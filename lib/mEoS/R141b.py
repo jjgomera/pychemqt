@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R141b(MEoS):
@@ -93,6 +94,35 @@ class R141b(MEoS):
         "n": [-0.31177e1, -0.68872e1, -0.18566e2, -0.40311e2, -0.95472e1,
               -0.12482e3],
         "t": [0.398, 1.33, 3.3, 6.7, 7.0, 14.0]}
+
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
+
+              "ek": 370.44, "sigma": 0.5493, "omega": 5,
+
+              "psi": [0.921345, 4.1091e-2], "psi_d": [0, 1],
+              "fint": [5.21722e-4, 2.92456e-6], "fint_t": [0, 1],
+              "chi": [1.0867, -2.16469e-2], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS,
+    _thermal = trnECS,
 
 
 class Test(TestCase):

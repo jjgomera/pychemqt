@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R32(MEoS):
@@ -232,26 +233,34 @@ class R32(MEoS):
         "n": [-.22002e1, -.5972e1, -.14571e2, -.42598e2, .42686e1, -.73373e2],
         "t": [0.336, 0.98, 2.7, 5.7, 6.5, 11.0]}
 
-    thermo0 = {"eq": 1,
-               "__name__": "Marsh (2002)",
-               "__doc__": """Unpublished; however the fit uses the functional form found in: Marsh, K., Perkins, R., and Ramires, M.L.V., "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data, 47(4):932-940, 2002""",
+    trnECS = {"__name__": "Huber (2003)",
 
-               "Tref": 351.255, "kref": 1,
-               "no": [0.106548e-1, -0.194174e-1, 0.254295e-1],
-               "co": [0, 1, 2],
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
 
-               "Trefb": 351.255, "rhorefb": 8.1500846, "krefb": 1,
-               "nb": [0.221878e-1, -0.215336e-1, 0.283523, -0.169164, -0.297237,
-                      .191614, .105727, -.665397e-1, -.123172e-1, 0.766378e-2],
-               "tb": [0, 1]*5,
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+              "eq": "ecs",
 
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.582925e-10, "Tcref": 526.8825}
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
 
-    # _thermal = thermo0,
+              "ek": 289.65, "sigma": 0.4098, "omega": 5,
+
+              "psi": [0.7954, 5.42658e-2], "psi_d": [0, 1],
+              "fint": [4.36654e-4, 1.78134e-6], "fint_t": [0, 1],
+              "chi": [1.2942, -9.24549e-2], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS,
+    _thermal = trnECS,
 
 
 class Test(TestCase):

@@ -18,9 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
-from lib.mEoS.C3 import C3
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R13(MEoS):
@@ -131,21 +131,27 @@ class R13(MEoS):
         "n": [-0.31949e1, -0.73425e1, -0.21966e2, -0.51459e2, -0.85359e2],
         "t": [0.414, 1.41, 3.7, 7.7, 15.0]}
 
-    trnECS = {"eq": "ecs",
-              "__name__": "Extended Corresponding States model",
-              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
-                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"},
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
 
               "ref": C3,
-              "ref_eq": "helmholtz1",
-              "eq_visco": "visco0",
-              "eq_thermo": "thermo0",
+              "visco": "visco1",
+              "thermo": "thermo0",
 
+              "ek": 204.0, "sigma": 0.4971, "omega": 5,
+
+              "psi": [0.976177, 1.48047e-2], "psi_d": [0, 1],
               "fint": [1.07447e-3, 6.42373e-7], "fint_t": [0, 1],
-              "psi": [0.976177, 1.48047e-2], "psi_t": [0, 0], "psi_d": [0, 1],
-              "phi": [1.1394, -3.65562e-2], "phi_t": [0, 0], "phi_d": [0, 1],
+              "chi": [1.1394, -3.65562e-2], "chi_d": [0, 1],
 
               "critical": 3,
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
@@ -153,3 +159,8 @@ class R13(MEoS):
 
     _viscosity = trnECS,
     _thermal = trnECS,
+
+
+if __name__ == "__main__":
+    st = R13(T=300, P=1e5)
+    print(st.mu)

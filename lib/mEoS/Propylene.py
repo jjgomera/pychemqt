@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class Propylene(MEoS):
@@ -208,6 +209,34 @@ class Propylene(MEoS):
         "n": [-1.59841, -4.73840, -10.8886, -31.0312, -56.9431, -143.544],
         "t": [0.309, 0.853, 2.37, 5.2, 10., 20.]}
 
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
+
+              "ek": 298.9, "sigma": 0.4678, "omega": 5,
+
+              "psi": [1.33962, -0.256307, 4.68211e-2], "psi_d": [0, 1, 2],
+              "fint": [1.09939e-3, 3.72539e-7], "fint_t": [0, 1],
+              "chi": [1.3521, -0.123177], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS,
+
     thermo0 = {"__name__": "Assael (2016)",
                "__doi__": {
                    "autor": "Assael, M.J., Koutian, A., Huber, M.L., Perkins, "
@@ -237,10 +266,7 @@ class Propylene(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.198e-9,
                "gam0": 0.057, "qd": 0.43e-9, "Tcref": 546.32}
 
-    _thermal = thermo0,
-
-
-# TODO: Add viscosity correlation from Huber, ecs correlation
+    _thermal = thermo0, trnECS
 
 
 class Test(TestCase):

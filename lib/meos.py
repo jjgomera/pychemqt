@@ -286,9 +286,20 @@ __doi__ = {
                   "and Oxigen",
          "ref": "J. Phys. Chem. Ref. Data 3(4) (1974) 979-1018",
          "doi": "10.1063/1.3253152"},
-
-
     20:
+        {"autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+         "title": "Model for the Viscosity and Thermal Conductivity of "
+                  "Refrigerants, Including a New Correlation for the "
+                  "Viscosity of R134a",
+         "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+         "doi": "10.1021/ie0300880"},
+    21:
+        {"autor": "Estela-Uribe, J.F., Trusler, J.P.M.",
+         "title": "Extended corresponding states model for fluids and fluid"
+                  "mixtures I. Shape factor model for pure fluids",
+         "ref": "Fluid Phase Equilibria 204 (2003) 15-40",
+         "doi": "10.1016/s0378-3812(02)00190-5"},
+    22:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -973,6 +984,11 @@ class MEoS(ThermoAdvanced):
     _viscosity = None
     _thermal = None
     _critical = None
+
+    # Conformal ecs calculated properties, saved here to avoid recalculate
+    _T0_ecs = None
+    _rho0_ecs = None
+    _ecs_msg = ""
 
     _test = []
 
@@ -3911,8 +3927,8 @@ class MEoS(ThermoAdvanced):
             return None
 
     # Viscosity calculation methods
-    @refDoc(__doi__, [2, 3, 4, 5], tab=8)
-    def _Viscosity(self, rho, T, fase):
+    @refDoc(__doi__, [2, 3, 4, 5, 20], tab=8)
+    def _Viscosity(self, rho, T, fase, coef=False, residual=False):
         r"""Viscosity calculation procedure, implement several general method
 
         The derived class must define a dict object with the parameters for the
@@ -3922,6 +3938,7 @@ class MEoS(ThermoAdvanced):
             * 0 - Hardcoded for special procedures (i.e.: R23, H2O, ...)
             * 1 - General formulation with different contribution
             * 2 - Younglove formulation
+            * 3 - Extended corresponding states correlation
             * 4 - Quiñones-Cisneros friction theory model
 
         **Hardcoded procedures**
@@ -4036,6 +4053,47 @@ class MEoS(ThermoAdvanced):
             Although both references use (almost) same correlation the density
             is in g/cm³ in [4]_ and mol/l in [5]_, the parameters are maintain
             with values in references.
+
+        **Extended corresponding states (ECS) model**
+
+            Formulation as explain in [20]_.
+
+            .. math::
+                \begin{array}[t]{l}
+                \eta = \eta^o(T) + \Delta\eta_o(T_o,\rho_o)F_{\eta}(T,\rho)\\
+                \eta^o=\frac{5\sqrt{\pi Mk_bT}}{16\pi\sigma^2\Omega^{(2,2)}}\\
+                T_o = T/f\\
+                \rho_o = \rho h\\
+                f = \frac{T_c}{T_{c0}}\vartheta\\
+                h = \frac{\rho_{c0}}{\rho_c}\varphi\\
+                F_{\eta} = \frac{f^{1/2}}{h^{3/2}}\left(\frac{M}{M_0}\right)^
+                {1/2}\\
+                \end{array}
+
+            where :math:`\varOmega^{(2,2)}` is the collision integral, see
+            :func:`lib.physics.Collision_Neufeld`
+
+            The residual contribution to the viscosity is calculated using
+            the correlation of reference fluid at conformal temperature and
+            density. These are calculated by iteration to meet the conditions
+
+            .. math::
+                \begin{array}[t]{l}
+                \alpha^r(T, \rho) = \alpha_0^r(T_0, \rho_0)\\
+                Z(T, \rho) = Z_0(T_0, \rho_0)\\
+                \end{array}
+
+            So it necessary accurate mEoS for both reference fluid and fluid
+            to calculate viscosity.
+
+            Furthermore the method can be based in experimental data using a
+            correction factor for the conformal density
+
+            .. math::
+                \begin{array}[t]{l}
+                \rho_{0,\eta}(T, \rho) = \rho_0(T, \rho)\psi(\rho_r)\\
+                \psi = \sum_k C_k\rho_r^k
+                \end{array}
 
 
         **Quiñones-Cisneros formulation**
@@ -4228,26 +4286,73 @@ class MEoS(ThermoAdvanced):
 
                 mu = muo+mu1*rhogcc+mu2                                 # Eq 18
 
-            elif self._viscosity["eq"] == 3 or self._viscosity["eq"] == "ecs":
+            elif coef["eq"] == 3 or coef["eq"] == "ecs":
                 # Huber ECS model
 
-                Tr = T/self.Tc
-                rhor = rho/self.rhoc
+                tau = self.Tc/T
+                delta = rho/self.rhoc
 
-                fint = 0
-                for n, m in zip(self._viscosity["fint"], self._viscosity["fint_t"]):
-                    fint += n*T**m
+                # Reference fluid
+                ref = coef["ref"]
+                visco0 = ref.__getattribute__(ref, coef["visco"])
 
+                # Calculate the conformal temperature and density
+                def f(parr):
+                    T0, rho0 = parr
+                    tau0 = ref.Tc/T0
+                    delta0 = rho0/ref.rhoc
+                    ar = self._phir(tau, delta)
+                    ar0 = ref()._phir(tau0, delta0)
+                    fird = self._phird(tau, delta)
+                    fird0 = ref()._phird(tau0, delta0)
+                    Z = 1+delta*fird
+                    Z0 = 1+delta0*fird0
+                    return ar-ar0, Z-Z0
+
+                rinput = fsolve(f, [T, rho], full_output=True)
+                if sum(abs(rinput[1]["fvec"])) < 1e-5:
+                    T0, rho0 = rinput[0]
+                    f = T/T0
+                    h = rho0/ref.M/rho*self.M
+                else:
+                    # If solution don't converge use the generalised
+                    # correlation for shape factor gives in Estela-Uribe
+                    self._ecs_msg = "Iteration don't converge"
+
+                    prop = self._ECSEstela(delta, tau, ref)
+                    teta = prop["teta"]
+                    phi = prop["phi"]
+
+                    f = self.Tc/ref.Tc*teta
+                    T0 = T/f
+                    h = ref.rhoc/ref.M * self.M/self.rhoc * phi
+                    rho0 = rho/self.M*h*ref.M
+
+                self._T0_ecs = T0
+                self._rho0_ecs = rho0
+
+                # Define the coef data for calculate the dilute gas viscosity
+                visco = {}
+                visco["omega"] = 5  # Neufeld correlation
+                visco["ek"] = coef["ek"]
+                visco["sigma"] = coef["sigma"]
+                muo = self._Visco0(T, visco)
+
+                # Eq 9
                 psi = 0
-                for n, t, d in zip(self._viscosity["psi"], self._viscosity["psi_t"], self._viscosity["psi_d"]):
-                    psi += n*Tr**t*rhor**d
+                for n, d in zip(coef["psi"], coef["psi_d"]):
+                    psi += n*delta**d
+                rho0 *= psi
 
-                mu = None
+                # Eq 8
+                F = f**0.5/h**(2/3)*(self.M/ref.M)**0.5
 
+                mur = ref()._Viscosity(rho0, T0, fase, visco0, True)
+                mu = muo + mur*F
 
             elif coef["eq"] == 4:
                 # Quiñones-Cisneros correlations
-                muo = self._Visco0()
+                muo = self._Visco0(T)
 
                 Gamma = self.Tc/T                                      # Eq 35
                 psi1 = exp(Gamma)-1.0                                  # Eq 33
@@ -4447,34 +4552,34 @@ class MEoS(ThermoAdvanced):
                 b = [-3.0328138281, 16.918880086, -37.189364917, 41.288861858,
                      -24.615921140, 8.9488430959, -1.8739245042, 0.20966101390,
                      -0.0096570437074]
-            T_ = coef["ek"]/self.T
+            T_ = coef["ek"]/T
             suma = 0
             for i, bi in enumerate(b):
                 suma += bi*T_**((3.-i)/3.)
             omega = 1./suma
 
-        elif self._viscosity["omega"] == 3:
-            Tr = self.T/coef.get("ek", 1)
+        elif coef["omega"] == 3:
+            Tr = T/coef.get("ek", 1)
             suma = 0
             for i, bi in enumerate(b):
                 suma += bi/Tr**i
             omega = exp(suma)
 
-        elif self._viscosity["omega"] == 4:
-            Tr = self.T/coef.get("ek", 1)
+        elif coef["omega"] == 4:
+            Tr = T/coef.get("ek", 1)
             omega = 0
             for i, bi in enumerate(b):
                 omega += bi/Tr**i
 
-        elif self._viscosity["omega"] == 5:
-            T_ = self.T/coef["ek"]
+        elif coef["omega"] == 5:
+            T_ = T/coef["ek"]
             omega = Collision_Neufeld(T_)
 
         return omega
 
     # Thermal conductivity methods
-    @refDoc(__doi__, [6, 4, 5, 17, 18], tab=8)
-    def _ThCond(self, rho, T, fase):
+    @refDoc(__doi__, [6, 4, 5, 17, 18, 20], tab=8)
+    def _ThCond(self, rho, T, fase, coef=False, contribution=False):
         r"""Thermal conductivity calculation procedure
 
         The derived class must define a dict object with the parameters for the
@@ -4485,6 +4590,7 @@ class MEoS(ThermoAdvanced):
             * 1 - General formulation with different contribution
             * 2 : Younglove #1 form, used in N2, O2, Ar.
             * 3 : Younglove #2 form, used in CH4, C2, C3, C4, iC4.
+            * 4 - Extended corresponding states correlation
 
         **Hardcoded procedures**
 
@@ -4601,6 +4707,50 @@ class MEoS(ThermoAdvanced):
                 * ek: Lennard-Jones energy parameter, [K]
                 * G: λ0 contribution parameters (2 terms)
                 * E: λ1 contribution parameters (8 terms)
+
+
+        **Extended corresponding states (ECS) model**
+
+            Formulation as explain in [20]_.
+
+            .. math::
+                \begin{array}[t]{l}
+                \lambda = \lambda^{int}(T)+\lambda^{trans}(T, \rho)\\
+                \lambda^{int} = \frac{f_{int}\eta^o}{M}\left(C_p^o-\frac{5}{2}
+                R\right)\\
+                f_{int}=a_0+a_1T\\
+                \lambda^{trans} = \lambda^o+\lambda^r+\lambda^c\\
+                \lambda^o = \frac{15}{4}R\eta^o\\
+                \lambda_r(T,\rho) = \lambda_0^r(T_0,\rho_0)F_{\lambda}\\
+                F_{\lambda} = \frac{f^{1/2}}{h^{3/2}}\left(\frac{M_0}{M}
+                \right)^{1/2}\\
+                \end{array}
+
+            The residual contribution to the thermal conductivity is calculated
+            using the correlation of reference fluid at conformal temperature
+            and density. These are calculated by iteration to meet the
+            conditions
+
+            .. math::
+                \begin{array}[t]{l}
+                \alpha^r(T, \rho) = \alpha_0^r(T_0, \rho_0)\\
+                Z(T, \rho) = Z_0(T_0, \rho_0)\\
+                \end{array}
+
+            So it necessary accurate mEoS for both reference fluid and fluid
+            to calculate thermal conductivity.
+
+            Furthermore the method can be based in experimental data using a
+            correction factor for the conformal density
+
+            .. math::
+                \begin{array}[t]{l}
+                \rho_{0,\lambda}(T, \rho) = \rho_0(T, \rho)\chi(\rho_r)\\
+                \chi = \sum_k b_k\rho_r^k
+                \end{array}
+
+            The critical enhancement is calculated with the Olchowy and Sengers
+            model, see :func:`MEoS._KCritical`.
 
 
         Parameters
@@ -4812,9 +4962,87 @@ class MEoS(ThermoAdvanced):
                 # print(kg, kb, kc)
                 k = kg+kb+kc
 
-            elif self._thermal["eq"] == "ecs":
-                # TODO
-                k = 0
+            elif coef["eq"] == 4 or coef["eq"] == "ecs":
+                # Huber ECS model
+
+                Tr = T/self.Tc
+                rhor = rho/self.rhoc
+                tau = 1/Tr
+                delta = rhor
+                muo = self._Visco0(T)
+
+                # Reference fluid
+                ref = coef["ref"]
+                thermo0 = ref.__getattribute__(ref, coef["thermo"])
+
+                # If viscosity correlation use too a ecs method restore
+                # conformal state and avoid repeat iteration
+                if self._T0_ecs:
+                    T0 = self._T0_ecs
+                    rho0 = self._rho0_ecs
+                    f = T/T0
+                    h = rho0/ref.M/rho*self.M
+
+                else:
+                    # Calculate the conformal temperature and density
+                    def f(parr):
+                        T0, rho0 = parr
+                        tau0 = ref.Tc/T0
+                        delta0 = rho0/ref.rhoc
+                        ar = self._phir(tau, delta)
+                        ar0 = ref()._phir(tau0, delta0)
+                        fird = self._phird(tau, delta)
+                        fird0 = ref()._phird(tau0, delta0)
+                        Z = 1+delta*fird
+                        Z0 = 1+delta0*fird0
+                        return ar-ar0, Z-Z0
+
+                    rinput = fsolve(f, [T, rho], full_output=True)
+                    if sum(abs(rinput[1]["fvec"])) < 1e-5:
+                        T0, rho0 = rinput[0]
+                        f = T/T0
+                        h = rho0/ref.M/rho*self.M
+                        rho0 = rho/self.M*h*ref.M
+                    else:
+                        # If solution don't converge use the generalised
+                        # correlation for shape factor gives in Estela-Uribe
+                        self._ecs_msg = "Iteration don't converge"
+
+                        prop = self._ECSEstela(delta, tau, ref)
+                        teta = prop["teta"]
+                        phi = prop["phi"]
+
+                        f = self.Tc/ref.Tc*teta
+                        T0 = T/f
+                        h = ref.rhoc/ref.M * self.M/self.rhoc * phi
+                        rho0 = rho/self.M*h*ref.M
+
+                # Calculate the internal contribution to thermal conductivity
+                fint = 0
+                for n, t in zip(coef["fint"], coef["fint_t"]):
+                    fint += n*T**t
+                kg = muo*fint*(self.cp0.kJkgK-2.5*self.R.kJkgK)         # Eq 24
+
+                # Calculate the dilute gas thermal conductivity
+                ko = 15/4*self.R.kJkgK*muo*1e-3                         # Eq 27
+
+                kr, kc = 0, 0
+                if rho:
+                    # Eq 31
+                    chi = 0
+                    for n, d in zip(coef["chi"], coef["chi_d"]):
+                        chi += n*rhor**d
+                    rho0 *= chi
+
+                    F = f**0.5/h**(2/3)*(ref.M/self.M)**0.5             # Eq 29
+
+                    # Residual contribution using the ecs method
+                    kr = F * ref()._ThCond(rho0, T0, fase, thermo0, True)
+
+                    # Critical enhancement
+                    kc = self._KCritical(rho, T, fase)
+
+                k = kg + ko + kr + kc
 
         else:
             # Use the Chung method as default method for no high quality method
@@ -5074,12 +5302,78 @@ class MEoS(ThermoAdvanced):
                     self._thermal["dc"]):
                 expo += n*(tau+alfa)**t*(delta+beta)**d
             tc = self._thermal["krefc"]*exp(expo)
- 
+
         elif isinstance(self._thermal["critical"], str):
             # Hardcoded method
             method = self.__getattribute__(self._thermal["critical"])
             tc = method(rho, T, fase)
         return tc
+
+    @refDoc(__doi__, [21], tab=8)
+    def _ECSEstela(self, delta, tau, ref):
+        r"""Calculation of shape factor for conformal state as explain in [21]_
+
+        The correlation is only recommended for nonpolar fluids so it´s use may
+        be very inaccuracy
+
+        .. math::
+            \begin{array}[t]{l}
+            \vartheta = 1+(\omega-\omega_0)(A_1+A_2e^{-\delta^2}+\Psi_
+            {\vartheta})\\
+            \varphi = \frac{Z_{c0}}{Z_c}(1+(\omega-\omega_0)(A_3+A_4e^
+            {-\delta^2}+\Psi_{\varphi}))\\
+            A_i = a_{i,1}-a_{i,2}\ln\tau\\
+            \Psi_{\vartheta} = b_1\delta e^{-b_2\Delta^2}\\
+            \Psi_{\varphi} = c_1\delta e^{-c_2\Delta^2}\\
+            \Delta = (\delta-1)^2+(\frac{1}{\tau}-1)^2\\
+            \end{array}
+
+        Parameters
+        ----------
+        tau : float
+            Inverse reduced temperature, Tc/T [-]
+        delta : float
+            Reduced density, rho/rhoc [-]
+        ref : lib.meos.MEoS
+            Class with the reference fluid
+
+        Returns
+        -------
+        prop : dict
+            Calculated shape factor: teta, phi.
+        """
+        # Parameters, Table 3, pag 25
+        a = [[0.05899028, -0.93046626], [-0.08809157, 0.18165944],
+             [0.01301722, 0.28587945], [0.00436092, 0.41092573]]
+        b = [0.21343372, -0.64441400]
+        c = [-0.12147697, 0.12392723]
+
+        # Critical compressibility factor
+        Zc = self.Pc/self.rhoc/self.R/self.Tc
+        R = ref.eq[0]["R"]/ref.M*1000
+        Zc0 = ref.Pc/ref.rhoc/R/ref.Tc
+        w = self.f_acent
+        w0 = ref.f_acent
+
+        Delta = (delta-1)**2+(1/tau-1)**2                   # Eq 23
+
+        # Eq 20
+        A1 = a[0][0] - a[0][1]*log(tau)
+        A2 = a[1][0] - a[1][1]*log(tau)
+        A3 = a[2][0] - a[2][1]*log(tau)
+        A4 = a[3][0] - a[3][1]*log(tau)
+
+        phi_teta = b[0]*delta*exp(-b[1]*Delta**2)           # Eq 21
+        phi_phi = c[0]*delta*exp(-c[1]*Delta**2)            # Eq 22
+
+        # Eq 18
+        teta = 1+(w-w0)*(A1+A2*exp(-delta**2)+phi_teta)
+
+        # Eq 19
+        phi = Zc0/Zc*(1+(w-w0)*(A3+A4*exp(-delta**2)+phi_phi))
+
+        prop = {"teta": teta, "phi": phi}
+        return prop
 
 
 class MEoSBlend(MEoS):
@@ -5188,4 +5482,3 @@ if __name__ == "__main__":
     print(st.rho, st.s)
     st1 = H2O(T=300, s=st.s)
     print(st.s, st1.s)
-

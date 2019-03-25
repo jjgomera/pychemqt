@@ -124,22 +124,31 @@ class R236ea(MEoS):
         "n": [-2.7426, -6.2268, -15.109, -49.524, -114.11],
         "t": [0.376, 1.1, 2.7, 5.5, 11]}
 
-    trnECS = {"eq": "ecs",
-              "__name__": "Extended Corresponding States model",
-              "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., Model for the viscosity and thermal conductivity of refrigerants, including a new correlation for the viscosity of R134a, Ind.Eng.Chem.Res. 42: 3163-3178 (2003).""",
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
 
               "ref": R134a,
-              "ref_eq": "helmholtz1",
-              "eq_visco": "visco0",
-              "eq_thermo": "thermo0",
+              "visco": "visco0",
+              "thermo": "thermo0",
 
-              "f_int": [1.32e-3],
-              "psi": [1.0],
-              "phi": [1.0],
+              "ek": 318.33, "sigma": 0.5604, "omega": 5,
+
+              "psi": [1.12216, -2.73101e-2], "psi_d": [0, 1],
+              "fint": [1.70267e-3, -4.91063e-7], "fint_t": [0, 1],
+              "chi": [0.9617, 3.37897e-2], "chi_d": [0, 1],
 
               "critical": 3,
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.5e-9, "Tcref": 579.49}
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-#    _viscosity=trnECS,
-#    _thermal=trnECS,
+    _viscosity = trnECS,
+    _thermal = trnECS,
