@@ -342,7 +342,7 @@ class R125(MEoS):
 
               "CPf": 141.2564,
               "CPg1": 3.033797,
-              "CPgi": [0.2992464/3.0033797],
+              "CPgi": [0.2992464/3.033797],
               "CPti": [-0.5]}
 
     trnECS = {"__name__": "Huber (2003)",
@@ -711,10 +711,8 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.35860)
 
     def test_Huber(self):
-        # FIXME: Tiny error
-        pass
-
-        # st = R125(T=300, rhom=10.5969998)
-        # self.assertEqual(round(st.mu.muPas, 2), 177.37)
-        # st = R125(T=400, rhom=0.030631)
-        # self.assertEqual(round(st.mu.muPas, 3), 17.070)
+        # Data in text, pag 4452
+        st = R125(T=300, P=1e7)
+        self.assertEqual(round(st.mu.muPas, 2), 177.38)
+        st = R125(T=400, P=101325)
+        self.assertEqual(round(st.mu.muPas, 3), 17.063)
