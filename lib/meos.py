@@ -1222,8 +1222,6 @@ class MEoS(ThermoAdvanced):
             self._constants = self.eq[eq]
         elif self.eq[eq]["__type__"] == "MBWR":
             self._constants = self.eq[eq]
-        elif self.eq[eq]["__type__"] == "ECS":
-            self._constants = self.eq[eq]
 
         if not self._code:
             self._code = str(eq)
