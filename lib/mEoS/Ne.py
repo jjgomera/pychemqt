@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from scipy import log10
 from scipy.constants import pi, Avogadro
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Ne(MEoS):

@@ -32,7 +32,7 @@ class R124(MEoS):
     _refPropName = "R124"
     _coolPropName = "R124"
     rhoc = unidades.Density(560.)
-    Tc = unidades.Temperature(395.425)
+    Tc = unidades.Temperature(395.43)
     Pc = unidades.Pressure(3624.295, "kPa")
     M = 136.4762  # g/mol
     Tt = unidades.Temperature(74.)

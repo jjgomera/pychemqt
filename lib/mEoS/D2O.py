@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from iapws._iapws import _D2O_Viscosity, _D2O_ThCond, _D2O_Tension
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class D2O(MEoS):

@@ -22,8 +22,9 @@ from math import exp, pi
 from unittest import TestCase
 
 from scipy.constants import Boltzmann
-from lib.meos import MEoS
+
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Ar(MEoS):

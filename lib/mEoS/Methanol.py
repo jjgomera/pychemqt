@@ -23,8 +23,8 @@ from unittest import TestCase
 from scipy import exp
 from scipy.constants import pi, Avogadro
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Methanol(MEoS):

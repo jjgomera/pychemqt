@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS.R134a import R134a
+from lib.mEoS import R134a
 
 
 class R236ea(MEoS):
@@ -88,26 +88,6 @@ class R236ea(MEoS):
         "gamma3": [1.13, 0.6691, 0.465, 1.28, 0.8781],
         "epsilon3": [0.7119, 0.9102, 0.678, 0.7091, 1.727]}
 
-    ecs = {"__type__": "ECS",
-           "__name__": "Thermodynamic Extended Corresponding States model w/ T- and rho-dependent shape factors.",
-           "__doc__":  u"""Huber, M.L. and Ely, J.F., "A predictive extended corresponding states model for pure and mixed refrigerants including an equation of state for R134a," Int. J. Refrigeration, 17:18-31, 1994.""",
-           "cp": CP1,
-           "ref": R134a,
-           "eq": "helmholtz1",
-           # "eq": "MBWR",
-           "R": 8.314471,
-
-            "Tmin": 242.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 10.465,
-#            "Pmin": aaaaaaa, "rhomin": aaaaaaa,
-
-           "ft": [-0.67786992, -0.52182651],
-           "ft_add": [], "ft_add_exp": [],
-           "fd": [0.113833347e-1], "fd_exp": [1],
-           "ht": [0.142369159e1, 0.870214752e-1],
-           "ht_add": [0.195298641e-1], "ht_add_exp": [1],
-           "hd": [], "hd_exp": []}
-
-    # eq = rui, ecs
     eq = rui,
 
     _surface = {"sigma": [0.306974, -0.247277], "exp": [1.12614, 1.09899]}

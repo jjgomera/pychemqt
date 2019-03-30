@@ -23,8 +23,8 @@ from unittest import TestCase
 from scipy import exp, log, pi
 from scipy.constants import Boltzmann
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class NH3(MEoS):

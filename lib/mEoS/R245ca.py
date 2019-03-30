@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS.R134a import R134a
+from lib.mEoS import R134a
 
 
 class R245ca(MEoS):
@@ -93,24 +93,6 @@ class R245ca(MEoS):
         "beta3": [2.4, 1.5, 4.2, 379],
         "gamma3": [1.265, 0.42, 0.864, 1.15],
         "epsilon3": [0.55, 0.724, 0.524, 0.857]}
-
-    ecs = {"__type__": "ECS",
-           "__name__": "Thermodynamic Extended Corresponding States model w/ T- and rho-dependent shape factors.",
-           "__doc__":  u"""Huber, M.L. and Ely, J.F., "A predictive extended corresponding states model for pure and mixed refrigerants including an equation of state for R134a," Int. J. Refrigeration, 17:18-31, 1994.""",
-           "cp": CP2,
-           "ref": R134a,
-           "eq": "helmholtz1",
-           "R": 8.314471,
-
-            "Tmin": 200.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 11.995,
-#            "Pmin": aaaaaaa, "rhomin": aaaaaaa,
-
-           "ft": [-0.241011472, -0.788477331],
-           "ft_add": [], "ft_add_exp": [],
-           "fd": [], "fd_exp": [],
-           "ht": [0.160567866e1, -0.727455038],
-           "ht_add": [], "ht_add_exp": [],
-           "hd": [], "hd_exp": []}
 
     eq = zhou,
 

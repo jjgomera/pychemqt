@@ -23,8 +23,8 @@ from unittest import TestCase
 from scipy import exp
 from scipy.constants import Boltzmann, Avogadro, pi
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Ethylene(MEoS):

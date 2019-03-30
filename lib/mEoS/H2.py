@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from scipy import exp, log
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class H2(MEoS):

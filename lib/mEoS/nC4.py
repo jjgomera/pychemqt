@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from scipy import log, exp
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC4(MEoS):

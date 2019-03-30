@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from unittest import TestCase
 
-from lib.meos import MEoSBlend
 from lib import unidades
+from lib.meos import MEoSBlend
 
 
 class Air(MEoSBlend):
@@ -293,10 +293,3 @@ class Test(TestCase):
         self.assertEqual(round(Air(rhom=10, T=200).k.mWmK, 4), 35.3185)
         self.assertEqual(round(Air(rhom=5, T=300).k.mWmK, 4), 32.6062)
         self.assertEqual(round(Air(rhom=10.4, T=132.64).k.mWmK, 4), 75.6231)
-
-
-if __name__ == "__main__":
-    from iapws.humidAir import Air as Air2
-    st = Air(rhom=28, T=100)
-    st1 = Air2(rhom=28, T=100)
-    print(st.k.mWmK, st1.k)

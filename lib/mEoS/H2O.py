@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from unittest import TestCase
 from copy import copy
+from unittest import TestCase
 
 from scipy import exp
 from iapws import _Viscosity, _ThCond, _Dielectric, _Tension
