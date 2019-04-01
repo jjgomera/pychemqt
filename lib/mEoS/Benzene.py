@@ -253,14 +253,13 @@ class Test(TestCase):
 
         # Table 5, Saturation line, give too liquid density values to check
         # Thol mEoS
-        # FIXME: Strange saturation returned values for density
-        # st = Benzene(T=280, x=0)
-        # self.assertEqual(round(st.Liquido.rho, 3), 892.701)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 795.3)
+        st = Benzene(T=280, x=0)
+        self.assertEqual(round(st.Liquido.rho, 3), 892.701)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 795.3)
 
-        # st = Benzene(T=400, x=0)
-        # self.assertEqual(round(st.Liquido.rho, 3), 758.650)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 209.9)
+        st = Benzene(T=400, x=0)
+        self.assertEqual(round(st.Liquido.rho, 3), 758.649)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 209.9)
 
         st = Benzene(T=540, x=0)
         self.assertEqual(round(st.Liquido.rho, 3), 508.838)
@@ -272,11 +271,6 @@ class Test(TestCase):
         # visco0 correlation, so tiny desviations are for that cause
         self.assertEqual(round(Benzene(T=290, rho=890).k.mWmK, 2), 147.65)
         self.assertEqual(round(Benzene(T=500, rho=2).k.mWmK, 3), 30.174)
-        # self.assertEqual(round(Benzene(T=500, rho=32).k.mWmK, 3), 32.175)
-        # self.assertEqual(round(Benzene(T=500, rho=800).k.mWmK, 2), 141.24)
+        self.assertEqual(round(Benzene(T=500, rho=32).k.mWmK, 3), 32.209)
+        self.assertEqual(round(Benzene(T=500, rho=800).k.mWmK, 2), 141.22)
         self.assertEqual(round(Benzene(T=570, rho=1.7).k.mWmK, 3), 37.763)
-
-
-if __name__ == "__main__":
-    st = Benzene(T=500, rho=32)
-    print(st.k.mWmK)
