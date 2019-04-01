@@ -41,7 +41,6 @@ class R141b(MEoS):
     Tb = unidades.Temperature(305.20)
     f_acent = 0.2195
     momentoDipolar = unidades.DipoleMoment(2.014, "Debye")
-    id = 236
     # id = 1633
 
     Fi1 = {"ao_log": [1, 3.],

@@ -78,9 +78,9 @@ class R125(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data 34(1) (2005) 69-108",
                     "doi": "10.1063/1.1797813"},
 
-        # FIXME: Check meos phir calculation with exp != 2
         "R": 8.314472,
-        "cp": Fi1,
+        "rhoc": 4.779,
+        "cp": CP1,
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09,

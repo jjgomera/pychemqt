@@ -60,7 +60,7 @@ class Cyclopropane(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 473.0, "Pmax": 28000.0, "rhomax": 15.595,
+        "Tmin": Tt, "Tmax": 473.0, "Pmax": 28000.0, "rhomax": 15.595,
         "Pmin": 342.71, "rhomin": 15.595,
 
         "nr1": [-0.137016097588e1, 0.212444673002e1, -0.578908942724,

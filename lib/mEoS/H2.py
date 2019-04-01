@@ -152,7 +152,7 @@ class H2(MEoS):
 
         "R": 8.3143,
         "cp": CP1,
-        "ref": "IIR",
+        "ref": "NBP",
 
         "Tmin": 18.0, "Tmax": 700.0, "Pmax": 50000.0, "rhomax": 38.74,
         "Pmin": 8.736, "rhomin": 38.7,

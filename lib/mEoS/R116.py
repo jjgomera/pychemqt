@@ -65,8 +65,9 @@ class R116(MEoS):
                     "doi":  "10.1021/je050186n"},
 
         "R": 8.314472,
-        "cp": Fi1,
-        "ref": "NBP",
+        "rhoc": 4.444,
+        "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.31,
         "Pmin": 26.1, "rhomin": 12.3,
@@ -94,7 +95,7 @@ class R116(MEoS):
 
         "R": 8.31451,
         "cp": CP2,
-        "ref": "NBP",
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.23,
         "Pmin": 32.09, "rhomin": 12.231,

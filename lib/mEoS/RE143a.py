@@ -40,10 +40,10 @@ class RE143a(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.32, "Debye")
     # id = 1817
 
-    f = 100*8.314472/M
-    CP1 = {"ao": 20.37*f,
-           "an": [], "pow": [],
-           "ao_exp": [0.2918*f, -1.950e-4*f, 4.650e-8*f], "exp": [1, 2, 3]}
+    f = 8.314472
+    CP1 = {"ao": 20.37/f,
+           "an": [0.2918/f, -1.950e-4/f, 4.650e-8/f], "pow": [1, 2, 3],
+           "ao_exp": [], "exp": []}
 
     akasaka = {
         "__type__": "Helmholtz",

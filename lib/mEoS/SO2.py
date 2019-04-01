@@ -67,8 +67,7 @@ class SO2(MEoS):
         "__doi__": {
             "autor": "Gao, K., Wu, J., Zhang, P., Lemmon, E.W.",
             "title": "A Helmholtz Energy Equation of State for Sulfur Dioxide",
-            "ref": "J. Chem. Eng. Data, ",
-            # TODO: Complete reference when find internet
+            "ref": "J. Chem. Eng. Data, 61(6) (2016) 2859-2872",
             "doi":  "10.1021/acs.jced.6b00195"},
 
         "R": 8.3144621,
@@ -140,7 +139,7 @@ class SO2(MEoS):
         "cp": CP2,
         "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91,
+        "Tmin": Tt, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91,
         "Pmin": 11.82, "rhomin": 23.0,
 
         "nr1": [0.789407019882, -0.170449580056e1, 0.115984637964e1,

@@ -300,6 +300,12 @@ __doi__ = {
          "ref": "Fluid Phase Equilibria 204 (2003) 15-40",
          "doi": "10.1016/s0378-3812(02)00190-5"},
     22:
+        {"autor": "McLinden, M.O., Klein, S.A., Perkins, R.A.",
+         "title": "An Extended corresponding states model for the thermal "
+                  "conductivity of refrigerants and refrigerant mixtures",
+         "ref": "Int. J. Refrigeration 23 (2000) 43-63",
+         "doi": "10.1016/s0140-7007(99)00024-9"},
+    22:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -3075,12 +3081,21 @@ class MEoS(ThermoAdvanced):
     def _PHIO(self, cp):
         """Convert cp dict in phi0 dict when the cp expression isn't in
         Helmholtz free energy terms"""
-        # TODO: Add support for 1/τ terms, give tau*logtau terms and more
         co = cp["ao"]-1
-        ti = [-x for x in cp["pow"]]
-        ci = [-n/(t*(t+1))*self.Tc**t for n, t in zip(cp["an"], cp["pow"])]
+        ti = []
+        ci = []
+        taulogtau = 0
+        for n, t in zip(cp["an"], cp["pow"]):
+            if t == -1:
+                # Special case of tau*logtau term
+                taulogtau = -n/self.Tc
+            else:
+                ti.append(-t)
+                ci.append(-n/(t*(t+1))*self.Tc**t)
+
         titao = [fi/self.Tc for fi in cp["exp"]]
-        hyp = [fi/self.Tc for fi in cp["hyp"]]
+        sinh = [fi/self.Tc for fi in cp.get("sinh", [])]
+        cosh = [fi/self.Tc for fi in cp.get("cosh", [])]
 
         # The integration constant are difficult to precalculate as depend of
         # resitual Helmholtz free energy. It's easier use a offset system
@@ -3093,8 +3108,14 @@ class MEoS(ThermoAdvanced):
                "ao_pow": [cII, cI] + ci,
                "ao_exp": cp["ao_exp"],
                "titao": titao,
-               "ao_hyp": cp["ao_hyp"],
-               "hyp": hyp}
+               "ao_sinh": cp.get("ao_sinh", []),
+               "sinh": sinh,
+               "ao_cosh": cp.get("ao_cosh", []),
+               "cosh": cosh}
+
+        if taulogtau:
+            Fi0["tau*logtau"] = taulogtau
+
         return Fi0
 
     def _phi0(self, cp, tau, delta):
@@ -3926,7 +3947,7 @@ class MEoS(ThermoAdvanced):
             return None
 
     # Viscosity calculation methods
-    @refDoc(__doi__, [2, 3, 4, 5, 20], tab=8)
+    @refDoc(__doi__, [2, 3, 4, 5, 20, 22], tab=8)
     def _Viscosity(self, rho, T, fase, coef=False, residual=False):
         r"""Viscosity calculation procedure, implement several general method
 
@@ -4055,7 +4076,7 @@ class MEoS(ThermoAdvanced):
 
         **Extended corresponding states (ECS) model**
 
-            Formulation as explain in [20]_.
+            Formulation as explain in [20]_ and [22]_.
 
             .. math::
                 \begin{array}[t]{l}
@@ -4598,7 +4619,7 @@ class MEoS(ThermoAdvanced):
         return omega
 
     # Thermal conductivity methods
-    @refDoc(__doi__, [6, 4, 5, 17, 18, 20], tab=8)
+    @refDoc(__doi__, [6, 4, 5, 17, 18, 20, 22], tab=8)
     def _ThCond(self, rho, T, fase, coef=False, contribution=False):
         r"""Thermal conductivity calculation procedure
 
@@ -4731,7 +4752,7 @@ class MEoS(ThermoAdvanced):
 
         **Extended corresponding states (ECS) model**
 
-            Formulation as explain in [20]_.
+            Formulation as explain in [20]_ and [22]_.
 
             .. math::
                 \begin{array}[t]{l}
@@ -5072,13 +5093,13 @@ class MEoS(ThermoAdvanced):
                 k = kg + ko + kr + kc
 
         else:
-            # Use the Chung method as default method for no high quality method
+            # Use the Chung method as default method when no high quality
+            # correlation available
             muo = MuG_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
                             self.momentoDipolar.Debye, 0)
             ko = ThG_Chung(T, self.Tc, self.M, self.f_acent, fase.cv, muo)
             k = ThG_P_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
                             self.momentoDipolar.Debye, 0, rho, ko)
-            k = 0
         return unidades.ThermalConductivity(k)
 
     @refDoc(__doi__, [4, 5, 15, 16, 19], tab=8)

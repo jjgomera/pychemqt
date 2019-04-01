@@ -988,7 +988,7 @@ class Test(TestCase):
         self.assertEqual(round(Ethylene(T=400, P=2e8).k.mWmK, 1), 190.3)
         self.assertEqual(round(Ethylene(T=500, P=2e8).k.mWmK, 1), 170.6)
 
-        # Critical enhancement point
+        # Critical enhancement point, section 3.1.4, pag 8
         self.assertEqual(round(Ethylene(T=300, rho=300).k.mWmK, 2), 69.62)
 
     def test_Holland(self):

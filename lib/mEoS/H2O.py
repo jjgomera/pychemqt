@@ -187,7 +187,7 @@ class H2O(MEoS):
 
         "R": 8.31434,
         "cp": Fi3,
-        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
+        "ref": {"Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
         "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49,
         "Pmin": 0.61166, "rhomin": 55.497,
@@ -240,7 +240,7 @@ class H2O(MEoS):
 
         "R": 8.31434,
         "cp": Fi4,
-        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
+        "ref": {"Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
         "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49,
         "Pmin": 0.61166, "rhomin": 55.497,
@@ -281,7 +281,7 @@ class H2O(MEoS):
         "R": 8.314371357587,
         "cp": Fi1,
         "ref": {"name": "CUSTOM",
-                "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
+                "Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
         "Pmin": 0.1, "rhomin": 40.,
