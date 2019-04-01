@@ -149,56 +149,44 @@ class Test(TestCase):
         # PhD thesis, Ruhr-Universität Bochum, 2015.
 
         # Appendix A, Pag 259
-
-        # The values in table are not good, trying to use the values report by
-        # CoolProp
-
-        # from CoolProp. CoolProp import PropsSI
-        # P = PropsSI("P", "T", 250, "Dmolar", 0.0001, "MM")
-        P = 0.20785
-        # Cp = PropsSI("Cpmolar", "T", 250, "Dmolar", 0.0001, "MM")
-        Cp = 216.5
+        # The two first point are inverted in table
 
         st = MM(T=250, rhom=0.0001, eq="thol")
-        self.assertEqual(round(st.P.kPa, 5), P)
-        self.assertEqual(round(st.cpM.JmolK, 1), Cp)
+        self.assertEqual(round(st.P.MPa, 11), 2.0772979e-4)
+        self.assertEqual(round(st.cpM.JmolK, 5), 216.58261)
+        self.assertEqual(round(st.w, 5), 115.31572)
+        self.assertEqual(round(st.hM.Jmol, 4), 1715.1951)
+        self.assertEqual(round(st.sM.JmolK, 6), 38.943461)
+        self.assertEqual(round(st.aM.Jmol, 3), -10097.968)
 
-        # st = MM(T=250, rhom=0.0001, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 2.3550378)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 290.08362)
-        # self.assertEqual(round(st.w, 4), 1068.3855)
-        # self.assertEqual(round(st.hM.Jmol, 3), -38660.059)
-        # self.assertEqual(round(st.sM.JmolK, 6), -126.50073)
-        # self.assertEqual(round(st.aM.Jmol, 6), -7505.8829)
+        st = MM(T=250, rhom=5, eq="thol")
+        self.assertEqual(round(st.P.MPa, 7), 2.3550378)
+        self.assertEqual(round(st.cpM.JmolK, 5), 290.08361)
+        self.assertEqual(round(st.w, 4), 1068.3855)
+        self.assertEqual(round(st.hM.Jmol, 3), -38660.057)
+        self.assertEqual(round(st.sM.JmolK, 5), -126.50074)
+        self.assertEqual(round(st.aM.Jmol, 4), -7505.8794)
 
-        # st = MM(T=250, rhom=5, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 2.0772979e-4)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 2.1658262e-2)
-        # self.assertEqual(round(st.w, 4), 115.31572)
-        # self.assertEqual(round(st.hM.Jmol, 3), 1715.1940)
-        # self.assertEqual(round(st.sM.JmolK, 6), 38.943471)
-        # self.assertEqual(round(st.aM.Jmol, 6), -10097.972)
+        st = MM(T=400, rhom=0.05, eq="thol")
+        self.assertEqual(round(st.P.MPa, 8), 0.15367468)
+        self.assertEqual(round(st.cpM.JmolK, 5), 293.72933)
+        self.assertEqual(round(st.w, 5), 134.70433)
+        self.assertEqual(round(st.hM.Jmol, 3), 38493.817)
+        self.assertEqual(round(st.sM.JmolK, 6), 99.143187)
+        self.assertEqual(round(st.aM.Jmol, 4), -4236.9519)
 
-        # st = MM(T=400, rhom=0.05, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 0.15367468)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 293.72934)
-        # self.assertEqual(round(st.w, 4), 134.70433)
-        # self.assertEqual(round(st.hM.Jmol, 3), 38493.817)
-        # self.assertEqual(round(st.sM.JmolK, 6), 99.143201)
-        # self.assertEqual(round(st.aM.Jmol, 6), -4236.9572)
+        st = MM(T=400, rhom=4.5, eq="thol")
+        self.assertEqual(round(st.P.MPa, 6), 40.937214)
+        self.assertEqual(round(st.cpM.JmolK, 5), 339.40133)
+        self.assertEqual(round(st.w, 5), 930.21218)
+        self.assertEqual(round(st.hM.Jmol, 3), 13672.106)
+        self.assertEqual(round(st.sM.JmolK, 6), 11.063873)
+        self.assertEqual(round(st.aM.Jmol, 5), 149.39757)
 
-        # st = MM(T=400, rhom=4.5, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 40.937214)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 339.40134)
-        # self.assertEqual(round(st.w, 4), 930.21218)
-        # self.assertEqual(round(st.hM.Jmol, 3), 1367.2106)
-        # self.assertEqual(round(st.sM.JmolK, 6), 11.063887)
-        # self.assertEqual(round(st.aM.Jmol, 6), 149.39229)
-
-        # st = MM(T=560, rhom=4.5, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 123.02530)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 387.27688)
-        # self.assertEqual(round(st.w, 4), 1132.8991)
-        # self.assertEqual(round(st.hM.Jmol, 3), 83661.459)
-        # self.assertEqual(round(st.sM.JmolK, 6), 119.31485)
-        # self.assertEqual(round(st.aM.Jmol, 6), -10493.815)
+        st = MM(T=560, rhom=4.5, eq="thol")
+        self.assertEqual(round(st.P.MPa, 5), 123.02530)
+        self.assertEqual(round(st.cpM.JmolK, 5), 387.27687)
+        self.assertEqual(round(st.w, 4), 1132.8991)
+        self.assertEqual(round(st.hM.Jmol, 3), 83661.457)
+        self.assertEqual(round(st.sM.JmolK, 5), 119.31484)
+        self.assertEqual(round(st.aM.Jmol, 3), -10493.807)
