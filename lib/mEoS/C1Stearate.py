@@ -39,11 +39,11 @@ class C1Stearate(MEoS):
     f_acent = 1.02
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [247.115], "pow": [-0.0916606],
-           "ao_exp": [276.94, 408.997, 472.702],
-           "exp": [556.17, 1311.85, 2825.71],
-           "ao_hyp": [], "hyp": []}
+           "an": [247.115/f], "pow": [-0.0916606],
+           "ao_exp": [276.94/f, 408.997/f, 472.702/f],
+           "exp": [556.17, 1311.85, 2825.71]}
 
     huber = {
         "__type__": "Helmholtz",

@@ -44,8 +44,7 @@ class DMC(MEoS):
            "pow": [0, 1],
            "ao_pow": [4.9916462, -0.1709449],
            "ao_exp": [1.48525, 0.822585, 16.2453, 1.15925],
-           "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc]}
 
     zhou = {
         "__type__": "Helmholtz",

@@ -44,8 +44,7 @@ class R1233zd(MEoS):
     CP1 = {"ao": 4.0,
            "an": [], "pow": [],
            "ao_exp": [11.765, 8.6848],
-           "exp": [630, 2230],
-           "ao_hyp": [], "hyp": []}
+           "exp": [630, 2230]}
 
     mondejar = {
         "__type__": "Helmholtz",

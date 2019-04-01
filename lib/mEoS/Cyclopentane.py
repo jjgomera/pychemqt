@@ -46,8 +46,7 @@ class Cyclopentane(MEoS):
            "pow": [0, 1],
            "ao_pow": [-0.3946233253, 2.4918910143],
            "ao_exp": [1.34, 13.4, 17.4, 6.65],
-           "titao": [230/Tc, 1180/Tc, 2200/Tc, 5200/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [230/Tc, 1180/Tc, 2200/Tc, 5200/Tc]}
 
     gedanitz = {
         "__type__": "Helmholtz",

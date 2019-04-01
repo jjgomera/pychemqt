@@ -49,7 +49,7 @@ class Xe(MEoS):
 
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",

@@ -45,7 +45,7 @@ class Ne(MEoS):
 
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     katti = {
         "__type__": "Helmholtz",

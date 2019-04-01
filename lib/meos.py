@@ -3167,18 +3167,18 @@ class MEoS(ThermoAdvanced):
                 fiot += n*g/(C*exp(-g*tau)+1)
                 fiott += C*n*g**2*exp(-g*tau)/(C*exp(-g*tau)+1)**2
 
-        if "ao_hyp" in Fi0 and Fi0["ao_hyp"]:
-            for i in [0, 2]:
-                fio += Fi0["ao_hyp"][i]*log(abs(sinh(Fi0["hyp"][i]*tau)))
-                fiot += Fi0["ao_hyp"][i]*Fi0["hyp"][i]/tanh(Fi0["hyp"][i]*tau)
-                fiott -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]**2/sinh(
-                    Fi0["hyp"][i]*tau)**2
+        # Hyperbolic terms
+        if "ao_sinh" in Fi0:
+            for n, c in zip(Fi0["ao_sinh"], Fi0["sinh"]):
+                fio += n*log(abs(sinh(c*tau)))
+                fiot += n*c/tanh(c*tau)
+                fiott -= n*c**2/sinh(c*tau)**2
 
-            for i in [1, 3]:
-                fio -= Fi0["ao_hyp"][i]*log(abs(cosh(Fi0["hyp"][i]*tau)))
-                fiot -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]*tanh(Fi0["hyp"][i]*tau)
-                fiott -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]**2/cosh(
-                    Fi0["hyp"][i]*tau)**2
+        if "ao_cosh" in Fi0:
+            for n, c in zip(Fi0["ao_cosh"], Fi0["cosh"]):
+                fio -= n*log(abs(cosh(c*tau)))
+                fiot -= n*c*tanh(c*tau)
+                fiott -= n*c**2/cosh(c*tau)**2
 
         R_ = cp.get("R", self._constants["R"])
         factor = R_/self._constants["R"]

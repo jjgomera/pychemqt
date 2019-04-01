@@ -39,11 +39,12 @@ class MD3M(MEoS):
     f_acent = 0.722
     momentoDipolar = unidades.DipoleMoment(1.223, "Debye")
 
-    CP1 = {"ao": 463.2,
+    f = 8.314472
+    CP1 = {"ao": 463.2/f,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [609372332.2, 0, 4290277999.0, 0],
-           "hyp": [908.5, 0, 2117.1, 0]}
+           "ao_sinh": [957.2/f, ], "sinh": [2117.1],
+           "ao_cosh": [738.3/f], "cosh": [908.5]}
 
     colonna = {
         "__type__": "Helmholtz",

@@ -40,11 +40,12 @@ class D6(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.559, "Debye")
     # id=1674
 
-    CP1 = {"ao": 468.7,
+    f = 8.314472
+    CP1 = {"ao": 468.7/f,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [425104546.6, 0, 3151243909.0, 0],
-           "hyp": [786.8, 0, 1792.1, 0]}
+           "ao_sinh": [981.2/f], "sinh": [1792.1],
+           "ao_cosh": [686.7/f], "cosh": [786.8]}
 
     colonna = {
         "__type__": "Helmholtz",

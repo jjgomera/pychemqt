@@ -39,11 +39,11 @@ class MD4M(MEoS):
     f_acent = 0.825
     momentoDipolar = unidades.DipoleMoment(1.308, "Debye")
 
-    CP1 = {"ao": -20.071,
-           "an": [2228.5e-3, -1311.4e-6, 286.2e-9],
+    f = 8.314472
+    CP1 = {"ao": -20.071/f,
+           "an": [2228.5e-3/f, -1311.4e-6/f, 286.2e-9/f],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     colonna = {
         "__type__": "Helmholtz",

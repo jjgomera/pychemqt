@@ -38,14 +38,12 @@ class RE245cb2(MEoS):
     Tb = unidades.Temperature(278.76)
     f_acent = 0.354
     momentoDipolar = unidades.DipoleMoment(2.785, "Debye")
-    id = 671
     # id = 1817
 
     CP1 = {"ao": 10.196438,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [10.214789, 10.503071, 0.98682562, 0],
-           "hyp": [814, 2031, 3040, 0]}
+           "ao_exp": [10.214789, 10.503071, 0.98682562],
+           "exp": [814, 2031, 3040]}
 
     zhou = {
         "__type__": "Helmholtz",

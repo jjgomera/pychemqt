@@ -39,27 +39,19 @@ class R1234ze(MEoS):
     Tb = unidades.Temperature(254.177)
     f_acent = 0.313
     momentoDipolar = unidades.DipoleMoment(1.27, "Debye")
-    id = 671
 
     Fi1 = {"ao_log": [1, 3],
-           "pow": [0, 1],
-           "ao_pow": [-12.558347537, 8.7912297624],
-           "ao_exp": [9.3575, 10.717],
-           "titao": [513/Tc, 1972/Tc],
-           "ao_hyp": [], "hyp": []}
+           "pow": [0, 1], "ao_pow": [-12.558347537, 8.7912297624],
+           "ao_exp": [9.3575, 10.717], "titao": [513/Tc, 1972/Tc]}
 
     Fi2 = {"ao_log": [1, 5.8887],
            "pow": [], "ao_pow": [],
            "ao_exp": [7.0804, 9.3371, 2.5577],
-           "titao": [620/Tc, 1570/Tc, 3953/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [620/Tc, 1570/Tc, 3953/Tc]}
 
     Fi3 = {"ao_log": [1, 3],
-           "pow": [0, 1],
-           "ao_pow": [-10.8724711, -30.1326538],
-           "ao_exp": [6.07536, 9.95795],
-           "titao": [289/Tc, 1303/Tc],
-           "ao_hyp": [], "hyp": []}
+           "pow": [0, 1], "ao_pow": [-10.8724711, -30.1326538],
+           "ao_exp": [6.07536, 9.95795], "titao": [289/Tc, 1303/Tc]}
 
     thol = {
         "__type__": "Helmholtz",

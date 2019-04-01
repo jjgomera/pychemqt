@@ -46,13 +46,12 @@ class He(MEoS):
 
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     Fi2 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [13.628409737, -143.470759602],
-           "ao_exp": [], "titao": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "titao": []}
 
     ortiz = {
         "__type__": "Helmholtz",

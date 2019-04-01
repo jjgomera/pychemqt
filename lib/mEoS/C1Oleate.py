@@ -42,11 +42,11 @@ class C1Oleate(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.63, "Debye")
     # id = 919
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [90.2385], "pow": [0.146118],
-           "ao_exp": [234.797, 335.768, 431.66],
-           "exp": [613.529, 1405.31, 2867.76],
-           "ao_hyp": [], "hyp": []}
+           "an": [90.2385/f], "pow": [0.146118],
+           "ao_exp": [234.797/f, 335.768/f, 431.66/f],
+           "exp": [613.529, 1405.31, 2867.76]}
 
     huber = {
         "__type__": "Helmholtz",

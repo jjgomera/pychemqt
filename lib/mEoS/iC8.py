@@ -43,8 +43,7 @@ class iC8(MEoS):
     CP1 = {"ao": 10.76,
            "an": [], "pow": [],
            "ao_exp": [15.48, 34.42, 21.42],
-           "exp": [775, 1900, 5100],
-           "ao_hyp": [], "hyp": []}
+           "exp": [775, 1900, 5100]}
 
     blackham = {
         "__type__": "Helmholtz",

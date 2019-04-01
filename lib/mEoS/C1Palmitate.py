@@ -39,12 +39,12 @@ class C1Palmitate(MEoS):
     f_acent = 0.91
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [120.529],
+           "an": [120.529/f],
            "pow": [0.0801627],
-           "ao_exp": [345.62, 289.038, 301.639],
-           "exp": [2952.37, 734.653, 1593.55],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [345.62/f, 289.038/f, 301.639/f],
+           "exp": [2952.37, 734.653, 1593.55]}
 
     huber = {
         "__type__": "Helmholtz",

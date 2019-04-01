@@ -41,12 +41,12 @@ class C1Linoleate(MEoS):
     f_acent = 0.805
     momentoDipolar = unidades.DipoleMoment(1.79, "Debye")
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [190.986],
+           "an": [190.986/f],
            "pow": [0.020213],
-           "ao_exp": [437.371, 287.222, 321.956],
-           "exp": [3052.11, 746.631, 1624.33],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [437.371/f, 287.222/f, 321.956/f],
+           "exp": [3052.11, 746.631, 1624.33]}
 
     huber = {
         "__type__": "Helmholtz",

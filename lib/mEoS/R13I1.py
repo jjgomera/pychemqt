@@ -43,8 +43,7 @@ class R13I1(MEoS):
 
     CP1 = {"ao": 4.,
            "an": [], "pow": [],
-           "ao_exp": [6.2641], "exp": [694],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [6.2641], "exp": [694]}
 
     lemmon = {
         "__type__": "Helmholtz",

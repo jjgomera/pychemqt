@@ -49,8 +49,7 @@ class R236ea(MEoS):
 
     CP1 = {"ao": 5.30694,
            "an": [0.03973, -1.859e-5], "pow": [1, 2],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     rui = {
         "__type__": "Helmholtz",

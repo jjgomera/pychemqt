@@ -41,9 +41,7 @@ class RE347mcc(MEoS):
 
     CP1 = {"ao": 13.09,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [13.78, 14.21, 0, 0],
-           "hyp": [2045, 850, 0, 0]}
+           "ao_exp": [13.78, 14.21], "exp": [2045, 850]}
 
     zhou = {
         "__type__": "Helmholtz",

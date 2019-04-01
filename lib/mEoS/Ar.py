@@ -54,14 +54,12 @@ class Ar(MEoS):
            "ao_exp": [], "titao": []}
 
     CP1 = {"ao": 2.5,
-           "an": [], "pow": [], "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "an": [], "pow": [], "ao_exp": [], "exp": []}
 
     Fi2 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [8.3166315, -4.9465026],
-           "ao_exp": [], "titao": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "titao": []}
 
     tegeler = {
         "__type__": "Helmholtz",

@@ -40,11 +40,12 @@ class R114(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.658, "Debye")
     id = 231
 
-    CP1 = {"ao": 0.97651380e-1,
-           "an": [0.3240861e-2, -0.5895364e-5, 0.6737929e-8, -0.3546364e-11],
+    f = 1/8.31451*170.93
+    CP1 = {"ao": 0.97651380e-1*f,
+           "an": [0.3240861e-2*f, -0.5895364e-5*f, 0.6737929e-8*f,
+                  -0.3546364e-11*f],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     platzer = {
         "__type__": "Helmholtz",

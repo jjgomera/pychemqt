@@ -63,8 +63,7 @@ class R134a(MEoS):
     # ASHRAE Trans. 95(2):263-283, 1989
     CP1 = {"ao": 19.4006/8.314471,
            "an": [0.258531/8.314471, -1.29665e-4/8.314471], "pow": [1, 2],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     tillner = {
         "__type__": "Helmholtz",
