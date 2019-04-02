@@ -197,6 +197,7 @@ class CO2(MEoS):
                     "doi": ""},
 
         "R": 8.31434,
+        "M": 44.0098, "Tc": 304.13, "rhoc": 10.63,
         "cp": CP3,
         "ref": "OTO",
 
@@ -358,15 +359,16 @@ class CO2(MEoS):
               "B": [1.04558e-8, -2.20758e-9, 0.0],
               "C": [1.03255e-6, -8.56207e-7, 3.84384e-7]}
 
-    visco2 = {"eq": 0,
-              "method": "_visco2",
-              "__name__": "Vesovic (1990)",
+    visco2 = {"__name__": "Vesovic (1990)",
               "__doi__": {
                   "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
                            "Sengers, J.V., Watson, J.T.R., Millat, J.",
                   "title": "The Transport Properties of Carbon Dioxide",
                   "ref": "J. Phys. Chem. Ref. Data 19(3) (1990) 763-808",
                   "doi": "10.1063/1.555875"},
+
+              "eq": 0,
+              "method": "_visco2",
 
               "omega": 1,
               "ek": 251.196, "sigma": 0.3751,
@@ -392,8 +394,7 @@ class CO2(MEoS):
         Vo = 7.41e-4-3.3e-7*T                                           # Eq 72
         mul = 1/B/(1/rho-Vo)                                            # Eq 70
 
-        # Critical enhancement
-        # TODO: Not implemented
+        # Critical enhancement Not implemented
         muc = 0
 
         # Eq 74, parameters
@@ -500,14 +501,9 @@ class CO2(MEoS):
 
                "eq": 1,
 
-               "Toref": 251.196, "koref": 1e-3,
-               "no_num": [7.5378307, 4.8109652e-2],
-               "to_num": [0.5, -99],
-               "no_den": [0.4226159, 0.6280115, -0.5387661, 0.6735941,
-                          -0.4362677, 0.2255388],
-               "to_den": [0, 1, 2, 3, 6, 7],
+               "special": "_thermo20",
 
-               "Tref_res": 1., "rhoref_res": 2.272221e-2, "kref_res": 1e-3,
+               "rhoref_res": 1, "kref_res": 1e-3,
                "nr": [2.447164e-2, 8.705605e-5, -6.547950e-8, 6.594919e-11],
                "tr": [0, 0, 0, 0],
                "dr": [1, 2, 3, 4],
@@ -515,6 +511,30 @@ class CO2(MEoS):
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 450.}
+
+    def _thermo20(self, rho, T, fase):
+        """Special method for zero-density thermal conductivity in Vesovic
+        correlation"""
+        T_ = T/251.196
+
+        # Eq 30
+        bi = [0.4226159, 0.6280115, -0.5387661, 0.6735941, 0, 0, -0.4362677,
+              0.2255388]
+        den = 0
+        for i, b in enumerate(bi):
+            den += b/T_**i
+
+        # Eq 31
+        ci = [0, 2.387869e-2, 4.350794, -10.33404, 7.981590, -1.940558]
+        suma = 0
+        for i, c in enumerate(ci):
+            suma += c*(T/100)**(2-i)
+        cint = 1+exp(-183.5/T)*suma
+
+        r = (2/5*cint)**0.5                                             # Eq 12
+        ko = 0.475598*T**0.5*(1+r**2)/den                               # Eq 29
+
+        return ko*1e-3
 
     _thermal = thermo0, thermo1, thermo2
 
@@ -763,26 +783,33 @@ class Test(TestCase):
             CO2(T=1000, P=2e8, thermal=1).k.mWmK, 2), 116.65)
 
     def test_vesovic(self):
-        # FIXME: Vesovic thermal conductivity correlation dont work
         # Appendix IV, Pag 808
-        st = CO2(T=220, rho=2.440, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 10.90)
+        # Include basic testing for Ely mEoS
+        st = CO2(T=220, P=1e5, eq="ely", visco=2, thermal=2)
+        self.assertEqual(round(st.rho, 3), 2.440)
+        self.assertEqual(round(st.k.mWmK, 2), 10.90)
         self.assertEqual(round(st.mu.muPas, 2), 11.06)
-        st = CO2(T=300, rho=1.773, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 16.77)
+        st = CO2(T=300, P=1e5, eq="ely", visco=2, thermal=2)
+        self.assertEqual(round(st.rho, 3), 1.773)
+        self.assertEqual(round(st.k.mWmK, 2), 16.77)
         self.assertEqual(round(st.mu.muPas, 2), 15.02)
-        st = CO2(T=800, rho=0.662, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 56.65)
+        st = CO2(T=800, P=1e5, eq="ely", visco=2, thermal=2)
+        self.assertEqual(round(st.rho, 3), 0.662)
+        self.assertEqual(round(st.k.mWmK, 2), 56.65)
         self.assertEqual(round(st.mu.muPas, 2), 35.09)
-        st = CO2(T=304, rho=254.3205, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 42.52)
+        st = CO2(T=304, P=7e6, eq="ely", visco=2, thermal=2)
+        self.assertEqual(round(st.rho, 4), 254.3587)
+        self.assertEqual(round(st.k.mWmK, 2), 43.11)
         self.assertEqual(round(st.mu.muPas, 2), 20.80)
-        st = CO2(T=220, rho=1194.86, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 187.50)
-        self.assertEqual(round(st.mu.muPas, 2), 274.22)
-        st = CO2(T=300, rho=1029.27, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 137.61)
+        st = CO2(T=220, P=1.5e7, visco=2, thermal=2)
+        self.assertEqual(round(st.rho, 2), 1194.96)
+        self.assertEqual(round(st.k.mWmK, 2), 187.31)
+        self.assertEqual(round(st.mu.muPas, 2), 274.33)
+        st = CO2(T=300, P=5e7, eq="ely", visco=2, thermal=2)
+        self.assertEqual(round(st.rho, 2), 1029.29)
+        self.assertEqual(round(st.k.mWmK, 2), 137.32)
         self.assertEqual(round(st.mu.muPas, 2), 133.15)
-        st = CO2(T=800, rho=407.828, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 78.47)
+        st = CO2(T=800, P=7.5e7, eq="ely", visco=2, thermal=2)
+        self.assertEqual(round(st.rho, 3), 407.908)
+        self.assertEqual(round(st.k.mWmK, 2), 78.48)
         self.assertEqual(round(st.mu.muPas, 2), 48.62)

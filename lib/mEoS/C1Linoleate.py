@@ -131,12 +131,13 @@ class C1Linoleate(MEoS):
 class Test(TestCase):
 
     def test_Perkins(self):
-        # TODO: Add viscosity ecs correlation to meet exactly the testing point
+        # Critical enhancement can differ because the viscosity correlation
+        # in paper is not implemented in pychemqt
 
         # Table 3, Pag 2386
         st = C1Linoleate(T=450, P=1e2)
         self.assertEqual(round(st.rho, 8), 0.00787223)
-        # self.assertEqual(round(st.k, 7), 0.0122743)
+        self.assertEqual(round(st.k, 7), 0.0122783)
 
         st = C1Linoleate(T=450, P=1e6)
         self.assertEqual(round(st.rho, 3), 778.176)
