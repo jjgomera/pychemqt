@@ -41,7 +41,7 @@ class RC318(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 692
 
-    # Factor  because Cp is not reduced by R
+    # Factor neccessary because Cp is not reduced by R
     f = 200.04/8.31451
     CP1 = {"ao": 0.121*f,
            "an": [0.2903e-2*f, -0.25327e-5*f, 0.77191e-9*f], "pow": [1, 2, 3],
