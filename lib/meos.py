@@ -25,15 +25,6 @@ The module implement too the calculation using the Peng-Robinson cubic
 equation of state.
 
 
-**Helmholtz**
-
-Most modern, high-accuracy equation of state use this general form explicit
-in the free Helmholtz energy as a function of temperature and density.
-
-.. math::
-    \frac{A(\rho,T)}{RT} = \phi(\delta,\tau) = \phi^o(\delta,\tau) +
-    \phi^r(\delta,\tau)
-
 The ideal gas contribution is equal for all equation of state implemented. It
 uses the equation for ideal gas specific heat so all fluid must define it
 in subclass fluid definition
@@ -45,6 +36,16 @@ in subclass fluid definition
   s^o(T) = \intop_{T_o}^{T}\frac{C_{p}^{o}-R}{T}dT -
   R\ln\left(\frac{\rho}{\rho_0^o}\right)+s_{0}^{o}\\
   \end{array}
+
+
+**Helmholtz**
+
+Most modern, high-accuracy equation of state use this general form explicit
+in the free Helmholtz energy as a function of temperature and density.
+
+.. math::
+    \frac{A(\rho,T)}{RT} = \phi(\delta,\tau) = \phi^o(\delta,\tau) +
+    \phi^r(\delta,\tau)
 
 The residual contribution is a combination of term
 
@@ -305,7 +306,14 @@ __doi__ = {
                   "conductivity of refrigerants and refrigerant mixtures",
          "ref": "Int. J. Refrigeration 23 (2000) 43-63",
          "doi": "10.1016/s0140-7007(99)00024-9"},
-    22:
+    23:
+        {"autor": "Jaeschke, M., Schley, P.",
+         "title": "Ideal-Gas Thermodynamic Properties for Natural Gas "
+                  "Applications",
+         "ref": "Int. J. Thermophys. 16(6) (1995) 1381-1392",
+         "doi": "10.1007/bf02083547"},
+
+    24:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -502,8 +510,7 @@ def _Helmholtz_phird(tau, delta, coef):
     Returns
     -------
     fird : float
-        .. math::
-          \left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}
+        :math:`\left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}`
     """
     fird = 0
 
@@ -3119,10 +3126,33 @@ class MEoS(ThermoAdvanced):
         return Fi0
 
     def _phi0(self, cp, tau, delta):
-        """Ideal gas Helmholtz free energy and derivatives
+        r"""Ideal gas Helmholtz free energy and derivatives
+        The ideal gas specific heat can have different contributions
+
+        .. math::
+            \frac{C_p^o}{R} = c_o + \sum_i c_iT_r^i
+            + \sum_jc_j\frac{e^{\theta T_r}} {\left(1-e^{\theta T_r}\right)^2}
+            + \sum_k \gamma_k\frac{\xi/T_r}{\sinh(\xi/T_r)}
+            + \sum_l \delta_l\frac{\epsilon_l/T_r}{\cosh(\epsilon_l/T_r)}
+
+        The dict with the definition of ideal gas specific heat must define
+        the parameters:
+
+            * ao: Independent of temperature coefficient
+            * an: Polynomial term coefficient
+            * pow: Polynomial term temperature exponent
+            * ao_exp: Exponential term coefficient
+            * exp: Exponential term exponent
+            * ao_sinh: Hyperbolic sine term coefficient
+            * sinh: Hyperbolic sine term exponent
+            * ao_cosh: Hyperbolic cosine term coefficient
+            * cosh: Hyperbolic cosine term exponent
 
         Parameters
         ----------
+        cp : dict
+            Ideal gas properties parameters, can be in Cp term of directly in
+            helmholtz free energy
         tau : float
             Inverse reduced temperature, Tc/T [-]
         delta : float

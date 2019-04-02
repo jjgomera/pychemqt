@@ -363,9 +363,9 @@ class nC4(MEoS):
 
               "special": "_mur"}
 
-    def _mu0(self):
+    def _mu0(self, T):
         """Special term for zero-density viscosity for Herrmann correlation"""
-        tau = self.Tc/self.T
+        tau = self.Tc/T
 
         # Eq 8
         no = [4.6147656002208, 4.574318591039e-1, 3.0851104723224e-2]

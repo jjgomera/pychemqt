@@ -316,7 +316,54 @@ class CO2(MEoS):
         "n": [-1.7074879, -0.8227467, -4.6008549, -10.111178, -29.742252],
         "t": [0.34, 0.5, 1, 7/3, 14/3]}
 
-    visco0 = {"__name__": "Fenghour (1998)",
+    visco0 = {"__name__": "Laesecke (2017)",
+              "__doi__": {
+                  "autor": "Laesecke, A., Muzny, C.D.",
+                  "title": "Reference Correlation for the Viscosity of Carbon "
+                           "Dioxide",
+                  "ref": "J. Phys. Chem. Ref. Data 46(1) (2017) 013107",
+                  "doi": "10.1063/1.4977429"},
+
+              "eq": 1, "omega": 0,
+
+              "M": 44.0095,
+              "ek": 200.76, "sigma": 0.378421,
+
+              "special0": "_mu0",
+
+              "Tref_virial": 200.76,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 216.592, "rhoref_res": 1178.53, "muref_res": 94.36,
+              "nr": [0.360603235428487],
+              "tr": [-1],
+              "dr": [3],
+
+              "nr_num": [1, 1],
+              "tr_num": [0, 0],
+              "dr_num": [2, 8.06282737481277],
+              "nr_den": [1, -0.121550806591497],
+              "tr_den": [-1, 0],
+              "dr_den": [0, 0]}
+
+    def _mu0(self, T):
+        """Special term for zero-density viscosity for Herrmann correlation"""
+        # Table 2, Parameters
+        a = [1749.354893188350, -369.069300007128, 5423856.34887691,
+             -2.21283852168356, -269503.247933569, 73145.021531826,
+             5.34368649509278]
+
+        # Eq 4
+        muo = 1.0055*T**0.5/(a[0]+a[1]*T**(1/6)+a[2]*exp(a[3]*T**(1/3)) +
+                             (a[4]+a[5]*T**(1/3))/exp(T**(1/3))+a[6]*T**0.5)
+
+        # Value in mPas in eq, returned in μPas
+        return muo*1e3
+
+    visco1 = {"__name__": "Fenghour (1998)",
               "__doi__": {
                   "autor": "Fenghour, A., Wakeham, W.A., Vesovic, V.",
                   "title": "The Viscosity of Carbon Dioxide",
@@ -338,7 +385,7 @@ class CO2(MEoS):
               "gr": [0, 0, 0, 0, 0],
               "cr": [0, 0, 0, 0, 0]}
 
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -359,7 +406,7 @@ class CO2(MEoS):
               "B": [1.04558e-8, -2.20758e-9, 0.0],
               "C": [1.03255e-6, -8.56207e-7, 3.84384e-7]}
 
-    visco2 = {"__name__": "Vesovic (1990)",
+    visco3 = {"__name__": "Vesovic (1990)",
               "__doi__": {
                   "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
                            "Sengers, J.V., Watson, J.T.R., Millat, J.",
@@ -368,7 +415,7 @@ class CO2(MEoS):
                   "doi": "10.1063/1.555875"},
 
               "eq": 0,
-              "method": "_visco2",
+              "method": "_visco3",
 
               "omega": 1,
               "ek": 251.196, "sigma": 0.3751,
@@ -376,7 +423,7 @@ class CO2(MEoS):
               "collision": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
                             -1.537102e-2]}
 
-    def _visco2(self, rho, T, fase=None):
+    def _visco3(self, rho, T, fase=None):
 
         # Zero-Density viscosity
         muo = self._Visco0(T)
@@ -409,7 +456,7 @@ class CO2(MEoS):
 
         return unidades.Viscosity(mu, "muPas")
 
-    _viscosity = visco0, visco1, visco2
+    _viscosity = visco0, visco1, visco2, visco3
 
     thermo0 = {"__name__": "Huber (2016)",
                "__doi__": {
@@ -728,27 +775,25 @@ class Test(TestCase):
 
     def test_fenghour(self):
         # Table 13, Pag 44
-        self.assertEqual(round(CO2(T=220, rho=2.440).mu.muPas, 2), 11.06)
-        self.assertEqual(round(CO2(T=300, rho=1.773).mu.muPas, 2), 15.02)
-        self.assertEqual(round(CO2(T=800, rho=0.662).mu.muPas, 2), 35.09)
-        self.assertEqual(round(CO2(T=304, rho=254.320).mu.muPas, 2), 20.90)
-        self.assertEqual(round(CO2(T=220, rho=1194.86).mu.muPas, 2), 269.37)
-        self.assertEqual(round(CO2(T=300, rho=1029.27).mu.muPas, 2), 132.55)
-        self.assertEqual(round(CO2(T=800, rho=407.828).mu.muPas, 2), 48.74)
+        k = {"visco": 1}
+        self.assertEqual(round(CO2(T=220, rho=2.440, **k).mu.muPas, 2), 11.06)
+        self.assertEqual(round(CO2(T=300, rho=1.773, **k).mu.muPas, 2), 15.02)
+        self.assertEqual(round(CO2(T=800, rho=0.662, **k).mu.muPas, 2), 35.09)
+        self.assertEqual(round(CO2(T=304, rho=254.32, **k).mu.muPas, 2), 20.90)
+        self.assertEqual(round(
+            CO2(T=220, rho=1194.86, **k).mu.muPas, 2), 269.37)
+        self.assertEqual(round(
+            CO2(T=300, rho=1029.27, **k).mu.muPas, 2), 132.55)
+        self.assertEqual(round(
+            CO2(T=800, rho=407.828, **k).mu.muPas, 2), 48.74)
 
     def test_Huber(self):
         # Table 7, Pag 15
         self.assertEqual(round(CO2(T=250, rho=0).k.mWmK, 2), 12.99)
         self.assertEqual(round(CO2(T=250, rho=2).k.mWmK, 2), 13.05)
         self.assertEqual(round(CO2(T=250, rho=1058).k.mWmK, 2), 140.00)
-
-        # TODO: Add visco correlation
-        # A. Laesecke and C. D. Muzny
-        # Reference Correlation of the Viscosity of CO2
-        # J. Phys. Chem. Ref. Data
-        # self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 73.04)
-
-        self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 72.28)
+        self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 73.04)
+        self.assertEqual(round(CO2(T=310, rho=400, visco=1).k.mWmK, 2), 72.28)
 
     def test_Scalabrin(self):
         # Selected values from Table 10, Pag 1568, saturation states
@@ -785,31 +830,46 @@ class Test(TestCase):
     def test_vesovic(self):
         # Appendix IV, Pag 808
         # Include basic testing for Ely mEoS
-        st = CO2(T=220, P=1e5, eq="ely", visco=2, thermal=2)
+        st = CO2(T=220, P=1e5, eq="ely", visco=3, thermal=2)
         self.assertEqual(round(st.rho, 3), 2.440)
         self.assertEqual(round(st.k.mWmK, 2), 10.90)
         self.assertEqual(round(st.mu.muPas, 2), 11.06)
-        st = CO2(T=300, P=1e5, eq="ely", visco=2, thermal=2)
+        st = CO2(T=300, P=1e5, eq="ely", visco=3, thermal=2)
         self.assertEqual(round(st.rho, 3), 1.773)
         self.assertEqual(round(st.k.mWmK, 2), 16.77)
         self.assertEqual(round(st.mu.muPas, 2), 15.02)
-        st = CO2(T=800, P=1e5, eq="ely", visco=2, thermal=2)
+        st = CO2(T=800, P=1e5, eq="ely", visco=3, thermal=2)
         self.assertEqual(round(st.rho, 3), 0.662)
         self.assertEqual(round(st.k.mWmK, 2), 56.65)
         self.assertEqual(round(st.mu.muPas, 2), 35.09)
-        st = CO2(T=304, P=7e6, eq="ely", visco=2, thermal=2)
+        st = CO2(T=304, P=7e6, eq="ely", visco=3, thermal=2)
         self.assertEqual(round(st.rho, 4), 254.3587)
         self.assertEqual(round(st.k.mWmK, 2), 43.11)
         self.assertEqual(round(st.mu.muPas, 2), 20.80)
-        st = CO2(T=220, P=1.5e7, visco=2, thermal=2)
+        st = CO2(T=220, P=1.5e7, visco=3, thermal=2)
         self.assertEqual(round(st.rho, 2), 1194.96)
         self.assertEqual(round(st.k.mWmK, 2), 187.31)
         self.assertEqual(round(st.mu.muPas, 2), 274.33)
-        st = CO2(T=300, P=5e7, eq="ely", visco=2, thermal=2)
+        st = CO2(T=300, P=5e7, eq="ely", visco=3, thermal=2)
         self.assertEqual(round(st.rho, 2), 1029.29)
         self.assertEqual(round(st.k.mWmK, 2), 137.32)
         self.assertEqual(round(st.mu.muPas, 2), 133.15)
-        st = CO2(T=800, P=7.5e7, eq="ely", visco=2, thermal=2)
+        st = CO2(T=800, P=7.5e7, eq="ely", visco=3, thermal=2)
         self.assertEqual(round(st.rho, 3), 407.908)
         self.assertEqual(round(st.k.mWmK, 2), 78.48)
         self.assertEqual(round(st.mu.muPas, 2), 48.62)
+
+    def test_Laesecke(self):
+        self.assertEqual(round(CO2(T=100, rho=0).mu.mPas, 7), 0.0053757)
+
+        # States out of validity of mEoS, use this to bypass complete state
+        # calculation
+        self.assertEqual(round(CO2()._Visco0(2000)*1e-3, 6), 0.066079)
+        self.assertEqual(round(CO2()._Visco0(10000)*1e-3, 5), 0.17620)
+
+        self.assertEqual(round(CO2(T=220, rho=3).mu.mPas, 6), 0.011104)
+        self.assertEqual(round(CO2(T=225, rho=1150).mu.mPas, 5), 0.22218)
+        self.assertEqual(round(CO2(T=300, rho=65).mu.mPas, 6), 0.015563)
+        self.assertEqual(round(CO2(T=300, rho=1400).mu.mPas, 5), 0.50594)
+        self.assertEqual(round(CO2(T=700, rho=100).mu.mPas, 6), 0.033112)
+        self.assertEqual(round(CO2(T=700, rho=1200).mu.mPas, 5), 0.22980)

@@ -366,10 +366,10 @@ class iC4(MEoS):
 
               "special": "_mur"}
 
-    def _mu0(self):
+    def _mu0(self, T):
         """Special term for zero-density viscosity for Herrmann correlation"""
         Tc = 407.81
-        tau = Tc/self.T
+        tau = Tc/T
 
         npf = 1.032954077e3
         n00 = 1.6520217e3

@@ -327,7 +327,7 @@ class C2(MEoS):
 
               "eq": 1, "omega": 0,
 
-              "special0": "_vi0",
+              "special0": "_mu0",
 
               "Tref_res": 305.322,
               "rhoref_res": 206.18,
@@ -345,16 +345,16 @@ class C2(MEoS):
               "br_gaus": [90, 50],
               "er_gaus": [100, 250]}
 
-    def _vi0(self):
+    def _mu0(self, T):
         """Special zero-density correlation for the Herrmann viscosity
         correlation"""
         # Eq 6
-        X = 0.79330 + 262.946/exp(self.T**(1/3)) + \
-            (13.8366+1339.77/exp(self.T**(1/3)))*(1/self.T)**0.5 + \
-            -322.242*self.T/exp(2*self.T**(1/3))
+        X = 0.79330 + 262.946/exp(T**(1/3)) + \
+            (13.8366+1339.77/exp(T**(1/3)))*(1/T)**0.5 + \
+            -322.242*T/exp(2*T**(1/3))
 
         # Eq 5
-        muo = self.T**0.5/X
+        muo = T**0.5/X
 
         return muo
 
