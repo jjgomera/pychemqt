@@ -401,16 +401,6 @@ def _Helmholtz_phir(tau, delta, coef):
             Delta = Tita**2+B*((delta-1)**2)**a
             fir += n*Delta**b*delta*F
 
-        # Hard sphere term
-        if coef.get("Fi", None):
-            f = coef["Fi"]
-            n = 0.1617
-            a = 0.689
-            g = 0.3674
-            X = n*delta/(a+(1-a)/tau**g)
-
-            fir += (f**2-1)*log(1-X)+((f**2+3*f)*X-3*f*X**2)/(1-X)**2
-
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
             if delta < 0.2:
@@ -568,17 +558,6 @@ def _Helmholtz_phird(tau, delta, coef):
 
             fird += n*(Delta**b*(F+delta*Fd)+DeltaBd*delta*F)
 
-        # Hard sphere term
-        if coef.get("Fi", None):
-            f = coef["Fi"]
-            n = 0.1617
-            a = 0.689
-            g = 0.3674
-            X = n*delta/(a+(1-a)/tau**g)
-            Xd = n/(a+(1-a)/tau**g)
-            ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
-            fird += ahdX*Xd
-
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
             if delta < 0.2:
@@ -669,17 +648,6 @@ def _Helmholtz_phirt(tau, delta, coef):
             Delta = Tita**2+B*((delta-1)**2)**a
             DeltaBt = -2*Tita*b*Delta**(b-1)
             firt += n*delta*(DeltaBt*F+Delta**b*Ft)
-
-        # Hard sphere term
-        if coef.get("Fi", None):
-            f = coef["Fi"]
-            n = 0.1617
-            a = 0.689
-            g = 0.3674
-            X = n*delta/(a+(1-a)/tau**g)
-            Xt = n*delta*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-            ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
-            firt += ahdX*Xt
 
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
@@ -3497,43 +3465,6 @@ class MEoS(ThermoAdvanced):
                 B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
                 C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ *
                         (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
-
-            # Hard sphere term
-            if self._constants.get("Fi", None):
-                f = self._constants["Fi"]
-                n = 0.1617
-                a = 0.689
-                g = 0.3674
-                X = n*delta/(a+(1-a)/tau**g)
-                Xd = n/(a+(1-a)/tau**g)
-                Xt = n*delta*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-                Xdt = n*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-                Xtt = -n*delta*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g) -
-                                2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
-                Xdtt = -n*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g) -
-                           2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
-
-                ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
-                ahdXX = -(f**2-1)/(1-X)**2 + \
-                    (3*(f**2+3*f)+(f**2-3*f)*(1+2*X))/(1-X)**4
-                ahdXXX = -2*(f**2-1)/(1-X)**3 + \
-                    6*(2*(f**2+3*f)+(f**2-3*f)*(1+X))/(1-X)**5
-
-                fir += (f**2-1)*log(1-X)+((f**2+3*f)*X-3*f*X**2)/(1-X)**2
-                fird += ahdX*Xd
-                firdd += ahdXX*Xd**2
-                firt += ahdX*Xt
-                firtt += ahdXX*Xt**2+ahdX*Xtt
-                firdt += ahdXX*Xt*Xd+ahdX*Xdt
-                firdtt += ahdXXX*Xt**2*Xd+ahdXX*(Xtt*Xd+2*Xdt*Xt)*ahdX*Xdtt
-
-                X_virial = n*delta_0/(a+(1-a)/tau**g)
-                ahdX_virial = -(f**2-1)/(1-X_virial) + \
-                    (f**2+3*f+X_virial*(f**2-3*f))/(1-X_virial)**3
-                ahdXX_virial = -(f**2-1)/(1-X_virial)**2 + \
-                    (3*(f**2+3*f)+(f**2-3*f)*(1+2*X_virial))/(1-X_virial)**4
-                B += ahdX_virial*Xd
-                C += ahdXX_virial*Xd**2
 
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr5" in self._constants:
