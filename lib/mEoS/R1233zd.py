@@ -105,8 +105,7 @@ class R1233zd(MEoS):
                    "title": "Measurement and Correlation of the Thermal "
                             "Conductivity of trans-1-Chloro-3,3,3-"
                             "trifluoropropene (R1233zd(E))",
-                   # TODO Fix reference
-                   "ref": "J. Chem. Eng. Data XX(X) (2017)",
+                   "ref": "J. Chem. Eng. Data 62(9) (2017) 2659-2665",
                    "doi": "10.1021/acs.jced.7b00106"},
 
                "eq": 1,
