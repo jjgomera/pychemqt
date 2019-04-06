@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+from math import log
 from unittest import TestCase
 
 from lib import unidades
@@ -149,11 +150,36 @@ class Air(MEoSBlend):
     eq = lemmon, jacobsen
 
     _surface = {"sigma": [0.03046], "exp": [1.28]}
-    _melting = {"eq": 1, "Tref": Tb, "Pref": 5.265,
-                "Tmin": 59.75, "Tmax": 2000.0,
-                "a1": [1, 0.354935e5, -0.354935e5],
-                "exp1": [0, 0.178963e1, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": lemmon["__doi__"],
+        "Tmin": 59.75, "Tmax": 2000.0,
+        "Tref": Tt, "Pref": 5265,
+
+        "a0": 1,
+        "a2": [35493.5], "exp2": [1.78963]}
+
+    # Dew-point density
+    _liquid_Density = {
+        "eq": 2,
+        "n": [-2.0466, -4.752, -13.259, -47.652],
+        "t": [0.41, 1, 2.8, 6.5]}
+
+    def _Vapor_Density(self, T):
+        """Bubble-point density ancillary equation, Eq 2 in Lemmon reference"""
+        if T < self.Tt:
+            T = self.Tt
+        if T > 132.6312:
+            T = 132.6312
+
+        Tita = 1-T/132.6312
+
+        N = [44.3413, -240.073, 285.139, -88.3366, -0.892181]
+        rhor = 1 + N[0]*Tita**0.65 + N[1]*Tita**0.85 + N[2]*Tita**0.95 + \
+            N[3]*Tita**1.1 + N[4]*log(T/132.6312)
+
+        return unidades.Density(rhor*10.4477*self.M)
 
     visco0 = {"__name__": "Lemmon (2004)",
               "__doi__": {
