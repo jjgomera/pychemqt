@@ -152,13 +152,8 @@ class R13(MEoS):
               "chi": [1.1394, -3.65562e-2], "chi_d": [0, 1],
 
               "critical": 3,
-              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 3.49636e-10, "Tcref": 453.0}
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+              "gam0": 0.0496, "qd": 3.49636e-10, "Tcref": 453.0}
 
     _viscosity = trnECS,
     _thermal = trnECS,
-
-
-if __name__ == "__main__":
-    st = R13(T=300, P=1e5)
-    print(st.mu)
