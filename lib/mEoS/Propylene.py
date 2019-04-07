@@ -191,10 +191,19 @@ class Propylene(MEoS):
     eq = lemmon, overhoff, angus
 
     _surface = {"sigma": [0.05268], "exp": [1.186]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.48475e-4,
-                "Tmin": Tt, "Tmax": 2000.0,
-                "a1": [-6593000000, 6593000001], "exp1": [0, 2.821],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+            "eq": 2,
+            "__doi__": {
+                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+                "title": "Melting Curves of Pressure-Transmitting fluids",
+                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+                "doi": "J. Chem. Phys. 40(12) (1964) 3662-3666"},
+
+            "Tmin": Tt, "Tmax": 2000.0,
+            "Tref": Tt, "Pref": 0.00074864,
+            "a2": [3196e5], "exp2": [2.821]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-6.75625, 2.02700, -1.35883, -2.74671, -0.936445],
