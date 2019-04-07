@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from unittest import TestCase
 
 from iapws._iapws import _D2O_Viscosity, _D2O_ThCond, _D2O_Tension
+from iapws._iapws import _D2O_Melting_Pressure, _D2O_Sublimation_Pressure
 
 from lib import unidades
 from lib.meos import MEoS
@@ -148,21 +149,24 @@ class D2O(MEoS):
 
     eq = herrig, hill
 
-    _melting = {
-            # Only added the melting line for Ice Ih
-            "eq": 1,
-            "Tmin": 254.415, "Tmax": 276.969,
-            "Tref": 276.969, "Pref": 0.66159,
-            "a1": [], "exp1": [],
-            "a2": [1, -0.30153e5, 0.692503e6], "exp2": [0, 5.5, 8.2],
-            "a3": [], "exp3": []}
-    _sublimation = {
-            "eq": 2,
-            "Tmin": 210, "Tmax": 276.969,
-            "Tref": 276.969, "Pref": 0.66159,
-            "a1": [], "exp1": [],
-            "a2": [-13.14226, 32.12969], "exp2": [-1.73, -1.42],
-            "a3": [], "exp3": []}
+    _melting = {"Tmin": 254.415, "Tmax": 315}
+
+    @classmethod
+    def _Melting_Pressure(cls, T):
+        try:
+            Pm = _D2O_Melting_Pressure(T)
+        except NotImplementedError:
+            Pm = None
+        return unidades.Pressure(Pm, "MPa")
+
+    @classmethod
+    def _Sublimation_Pressure(cls, T):
+        try:
+            Ps = _D2O_Sublimation_Pressure(T)
+        except NotImplementedError:
+            Ps = None
+        return unidades.Pressure(Ps, "MPa")
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.794440e1, 0.194340e1, -0.243530e1, -0.342000e1, 0.355000e2,
