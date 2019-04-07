@@ -324,10 +324,18 @@ class C3(MEoS):
                    "a1": [15.85, 0.036], "expt1": [0, 1], "expd1": [1, 1],
                    "a2": [172.75, 505.67, -388.21, -2078.8],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.35, 2.35]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.00000017,
-                "Tmin": Tt, "Tmax": 2000.0,
-                "a1": [-4230000000000, 4230000000001], "exp1": [0, 1.283],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+            "eq": 2,
+            "__doi__": {
+                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+                "title": "Melting Curves of Pressure-Transmitting fluids",
+                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+                "doi": "J. Chem. Phys. 40(12) (1964) 3662-3666"},
+
+            "Tmin": Tt, "Tmax": 2000.0,
+            "Tref": Tt, "Pref": 0.000172,
+            "a2": [7180e5], "exp2": [1.283]}
 
     _vapor_Pressure = {
         "eq": 3,
