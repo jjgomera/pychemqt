@@ -204,7 +204,7 @@ class iC5(MEoS):
                 "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
                 "title": "Melting Curves of Pressure-Transmitting fluids",
                 "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
-                "doi": "J. Chem. Phys. 40(12) (1964) 3662-3666"},
+                "doi": "10.1063/1.1725068"},
 
             "Tmin": Tt, "Tmax": 2000.0,
             "Tref": Tt, "Pref": 8.952745e-5,
