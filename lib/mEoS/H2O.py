@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from copy import copy
 from unittest import TestCase
 
-from scipy import exp
 from iapws import _Viscosity, _ThCond, _Dielectric, _Tension
+from iapws import _Melting_Pressure, _Sublimation_Pressure
 
 from lib import unidades
 from lib.meos import MEoS
@@ -427,39 +427,19 @@ class H2O(MEoS):
 
     @classmethod
     def _Melting_Pressure(cls, T):
-        if 251.165 <= T <= 256.164:
-            Tref = 251.165
-            Pref = 208566.
-            Tita = T/Tref
-            P2 = Pref*(1-0.299948*(1-Tita**60.))
-        elif 256.164 < T <= 273.31:
-            Tref = 256.164
-            Pref = 350100.
-            Tita = T/Tref
-            P2 = Pref*(1-1.18721*(1-Tita**8.))
-        elif 273.31 < T <= 355:
-            Tref = 273.31
-            Pref = 632400.
-            Tita = T/Tref
-            P2 = Pref*(1-1.07476*(1-Tita**4.6))
-        elif 355. < T:
-            Tref = 355
-            Pref = 2216000.
-            Tita = T/Tref
-            P2 = Pref*exp(1.73683*(1-1./Tita)-0.544606e-1*(1-Tita**5) +
-                          0.806106e-7*(1-Tita**22))
-        return unidades.Pressure(P2, "kPa")
+        try:
+            Pm = _Melting_Pressure(T)
+        except NotImplementedError:
+            Pm = None
+        return unidades.Pressure(Pm, "MPa")
 
     @classmethod
     def _Sublimation_Pressure(cls, T):
-        Pref = 611.657
-        Tita = T/cls.Tt
-        a = [-0.212144006e2, 0.273203819e2, -0.61059813e1]
-        expo = [0.333333333e-2, 1.20666667, 1.70333333]
-        suma = 0
-        for ai, expi in zip(a, expo):
-            suma += ai*Tita**expi
-        return unidades.Pressure(exp(suma/Tita)*Pref)
+        try:
+            Ps = _Sublimation_Pressure(T)
+        except NotImplementedError:
+            Ps = None
+        return unidades.Pressure(Ps, "MPa")
 
 
 class Test(TestCase):
