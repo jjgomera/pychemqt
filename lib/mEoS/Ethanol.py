@@ -171,6 +171,21 @@ class Ethanol(MEoS):
     _PR = 0.0043733
 
     _surface = {"sigma": [0.05], "exp": [0.952]}
+
+    _melting = {
+            "eq": 1,
+            "__doi__": {
+                "autor": "Sun, T.F., Schouten, J.A., Trappeniers, N.J., "
+                         "Biswas, S.N.",
+                "title": "Accurate Measurement of the Melting Line of Methanol"
+                         " and Ethanol at Pressures up to 270 MPa",
+                "ref": "Ber. Bunsenges. Phys. Chem. 92 (1988) 652-655",
+                "doi": "10.1002/bbpc.198800153"},
+
+            "Tmin": Tt, "Tmax": 650,
+            "Tref": 158.37, "Pref": 1e6,
+            "a2": [436.9], "exp2": [2.6432]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.91043e1, 0.47263e1, -0.97145e1, 0.41536e1, -0.20739e1],
