@@ -308,16 +308,22 @@ class nC4(MEoS):
 
     eq = buecker, younglove, GERG, miyamoto, shortSpan, polt, sun
 
+    _surface = {"sigma": [0.05138], "exp": [1.209]}
     _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
                    "a0": [0.0557549],  "expt0": [-1.], "expd0": [1.],
                    "a1": [20.611, 0.02], "expt1": [0, 1], "expd1": [1, 1],
                    "a2": [66.64, 24.44, -7461.2, -1983.6],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.00066566,
-                "Tmin": 134.895, "Tmax": 575.0,
-                "a1": [-558558235.4, 558558236.4], "exp1": [0, 2.206],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _surface = {"sigma": [0.05138], "exp": [1.209]}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": buecker["__doi__"],
+
+        "Tmin": 134.895, "Tmax": 575.0,
+        "Tref": Tt, "Pref": 0.653,
+        "a0": 1,
+        "a2": [5.585582364e8], "exp2": [2.206]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.71897e1, 0.26122e1, -0.21729e1, -0.27230e1],
