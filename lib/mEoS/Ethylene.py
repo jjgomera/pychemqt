@@ -261,11 +261,30 @@ class Ethylene(MEoS):
                    "a1": [10.725], "expt1": [0], "expd1": [1],
                    "a2": [55.19, 49.5, -2045, -1154.],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.9, 2.9]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 450.0,
-                "a1": [0.1225e-3, 0.357924e3, -0.357924e3],
-                "exp1": [0, 0.20645e1, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "__doi__": smukala["__doi__"],
+        "Tmin": Tt, "Tmax": 550.0}
+
+    @classmethod
+    def _Melting_Pressure(cls, T):
+        """Calculate the melting pressure using the fractional method of
+        Smukala"""
+        Tt2 = 110.369
+        if T < Tt2:
+            a = 2947001.84
+            t = 2.045
+            Tt = cls.Tt
+            Pt = 122.65
+        else:
+            a = 6.82693421
+            t = 1.089
+            Tt = Tt2
+            Pt = 46.8e6
+
+        Pr = 1 + a*((T/Tt)**t-1)
+        return unidades.Pressure(Pr*Pt)
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-6.3905741, 1.4060338, -1.6589923, 1.0278028, -2.5071716],
