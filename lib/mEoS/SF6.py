@@ -211,21 +211,24 @@ class SF6(MEoS):
 
     _surface = {"sigma": [0.0538, -4.064e-5], "exp": [1.271, 0.2116]}
     _melting = {
+        "eq": 2,
         "__doi__": {
             "autor": "Harvey, A.H.",
             "title": "On the Melting Curve of Sulfur Hexafluoride",
             "ref": "J. Phys. Chem. Ref. Data 46(4) (2017) 043102",
             "doi": "10.1063/1.5005537"},
 
-        "eq": 1, "Tref": Tt, "Pref": 1,
-        "a1": [231.429, 223.7e3, -223.7e3],
-        "exp1": [0, 1.555, 0],
-        "a2": [], "exp2": [], "a3": [], "exp3": []}
+        "Tmin": Tt, "Tmax": 625,
+        "Tref": Tt, "Pref": 231429,
+        "a2": [223.7e6], "exp2": [1.555]}
+
     _sublimation = {
-        "eq": 2, "Tref": Tt, "Pref": 231.429,
+        "eq": 2,
+        "__doi__": guder["__doi__"],
+
+        "Tref": Tt, "Pref": 231429,
         "Tmin": Tt, "Tmax": Tt,
-        "a1": [-11.6942141, 11.6942141], "exp1": [-1.07, 0],
-        "a2": [], "exp2": [], "a3": [], "exp3": []}
+        "a2": [-11.6942141], "exp2": [-1.07]}
 
     _vapor_Pressure = {
         "eq": 3,
