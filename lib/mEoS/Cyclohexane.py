@@ -191,10 +191,19 @@ class Cyclohexane(MEoS):
     eq = zhou, penoncello, shortSpan, sun
 
     _surface = {"sigma": [0.06485], "exp": [1.263]}
-    _melting = {"eq": 1, "Tref": 1, "Pref": 700,
-                "Tmin": Tt, "Tmax": 370.0,
-                "a1": [0.1329969885, -374.255624], "exp1": [1.41, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": {"autor": "Wisotzki, K.D., Wǘrflinger, A.",
+                    "title": "PVT Data for Liquid and Solid Cyclohexane, "
+                             "Cyclohexanone and Cyclopentanol up to 3000 bar",
+                    "ref": "J. Phis. Chem. Solids 43(1) (1982) 13-20",
+                    "doi": "10.1016/0022-3697(82)90167-6"},
+
+        "Tmin": Tt, "Tmax": 700.0,
+        "Tref": 279.7, "Pref": 1,
+        "a2": [3834e5], "exp2": [1.41]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.0342, 1.7311, -1.7572, -3.3406],
@@ -357,3 +366,10 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 3), 15.093)
         st = Cyclohexane(T=700, rhom=7.4765)
         self.assertEqual(round(st.mu.muPas, 3), 176.749)
+
+    def test_Wisotzki(self):
+        # Table 6, pag 19
+        self.assertEqual(round(
+            Cyclohexane._Melting_Pressure(279.3).bar, 2), 1.00)
+        self.assertEqual(round(
+            Cyclohexane._Melting_Pressure(329.7).bar, 2), 1000)
