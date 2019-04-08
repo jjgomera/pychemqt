@@ -187,11 +187,19 @@ class NH3(MEoS):
 
     eq = tillner, ahrendts, shortSpan, sun
 
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 700.0,
-                "a1": [], "exp1": [], "a2": [], "exp2": [],
-                "a3": [0.2533125e4], "exp3": [1]}
     _surface = {"sigma": [0.1028, -0.09453], "exp": [1.211, 5.585]}
+    _melting = {
+        "eq": 1,
+        "__doi__": {
+            "autor": "Haar, L., Gallagher, J.S.",
+            "title": "Thermodynamic Properties of Ammonia",
+            "ref": "J. Phys. Chem. Ref. Data 7(3) (1978) 635-792",
+            "doi": "10.1063/1.555579"},
+
+        "Tmin": Tt, "Tmax": 700.0,
+        "Tref": Tt, "Pref": 101325,
+        "a3": [2.5e4], "exp3": [1]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.70993e1, -0.24330e1, 0.87591e1, -0.64091e1, -0.21185e1],
