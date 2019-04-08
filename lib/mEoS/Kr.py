@@ -83,7 +83,7 @@ class Kr(MEoS):
         "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
-                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "ref": "Chem. Technik 22(1992)6 216-224",
                     "doi": ""},
 
         "R": 8.3143,
@@ -120,15 +120,20 @@ class Kr(MEoS):
                    "a1": [6.273], "expt1": [0], "expd1": [1],
                    "a2": [6.485, 13.48, -82.51, -170.4],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.7, 2.7]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 101.325,
-                "Tmin": Tt, "Tmax": 800.0,
-                "a1": [-2345.757, 1.080476685], "exp1": [0, 1.6169841],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 73.197,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-11.5616], "exp2": [1],
-                    "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 2,
+        "__doi__": {"autor": "Michels, A., Prins, C.",
+                    "title": "The Melting Lines of Argon, Krypton and Xenon "
+                             "up to 1500 Atm; Representation of the Results "
+                             "by a Law of Corresponding States",
+                    "ref": "Physica 28 (1962) 101-116",
+                    "doi": "10.1016/0031-8914(62)90096-4"},
+
+        "Tmin": Tt, "Tmax": 800.0,
+        "Tref": 1, "Pref": -2345*101325,
+        "a1": [1.08047668519*101325], "exp1": [1.6169841]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.59697e1, 0.12673e1, -0.95609, -0.35630e2, 0.56884e2],
@@ -153,3 +158,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 27.390)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 1667.678)
         self.assertEqual(round(st.w, 3), 137.838)
+
+    def test_Michels(self):
+        # Table I, pag 105
+        self.assertEqual(round(Kr._Melting_Pressure(115.893).atm, 2), 5.52)
+        self.assertEqual(round(Kr._Melting_Pressure(119.069).atm, 2), 110.55)
+        self.assertEqual(round(Kr._Melting_Pressure(138.598).atm, 2), 794.08)
+        self.assertEqual(round(Kr._Melting_Pressure(157.033).atm, 2), 1496.47)
