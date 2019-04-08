@@ -127,7 +127,7 @@ class CO(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -152,10 +152,20 @@ class CO(MEoS):
 
     _surface = {"sigma": [0.02843],
                 "exp": [1.148]}
-    _melting = {"eq": 1, "Tref": 1, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 1000.0,
-                "a1": [-142.941, 0.0195608], "exp1": [0, 2.10747],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": {"autor": "Barreiros, S.F., Calado, J.C.G., Nunes da "
+                             "Ponte, M.",
+                    "title": "The melting curve of carbon monoxide",
+                    "ref": "J. Chem. Thermodynamics 14 (1982) 1197-1198",
+                    "doi": "10.1016/0021-9614(82)90044-1"},
+
+        "Tmin": Tt, "Tmax": 1000.0,
+        "Tref": 1, "Pref": 1e6,
+        "a0": -142.941,
+        "a1": [0.0195608], "exp1": [2.10747]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.61192e1, 0.10411e1, -0.62162e1, 0.10437e2, -0.76813e1],
