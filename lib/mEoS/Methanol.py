@@ -182,12 +182,15 @@ class Methanol(MEoS):
 
     _surface = {"sigma": [0.22421, -0.21408, 0.083233],
                 "exp": [1.3355, 1.677, 4.4402]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.187e-3,
-                "Tmin": Tt, "Tmax": 620.,
-                "a1": [1], "exp1": [0],
-                "a2": [5.320770e9, 4.524780e9, 3.888861e10],
-                "exp2": [1, 1.5, 4],
-                "a3": [], "exp3": []}
+
+    _melting = {
+            "eq": 1,
+            "__doi__": reuck["__doi__"],
+
+            "Tmin": Tt, "Tmax": 650,
+            "Tref": Tt, "Pref": 0.187,
+            "a0": 1,
+            "a2": [5.320770e9, 4.524780e9, 3.888861e10], "exp2": [1, 1.5, 4]}
 
     _vapor_Pressure = {
         "eq": 3,
