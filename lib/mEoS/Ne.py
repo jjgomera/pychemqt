@@ -95,14 +95,21 @@ class Ne(MEoS):
                    "a1": [0.9969], "expt1": [0], "expd1": [1],
                    "a2": [-0.109, 0.0708, -2.88, -1.],
                    "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 43.36814,
-                "Tmin": Tt, "Tmax": 700.0,
-                "a1": [1., 4437.], "exp1": [0, 1.33],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 43.464,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-10.65], "exp2": [1], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 2,
+        "__doi__": {
+            "autor": "Santamaría-Pérez, D., Mukherjee, G.D., Schwager, B., "
+                     "Boehler, R.",
+            "title": "High-pressure melting curve of helium and neon: "
+                     "Deviations from corresponding states theory",
+            "ref": "Physical Review B 81 (2010) 214101",
+            "doi": "10.1103/PhysRevB.81.214101"},
+
+        "Tmin": 24.4, "Tmax": 700.0,
+        "Tref": 24.4, "Pref": 101325,
+
+        "a2": [0.17e9], "exp2": [1/0.77]}
 
     _vapor_Pressure = {
         "eq": 3,
