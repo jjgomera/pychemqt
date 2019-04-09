@@ -59,7 +59,7 @@ class Propyne(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 474.0, "Pmax": 32000.0, "rhomax": 16.28,
+        "Tmin": 273, "Tmax": 474.0, "Pmax": 32000.0, "rhomax": 16.28,
         "Pmin": 0.2, "rhomin": 22.7,
 
         "nr1": [0.102590136933e1, -0.220786016506e1, 0.107889905204e1,

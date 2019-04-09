@@ -122,10 +122,14 @@ class F2(MEoS):
     eq = reuck, polt
 
     _surface = {"sigma": [0.03978], "exp": [1.218]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 300.0,
-                "a1": [.000252, 249.975, -249.9750131], "exp1": [0, 2.1845, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": reuck["__doi__"],
+        "Tmin": Tt, "Tmax": 300.0,
+        "Tref": Tt, "Pref": 238.8,
+        "a2": [988043.478261], "exp2": [2.1845]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.37061e1, -0.81517e2, 0.13743e3, -0.58617e2, -0.13528e1],
