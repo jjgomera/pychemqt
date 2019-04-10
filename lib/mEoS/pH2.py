@@ -139,11 +139,37 @@ class pH2(MEoS):
                    "a1": [2.0297, 0.0069], "expt1": [0, 1], "expd1": [1, 1],
                    "a2": [0.181, 0.021, -7.4],
                    "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
-    _melting = {"Tmin": Tt, "Tmax": 400.0}
-    _sublimation = {"eq": 2, "Tref": 1, "Pref": 0.133332237,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [4.009857354, -90.77568949], "exp1": [0, -1],
-                    "a2": [], "exp2": [], "a3": [2.48983094], "exp3": [1]}
+
+    _melting = {
+        "__doi__": younglove["__doi__"],
+        "Tmin": Tt, "Tmax": 400.0}
+
+    @classmethod
+    def _Melting_Pressure(cls, T):
+        """The correlation has two different equation so hardcoded here"""
+        if T > 22:
+            P = -26.5289115 + 0.248578596*T**1.764739
+        else:
+            P = -21.272389 + 0.125746643*T**1.955
+
+        return unidades.Pressure(P, "MPa")
+
+    _sublimation = {
+        "eq": 2,
+        "__doi__": {
+            "autor": "McCarty, R.D., Hord, J., Roder, H.M.",
+            "title": "Selected Properties of Hydrogen (Engineering Design "
+                     "Data)",
+            "ref": "NBS Monograph 168, NBS 1981.",
+            "doi": ""},
+
+        "Tmin": Tt, "Tmax": Tt,
+        # The returned pressure is in mmHg
+        "Tref": 1, "Pref": 101325/760,
+        "a0": 4.009857354,
+        "a1": [-90.77568949], "exp1": [-1],
+        "a3": [2.48983094], "exp3": [1]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.487767e1, 0.103359e1, 0.826680, -0.129412],
@@ -157,18 +183,6 @@ class pH2(MEoS):
         "n": [-0.57545e1, 0.38153e1, -0.12293e2, 0.15095e2, -0.17295e2,
               -0.34190e2],
         "t": [0.53, 0.7, 1.7, 2.4, 3.3, 10]}
-
-    @classmethod
-    def _Melting_Pressure(cls, T=None):
-        Tref = 1
-        Pref = 1000
-        Tita = T/Tref
-        if T > 22:
-            suma = -0.265289115e2+0.248578596*Tita**0.1764739e1
-        else:
-            suma = -0.21272389e2+0.125746643*Tita**0.1955e1
-
-        return unidades.Pressure(suma*Pref, "kPa")
 
     visco0 = {"__name__": "McCarty (1972)",
               "__doi__": {

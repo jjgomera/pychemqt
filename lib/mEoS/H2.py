@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from scipy import exp, log
+from scipy import exp, log, log10
 
 from lib import unidades
 from lib.meos import MEoS
@@ -85,7 +85,7 @@ class H2(MEoS):
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 102.0,
         "Pmin": 7.36, "rhomin": 38.2,
-        "Tc": 33.145, "Pc": 1.2964, "rhoc": 15.508,
+        "Tc": 33.145, "Pc": 1296.4, "rhoc": 15.508,
 
         "nr1": [-6.93643, 0.01, 2.1101, 4.52059, 0.732564, -1.34086, 0.130985],
         "d1": [1, 4, 1, 1, 2, 2, 3],
@@ -103,8 +103,7 @@ class H2(MEoS):
         "alfa3": [1.685, 0.489, 0.103, 2.506, 1.607],
         "beta3": [0.171, 0.2245, 0.1304, 0.2785, 0.3967],
         "gamma3": [0.7164, 1.3444, 1.4517, 0.7204, 1.5445],
-        "epsilon3": [1.506, 0.156, 1.736, 0.67, 1.662],
-        "nr4": []}
+        "epsilon3": [1.506, 0.156, 1.736, 0.67, 1.662]}
 
     GERG = {
         "__type__": "Helmholtz",
@@ -135,10 +134,7 @@ class H2(MEoS):
         "d2": [1, 5, 5, 5, 1, 1, 2, 5, 1],
         "t2": [2.625, 0, 0.25, 1.375, 4, 4.25, 5, 8, 8],
         "c2": [1, 1, 1, 1, 2, 2, 3, 3, 5],
-        "gamma2": [1]*9,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*9}
 
     bender = {
         "__type__": "Helmholtz",
@@ -186,16 +182,38 @@ class H2(MEoS):
                    "a1": [2.0306, 0.0056], "expt1": [0, 1], "expd1": [1, 1],
                    "a2": [0.181, 0.021, -7.4],
                    "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 7.3578,
-                "Tmin": Tt, "Tmax": 400.0,
-                "a1": [1], "exp1": [0],
-                "a2": [5626.3, 2717.2], "exp2": [1, 1.83],
-                "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 7.7,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-8.065], "exp2": [0.93],
-                    "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": {
+              "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
+              "title": "Extended and accuracy determination of the melting "
+                       "curves of argon, helium, ice (H2O), and hydrogen (H2)",
+              "ref": "Physical Review B, 61(10) (2000) 6535-6546",
+              "doi": "10.1103/PhysRevB.61.6535"},
+
+        # It used the Eq. 9 in paper, the Eq. 10 is only prefered at very high
+        # pressure, solved only iteratively, out of interest range in pychemqt
+        "Tmin": Tt, "Tmax": 1100,
+        "Tref": 1, "Pref": 1e9,
+        "a1": [1.63e-4], "exp1": [1.824]}
+
+    _sublimation = {
+        "__doi__": {
+            "autor": "McCarty, R.D., Hord, J., Roder, H.M.",
+            "title": "Selected Properties of Hydrogen (Engineering Design "
+                     "Data)",
+            "ref": "NBS Monograph 168, NBS 1981.",
+            "doi": ""},
+        "Tmin": Tt, "Tmax": Tt}
+
+    @classmethod
+    def _Sublimation_Pressure(cls, T):
+        """Special sublimation pressure correlation"""
+        # Use decimal logarithm
+        P = 10**(-43.39/T+2.5*log10(T)+2.047)
+        return unidades.Pressure(P, "mmHg")
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.489789e1, 0.988558, 0.349689, 0.499356],
