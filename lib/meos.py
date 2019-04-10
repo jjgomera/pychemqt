@@ -3807,7 +3807,8 @@ class MEoS(ThermoAdvanced):
         .. math::
             \sigma(T) = \sum_i \sigma_i\left(1-\frac{T}{T_c}\right)^{n_i}
 
-        The subclass must define the parameters of correlation in _surface::
+        The subclass must define the parameters of correlation in _surface:
+
             * sigma: Coefficient of polynomial term
             * exp: Exponential of polynomial term
         """
@@ -3861,41 +3862,153 @@ class MEoS(ThermoAdvanced):
 
     @classmethod
     def _Melting_Pressure(cls, T):
-        """Calculate the melting pressure"""
+        r"""Calculate the melting pressure.
+
+        .. math::
+            \begin{array}[t]{l}
+            \frac{P_m}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(\theta^{t_{2i}}-1\right) +
+            \sum a_{3i}\log \theta^{t_{3i}} +
+            \sum a_{4i}\left(\theta-1\right)^{t_{4i}}\\
+            P_m - P_r = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(\theta^{t_{2i}}-1\right) +
+            \sum a_{3i}\log \theta^{t_{3i}} +
+            \sum a_{4i}\left(\theta-1\right)^{t_{4i}}\\
+            \ln\frac{P_m}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(\theta^{t_{2i}}-1\right) +
+            \sum a_{3i}\log \theta^{t_{3i}} +
+            \sum a_{4i}\left(\theta-1\right)^{t_{4i}}\\
+            \theta = \frac{T}{T_r}\\
+            \end{array}
+
+        The dict with coefficient must define the properties:
+
+            * eq: Type of equation
+            * __doi__: Dict with reference of correlation
+            * Tmin: Lower temperature limit, [K]
+            * Tmax: Upper temperature limit, [K]
+            * Tref: Reducing temperature, [K]
+            * Pref: Reducing pressure, [Pa]
+            * a0: Zero dependence coefficient
+            * a1: Polynomial term coefficient
+            * exp1: Polynomial term exponent
+            * a2: Polynomial θ^t-1 term coefficient
+            * exp2: Polynomial θ^t-1 term exponent
+            * a3: Logarithmic term coefficient
+            * exp3: Logarithmic term exponent
+            * a4: Polynomial (θ-1)^t term coefficient
+            * exp4: Polynomial (θ-1)^t term exponent
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+
+        Returns
+        -------
+        P : float
+            Melting pressure, [K]
+        """
         if cls._melting:
             Tref = cls._melting["Tref"]
             Pref = cls._melting["Pref"]
             Tita = T/Tref
             suma = 0
-            for a, t in zip(cls._melting["a1"], cls._melting["exp1"]):
-                suma += a*Tita**t
-            for a, t in zip(cls._melting["a2"], cls._melting["exp2"]):
-                suma += a*(Tita-1)**t
-            for a, t in zip(cls._melting["a3"], cls._melting["exp3"]):
-                suma += a*log(Tita)**t
+            if "a0" in cls._melting:
+                suma += cls._melting["a0"]
+
+            if "a1" in cls._melting:
+                for a, t in zip(cls._melting["a1"], cls._melting["exp1"]):
+                    suma += a*Tita**t
+
+            if "a2" in cls._melting:
+                for a, t in zip(cls._melting["a2"], cls._melting["exp2"]):
+                    suma += a*(Tita**t-1)
+
+            if "a3" in cls._melting:
+                for a, t in zip(cls._melting["a3"], cls._melting["exp3"]):
+                    suma += a*log(Tita)**t
+
+            if "a4" in cls._melting:
+                for a, t in zip(cls._melting["a4"], cls._melting["exp4"]):
+                    suma += a*(Tita-1)**t
 
             if cls._melting["eq"] == 1:
                 P = suma*Pref
             elif cls._melting["eq"] == 2:
+                # Simon formulation
+                P = suma+Pref
+            elif cls._melting["eq"] == 2:
                 P = exp(suma)*Pref
-            return unidades.Pressure(P, "kPa")
+            return unidades.Pressure(P)
         else:
             return None
 
     @classmethod
     def _Sublimation_Pressure(cls, T):
-        """Calculate the sublimation pressure"""
+        r"""Calculate the sublimation pressure.
+
+        .. math::
+            \begin{array}[t]{l}
+            \frac{P}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(1-\theta\right)^{t_{2i}} +
+            \sum a_{3i}\log \theta^{t_{3i}}\\
+            P - P_r = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(1-\theta\right)^{t_{2i}} +
+            \sum a_{3i}\log \theta^{t_{3i}}\\
+            \ln\frac{P}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(1-\theta\right)^{t_{2i}} +
+            \sum a_{3i}\log \theta^{t_{3i}}\\
+            \theta = \frac{T}{T_r}\\
+            \end{array}
+
+        The dict with coefficient must define the properties:
+
+            * eq: Type of equation
+            * __doi__: Dict with reference of correlation
+            * Tmin: Lower temperature limit, [K]
+            * Tmax: Upper temperature limit, [K]
+            * Tref: Reducing temperature, [K]
+            * Pref: Reducing pressure, [Pa]
+            * a0: Zero dependence coefficient
+            * a1: Polynomial term coefficient
+            * exp1: Polynomial term exponent
+            * a2: Polynomial 1-θ term coefficient
+            * exp2: Polynomial 1-θ term exponent
+            * a3: Logarithmic term coefficient
+            * exp3: Logarithmic term exponent
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+
+        Returns
+        -------
+        P : float
+            Sublimation pressure, [K]
+        """
         if cls._sublimation:
-            Tref = cls._sublimation["Tref"]
-            Pref = cls._sublimation["Pref"]
+            coef = cls._sublimation
+
+            Tref = coef["Tref"]
+            Pref = coef["Pref"]
             Tita = T/Tref
             suma = 0
-            for a, t in zip(cls._sublimation["a1"], cls._sublimation["exp1"]):
-                suma += a*Tita**t
-            for a, t in zip(cls._sublimation["a2"], cls._sublimation["exp2"]):
-                suma += a*(1-Tita)**t
-            for a, t in zip(cls._sublimation["a3"], cls._sublimation["exp3"]):
-                suma += a*log(Tita)**t
+            if "a0" in cls._melting:
+                suma += cls._melting["a0"]
+
+            if "a1" in coef:
+                for a, t in zip(coef["a1"], coef["exp1"]):
+                    suma += a*Tita**t
+
+            if "a2" in coef:
+                for a, t in zip(coef["a2"], coef["exp2"]):
+                    suma += a*(1-Tita)**t
+
+            if "a3" in coef:
+                for a, t in zip(coef["a3"], coef["exp3"]):
+                    suma += a*log(Tita)**t
 
             if cls._sublimation["eq"] == 1:
                 P = suma*Pref
@@ -3903,7 +4016,7 @@ class MEoS(ThermoAdvanced):
                 P = exp(suma)*Pref
             elif cls._sublimation["eq"] == 3:
                 P = exp(Tref/T*suma)*Pref
-            return unidades.Pressure(P, "kPa")
+            return unidades.Pressure(P)
         else:
             return None
 
@@ -4491,7 +4604,7 @@ class MEoS(ThermoAdvanced):
         # Special hardcoded method:
         if "special0" in coef:
             method = self.__getattribute__(coef["special0"])
-            muo += method()
+            muo += method(T)
 
         return muo
 
