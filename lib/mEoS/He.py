@@ -213,10 +213,22 @@ class He(MEoS):
                    "a1": [0.517254], "expt1": [0], "expd1": [1],
                    "a2": [-0.203, 0.039, 7.47],
                    "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
-    _melting = {"eq": 1, "Tref": 1, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 1500.0,
-                "a1": [-1.7455837, 1.6979793], "exp1": [0, 1.555414],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+            "eq": 1,
+            "__doi__": {
+                  "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
+                  "title": "Extended and accuracy determination of the "
+                           "melting curves of argon, helium, ice (H2O), and "
+                           "hydrogen (H2)",
+                  "ref": "Physical Review B, 61(10) (2000) 6535-6546",
+                  "doi": "10.1103/PhysRevB.61.6535"},
+
+            "Tmin": Tt, "Tmax": 1500,
+            "Tref": 1, "Pref": 1e9,
+
+            "a1": [1.6067e-3], "exp1": [1.565]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-3.8357, 1.7062, -0.71231, 1.0862],
