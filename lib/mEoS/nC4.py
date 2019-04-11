@@ -309,11 +309,10 @@ class nC4(MEoS):
     eq = buecker, younglove, GERG, miyamoto, shortSpan, polt, sun
 
     _surface = {"sigma": [0.05138], "exp": [1.209]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [0.0557549],  "expt0": [-1.], "expd0": [1.],
-                   "a1": [20.611, 0.02], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [66.64, 24.44, -7461.2, -1983.6],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
+    _dielectric = {
+        "eq": 1,
+        "a": [20.611, 0.020], "b": [66.64, 24.44], "c": [-7461.2, -1983.6],
+        "Au": 15.23, "D": 2}
 
     _melting = {
         "eq": 1,

@@ -287,11 +287,10 @@ class CO2(MEoS):
     eq = span, MBWR, GERG, ely, shortSpan, sun
 
     _surface = {"sigma": [0.07863], "exp": [1.254]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [7.3455, 0.00335], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [83.93, 145.1, -578.8, -1012.],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.55, 2.55]}
+    _dielectric = {
+        "eq": 1,
+        "a": [7.3455, 0.00335], "b": [83.93, 145.1], "c": [-578.8, -1012.],
+        "Au": 0, "D": 1.55}
 
     _melting = {
         "eq": 1,

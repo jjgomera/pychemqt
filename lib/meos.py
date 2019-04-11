@@ -312,24 +312,24 @@ __doi__ = {
                   "Applications",
          "ref": "Int. J. Thermophys. 16(6) (1995) 1381-1392",
          "doi": "10.1007/bf02083547"},
-
     24:
+        {"autor": "Harvey, A.H. and Lemmon, E.W.",
+         "title": "Method for Estimating the Dielectric Constant of "
+                  "Natural Gas Mixtures ",
+         "ref": "Int. J. Thermophys. 26(1) (2005) 31-46",
+         "doi": "10.1007/s10765-005-2351-5"},
+
+    25:
         {"autor": "",
          "title": "",
          "ref": "",
          "doi": ""},
 
-    # 1:
+    # 24:
         # {"autor": "Reeves, L.E., Scott, G.J., Babb, S.E., Jr.",
          # "title": "Melting Curves of Pressure‐Transmitting Fluids ",
          # "ref": "J. Chem. Phys. 40, 3662 (1964)",
          # "doi": "10.1063/1.1725068"},
-    # 2:
-        # {"autor": "Harvey, A.H. and Lemmon, E.W.",
-         # "title": "Method for Estimating the Dielectric Constant of "
-                  # "Natural Gas Mixtures ",
-         # "ref": "Int. J. Thermophys., 26(1):31-46, 2005.",
-         # "doi": "10.1007/s10765-005-2351-5"},
 
         }
 
@@ -1173,6 +1173,8 @@ class MEoS(ThermoAdvanced):
         # Define general documentation
         if self._surface and "__doi__" not in self._surface:
             self._surface["__doi__"] = __doi__[1]
+        if self._dielectric and "__doi__" not in self._dielectric:
+            self._dielectric["__doi__"] = __doi__[24]
 
     def __call__(self, **kwargs):
         """Make instance callable to let definition one parameters for one"""
@@ -3828,36 +3830,85 @@ class MEoS(ThermoAdvanced):
             sigma = None
         return sigma
 
+    @refDoc(__doi__, [24], tab=8)
     def _Dielectric(self, rho, T):
-        """Calculate the dielectric constant"""
+        r"""Calculate the dielectric constant as explain in [24]_.
+
+        Calculate first the electric polarization
+
+        .. math::
+            \begin{array}[t]{l}
+            \frac{P}{\rho} = A_{\epsilon}+\frac{A_{\mu}}{T}+B_{\epsilon}\rho
+            + C\rho^D\\
+            A_{\epsilon} = a_0+a_1\left(\frac{T}{T_0}-1\right)\\
+            B_{\epsilon} = b_0+b_1\left(\frac{T_0}{T}-1\right)\\
+            C_{\epsilon} = c_0+c_1\left(\frac{T_0}{T}-1\right)\\
+            \end{array}
+
+        and then calculate the dielectric constant using the appropiate
+        correlation
+
+        .. math::
+            \begin{array}[t]{l}
+            P_{CM} = \frac{\epsilon-1}{\epsilon+2}\\
+            P_{K} = \frac{(\epsilon-1)(2\epsilon+1}{9\epsilon}\\
+            \end{array}
+
+        The Clausius-Mosotti (CM} is more appropiate for nonpolar fluids, the
+        Kirkwood is for polar fluids.
+
+        The dict with coefficient must define the properties:
+
+            * eq: Type of equation
+            * ai: Parameter of virial coefficient :math:`A_{\epsilon}`
+            * bi: Parameter of virial coefficient :math:`B_{\epsilon}`
+            * ci: Parameter of parameter C
+            * Au: Parameter :math:`A_{mu}`
+            * D: Exponential of density in last term
+
+        Parameters
+        ----------
+        rho : float
+            Density [kg/m³]
+        T : float
+            Temperature [K]
+
+        Returns
+        -------
+        epsilon : float
+            Static dielectric constant, [-]
+        """
+        # density in mol/cc
+        rhom = rho/self.M/1000
+
         if self._dielectric:
-            if rho < 1e-12:
-                e = 1.
+            if rho:
+                ai = self._dielectric["a"]
+                bi = self._dielectric["b"]
+                ci = self._dielectric["c"]
+                D = self._dielectric["D"]
+                Au = self._dielectric["Au"]
+                T0 = self._dielectric.get("T0", 273.16)
+
+                Ae = ai[0] + ai[1]*(T/T0-1)                             # Eq 6a
+                Be = bi[0] + bi[1]*(T0/T-1)                             # Eq 6b
+                C = ci[0] + ci[1]*(T0/T-1)                              # Eq 6c
+
+                # Eq 5
+                P = rhom*(Ae + Au/T + Be*rhom + C*rhom**D)
+
+                if self._dielectric["eq"] == 1:
+                    # Clausius-Mosotti expression, for nonpolar fluids
+                    e = (1+2*P)/(1-P)
+                elif self._dielectric["eq"] == 2:
+                    # Kirwood expression, for polar fluid
+                    e = 0.25*(1+9*P+3*(9*P**2+2*P+1)**0.5)
+
             else:
-                delta = rho/self.M/self._dielectric["rhoref"]
-                tau = T/self._dielectric["Tref"]
-                a0 = self._dielectric["a0"]
-                expt0 = self._dielectric["expt0"]
-                expd0 = self._dielectric["expd0"]
-                a1 = self._dielectric["a1"]
-                expt1 = self._dielectric["expt1"]
-                expd1 = self._dielectric["expd1"]
-                a2 = self._dielectric["a2"]
-                expt2 = self._dielectric["expt2"]
-                expd2 = self._dielectric["expd2"]
-                c = 0
-                for a, expt, expd in zip(a0, expt0, expd0):
-                    c += a * tau**expt * delta**expd
-                for a, expt, expd in zip(a1, expt1, expd1):
-                    c += a * (tau-1)**expt * delta**expd
-                for a, expt, expd in zip(a2, expt2, expd2):
-                    c += a * (1./tau-1)**expt * delta**expd
-                if self._dielectric["eq"] == 3:
-                    e = (1+2*c)/(1-c)
-                else:
-                    e = 0.25*(1+9*c+3*(9*c**2+2*c+1)**0.5)
+                e = 1
         else:
             e = None
+
         return unidades.Dimensionless(e)
 
     @classmethod

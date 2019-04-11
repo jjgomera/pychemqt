@@ -256,11 +256,10 @@ class Ethylene(MEoS):
     eq = smukala, mccarty, jahangiri, shortSpan, sun
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [10.725], "expt1": [0], "expd1": [1],
-                   "a2": [55.19, 49.5, -2045, -1154.],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.9, 2.9]}
+    _dielectric = {
+        "eq": 1,
+        "a": [10.725, 0], "b": [55.19, 49.5], "c": [-2045., -1154.],
+        "Au": 0, "D": 1.9}
 
     _melting = {
         "__doi__": smukala["__doi__"],

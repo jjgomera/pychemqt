@@ -319,11 +319,11 @@ class C3(MEoS):
     eq = lemmon, younglove, buecker, GERG, miyamoto, shortSpan, sun
 
     _surface = {"sigma": [0.05334, -0.01748], "exp": [1.235, 4.404]}
-    _dielectric = {"eq": 4, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [0.1573071],  "expt0": [-1.], "expd0": [1.],
-                   "a1": [15.85, 0.036], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [172.75, 505.67, -388.21, -2078.8],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.35, 2.35]}
+
+    _dielectric = {
+        "eq": 2,
+        "a": [15.850, 0.036], "b": [172.75, 505.67], "c": [-388.21, -2078.8],
+        "Au": 42.97, "D": 1.35}
 
     _melting = {
             "eq": 2,

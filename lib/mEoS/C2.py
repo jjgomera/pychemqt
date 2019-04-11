@@ -293,11 +293,10 @@ class C2(MEoS):
     eq = buecker, younglove, GERG, friend, shortSpan, sun
 
     _surface = {"sigma": [0.07602, -0.02912], "exp": [1.32, 1.676]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [11.1552, 0.0112], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [36.759, 23.639, -808.03, -378.84],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.75, 2.75]}
+    _dielectric = {
+        "eq": 1,
+        "a": [11.1552, 0.0112], "b": [36.759, 23.639], "c": [-808.03, -378.84],
+        "Au": 0, "D": 1.75}
 
     _melting = {
         "eq": 1,

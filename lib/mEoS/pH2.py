@@ -134,11 +134,10 @@ class pH2(MEoS):
     eq = leachman, younglove
 
     _surface = {"sigma": [0.005314], "exp": [1.06]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [2.0297, 0.0069], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [0.181, 0.021, -7.4],
-                   "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
+    _dielectric = {
+        "eq": 1,
+        "a": [2.0297, 0.0069], "b": [0.181, 0.021], "c": [-7.4],
+        "Au": 0, "D": 2}
 
     _melting = {
         "__doi__": younglove["__doi__"],
