@@ -59,7 +59,7 @@ class R12(MEoS):
                            "(Waermetechnik/Kaeltetechnik), No. 57, 1992.",
                     "doi": ""},
 
-        "R": 8.314471,
+        "R": 8.314471, "rhoc": 4.672781,
         "cp": CP1,
         "ref": "IIR",
 

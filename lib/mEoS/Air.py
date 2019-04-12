@@ -249,7 +249,7 @@ class Test(TestCase):
         self.assertEqual(round(Air._dewP(130).MPa, 5), 3.30835)
 
         # Selected point from Table A2, Pag 366
-        st = Air(T=100, P=101325)
+        st = Air(T=100, P=101325, rho0=1)
         self.assertEqual(round(st.rhoM, 5), 0.12449)
         self.assertEqual(round(st.uM.kJkmol, 1), 2028.2)
         self.assertEqual(round(st.hM.kJkmol, 1), 2842.1)

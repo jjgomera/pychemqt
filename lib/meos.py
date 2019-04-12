@@ -325,12 +325,6 @@ __doi__ = {
          "ref": "",
          "doi": ""},
 
-    # 24:
-        # {"autor": "Reeves, L.E., Scott, G.J., Babb, S.E., Jr.",
-         # "title": "Melting Curves of Pressure‐Transmitting Fluids ",
-         # "ref": "J. Chem. Phys. 40, 3662 (1964)",
-         # "doi": "10.1063/1.1725068"},
-
         }
 
 
@@ -3903,7 +3897,6 @@ class MEoS(ThermoAdvanced):
                 elif self._dielectric["eq"] == 2:
                     # Kirwood expression, for polar fluid
                     e = 0.25*(1+9*P+3*(9*P**2+2*P+1)**0.5)
-
             else:
                 e = 1
         else:
@@ -5547,6 +5540,105 @@ class MEoS(ThermoAdvanced):
 
         prop = {"teta": teta, "phi": phi}
         return prop
+
+    @refDoc(__doi__, [10], tab=8)
+    def _IdealCurve(self, name, T, rho0=None):
+        r"""Ideal curve pressure calculation procedure. The ideal curves are
+        used as a test for extrapolation behaviour of a EoS. There are curves
+        where the real fluid has a property equal to the value for the ideal
+        gas, compressibility factor and its first derivatives.
+
+        * Classical ideal curve, Z=1
+
+        .. math::
+            \left(\frac{\partial \alpha^r}{\partial \delta}\right)_{\tau} = 0
+
+        * Boyle curve
+
+        .. math::
+            \left(\frac{\partial Z}{\partial \rho}\right)_T
+
+        .. math::
+            \left(\frac{\partial \alpha^r}{\partial \delta}\right)_{\tau}
+            + \delta \left(\frac{\partial^2 \alpha^r}{\partial \delta^2}\right)
+            _{\tau} = 0
+
+        * Joule-Thomson inversion curve
+
+        .. math::
+            \left(\frac{\partial Z}{\partial T}\right)_P
+
+        .. math::
+            \left(\frac{\partial \alpha^r}{\partial \delta}\right)_{\tau}
+            + \delta \left(\frac{\partial^2 \alpha^r}{\partial \delta^2}\right)
+            _{\tau} + \tau \left(\frac{\partial^2 \alpha^r}
+            {\partial \delta \partial \tau}\right) = 0
+
+        * Joule inversion curve
+
+        .. math::
+            \left(\frac{\partial Z}{\partial T}\right)_{\rho}
+
+        .. math::
+            \left(\frac{\partial^2\alpha^r}{\partial \delta \partial \tau}
+            \right) = 0
+
+        Definition and equation based in residual Helmholtz energy from Table
+        4.11, pag.168 in reference [10]_
+
+        Parameters
+        ----------
+        name : str
+            Name of curve to calculate:
+
+                * ideal
+                * boyle
+                * joule-thomson
+                * joule
+
+        T : float
+            Temperature of point to calculate, [K]
+
+        Returns
+        -------
+        P : float
+            Pressure of point, [Pa]
+        """
+        tau = self.Tc/T
+        if name == "ideal":
+            def f(rho):
+                delta = rho/self.rhoc
+                return self._phird(tau, delta)
+        elif name == "boyle":
+            def f(rho):
+                delta = rho/self.rhoc
+                prop = self._eq(rho, T)
+                return prop["fird"]+delta*prop["firdd"]
+        elif name == "joule-thomson":
+            def f(rho):
+                delta = rho/self.rhoc
+                prop = self._eq(rho, T)
+                return prop["fird"]+delta*prop["firdd"]+tau*prop["firdt"]
+        elif name == "joule":
+            def f(rho):
+                prop = self._eq(rho, T)
+                return prop["firdt"]
+
+        if rho0 is None and T < self.Tc:
+            rho0 = self._Liquid_Density(T)*2
+        elif rho0 is None:
+            rho0 = self.rhoc/3
+
+        rinput = fsolve(f, rho0, full_output=True)
+        if rinput[2] == 1 and abs(rinput[1]["fvec"]) < 1e-5:
+            rho = rinput[0][0]
+            delta = rho/self.rhoc
+            P = (1+delta*self._phird(tau, delta))*self.R*T*rho
+            print(name, T, rho, P)
+            return P
+        else:
+            print(rho0, rinput)
+            return 0
 
 
 class MEoSBlend(MEoS):
