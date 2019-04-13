@@ -62,6 +62,12 @@ class R32(MEoS):
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": []}
 
+    # Expression in tau term, dividing by Tc in all terms
+    CP3 = {"ao": 4.3914,
+           "an": [-2.5143/351.35, 5.3885/351.35**2, -1.6057/351.35*3],
+           "pow": [1, 2, 3],
+           "ao_exp": [], "exp": []}
+
     tillner = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Tillner-Roth "
@@ -215,7 +221,41 @@ class R32(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = tillner, outcalt, shortSpan, astina, sun
+    vasserman = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-32 of Vasserman and"
+                    "Fominsky (2001)",
+        "__doi__": {"autor": "Vasserman A.A., Fominsky D.V.",
+                    "title": "Equations of State for the Ozone-Safe "
+                             "Refrigerants R32 and R125",
+                    "ref": "Int. J. Thermophysics 22(4) (2001) 1089-1098",
+                    "doi": "10.1023/a_1010699806169"},
+
+        "R": 0.159821*M,
+        "Tc": 351.35, "rhoc": 427/M,
+        "cp": CP3,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
+
+        "nr1": [1.183486, -2.430934, -1.472179e-2, -4.506743e-1, 1.721527,
+                -1.349166, -6.052212e-1, 9.265910e-1, 8.081905e-2,
+                -1.999587e-1, 3.655934e-3, 8.217181e-3, -3.230880e-3,
+                5.778584e-3, -2.536027e-6],
+        "d1": [1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 6, 6, 10],
+        "t1": [0, 1, 4, 0, 1, 2, 1, 2, 0, 2, 3, 2, 0, 1, 0],
+
+        "nr2": [-6.546357e-2, -2.784785e-1, 1.113400, -2.954417, 4.898234,
+                -2.354906, -7.709682e-1, 6.502963e-1, 2.168338e-1,
+                -5.499117e-1, 1.978099e-2, 9.535163e-2, -1.425744e-2,
+                3.921874e-3],
+        "d2": [1, 1, 2, 2, 2, 2, 3, 4, 5, 5, 6, 6, 8, 9],
+        "t2": [4, 5, 1, 2, 4, 5, 5, 5, 3, 4, 3, 5, 4, 2],
+        "c2": [2]*14,
+        "gamma2": [1]*14}
+
+    eq = tillner, outcalt, shortSpan, astina, vasserman, sun
     _PR = 0.00585
 
     _surface = {"sigma": [0.07147], "exp": [1.246]}

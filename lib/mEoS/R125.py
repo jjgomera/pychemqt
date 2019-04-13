@@ -68,6 +68,12 @@ class R125(MEoS):
            "pow": [1, 2, 3],
            "ao_exp": [], "exp": []}
 
+    # Expression in tau term, dividing by Tc in all terms
+    CP4 = {"ao": 2.9072,
+           "an": [11.5586/339.33, -2.1135/339.33**2],
+           "pow": [1, 2],
+           "ao_exp": [], "exp": []}
+
     lemmon = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Lemmon (2005)",
@@ -289,8 +295,41 @@ class R125(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # TODO: Add Vasserman meos, file in meos todo database
-    eq = lemmon, outcalt, sunaga, piao, shortSpan, astina, sun
+    vasserman = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-125 of Vasserman and"
+                    "Fominsky (2001)",
+        "__doi__": {"autor": "Vasserman A.A., Fominsky D.V.",
+                    "title": "Equations of State for the Ozone-Safe "
+                             "Refrigerants R32 and R125",
+                    "ref": "Int. J. Thermophysics 22(4) (2001) 1089-1098",
+                    "doi": "10.1023/a_1010699806169"},
+
+        "R": 0.069275*M,
+        "Tc": 339.33, "rhoc": 571.29/M,
+        "cp": CP4,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+        "Pmin": 0.1, "rhomin": 40.,
+
+        "nr1": [2.825627e-1, -6.854910e-1, -9.975127e-1, 6.445149e-1,
+                4.024926e-1, -7.060325e-1, 2.621465e-1, 1.118047e-1,
+                -1.217283e-1, -3.381068e-2, 7.828134e-3, 2.074012e-3,
+                -5.912590e-5, 8.017074e-5, -5.547434e-5],
+        "d1": [1, 1, 1, 2, 2, 3, 4, 5, 5, 6, 7, 7, 7, 8, 10],
+        "t1": [0, 1, 3, 1, 3, 1, 2, 0, 2, 0, 1, 2, 4, 3, 1],
+
+        "nr2": [1.203782e-1, 1.687868e1, -6.643158e1, 9.473412e1, -5.988361e1,
+                1.396914e1, 6.765262e-1, -5.880934e-2, -5.648372e-1,
+                1.643516e-1, 6.900750e-1, -1.066543, 3.699827e-1, -4.472888e-2,
+                6.506423e-3, -8.564364e-3],
+        "d2": [1, 2, 2, 2, 2, 2, 3, 4, 4, 5, 6, 6, 6, 7, 10, 10],
+        "t2": [4, 1, 2, 3, 4, 5, 2, 1, 3, 4, 1, 2, 4, 5, 1, 3],
+        "c2": [2]*16,
+        "gamma2": [1]*16}
+
+    eq = lemmon, outcalt, sunaga, piao, shortSpan, astina, vasserman, sun
     _PR = -0.00247
 
     _surface = {"sigma": [0.05252], "exp": [1.237]}
