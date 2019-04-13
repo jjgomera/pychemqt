@@ -64,7 +64,6 @@ class R404a(MEoSBlend):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.21,
-        "Pmin": 22.65, "rhomin": 14.21,
 
         "Tj": 345.270, "Pj": 3.7348,
         "dew": {"i": [0.1*2, 0.972*2, 3.8*2, 9.0*2],

@@ -64,7 +64,6 @@ class C1Linoleate(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.16,
-        "Pmin": 0.7e-14, "rhomin": 3.16,
 
         "nr1": [0.3183187e-1, 0.1927286e1, -0.3685053e1, 0.8449312e-1],
         "d1": [4, 1, 1, 3],

@@ -64,7 +64,6 @@ class R407c(MEoSBlend):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 17.04,
-        "Pmin": 19.2, "rhomin": 17.04,
 
         "Tj": 359.345, "Pj": 4.6317,
         "dew": {"i": [0.4*2, 0.965*2, 3.1*2, 5.0*2],
