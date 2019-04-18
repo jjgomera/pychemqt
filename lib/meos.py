@@ -2809,14 +2809,13 @@ class MEoS(ThermoAdvanced):
 
         elif self._constants["__type__"] == "MBWR":
             T = self.Tc/tau
-            rho = delta*self.rhoc
 
             if "gamma" in self._constants:
                 rhocm = 1/(-self._constants["gamma"])**0.5
                 rhoc = rhocm*self.M
             else:
                 rhoc = self.rhoc
-                rhocm = rhoc/self.M
+            rho = delta*rhoc
 
             fir = _MBWR_phird(T, rho, rhoc, self.M, self._constants)
         return fir
@@ -2845,14 +2844,13 @@ class MEoS(ThermoAdvanced):
 
         elif self._constants["__type__"] == "MBWR":
             T = self.Tc/tau
-            rho = delta*self.rhoc
 
             if "gamma" in self._constants:
                 rhocm = 1/(-self._constants["gamma"])**0.5
                 rhoc = rhocm*self.M
             else:
                 rhoc = self.rhoc
-                rhocm = rhoc/self.M
+            rho = delta*rhoc
 
             fir = _MBWR_phirt(T, self.Tc, rho, rhoc, self.M, self._constants)
         return fir
@@ -4397,13 +4395,11 @@ class MEoS(ThermoAdvanced):
                     method = self.__getattribute__(coef["special"])
                     mue = method(rho, T, fase)
 
-                # print("list", muo+mud+mur, muo, mud, mur, mue)
                 # Return the residual contribution if it's requested
                 # i.e. in ecs viscosity correlations
                 if residual:
                     return mud+mur+muCP+mue
 
-                # print(muo, mud, mur, muCP)
                 mu = muo+mud+mur+muCP+mue
 
             elif coef["eq"] == 2:
@@ -5068,7 +5064,6 @@ class MEoS(ThermoAdvanced):
                     method = self.__getattribute__(coef["special"])
                     ke = method(rho, T, fase)
 
-                # print(kg, kr, kc, ke)
                 if contribution:
                     return kr+ke
                 k = kg+kr+kc+ke
@@ -5125,7 +5120,6 @@ class MEoS(ThermoAdvanced):
                     kb = 0
                     kc = 0
 
-                # print(kg, kb, kc)
                 k = kg+kb+kc
 
             elif coef["eq"] == 4 or coef["eq"] == "ecs":
@@ -5218,6 +5212,11 @@ class MEoS(ThermoAdvanced):
             ko = ThG_Chung(T, self.Tc, self.M, self.f_acent, fase.cv, muo)
             k = ThG_P_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
                             self.momentoDipolar.Debye, 0, rho, ko)
+
+        # Avoid error for complex thermal conductivity
+        if type(k) == complex:
+            k = None
+
         return unidades.ThermalConductivity(k)
 
     @refDoc(__doi__, [4, 5, 15, 16, 19], tab=8)

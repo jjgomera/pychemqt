@@ -33,5 +33,5 @@ from test_lib import TestLib
 suite = TestSuite()
 suite.addTest(TestLib)
 
-runner = TextTestRunner()
+runner = TextTestRunner(failfast=True)
 results = runner.run(suite)
