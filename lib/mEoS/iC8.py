@@ -49,7 +49,7 @@ class iC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isooctane of Blackham "
                     "and Lemmon (2011).",
-        "__doi__": {"autor": "Blackham, T.M. and Lemmon, E.W.",
+        "__doi__": {"autor": "Blackham, T.M., Lemmon, E.W.",
                     "title": "",
                     "ref": "to be published in Int. J. Thermophys., 2011.",
                     "doi": ""},

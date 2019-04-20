@@ -127,7 +127,7 @@ class nC4(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for butane of Younglove and Ely "
                     "(1987)",
-        "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+        "__doi__": {"autor": "Younglove, B.A., Ely, J.F.",
                     "title": "Thermophysical Properties of Fluids. II. "
                              "Methane, Ethane, Propane, Isobutane, and Normal "
                              "Butane",
@@ -187,7 +187,7 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Miyamoto and "
                     "Watanabe (2001)",
-        "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
+        "__doi__": {"autor": "Miyamoto, H., Watanabe, K.",
                     "title": "A Thermodynamic Property Model for Fluid-Phase "
                              "n-Butane",
                     "ref": "Int. J. Thermophys., 22(2) (2001) 459-475",
@@ -243,7 +243,7 @@ class nC4(MEoS):
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Polt (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -274,7 +274,7 @@ class nC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for butane of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -484,7 +484,7 @@ class nC4(MEoS):
                "__doi__": {
                    "autor": "Younglove, B.A., Ely, J.F.",
                    "title": "Thermophysical Properties of Fluids. II. Methane,"
-                            " Ethane, Propane, Isobutane, and Normal Butane ",
+                            " Ethane, Propane, Isobutane, and Normal Butane",
                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                    "doi": "10.1063/1.555785"},
 

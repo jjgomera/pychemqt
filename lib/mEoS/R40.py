@@ -51,7 +51,7 @@ class R40(MEoS):
     thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R40 of Thol et al (2013)",
-        "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
+        "__doi__": {"autor": "Thol, M., Piazza, L., Span, R.",
                     "title": "A New Functional Form for Equations of State "
                              "for Some Weakly Associating Fluids",
                     "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",

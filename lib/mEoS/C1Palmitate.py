@@ -51,7 +51,7 @@ class C1Palmitate(MEoS):
         "__name__": "Helmholtz equation of state for methyl linoleate of Huber"
                     "et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
-                             "L.S., and Bruno, T.J.",
+                             "L.S., Bruno, T.J.",
                     "title": "Model for the Thermodynamic Properties of a "
                              "Biodiesel Fuel",
                     "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",

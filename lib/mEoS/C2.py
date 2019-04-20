@@ -133,7 +133,7 @@ class C2(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethane of Younglove and Ely "
                     "(1987)",
-        "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+        "__doi__": {"autor": "Younglove, B.A., Ely, J.F.",
                     "title": "Thermophysical Properties of Fluids. II. "
                              "Methane, Ethane, Propane, Isobutane, and Normal "
                              "Butane",
@@ -195,9 +195,9 @@ class C2(MEoS):
     friend = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Friend (1991)",
-        "__doi__": {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
+        "__doi__": {"autor": "Friend, D.G., Ingham, H., Ely, J.F.",
                     "title": "Thermophysical Properties of Ethane",
-                    "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
+                    "ref": "J. Phys. Chem. Ref. Data 20(2) (1991) 275-347",
                     "doi": "10.1063/1.555881"},
 
         "R": 8.31451,
@@ -259,7 +259,7 @@ class C2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethane of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -481,7 +481,7 @@ class C2(MEoS):
                "__doi__": {
                    "autor": "Younglove, B.A., Ely, J.F.",
                    "title": "Thermophysical Properties of Fluids. II. Methane,"
-                            " Ethane, Propane, Isobutane, and Normal Butane ",
+                            " Ethane, Propane, Isobutane, and Normal Butane",
                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                    "doi": "10.1063/1.555785"},
 

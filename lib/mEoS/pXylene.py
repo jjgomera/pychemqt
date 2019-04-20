@@ -52,7 +52,7 @@ class pXylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylbenzene of Zhou et "
                     "al. (2012).",
-        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., and Wu, J.",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., Wu, J.",
                     "title": "Thermodynamic Properties of o-Xylene, m-Xylene, "
                              "p-Xylene, and Ethylbenzene",
                     "ref": "J. Phys. Chem. Ref. Data 41, 023103 (2012).",

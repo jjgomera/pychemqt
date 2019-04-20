@@ -79,10 +79,10 @@ class Kr(MEoS):
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for krypton of Polt (1992).",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
-                    "ref": "Chem. Technik 22(1992)6 216-224",
+                    "ref": "Chem. Technik 22(1992)6 - 216/224",
                     "doi": ""},
 
         "R": 8.3143,

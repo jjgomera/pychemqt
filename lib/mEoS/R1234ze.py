@@ -56,7 +56,7 @@ class R1234ze(MEoS):
     thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze of Thol (2016)",
-        "__doi__": {"autor": "Thol, M. and Lemmon, E.W.",
+        "__doi__": {"autor": "Thol, M., Lemmon, E.W.",
                     "title": "Equation of State for the Thermodynamic"
                              "Properties of trans-1,3,3,3-Tetrafluoroporpene"
                              "[R-1234ze(E)]",

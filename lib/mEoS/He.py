@@ -100,7 +100,7 @@ class He(MEoS):
     mccarty = {
         "__type__": "Helmholtz",
         "__name__": "FEQ of state for helium of McCarty and Arp (1990).",
-        "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
+        "__doi__": {"autor": "McCarty, R.D., Arp, V.D.",
                     "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
                     "doi": "10.1007/978-1-4613-0639-9_174"},
@@ -141,7 +141,7 @@ class He(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for helium of McCarty and Arp "
                     "(1990).",
-        "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
+        "__doi__": {"autor": "McCarty, R.D., Arp, V.D.",
                     "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
                     "doi": "10.1007/978-1-4613-0639-9_174"},

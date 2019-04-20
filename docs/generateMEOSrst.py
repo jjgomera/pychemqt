@@ -14,7 +14,9 @@ txt = "lib.mEoS"
 txt += os.linesep + "========" + os.linesep + os.linesep
 txt += "The list of available fluid with high quality multiparameter equations"
 txt += " is automatically updated here:" + os.linesep + os.linesep
-txt += ".. toctree::" + os.linesep + os.linesep
+txt += ".. toctree::" + os.linesep
+txt += "    :maxdepth: 1" + os.linesep + os.linesep
+
 for mod in lib.mEoS.__all__:
     txt += "    lib.mEoS.%s" % mod.__name__ + os.linesep
     txt2 += "* :doc:`%s <lib.mEoS.%s>` (%s)" % (mod.__name__, mod.__name__,
@@ -40,11 +42,13 @@ for mod in lib.mEoS.__all__:
 
     txt += "* Molecular weigth: %s g/mol" % mod.M + os.linesep
     txt += "* Tc: " + mod.Tc.str + os.linesep
-    txt += "* Pc: " + mod.Pc.str + os.linesep
+    txt += "* Pc: " + mod.Pc.get_str("MPa") + os.linesep
     txt += "* ρc: " + mod.rhoc.str + os.linesep
     txt += "* Tt: " + mod.Tt.str + os.linesep
     txt += "* Tb: " + mod.Tb.str + os.linesep
     txt += "* Acentric factor: %s" % mod.f_acent + os.linesep
+    txt += "* Dipole moment: %s" % mod.momentoDipolar.get_str("Debye")
+    txt += os.linesep
 
     txt += "Equation of state" + os.linesep
     txt += "-----------------" + os.linesep + os.linesep
@@ -81,8 +85,8 @@ for mod in lib.mEoS.__all__:
         txt += os.linesep + "Calculation example" + os.linesep
         txt += "-------------" + os.linesep
         txt += os.linesep + os.linesep
-        txt += "Using the default option for equation of state, viscosity and"
-        txt += " thermal conductivity we can get this diagram plots:"
+        txt += "Using the first option for equation of state, we can get this "
+        txt += "diagram plots with the liquid-gas saturation region:"
         txt += os.linesep + os.linesep
         txt += ".. image:: images/%s.png" % mod.__name__
         txt += os.linesep + os.linesep

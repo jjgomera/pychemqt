@@ -67,7 +67,7 @@ class SF6(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur hexafluoride of "
                     "Guder and Wagner (2009)",
-        "__doi__": {"autor": "Guder, C. and Wagner, W.",
+        "__doi__": {"autor": "Guder, C., Wagner, W.",
                     "title": "A Reference Equation of State for the "
                              "Thermodynamic Properties of Sulfur Hexafluoride "
                              "(SF6) for Temperatures from the Melting Line to "

@@ -59,8 +59,8 @@ class Air(MEoSBlend):
         "__name__": "Helmholtz equation of state for air of Lemmon et al. "
                     "(2000)",
         "__doi__": {
-            "autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., and "
-                     "Friend, D.G.",
+            "autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., Friend, "
+                     "D.G.",
             "title": "Thermodynamic Properties of Air and Mixtures of "
                      "Nitrogen, Argon, and Oxygen From 60 to 2000 K at "
                      "Pressures to 2000 MPa",
@@ -103,7 +103,7 @@ class Air(MEoSBlend):
                     "(1992)",
         "__doi__": {
             "autor": "Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., "
-                     "Clarke, W.P., and Lemmon, E.W.",
+                     "Clarke, W.P., Lemmon, E.W.",
             "title": "A Thermodynamic Property Formulation for Air",
             "ref": "Fluid Phase Equilibria, 79:113-124, 1992.",
             "doi": "10.1016/0378-3812(92)85124-Q"},

@@ -6,22 +6,23 @@
 import lib
 
 all = lib.__all__ 
-# for mod in lib.EoS.__all__:
-    # all.append(".".join(mod.__name__.split(".")[1:]))
 
 total = []
 for library in all:
-    if library in ["EoS", "mEoS"]:
-        continue
-
     # Import module to intronspection
     __import__("lib.%s" % library)
-    if "EoS" in library:
-        submodule, name = library.split(".")
-        module = lib.__getattribute__(submodule).__getattribute__(name)
-    else:
-        module = lib.__getattribute__(library)
+    module = lib.__getattribute__(library)
 
+    # Special case for metalibreries
+    if library in ["mEoS", "EoS"]:
+        for cmp in module.__doi__:
+            for eq in module.__doi__[cmp]:
+                rf = module.__doi__[cmp][eq]
+                if rf not in total:
+                    total.append(rf)
+        continue
+
+    # General case for simple libraries
     # Make lib.rst schemas
     with open("docs/lib.%s.rst" % library, "w") as file:
         print("lib.%s module" % library, file=file)
@@ -30,6 +31,7 @@ for library in all:
         print(".. automodule:: lib.%s" % library, file=file)
         print("    :members:", file=file)
         print("    :undoc-members:", file=file)
+        print("    :private-members:", file=file)
         print("    :show-inheritance:", file=file)
         print("    :member-order: bysource", file=file)
 
@@ -45,3 +47,20 @@ for library in all:
                 id = str(id)
                 print(".. [%s] %s; %s. %s" % (
                     id, rf["autor"], rf["title"], rf["ref"]), file=file)
+                if rf not in total:
+                    total.append(rf)
+
+# Global references file
+with open("docs/references.rst", "w") as file:
+    print("References", file=file)
+    print("----------", file=file)
+
+    id = 0
+    for lnk in sorted(total, key=lambda lnk: str.upper(lnk["autor"])):
+        if lnk["autor"] or lnk["title"] or lnk["ref"]:
+            id += 1
+            ref = ".. [%i] %s; %s, %s" % (
+                id, lnk["autor"], lnk["title"], lnk["ref"])
+            if lnk["doi"]:
+                ref += ", http://dx.doi.org/%s" % lnk["doi"]
+            print(ref, file=file)

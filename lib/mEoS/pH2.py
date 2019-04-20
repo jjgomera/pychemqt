@@ -183,7 +183,7 @@ class pH2(MEoS):
 
     visco0 = {"__name__": "McCarty (1972)",
               "__doi__": {
-                  "autor": "McCarty, R.D. and Weber, L.A.",
+                  "autor": "McCarty, R.D., Weber, L.A.",
                   "title": "Thermophysical Properties of Parahydrogen from "
                            "the Freezing Liquid Line to 5000 R for Pressures "
                            "to 10000 psia",

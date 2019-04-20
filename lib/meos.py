@@ -214,7 +214,7 @@ __doi__ = {
     7:
         {"autor": "Tariq, U., Jusoh, A.R.B., Riesco, N., Vesovic, V.",
          "title": "Reference Correlation of the Viscosity of Cyclohexane from "
-                  " the Triple Point to 700K and up to 110 MPa",
+                  "the Triple Point to 700K and up to 110 MPa",
          "ref": "J. Phys. Chem. Ref. Data 43(3) (2014) 033101",
          "doi": "10.1063/1.4891103"},
     8:
@@ -276,7 +276,7 @@ __doi__ = {
          "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
          "doi": "10.1063/1.555828"},
     18:
-        {"autor": "Friend, D.G., Ingham, H., and Ely, J.F.",
+        {"autor": "Friend, D.G., Ingham, H., Ely, J.F.",
          "title": "Thermophysical Properties of Ethane",
          "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
          "doi": "10.1063/1.555881"},
@@ -313,7 +313,7 @@ __doi__ = {
          "ref": "Int. J. Thermophys. 16(6) (1995) 1381-1392",
          "doi": "10.1007/bf02083547"},
     24:
-        {"autor": "Harvey, A.H. and Lemmon, E.W.",
+        {"autor": "Harvey, A.H., Lemmon, E.W.",
          "title": "Method for Estimating the Dielectric Constant of "
                   "Natural Gas Mixtures ",
          "ref": "Int. J. Thermophys. 26(1) (2005) 31-46",

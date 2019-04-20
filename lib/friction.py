@@ -148,7 +148,7 @@ __doi__ = {
          "ref": "Heating Piping Air Conditioning 8 (1989), 30-45.",
          "doi": ""},
     15:
-        {"autor": "Eck B.",
+        {"autor": "Eck, B.",
          "title": "Technische Stromungslehre",
          "ref": "Springer, New York, 1973.",
          "doi": ""},

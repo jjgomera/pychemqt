@@ -121,7 +121,7 @@ class CO2(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for carbon dioxide of Ely (1987)",
-        "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
+        "__doi__": {"autor": "Ely, J.F., Magee, J.W., Haynes, W.M.",
                     "title": "Thermophysical properties for special high CO2 "
                              "content mixtures",
                     "ref": "Research Report RR-110, Gas Processors "
@@ -186,7 +186,7 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Ely "
                     "(1987)",
-        "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
+        "__doi__": {"autor": "Ely, J.F., Magee, J.W., Haynes, W.M.",
                     "title": "Thermophysical properties for special high CO2 "
                              "content mixtures",
                     "ref": "Research Report RR-110, Gas Processors "
@@ -253,7 +253,7 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Sun "
                     "and Ely (2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",

@@ -176,7 +176,7 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and "
                     "Wagner-58 coeff (1989).",
-        "__doi__": {"autor": "Saul, A. and Wagner, W.",
+        "__doi__": {"autor": "Saul, A., Wagner, W.",
                     "title": "A Fundamental Equation for Water Covering the"
                              "Range from the Melting Line to 1273 K at"
                              "Pressures up to 25000 MPa",
@@ -228,7 +228,7 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and "
                     "Wagner-38 coeff (1989).",
-        "__doi__": {"autor": "Saul, A. and Wagner, W.",
+        "__doi__": {"autor": "Saul, A., Wagner, W.",
                     "title": "A Fundamental Equation for Water Covering the"
                              "Range from the Melting Line to 1273 K at"
                              "Pressures up to 25000 MPa",
@@ -267,8 +267,8 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Sun and Ely"
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering"
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
+                    "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to"
                              "non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",

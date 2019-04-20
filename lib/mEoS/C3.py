@@ -168,7 +168,7 @@ class C3(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for propane of Younglove and Ely "
                     "(1987)",
-        "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+        "__doi__": {"autor": "Younglove, B.A., Ely, J.F.",
                     "title": "Thermophysical Properties of Fluids. II. "
                              "Methane, Ethane, Propane, Isobutane, and Normal "
                              "Butane",
@@ -226,7 +226,7 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Miyamoto and "
                     "Watanabe (2001)",
-        "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
+        "__doi__": {"autor": "Miyamoto, H., Watanabe, K.",
                     "title": "A Thermodynamic Property Model for Fluid-Phase "
                              "Propane",
                     "ref": "Int. J. Thermophys., 21(5) (2000) 1045-1072",
@@ -284,7 +284,7 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",

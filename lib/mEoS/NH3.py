@@ -92,7 +92,7 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Ahrendts "
                     "and Baehr (1979)",
-        "__doi__": {"autor": "Ahrendts, J. and Baehr, H.D.",
+        "__doi__": {"autor": "Ahrendts, J., Baehr, H.D.",
                     "title": "The Thermodynamic Properties of Ammonia",
                     "ref": "VDI-Forsch., Number 596, 1979.",
                     "doi": ""},
@@ -156,7 +156,7 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",

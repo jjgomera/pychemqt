@@ -49,7 +49,7 @@ class DMC(MEoS):
     zhou = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DMC of Zhou (2011).",
-        "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
+        "__doi__": {"autor": "Zhou, Y., Wu, J., Lemmon, E.W.",
                     "title": "Thermodynamic Properties of Dimethyl Carbonate",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 40, No. 4 2011",
                     "doi":  "10.1063/1.3664084"},

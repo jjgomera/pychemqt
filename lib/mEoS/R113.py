@@ -50,7 +50,7 @@ class R113(MEoS):
     marx = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-113 of Marx (1992)",
-        "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
+        "__doi__": {"autor": "Marx, V., Pruss, A., Wagner, W.",
                     "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 "
                              "und R 113. Beschreibung des thermodynamishchen "
                              "Zustandsverhaltens bei Temperaturen bis 525 K "

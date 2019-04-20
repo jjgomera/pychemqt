@@ -262,7 +262,7 @@ class N2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -342,7 +342,7 @@ class N2(MEoS):
                   "title": "Thermophysical Properties of Fluids. I. Argon, "
                            "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
                            "Trifluoride, and Oxygen",
-                  "ref": "J. Phys. Chem. Ref. Data, 11 (Suppl. 1) (1982)",
+                  "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
                   "doi": ""},
 
               "eq": 2, "omega": 0,

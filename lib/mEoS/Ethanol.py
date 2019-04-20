@@ -138,7 +138,7 @@ class Ethanol(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Sun and Ely "
                     "(2004).",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",

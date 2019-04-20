@@ -67,6 +67,7 @@ doc
 docs/lib.mEoS*
 docs/lib.*_ref.rst
 docs/equipment.*.rst
+docs/references.rst
 
 docs/lib.adimensional.rst
 docs/lib.atmosphere.rst
