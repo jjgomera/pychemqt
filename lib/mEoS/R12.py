@@ -112,6 +112,19 @@ class R12(MEoS):
     eq = marx, shortSpan
 
     _surface = {"sigma": [-0.000124, 0.05662], "exp": [0.4318, 1.263]}
+
+    _melting = {
+            "eq": 2,
+            "__doi__": {
+                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+                "title": "Melting Curves of Pressure-Transmitting fluids",
+                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+                "doi": "10.1063/1.1725068"},
+
+            "Tmin": Tt, "Tmax": 2000.0,
+            "Tref": Tt, "Pref": 0.,
+            "a2": [3288e5], "exp2": [2.231]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.70834e1, 0.43562e1, -0.35249e1, -0.28872e1, -0.89926],
