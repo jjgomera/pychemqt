@@ -52,7 +52,6 @@ class PsychroPlot(mpl):
     """
     def __init__(self, *args, **kwargs):
         mpl.__init__(self, *args, **kwargs)
-        self.notes = []
         self.state = None
 
     def config(self, config):
@@ -108,27 +107,21 @@ class PsychroPlot(mpl):
         """Update data of current cursor point in plot annotates"""
         self.clearPointData()
 
-        if chart:
-            yinit = 0.95
-            ystep = -0.025
-            x = 0.01
-        else:
-            yinit = 0.25
-            ystep = -0.025
-            x = 0.85
-
-        yi = yinit
+        txt = []
         for key in ("tdb", "tdp", "twb", "HR", "w", "h", "v", "rho"):
-            self.notes.append(self.ax.annotate(
-                "%s: %s" % (key, state.__getattribute__(key).str), (x, yi),
-                xycoords='axes fraction', size="small", va="center"))
-            yi += ystep
+            txt.append(("%s: %s" % (key, state.__getattribute__(key).str),))
+
+        if chart:
+            loc = "upper left"
+        else:
+            loc = "lower right"
+        self.ax.table(cellText=txt, loc=loc, cellLoc="left", colLoc="left")
+        self.ax.tables[0].auto_set_column_width(0)
         self.draw()
 
     def clearPointData(self):
-        while self.notes:
-            anotation = self.notes.pop()
-            anotation.remove()
+        while self.ax.tables:
+            self.ax.tables.pop()
         self.draw()
 
 
