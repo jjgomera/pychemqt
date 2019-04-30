@@ -382,7 +382,9 @@ class UI_Psychrometry(QtWidgets.QDialog):
                     if tmin <= wi <= tmax and wmin <= ti <= wmax:
                         i += 1
 
-            label = str(label)
+            if isinstance(label, float):
+                label = "%4g" % label
+
             if self.Preferences.getboolean("Psychr", name+"units"):
                 label += unit
             pos = self.Preferences.getfloat("Psychr", name+"position")
