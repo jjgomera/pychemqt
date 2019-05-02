@@ -61,74 +61,141 @@ except:
 
 from lib.config import conf_dir
 from lib.unidades import (Temperature, Pressure, Dimensionless, SpecificVolume,
-                          Density, Enthalpy)
+                          Density, Enthalpy, Length)
+from lib.utilities import refDoc
 
 
+__doi__ = {
+    1:
+        {"autor": "",
+         "title": "2013 ASHRAE Handook. Fundamentals (SI Edition)",
+         "ref": "",
+         "doi": ""},
+    2:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
+        }
+
+
+@refDoc(__doi__, [1])
 def _Pbar(Z):
     """
-    ASHRAE Fundamentals Handbook pag 1.1 eq. 3
-    input:
-        Z: altitude, m
-    return
-        standard atmosphere barometric pressure, Pa
+    Standard atmosphere pressure as a function of altitude as explain in [1]_
+    pag 1.1 Eq 3
+
+    Parameters
+    ------------
+    Z : float
+        Altitude, [m]
+
+    Returns
+    -------
+    P : float
+        Standard barometric pressure, [Pa]
+
+    Examples
+    --------
+    Selected point from Table 1 in [1]_
+
+    >>> "%0.3f" % _Pbar(-500).kPa
+    '107.478'
+    >>> "%0.3f" % _Pbar(8000).kPa
+    '35.600'
     """
-    return 101325.*(1-2.25577e-5*Z)**5.256
+    P = (1-2.25577e-5*Z) ** 5.2559
+    return Pressure(P, "atm")
 
 
+@refDoc(__doi__, [1])
 def _height(P):
     """
     Inverted _Pbar function
-    input:
-        standard atmosphere barometric pressure, Pa
-    return
-        Z: altitude, m
+
+    Parameters
+    ------------
+    P : float
+        Standard barometric pressure, [Pa]
+
+    Returns
+    -------
+    Z : float
+        Altitude, [m]
+
+    Examples
+    --------
+    Selected point from Table 1 in [1]_
+
+    >>> "%0.0f" % _height(107478)
+    '-500'
     """
     P_atm = P/101325.
-    return 1/2.25577e-5*(1-exp(log(P_atm)/5.2559))
+    Z = 1/2.25577e-5*(1-exp(log(P_atm)/5.2559))
+    return Length(Z)
 
 
-def _Tbar(self, Z):
+@refDoc(__doi__, [1])
+def _Tbar(Z):
     """
-    ASHRAE Fundamentals Handbook pag 1.2 eq. 4
-    input:
-        Z: altitude, m
-    return
-        standard atmosphere dry bulb temperature, K
+    Standard temperature as a function of altitude as explain in [1]_
+    pag 1.1 Eq 4
+
+    Parameters
+    ------------
+    Z : float
+        Altitude, [m]
+
+    Returns
+    -------
+    T : float
+        Temperature, [K]
+
+    Examples
+    --------
+    Selected point from Table 1 in [1]_
+
+    >>> "%0.1f" % _Tbar(-500).C
+    '18.2'
+    >>> "%0.1f" % _Tbar(8000).C
+    '-37.0'
     """
-    return 288.15-0.0065*Z
+    t = 15-0.0065*Z
+    return Temperature(t, "C")
 
 
-def _Psat(Tdb):
+@refDoc(__doi__, [1])
+def _Psat(T):
     """
-    ASHRAE Fundamentals Handbook pag 1.2 eq. 4
-    input:
-        Dry bulb temperature, K
-    return:
-        Saturation pressure, Pa
+    Water vapor saturation pressure calculation as explain in [1]_
+    pag 1.2, Eq 5-6
+
+    Parameters
+    ------------
+    T : float
+        Temperature, [K]
+
+    Returns
+    -------
+    P : float
+        Saturation pressure, [Pa]
     """
-    if 173.15 <= Tdb < 273.15:
-        C1 = -5674.5359
-        C2 = 6.3925247
-        C3 = -0.009677843
-        C4 = 0.00000062215701
-        C5 = 2.0747825E-09
-        C6 = -9.484024E-13
-        C7 = 4.1635019
-        pws = exp(C1/Tdb + C2 + C3*Tdb + C4*Tdb**2 + C5*Tdb**3 + C6*Tdb**4 +
-                  C7*log(Tdb))
+    if 173.15 <= T < 273.15:
+        # Saturation pressure over ice, Eq 5
+        C = [-5674.5359, 6.3925247, -0.009677843, 0.00000062215701,
+             2.0747825E-09, -9.484024E-13, 4.1635019]
+        pws = exp(C[0]/T + C[1] + C[2]*T + C[3]*T**2 + C[4]*T**3 + C[5]*T**4 +
+                  C[6]*log(T))
     elif 273.15 <= Tdb <= 473.15:
-        C8 = -5800.2206
-        C9 = 1.3914993
-        C10 = -0.048640239
-        C11 = 0.000041764768
-        C12 = -0.000000014452093
-        C13 = 6.5459673
-        pws = exp(C8/Tdb + C9 + C10*Tdb + C11*Tdb**2 + C12*Tdb**3 +
-                  C13*log(Tdb))
+        # Saturation pressure over liquid water, Eq 6
+        C = [-5800.2206, 1.3914993, -0.048640239, 0.000041764768,
+             -0.000000014452093, 6.5459673]
+        pws = exp(C[0]/T + C[1] + C[2]*T + C[3]*T**2 + C[4]*T**3 + C[5]*log(T))
     else:
         raise NotImplementedError("Incoming out of bound")
 
-    return pws
+    return Pressure(pws) 
 
 
 def _Tsat(Pv):
@@ -143,6 +210,7 @@ def _Tsat(Pv):
     Pv_lim = _Psat(273.15)
     Pv_max = _Psat(473.15)
     if Pv_min <= Pv < Pv_lim:
+
         C1 = -5674.5359
         C2 = 6.3925247
         C3 = -0.009677843
