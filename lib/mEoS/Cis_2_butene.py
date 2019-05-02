@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Cis_2_butene(MEoS):
@@ -63,7 +63,6 @@ class Cis_2_butene(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 525., "Pmax": 50000.0, "rhomax": 14.09,
-        "Pmin": 0.00026, "rhomin": 14.09,
 
         "nr1":  [0.77827, -2.8064, 1.003, 0.013762, 0.085514, 0.00021268],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -88,7 +87,7 @@ class Cis_2_butene(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-0.28918e1, -0.58582e1, -0.17443e2, -0.24566e2, -0.29413e2,
-               -0.11392e3],
+              -0.11392e3],
         "t": [0.4098, 1.174, 3.11, 6.1, 7.6, 14.8]}
 
 

@@ -23,8 +23,8 @@ from unittest import TestCase
 from scipy import exp
 from scipy.constants import Boltzmann, Avogadro, pi
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Ethylene(MEoS):
@@ -61,16 +61,13 @@ class Ethylene(MEoS):
            "ao_exp": [1]*12,
            "exp": [4353.907145, 2335.2251475, 1930.913215, 1471.9256475,
                    4464.6972475, 1778.39697, 1365.4520425, 1356.8190475,
-                   4469.013745, 1188.475645, 4300.6703425, 2077.67413],
-           "ao_hyp": [], "hyp": []}
+                   4469.013745, 1188.475645, 4300.6703425, 2077.67413]}
 
     CP2 = {"ao": 3.554495281,
            "an": [0.5603615762e6, -0.2141069802e5, 0.2532008897e3,
                   -0.9951927478e-2, 0.5108931070e-4, -0.1928667482e-7],
-           "pow": [-3, -2, -1.001, 1, 2, 3],
-           "ao_exp": [-0.2061703241e2],
-           "exp": [3000],
-           "ao_hyp": [], "hyp": []}
+           "pow": [-3, -2, -1, 1, 2, 3],
+           "ao_exp": [-0.2061703241e2], "exp": [3000]}
 
     smukala = {
         "__type__": "Helmholtz",
@@ -88,7 +85,6 @@ class Ethylene(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 300000.0, "rhomax": 27.03,
-        "Pmin": 0.12265, "rhomin": 23.334,
 
         "nr1": [1.861742910067, -3.0913708460844, -0.17384817095516,
                 0.08037098569284, 0.23682707317354, 0.021922786610247],
@@ -133,11 +129,10 @@ class Ethylene(MEoS):
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225},
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 29645.9, "so": 219.39},
         "M": 28.054, "Tc": 282.3452, "rhoc": 7.634,
 
-        "Tmin": Tt, "Tmax": 450.0, "Pmax": 260000.0, "rhomax": 26.67,
-        "Pmin": 0.1225, "rhomin": 23.348,
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 260000.0, "rhomax": 26.67,
 
         "nr1": [3.248937034, -10.17278862, 7.386604053, -1.568916359,
                 -0.08884514287, 0.06021068143, 0.1078324588, -0.02004025211,
@@ -176,7 +171,6 @@ class Ethylene(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 27.03,
-        "Pmin": 0.12123, "rhomin": 23.34,
         "M": 28.054,
 
         "nr1": [0.9096223, -0.24641015e1, 0.56175311, -0.19688013e-1,
@@ -191,52 +185,28 @@ class Ethylene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    MBWR = {
+    mccarty = {
+        # Also referenced in
+        # Younglove, B.A.",
+        # Thermophysical Properties of Fluids. I. Argon, Ethylene,
+        # Parahydrogen, Nitrogen, Nitrogen Trifluoride, and Oxygen
+        # J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)
+        # Younglove use a different rhoc so the tabulated values may differ
         "__type__": "MBWR",
-        "__name__": "MBWR equation of state for ethylene of McCarty and Jacobsen (1981)",
+        "__name__": "MBWR equation of state for ethylene of McCarty (1981)",
         "__doi__": {"autor": "McCarty, R.D., Jacobsen, R.T.",
                     "title": "An Equation of State for Fluid Ethylene",
                     "ref": "Natl. Bur. Stand., Tech. Note 1045, 1981.",
                     "doi": ""},
-        "__test__":
-            # Table, Pag 138
-            """
-            >>> st=Ethylene(T=110, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 23.2516 110 7369.71 87.438 43.54 72.05 1706.12
-            >>> st=Ethylene(T=150, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 21.4687 150 10056.28 108.312 40.64 65.72 1507.50
-            >>> st=Ethylene(T=200, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 19.0802 200 13387.64 127.463 37.33 68.11 1172.01
-            >>> st=Ethylene(T=250, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 16.1946 250 16970.99 143.418 38.08 77.31 811.65
-            >>> st=Ethylene(T=300, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 11.5343 300 21586.21 160.141 42.53 118.76 418.90
-            >>> st=Ethylene(T=350, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 5.3640 350 27794.36 179.364 44.3 92.15 309.36
-            >>> st=Ethylene(T=400, P=1e7, eq=1)
-            >>> print "%0.0f %0.4f %0.0f %0.2f %0.3f %0.2f %0.2f %0.2f" % (\
-                st.P.MPa, st.rho, st.T, st.hM.kJkmol, st.s.kJkmolK, st.cv.kJkmolK, st.cp.kJkmolK, st.Liquido.w, st.Gas.w)
-            10 3.7626 400 31676.15 189.761 46.49 70.37 347.16
-            """,
-        "R": 8.31434,
+
+        "R": 8.31434, "M": 28.054,
+        "Tt": 103.986, "Tc": 282.3428, "Pc": 5.0403, "rhoc": 7.634,
         "cp": CP2,
-        "ref": "IIR",
+        "ref": {"Tref": 300, "Pref": 101.325, "so": 219.4, "ho": 29646.46},
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 23.343,
-        "Pmin": 0.1213, "rhomin": 23.343,
+        "Tmin": Tt, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 23.343,
 
+        "gamma": -0.0172,
         "b": [None, -0.2146684366683e-1, 0.1791433722534e1, -0.3675315603930e2,
               0.3707178934669e4, -0.3198282566709e6, 0.5809379774732e-3,
               -0.7895570824899, 0.1148620375835e3, 0.2713774629193e6,
@@ -253,7 +223,7 @@ class Ethylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylene of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -265,7 +235,6 @@ class Ethylene(MEoS):
         "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 29610, "so": 219.225},
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [8.42278605e-1, 8.65139678e-1, -2.79801027, 6.74520156e-2,
                 2.42445468e-4, -2.74767618e-3],
@@ -279,20 +248,37 @@ class Ethylene(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # eq = smukala, MBWR, jahangiri, shortSpan, sun
-    eq = smukala, jahangiri, shortSpan, sun
+    eq = smukala, mccarty, jahangiri, shortSpan, sun
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [10.725], "expt1": [0], "expd1": [1],
-                   "a2": [55.19, 49.5, -2045, -1154.],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.9, 2.9]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 450.0,
-                "a1": [0.1225e-3, 0.357924e3, -0.357924e3],
-                "exp1": [0, 0.20645e1, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [10.725, 0], "b": [55.19, 49.5], "c": [-2045., -1154.],
+        "Au": 0, "D": 1.9}
+
+    _melting = {
+        "__doi__": smukala["__doi__"],
+        "Tmin": Tt, "Tmax": 550.0}
+
+    @classmethod
+    def _Melting_Pressure(cls, T):
+        """Calculate the melting pressure using the fractional method of
+        Smukala"""
+        Tt2 = 110.369
+        if T < Tt2:
+            a = 2947001.84
+            t = 2.045
+            Tt = cls.Tt
+            Pt = 122.65
+        else:
+            a = 6.82693421
+            t = 1.089
+            Tt = Tt2
+            Pt = 46.8e6
+
+        Pr = 1 + a*((T/Tt)**t-1)
+        return unidades.Pressure(Pr*Pt)
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-6.3905741, 1.4060338, -1.6589923, 1.0278028, -2.5071716],
@@ -390,35 +376,35 @@ class Ethylene(MEoS):
         for i in range(-3, 6):
             lo += GT[i+3]*T**(i/3.)
 
-        tita = (rho-221)/221
-        k = [-1.304503323e1, 1.8214616599e1, -9.903022496e3, 7.420521631e2,
-             -3.0083271933e-1, 9.6456068829e1, 1.350256962e4]
-        l2 = exp(k[0]+k[3]/T) * (exp(rho.gcc**0.1*(k[1]+k[2]/T**1.5) +
-                                 tita*rho.gcc**0.5*(k[4]+k[5]/T+k[6]/T**2))-1)
+        l2, lc = 0, 0
+        if rho:
+            tita = (rho-221)/221
+            k = [-1.304503323e1, 1.8214616599e1, -9.903022496e3, 7.420521631e2,
+                 -3.0083271933e-1, 9.6456068829e1, 1.350256962e4]
+            l2 = exp(k[0]+k[3]/T) * (
+                exp(rho.gcc**0.1*(k[1]+k[2]/T**1.5) +
+                    tita*rho.gcc**0.5*(k[4]+k[5]/T+k[6]/T**2))-1)
 
-        # Critical enhancement
-        deltarho = (rho-221)/221
-        deltaT = (T-282.34)/282.34
+            # Critical enhancement
+            deltarho = (rho-221)/221
+            deltaT = (T-282.34)/282.34
 
-        xt = rho**2*fase.kappa*5.039/221**2
-        B = abs(deltarho)/abs(deltaT)**1.19                             # Eq 11
-        Gamma = xt*abs(deltaT)**1.19                                    # Eq 12
-        xi = 0.69/(B**2*5.039/Gamma/Boltzmann/282.34)**0.5              # Eq 14
+            xt = rho**2*fase.kappa*5.039/221**2
+            B = abs(deltarho)/abs(deltaT)**1.19                         # Eq 11
+            Gamma = xt*abs(deltaT)**1.19                                # Eq 12
+            xi = 0.69/(B**2*5.039/Gamma/Boltzmann/282.34)**0.5          # Eq 14
 
-        # Eq 19
-        F = exp(-18.66*deltaT**2) * exp(-4.25*deltarho**4)
+            # Eq 19
+            F = exp(-18.66*deltaT**2) * exp(-4.25*deltarho**4)
 
-        # Eq 18
-        c = (self.M/rho.gcc/Avogadro/Boltzmann/T)**0.5
-        d = Boltzmann*T**2/6/pi/fase.mu.muPas/xi
-        lc = c*d*fase.dpdT_rho**2*fase.kappa**0.5*F
+            # Eq 18
+            c = (self.M/rho.gcc/Avogadro/Boltzmann/T)**0.5
+            d = Boltzmann*T**2/6/pi/fase.mu.muPas/xi
+            lc = c*d*fase.dpdT_rho**2*fase.kappa**0.5*F
 
         return unidades.ThermalConductivity(lo+l2+lc, "mWmK")
 
     _thermal = thermo0, thermo1
-
-
-# TODO: Add MBWR equation of Younglove
 
 
 class Test(TestCase):
@@ -548,76 +534,434 @@ class Test(TestCase):
         self.assertEqual(round(st.cp.kJkgK, 4), 2.2550)
         self.assertEqual(round(st.w, 1), 1668.7)
 
+    def test_mccarty(self):
+        # Selected values from Table B-1, Pag 74, saturation state
+        st = Ethylene(T=104, x=0.5, eq="mccarty")
+        self.assertEqual(round(st.P.MPa, 5), 0.00012)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 23.389)
+        self.assertEqual(round(st.Liquido.dpdrho_T.MPakgm3*st.M, 3), 46.027)
+        self.assertEqual(round(st.Liquido.dpdT_rho.MPaK, 3), 2.907)
+        self.assertEqual(round(st.Liquido.uM.Jmol, 2), 6615.72)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 2), 6615.73)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 1), 84.4)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 39.49)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 74.39)
+        self.assertEqual(round(st.Liquido.w, 0), 1758)
+        self.assertEqual(round(st.Gas.rhoM, 6), 0.000141)
+        self.assertEqual(round(st.Gas.dpdrho_T.MPakgm3*st.M, 3), 0.864)
+        self.assertEqual(round(st.Gas.dpdT_rho.MPaK, 3), 0.000)
+        self.assertEqual(round(st.Gas.uM.Jmol, 2), 21685.99)
+        self.assertEqual(round(st.Gas.hM.Jmol, 2), 22550.47)
+        self.assertEqual(round(st.Gas.sM.JmolK, 1), 237.6)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 24.99)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 33.31)
+        self.assertEqual(round(st.Gas.w, 0), 203)
+
+        st = Ethylene(T=125, x=0.5, eq="mccarty")
+        self.assertEqual(round(st.P.MPa, 5), 0.00252)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 22.345)
+        self.assertEqual(round(st.Liquido.dpdrho_T.MPakgm3*st.M, 3), 47.453)
+        self.assertEqual(round(st.Liquido.dpdT_rho.MPaK, 3), 2.136)
+        self.assertEqual(round(st.Liquido.uM.Jmol, 2), 8067.58)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 2), 8067.69)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 1), 97.1)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 43.19)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 67.25)
+        self.assertEqual(round(st.Liquido.w, 0), 1623)
+        self.assertEqual(round(st.Gas.rhoM, 6), 0.002432)
+        self.assertEqual(round(st.Gas.dpdrho_T.MPakgm3*st.M, 3), 1.034)
+        self.assertEqual(round(st.Gas.dpdT_rho.MPaK, 3), 0.000)
+        self.assertEqual(round(st.Gas.uM.Jmol, 2), 22204.76)
+        self.assertEqual(round(st.Gas.hM.Jmol, 2), 23241.57)
+        self.assertEqual(round(st.Gas.sM.JmolK, 1), 218.5)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 25.19)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 33.61)
+        self.assertEqual(round(st.Gas.w, 0), 222)
+
+        st = Ethylene(T=150, x=0.5, eq="mccarty")
+        self.assertEqual(round(st.P.MPa, 5), 0.02735)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 21.202)
+        self.assertEqual(round(st.Liquido.dpdrho_T.MPakgm3*st.M, 3), 35.511)
+        self.assertEqual(round(st.Liquido.dpdT_rho.MPaK, 3), 1.687)
+        self.assertEqual(round(st.Liquido.uM.Jmol, 2), 9738.07)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 2), 9739.36)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 1), 109.3)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 40.14)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 66.88)
+        self.assertEqual(round(st.Liquido.w, 0), 1452)
+        self.assertEqual(round(st.Gas.rhoM, 4), 0.0222)
+        self.assertEqual(round(st.Gas.dpdrho_T.MPakgm3*st.M, 3), 1.213)
+        self.assertEqual(round(st.Gas.dpdT_rho.MPaK, 3), 0.000)
+        self.assertEqual(round(st.Gas.uM.Jmol, 2), 22798.71)
+        self.assertEqual(round(st.Gas.hM.Jmol, 2), 24029.05)
+        self.assertEqual(round(st.Gas.sM.JmolK, 1), 204.6)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 25.97)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 34.87)
+        self.assertEqual(round(st.Gas.w, 0), 241)
+
+        st = Ethylene(T=175, x=0.5, eq="mccarty")
+        self.assertEqual(round(st.P.MPa, 5), 0.13956)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 19.955)
+        self.assertEqual(round(st.Liquido.dpdrho_T.MPakgm3*st.M, 3), 24.970)
+        self.assertEqual(round(st.Liquido.dpdT_rho.MPaK, 3), 1.317)
+        self.assertEqual(round(st.Liquido.uM.Jmol, 2), 11423.46)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 2), 11430.45)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 1), 119.7)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 37.83)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 68.34)
+        self.assertEqual(round(st.Liquido.w, 0), 1268)
+        self.assertEqual(round(st.Gas.rhoM, 6), 0.100137)
+        self.assertEqual(round(st.Gas.dpdrho_T.MPakgm3*st.M, 3), 1.332)
+        self.assertEqual(round(st.Gas.dpdT_rho.MPaK, 3), 0.001)
+        self.assertEqual(round(st.Gas.uM.Jmol, 2), 23341.06)
+        self.assertEqual(round(st.Gas.hM.Jmol, 2), 24734.75)
+        self.assertEqual(round(st.Gas.sM.JmolK, 1), 195.7)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 27.56)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 37.69)
+        self.assertEqual(round(st.Gas.w, 0), 255)
+
+        st = Ethylene(T=225, x=0.5, eq="mccarty")
+        self.assertEqual(round(st.P.MPa, 4), 1.1279)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 17.006)
+        self.assertEqual(round(st.Liquido.dpdrho_T.MPakgm3*st.M, 3), 10.002)
+        self.assertEqual(round(st.Liquido.dpdT_rho.MPaK, 3), 0.721)
+        self.assertEqual(round(st.Liquido.uM.Jmol, 2), 14966.73)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 2), 15033.06)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 1), 137.5)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 37.13)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 77.58)
+        self.assertEqual(round(st.Liquido.w, 0), 863)
+        self.assertEqual(round(st.Gas.rhoM, 5), 0.73325)
+        self.assertEqual(round(st.Gas.dpdrho_T.MPakgm3*st.M, 3), 1.208)
+        self.assertEqual(round(st.Gas.dpdT_rho.MPaK, 3), 0.007)
+        self.assertEqual(round(st.Gas.uM.Jmol, 2), 24130.08)
+        self.assertEqual(round(st.Gas.hM.Jmol, 2), 25668.30)
+        self.assertEqual(round(st.Gas.sM.JmolK, 1), 184.8)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 33.21)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 52.17)
+        self.assertEqual(round(st.Gas.w, 0), 260)
+
+        # Table B-2, pag 81, single phase region
+        st = Ethylene(T=150, P=5e4, eq="mccarty")
+        self.assertEqual(round(st.rhoM, 3), 21.203)
+        self.assertEqual(round(st.dpdrho_T.MPakgm3*st.M, 3), 35.52)
+        self.assertEqual(round(st.dpdT_rho.MPaK, 3), 1.687)
+        self.assertEqual(round(st.uM.Jmol, 2), 9737.71)
+        self.assertEqual(round(st.hM.Jmol, 2), 9740.07)
+        self.assertEqual(round(st.sM.JmolK, 1), 109.3)
+        self.assertEqual(round(st.cvM.JmolK, 2), 40.14)
+        self.assertEqual(round(st.cpM.JmolK, 2), 66.87)
+        self.assertEqual(round(st.w, 0), 1452)
+
+        st = Ethylene(T=300, P=101325, eq="mccarty")
+        self.assertEqual(round(st.rhoM, 6), 0.040847)
+        self.assertEqual(round(st.dpdrho_T.MPakgm3*st.M, 3), 2.467)
+        self.assertEqual(round(st.dpdT_rho.MPaK, 6), 0.000342)
+        self.assertEqual(round(st.uM.Jmol, 2), 27165.87)
+        self.assertEqual(round(st.hM.Jmol, 2), 29646.46)
+        self.assertEqual(round(st.sM.JmolK, 1), 219.4)
+        self.assertEqual(round(st.cvM.JmolK, 2), 34.81)
+        self.assertEqual(round(st.cpM.JmolK, 2), 43.32)
+        self.assertEqual(round(st.w, 0), 331)
+
+        st = Ethylene(T=450, P=1e6, eq="mccarty")
+        self.assertEqual(round(st.rhoM, 5), 0.27072)
+        self.assertEqual(round(st.dpdrho_T.MPakgm3*st.M, 3), 3.646)
+        self.assertEqual(round(st.dpdT_rho.MPaK, 5), 0.00232)
+        self.assertEqual(round(st.uM.Jmol, 2), 33363.38)
+        self.assertEqual(round(st.hM.Jmol, 2), 37057.24)
+        self.assertEqual(round(st.sM.JmolK, 1), 220.4)
+        self.assertEqual(round(st.cvM.JmolK, 2), 49.68)
+        self.assertEqual(round(st.cpM.JmolK, 2), 58.74)
+        self.assertEqual(round(st.w, 0), 392)
+
+        st = Ethylene(T=110, P=1e7, eq="mccarty")
+        self.assertEqual(round(st.rhoM, 3), 23.252)
+        self.assertEqual(round(st.dpdrho_T.MPakgm3*st.M, 3), 49.352)
+        self.assertEqual(round(st.dpdT_rho.MPaK, 2), 2.63)
+        self.assertEqual(round(st.uM.Jmol, 2), 6939.63)
+        self.assertEqual(round(st.hM.Jmol, 2), 7369.71)
+        self.assertEqual(round(st.sM.JmolK, 1), 87.4)
+        self.assertEqual(round(st.cvM.JmolK, 2), 43.54)
+        self.assertEqual(round(st.cpM.JmolK, 2), 72.05)
+        self.assertEqual(round(st.w, 0), 1706)
+
+        st = Ethylene(T=450, P=4e7, eq="mccarty")
+        self.assertEqual(round(st.rhoM, 3), 10.569)
+        self.assertEqual(round(st.dpdrho_T.MPakgm3*st.M, 3), 6.793)
+        self.assertEqual(round(st.dpdT_rho.MPaK, 3), 0.202)
+        self.assertEqual(round(st.uM.Jmol, 2), 28192.71)
+        self.assertEqual(round(st.hM.Jmol, 2), 31977.53)
+        self.assertEqual(round(st.sM.JmolK, 1), 180.7)
+        self.assertEqual(round(st.cvM.JmolK, 2), 53.35)
+        self.assertEqual(round(st.cpM.JmolK, 2), 77.55)
+        self.assertEqual(round(st.w, 0), 593)
+
     def test_jahangiri(self):
-        # FIXME: The ideal properties from Cp expresion don't work
-        # Work from _Cp0, but don't from phio
-        pass
+        # Table 24, Pag 635, Second virial coefficients
+        st = Ethylene(T=200.15, P=101325, eq="jahangiri")
+        self.assertEqual(round(st.virialB.ccg*st.M, 3), -310.248)
+        st = Ethylene(T=250.15, P=101325, eq="jahangiri")
+        self.assertEqual(round(st.virialB.ccg*st.M, 3), -199.921)
+        st = Ethylene(T=300.15, P=101325, eq="jahangiri")
+        self.assertEqual(round(st.virialB.ccg*st.M, 3), -138.087)
+        st = Ethylene(T=350.15, P=101325, eq="jahangiri")
+        self.assertEqual(round(st.virialB.ccg*st.M, 3), -98.356)
+        st = Ethylene(T=400.15, P=101325, eq="jahangiri")
+        self.assertEqual(round(st.virialB.ccg*st.M, 3), -70.599)
+        st = Ethylene(T=450.15, P=101325, eq="jahangiri")
+        self.assertEqual(round(st.virialB.ccg*st.M, 3), -50.099)
 
-        # Selected values from Table 18, Pag 613, ideal properties
-        # st = Ethylene(T=105, P=1e5, eq="jahangiri")
-        # self.assertEqual(round(st.cpM0.JmolK, 3), 33.278)
-        # self.assertEqual(round(st.hM0.Jmol, 3), -7023.816)
-        # self.assertEqual(round(st.sM0.JmolK, 3), -37.155)
+        # # Table 27, Pag 646, saturation states
+        st = Ethylene(T=104, x=0.5, eq="jahangiri")
+        self.assertEqual(round(st.P.MPa, 5), 0.00012)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 23.347)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 1), 6613.4)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 2), 84.32)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 39.00)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 61.67)
+        self.assertEqual(round(st.Liquido.w, 0), 1822)
+        self.assertEqual(round(st.Gas.rhoM, 5), 0.00014)
+        self.assertEqual(round(st.Gas.hM.Jmol, 0), 22552)
+        self.assertEqual(round(st.Gas.sM.JmolK, 2), 237.57)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 24.97)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 33.29)
+        self.assertEqual(round(st.Gas.w, 0), 203)
 
-        # st = Ethylene(T=200, P=1e5, eq="jahangiri")
-        # self.assertEqual(round(st.cpM0.JmolK, 3), 35.352)
-        # self.assertEqual(round(st.hM0.Jmol, 3), -3801.885)
-        # self.assertEqual(round(st.sM0.JmolK, 3), -15.367)
+        st = Ethylene(T=150, x=0.5, eq="jahangiri")
+        self.assertEqual(round(st.P.MPa, 5), 0.02747)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 21.206)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 1), 9780.0)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 2), 109.54)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 39.29)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 66.68)
+        self.assertEqual(round(st.Liquido.w, 0), 1457)
+        self.assertEqual(round(st.Gas.rhoM, 5), 0.02231)
+        self.assertEqual(round(st.Gas.hM.Jmol, 0), 24039)
+        self.assertEqual(round(st.Gas.sM.JmolK, 2), 204.60)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 25.76)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 34.56)
+        self.assertEqual(round(st.Gas.w, 0), 241)
 
-        # st = Ethylene(T=300, P=1e5, eq="jahangiri")
-        # self.assertEqual(round(st.cpM0.JmolK, 3), 43.027)
-        # self.assertEqual(round(st.hM0.Jmol, 3), 79.437)
-        # self.assertEqual(round(st.sM0.JmolK, 3), 0.266)
+        st = Ethylene(T=200, x=0.5, eq="jahangiri")
+        self.assertEqual(round(st.P.MPa, 5), 0.45596)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 18.589)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 0), 13190)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 2), 129.01)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 37.13)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 71.01)
+        self.assertEqual(round(st.Liquido.w, 0), 1070)
+        self.assertEqual(round(st.Gas.rhoM, 5), 0.30297)
+        self.assertEqual(round(st.Gas.hM.Jmol, 0), 25325)
+        self.assertEqual(round(st.Gas.sM.JmolK, 2), 189.68)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 29.46)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 42.12)
+        self.assertEqual(round(st.Gas.w, 0), 262)
 
-        # st = Ethylene(T=400, P=1e5, eq="jahangiri")
-        # self.assertEqual(round(st.cpM0.JmolK, 3), 52.989)
-        # self.assertEqual(round(st.hM0.Jmol, 3), 4877.189)
-        # self.assertEqual(round(st.sM0.JmolK, 3), 13.999)
+        st = Ethylene(T=250, x=0.5, eq="jahangiri")
+        self.assertEqual(round(st.P.MPa, 4), 2.3307)
+        self.assertEqual(round(st.Liquido.rhoM, 3), 15.048)
+        self.assertEqual(round(st.Liquido.hM.Jmol, 0), 17143)
+        self.assertEqual(round(st.Liquido.sM.JmolK, 2), 146.08)
+        self.assertEqual(round(st.Liquido.cvM.JmolK, 2), 38.57)
+        self.assertEqual(round(st.Liquido.cpM.JmolK, 2), 94.60)
+        self.assertEqual(round(st.Liquido.w, 0), 627)
+        self.assertEqual(round(st.Gas.rhoM, 4), 1.6042)
+        self.assertEqual(round(st.Gas.hM.Jmol, 0), 25672)
+        self.assertEqual(round(st.Gas.sM.JmolK, 2), 180.19)
+        self.assertEqual(round(st.Gas.cvM.JmolK, 2), 37.48)
+        self.assertEqual(round(st.Gas.cpM.JmolK, 2), 74.66)
+        self.assertEqual(round(st.Gas.w, 0), 249)
 
-        # st = Ethylene(T=500, P=1e5, eq="jahangiri")
-        # self.assertEqual(round(st.cpM0.JmolK, 3), 62.411)
-        # self.assertEqual(round(st.hM0.Jmol, 3), 10656.721)
-        # self.assertEqual(round(st.sM0.JmolK, 3), 26.856)
+        # Table 28, pag 656, single phase values
+        st = Ethylene(T=105, P=1e4, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 23.302)
+        self.assertEqual(round(st.uM.Jmol, 1), 6676.1)
+        self.assertEqual(round(st.hM.Jmol, 1), 6676.5)
+        self.assertEqual(round(st.sM.JmolK, 2), 84.92)
+        self.assertEqual(round(st.cvM.JmolK, 2), 40.86)
+        self.assertEqual(round(st.cpM.JmolK, 2), 63.76)
+        self.assertEqual(round(st.w, 0), 1801)
 
-        # # Table 24, Pag 635, Second virial coefficients
-        # st = Ethylene(T=200.15, x=0, eq="jahangiri")
-        # self.assertEqual(round(st.virialB.ccg*st.M, 3), -310.248)
-        # st = Ethylene(T=250.15, x=0, eq="jahangiri")
-        # self.assertEqual(round(st.virialB.ccg*st.M, 3), -199.921)
-        # st = Ethylene(T=300.15, x=0, eq="jahangiri")
-        # self.assertEqual(round(st.virialB.ccg*st.M, 3), -138.087)
-        # st = Ethylene(T=350.15, x=0, eq="jahangiri")
-        # self.assertEqual(round(st.virialB.ccg*st.M, 3), -98.356)
-        # st = Ethylene(T=400.15, x=0, eq="jahangiri")
-        # self.assertEqual(round(st.virialB.ccg*st.M, 3), -70.599)
-        # st = Ethylene(T=450.15, x=0, eq="jahangiri")
-        # self.assertEqual(round(st.virialB.ccg*st.M, 3), -50.099)
+        st = Ethylene(T=160, P=5e4, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 5), 0.03831)
+        self.assertEqual(round(st.uM.Jmol, 0), 23043)
+        self.assertEqual(round(st.hM.Jmol, 0), 24348)
+        self.assertEqual(round(st.sM.JmolK, 2), 201.69)
+        self.assertEqual(round(st.cvM.JmolK, 2), 26.13)
+        self.assertEqual(round(st.cpM.JmolK, 2), 35.17)
+        self.assertEqual(round(st.w, 0), 248)
 
-        # # Table 25, Pag 637, saturation states
-        # st = Ethylene(T=238.18, x=0.5, eq="jahangiri")
-        # self.assertEqual(round(st.P.MPa, 3), 1.681)
-        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), 16108.4)
-        # self.assertEqual(round(st.Liquido.sM.JmolK, 1), 25739.7)
+        st = Ethylene(T=450, P=1e5, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 5), 0.02676)
+        self.assertEqual(round(st.uM.Jmol, 0), 33502)
+        self.assertEqual(round(st.hM.Jmol, 0), 37238)
+        self.assertEqual(round(st.sM.JmolK, 2), 239.82)
+        self.assertEqual(round(st.cvM.JmolK, 2), 49.54)
+        self.assertEqual(round(st.cpM.JmolK, 2), 57.93)
+        self.assertEqual(round(st.w, 0), 394)
 
-        # st = Ethylene(T=258.15, x=0.5, eq="jahangiri")
-        # self.assertEqual(round(st.P.MPa, 3), 2.869)
-        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), 17915.0)
-        # self.assertEqual(round(st.Liquido.sM.JmolK, 1), 25528.3)
+        st = Ethylene(T=300, P=101325, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 5), 0.04085)
+        self.assertEqual(round(st.uM.Jmol, 0), 27166)
+        self.assertEqual(round(st.hM.Jmol, 0), 29646)
+        self.assertEqual(round(st.sM.JmolK, 2), 219.39)
+        self.assertEqual(round(st.cvM.JmolK, 2), 34.77)
+        self.assertEqual(round(st.cpM.JmolK, 2), 43.29)
+        self.assertEqual(round(st.w, 0), 331)
 
-        # st = Ethylene(T=278.15, x=0.5, eq="jahangiri")
-        # self.assertEqual(round(st.P.MPa, 3), 4.589)
-        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), 20437.1)
-        # self.assertEqual(round(st.Liquido.sM.JmolK, 1), 24294.9)
+        st = Ethylene(T=180, P=2e5, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 19.694)
+        self.assertEqual(round(st.uM.Jmol, 0), 11786)
+        self.assertEqual(round(st.hM.Jmol, 0), 11796)
+        self.assertEqual(round(st.sM.JmolK, 2), 121.74)
+        self.assertEqual(round(st.cvM.JmolK, 2), 37.35)
+        self.assertEqual(round(st.cpM.JmolK, 2), 68.10)
+        self.assertEqual(round(st.w, 0), 1231)
 
-        # st = Ethylene(T=282.15, x=0.5, eq="jahangiri")
-        # self.assertEqual(round(st.P.MPa, 3), 5.018)
-        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), 21644.4)
-        # self.assertEqual(round(st.Liquido.sM.JmolK, 1), 23021.6)
+        st = Ethylene(T=195, P=3e5, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 5), 0.19795)
+        self.assertEqual(round(st.uM.Jmol, 0), 23794)
+        self.assertEqual(round(st.hM.Jmol, 0), 25309)
+        self.assertEqual(round(st.sM.JmolK, 2), 192.81)
+        self.assertEqual(round(st.cvM.JmolK, 2), 28.41)
+        self.assertEqual(round(st.cpM.JmolK, 2), 39.43)
+        self.assertEqual(round(st.w, 0), 264)
 
-        # st = Ethylene(T=282.25, x=0.5, eq="jahangiri")
-        # self.assertEqual(round(st.P.MPa, 3), 5.029)
-        # self.assertEqual(round(st.Liquido.hM.Jmol, 1), 21781.5)
-        # self.assertEqual(round(st.Liquido.sM.JmolK, 1), 22853.6)
+        st = Ethylene(T=160, P=5e5, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 20.731)
+        self.assertEqual(round(st.uM.Jmol, 0), 10436)
+        self.assertEqual(round(st.hM.Jmol, 0), 10460)
+        self.assertEqual(round(st.sM.JmolK, 2), 113.78)
+        self.assertEqual(round(st.cvM.JmolK, 2), 38.28)
+        self.assertEqual(round(st.cpM.JmolK, 2), 66.60)
+        self.assertEqual(round(st.w, 0), 1387)
+
+        st = Ethylene(T=288, P=8e5, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 5), 0.35246)
+        self.assertEqual(round(st.uM.Jmol, 0), 26525)
+        self.assertEqual(round(st.hM.Jmol, 0), 28794)
+        self.assertEqual(round(st.sM.JmolK, 2), 199.66)
+        self.assertEqual(round(st.cvM.JmolK, 2), 34.21)
+        self.assertEqual(round(st.cpM.JmolK, 2), 44.56)
+        self.assertEqual(round(st.w, 0), 316)
+
+        st = Ethylene(T=220, P=1e6, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 17.360)
+        self.assertEqual(round(st.uM.Jmol, 0), 14606)
+        self.assertEqual(round(st.hM.Jmol, 0), 14663)
+        self.assertEqual(round(st.sM.JmolK, 2), 135.88)
+        self.assertEqual(round(st.cvM.JmolK, 2), 37.32)
+        self.assertEqual(round(st.cpM.JmolK, 2), 76.00)
+        self.assertEqual(round(st.w, 0), 902)
+
+        st = Ethylene(T=244, P=2e6, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 15.582)
+        self.assertEqual(round(st.uM.Jmol, 0), 16479)
+        self.assertEqual(round(st.hM.Jmol, 0), 16607)
+        self.assertEqual(round(st.sM.JmolK, 2), 143.99)
+        self.assertEqual(round(st.cvM.JmolK, 2), 38.18)
+        self.assertEqual(round(st.cpM.JmolK, 2), 88.69)
+        self.assertEqual(round(st.w, 0), 685)
+
+        st = Ethylene(T=450, P=3e6, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 5), 0.83490)
+        self.assertEqual(round(st.uM.Jmol, 0), 33027)
+        self.assertEqual(round(st.hM.Jmol, 0), 36621)
+        self.assertEqual(round(st.sM.JmolK, 2), 210.49)
+        self.assertEqual(round(st.cvM.JmolK, 2), 49.92)
+        self.assertEqual(round(st.cpM.JmolK, 2), 60.60)
+        self.assertEqual(round(st.w, 0), 387)
+
+        st = Ethylene(T=280, P=5e6, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 11.098)
+        self.assertEqual(round(st.uM.Jmol, 0), 20068)
+        self.assertEqual(round(st.hM.Jmol, 0), 20519)
+        self.assertEqual(round(st.sM.JmolK, 2), 158.00)
+        self.assertEqual(round(st.cvM.JmolK, 2), 43.83)
+        self.assertEqual(round(st.cpM.JmolK, 1), 254.2)
+        self.assertEqual(round(st.w, 0), 311)
+
+        st = Ethylene(T=385, P=8e6, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 4), 3.1028)
+        self.assertEqual(round(st.uM.Jmol, 0), 28666)
+        self.assertEqual(round(st.hM.Jmol, 0), 31244)
+        self.assertEqual(round(st.sM.JmolK, 2), 190.15)
+        self.assertEqual(round(st.cvM.JmolK, 2), 45.30)
+        self.assertEqual(round(st.cpM.JmolK, 2), 67.89)
+        self.assertEqual(round(st.w, 0), 336)
+
+        st = Ethylene(T=110, P=1e7, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 23.250)
+        self.assertEqual(round(st.uM.Jmol, 1), 6922.6)
+        self.assertEqual(round(st.hM.Jmol, 1), 7352.8)
+        self.assertEqual(round(st.sM.JmolK, 2), 87.21)
+        self.assertEqual(round(st.cvM.JmolK, 2), 46.18)
+        self.assertEqual(round(st.cpM.JmolK, 2), 69.34)
+        self.assertEqual(round(st.w, 0), 1779)
+
+        st = Ethylene(T=244, P=2e7, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 17.396)
+        self.assertEqual(round(st.uM.Jmol, 0), 15489)
+        self.assertEqual(round(st.hM.Jmol, 0), 16638)
+        self.assertEqual(round(st.sM.JmolK, 2), 139.68)
+        self.assertEqual(round(st.cvM.JmolK, 2), 38.06)
+        self.assertEqual(round(st.cpM.JmolK, 2), 69.84)
+        self.assertEqual(round(st.w, 0), 992)
+
+        st = Ethylene(T=390, P=3e7, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 11.067)
+        self.assertEqual(round(st.uM.Jmol, 0), 24895)
+        self.assertEqual(round(st.hM.Jmol, 0), 27606)
+        self.assertEqual(round(st.sM.JmolK, 2), 172.52)
+        self.assertEqual(round(st.cvM.JmolK, 2), 47.06)
+        self.assertEqual(round(st.cpM.JmolK, 2), 79.47)
+        self.assertEqual(round(st.w, 0), 565)
+
+        st = Ethylene(T=130, P=4e7, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 22.926)
+        self.assertEqual(round(st.uM.Jmol, 1), 8020.7)
+        self.assertEqual(round(st.hM.Jmol, 1), 9765.5)
+        self.assertEqual(round(st.sM.JmolK, 2), 96.52)
+        self.assertEqual(round(st.cvM.JmolK, 2), 44.99)
+        self.assertEqual(round(st.cpM.JmolK, 2), 67.44)
+        self.assertEqual(round(st.w, 0), 1779)
+
+        st = Ethylene(T=350, P=5e7, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 15.003)
+        self.assertEqual(round(st.uM.Jmol, 0), 21092)
+        self.assertEqual(round(st.hM.Jmol, 0), 24425)
+        self.assertEqual(round(st.sM.JmolK, 2), 159.84)
+        self.assertEqual(round(st.cvM.JmolK, 2), 44.46)
+        self.assertEqual(round(st.cpM.JmolK, 2), 70.13)
+        self.assertEqual(round(st.w, 0), 867)
+
+        st = Ethylene(T=240, P=8e7, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 19.935)
+        self.assertEqual(round(st.uM.Jmol, 0), 13969)
+        self.assertEqual(round(st.hM.Jmol, 0), 17982)
+        self.assertEqual(round(st.sM.JmolK, 2), 132.07)
+        self.assertEqual(round(st.cvM.JmolK, 2), 40.20)
+        self.assertEqual(round(st.cpM.JmolK, 2), 62.12)
+        self.assertEqual(round(st.w, 0), 1434)
+
+        st = Ethylene(T=350, P=1e8, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 17.490)
+        self.assertEqual(round(st.uM.Jmol, 0), 19860)
+        self.assertEqual(round(st.hM.Jmol, 0), 25578)
+        self.assertEqual(round(st.sM.JmolK, 2), 154.41)
+        self.assertEqual(round(st.cvM.JmolK, 2), 46.02)
+        self.assertEqual(round(st.cpM.JmolK, 2), 65.80)
+        self.assertEqual(round(st.w, 0), 1203)
+
+        st = Ethylene(T=350, P=2.6e8, eq="jahangiri")
+        self.assertEqual(round(st.rhoM, 3), 20.953)
+        self.assertEqual(round(st.uM.Jmol, 0), 18436)
+        self.assertEqual(round(st.hM.Jmol, 0), 30845)
+        self.assertEqual(round(st.sM.JmolK, 2), 145.92)
+        self.assertEqual(round(st.cvM.JmolK, 2), 48.98)
+        self.assertEqual(round(st.cpM.JmolK, 2), 64.39)
+        self.assertEqual(round(st.w, 0), 1792)
 
     def test_shortSpan(self):
         # Table III, Pag 46
@@ -657,56 +1001,71 @@ class Test(TestCase):
         self.assertEqual(round(Ethylene(T=400, P=2e8).k.mWmK, 1), 190.3)
         self.assertEqual(round(Ethylene(T=500, P=2e8).k.mWmK, 1), 170.6)
 
-        # Critical enhancement point
+        # Critical enhancement point, section 3.1.4, pag 8
         self.assertEqual(round(Ethylene(T=300, rho=300).k.mWmK, 2), 69.62)
 
     def test_Holland(self):
+        # Single phase selected point
         # Viscosity, Table 5, pag 924
-        # Viscosity, Table 6, pag 924
+        # Thermal Conductivity, Table 6, pag 927
+        st = Ethylene(T=110, P=1e5, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 5660.5)
+        self.assertEqual(round(st.k.mWmK, 2), 261.77)
 
-        # FIXME: The state point use MBWR mEoS
-        return
+        st = Ethylene(T=140, P=1e6, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 2769.8)
+        self.assertEqual(round(st.k.mWmK, 2), 223.14)
 
-        # st = Ethylene(T=110, P=1e5, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 5660.5)
-        # self.assertEqual(round(st.k.mWmK, 2), 261.77)
-        # st = Ethylene(T=140, P=1e6, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 2769.8)
-        # st = Ethylene(T=200, P=5e6, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 1223.7)
-        # st = Ethylene(T=300, P=1e5, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 103.8)
-        # st = Ethylene(T=130, P=1e7, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 3278.5)
-        # st = Ethylene(T=300, P=5e7, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 759.0)
-        # st = Ethylene(T=500, P=1e5, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 165.1)
-        # st = Ethylene(T=500, P=5e7, eq="MBWR", thermal=1)
-        # self.assertEqual(round(st.mu.microP, 1), 394.1)
+        st = Ethylene(T=200, P=5e6, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 1223.7)
+        self.assertEqual(round(st.k.mWmK, 1), 158.5)
 
-        # Table 6, pag 927
-        # >>> st=Ethylene(T=110, P=1e5)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 261.77
-        # >>> st=Ethylene(T=140, P=1e6)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 223.14
-        # >>> st=Ethylene(T=200, P=5e6)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 158.50
-        # >>> st=Ethylene(T=300, P=1e5)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 20.56
-        # >>> st=Ethylene(T=130, P=1e7)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 244.97
-        # >>> st=Ethylene(T=300, P=5e7)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 129.32
-        # >>> st=Ethylene(T=500, P=1e5)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 49.95
-        # >>> st=Ethylene(T=500, P=5e7)
-        # >>> print "%0.2f" % st.k.mWmK
-        # 93.57
+        st = Ethylene(T=300, P=1e5, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 103.8)
+        self.assertEqual(round(st.k.mWmK, 2), 20.58)
+
+        st = Ethylene(T=130, P=1e7, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 3278.5)
+        self.assertEqual(round(st.k.mWmK, 2), 244.97)
+
+        st = Ethylene(T=300, P=5e7, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 759.0)
+        self.assertEqual(round(st.k.mWmK, 2), 129.40)
+
+        st = Ethylene(T=500, P=1e5, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 165.1)
+        self.assertEqual(round(st.k.mWmK, 2), 49.95)
+
+        st = Ethylene(T=500, P=5e7, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 394.1)
+        self.assertEqual(round(st.k.mWmK, 2), 93.57)
+
+        # Saturated liquid values, Table 7, pag 930
+        # The density values differ so the calculated transport properties
+        # difffer in that cases, I think the paper use the ancillary equation
+        # for liquid saturated density
+        st = Ethylene(T=200, x=0, eq="mccarty", thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 18.575)
+        self.assertEqual(round(st.mu.microP, 1), 1204.9)
+        self.assertEqual(round(st.k.mWmK, 1), 153.5)
+
+        # Dilute gas values, Table 8, pag 930
+        st = Ethylene(T=180, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 63.6)
+        self.assertEqual(round(st.k.mWmK, 1), 10.0)
+
+        st = Ethylene(T=250, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 86.6)
+        self.assertEqual(round(st.k.mWmK, 1), 14.9)
+
+        st = Ethylene(T=400, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 135.7)
+        self.assertEqual(round(st.k.mWmK, 1), 34.6)
+
+        st = Ethylene(T=500, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 164.8)
+        self.assertEqual(round(st.k.mWmK, 1), 49.9)
+
+        st = Ethylene(T=680, rho=0, thermal=1)
+        self.assertEqual(round(st.mu.microP, 1), 211.6)
+        self.assertEqual(round(st.k.mWmK, 1), 91.2)

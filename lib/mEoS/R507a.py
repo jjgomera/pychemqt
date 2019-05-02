@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoSBlend
 from lib import unidades
+from lib.meos import MEoSBlend
 
 
 class R507a(MEoSBlend):
@@ -62,7 +62,6 @@ class R507a(MEoSBlend):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.13,
-        "Pmin": 23.23, "rhomin": 14.13,
 
         "Tj": 343.765, "Pj": 3.7049,
         "dew": {"i": [1*2, 1.5*2, 2.1*2, 4.7*2],
@@ -87,6 +86,17 @@ class R507a(MEoSBlend):
     eq = lemmon,
 
     _surface = {"sigma": [0.06701, -0.04297], "exp": [1.3066, 2.3145]}
+
+    _liquid_Density = {
+        "eq": 1,
+        "n": [-1.1909272837212852, 2.4301888224201074, 3.512171521080571,
+              -3.7013727137258634, 2.358426436855713, -3.9469718132522256],
+        "t": [0.093, 0.162, 0.914, 1.425, 2.269, 7.339]}
+    _vapor_Density = {
+        "eq": 3,
+        "n": [3.975317800427674, -74.1368924572824, 75.98726158051952,
+              -11.56733447604713, 3.084500064878586, -6.722628041295302],
+        "t": [0.11, 0.26, 0.286, 0.563, 2.03, 2.811]}
 
     thermo0 = {"__name__": "Geller (2001)",
                "__doi__": {

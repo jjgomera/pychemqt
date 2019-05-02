@@ -21,9 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from unittest import TestCase
 
 from iapws._iapws import _D2O_Viscosity, _D2O_ThCond, _D2O_Tension
+from iapws._iapws import _D2O_Melting_Pressure, _D2O_Sublimation_Pressure
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class D2O(MEoS):
@@ -47,8 +48,7 @@ class D2O(MEoS):
            "pow": [0, 1],
            "ao_pow": [-8.670994022646, 6.96033578458778],
            "ao_exp": [0.010633, 0.99787, 2.1483, 0.3549],
-           "titao": [308/Tc, 1695/Tc, 3949/Tc, 10317/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [308/Tc, 1695/Tc, 3949/Tc, 10317/Tc]}
 
     Fi1 = {"ao_log": [0.5399322597e-2, 0],
            "pow": [0, 1, 2, 3, 4, 5],
@@ -56,8 +56,7 @@ class D2O(MEoS):
                       -.1256336874e1, 0.2843343470, -.2401555088e-1],
            "tau*logtau": -.1288399716e2,
            "tau*logdelta": 0.4415884023e1,
-           "ao_exp": [], "titao": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "titao": []}
 
     herrig = {
         "__type__": "Helmholtz",
@@ -75,7 +74,6 @@ class D2O(MEoS):
         "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0},
 
         "Tmin": Tt, "Tmax": 800.0, "Pmax": 100000.0, "rhomax": 65.,
-        "Pmin": 0.66103, "rhomin": 55.198,
 
         "nr1": [0.122082060e-1, 0.296956870e1, -0.379004540e1, 0.941089600,
                 -0.922466250, -0.139604190e-1],
@@ -109,7 +107,7 @@ class D2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": u"Helmholtz equation of state for heavy water of Hill "
         "et al. (1982).",
-        "__doi__": {"autor": "Hill, P.G., MacMillan, R.D.C., and Lee, V.",
+        "__doi__": {"autor": "Hill, P.G., MacMillan, R.D.C., Lee, V.",
                     "title": "A Fundamental Equation of State for Heavy Water",
                     "ref": "J. Phys. Chem. Ref. Data 11, 1 (1982)",
                     "doi": "10.1063/1.555661"},
@@ -119,7 +117,6 @@ class D2O(MEoS):
         "ref": {"Tref": 276.95, "Pref": 0.660096, "ho": 0.598, "so": 0},
 
         "Tmin": Tt, "Tmax": 800.0, "Pmax": 100000.0, "rhomax": 65.,
-        "Pmin": 0.66103, "rhomin": 55.198,
 
         "nr1": [-0.384820628204e3, 0.108213047259e4, -0.110768260635e4,
                 0.164668954246e4, -0.137959852228e4, 0.598964185629e3,
@@ -150,20 +147,24 @@ class D2O(MEoS):
 
     eq = herrig, hill
 
-    _melting = {
-            "eq": 1,
-            "Tmin": 254.415, "Tmax": 276.969,
-            "Tref": 276.969, "Pref": 0.66159,
-            "a1": [], "exp1": [],
-            "a2": [1, -0.30153e5, 0.692503e6], "exp2": [0, 5.5, 8.2],
-            "a3": [], "exp3": []}
-    _sublimation = {
-            "eq": 2,
-            "Tmin": 210, "Tmax": 276.969,
-            "Tref": 276.969, "Pref": 0.66159,
-            "a1": [], "exp1": [],
-            "a2": [-13.14226, 32.12969], "exp2": [-1.73, -1.42],
-            "a3": [], "exp3": []}
+    _melting = {"Tmin": 254.415, "Tmax": 315}
+
+    @classmethod
+    def _Melting_Pressure(cls, T):
+        try:
+            Pm = _D2O_Melting_Pressure(T)
+        except NotImplementedError:
+            Pm = None
+        return unidades.Pressure(Pm, "MPa")
+
+    @classmethod
+    def _Sublimation_Pressure(cls, T):
+        try:
+            Ps = _D2O_Sublimation_Pressure(T)
+        except NotImplementedError:
+            Ps = None
+        return unidades.Pressure(Ps, "MPa")
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.794440e1, 0.194340e1, -0.243530e1, -0.342000e1, 0.355000e2,
@@ -348,72 +349,6 @@ class Test(TestCase):
         # Inline point in section 3.4, pag 7
         P = D2O._Melting_Pressure(270).MPa
         self.assertEqual(round(P, 7), 83.7888413)
-
-    def test_D2O(self):
-        # Pag 17 of IAPWS 2007 update paper
-        """Table 5 pag 11"""
-        fluid = D2O(eq="hill")
-        Tr = 643.847
-        rhor = 358
-        ar = 21.671*1000/358
-        sr = 21.671*1000/358./643.89
-        pr = 21.671*1e6
-
-        rho = 0.0002*rhor
-        T = 0.5*Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -2.644979)
-        self.assertEqual(round(state["P"]/pr, 7), 0.0004402)
-        # self.assertEqual(round(state["cv"]/sr, 4), 14.2768)
-
-        rho = 3.18*rhor
-        T = 0.5*Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -0.217388)
-        # self.assertEqual(round(state["P"]/pr, 7), 4.3549719)
-        # self.assertEqual(round(state["cv"]/sr, 4), 41.4463)
-
-        rho = 0.0295*rhor
-        T = 0.75*Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -7.272543)
-        # self.assertEqual(round(state["P"]/pr, 7), 0.0870308)
-        # self.assertEqual(round(state["cv"]/sr, 4), 20.1586)
-
-        rho = 2.83*rhor
-        T = 0.75*Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -4.292707)
-        # self.assertEqual(round(state["P"]/pr, 7), 4.4752958)
-        # self.assertEqual(round(state["cv"]/sr, 4), 33.4367)
-
-        rho = 0.3*rhor
-        T = Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -15.163326)
-        # self.assertEqual(round(state["P"]/pr, 7), 0.8014044)
-        # self.assertEqual(round(state["cv"]/sr, 4), 30.8587)
-
-        rho = 1.55*rhor
-        T = Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -12.643811)
-        # self.assertEqual(round(state["P"]/pr, 7), 1.0976283)
-        # self.assertEqual(round(state["cv"]/sr, 4), 33.0103)
-
-        rho = 0.4*rhor
-        T = 1.2*Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -25.471535)
-        # self.assertEqual(round(state["P"]/pr, 7), 1.4990994)
-        # self.assertEqual(round(state["cv"]/sr, 4), 23.6594)
-
-        rho = 1.61*rhor
-        T = 1.2*Tr
-        state = fluid._eq(rho, T)
-        # self.assertEqual(round((state["h"]-state["P"]*1000/rho-T*state["s"])/ar, 6), -21.278164)
-        # self.assertEqual(round(state["P"]/pr, 7), 4.5643798)
-        # self.assertEqual(round(state["cv"]/sr, 4), 25.4800)
 
     def test_D2O_Viscosity(self):
         # Selected values from TAble A4, saturation state in IAPWS R4-84

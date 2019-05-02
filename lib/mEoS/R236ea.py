@@ -18,9 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
-from lib.mEoS.R134a import R134a
+from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R236ea(MEoS):
@@ -49,8 +49,7 @@ class R236ea(MEoS):
 
     CP1 = {"ao": 5.30694,
            "an": [0.03973, -1.859e-5], "pow": [1, 2],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     rui = {
         "__type__": "Helmholtz",
@@ -67,8 +66,7 @@ class R236ea(MEoS):
         "ref": {"Tref": 273.15, "Pref": 1.,
                 "ho": 56317.4970978844, "so": 282.8465334259},
 
-        "Tmin": 240.0, "Tmax": 412.0, "Pmax": 6000.0, "rhomax": 10.5,
-        "Pmin": 0.02, "rhomin": 11.7,
+        "Tmin": Tt, "Tmax": 420.0, "Pmax": 6000.0, "rhomax": 10.5,
 
         "nr1": [0.051074, 2.5584, -2.9180, -0.71485, 0.15534],
         "d1": [4, 1, 1, 2, 3],
@@ -88,26 +86,6 @@ class R236ea(MEoS):
         "gamma3": [1.13, 0.6691, 0.465, 1.28, 0.8781],
         "epsilon3": [0.7119, 0.9102, 0.678, 0.7091, 1.727]}
 
-    ecs = {"__type__": "ECS",
-           "__name__": "Thermodynamic Extended Corresponding States model w/ T- and rho-dependent shape factors.",
-           "__doc__":  u"""Huber, M.L. and Ely, J.F., "A predictive extended corresponding states model for pure and mixed refrigerants including an equation of state for R134a," Int. J. Refrigeration, 17:18-31, 1994.""",
-           "cp": CP1,
-           "ref": R134a,
-           "eq": "helmholtz1",
-           # "eq": "MBWR",
-           "R": 8.314471,
-
-            "Tmin": 242.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 10.465,
-#            "Pmin": aaaaaaa, "rhomin": aaaaaaa,
-
-           "ft": [-0.67786992, -0.52182651],
-           "ft_add": [], "ft_add_exp": [],
-           "fd": [0.113833347e-1], "fd_exp": [1],
-           "ht": [0.142369159e1, 0.870214752e-1],
-           "ht_add": [0.195298641e-1], "ht_add_exp": [1],
-           "hd": [], "hd_exp": []}
-
-    # eq = rui, ecs
     eq = rui,
 
     _surface = {"sigma": [0.306974, -0.247277], "exp": [1.12614, 1.09899]}
@@ -124,22 +102,31 @@ class R236ea(MEoS):
         "n": [-2.7426, -6.2268, -15.109, -49.524, -114.11],
         "t": [0.376, 1.1, 2.7, 5.5, 11]}
 
-    trnECS = {"eq": "ecs",
-              "__name__": "Extended Corresponding States model",
-              "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., Model for the viscosity and thermal conductivity of refrigerants, including a new correlation for the viscosity of R134a, Ind.Eng.Chem.Res. 42: 3163-3178 (2003).""",
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
 
               "ref": R134a,
-              "ref_eq": "helmholtz1",
-              "eq_visco": "visco0",
-              "eq_thermo": "thermo0",
+              "visco": "visco0",
+              "thermo": "thermo0",
 
-              "f_int": [1.32e-3],
-              "psi": [1.0],
-              "phi": [1.0],
+              "ek": 318.33, "sigma": 0.5604, "omega": 5,
+
+              "psi": [1.12216, -2.73101e-2], "psi_d": [0, 1],
+              "fint": [1.70267e-3, -4.91063e-7], "fint_t": [0, 1],
+              "chi": [0.9617, 3.37897e-2], "chi_d": [0, 1],
 
               "critical": 3,
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.5e-9, "Tcref": 579.49}
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-#    _viscosity=trnECS,
-#    _thermal=trnECS,
+    _viscosity = trnECS,
+    _thermal = trnECS,

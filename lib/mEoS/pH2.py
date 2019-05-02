@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from scipy import exp, log
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class pH2(MEoS):
@@ -53,13 +53,14 @@ class pH2(MEoS):
                      35.4059141417, 40.724998482, 163.7925799988,
                      309.2173173842]}
 
-    CP1 = {"ao": 2.4995169,
-           "an": [-0.11125185e-2, 0.27491461e-3, -0.10005269e-4, 0.22695404e-8,
-                  -0.21031029e-12],
-           "pow": [1, 1.5, 2, 3, 4],
-           "ao_exp": [0.12353388e2, -0.17777676e2, 0.64309174e1, 0.73347521e1],
-           "exp": [598, 778, 1101, 6207],
-           "ao_hyp": [], "hyp": []}
+    # Used the correlation in Leachaman et al. paper
+    # Younglove use a fractional correlation depend of temperature not easy
+    # of implement here
+    CP1 = {"ao": 2.5,
+           "an": [], "pow": [],
+           "ao_exp": [4.30256, 13.0289, -47.7365, 50.0013, -18.6261, 0.993973,
+                      0.536078],
+           "exp": [499, 826.5, 970.8, 1166.2, 1341.4, 5395, 10185]}
 
     leachman = {
         "__type__": "Helmholtz",
@@ -77,7 +78,6 @@ class pH2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 104.0,
-        "Pmin": 7.041, "rhomin": 38.185,
 
         "nr1": [-7.33375, .01, 2.60375, 4.66279, 0.682390, -1.47078, 0.135801],
         "d1": [1, 4, 1, 1, 2, 2, 3],
@@ -98,7 +98,7 @@ class pH2(MEoS):
         "epsilon3": [1.5487, 0.1785, 1.28, 0.6319, 1.7104],
         "nr4": []}
 
-    MBWR = {
+    younglove = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for parahydrogen of Younglove "
                     "(1982)",
@@ -111,12 +111,12 @@ class pH2(MEoS):
 
         "R": 8.31434,
         "cp": CP1,
-        "ref": "IIR",
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 8466.7, "so": 130.5},
         "Tc": 32.938, "Pc": 1.28377, "rhoc": 15.556,
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 44.0,
-        "Pmin": 7.042, "rhomin": 38.21,
+        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 104.0,
 
+        "gamma": -0.0041,
         "b": [None, 0.4675528393416e-3, 0.4289274251454e-1, -0.5164085596504,
               0.2961790279801e1, -0.3027194968412e2, 0.1908100320379e-4,
               -0.1339776859288e-2, 0.3056473115421, 0.5161197159532e2,
@@ -129,20 +129,44 @@ class pH2(MEoS):
               -0.1250868123513e-9, 0.1976107321888e-8, -0.2411883474011e-12,
               -0.4127551498251e-12, 0.8917972883610e-11]}
 
-    # eq = leachman, MBWR
-    eq = leachman,
+    eq = leachman, younglove
 
     _surface = {"sigma": [0.005314], "exp": [1.06]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [2.0297, 0.0069], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [0.181, 0.021, -7.4],
-                   "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
-    _melting = {"Tmin": Tt, "Tmax": 400.0}
-    _sublimation = {"eq": 2, "Tref": 1, "Pref": 0.133332237,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [4.009857354, -90.77568949], "exp1": [0, -1],
-                    "a2": [], "exp2": [], "a3": [2.48983094], "exp3": [1]}
+    _dielectric = {
+        "eq": 1,
+        "a": [2.0297, 0.0069], "b": [0.181, 0.021], "c": [-7.4, 0],
+        "Au": 0, "D": 2}
+
+    _melting = {
+        "__doi__": younglove["__doi__"],
+        "Tmin": Tt, "Tmax": 400.0}
+
+    @classmethod
+    def _Melting_Pressure(cls, T):
+        """The correlation has two different equation so hardcoded here"""
+        if T > 22:
+            P = -26.5289115 + 0.248578596*T**1.764739
+        else:
+            P = -21.272389 + 0.125746643*T**1.955
+
+        return unidades.Pressure(P, "MPa")
+
+    _sublimation = {
+        "eq": 2,
+        "__doi__": {
+            "autor": "McCarty, R.D., Hord, J., Roder, H.M.",
+            "title": "Selected Properties of Hydrogen (Engineering Design "
+                     "Data)",
+            "ref": "NBS Monograph 168, NBS 1981.",
+            "doi": ""},
+
+        "Tmin": Tt, "Tmax": Tt,
+        # The returned pressure is in mmHg
+        "Tref": 1, "Pref": 101325/760,
+        "a0": 4.009857354,
+        "a1": [-90.77568949], "exp1": [-1],
+        "a3": [2.48983094], "exp3": [1]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.487767e1, 0.103359e1, 0.826680, -0.129412],
@@ -157,23 +181,9 @@ class pH2(MEoS):
               -0.34190e2],
         "t": [0.53, 0.7, 1.7, 2.4, 3.3, 10]}
 
-    @classmethod
-    def _Melting_Pressure(cls, T=None):
-        Tref = 1
-        Pref = 1000
-        Tita = T/Tref
-#        a = [-0.265289115e2, 0.248578596, -0.21272389e2, 0.125746643]
-#        expo = [0, 0.1764739e1, 0, 0.1955e1]
-        if T > 22:
-            suma = -0.265289115e2+0.248578596*Tita**0.1764739e1
-        else:
-            suma = -0.21272389e2+0.125746643*Tita**0.1955e1
-
-        return unidades.Pressure(suma*Pref, "kPa")
-
     visco0 = {"__name__": "McCarty (1972)",
               "__doi__": {
-                  "autor": "McCarty, R.D. and Weber, L.A.",
+                  "autor": "McCarty, R.D., Weber, L.A.",
                   "title": "Thermophysical Properties of Parahydrogen from "
                            "the Freezing Liquid Line to 5000 R for Pressures "
                            "to 10000 psia",
@@ -318,6 +328,248 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.cp.kJkgK, 3), 92.392)
         self.assertEqual(round(st.Liquido.w, 2), 522.59)
         self.assertEqual(round(st.Gas.w, 2), 372.03)
+
+    def test_younglove(self):
+        # Selected point from Appendix H. Pag 97
+        st = pH2(T=40, P=5e3, eq="younglove")
+        self.assertEqual(round(st.rho, 5), 0.03033)
+        self.assertEqual(round(st.rhoM, 5), 0.01505)
+        self.assertEqual(round(st.uM.Jmol, 1), 499.0)
+        self.assertEqual(round(st.hM.Jmol, 1), 831.3)
+        self.assertEqual(round(st.sM.JmolK, 1), 100.7)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.49)
+        self.assertEqual(round(st.cpM.JmolK, 2), 20.83)
+        self.assertEqual(round(st.w, 1), 524.0)
+
+        st = pH2(T=110, P=1e4, eq="younglove")
+        self.assertEqual(round(st.rho, 5), 0.02204)
+        self.assertEqual(round(st.rhoM, 5), 0.01093)
+        self.assertEqual(round(st.uM.Jmol, 0), 1569)
+        self.assertEqual(round(st.hM.Jmol, 0), 2483)
+        self.assertEqual(round(st.sM.JmolK, 1), 118.1)
+        self.assertEqual(round(st.cvM.JmolK, 2), 20.37)
+        self.assertEqual(round(st.cpM.JmolK, 2), 28.69)
+        self.assertEqual(round(st.w, 1), 799.4)
+
+        st = pH2(T=400, P=2e4, eq="younglove")
+        self.assertEqual(round(st.rho, 5), 0.01212)
+        self.assertEqual(round(st.rhoM, 6), 0.006013)
+        self.assertEqual(round(st.uM.Jmol, 0), 8093)
+        self.assertEqual(round(st.hM.Jmol, 0), 11419)
+        self.assertEqual(round(st.sM.JmolK, 1), 152.5)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.02)
+        self.assertEqual(round(st.cpM.JmolK, 2), 29.33)
+        self.assertEqual(round(st.w, 0), 1518)
+
+        st = pH2(T=14, P=4e4, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 76.89)
+        self.assertEqual(round(st.rhoM, 2), 38.14)
+        self.assertEqual(round(st.uM.Jmol, 1), -619.7)
+        self.assertEqual(round(st.hM.Jmol, 1), -618.6)
+        self.assertEqual(round(st.sM.JmolK, 2), 10.12)
+        self.assertEqual(round(st.cvM.JmolK, 2), 10.60)
+        self.assertEqual(round(st.cpM.JmolK, 2), 15.16)
+        self.assertEqual(round(st.w, 0), 1366)
+
+        st = pH2(T=20, P=6e4, eq="younglove", rho0=0.7)
+        self.assertEqual(round(st.rho, 4), 0.7705)
+        self.assertEqual(round(st.rhoM, 4), 0.3822)
+        self.assertEqual(round(st.uM.Jmol, 1), 236.2)
+        self.assertEqual(round(st.hM.Jmol, 1), 393.2)
+        self.assertEqual(round(st.sM.JmolK, 2), 64.89)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.93)
+        self.assertEqual(round(st.cpM.JmolK, 2), 22.83)
+        self.assertEqual(round(st.w, 1), 359.6)
+
+        st = pH2(T=80, P=8e4, eq="younglove")
+        self.assertEqual(round(st.rho, 4), 0.2427)
+        self.assertEqual(round(st.rhoM, 4), 0.1204)
+        self.assertEqual(round(st.uM.Jmol, 0), 1031)
+        self.assertEqual(round(st.hM.Jmol, 0), 1695)
+        self.assertEqual(round(st.sM.JmolK, 2), 92.50)
+        self.assertEqual(round(st.cvM.JmolK, 2), 15.31)
+        self.assertEqual(round(st.cpM.JmolK, 2), 23.71)
+        self.assertEqual(round(st.w, 1), 713.9)
+
+        st = pH2(T=20, P=1e5, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 71.12)
+        self.assertEqual(round(st.rhoM, 2), 35.28)
+        self.assertEqual(round(st.uM.Jmol, 1), -524.3)
+        self.assertEqual(round(st.hM.Jmol, 1), -521.5)
+        self.assertEqual(round(st.sM.JmolK, 2), 15.75)
+        self.assertEqual(round(st.cvM.JmolK, 2), 11.32)
+        self.assertEqual(round(st.cpM.JmolK, 2), 19.11)
+        self.assertEqual(round(st.w, 0), 1111)
+
+        st = pH2(T=300, P=101325, eq="younglove")
+        self.assertEqual(round(st.rho, 5), 0.08184)
+        self.assertEqual(round(st.rhoM, 5), 0.04060)
+        self.assertEqual(round(st.uM.Jmol, 0), 5971)
+        self.assertEqual(round(st.hM.Jmol, 0), 8467)
+        self.assertEqual(round(st.sM.JmolK, 1), 130.5)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.61)
+        self.assertEqual(round(st.cpM.JmolK, 2), 29.93)
+        self.assertEqual(round(st.w, 0), 1310)
+
+        st = pH2(T=25, P=2e5, eq="younglove", rho0=2)
+        self.assertEqual(round(st.rho, 3), 2.187)
+        self.assertEqual(round(st.rhoM, 3), 1.085)
+        self.assertEqual(round(st.uM.Jmol, 1), 277.2)
+        self.assertEqual(round(st.hM.Jmol, 1), 461.6)
+        self.assertEqual(round(st.sM.JmolK, 2), 58.77)
+        self.assertEqual(round(st.cvM.JmolK, 2), 13.13)
+        self.assertEqual(round(st.cpM.JmolK, 2), 25.15)
+        self.assertEqual(round(st.w, 1), 391.4)
+
+        st = pH2(T=400, P=3e5, eq="younglove")
+        self.assertEqual(round(st.rho, 4), 0.1816)
+        self.assertEqual(round(st.rhoM, 5), 0.09007)
+        self.assertEqual(round(st.uM.Jmol, 0), 8093)
+        self.assertEqual(round(st.hM.Jmol, 0), 11423)
+        self.assertEqual(round(st.sM.JmolK, 1), 130.0)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.02)
+        self.assertEqual(round(st.cpM.JmolK, 2), 29.34)
+        self.assertEqual(round(st.w, 0), 1520)
+
+        st = pH2(T=25, P=4e5, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 64.65)
+        self.assertEqual(round(st.rhoM, 2), 32.07)
+        self.assertEqual(round(st.uM.Jmol, 1), -415.3)
+        self.assertEqual(round(st.hM.Jmol, 1), -402.9)
+        self.assertEqual(round(st.sM.JmolK, 2), 20.61)
+        self.assertEqual(round(st.cvM.JmolK, 2), 12.64)
+        self.assertEqual(round(st.cpM.JmolK, 2), 27.19)
+        self.assertEqual(round(st.w, 0), 927)
+
+        st = pH2(T=14, P=5e5, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 77.24)
+        self.assertEqual(round(st.rhoM, 2), 38.32)
+        self.assertEqual(round(st.uM.Jmol, 1), -621.5)
+        self.assertEqual(round(st.hM.Jmol, 1), -608.4)
+        self.assertEqual(round(st.sM.JmolK, 2), 9.99)
+        self.assertEqual(round(st.cvM.JmolK, 2), 10.90)
+        self.assertEqual(round(st.cpM.JmolK, 2), 15.10)
+        self.assertEqual(round(st.w, 0), 1356)
+
+        st = pH2(T=30, P=6e5, eq="younglove", rho0=6)
+        self.assertEqual(round(st.rho, 3), 6.368)
+        self.assertEqual(round(st.rhoM, 3), 3.159)
+        self.assertEqual(round(st.uM.Jmol, 1), 278.9)
+        self.assertEqual(round(st.hM.Jmol, 1), 468.8)
+        self.assertEqual(round(st.sM.JmolK, 2), 51.47)
+        self.assertEqual(round(st.cvM.JmolK, 2), 13.79)
+        self.assertEqual(round(st.cpM.JmolK, 2), 34.16)
+        self.assertEqual(round(st.w, 1), 406.1)
+
+        st = pH2(T=400, P=8e5, eq="younglove")
+        self.assertEqual(round(st.rho, 4), 0.4830)
+        self.assertEqual(round(st.rhoM, 4), 0.2396)
+        self.assertEqual(round(st.uM.Jmol, 0), 8092)
+        self.assertEqual(round(st.hM.Jmol, 0), 11430)
+        self.assertEqual(round(st.sM.JmolK, 1), 121.8)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.03)
+        self.assertEqual(round(st.cpM.JmolK, 2), 29.35)
+        self.assertEqual(round(st.w, 0), 1523)
+
+        st = pH2(T=28.5, P=1e6, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 59.48)
+        self.assertEqual(round(st.rhoM, 2), 29.51)
+        self.assertEqual(round(st.uM.Jmol, 1), -326.1)
+        self.assertEqual(round(st.hM.Jmol, 1), -292.2)
+        self.assertEqual(round(st.sM.JmolK, 2), 24.02)
+        self.assertEqual(round(st.cvM.JmolK, 2), 13.15)
+        self.assertEqual(round(st.cpM.JmolK, 2), 35.43)
+        self.assertEqual(round(st.w, 1), 811.5)
+
+        st = pH2(T=85, P=1.5e6, eq="younglove")
+        self.assertEqual(round(st.rho, 3), 4.334)
+        self.assertEqual(round(st.rhoM, 3), 2.150)
+        self.assertEqual(round(st.uM.Jmol, 0), 1058)
+        self.assertEqual(round(st.hM.Jmol, 0), 1755)
+        self.assertEqual(round(st.sM.JmolK, 2), 68.99)
+        self.assertEqual(round(st.cvM.JmolK, 2), 16.22)
+        self.assertEqual(round(st.cpM.JmolK, 2), 25.84)
+        self.assertEqual(round(st.w, 1), 738.8)
+
+        st = pH2(T=120, P=2e6, eq="younglove")
+        self.assertEqual(round(st.rho, 3), 4.009)
+        self.assertEqual(round(st.rhoM, 3), 1.989)
+        self.assertEqual(round(st.uM.Jmol, 0), 1733)
+        self.assertEqual(round(st.hM.Jmol, 0), 2739)
+        self.assertEqual(round(st.sM.JmolK, 2), 76.23)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.96)
+        self.assertEqual(round(st.cpM.JmolK, 2), 31.04)
+        self.assertEqual(round(st.w, 1), 843.7)
+
+        st = pH2(T=340, P=3e6, eq="younglove")
+        self.assertEqual(round(st.rho, 3), 2.104)
+        self.assertEqual(round(st.rhoM, 3), 1.044)
+        self.assertEqual(round(st.uM.Jmol, 0), 6816)
+        self.assertEqual(round(st.hM.Jmol, 0), 9690)
+        self.assertEqual(round(st.sM.JmolK, 1), 106.0)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.29)
+        self.assertEqual(round(st.cpM.JmolK, 2), 29.67)
+        self.assertEqual(round(st.w, 0), 1421)
+
+        st = pH2(T=80, P=4e6, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 12.56)
+        self.assertEqual(round(st.rhoM, 3), 6.230)
+        self.assertEqual(round(st.uM.Jmol, 1), 878.8)
+        self.assertEqual(round(st.hM.Jmol, 0), 1521)
+        self.assertEqual(round(st.sM.JmolK, 2), 58.17)
+        self.assertEqual(round(st.cvM.JmolK, 2), 15.61)
+        self.assertEqual(round(st.cpM.JmolK, 2), 27.86)
+        self.assertEqual(round(st.w, 1), 750.5)
+
+        st = pH2(T=16, P=5e6, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 79.16)
+        self.assertEqual(round(st.rhoM, 2), 39.27)
+        self.assertEqual(round(st.uM.Jmol, 1), -607.8)
+        self.assertEqual(round(st.hM.Jmol, 1), -480.4)
+        self.assertEqual(round(st.sM.JmolK, 2), 10.79)
+        self.assertEqual(round(st.cvM.JmolK, 2), 10.22)
+        self.assertEqual(round(st.cpM.JmolK, 2), 13.25)
+        self.assertEqual(round(st.w, 0), 1348)
+
+        st = pH2(T=400, P=1e7, eq="younglove")
+        self.assertEqual(round(st.rho, 3), 5.783)
+        self.assertEqual(round(st.rhoM, 3), 2.869)
+        self.assertEqual(round(st.uM.Jmol, 0), 8073)
+        self.assertEqual(round(st.hM.Jmol, 0), 11559)
+        self.assertEqual(round(st.sM.JmolK, 1), 100.8)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.16)
+        self.assertEqual(round(st.cpM.JmolK, 2), 29.57)
+        self.assertEqual(round(st.w, 0), 1592)
+
+        st = pH2(T=90, P=2e7, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 43.51)
+        self.assertEqual(round(st.rhoM, 2), 21.58)
+        self.assertEqual(round(st.uM.Jmol, 1), 718.5)
+        self.assertEqual(round(st.hM.Jmol, 0), 1645)
+        self.assertEqual(round(st.sM.JmolK, 2), 45.65)
+        self.assertEqual(round(st.cvM.JmolK, 2), 18.04)
+        self.assertEqual(round(st.cpM.JmolK, 2), 31.21)
+        self.assertEqual(round(st.w, 0), 1135)
+
+        st = pH2(T=400, P=4e7, eq="younglove")
+        self.assertEqual(round(st.rho, 2), 20.32)
+        self.assertEqual(round(st.rhoM, 2), 10.08)
+        self.assertEqual(round(st.uM.Jmol, 0), 8026)
+        self.assertEqual(round(st.hM.Jmol, 0), 11994)
+        self.assertEqual(round(st.sM.JmolK, 2), 89.13)
+        self.assertEqual(round(st.cvM.JmolK, 2), 21.51)
+        self.assertEqual(round(st.cpM.JmolK, 2), 30.04)
+        self.assertEqual(round(st.w, 0), 1812)
+
+        st = pH2(T=40, P=1e8, eq="younglove", rho0=100)
+        self.assertEqual(round(st.rho, 1), 100.8)
+        self.assertEqual(round(st.rhoM, 2), 49.99)
+        self.assertEqual(round(st.uM.Jmol, 1), -252.1)
+        self.assertEqual(round(st.hM.Jmol, 0), 1748)
+        self.assertEqual(round(st.sM.JmolK, 2), 15.64)
+        self.assertEqual(round(st.cvM.JmolK, 2), 14.25)
+        self.assertEqual(round(st.cpM.JmolK, 2), 16.68)
+        self.assertEqual(round(st.w, 0), 2394)
 
     def test_Assael(self):
         # Table 7, Pag 11

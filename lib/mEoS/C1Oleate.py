@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class C1Oleate(MEoS):
@@ -42,18 +42,18 @@ class C1Oleate(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.63, "Debye")
     # id = 919
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [90.2385], "pow": [0.146118],
-           "ao_exp": [234.797, 335.768, 431.66],
-           "exp": [613.529, 1405.31, 2867.76],
-           "ao_hyp": [], "hyp": []}
+           "an": [90.2385/f], "pow": [0.146118],
+           "ao_exp": [234.797/f, 335.768/f, 431.66/f],
+           "exp": [613.529, 1405.31, 2867.76]}
 
     huber = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl oleate of Huber "
                     "et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
-                             "L.S., and Bruno, T.J.",
+                             "L.S., Bruno, T.J.",
                     "title": "Model for the Thermodynamic Properties of a "
                              "Biodiesel Fuel",
                     "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
@@ -64,7 +64,6 @@ class C1Oleate(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.05,
-        "Pmin": 0.0000000004, "rhomin": 3.05,
 
         "nr1": [0.4596121e-1, 2.2954, -3.554366, -0.2291674, 0.6854534e-1],
         "d1": [4, 1, 1, 2, 3],
@@ -131,12 +130,13 @@ class C1Oleate(MEoS):
 class Test(TestCase):
 
     def test_Perkins(self):
-        # TODO: Add viscosity ecs correlation to meet exactly the testing point
+        # Critical enhancement can differ because the viscosity correlation
+        # in paper is not implemented in pychemqt
 
         # Table 3, Pag 2386
         st = C1Oleate(T=450, P=1e2)
         self.assertEqual(round(st.rho, 8), 0.00792666)
-        # self.assertEqual(round(st.k, 7), 0.0110996)
+        self.assertEqual(round(st.k, 7), 0.0111019)
 
         st = C1Oleate(T=450, P=1e6)
         self.assertEqual(round(st.rho, 3), 764.716)

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R143a(MEoS):
@@ -57,8 +57,7 @@ class R143a(MEoS):
     CP1 = {"ao": 1.838736,
            "an": [3.01994e-2, -1.78455e-5, 4.42442e-9],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -77,7 +76,6 @@ class R143a(MEoS):
         "ref": {"Tref": 273.15, "Pref": 1., "ho": 33936.4, "so": 198.961},
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 100000.0, "rhomax": 15.85,
-        "Pmin": 1.0749, "rhomin": 15.832,
 
         "nr1": [.77736443e1, -.870185e1, -.27779799, .1460922, .89581616e-2],
         "d1": [1, 1, 1, 2, 5],
@@ -108,7 +106,6 @@ class R143a(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 15.84,
-        "Pmin": 1.069, "rhomin": 15.8328,
 
         "b": [None, -0.240561786316e-1, 0.262345913719e1, -0.650858041394e2,
               0.995952053681e4, -0.147536464961e7, 0.135498153308e-2,
@@ -137,7 +134,6 @@ class R143a(MEoS):
         "Tc": 345.86, "rhoc": 434/M,
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 50000.0, "rhomax": 15.84,
-        "Pmin": 1.0808, "rhomin": 15.819,
 
         "nr1": [0.01606645, 4.163515, -5.031058, -0.01920208, 0.001470093],
         "d1": [5, 1, 1, 2, 4],
@@ -165,10 +161,9 @@ class R143a(MEoS):
         "R": 8.31451,
         "cp": Fi2,
         "ref": "IIR",
-        "M": 80.04, "Tc": 345.86, "rhoc": 434.1/80.04,
+        "M": 80.04, "Tc": 345.86, "Pc": 3764, "rhoc": 434.1/80.04,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.82,
-        "Pmin": 1.072, "rhomin": 15.816,
 
         "nr1": [1.0306886, -2.9497307, 0.6943523, 0.071552102, 1.9155982e-4],
         "d1": [1, 1, 1, 3, 7],

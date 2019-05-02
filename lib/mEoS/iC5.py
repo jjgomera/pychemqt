@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class iC5(MEoS):
@@ -52,21 +52,23 @@ class iC5(MEoS):
            "pow": [0, 1],
            "ao_pow": [15.449907693, -101.298172792],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [11.7618, 20.1101, 33.1688, 0],
-           "hyp": [0.635392636, 1.977271641, 4.169371131, 0]}
+           "ao_sinh": [11.7618, 33.1688],
+           "sinh": [0.635392636, 4.169371131],
+           "ao_cosh": [20.1101],
+           "cosh": [1.977271641]}
 
-    CP3 = {"ao": 0.396504/8.3143*72.151,
-           "an": [0.260678e-2/8.3143*72.151, 0.93677e-5/8.3143*72.151,
-                  -0.158286e-7/8.3143*72.151,  0.76525e-11/8.3143*72.151],
+    f = 72.151/8.3143
+    CP3 = {"ao": 0.396504*f,
+           "an": [0.260678e-2*f, 0.93677e-5*f, -0.158286e-7*f,  0.76525e-11*f],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
-    CP4 = {"ao": 21.3861/8.3159524*4.184,
+    f = 4.184/8.3159524
+    CP4 = {"ao": 21.3861*f,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [2.1524504e8/8.3159524*4.184, 2.8330244e7/8.3159524*4.184, 0, 0],
-           "hyp": [1.70158e3, 7.75899e2, 0, 0]}
+           "ao_sinh": [2.1524504e8*f], "sinh": [1.70158e3],
+           "ao_cosh": [2.8330244e7*f], "cosh": [7.75899e2]}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -82,7 +84,6 @@ class iC5(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3,
-        "Pmin": 0.83e-7, "rhomin": 10.925,
 
         "nr1": [1.0963, -3.0402, 1.0317, -0.15410, 0.11535, 0.00029809],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -110,7 +111,6 @@ class iC5(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 1000000.0, "rhomax": 13.3,
-        "Pmin": 0.83e-7, "rhomin": 10.925,
 
         "nr1": [0.11017531966644e1, -0.30082368531980e1, 0.99411904271336,
                 -0.14008636562629, 0.11193995351286, 0.29548042541230e-3],
@@ -128,7 +128,7 @@ class iC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isopentane of Polt "
                     "(1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -139,7 +139,6 @@ class iC5(MEoS):
         "ref": "NBP",
 
         "Tmin": 200.0, "Tmax": 553.0, "Pmax": 7500.0, "rhomax": 5.2252,
-        "Pmin": 51.964, "rhomin": 8.7248,
 
         "nr1": [-0.143819012123e1, 0.138298276836e1, -0.203328695121,
                 0.619304204378, -0.311353942178e1, 0.316914412369e1,
@@ -172,7 +171,6 @@ class iC5(MEoS):
         "ref": "NBP",
 
         "Tmin": 199.82, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 9.9258626,
-        "Pmin": 0.34375, "rhomin": 9.9259,
 
         "nr1": [0.179378842786e1, 0.258488286720, -0.812072482201,
                 -0.753941018871, 0.565338153509e-1, -0.115706201242e-2,
@@ -184,21 +182,29 @@ class iC5(MEoS):
         "nr2": [-0.179378842786e1, -0.431019031876],
         "d2": [0, 2],
         "t2": [3, 3],
-        "c2": [2]*2,
+        "c2": [2, 2],
         "gamma2": [0.48056842]*2}
 
     eq = lemmon, GERG, polt, starling
 
     _surface = {"sigma": [0.051], "exp": [1.209]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [0.26977],  "expt0": [-1.], "expd0": [1.],
-                   "a1": [25.31, 0.025], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [108.9, 63.68, -15447, -5449.3],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.83e-7,
-                "Tmin": Tt, "Tmax": 2000.0,
-                "a1": [-7127700000000, 7127700000001], "exp1": [0, 1.563],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [25.31, 0.025], "b": [108.9, 63.68], "c": [-15447, -5449.3],
+        "Au": 73.69, "D": 2}
+
+    _melting = {
+            "eq": 2,
+            "__doi__": {
+                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+                "title": "Melting Curves of Pressure-Transmitting fluids",
+                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+                "doi": "10.1063/1.1725068"},
+
+            "Tmin": Tt, "Tmax": 2000.0,
+            "Tref": Tt, "Pref": 8.952745e-5,
+            "a2": [5916e5], "exp2": [1.563]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.72392e1, 0.22635e1, -0.18237e1, -0.29997e1, -0.27752e1],
@@ -211,22 +217,6 @@ class iC5(MEoS):
         "eq": 2,
         "n": [-38.825, 79.040, -48.791, -21.603, -57.218, -151.64],
         "t": [0.565, 0.66, 0.77, 3.25, 7.3, 16.6]}
-
-   # visco0 = {"eq": 2, "omega": 3,
-              # "__name__": "NIST",
-              # "__doi__": {"autor": "",
-                          # "title": "Coefficients are taken from NIST14, Version 9.08",
-                          # "ref": "",
-                          # "doi": ""},
-
-              # "ek": 341.06, "sigma": 0.56232,
-              # "n_chapman": 0.2267237/M**0.5,
-              # "F": [0, 0, 0, 100.],
-              # "E": [-4.57981980159405, -3393.5243856, 9.3806654324, 33641.3512,
-                    # 0.15624235969, 122.90017543, -20914.795166],
-              # "rhoc": 3.24}
-
-    # _viscosity = visco0,
 
     thermo0 = {"__name__": "Vassiliou (2015)",
                "__doi__": {

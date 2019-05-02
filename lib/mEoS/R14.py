@@ -18,8 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class R14(MEoS):
@@ -43,8 +44,7 @@ class R14(MEoS):
     CP1 = {"ao": 3.9465247,
            "an": [-.88586725e-2, 0.13939626e-3, -0.30056204e-6, 0.20504001e-9],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     platzer = {
         "__type__": "Helmholtz",
@@ -59,7 +59,6 @@ class R14(MEoS):
         "ref": "NBP",
 
         "Tmin": 120.0, "Tmax": 623.0, "Pmax": 51000.0, "rhomax": 20.764,
-        "Pmin": 0.64144, "rhomin": 20.764,
 
         "nr1": [-.334698748966, .586690904687, -.147068929692, .103999039623e1,
                 -.245792025288e1, .799614557889, -.749498954929, .152177772502,
@@ -91,3 +90,32 @@ class R14(MEoS):
         "eq": 2,
         "n": [-.55804e2, .10868e3, -.64257e2, -.11954e4, .36688e4, -.25956e4],
         "t": [0.713, 0.84, 1.0, 5.8, 6.3, 6.6]}
+
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": N2,
+              "visco": "visco0",
+              "thermo": "thermo0",
+
+              "ek": 164.44, "sigma": 0.4543, "omega": 5,
+
+              "psi": [1.10941, -0.0630268], "psi_d": [0, 1],
+              "fint": [1.19864e-3, 1.90048e-7], "fint_t": [0, 1],
+              "chi": [1.0442], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+              "gam0": 0.0496, "qd": 2.26566e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS,
+    _thermal = trnECS,

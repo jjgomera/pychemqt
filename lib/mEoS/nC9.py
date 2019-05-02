@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC9(MEoS):
@@ -52,8 +52,8 @@ class nC9(MEoS):
            "pow": [0, 1],
            "ao_pow": [16.313913248, -102.160247463],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [18.0241, 38.1235, 53.3415, 0],
-           "hyp": [0.263819696, 1.370586158, 2.848860483, 0]}
+           "ao_sinh": [18.0241, 53.3415], "sinh": [0.263819696, 2.848860483],
+           "ao_cosh": [38.1235], "cosh": [1.370586158]}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -70,7 +70,6 @@ class nC9(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06,
-        "Pmin": 0.00044, "rhomin": 6.05,
 
         "nr1": [1.1151, -2.7020, 0.83416, -0.38828, 0.1376, 0.00028185],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -98,7 +97,6 @@ class nC9(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 800000.0, "rhomax": 6.06,
-        "Pmin": 0.00044, "rhomin": 6.05,
 
         "nr1": [0.11151e1, -0.27020e1, 0.83416, -0.38828, 0.13760, 0.28185e-3],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -113,11 +111,11 @@ class nC9(MEoS):
     eq = lemmon, GERG
 
     _surface = {"sigma": [0.053388], "exp": [1.262]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [0.10924],  "expt0": [-1.], "expd0": [1.],
-                   "a1": [44.53, 0.045], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [286.27, 529.31, -83471, -90493],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
+    _dielectric = {
+        "eq": 1,
+        "a": [44.53, 0.045], "b": [286.27, 529.31], "c": [-83471, -90493],
+        "Au": 29.84, "D": 2}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.84804e1, 0.28640e1, -0.37414e1, -0.57479e1, 0.18799e1],

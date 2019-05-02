@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Kr(MEoS):
@@ -62,7 +62,6 @@ class Kr(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 200000.0, "rhomax": 33.42,
-        "Pmin": 73.5, "rhomin": 29.2,
 
         "nr1": [0.83561, -2.3725, 0.54567, 0.014361, 0.066502, 0.00019310],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -80,10 +79,10 @@ class Kr(MEoS):
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for krypton of Polt (1992).",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
-                    "ref": "Chem. Technik 22(1992)6 , 216/224",
+                    "ref": "Chem. Technik 22(1992)6 - 216/224",
                     "doi": ""},
 
         "R": 8.3143,
@@ -91,7 +90,6 @@ class Kr(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 780.0, "Pmax": 375000.0, "rhomax": 33.55,
-        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [-0.402218741560, 0.679250544381, -0.1878869802860,
                 0.603399982935, -0.177297564389e1, 0.581208430222,
@@ -115,20 +113,24 @@ class Kr(MEoS):
     eq = lemmon, polt
 
     _surface = {"sigma": [0.0447], "exp": [1.245]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [6.273], "expt1": [0], "expd1": [1],
-                   "a2": [6.485, 13.48, -82.51, -170.4],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.7, 2.7]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 101.325,
-                "Tmin": Tt, "Tmax": 800.0,
-                "a1": [-2345.757, 1.080476685], "exp1": [0, 1.6169841],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 73.197,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-11.5616], "exp2": [1],
-                    "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [6.273, 0], "b": [6.485, 13.48], "c": [-82.51, -170.4],
+        "Au": 0, "D": 1.7}
+
+    _melting = {
+        "eq": 2,
+        "__doi__": {"autor": "Michels, A., Prins, C.",
+                    "title": "The Melting Lines of Argon, Krypton and Xenon "
+                             "up to 1500 Atm; Representation of the Results "
+                             "by a Law of Corresponding States",
+                    "ref": "Physica 28 (1962) 101-116",
+                    "doi": "10.1016/0031-8914(62)90096-4"},
+
+        "Tmin": Tt, "Tmax": 800.0,
+        "Tref": 1, "Pref": -2345*101325,
+        "a1": [1.08047668519*101325], "exp1": [1.6169841]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.59697e1, 0.12673e1, -0.95609, -0.35630e2, 0.56884e2],
@@ -153,3 +155,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 27.390)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 1667.678)
         self.assertEqual(round(st.w, 3), 137.838)
+
+    def test_Michels(self):
+        # Table I, pag 105
+        self.assertEqual(round(Kr._Melting_Pressure(115.893).atm, 2), 5.52)
+        self.assertEqual(round(Kr._Melting_Pressure(119.069).atm, 2), 110.55)
+        self.assertEqual(round(Kr._Melting_Pressure(138.598).atm, 2), 794.08)
+        self.assertEqual(round(Kr._Melting_Pressure(157.033).atm, 2), 1496.47)

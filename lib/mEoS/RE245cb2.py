@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class RE245cb2(MEoS):
@@ -38,14 +38,12 @@ class RE245cb2(MEoS):
     Tb = unidades.Temperature(278.76)
     f_acent = 0.354
     momentoDipolar = unidades.DipoleMoment(2.785, "Debye")
-    id = 671
     # id = 1817
 
     CP1 = {"ao": 10.196438,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [10.214789, 10.503071, 0.98682562, 0],
-           "hyp": [814, 2031, 3040, 0]}
+           "ao_exp": [10.214789, 10.503071, 0.98682562],
+           "exp": [814, 2031, 3040]}
 
     zhou = {
         "__type__": "Helmholtz",
@@ -61,7 +59,6 @@ class RE245cb2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 400000.0, "rhomax": 10.02,
-        "Pmin": 8.272, "rhomin": 10.,
 
         "nr1": [0.041453162, 1.5010352, -2.3142144, -0.471412, 0.17182],
         "d1": [4, 1, 1, 2, 3],

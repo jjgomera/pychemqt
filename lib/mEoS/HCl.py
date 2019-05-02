@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class HCl(MEoS):
@@ -52,7 +52,7 @@ class HCl(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen chloride of Thol"
                     " et al. (2013)",
-        "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
+        "__doi__": {"autor": "Thol, M., Piazza, L., Span, R.",
                     "title": "A New Functional Form for Equations of State "
                              "for Some Weakly Associating Fluids",
                     "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",
@@ -63,7 +63,6 @@ class HCl(MEoS):
         "ref": "OTO",
 
         "Tmin": 155.0, "Tmax": 330.0, "Pmax": 20000.0, "rhomax": 33.8145,
-        "Pmin": 0.7, "rhomin": 33.8145,
 
         "nr1": [-.40937325, 0.943994574, -1.78830477, 0.128619044,
                 4.39018427e-3, 0.0130480908, 1.69387782e-3],

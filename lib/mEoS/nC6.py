@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC6(MEoS):
@@ -49,27 +49,25 @@ class nC6(MEoS):
            "pow": [0, 1],
            "ao_pow": [14.345969349, -96.165722367],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [11.6977, 26.8142, 38.6164, 0],
-           "hyp": [0.359036667, 1.691951873, 3.596924107, 0]}
+           "ao_sinh": [11.6977, 38.6164], "sinh": [182.326/Tc, 1826.59/Tc],
+           "ao_cosh": [26.8142], "cosh": [859.207/Tc]}
 
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [11.6977, 26.8142, 38.6164, 0],
-           "hyp": [182.326, 859.207, 1826.59, 0]}
+           "ao_sinh": [11.6977, 38.6164], "sinh": [182.326, 1826.59],
+           "ao_cosh": [26.8142], "cosh": [859.207]}
 
     CP3 = {"ao": 2.5200507,
            "an": [0.05280653, -5.7861557e-6, -1.0899040e-8, -1.8988742e-13],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     CP4 = {"ao": 26.6225/8.3159524*4.184,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [2.3738446e8/8.3159524*4.184, 3.5806766e7/8.3159524*4.184,
-                      0, 0],
-           "hyp": [1.71849e3, 8.02069e2, 0, 0]}
+           "ao_sinh": [2.3738446e8/8.3159524*4.184], "sinh": [1.71849e3],
+           "ao_cosh": [3.5806766e7/8.3159524*4.184], "cosh": [8.02069e2]}
 
     shortSpan = {
         "__type__": "Helmholtz",
@@ -87,7 +85,6 @@ class nC6(MEoS):
         "M": 86.177, "Tc": 507.82, "rhoc": 233.18/86.177,
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 8.85,
-        "Pmin": 0.001277, "rhomin": 8.8394,
 
         "nr1": [0.10553238013661e1, -0.26120615890629e1, 0.76613882967260,
                 -0.29770320622459, 0.11879907733358, 0.27922861062617e-3],
@@ -117,7 +114,6 @@ class nC6(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 8.85,
-        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.10553238013661e1, -0.26120615890629e1, 0.76613882967260,
                 -0.29770320622459, 0.11879907733358, 0.27922861062617e-3],
@@ -145,7 +141,6 @@ class nC6(MEoS):
         "ref": "NBP",
 
         "Tmin": 223.0, "Tmax": 623.0, "Pmax": 510000.0, "rhomax": 8.726125,
-        "Pmin": 0.001277, "rhomin": 8.8394,
 
         "nr1": [-0.157654494847e1, 0.178731485778e1, -0.341262936801,
                 0.114919468260e1, -0.381451065649e1, 0.356688884337e1,
@@ -178,7 +173,6 @@ class nC6(MEoS):
         "ref": "NBP",
 
         "Tmin": 222.04, "Tmax": 644.0, "Pmax": 55000.0, "rhomax": 8.6724844,
-        "Pmin": 0.001277, "rhomin": 8.8394,
 
         "nr1": [0.261128818398e1, 0.451396780770, -0.783362300734,
                 -0.108785843809e1, 0.124906986929, -0.155020819852e-1,
@@ -197,7 +191,7 @@ class nC6(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexane of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -209,7 +203,6 @@ class nC6(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [2.43433265, 1.18137185, -4.24411947, 1.08655334e-1,
                 2.87828538e-4, -2.51781047e-1],
@@ -226,11 +219,11 @@ class nC6(MEoS):
     eq = shortSpan, GERG, polt, starling, sun
 
     _surface = {"sigma": [0.210952, -0.158485], "exp": [1.0962, 1.05893]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [0.10924],  "expt0": [-1.], "expd0": [1.],
-                   "a1": [30.18, 0.03], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [222.31, 232.62, -36872, -25733],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
+    _dielectric = {
+        "eq": 1,
+        "a": [30.18, 0.030], "b": [222.31, 232.62], "c": [-36872, -25733],
+        "Au": 29.84, "D": 2}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.74172e1, 0.12897e1, -0.32544e1, -0.14609e1, 0.81765e-1],

@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R114(MEoS):
@@ -40,11 +40,12 @@ class R114(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.658, "Debye")
     id = 231
 
-    CP1 = {"ao": 0.97651380e-1,
-           "an": [0.3240861e-2, -0.5895364e-5, 0.6737929e-8, -0.3546364e-11],
+    f = 1/8.31451*170.93
+    CP1 = {"ao": 0.97651380e-1*f,
+           "an": [0.3240861e-2*f, -0.5895364e-5*f, 0.6737929e-8*f,
+                  -0.3546364e-11*f],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     platzer = {
         "__type__": "Helmholtz",
@@ -59,7 +60,6 @@ class R114(MEoS):
         "ref": "NBP",
 
         "Tmin": 273.15, "Tmax": 507.0, "Pmax": 21000.0, "rhomax": 8.942,
-        "Pmin": 0.2, "rhomin": 10.4,
 
         "nr1": [-0.340776521414, 0.323001398420, -0.424950537596e-1,
                 0.107938879710e1, -0.199243619673e1, -0.155135133506,

@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class iC8(MEoS):
@@ -43,14 +43,13 @@ class iC8(MEoS):
     CP1 = {"ao": 10.76,
            "an": [], "pow": [],
            "ao_exp": [15.48, 34.42, 21.42],
-           "exp": [775, 1900, 5100],
-           "ao_hyp": [], "hyp": []}
+           "exp": [775, 1900, 5100]}
 
     blackham = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isooctane of Blackham "
                     "and Lemmon (2011).",
-        "__doi__": {"autor": "Blackham, T.M. and Lemmon, E.W.",
+        "__doi__": {"autor": "Blackham, T.M., Lemmon, E.W.",
                     "title": "",
                     "ref": "to be published in Int. J. Thermophys., 2011.",
                     "doi": ""},
@@ -60,7 +59,6 @@ class iC8(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 1000000.0, "rhomax": 6.97,
-        "Pmin": 0.00001796, "rhomin": 6.96,
 
         "nr1": [0.568901e-1, 0.196155e1, -0.281164e1, -0.815112, 0.326583],
         "d1": [4, 1, 1, 2, 3],

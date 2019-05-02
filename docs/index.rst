@@ -14,7 +14,6 @@ Welcome to pychemqt's documentation!
 
 .. include:: README.rst
 
-
 Indices and tables
 ==================
 
@@ -23,3 +22,5 @@ Indices and tables
 * :ref:`search`
 
 .. include:: modules.rst
+
+`Here <references.html>`__ there is a complete list of refererences used in the program.

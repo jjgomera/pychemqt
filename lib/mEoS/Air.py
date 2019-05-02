@@ -18,10 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+from math import log
 from unittest import TestCase
 
-from lib.meos import MEoSBlend
 from lib import unidades
+from lib.meos import MEoSBlend
 
 
 class Air(MEoSBlend):
@@ -58,8 +59,8 @@ class Air(MEoSBlend):
         "__name__": "Helmholtz equation of state for air of Lemmon et al. "
                     "(2000)",
         "__doi__": {
-            "autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., and "
-                     "Friend, D.G.",
+            "autor": "Lemmon, E.W., Jacobsen, R.T, Penoncello, S.G., Friend, "
+                     "D.G.",
             "title": "Thermodynamic Properties of Air and Mixtures of "
                      "Nitrogen, Argon, and Oxygen From 60 to 2000 K at "
                      "Pressures to 2000 MPa",
@@ -73,7 +74,6 @@ class Air(MEoSBlend):
         "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 53.73,
-        "Pmin": 5.2646, "rhomin": 33.067,
 
         "Tj": 132.6312, "Pj": 3.78502,
         "dew": {"i": [1, 2, 5, 8],
@@ -103,7 +103,7 @@ class Air(MEoSBlend):
                     "(1992)",
         "__doi__": {
             "autor": "Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., "
-                     "Clarke, W.P., and Lemmon, E.W.",
+                     "Clarke, W.P., Lemmon, E.W.",
             "title": "A Thermodynamic Property Formulation for Air",
             "ref": "Fluid Phase Equilibria, 79:113-124, 1992.",
             "doi": "10.1016/0378-3812(92)85124-Q"},
@@ -114,7 +114,6 @@ class Air(MEoSBlend):
         "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
 
         "Tmin": Tt, "Tmax": 870.0, "Pmax": 70000.0, "rhomax": 34.628,
-        "Pmin": 6.2545, "rhomin": 33.073,
 
         "Tj": 132.61738, "Pj": 3.78502,
         "dew": {"i": [1, 2, 10, 11, 13, 14],
@@ -149,11 +148,36 @@ class Air(MEoSBlend):
     eq = lemmon, jacobsen
 
     _surface = {"sigma": [0.03046], "exp": [1.28]}
-    _melting = {"eq": 1, "Tref": Tb, "Pref": 5.265,
-                "Tmin": 59.75, "Tmax": 2000.0,
-                "a1": [1, 0.354935e5, -0.354935e5],
-                "exp1": [0, 0.178963e1, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": lemmon["__doi__"],
+        "Tmin": 59.75, "Tmax": 2000.0,
+        "Tref": Tt, "Pref": 5265,
+
+        "a0": 1,
+        "a2": [35493.5], "exp2": [1.78963]}
+
+    # Dew-point density
+    _liquid_Density = {
+        "eq": 2,
+        "n": [-2.0466, -4.752, -13.259, -47.652],
+        "t": [0.41, 1, 2.8, 6.5]}
+
+    def _Vapor_Density(self, T):
+        """Bubble-point density ancillary equation, Eq 2 in Lemmon reference"""
+        if T < self.Tt:
+            T = self.Tt
+        if T > 132.6312:
+            T = 132.6312
+
+        Tita = 1-T/132.6312
+
+        N = [44.3413, -240.073, 285.139, -88.3366, -0.892181]
+        rhor = 1 + N[0]*Tita**0.65 + N[1]*Tita**0.85 + N[2]*Tita**0.95 + \
+            N[3]*Tita**1.1 + N[4]*log(T/132.6312)
+
+        return unidades.Density(rhor*10.4477*self.M)
 
     visco0 = {"__name__": "Lemmon (2004)",
               "__doi__": {
@@ -223,7 +247,7 @@ class Test(TestCase):
         self.assertEqual(round(Air._dewP(130).MPa, 5), 3.30835)
 
         # Selected point from Table A2, Pag 366
-        st = Air(T=100, P=101325)
+        st = Air(T=100, P=101325, rho0=1)
         self.assertEqual(round(st.rhoM, 5), 0.12449)
         self.assertEqual(round(st.uM.kJkmol, 1), 2028.2)
         self.assertEqual(round(st.hM.kJkmol, 1), 2842.1)
@@ -293,10 +317,3 @@ class Test(TestCase):
         self.assertEqual(round(Air(rhom=10, T=200).k.mWmK, 4), 35.3185)
         self.assertEqual(round(Air(rhom=5, T=300).k.mWmK, 4), 32.6062)
         self.assertEqual(round(Air(rhom=10.4, T=132.64).k.mWmK, 4), 75.6231)
-
-
-if __name__ == "__main__":
-    from iapws.humidAir import Air as Air2
-    st = Air(rhom=28, T=100)
-    st1 = Air2(rhom=28, T=100)
-    print(st.k.mWmK, st1.k)

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R1234ze(MEoS):
@@ -39,32 +39,24 @@ class R1234ze(MEoS):
     Tb = unidades.Temperature(254.177)
     f_acent = 0.313
     momentoDipolar = unidades.DipoleMoment(1.27, "Debye")
-    id = 671
 
     Fi1 = {"ao_log": [1, 3],
-           "pow": [0, 1],
-           "ao_pow": [-12.558347537, 8.7912297624],
-           "ao_exp": [9.3575, 10.717],
-           "titao": [513/Tc, 1972/Tc],
-           "ao_hyp": [], "hyp": []}
+           "pow": [0, 1], "ao_pow": [-12.558347537, 8.7912297624],
+           "ao_exp": [9.3575, 10.717], "titao": [513/Tc, 1972/Tc]}
 
     Fi2 = {"ao_log": [1, 5.8887],
            "pow": [], "ao_pow": [],
            "ao_exp": [7.0804, 9.3371, 2.5577],
-           "titao": [620/Tc, 1570/Tc, 3953/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [620/Tc, 1570/Tc, 3953/Tc]}
 
     Fi3 = {"ao_log": [1, 3],
-           "pow": [0, 1],
-           "ao_pow": [-10.8724711, -30.1326538],
-           "ao_exp": [6.07536, 9.95795],
-           "titao": [289/Tc, 1303/Tc],
-           "ao_hyp": [], "hyp": []}
+           "pow": [0, 1], "ao_pow": [-10.8724711, -30.1326538],
+           "ao_exp": [6.07536, 9.95795], "titao": [289/Tc, 1303/Tc]}
 
     thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze of Thol (2016)",
-        "__doi__": {"autor": "Thol, M. and Lemmon, E.W.",
+        "__doi__": {"autor": "Thol, M., Lemmon, E.W.",
                     "title": "Equation of State for the Thermodynamic"
                              "Properties of trans-1,3,3,3-Tetrafluoroporpene"
                              "[R-1234ze(E)]",
@@ -76,7 +68,6 @@ class R1234ze(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.26,
-        "Pmin": 0.2187, "rhomin": 13.26,
 
         "nr1": [0.03982797, 1.812227, -2.537512, -0.5333254, 0.1677031],
         "d1": [4, 1, 1, 2, 3],
@@ -117,7 +108,6 @@ class R1234ze(MEoS):
         "Tc": 382.52, "rhoc": 4.29, "M": 114.0415928,
 
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.20,
-        "Pmin": 0.23, "rhomin": 13.19,
 
         "nr1": [0.055563, 1.66927, -2.53408, -0.475075, 0.190055],
         "d1": [4, 1, 1, 2, 3],
@@ -154,7 +144,6 @@ class R1234ze(MEoS):
         "ref": "IIR",
 
         "Tmin": 240., "Tmax": 420.0, "Pmax": 15000.0, "rhomax": 13.20,
-        "Pmin": 0.23, "rhomin": 13.19,
 
         "nr1": [8.5579765, -9.4701332, -0.25013623, 0.1378987, 0.012177113],
         "d1": [1, 1, 1, 2, 5],

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Cyclopentane(MEoS):
@@ -46,8 +46,7 @@ class Cyclopentane(MEoS):
            "pow": [0, 1],
            "ao_pow": [-0.3946233253, 2.4918910143],
            "ao_exp": [1.34, 13.4, 17.4, 6.65],
-           "titao": [230/Tc, 1180/Tc, 2200/Tc, 5200/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [230/Tc, 1180/Tc, 2200/Tc, 5200/Tc]}
 
     gedanitz = {
         "__type__": "Helmholtz",
@@ -64,7 +63,6 @@ class Cyclopentane(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 250000.0, "rhomax": 12.11,
-        "Pmin": 0.008854, "rhomin": 12.1,
 
         "nr1": [0.0630928, 1.50365, -2.37099, -0.484886, 0.191843],
         "d1": [4, 1, 1, 2, 3],

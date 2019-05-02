@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class RE245fa2(MEoS):
@@ -42,9 +42,8 @@ class RE245fa2(MEoS):
 
     CP1 = {"ao": 5.259865,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [12.12843, 13.25677, 0.521867, 0],
-           "hyp": [486, 1762, 7631, 0]}
+           "ao_exp": [12.12843, 13.25677, 0.521867],
+           "exp": [486, 1762, 7631]}
 
     zhou = {
         "__type__": "Helmholtz",
@@ -60,7 +59,6 @@ class RE245fa2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 400000.0, "rhomax": 10.02,
-        "Pmin": 8.272, "rhomin": 10.,
 
         "nr1": [0.47771378e-1, 0.15745383e1, -0.24763491e1, -0.49414564,
                 0.19380498],

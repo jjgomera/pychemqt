@@ -23,8 +23,8 @@ from unittest import TestCase
 from scipy import exp, log, pi
 from scipy.constants import Boltzmann
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class NH3(MEoS):
@@ -49,15 +49,13 @@ class NH3(MEoS):
            "ao_log": [1, -1],
            "pow": [0, 1, 1/3, -1.5, -1.75],
            "ao_pow": [-15.81502, 4.255726, 11.47434, -1.296211, 0.5706757],
-           "ao_exp": [], "titao": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "titao": []}
 
     CP2 = {"ao": 5.111814,
            "an": [-0.42966650e2, -0.10243792e-1, 0.38750775e-4, -0.46406097e-7,
                   0.20268561e-10],
-           "pow": [-1.001, 1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "pow": [-1, 1, 2, 3, 4],
+           "ao_exp": [], "exp": []}
 
     tillner = {
         "__type__": "Helmholtz",
@@ -75,7 +73,6 @@ class NH3(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 700., "Pmax": 1000000.0, "rhomax": 52.915,
-        "Pmin": 6.09, "rhomin": 43.035,
 
         "nr1": [-0.1858814e01, 0.4554431e-1, 0.7238548, 0.1229470e-1,
                 0.2141882e-10],
@@ -95,17 +92,17 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Ahrendts "
                     "and Baehr (1979)",
-        "__doi__": {"autor": "Ahrendts, J. and Baehr, H.D.",
+        "__doi__": {"autor": "Ahrendts, J., Baehr, H.D.",
                     "title": "The Thermodynamic Properties of Ammonia",
                     "ref": "VDI-Forsch., Number 596, 1979.",
                     "doi": ""},
 
         "R": 8.31434,
+        "M": 17.03026, "Tc": 405.4, "Pc": 11333, "rhoc": 13.212,
         "cp": CP2,
         "ref": "IIR",
 
         "Tmin": 195.486, "Tmax": 600., "Pmax": 400000.0, "rhomax": 44.0,
-        "Pmin": 6.0339, "rhomin": 43.137,
 
         "nr1": [0.911447599671, -0.382129415537e1, 0.147730246416e1,
                 0.580205129871e-1, -0.574413226616e-3, 0.153018094697,
@@ -142,7 +139,6 @@ class NH3(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 52.915,
-        "Pmin": 6.0531, "rhomin": 43.158,
         "M": 17.031, "rhoc": 13.211203,
 
         "nr1": [0.7302272, -1.1879116, -0.68319136, 0.040028683, 9.0801215e-5],
@@ -160,7 +156,7 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -172,7 +168,6 @@ class NH3(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [3.29159441e-1, 8.48237019e-1, -2.30706412, 4.08625188e-2,
                 6.79597481e-5, 4.99412149e-2],
@@ -188,11 +183,19 @@ class NH3(MEoS):
 
     eq = tillner, ahrendts, shortSpan, sun
 
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 700.0,
-                "a1": [], "exp1": [], "a2": [], "exp2": [],
-                "a3": [0.2533125e4], "exp3": [1]}
     _surface = {"sigma": [0.1028, -0.09453], "exp": [1.211, 5.585]}
+    _melting = {
+        "eq": 1,
+        "__doi__": {
+            "autor": "Haar, L., Gallagher, J.S.",
+            "title": "Thermodynamic Properties of Ammonia",
+            "ref": "J. Phys. Chem. Ref. Data 7(3) (1978) 635-792",
+            "doi": "10.1063/1.555579"},
+
+        "Tmin": Tt, "Tmax": 700.0,
+        "Tref": Tt, "Pref": 101325,
+        "a3": [2.5e4], "exp3": [1]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.70993e1, -0.24330e1, 0.87591e1, -0.64091e1, -0.21185e1],

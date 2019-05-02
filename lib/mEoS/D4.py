@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class D4(MEoS):
@@ -53,10 +53,10 @@ class D4(MEoS):
            "ao_exp": [0.292757, 38.2456, 58.975],
            "titao": [40/Tc, 200/Tc, 1800/Tc]}
 
-    CP1 = {"ao": -18.256,
-           "an": [1427.2e-3, -990.20e-6, 300.0e-9], "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+    f = 8.314472
+    CP1 = {"ao": -18.256/f,
+           "an": [1427.2e-3/f, -990.20e-6/f, 300.0e-9/f], "pow": [1, 2, 3],
+           "ao_exp": [], "exp": []}
 
     thol = {
         "__type__": "Helmholtz",
@@ -69,12 +69,11 @@ class D4(MEoS):
                     "doi":  ""},
 
         "R": 8.3144621,
+        "Tc": 586.5, "rhoc": 1.043, "Pc": 1347,
         "cp": Fi1,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 1200.0, "Pmax": 520000.0, "rhomax": 5.266,
-        # "Pmin": 0.00269, "rhomin": 5.2,
-        "Tc": 586.5, "rhoc": 1.043, "Pc": 1347,
 
         "nr1": [5.273743e-2, 4.176401, -4.737070, -1.289588, 5.272749e-1],
         "d1": [4, 1, 1, 2, 3],
@@ -110,7 +109,6 @@ class D4(MEoS):
         "ref": "NBP",
 
         "Tmin": 300.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.21,
-        "Pmin": 0.0696, "rhomin": 3.2,
 
         "nr1": [1.05392408, -2.22981918, 0.77573923, -0.6937405, 0.18721557,
                 0.42193330e-3],
@@ -137,7 +135,7 @@ class D4(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-0.16204e1, -0.57888e1, -0.24291e2, 0.53567e2, -0.12135e3,
-               -0.10976e4],
+              -0.10976e4],
         "t": [0.31, 0.78, 2.5, 4.4, 5.0, 15.0]}
 
 

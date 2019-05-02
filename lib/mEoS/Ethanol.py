@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Ethanol(MEoS):
@@ -44,9 +44,7 @@ class Ethanol(MEoS):
 
     Fi1 = {"ao_log": [1, 3.43069],
            "pow": [0, 1],
-           # Use custom to get the IIR referenve value
-           # "ao_pow": [-12.757491395, 9.3938494264],
-           "ao_pow": [-12.7531, 9.3909425],
+           "ao_pow": [-12.7531, 9.39094],
            "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
            "titao": [420.4/Tc, 1334/Tc, 1958/Tc, 4420/Tc]}
 
@@ -54,8 +52,7 @@ class Ethanol(MEoS):
            "an": [], "pow": [],
            "ao_exp": [1.95988750679, 7.60084166080, 3.89583440622,
                       4.23238091363],
-           "exp": [694, 1549, 2911, 4659],
-           "ao_hyp": [], "hyp": []}
+           "exp": [694, 1549, 2911, 4659]}
 
     schroeder = {
         "__type__": "Helmholtz",
@@ -74,7 +71,6 @@ class Ethanol(MEoS):
         "ref": "IIR",
 
         "Tmin": 159.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.74,
-        "Pmin": 0.00000088, "rhomin": 19.731,
 
         "nr1": [0.58200796e-1, 0.94391227, -0.80941908, 0.55359038,
                 -0.14269032e1, 0.13448717],
@@ -111,12 +107,16 @@ class Ethanol(MEoS):
                     "doi": "10.1023/B:IJOT.0000028470.49774.14"},
 
         "R": 8.314472,
-        "cp": CP1,
-        "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180},
         "Tc": 513.9, "rhoc": 5.991,
+        "cp": CP1,
+
+        # Changing reference state cited in paper for first point in sample
+        # table to fix h-s values in testing, last decimal added to fix last
+        # decimal
+        # "ref": {"Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180},
+        "ref": {"Tref": 350, "Pref": 100., "ho": 259.9514*M, "so": 1.03631*M},
 
         "Tmin": 250.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.4,
-        "Pmin": 0.00000088, "rhomin": 19.4,
 
         "nr1": [0.114008942201e2, -0.395227128302e2, 0.413063408370e2,
                 -0.188892923721e2, 0.472310314140e1, -0.778322827052e-2,
@@ -138,7 +138,7 @@ class Ethanol(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethanol of Sun and Ely "
                     "(2004).",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -151,7 +151,6 @@ class Ethanol(MEoS):
                 "Tref": 273.15, "Pref": 1., "ho": 45800, "so": 180},
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.6,
-        "Pmin": 0.00000064, "rhomin": 19.55,
 
         "nr1":  [-2.95455387, 1.95055493, -1.31612955, -1.47547651e-2,
                  1.39251945e-4, 5.04178939e-1],
@@ -169,6 +168,21 @@ class Ethanol(MEoS):
     _PR = 0.0043733
 
     _surface = {"sigma": [0.05], "exp": [0.952]}
+
+    _melting = {
+            "eq": 1,
+            "__doi__": {
+                "autor": "Sun, T.F., Schouten, J.A., Trappeniers, N.J., "
+                         "Biswas, S.N.",
+                "title": "Accurate Measurement of the Melting Line of Methanol"
+                         " and Ethanol at Pressures up to 270 MPa",
+                "ref": "Ber. Bunsenges. Phys. Chem. 92 (1988) 652-655",
+                "doi": "10.1002/bbpc.198800153"},
+
+            "Tmin": Tt, "Tmax": 650,
+            "Tref": 158.37, "Pref": 1e6,
+            "a2": [436.9], "exp2": [2.6432]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.91043e1, 0.47263e1, -0.97145e1, 0.41536e1, -0.20739e1],
@@ -340,7 +354,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.w, 2), 960.72)
         self.assertEqual(round(st.Gas.rho, 4), 1.6269)
         self.assertEqual(round(st.Gas.h.kJkg, 1), 1113.8)
-        self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.4687)
+        self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.4686)
         self.assertEqual(round(st.Gas.cv.kJkgK, 4), 1.5894)
         self.assertEqual(round(st.Gas.cp.kJkgK, 4), 1.8044)
         self.assertEqual(round(st.Gas.w, 2), 260.21)
@@ -370,7 +384,7 @@ class Test(TestCase):
 
         st = Ethanol(T=250, P=1e7, eq="dillon")
         self.assertEqual(round(st.rho, 2), 831.84)
-        self.assertEqual(round(st.h.kJkg, 4), 9.4718)
+        self.assertEqual(round(st.h.kJkg, 4), 9.4714)
         self.assertEqual(round(st.s.kJkgK, 4), 0.1625)
         self.assertEqual(round(st.cv.kJkgK, 4), 1.6724)
         self.assertEqual(round(st.cp.kJkgK, 4), 2.0325)

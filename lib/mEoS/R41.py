@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R41(MEoS):
@@ -45,21 +45,15 @@ class R41(MEoS):
     Fi1 = {"ao_log": [1, 3.],
            "pow": [0, 1, -1],
            "ao_pow": [-4.8676441160, 4.2527951258, -0.0268688568],
-           "ao_exp": [5.6936, 2.9351],
-           "titao": [1841/Tc, 4232/Tc]}
+           "ao_exp": [5.6936, 2.9351], "titao": [1841/Tc, 4232/Tc]}
 
     CP1 = {"ao": 4,
-           "an": [0.00016937],
-           "pow": [1],
-           "ao_exp": [5.6936, 2.9351],
-           "exp": [1841, 4232],
-           "ao_hyp": [], "hyp": []}
+           "an": [0.00016937], "pow": [1],
+           "ao_exp": [5.6936, 2.9351], "exp": [1841, 4232]}
 
     CP2 = {"ao": 4.59643,
-           "an": [-9.48588e-3, 3.96059e-5, -2.85616e-8],
-           "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "an": [-9.48588e-3, 3.96059e-5, -2.85616e-8], "pow": [1, 2, 3],
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -76,7 +70,6 @@ class R41(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 70000.0, "rhomax": 29.66,
-        "Pmin": 0.345, "rhomin": 29.65,
 
         "nr1": [1.6264, -2.8337, 0.0010932, 0.037136, 0.00018724],
         "d1": [1, 1, 1, 3, 7],
@@ -103,7 +96,6 @@ class R41(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 29.6,
-        "Pmin": 0.343, "rhomin": 29.6,
 
         "nr1": [0.85316, -2.6366, 0.69129, 0.054681, 0.00012796],
         "d1": [1, 1, 1, 3, 7],
@@ -132,7 +124,6 @@ class R41(MEoS):
         "ref": "NBP",
 
         "Tmin": 175.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.1006,
-        "Pmin": 0.32, "rhomin": 29.66,
 
         "b": [None, -0.326441485138e-1, 0.338620074694e1, -0.831696847103e2,
               0.139589938388e5, -0.156113972752e7, -0.165160386413e-2,

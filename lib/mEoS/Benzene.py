@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Benzene(MEoS):
@@ -52,8 +52,7 @@ class Benzene(MEoS):
            "an": [0.618649e-2/8.3143*78.108, -0.380363e-5/8.3143*78.108,
                   0.699648e-9/8.3143*78.108, 0.42661e-13/8.3143*78.108],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     thol = {
         "__type__": "Helmholtz",
@@ -70,7 +69,6 @@ class Benzene(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 725, "Pmax": 500000.0, "rhomax": 11.45,
-        "Pmin": 4.78, "rhomin": 11.45,
 
         "nr1": [0.03513062, 2.229707, -3.100459, -0.5763224, 0.2504179],
         "d1": [4, 1, 1, 2, 3],
@@ -95,7 +93,7 @@ class Benzene(MEoS):
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Polt (1992).",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -105,7 +103,6 @@ class Benzene(MEoS):
         "ref": "NBP",
 
         "Tmin": 278.7, "Tmax": 635.0, "Pmax": 78000.0, "rhomax": 11.45,
-        "Pmin": 6.0329, "rhomin": 11.385,
 
         "nr1": [-0.918572178424, 0.155357491575e1, -0.356149241161,
                 0.817273664265, -0.331303917534e1, 0.335336626528e1,
@@ -127,7 +124,7 @@ class Benzene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for benzene of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -138,7 +135,6 @@ class Benzene(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.76284970, 1.02610647, -3.74263321, 9.57682041e-2,
                 2.59179321e-4, -1.03082188e-1],
@@ -254,14 +250,13 @@ class Test(TestCase):
 
         # Table 5, Saturation line, give too liquid density values to check
         # Thol mEoS
-        # FIXME: Strange saturation returned values for density
-        # st = Benzene(T=280, x=0)
-        # self.assertEqual(round(st.Liquido.rho, 3), 892.701)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 795.3)
+        st = Benzene(T=280, x=0)
+        self.assertEqual(round(st.Liquido.rho, 3), 892.701)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 795.3)
 
-        # st = Benzene(T=400, x=0)
-        # self.assertEqual(round(st.Liquido.rho, 3), 758.650)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 1), 209.9)
+        st = Benzene(T=400, x=0)
+        self.assertEqual(round(st.Liquido.rho, 3), 758.649)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 209.9)
 
         st = Benzene(T=540, x=0)
         self.assertEqual(round(st.Liquido.rho, 3), 508.838)
@@ -273,11 +268,6 @@ class Test(TestCase):
         # visco0 correlation, so tiny desviations are for that cause
         self.assertEqual(round(Benzene(T=290, rho=890).k.mWmK, 2), 147.65)
         self.assertEqual(round(Benzene(T=500, rho=2).k.mWmK, 3), 30.174)
-        # self.assertEqual(round(Benzene(T=500, rho=32).k.mWmK, 3), 32.175)
-        # self.assertEqual(round(Benzene(T=500, rho=800).k.mWmK, 2), 141.24)
+        self.assertEqual(round(Benzene(T=500, rho=32).k.mWmK, 3), 32.209)
+        self.assertEqual(round(Benzene(T=500, rho=800).k.mWmK, 2), 141.22)
         self.assertEqual(round(Benzene(T=570, rho=1.7).k.mWmK, 3), 37.763)
-
-
-if __name__ == "__main__":
-    st = Benzene(T=500, rho=32)
-    print(st.k.mWmK)

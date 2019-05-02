@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class MM(MEoS):
@@ -48,11 +48,11 @@ class MM(MEoS):
            "ao_exp": [18.59, 29.58, 19.74, 4.87],
            "titao": [20/Tc, 1400/Tc, 3600/Tc, 6300/Tc]}
 
-    CP1 = {"ao": -51.894,
-           "an": [741.34e-3, -416e-6, 70e-9],
+    f = 8.314472
+    CP1 = {"ao": 51.894/f,
+           "an": [741.34e-3/f, -416e-6/f, 70e-9/f],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     thol = {
         "__type__": "Helmholtz",
@@ -63,28 +63,27 @@ class MM(MEoS):
                     "title": "Fundamental equation of state correlation for "
                              "hexamethyldisiloxane based on experimental and "
                              "molecular simulation data",
-                    # TODO: Search reference
-                    "ref": "Fluid Phase Equilibria, ",
+                    "ref": "Fluid Phase Equilibria 418 (2016) 133-151",
                     "doi":  "10.1016/j.fluid.2015.09.047"},
 
         "R": 8.3144621,
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": 220.0, "Tmax": 1200.0, "Pmax": 600000.0, "rhomax": 5.266,
+        "Tmin": Tt, "Tmax": 1200.0, "Pmax": 600000.0, "rhomax": 5.266,
         "M": 162.3768, "Tc": 518.7, "rhoc": 1.653, "Pc": 1931.1,
 
-        "nr1": [0.5063651e-1, 0.8604724, -0.9179684, -0.1146325, 0.4878559],
+        "nr1": [0.5063651e-1, 8.604724, -9.179684, -1.146325, 0.4878559],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1, 0.346, 0.46, 1.01, 0.59],
 
-        "nr2": [-0.2434088, -0.1621326, 0.6239872, -0.2306057, -0.5555096e-1],
+        "nr2": [-2.434088, -1.621326, 0.6239872, -2.306057, -0.5555096e-1],
         "d2": [1, 3, 2, 2, 7],
         "t2": [2.600, 3.330, 0.750, 2.950, 0.930],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
 
-        "nr3": [0.9385015, -0.2493508, -0.3308032, -0.1885803, -0.9883865e-1,
+        "nr3": [9.385015, -2.493508, -3.308032, -0.1885803, -0.9883865e-1,
                 0.1111090, 0.1061928, -0.1452454e-1],
         "d3": [1, 1, 3, 3, 1, 2, 3, 1],
         "t3": [1.33, 1.68, 1.7, 3.08, 5.41, 1.4, 1.1, 5.3],
@@ -110,7 +109,6 @@ class MM(MEoS):
         "ref": "NBP",
 
         "Tmin": 273.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 5.21,
-        "Pmin": 0.00269, "rhomin": 5.2,
 
         "nr1": [1.01686012, -2.19713029, 0.75443188, -0.68003426, 0.19082162,
                 0.10530133e-2],
@@ -150,56 +148,44 @@ class Test(TestCase):
         # PhD thesis, Ruhr-Universität Bochum, 2015.
 
         # Appendix A, Pag 259
-
-        # The values in table are not good, trying to use the values report by
-        # CoolProp
-
-        # from CoolProp. CoolProp import PropsSI
-        # P = PropsSI("P", "T", 250, "Dmolar", 0.0001, "MM")
-        P = 0.20785
-        # Cp = PropsSI("Cpmolar", "T", 250, "Dmolar", 0.0001, "MM")
-        Cp = 216.5
+        # The two first point are inverted in table
 
         st = MM(T=250, rhom=0.0001, eq="thol")
-        self.assertEqual(round(st.P.kPa, 5), P)
-        self.assertEqual(round(st.cpM.JmolK, 1), Cp)
+        self.assertEqual(round(st.P.MPa, 11), 2.0772979e-4)
+        self.assertEqual(round(st.cpM.JmolK, 5), 216.58261)
+        self.assertEqual(round(st.w, 5), 115.31572)
+        self.assertEqual(round(st.hM.Jmol, 4), 1715.1951)
+        self.assertEqual(round(st.sM.JmolK, 6), 38.943461)
+        self.assertEqual(round(st.aM.Jmol, 3), -10097.968)
 
-        # st = MM(T=250, rhom=0.0001, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 2.3550378)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 290.08362)
-        # self.assertEqual(round(st.w, 4), 1068.3855)
-        # self.assertEqual(round(st.hM.Jmol, 3), -38660.059)
-        # self.assertEqual(round(st.sM.JmolK, 6), -126.50073)
-        # self.assertEqual(round(st.aM.Jmol, 6), -7505.8829)
+        st = MM(T=250, rhom=5, eq="thol")
+        self.assertEqual(round(st.P.MPa, 7), 2.3550378)
+        self.assertEqual(round(st.cpM.JmolK, 5), 290.08361)
+        self.assertEqual(round(st.w, 4), 1068.3855)
+        self.assertEqual(round(st.hM.Jmol, 3), -38660.057)
+        self.assertEqual(round(st.sM.JmolK, 5), -126.50074)
+        self.assertEqual(round(st.aM.Jmol, 4), -7505.8794)
 
-        # st = MM(T=250, rhom=5, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 2.0772979e-4)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 2.1658262e-2)
-        # self.assertEqual(round(st.w, 4), 115.31572)
-        # self.assertEqual(round(st.hM.Jmol, 3), 1715.1940)
-        # self.assertEqual(round(st.sM.JmolK, 6), 38.943471)
-        # self.assertEqual(round(st.aM.Jmol, 6), -10097.972)
+        st = MM(T=400, rhom=0.05, eq="thol")
+        self.assertEqual(round(st.P.MPa, 8), 0.15367468)
+        self.assertEqual(round(st.cpM.JmolK, 5), 293.72933)
+        self.assertEqual(round(st.w, 5), 134.70433)
+        self.assertEqual(round(st.hM.Jmol, 3), 38493.817)
+        self.assertEqual(round(st.sM.JmolK, 6), 99.143187)
+        self.assertEqual(round(st.aM.Jmol, 4), -4236.9519)
 
-        # st = MM(T=400, rhom=0.05, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 0.15367468)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 293.72934)
-        # self.assertEqual(round(st.w, 4), 134.70433)
-        # self.assertEqual(round(st.hM.Jmol, 3), 38493.817)
-        # self.assertEqual(round(st.sM.JmolK, 6), 99.143201)
-        # self.assertEqual(round(st.aM.Jmol, 6), -4236.9572)
+        st = MM(T=400, rhom=4.5, eq="thol")
+        self.assertEqual(round(st.P.MPa, 6), 40.937214)
+        self.assertEqual(round(st.cpM.JmolK, 5), 339.40133)
+        self.assertEqual(round(st.w, 5), 930.21218)
+        self.assertEqual(round(st.hM.Jmol, 3), 13672.106)
+        self.assertEqual(round(st.sM.JmolK, 6), 11.063873)
+        self.assertEqual(round(st.aM.Jmol, 5), 149.39757)
 
-        # st = MM(T=400, rhom=4.5, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 40.937214)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 339.40134)
-        # self.assertEqual(round(st.w, 4), 930.21218)
-        # self.assertEqual(round(st.hM.Jmol, 3), 1367.2106)
-        # self.assertEqual(round(st.sM.JmolK, 6), 11.063887)
-        # self.assertEqual(round(st.aM.Jmol, 6), 149.39229)
-
-        # st = MM(T=560, rhom=4.5, eq="thol")
-        # self.assertEqual(round(st.P.MPa, 8), 123.02530)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 387.27688)
-        # self.assertEqual(round(st.w, 4), 1132.8991)
-        # self.assertEqual(round(st.hM.Jmol, 3), 83661.459)
-        # self.assertEqual(round(st.sM.JmolK, 6), 119.31485)
-        # self.assertEqual(round(st.aM.Jmol, 6), -10493.815)
+        st = MM(T=560, rhom=4.5, eq="thol")
+        self.assertEqual(round(st.P.MPa, 5), 123.02530)
+        self.assertEqual(round(st.cpM.JmolK, 5), 387.27687)
+        self.assertEqual(round(st.w, 4), 1132.8991)
+        self.assertEqual(round(st.hM.Jmol, 3), 83661.457)
+        self.assertEqual(round(st.sM.JmolK, 5), 119.31484)
+        self.assertEqual(round(st.aM.Jmol, 3), -10493.807)

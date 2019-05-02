@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from scipy import log10
 from scipy.constants import pi, Avogadro
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Ne(MEoS):
@@ -45,7 +45,7 @@ class Ne(MEoS):
 
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     katti = {
         "__type__": "Helmholtz",
@@ -63,7 +63,6 @@ class Ne(MEoS):
         "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 6179, "so": 146.214},
 
         "Tmin": Tt, "Tmax": 700.0, "Pmax": 700000.0, "rhomax": 90.56,
-        "Pmin": 43.464, "rhomin": 62.059,
 
         "nr1": [0.3532653449e1, -0.4513954384e1, -0.1524027959, 0.2188568609e1,
                 -7.44299997, 0.7755627402e1, -0.3122553128e1, 0.1014206899e1,
@@ -90,19 +89,25 @@ class Ne(MEoS):
 
     _surface = {"sigma": [0.012254, 0.02728, -0.025715],
                 "exp": [1.4136, 1.4517, 1.6567]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [0.9969], "expt1": [0], "expd1": [1],
-                   "a2": [-0.109, 0.0708, -2.88, -1.],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 43.36814,
-                "Tmin": Tt, "Tmax": 700.0,
-                "a1": [1., 4437.], "exp1": [0, 1.33],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 43.464,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-10.65], "exp2": [1], "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [0.9969, 0], "b": [-0.109, 0.0708], "c": [-2.88, -1.0],
+        "Au": 0, "D": 2}
+
+    _melting = {
+        "eq": 2,
+        "__doi__": {
+            "autor": "Santamaría-Pérez, D., Mukherjee, G.D., Schwager, B., "
+                     "Boehler, R.",
+            "title": "High-pressure melting curve of helium and neon: "
+                     "Deviations from corresponding states theory",
+            "ref": "Physical Review B 81 (2010) 214101",
+            "doi": "10.1103/PhysRevB.81.214101"},
+
+        "Tmin": 24.4, "Tmax": 700.0,
+        "Tref": 24.4, "Pref": 101325,
+
+        "a2": [0.17e9], "exp2": [1/0.77]}
 
     _vapor_Pressure = {
         "eq": 3,

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class pXylene(MEoS):
@@ -52,7 +52,7 @@ class pXylene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylbenzene of Zhou et "
                     "al. (2012).",
-        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., and Wu, J.",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., Wu, J.",
                     "title": "Thermodynamic Properties of o-Xylene, m-Xylene, "
                              "p-Xylene, and Ethylbenzene",
                     "ref": "J. Phys. Chem. Ref. Data 41, 023103 (2012).",
@@ -63,7 +63,6 @@ class pXylene(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 700.0, "Pmax": 200000.0, "rhomax": 8.166,
-        "Pmin": 0.580, "rhomin": 8.165,
 
         "nr1": [0.0010786811, -0.103161822, 0.0421544125, 1.47865376, -2.4266,
                 -0.46575193, 0.190290995],

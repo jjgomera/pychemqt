@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC5(MEoS):
@@ -49,33 +49,31 @@ class nC5(MEoS):
            "pow": [0, 1],
            "ao_pow": [],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [8.95043, 21.836, 33.4032, 0],
-           "hyp": [0.380391739, 1.789520971, 3.777411113, 0]}
+           "ao_sinh": [8.95043, 33.4032], "sinh": [0.380391739, 3.777411113],
+           "ao_cosh": [21.836], "cosh": [1.789520971]}
 
     CP0 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [8.95043, 21.836, 33.4032, 0],
-           "hyp": [178.67, 840.538, 1774.25, 0]}
+           "ao_sinh": [8.95043, 33.4032], "sinh": [178.67, 1774.25],
+           "ao_cosh": [21.836], "cosh": [840.538]}
 
     CP1 = {"ao": 10.288132,
            "an": [-0.2695377e-1, 0.20951065e-3, -0.27910773e-6, 0.12266269e-9],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
-    CP2 = {"ao": 22.5012/8.3159524*4.184,
+    f = 4.184/8.3159524
+    CP2 = {"ao": 22.5012*f,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [2.057417e8/8.3159524*4.184, 2.972927e7/8.3159524*4.184,
-                      0, 0],
-           "hyp": [1.71958e3, 8.02069e2, 0, 0]}
+           "ao_sinh": [2.057417e8*f], "sinh": [1.71958e3],
+           "ao_cosh": [2.972927e7*f], "cosh": [8.02069e2]}
 
     CP3 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [9.751560716, 22.71445741, 11.65392685],
-           "exp": [404.8796661, 1785.491483, 4504.430788],
-           "ao_hyp": [], "hyp": []}
+           "exp": [404.8796661, 1785.491483, 4504.430788]}
 
     shortSpan = {
         "__type__": "Helmholtz",
@@ -93,7 +91,6 @@ class nC5(MEoS):
         "M": 72.15, "Tc": 469.7, "rhoc": 232/72.15,
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 11.2,
-        "Pmin": 0.76322e-4, "rhomin": 10.566,
 
         "nr1": [0.10968643e1, -0.29988888e1, 0.99516887, -0.16170709,
                 0.11334460, 0.26760595e-3],
@@ -123,7 +120,6 @@ class nC5(MEoS):
         "ref": "OTO",
 
         "Tmin": 143.47, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 10.57,
-        "Pmin": 73.476, "rhomin": 29.249,
 
         "nr1": [0.10968643098001e1, -0.29988888298061e1, 0.99516886799212,
                 -0.16170708558539, 0.11334460072775, 0.26760595150748e-3],
@@ -151,7 +147,6 @@ class nC5(MEoS):
         "ref": "NBP",
 
         "Tmin": 238.0, "Tmax": 573.0, "Pmax": 30000.0, "rhomax": 9.410819,
-        "Pmin": 3.624503, "rhomin": 9.3861,
 
         "nr1": [-0.117648900900e1, 0.163499095773e1, -0.366669005817,
                 0.724947274043, -0.221919300269e1, 0.188671490348e1,
@@ -183,7 +178,6 @@ class nC5(MEoS):
         "ref": "NBP",
 
         "Tmin": 177.0, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 10.2534,
-        "Pmin": 0.011064, "rhomin": 10.253,
 
         "nr1": [0.175873733594e1, 0.485604047435, -0.111896446456e1,
                 -0.685918143315, 0.368714111378e-1, -0.167498784887e-2,
@@ -202,7 +196,7 @@ class nC5(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for pentane of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -214,7 +208,6 @@ class nC5(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [2.20261753, 1.07797592, -3.82130221, 1.06627357e-1,
                 3.07513215e-4, -2.84309667e-1],
@@ -245,7 +238,6 @@ class nC5(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 11.2,
-        "Pmin": 0.0000815, "rhomin": 10.558,
 
         "b": [None, -7.41533782499e-2, 7.54044021950, -1.93328401588e2,
               3.39428034054e4, -5.12571561595e6, 1.51195406963e-3,
@@ -263,15 +255,23 @@ class nC5(MEoS):
 
     _surface = {"sigma": [0.08015, 0.004384, -0.03437],
                 "exp": [1.408, 1.031, 1.818]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [0.10924],  "expt0": [-1.], "expd0": [1.],
-                   "a1": [25.39, 0.025], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [78.39, 54.15, -12480, -4800.0],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 3, 3]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.76322e-4,
-                "Tmin": Tt, "Tmax": 2000.0,
-                "a1": [-8647500000, 8647500001], "exp1": [0, 1.649],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [25.39, 0.025], "b": [78.39, 54.15], "c": [-12480, -4800.0],
+        "Au": 29.84, "D": 2}
+
+    _melting = {
+            "eq": 2,
+            "__doi__": {
+                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+                "title": "Melting Curves of Pressure-Transmitting fluids",
+                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+                "doi": "10.1063/1.1725068"},
+
+            "Tmin": Tt, "Tmax": 2000.0,
+            "Tref": Tt, "Pref": 0.076321,
+            "a2": [6600e5], "exp2": [1.649]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.73918e1, 0.31102e1, -0.22415e1, -0.31585e1, -0.90451],

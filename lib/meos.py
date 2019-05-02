@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-'''Pychemqt, Chemical Engineering Process simulator
+r'''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2017, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -18,16 +18,139 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Library to impolement high accuracy multiparameter equation of state based in
-free Helmholtz energy or MBWR
+This module implement high accuracy multiparameter equation of state. The
+supported equation include the fundamental equation of state explicit in the
+Helmholtz energy and the modified Benedict-Webb-Rubin (mBWR) equation of state.
+The module implement too the calculation using the Peng-Robinson cubic
+equation of state.
 
-:class:`MEOS`: Main class with all functionality
+
+The ideal gas contribution is equal for all equation of state implemented. It
+uses the equation for ideal gas specific heat so all fluid must define it
+in subclass fluid definition
+
+.. math::
+  \begin{array}[t]{l}
+  f^o(\rho,T) = h^o(T)-RT-Ts^o(\rho,T)\\
+  h^o(T) = \intop_{T_{o}}^{T}C_{p}^{o}dT+h_{0}^{o}\\
+  s^o(T) = \intop_{T_o}^{T}\frac{C_{p}^{o}-R}{T}dT -
+  R\ln\left(\frac{\rho}{\rho_0^o}\right)+s_{0}^{o}\\
+  \end{array}
+
+
+**Helmholtz**
+
+Most modern, high-accuracy equation of state use this general form explicit
+in the free Helmholtz energy as a function of temperature and density.
+
+.. math::
+    \frac{A(\rho,T)}{RT} = \phi(\delta,\tau) = \phi^o(\delta,\tau) +
+    \phi^r(\delta,\tau)
+
+The residual contribution is a combination of term
+
+.. math::
+  \begin{array}[t]{l}
+  \phi^r = \phi^r_{Pol}+\phi^r_{Exp}+\phi^r_{GBS}+\phi^r_{NA}\\
+  \phi^r_{Pol} = \sum_i n_i\delta^{d_i}\tau^{t_i}\\
+  \phi^r_{Exp} = \sum_i n_i\delta^{d_i}\tau^{t_i} e^{-\gamma_i\delta^{c_i}}\\
+  \phi^r_{GBS} = \sum_i n_i\delta^{d_i}\tau^{t_i} e^{-\alpha(\delta-
+  \epsilon_i)^2-\beta_i(\tau-\gamma_i)^2}\\
+  \phi^r_{NA} = \sum n\Delta^{b_i}\delta e^{-C_i\left(\delta-1\right)^2-D_i
+  \left(\tau-1\right)^2}\\
+  \Delta = \theta^2+B_i\left(\left(\delta-1\right)^2\right)^{a_i}\\
+  \theta = (1-\tau)+A_i\left(\left(\delta-1\right)^2\right)^{1/2\beta_ i}\\
+  \end{array}
+
+The polynomial and exponential term are common to all equations, the Gaussian
+bell shaped are used to improved accuracy in critical region. The nonanalytic
+terms are used to represent the steep variation of icochoric heat capacity and
+speed of sound near the critical point. They are only used for water and carbon
+dioxide reference equation of state, they are very time computing.
+
+
+**MBWR (modified Benedict-Webb-Rubin)**
+
+Pressure explicit equation of state as a function of temperature and density
+
+.. math::
+    P = \sum_{n=1}^9a_n\rho^n + \exp\left(-\delta^2\right)
+    \sum_{n=10}^{15}a_n\rho^{2n-17}
+
+where:
+
+.. math::
+  \begin{array}[t]{l}
+  \delta = \rho/\rho_c\\
+  a_1 = RT\\
+  a_2 = b_1T + b_2T^{1/2} + b_3 + b_4/T + b_5/T^2\\
+  a_3 = b_6T+b_7+b_8T+b_9/T^2\\
+  a_4 = b_{10}T+b_{11}+b_{12}/T\\
+  a_5 = b_{13}\\
+  a_6 = b_{14}/T+b_{15}/T^2\\
+  a_7 = b_{16}/T\\
+  a_8 = b_{17}/T+b_{18}/T^2\\
+  a_9 = b_{19}/T^2\\
+  a_{10} = b_{20}/T^2+b_{21}/T^3\\
+  a_{11} = b_{22}/T^2+b_{23}/T^4\\
+  a_{12} = b_{24}/T^2+b_{25}/T^3\\
+  a_{13} = b_{26}/T^2+b_{27}/T^4\\
+  a_{14} = b_{28}/T^2+b_{29}/T^3\\
+  a_{15} = b_{30}/T^2+b_{31}/T^3+b_{32}/T^4\\
+  \end{array}
+
+:math:`b_i` are the coefficient of equation saved in dict
+
+
+**Cubic equation of state**
+
+Cubic pressure-explicit equations of state can be expressed with the general
+form:
+
+.. math::
+    P = \frac{RT}{V-b}-\frac{\alpha(T)}{\left(v+\Delta_1b\right)
+    \left(v+\Delta_2b\right)}
+
+From this formulation it's possible calculate the Helmholtz free energy with
+the equation:
+
+.. math::
+  \begin{array}[t]{l}
+  \alpha^r = \psi^{(-)}-\frac{\tau\alpha}{RT_c}\psi^{(+)}\\
+  \psi^{(-)} = -\ln \left(1-b\delta\rho_c\right)\\
+  \psi^{(+)} = \frac{\ln\left(\frac{\Delta_1b\rho_c\delta+1}{\Delta_2b\rho_c
+  \delta+1}\right)}{b\left(\Delta_1-\Delta_2\right)}\\
+  \end{array}
+
+
+Module Code
+-----------
+
+The module include the following functions:
+
+:class:`MEoS`: Main class with all functionality
+
+The module implement too high accuracy correlation for viscosity and thermal
+conductivity, see the documentation of its calculation procedure:
+
+    * :func:`MEoS._Viscosity`
+    * :func:`MEoS._ThCond`
+
 
 Other functions used in iteration calculation to try to speed up it:
 
     * :func:`_Helmholtz_phir`
     * :func:`_Helmholtz_phird`
     * :func:`_Helmholtz_phirt`
+
+    * :func:`_MBWR_phir`
+    * :func:`_MBWR_phird`
+    * :func:`_MBWR_phirt`
+
+    * :func:`_PR_phir`
+    * :func:`_PR_phird`
+    * :func:`_PR_phirt`
+
 '''
 
 
@@ -91,7 +214,7 @@ __doi__ = {
     7:
         {"autor": "Tariq, U., Jusoh, A.R.B., Riesco, N., Vesovic, V.",
          "title": "Reference Correlation of the Viscosity of Cyclohexane from "
-                  " the Triple Point to 700K and up to 110 MPa",
+                  "the Triple Point to 700K and up to 110 MPa",
          "ref": "J. Phys. Chem. Ref. Data 43(3) (2014) 033101",
          "doi": "10.1063/1.4891103"},
     8:
@@ -112,8 +235,6 @@ __doi__ = {
                   "Thermodynamic Property Data",
          "ref": "Springer, 2000",
          "doi": ""},
-
-
     11:
         {"autor": "Younglove, B.A., McLinden, M.O.",
          "title": "An International Standard Equation of State for the "
@@ -121,47 +242,88 @@ __doi__ = {
                   "(2,2-Dichloro-1,1,1-trifluoroethane)",
          "ref": "J. Phys. Chem. Ref. Data, 23(5) (1994) 731-779",
          "doi": "10.1063/1.555950"},
-
-
-
     12:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
-
-    # 1:
-        # {"autor": "Reeves, L.E., Scott, G.J., Babb, S.E., Jr.",
-         # "title": "Melting Curves of Pressure‐Transmitting Fluids ",
-         # "ref": "J. Chem. Phys. 40, 3662 (1964)",
-         # "doi": "10.1063/1.1725068"},
-    # 2:
-        # {"autor": "Harvey, A.H. and Lemmon, E.W.",
-         # "title": "Method for Estimating the Dielectric Constant of "
-                  # "Natural Gas Mixtures ",
-         # "ref": "Int. J. Thermophys., 26(1):31-46, 2005.",
-         # "doi": "10.1007/s10765-005-2351-5"},
-
-    10:
+        {"autor": "Peng, D.-Y., Robinson, D.B.",
+         "title": "A New Two-Constant Equation of State",
+         "ref": "Ind. Eng. Chem. Fund. 15(1) (1976) 59-64",
+         "doi": "10.1021/i160057a011"},
+    13:
+        {"autor": "Péneloux, A, Rauzy, E., Frèze, R.",
+         "title": "A Consistent Correction for Redlich-Kwong-Soave Volumes",
+         "ref": "Fluid Phase Equilibria 8 (1982) 7-23",
+         "doi": "10.1016/0378-3812(82)80002-2"},
+    14:
+        {"autor": "Bell, I.H., Jäger, A.",
+         "title": "Helmholtz Energy Transformations of Common Cubic Equations "
+                  "of State for Use with Pure Fluids and Mixtures",
+         "ref": "J. Res. of NIST 121 (2016) 236-263",
+         "doi": "10.6028/jres.121.011"},
+    15:
+        {"autor": "Laesecke, A., Perkins, R.A., Howley, J.B.",
+         "title": "An improved correlation for the thermal conductivity of "
+                  "HCFC123 (2,2-dichloro-1,1,1-trifluoroethane)",
+         "ref": "Int. J. Refrigeration 19(4) (1996) 231-238",
+         "doi":  "10.1016/0140-7007(96)00019-9"},
+    16:
         {"autor": "Olchowy, G.A., Sengers, J.V.",
          "title": "A Simplified Representation for the Thermal Conductivity "
                   "of Fluids in the Critical Region",
          "ref": "Int. J. Thermophys. 10(2) (1989) 417-426",
          "doi": "10.1007/bf01133538"},
+    17:
+        {"autor": "Friend, D.G., Ely, J.F., Ingham, H.",
+         "title": "Thermophysical Properties of Methane",
+         "ref": "J. Phys. Chem. Ref. Data 18(2) (1989) 583-638",
+         "doi": "10.1063/1.555828"},
+    18:
+        {"autor": "Friend, D.G., Ingham, H., Ely, J.F.",
+         "title": "Thermophysical Properties of Ethane",
+         "ref": "J. Phys. Chem. Ref. Data 20, 275 (1991)",
+         "doi": "10.1063/1.555881"},
+    19:
+        {"autor": "Hanley H.J.M., McCarty, R.D., Haynes, W.M.",
+         "title": "The Viscosity and Thermal Conductivity Coefficient for "
+                  "Dense Gaseous and Liquid Argon, Krypton, Xenon, Nitrogen "
+                  "and Oxigen",
+         "ref": "J. Phys. Chem. Ref. Data 3(4) (1974) 979-1018",
+         "doi": "10.1063/1.3253152"},
+    20:
+        {"autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+         "title": "Model for the Viscosity and Thermal Conductivity of "
+                  "Refrigerants, Including a New Correlation for the "
+                  "Viscosity of R134a",
+         "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+         "doi": "10.1021/ie0300880"},
+    21:
+        {"autor": "Estela-Uribe, J.F., Trusler, J.P.M.",
+         "title": "Extended corresponding states model for fluids and fluid"
+                  "mixtures I. Shape factor model for pure fluids",
+         "ref": "Fluid Phase Equilibria 204 (2003) 15-40",
+         "doi": "10.1016/s0378-3812(02)00190-5"},
+    22:
+        {"autor": "McLinden, M.O., Klein, S.A., Perkins, R.A.",
+         "title": "An Extended corresponding states model for the thermal "
+                  "conductivity of refrigerants and refrigerant mixtures",
+         "ref": "Int. J. Refrigeration 23 (2000) 43-63",
+         "doi": "10.1016/s0140-7007(99)00024-9"},
+    23:
+        {"autor": "Jaeschke, M., Schley, P.",
+         "title": "Ideal-Gas Thermodynamic Properties for Natural Gas "
+                  "Applications",
+         "ref": "Int. J. Thermophys. 16(6) (1995) 1381-1392",
+         "doi": "10.1007/bf02083547"},
+    24:
+        {"autor": "Harvey, A.H., Lemmon, E.W.",
+         "title": "Method for Estimating the Dielectric Constant of "
+                  "Natural Gas Mixtures ",
+         "ref": "Int. J. Thermophys. 26(1) (2005) 31-46",
+         "doi": "10.1007/s10765-005-2351-5"},
 
-    49:
-        {"autor": "Chung, T.H., Ajlan, M., Lee, L.L., Starling, K.E.",
-         "title": "Generalized Multiparameter Correlation for Nonpolar and "
-                  "Polar Fluid Transport Properties",
-         "ref": "Ind. Eng. Chem. Res. 27(4) (1988) 671-679",
-         "doi": "10.1021/ie00076a024"},
-    50:
-        {"autor": "Chung, T.H., Lee, L.L., Starling, K.E.",
-         "title": "Applications of Kinetic Gas Theories and Multiparameter "
-                  "Correlation for Prediction of Dilute Gas Viscosity and "
-                  "Thermal Conductivity",
-         "ref": "Ind. Eng. Chem. Fundam. 23(1) (1984) 8-13",
-         "doi": "10.1021/i100013a002"},
+    25:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
 
         }
 
@@ -232,16 +394,6 @@ def _Helmholtz_phir(tau, delta, coef):
             F = exp(-C*(delta-1)**2-D*(tau-1)**2)
             Delta = Tita**2+B*((delta-1)**2)**a
             fir += n*Delta**b*delta*F
-
-        # Hard sphere term
-        if coef.get("Fi", None):
-            f = coef["Fi"]
-            n = 0.1617
-            a = 0.689
-            g = 0.3674
-            X = n*delta/(a+(1-a)/tau**g)
-
-            fir += (f**2-1)*log(1-X)+((f**2+3*f)*X-3*f*X**2)/(1-X)**2
 
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
@@ -342,8 +494,7 @@ def _Helmholtz_phird(tau, delta, coef):
     Returns
     -------
     fird : float
-        .. math::
-          \left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}
+        :math:`\left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}`
     """
     fird = 0
 
@@ -401,17 +552,6 @@ def _Helmholtz_phird(tau, delta, coef):
 
             fird += n*(Delta**b*(F+delta*Fd)+DeltaBd*delta*F)
 
-        # Hard sphere term
-        if coef.get("Fi", None):
-            f = coef["Fi"]
-            n = 0.1617
-            a = 0.689
-            g = 0.3674
-            X = n*delta/(a+(1-a)/tau**g)
-            Xd = n/(a+(1-a)/tau**g)
-            ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
-            fird += ahdX*Xd
-
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
             if delta < 0.2:
@@ -433,61 +573,6 @@ def _Helmholtz_phird(tau, delta, coef):
     return fird
 
 
-def _MBWR_phird(T, rho, rhoc, M, coef):
-    r"""Residual contribution to the free Helmholtz energy for MBWR EoS, delta
-    derivative
-
-    Parameters
-    ----------
-    T : float
-        Temperature, [K]
-    rho : float
-        Density, [kg/m³]
-    rhoc : float
-        Critical density, [kg/m³]
-    M : float
-        Molecular weight, [g/mol]
-    coef : dict
-        Parameters of MBWR equation of state
-
-    Returns
-    -------
-    fird : float
-        .. math::
-          \left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}
-    """
-    delta = rho/rhoc
-    rhom = rho/M
-    b = coef["b"]
-    R = coef["R"]
-
-    # Equation B2
-    a = [None]
-    # Use the gas constant in l·bar/mol·K
-    a.append(R/100*T)
-    a.append(b[1]*T + b[2]*T**0.5 + b[3] + b[4]/T + b[5]/T**2)
-    a.append(b[6]*T + b[7] + b[8]/T + b[9]/T**2)
-    a.append(b[10]*T + b[11] + b[12]/T)
-    a.append(b[13])
-    a.append(b[14]/T + b[15]/T**2)
-    a.append(b[16]/T)
-    a.append(b[17]/T + b[18]/T**2)
-    a.append(b[19]/T**2)
-    a.append(b[20]/T**2 + b[21]/T**3)
-    a.append(b[22]/T**2 + b[23]/T**4)
-    a.append(b[24]/T**2 + b[25]/T**3)
-    a.append(b[26]/T**2 + b[27]/T**4)
-    a.append(b[28]/T**2 + b[29]/T**3)
-    a.append(b[30]/T**2 + b[31]/T**3 + b[32]/T**4)
-
-    # Eq B1
-    P = sum([a[n]*rhom**n for n in range(1, 10)])
-    P += exp(-(delta**2))*sum([a[n]*rhom**(2*n-17) for n in range(10, 16)])
-    P *= 100  # Convert from bar to kPa
-
-    return (P/rhom/T/R-1)/delta
-
-
 def _Helmholtz_phirt(tau, delta, coef):
     r"""Residual contribution to the free Helmholtz energy, tau derivative
 
@@ -503,8 +588,7 @@ def _Helmholtz_phirt(tau, delta, coef):
     Returns
     -------
     firt : float
-        .. math::
-            \left.\frac{\partial \phi^r}{\partial \tau}\right|_{\delta}
+        :math:`\left.\frac{\partial \phi^r}{\partial \tau}\right|_{\delta}`
     """
     firt = 0
 
@@ -559,17 +643,6 @@ def _Helmholtz_phirt(tau, delta, coef):
             DeltaBt = -2*Tita*b*Delta**(b-1)
             firt += n*delta*(DeltaBt*F+Delta**b*Ft)
 
-        # Hard sphere term
-        if coef.get("Fi", None):
-            f = coef["Fi"]
-            n = 0.1617
-            a = 0.689
-            g = 0.3674
-            X = n*delta/(a+(1-a)/tau**g)
-            Xt = n*delta*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-            ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
-            firt += ahdX*Xt
-
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
             if delta < 0.2:
@@ -586,6 +659,128 @@ def _Helmholtz_phirt(tau, delta, coef):
             firt += factor*frt
 
     return firt
+
+
+def _MBWR_phir(T, rho, rhoc, M, coef):
+    r"""Residual contribution to the free Helmholtz energy for MBWR EoS
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    rho : float
+        Density, [kg/m³]
+    rhoc : float
+        Critical density, [kg/m³]
+    M : float
+        Molecular weight, [g/mol]
+    coef : dict
+        Parameters of MBWR equation of state
+
+    Returns
+    -------
+    fir : float
+        :math:`\phi^r`, adimensional free Helmholtz energy, [-]
+    """
+    rhom = rho/M
+    rhocm = rhoc/M
+    delta = rho/rhoc
+
+    b = coef["b"]
+    R = coef["R"]
+
+    # Equation B2
+    a = [None]
+    # Use the gas constant in l·bar/mol·K
+    a.append(R/100*T)
+    a.append(b[1]*T + b[2]*T**0.5 + b[3] + b[4]/T + b[5]/T**2)
+    a.append(b[6]*T + b[7] + b[8]/T + b[9]/T**2)
+    a.append(b[10]*T + b[11] + b[12]/T)
+    a.append(b[13])
+    a.append(b[14]/T + b[15]/T**2)
+    a.append(b[16]/T)
+    a.append(b[17]/T + b[18]/T**2)
+    a.append(b[19]/T**2)
+    a.append(b[20]/T**2 + b[21]/T**3)
+    a.append(b[22]/T**2 + b[23]/T**4)
+    a.append(b[24]/T**2 + b[25]/T**3)
+    a.append(b[26]/T**2 + b[27]/T**4)
+    a.append(b[28]/T**2 + b[29]/T**3)
+    a.append(b[30]/T**2 + b[31]/T**3 + b[32]/T**4)
+
+    # Eq B6
+    A = 0
+    for n in range(2, 10):
+        A += a[n]/(n-1)*rhom**(n-1)
+
+    A -= 0.5*a[10]*rhocm**2*(exp(-delta**2)-1)
+    A -= 0.5*a[11]*rhocm**4*(exp(-delta**2)*(delta**2+1)-1)
+    A -= 0.5*a[12]*rhocm**6*(exp(-delta**2)*(
+        delta**4+2*delta**2+2)-2)
+    A -= 0.5*a[13]*rhocm**8*(exp(-delta**2)*(
+        delta**6+3*delta**4+6*delta**2+6)-6)
+    A -= 0.5*a[14]*rhocm**10*(exp(-delta**2)*(
+        delta**8+4*delta**6+12*delta**4+24*delta**2+24)-24)
+    A -= 0.5*a[15]*rhocm**12*(exp(-delta**2)*(
+        delta**10+5*delta**8+20*delta**6+60*delta**4+120*delta**2+120)-120)
+    A = A*100  # Convert from L·bar/mol to J/mol
+
+    return A/R/T
+
+
+def _MBWR_phird(T, rho, rhoc, M, coef):
+    r"""Residual contribution to the free Helmholtz energy for MBWR EoS, delta
+    derivative
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    rho : float
+        Density, [kg/m³]
+    rhoc : float
+        Critical density, [kg/m³]
+    M : float
+        Molecular weight, [g/mol]
+    coef : dict
+        Parameters of MBWR equation of state
+
+    Returns
+    -------
+    fird : float
+        :math:`\left.\frac{\partial \phi^r}{\partial \delta}\right|_{\tau}`
+    """
+    rhom = rho/M
+    delta = rho/rhoc
+
+    b = coef["b"]
+    R = coef["R"]
+
+    # Equation B2
+    a = [None]
+    # Use the gas constant in l·bar/mol·K
+    a.append(R/100*T)
+    a.append(b[1]*T + b[2]*T**0.5 + b[3] + b[4]/T + b[5]/T**2)
+    a.append(b[6]*T + b[7] + b[8]/T + b[9]/T**2)
+    a.append(b[10]*T + b[11] + b[12]/T)
+    a.append(b[13])
+    a.append(b[14]/T + b[15]/T**2)
+    a.append(b[16]/T)
+    a.append(b[17]/T + b[18]/T**2)
+    a.append(b[19]/T**2)
+    a.append(b[20]/T**2 + b[21]/T**3)
+    a.append(b[22]/T**2 + b[23]/T**4)
+    a.append(b[24]/T**2 + b[25]/T**3)
+    a.append(b[26]/T**2 + b[27]/T**4)
+    a.append(b[28]/T**2 + b[29]/T**3)
+    a.append(b[30]/T**2 + b[31]/T**3 + b[32]/T**4)
+
+    # Eq B1
+    P = sum([a[n]*rhom**n for n in range(1, 10)])
+    P += exp(-(delta**2))*sum([a[n]*rhom**(2*n-17) for n in range(10, 16)])
+    P *= 100  # Convert from bar to kPa
+
+    return (P/rhom/T/R-1)/delta
 
 
 def _MBWR_phirt(T, Tc, rho, rhoc, M, coef):
@@ -609,13 +804,13 @@ def _MBWR_phirt(T, Tc, rho, rhoc, M, coef):
     Returns
     -------
     firt : float
-        .. math::
-            \left.\frac{\partial \phi^r}{\partial \tau}\right|_{\delta}
+        :math:`\left.\frac{\partial \phi^r}{\partial \tau}\right|_{\delta}`
     """
-    tau = Tc/T
-    delta = rho/rhoc
     rhom = rho/M
     rhocm = rhoc/M
+    tau = Tc/T
+    delta = rho/rhoc
+
     b = coef["b"]
     R = coef["R"]
 
@@ -764,6 +959,11 @@ class MEoS(ThermoAdvanced):
     _viscosity = None
     _thermal = None
     _critical = None
+
+    # Conformal ecs calculated properties, saved here to avoid recalculate
+    _T0_ecs = None
+    _rho0_ecs = None
+    _ecs_msg = ""
 
     _test = []
 
@@ -967,6 +1167,8 @@ class MEoS(ThermoAdvanced):
         # Define general documentation
         if self._surface and "__doi__" not in self._surface:
             self._surface["__doi__"] = __doi__[1]
+        if self._dielectric and "__doi__" not in self._dielectric:
+            self._dielectric["__doi__"] = __doi__[24]
 
     def __call__(self, **kwargs):
         """Make instance callable to let definition one parameters for one"""
@@ -996,8 +1198,6 @@ class MEoS(ThermoAdvanced):
         elif self.eq[eq]["__type__"] == "Helmholtz":
             self._constants = self.eq[eq]
         elif self.eq[eq]["__type__"] == "MBWR":
-            self._constants = self.eq[eq]
-        elif self.eq[eq]["__type__"] == "ECS":
             self._constants = self.eq[eq]
 
         if not self._code:
@@ -1129,6 +1329,12 @@ class MEoS(ThermoAdvanced):
         propiedades = None
         vapor = None
         liquido = None
+
+        # Special rhoc for MBWR with gamma defined
+        if self._constants["__type__"] == "MBWR" and \
+                "gamma" in self._constants:
+            rhocm = 1/(-self._constants["gamma"])**0.5
+            self.rhoc = rhocm*self.M
 
         # Procedure for each input option
         if self._mode == "T-P":
@@ -2147,6 +2353,14 @@ class MEoS(ThermoAdvanced):
             self.Svap = unidades.SpecificHeat(None)
         self.invT = unidades.InvTemperature(-1/self.T)
 
+        # Returned the real rhoc value for MBWR with gamma defined
+        if self._constants["__type__"] == "MBWR" and \
+                "gamma" in self._constants:
+            if "rhoc" in self._constants:
+                self.rhoc = unidades.Density(self._constants["rhoc"]*self.M)
+            else:
+                self.rhoc = self.__class__.rhoc
+
         # Phase identification parameter
         # PI = 2-rho*(d2PdrhodT/dPdT-d2pdrho2/dPdrho)
 
@@ -2318,6 +2532,13 @@ class MEoS(ThermoAdvanced):
         fird = estado["fird"]
         firdd = estado["firdd"]
         firdt = estado["firdt"]
+
+        fase.fir = fir
+        fase.fird = fird
+        fase.firdd = firdd
+        fase.firt = firt
+        fase.firtt = firtt
+        fase.firdt = firdt
 
         h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird) + \
             self.href-self.hoffset
@@ -2497,14 +2718,19 @@ class MEoS(ThermoAdvanced):
         return rhoL, rhoG, Ps
 
     def _eq(self, rho, T):
+        """Define the calculation method to use"""
         delta = rho/self.rhoc
         tau = self.Tc/T
 
         prop = self._phi0(self._constants["cp"], tau, delta)
 
-        if self._constants["__type__"] == "Helmholtz":
+        if self._code == "PR":
+            res = self._PengRobinson(rho, T)
+
+        elif self._constants["__type__"] == "Helmholtz":
             res = self._Helmholtz(tau, delta)
             prop["P"] = (1+delta*res["fird"])*self.R*T*rho
+
         elif self._constants["__type__"] == "MBWR":
             res = self._MBWR(rho, T)
         else:
@@ -2523,178 +2749,111 @@ class MEoS(ThermoAdvanced):
         return prop
 
     def _phir(self, tau, delta):
-        if self._constants["__type__"] == "Helmholtz":
+        """Residual contribution to the free Helmholtz energy"""
+        if self._code == "PR":
+            kw = {}
+            kw["rhoc"] = self.rhoc
+            kw["Tc"] = self.Tc
+
+            kw["b"] = 0.0778*R*self.Tc/self.Pc
+            kw["Delta1"] = 1+2**0.5
+            kw["Delta2"] = 1-2**0.5
+
+            a = 0.457235*R**2*self.Tc**2/self.Pc
+
+            Tr = 1/tau
+            m = 0.37464+1.54226*self.f_acent-0.26992*self.f_acent**2
+            alfa = a*(1+m*(1-Tr**0.5))**2
+            kw["alfa"] = alfa
+
+            fir = _PR_phir(tau, delta, **kw)
+
+        elif self._constants["__type__"] == "Helmholtz":
             fir = _Helmholtz_phir(tau, delta, self._constants)
+
         elif self._constants["__type__"] == "MBWR":
             T = self.Tc/tau
             rho = delta*self.rhoc
-            fir = _MBWR_phir(T, rho, self.rhoc, self.M, self._constants)
+
+            if "gamma" in self._constants:
+                rhocm = 1/(-self._constants["gamma"])**0.5
+                rhoc = rhocm*self.M
+            else:
+                rhoc = self.rhoc
+                rhocm = rhoc/self.M
+
+            fir = _MBWR_phir(T, rho, rhoc, self.M, self._constants)
         return fir
 
     def _phird(self, tau, delta):
-        if self._constants["__type__"] == "Helmholtz":
+        """Residual contribution to the free Helmholtz energy, delta
+        derivative"""
+        if self._code == "PR":
+            kw = {}
+            kw["rhoc"] = self.rhoc
+
+            kw["b"] = 0.0778*R*self.Tc/self.Pc
+            kw["Delta1"] = 1+2**0.5
+            kw["Delta2"] = 1-2**0.5
+
+            a = 0.457235*R**2*self.Tc**2/self.Pc
+
+            Tr = 1/tau
+            m = 0.37464+1.54226*self.f_acent-0.26992*self.f_acent**2
+            alfa = a*(1+m*(1-Tr**0.5))**2
+            kw["alfa"] = alfa
+            fir = _PR_phird(tau, delta, **kw)
+
+        elif self._constants["__type__"] == "Helmholtz":
             fir = _Helmholtz_phird(tau, delta, self._constants)
+
         elif self._constants["__type__"] == "MBWR":
             T = self.Tc/tau
-            rho = delta*self.rhoc
-            fir = _MBWR_phird(T, rho, self.rhoc, self.M, self._constants)
+
+            if "gamma" in self._constants:
+                rhocm = 1/(-self._constants["gamma"])**0.5
+                rhoc = rhocm*self.M
+            else:
+                rhoc = self.rhoc
+            rho = delta*rhoc
+
+            fir = _MBWR_phird(T, rho, rhoc, self.M, self._constants)
         return fir
 
     def _phirt(self, tau, delta):
-        if self._constants["__type__"] == "Helmholtz":
+        """Residual contribution to the free Helmholtz energy, tau
+        derivative"""
+        if self._code == "PR":
+            kw = {}
+            kw["rhoc"] = self.rhoc
+
+            kw["b"] = 0.0778*R*self.Tc/self.Pc
+            kw["Delta1"] = 1+2**0.5
+            kw["Delta2"] = 1-2**0.5
+
+            a = 0.457235*R**2*self.Tc**2/self.Pc
+
+            Tr = 1/tau
+            m = 0.37464+1.54226*self.f_acent-0.26992*self.f_acent**2
+            alfa = a*(1+m*(1-Tr**0.5))**2
+            kw["alfa"] = alfa
+            fir = _PR_phirt(tau, delta, **kw)
+
+        elif self._constants["__type__"] == "Helmholtz":
             fir = _Helmholtz_phirt(tau, delta, self._constants)
+
         elif self._constants["__type__"] == "MBWR":
             T = self.Tc/tau
-            rho = delta*self.rhoc
-            fir = _MBWR_phirt(
-                T, self.Tc, rho, self.rhoc, self.M, self._constants)
+
+            if "gamma" in self._constants:
+                rhocm = 1/(-self._constants["gamma"])**0.5
+                rhoc = rhocm*self.M
+            else:
+                rhoc = self.rhoc
+            rho = delta*rhoc
+
+            fir = _MBWR_phirt(T, self.Tc, rho, rhoc, self.M, self._constants)
         return fir
-
-    def _ECS(self,  rho, T):
-        delta = rho/self.rhoc
-        tau = self.Tc/T
-
-        ideal = self._phi0(self._constants["cp"], tau, delta)
-        fio = ideal["fio"]
-        fiot = ideal["fiot"]
-        fiott = ideal["fiott"]
-
-        ref = self._constants["ref"](eq=self._constants["eq"])
-        Tr = T/self.Tc
-        rhor = rho/self.rhoc
-
-        psi = 1+(self.f_acent-ref.f_acent)*(self._constants["ft"][0]+self._constants["ft"][1]*log(Tr))
-        for n, m in zip(self._constants["ft_add"], self._constants["ft_add_exp"]):
-            psi += n*Tr**m
-        for n, m in zip(self._constants["fd"], self._constants["fd_exp"]):
-            psi += n*rhor**m
-        T0 = T*ref.Tc/self.Tc/psi
-
-        phi = ref.Zc/self.Zc*(1+(self.f_acent-ref.f_acent)*(self._constants["ht"][0]+self._constants["ht"][1]*log(Tr)))
-        for n, m in zip(self._constants["ht_add"], self._constants["ht_add_exp"]):
-            phi += n*Tr**m
-        for n, m in zip(self._constants["hd"], self._constants["hd_exp"]):
-            phi += n*rhor**m
-        rho0 = rho*ref.rhoc/self.rhoc*phi
-
-        deltaref = rho0/ref.rhoc
-        tauref = ref.Tc/T0
-        res = self._Helmholtz(tauref, deltaref)
-        fir = res["fir"]
-        firt = res["firt"]
-        firtt = res["firtt"]
-        fird = res["fird"]
-        firdd = res["firdd"]
-        firdt = res["firdt"]
-        B = res["B"]
-        C = res["C"]
-
-        propiedades = {}
-        propiedades["fir"]=fir
-        propiedades["fird"]=fird
-        propiedades["firdd"]=firdd
-
-        propiedades["T"]=T
-        propiedades["P"]=(1+delta*fird)*self.R.JkgK*T*rho
-        propiedades["v"]=1/rho
-        propiedades["h"]=self.R.kJkgK*T*(1+tau*(fiot+firt)+delta*fird)
-        propiedades["s"]=self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
-        propiedades["cv"]=-self.R.kJkgK*tau**2*(fiott+firtt)
-        propiedades["cp"]=self.R.kJkgK*(-tau**2*(fiott+firtt)+(1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd))
-        propiedades["w"]=(self.R*T*(1+2*delta*fird+delta**2*firdd-(1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
-        propiedades["alfap"]=(1-delta*tau*firdt/(1+delta*fird))/T
-        propiedades["betap"]=rho*(1+(delta*fird+delta**2*firdd)/(1+delta*fird))
-        propiedades["fugacity"]=exp(fir+delta*fird-log(1+delta*fird))
-        propiedades["B"]=B
-        propiedades["C"]=C
-        propiedades["dpdrho"]=self.R*T*(1+2*delta*fird+delta**2*firdd)
-        propiedades["dpdT"]=self.R.kJkgK*rho*(1+delta*fird+delta*tau*firdt)
-#        propiedades["cps"]=propiedades["cv"] Add cps from Argon pag.27
-        return propiedades
-
-    def _PengRobinson(self, rho, T):
-        """Peng, D.-Y.; Robinson, D.B. A New Two-Constant Equation of State. I&EC Fundam. 1976, 15(1), 59
-        Peneloux, A.; Rauzy, E.; Freze, R. A consistent correction for Redlich-Kwong-Soave volumes. Fluid Phase Eq. 1982, 8, 7.
-        http://dx.doi.org/10.1021/i160057a011
-        http://dx.doi.org/10.1016/0378-3812(82)80002-2"""
-        # FIXME: no sale por poco
-        delta = rho/self.rhoc
-        tau = self.Tc/T
-        delta_0 = 1e-50
-        rho = rho/self.M
-
-        Tr = 1./tau
-        m = 0.37464+1.54226*self.f_acent-0.26992*self.f_acent**2
-        alfa = (1+m*(1-Tr**0.5))**2
-        a = 0.457235*R_atml**2*self.Tc**2/self.Pc.atm
-        b = 0.077796*R_atml*self.Tc/self.Pc.atm
-
-        daT = -a*m/T**0.5/self.Tc**0.5*alfa**0.5
-        d2aT = a*m*(1+m)/2/T/(T*self.Tc)**0.5
-
-        ideal = self._phi0(self._constants["cp"], tau, delta)
-        fio = ideal["fio"]
-        fiot = ideal["fiot"]
-        fiott = ideal["fiott"]
-
-        v = 1./rho
-        vb = v-b
-        q = b*8**0.5
-        v1 = 2*v+2*b+q
-        v2 = 2*v+2*b-q
-        v1n = v1+2*self._PR
-        v2n = v2+2*self._PR
-        fir = log(v)-log(vb+self._PR)+a/self.R.kJkgK/T*log(v2n/v1n)/q
-
-        phipart = (1./self.R.kJkgK/q)*(daT/T-a/T**2)
-        dtdtau = -T**2/self.Tc
-        dphidtau = phipart*dtdtau
-        term1 = 2+2*b*rho-rho*q+2*rho*self._PR
-        term2 = 2+2*b*rho+rho*q+2*rho*self._PR
-        phidpart = -4*self.rhoc/self.M*q/term1/term2
-        firdt = dphidtau*phidpart
-
-        fird = -1+1./(1-b*rho+rho*self._PR)+a/self.R.kJkgK/T/q*(2/v1n-2/v2n)/rho
-        bdt = 1-b*rho+rho*self._PR
-        firdd = 1-1./bdt-(self._PR*self.rhoc/self.M-b*self.rhoc/self.M) * \
-            delta/bdt**2 + 4*a/self.R.kJkgK/T/q/rho * \
-            ((1./v2n-1./v1n)+(1./v1n**2-1./v2n**2)/rho)
-        dphidt = 1./self.R.kJkgK/q*log(v2n/v1n)*(daT/T-a/T**2)
-        firt = dphidt*dtdtau
-        d2phidt2 = (1./self.R.kJkgK/q)*log(v2n/v1n)*(d2aT/T-2*daT/T**2+2*a/T**3)
-        d2phid2tau = 1./tau**2*(T**2*d2phidt2+2*T*dphidt)
-        firtt = d2phid2tau
-
-#        fir=-log(1-b*rho)+a/(self.R*T*2**1.5*b)*log((1+(1-2**0.5)*b*rho)/(1+(1+2**0.5)*b*rho))
-#        fird=b/(1-b*rho)+a/(self.R*T*2**1.5*b)*((1-2**0.5)*b/(1+(1-2**0.5)*b*rho)-(1+2**0.5)*b/(1+(1+2**0.5)*b*rho))
-#        firdd=(b/(1-b*rho))**2+a/(rho**2*self.R*T*2**1.5*b)*(-((1-2**0.5)*b*rho/(1+(1-2**0.5)*b*rho))**2+((1+2**0.5)*b*rho/(1+(1+2**0.5)*b*rho))**2)
-#        firt=1/(self.R*T*2**1.5*b)*(daT-a/T)*log((1+(1-2**0.5)*b*rho)/(1+(1+2**0.5)*b*rho))
-#        firtt=1/(self.R*2**1.5*b*T)*(d2aT-2/T*daT+2*a/T**2)*log((1+(1-2**0.5)*b*rho)/(1+(1+2**0.5)*b*rho))
-#        firdt=1/(rho*T*self.R*2**1.5*b)*(daT-a/T)*((1-2**0.5)*b*rho/(1+(1-2**0.5)*b*rho)-(1+2**0.5)*b*rho/(1+(1+2**0.5)*b*rho))
-        firdtt = B = C = 0
-
-        propiedades = {}
-        propiedades["fir"] = fir
-        propiedades["fird"] = fird
-        propiedades["firdd"] = firdd
-
-        propiedades["T"] = T
-        propiedades["P"] = (1+delta*fird)*self.R.JkgK*T*rho
-        propiedades["v"] = 1/rho
-        propiedades["h"] = self.R.kJkgK*T*(1+tau*(fiot+firt)+delta*fird)
-        propiedades["s"] = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)
-        propiedades["cp"] = self.R.kJkgK*(-tau**2*(fiott+firtt)+(1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd))
-        propiedades["cv"] = -self.R.kJkgK*tau**2*(fiott+firtt)
-        propiedades["w"] = (self.R*T*(1+2*delta*fird+delta**2*firdd-(1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
-        propiedades["alfap"] = (1-delta*tau*firdt/(1+delta*fird))/T
-        propiedades["betap"] = rho*(1+(delta*fird+delta**2*firdd)/(1+delta*fird))
-        propiedades["fugacity"] = exp(fir+delta*fird-log(1+delta*fird))
-        propiedades["B"] = B
-        propiedades["C"] = C
-        propiedades["dpdrho"] = self.R*T*(1+2*delta*fird+delta**2*firdd)
-        propiedades["dpdT"] = self.R*rho*(1+delta*fird+delta*tau*firdt)
-        propiedades["dhdrho"] = 0
-        return propiedades
 
     @refDoc(__doi__, [10], tab=8)
     def _Generalised(self):
@@ -2770,8 +2929,7 @@ class MEoS(ThermoAdvanced):
                 * so: Entropy in reference state, [kJ/kg·K]
         """
         # Variable to avoid rewrite and save the h-s offset status application
-        # applyOffset = "ao" in self._constants["cp"] or ref is not None
-        applyOffset = ref is not False
+        applyOffset = "ao" in self._constants["cp"] or ref is not None
 
         if ref is None:
             rf = self._constants["ref"]
@@ -2859,7 +3017,9 @@ class MEoS(ThermoAdvanced):
                 # First check if the custum state is in database
                 code = "%s-%s-%s-%s" % refvalues
                 if code not in dat[name]:
-                    st = self.__class__(T=refvalues[0], P=refvalues[1]*1e3, **kw)
+                    T = refvalues[0]
+                    P = refvalues[1]*1e3
+                    st = self.__class__(T=T, P=P, **kw)
                     self.hoffset = st.h.kJkg
                     self.soffset = st.s.kJkgK
 
@@ -2890,12 +3050,21 @@ class MEoS(ThermoAdvanced):
     def _PHIO(self, cp):
         """Convert cp dict in phi0 dict when the cp expression isn't in
         Helmholtz free energy terms"""
-        # TODO: Add support for 1/τ terms, give tau*logtau terms and more
         co = cp["ao"]-1
-        ti = [-x for x in cp["pow"]]
-        ci = [-n/(t*(t+1))*self.Tc**t for n, t in zip(cp["an"], cp["pow"])]
+        ti = []
+        ci = []
+        taulogtau = 0
+        for n, t in zip(cp["an"], cp["pow"]):
+            if t == -1:
+                # Special case of tau*logtau term
+                taulogtau = -n/self.Tc
+            else:
+                ti.append(-t)
+                ci.append(-n/(t*(t+1))*self.Tc**t)
+
         titao = [fi/self.Tc for fi in cp["exp"]]
-        hyp = [fi/self.Tc for fi in cp["hyp"]]
+        sinh = [fi/self.Tc for fi in cp.get("sinh", [])]
+        cosh = [fi/self.Tc for fi in cp.get("cosh", [])]
 
         # The integration constant are difficult to precalculate as depend of
         # resitual Helmholtz free energy. It's easier use a offset system
@@ -2908,15 +3077,44 @@ class MEoS(ThermoAdvanced):
                "ao_pow": [cII, cI] + ci,
                "ao_exp": cp["ao_exp"],
                "titao": titao,
-               "ao_hyp": cp["ao_hyp"],
-               "hyp": hyp}
+               "ao_sinh": cp.get("ao_sinh", []),
+               "sinh": sinh,
+               "ao_cosh": cp.get("ao_cosh", []),
+               "cosh": cosh}
+
+        if taulogtau:
+            Fi0["tau*logtau"] = taulogtau
+
         return Fi0
 
     def _phi0(self, cp, tau, delta):
-        """Ideal gas Helmholtz free energy and derivatives
+        r"""Ideal gas Helmholtz free energy and derivatives
+        The ideal gas specific heat can have different contributions
+
+        .. math::
+            \frac{C_p^o}{R} = c_o + \sum_i c_iT_r^i
+            + \sum_jc_j\frac{e^{\theta T_r}} {\left(1-e^{\theta T_r}\right)^2}
+            + \sum_k \gamma_k\frac{\xi/T_r}{\sinh(\xi/T_r)}
+            + \sum_l \delta_l\frac{\epsilon_l/T_r}{\cosh(\epsilon_l/T_r)}
+
+        The dict with the definition of ideal gas specific heat must define
+        the parameters:
+
+            * ao: Independent of temperature coefficient
+            * an: Polynomial term coefficient
+            * pow: Polynomial term temperature exponent
+            * ao_exp: Exponential term coefficient
+            * exp: Exponential term exponent
+            * ao_sinh: Hyperbolic sine term coefficient
+            * sinh: Hyperbolic sine term exponent
+            * ao_cosh: Hyperbolic cosine term coefficient
+            * cosh: Hyperbolic cosine term exponent
 
         Parameters
         ----------
+        cp : dict
+            Ideal gas properties parameters, can be in Cp term of directly in
+            helmholtz free energy
         tau : float
             Inverse reduced temperature, Tc/T [-]
         delta : float
@@ -2982,18 +3180,18 @@ class MEoS(ThermoAdvanced):
                 fiot += n*g/(C*exp(-g*tau)+1)
                 fiott += C*n*g**2*exp(-g*tau)/(C*exp(-g*tau)+1)**2
 
-        if "ao_hyp" in Fi0 and Fi0["ao_hyp"]:
-            for i in [0, 2]:
-                fio += Fi0["ao_hyp"][i]*log(abs(sinh(Fi0["hyp"][i]*tau)))
-                fiot += Fi0["ao_hyp"][i]*Fi0["hyp"][i]/tanh(Fi0["hyp"][i]*tau)
-                fiott -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]**2/sinh(
-                    Fi0["hyp"][i]*tau)**2
+        # Hyperbolic terms
+        if "ao_sinh" in Fi0:
+            for n, c in zip(Fi0["ao_sinh"], Fi0["sinh"]):
+                fio += n*log(abs(sinh(c*tau)))
+                fiot += n*c/tanh(c*tau)
+                fiott -= n*c**2/sinh(c*tau)**2
 
-            for i in [1, 3]:
-                fio -= Fi0["ao_hyp"][i]*log(abs(cosh(Fi0["hyp"][i]*tau)))
-                fiot -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]*tanh(Fi0["hyp"][i]*tau)
-                fiott -= Fi0["ao_hyp"][i]*Fi0["hyp"][i]**2/cosh(
-                    Fi0["hyp"][i]*tau)**2
+        if "ao_cosh" in Fi0:
+            for n, c in zip(Fi0["ao_cosh"], Fi0["cosh"]):
+                fio -= n*log(abs(cosh(c*tau)))
+                fiot -= n*c*tanh(c*tau)
+                fiott -= n*c**2/cosh(c*tau)**2
 
         R_ = cp.get("R", self._constants["R"])
         factor = R_/self._constants["R"]
@@ -3011,34 +3209,40 @@ class MEoS(ThermoAdvanced):
         prop["fiodt"] = fiodt
         return prop
 
-    def _Cp0(self, T=False):
-        Tc = self._constants.get("Tref", self.Tc)
-        if not T:
-            T = self.T
-        cp = self._constants["cp"]
-
-        if "ao_log" in cp:
-            tau = Tc/T
-            ideal = self._phi0(self._constants["cp"], tau, 0)
-            fiott = ideal["fiott"]
-            cpo = (-tau**2*fiott+1)*self.R
-            return unidades.SpecificHeat(cpo)
-        else:
-            tau = Tc/T
-            cpo = cp["ao"]
-            for a, t in zip(cp["an"], cp["pow"]):
-                cpo += a*T**t
-            for m, tita in zip(cp["ao_exp"], cp["exp"]):
-                cpo += m*(tita/T)**2*exp(tita/T)/(1-exp(tita/T))**2
-            if cp["ao_hyp"]:
-                for i in [0, 2]:
-                    cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(sinh(cp["hyp"][i]/T)))**2
-                for i in [1, 3]:
-                    cpo += cp["ao_hyp"][i]*(cp["hyp"][i]/T/(cosh(cp["hyp"][i]/T)))**2
-            return unidades.SpecificHeat(cpo*self.R.kJkgK)
-
     def _Helmholtz(self, tau, delta):
-        """Residual contribution to the free Helmholtz energy
+        r"""Residual contribution to the free Helmholtz energy
+
+        The dict with equation of state definition must define the parameters:
+
+            * nr1: Polynomial term coefficient
+            * d1: Polynomial term delta exponent
+            * t1: Polynomial term tau exponent
+
+            * nr2: Exponential term coefficient
+            * d2: Exponential term delta exponent
+            * t2: Exponential term tau exponent
+            * c2: Exponential term delta exponent in exponential
+            * gamma2: Exponential term exponential coefficient
+
+            * nr3: Gaussian term coefficient
+            * d3: Gaussian term delta exponent
+            * t3: Gaussian term tau exponent
+            * epsilon3: Gaussian term delta correction in exponential
+            * gamma3: Gaussian term tau correction in exponential
+            * alfa3: Gaussian term exponential tau term coefficient
+            * beta3: Gaussian term exponential tau term coefficient
+            * exp1: Gaussian term exponential delta term exponential, default 2
+            * exp2: Gaussian term exponential tau term exponential, default 2
+
+            * nr4: Nonanalytic term coefficient
+            * a4: Nonanalytic term exponent in Δ expression
+            * b4: Nonanalytic term Δ exponent
+            * B: Nonanalytic term coefficient in Δ expression
+            * C: Nonanalytic term delta coefficient in exponential
+            * D: Nonanalytic term tau coefficient in exponential
+            * A: Nonanalytic term coefficient in θ expression
+            * beta4: Nonanalytic term exponent in θ expression
+
 
         Parameters
         ----------
@@ -3049,13 +3253,15 @@ class MEoS(ThermoAdvanced):
 
         Returns
         -------
-        prop : dictionary with residual adimensional helmholtz energy and deriv
-            fir  [-]
-            firt: [∂fir/∂τ]δ,x  [-]
-            fird: [∂fir/∂δ]τ,x  [-]
-            firtt: [∂²fir/∂τ²]δ,x  [-]
-            firdt: [∂²fir/∂τ∂δ]x  [-]
-            firdd: [∂²fir/∂δ²]τ,x  [-]
+        prop : dict
+            Dictionary with residual adimensional helmholtz energy and
+            derivatives:
+                * fir  [-]
+                * firt: [∂fir/∂τ]δ,x  [-]
+                * fird: [∂fir/∂δ]τ,x  [-]
+                * firtt: [∂²fir/∂τ²]δ,x  [-]
+                * firdt: [∂²fir/∂τ∂δ]x  [-]
+                * firdd: [∂²fir/∂δ²]τ,x  [-]
         """
 
         fir = fird = firdd = firt = firtt = firdt = firdtt = 0
@@ -3254,43 +3460,6 @@ class MEoS(ThermoAdvanced):
                 C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ *
                         (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
 
-            # Hard sphere term
-            if self._constants.get("Fi", None):
-                f = self._constants["Fi"]
-                n = 0.1617
-                a = 0.689
-                g = 0.3674
-                X = n*delta/(a+(1-a)/tau**g)
-                Xd = n/(a+(1-a)/tau**g)
-                Xt = n*delta*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-                Xdt = n*(1-a)*g/tau**(g+1)/(a+(1-a)/tau**g)**2
-                Xtt = -n*delta*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g) -
-                                2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
-                Xdtt = -n*((1-a)*g/tau**(g+2)*((g+1)*(a+(1-a)/tau**g) -
-                           2*g*(1-a)/tau**g))/(a+(1-a)/tau**g)**3
-
-                ahdX = -(f**2-1)/(1-X) + (f**2+3*f+X*(f**2-3*f))/(1-X)**3
-                ahdXX = -(f**2-1)/(1-X)**2 + \
-                    (3*(f**2+3*f)+(f**2-3*f)*(1+2*X))/(1-X)**4
-                ahdXXX = -2*(f**2-1)/(1-X)**3 + \
-                    6*(2*(f**2+3*f)+(f**2-3*f)*(1+X))/(1-X)**5
-
-                fir += (f**2-1)*log(1-X)+((f**2+3*f)*X-3*f*X**2)/(1-X)**2
-                fird += ahdX*Xd
-                firdd += ahdXX*Xd**2
-                firt += ahdX*Xt
-                firtt += ahdXX*Xt**2+ahdX*Xtt
-                firdt += ahdXX*Xt*Xd+ahdX*Xdt
-                firdtt += ahdXXX*Xt**2*Xd+ahdXX*(Xtt*Xd+2*Xdt*Xt)*ahdX*Xdtt
-
-                X_virial = n*delta_0/(a+(1-a)/tau**g)
-                ahdX_virial = -(f**2-1)/(1-X_virial) + \
-                    (f**2+3*f+X_virial*(f**2-3*f))/(1-X_virial)**3
-                ahdXX_virial = -(f**2-1)/(1-X_virial)**2 + \
-                    (3*(f**2+3*f)+(f**2-3*f)*(1+2*X_virial))/(1-X_virial)**4
-                B += ahdX_virial*Xd
-                C += ahdXX_virial*Xd**2
-
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr5" in self._constants:
                 if delta < 0.2:
@@ -3362,39 +3531,43 @@ class MEoS(ThermoAdvanced):
 
     @refDoc(__doi__, [11], tab=8)
     def _MBWR(self, rho, T):
-        r"""Implementation of modified Benedict-Webb-Rubin (mBWR) equation of
-        state
+        r"""Residual contribution to the free Helmholtz energy and derivatives
+        for modified Benedict-Webb-Rubin (mBWR) equation of state. Derived
+        calculation defined in Appendix B in [11]_
 
-        .. math::
-            P = \sum_{n=1}^9 + \exp\left(-\delta^2\right)
-            \sum_{n=10}^{15}a_n\rho^{2n-17}
+        The dict with equation of state definition must define the parameters:
 
-        where:
+            * b: coefficient of :math:`a_i` equations
+            * gamma: optional reducing density value in exponential term
 
-        .. math::
-          \begin{array}[t]{l}
-          a_1 = RT\\
-          a_2 = b_1T + b_2T^{1/2} + b_3 + b_4/T + b_5/T^2\\
-          a_3 = b_6T+b_7+b_8T+b_9/T^2\\
-          a_4 = b_{10}T+b_{11}+b_{12}/T\\
-          a_5 = b_{13}\\
-          a_6 = b_{14}/T+b_{15}/T^2\\
-          a_7 = b_{16}/T\\
-          a_8 = b_{17}/T+b_{18}/T^2\\
-          a_9 = b_{19}/T^2\\
-          a_{10} = b_{20}/T^2+b_{21}/T^3\\
-          a_{11} = b_{22}/T^2+b_{23}/T^4\\
-          a_{12} = b_{24}/T^2+b_{25}/T^3\\
-          a_{13} = b_{26}/T^2+b_{27}/T^4\\
-          a_{14} = b_{28}/T^2+b_{29}/T^3\\
-          a_{15} = b_{30}/T^2+b_{31}/T^3+b_{32}/T^4\\
-          \end{array}
+        Parameters
+        ----------
+        rho : float
+            Density, [kg/m³]
+        T : float
+            Temperature, [K]
 
-        :math:`b_i` are the coefficient of equation saved in dict
+        Returns
+        -------
+        prop : dict
+            Dictionary with residual adimensional helmholtz energy and
+            derivatives:
+                * fir  [-]
+                * firt: [∂fir/∂τ]δ,x  [-]
+                * fird: [∂fir/∂δ]τ,x  [-]
+                * firtt: [∂²fir/∂τ²]δ,x  [-]
+                * firdt: [∂²fir/∂τ∂δ]x  [-]
+                * firdd: [∂²fir/∂δ²]τ,x  [-]
         """
         rhom = rho/self.M
-        rhocm = self.rhoc/self.M
-        delta = rho/self.rhoc
+        if "gamma" in self._constants:
+            rhocm = 1/(-self._constants["gamma"])**0.5
+            rhoc = rhocm*self.M
+        else:
+            rhoc = self.rhoc
+            rhocm = rhoc/self.M
+        delta = rho/rhoc
+
         b = self._constants["b"]
         R = self._constants["R"]
 
@@ -3628,7 +3801,8 @@ class MEoS(ThermoAdvanced):
         .. math::
             \sigma(T) = \sum_i \sigma_i\left(1-\frac{T}{T_c}\right)^{n_i}
 
-        The subclass must define the parameters of correlation in _surface::
+        The subclass must define the parameters of correlation in _surface:
+
             * sigma: Coefficient of polynomial term
             * exp: Exponential of polynomial term
         """
@@ -3644,79 +3818,239 @@ class MEoS(ThermoAdvanced):
                 # If no available data use the Pitzer correlation
                 sigma = Tension_Pitzer(T, self.Tc, self.Pc, self.f_acent)
         else:
-            # Undefined out of range of two phase region
+            # Undefined, out of range, not in  two phase region
             sigma = None
         return sigma
 
+    @refDoc(__doi__, [24], tab=8)
     def _Dielectric(self, rho, T):
-        """Calculate the dielectric constant"""
+        r"""Calculate the dielectric constant as explain in [24]_.
+
+        Calculate first the electric polarization
+
+        .. math::
+            \begin{array}[t]{l}
+            \frac{P}{\rho} = A_{\epsilon}+\frac{A_{\mu}}{T}+B_{\epsilon}\rho
+            + C\rho^D\\
+            A_{\epsilon} = a_0+a_1\left(\frac{T}{T_0}-1\right)\\
+            B_{\epsilon} = b_0+b_1\left(\frac{T_0}{T}-1\right)\\
+            C_{\epsilon} = c_0+c_1\left(\frac{T_0}{T}-1\right)\\
+            \end{array}
+
+        and then calculate the dielectric constant using the appropiate
+        correlation
+
+        .. math::
+            \begin{array}[t]{l}
+            P_{CM} = \frac{\epsilon-1}{\epsilon+2}\\
+            P_{K} = \frac{(\epsilon-1)(2\epsilon+1}{9\epsilon}\\
+            \end{array}
+
+        The Clausius-Mosotti (CM} is more appropiate for nonpolar fluids, the
+        Kirkwood is for polar fluids.
+
+        The dict with coefficient must define the properties:
+
+            * eq: Type of equation
+            * ai: Parameter of virial coefficient :math:`A_{\epsilon}`
+            * bi: Parameter of virial coefficient :math:`B_{\epsilon}`
+            * ci: Parameter of parameter C
+            * Au: Parameter :math:`A_{mu}`
+            * D: Exponential of density in last term
+
+        Parameters
+        ----------
+        rho : float
+            Density [kg/m³]
+        T : float
+            Temperature [K]
+
+        Returns
+        -------
+        epsilon : float
+            Static dielectric constant, [-]
+        """
+        # density in mol/cc
+        rhom = rho/self.M/1000
+
         if self._dielectric:
-            if rho < 1e-12:
-                e = 1.
+            if rho:
+                ai = self._dielectric["a"]
+                bi = self._dielectric["b"]
+                ci = self._dielectric["c"]
+                D = self._dielectric["D"]
+                Au = self._dielectric["Au"]
+                T0 = self._dielectric.get("T0", 273.16)
+
+                Ae = ai[0] + ai[1]*(T/T0-1)                             # Eq 6a
+                Be = bi[0] + bi[1]*(T0/T-1)                             # Eq 6b
+                C = ci[0] + ci[1]*(T0/T-1)                              # Eq 6c
+
+                # Eq 5
+                P = rhom*(Ae + Au/T + Be*rhom + C*rhom**D)
+
+                if self._dielectric["eq"] == 1:
+                    # Clausius-Mosotti expression, for nonpolar fluids
+                    e = (1+2*P)/(1-P)
+                elif self._dielectric["eq"] == 2:
+                    # Kirwood expression, for polar fluid
+                    e = 0.25*(1+9*P+3*(9*P**2+2*P+1)**0.5)
             else:
-                delta = rho/self.M/self._dielectric["rhoref"]
-                tau = T/self._dielectric["Tref"]
-                a0 = self._dielectric["a0"]
-                expt0 = self._dielectric["expt0"]
-                expd0 = self._dielectric["expd0"]
-                a1 = self._dielectric["a1"]
-                expt1 = self._dielectric["expt1"]
-                expd1 = self._dielectric["expd1"]
-                a2 = self._dielectric["a2"]
-                expt2 = self._dielectric["expt2"]
-                expd2 = self._dielectric["expd2"]
-                c = 0
-                for a, expt, expd in zip(a0, expt0, expd0):
-                    c += a * tau**expt * delta**expd
-                for a, expt, expd in zip(a1, expt1, expd1):
-                    c += a * (tau-1)**expt * delta**expd
-                for a, expt, expd in zip(a2, expt2, expd2):
-                    c += a * (1./tau-1)**expt * delta**expd
-                if self._dielectric["eq"] == 3:
-                    e = (1+2*c)/(1-c)
-                else:
-                    e = 0.25*(1+9*c+3*(9*c**2+2*c+1)**0.5)
+                e = 1
         else:
             e = None
+
         return unidades.Dimensionless(e)
 
     @classmethod
     def _Melting_Pressure(cls, T):
-        """Calculate the melting pressure"""
+        r"""Calculate the melting pressure.
+
+        .. math::
+            \begin{array}[t]{l}
+            \frac{P_m}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(\theta^{t_{2i}}-1\right) +
+            \sum a_{3i}\log \theta^{t_{3i}} +
+            \sum a_{4i}\left(\theta-1\right)^{t_{4i}}\\
+            P_m - P_r = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(\theta^{t_{2i}}-1\right) +
+            \sum a_{3i}\log \theta^{t_{3i}} +
+            \sum a_{4i}\left(\theta-1\right)^{t_{4i}}\\
+            \ln\frac{P_m}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(\theta^{t_{2i}}-1\right) +
+            \sum a_{3i}\log \theta^{t_{3i}} +
+            \sum a_{4i}\left(\theta-1\right)^{t_{4i}}\\
+            \theta = \frac{T}{T_r}\\
+            \end{array}
+
+        The dict with coefficient must define the properties:
+
+            * eq: Type of equation
+            * __doi__: Dict with reference of correlation
+            * Tmin: Lower temperature limit, [K]
+            * Tmax: Upper temperature limit, [K]
+            * Tref: Reducing temperature, [K]
+            * Pref: Reducing pressure, [Pa]
+            * a0: Zero dependence coefficient
+            * a1: Polynomial term coefficient
+            * exp1: Polynomial term exponent
+            * a2: Polynomial θ^t-1 term coefficient
+            * exp2: Polynomial θ^t-1 term exponent
+            * a3: Logarithmic term coefficient
+            * exp3: Logarithmic term exponent
+            * a4: Polynomial (θ-1)^t term coefficient
+            * exp4: Polynomial (θ-1)^t term exponent
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+
+        Returns
+        -------
+        P : float
+            Melting pressure, [K]
+        """
         if cls._melting:
             Tref = cls._melting["Tref"]
             Pref = cls._melting["Pref"]
             Tita = T/Tref
             suma = 0
-            for a, t in zip(cls._melting["a1"], cls._melting["exp1"]):
-                suma += a*Tita**t
-            for a, t in zip(cls._melting["a2"], cls._melting["exp2"]):
-                suma += a*(Tita-1)**t
-            for a, t in zip(cls._melting["a3"], cls._melting["exp3"]):
-                suma += a*log(Tita)**t
+            if "a0" in cls._melting:
+                suma += cls._melting["a0"]
+
+            if "a1" in cls._melting:
+                for a, t in zip(cls._melting["a1"], cls._melting["exp1"]):
+                    suma += a*Tita**t
+
+            if "a2" in cls._melting:
+                for a, t in zip(cls._melting["a2"], cls._melting["exp2"]):
+                    suma += a*(Tita**t-1)
+
+            if "a3" in cls._melting:
+                for a, t in zip(cls._melting["a3"], cls._melting["exp3"]):
+                    suma += a*log(Tita)**t
+
+            if "a4" in cls._melting:
+                for a, t in zip(cls._melting["a4"], cls._melting["exp4"]):
+                    suma += a*(Tita-1)**t
 
             if cls._melting["eq"] == 1:
                 P = suma*Pref
             elif cls._melting["eq"] == 2:
+                # Simon formulation
+                P = suma+Pref
+            elif cls._melting["eq"] == 2:
                 P = exp(suma)*Pref
-            return unidades.Pressure(P, "kPa")
+            return unidades.Pressure(P)
         else:
             return None
 
     @classmethod
     def _Sublimation_Pressure(cls, T):
-        """Calculate the sublimation pressure"""
+        r"""Calculate the sublimation pressure.
+
+        .. math::
+            \begin{array}[t]{l}
+            \frac{P}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(1-\theta\right)^{t_{2i}} +
+            \sum a_{3i}\log \theta^{t_{3i}}\\
+            P - P_r = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(1-\theta\right)^{t_{2i}} +
+            \sum a_{3i}\log \theta^{t_{3i}}\\
+            \ln\frac{P}{P_r} = a_o + \sum a_{1i}\theta^{t_{1i}} +
+            \sum a_{2i}\left(1-\theta\right)^{t_{2i}} +
+            \sum a_{3i}\log \theta^{t_{3i}}\\
+            \theta = \frac{T}{T_r}\\
+            \end{array}
+
+        The dict with coefficient must define the properties:
+
+            * eq: Type of equation
+            * __doi__: Dict with reference of correlation
+            * Tmin: Lower temperature limit, [K]
+            * Tmax: Upper temperature limit, [K]
+            * Tref: Reducing temperature, [K]
+            * Pref: Reducing pressure, [Pa]
+            * a0: Zero dependence coefficient
+            * a1: Polynomial term coefficient
+            * exp1: Polynomial term exponent
+            * a2: Polynomial 1-θ term coefficient
+            * exp2: Polynomial 1-θ term exponent
+            * a3: Logarithmic term coefficient
+            * exp3: Logarithmic term exponent
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+
+        Returns
+        -------
+        P : float
+            Sublimation pressure, [K]
+        """
         if cls._sublimation:
-            Tref = cls._sublimation["Tref"]
-            Pref = cls._sublimation["Pref"]
+            coef = cls._sublimation
+
+            Tref = coef["Tref"]
+            Pref = coef["Pref"]
             Tita = T/Tref
             suma = 0
-            for a, t in zip(cls._sublimation["a1"], cls._sublimation["exp1"]):
-                suma += a*Tita**t
-            for a, t in zip(cls._sublimation["a2"], cls._sublimation["exp2"]):
-                suma += a*(1-Tita)**t
-            for a, t in zip(cls._sublimation["a3"], cls._sublimation["exp3"]):
-                suma += a*log(Tita)**t
+            if "a0" in cls._melting:
+                suma += cls._melting["a0"]
+
+            if "a1" in coef:
+                for a, t in zip(coef["a1"], coef["exp1"]):
+                    suma += a*Tita**t
+
+            if "a2" in coef:
+                for a, t in zip(coef["a2"], coef["exp2"]):
+                    suma += a*(1-Tita)**t
+
+            if "a3" in coef:
+                for a, t in zip(coef["a3"], coef["exp3"]):
+                    suma += a*log(Tita)**t
 
             if cls._sublimation["eq"] == 1:
                 P = suma*Pref
@@ -3724,13 +4058,13 @@ class MEoS(ThermoAdvanced):
                 P = exp(suma)*Pref
             elif cls._sublimation["eq"] == 3:
                 P = exp(Tref/T*suma)*Pref
-            return unidades.Pressure(P, "kPa")
+            return unidades.Pressure(P)
         else:
             return None
 
     # Viscosity calculation methods
-    @refDoc(__doi__, [2, 3, 4, 5], tab=8)
-    def _Viscosity(self, rho, T, fase):
+    @refDoc(__doi__, [2, 3, 4, 5, 20, 22], tab=8)
+    def _Viscosity(self, rho, T, fase, coef=False, residual=False):
         r"""Viscosity calculation procedure, implement several general method
 
         The derived class must define a dict object with the parameters for the
@@ -3740,6 +4074,7 @@ class MEoS(ThermoAdvanced):
             * 0 - Hardcoded for special procedures (i.e.: R23, H2O, ...)
             * 1 - General formulation with different contribution
             * 2 - Younglove formulation
+            * 3 - Extended corresponding states correlation
             * 4 - Quiñones-Cisneros friction theory model
 
         **Hardcoded procedures**
@@ -3760,13 +4095,11 @@ class MEoS(ThermoAdvanced):
             *Initial density terms, second virial coefficient*
 
                 .. math::
-                    \eta^1(T) = B_\eta \eta^0
-
-                .. math::
-                    B_\eta = \eta_r B^*_\eta
-
-                .. math::
-                    B^*_\eta = \sum_in_i\tau^t
+                    \begin{array}[t]{l}
+                    \eta^1(T) = B_\eta \eta^0\\
+                    B_\eta = \eta_r B^*_\eta\\
+                    B^*_\eta = \sum_in_i\tau^t\\
+                    \end{array}
 
                 * Tref_virial: Initial density reference temperature
                 * muref_virial: Initial density reference viscosity
@@ -3806,11 +4139,11 @@ class MEoS(ThermoAdvanced):
             *Modified Batschinkski-Hildebrand contribution*
 
                 .. math::
+                    \begin{array}[t]{l}
                     \eta^{CP} = f\left(\frac{\delta}{\delta_0(\tau)-\delta}-
-                    \frac{\delta}{\delta_0(\tau)}\right)
-
-                .. math::
-                    \delta_0(\tau) = g_1\left(1+\sum_i g_i\tau^{t_i}\right)
+                    \frac{\delta}{\delta_0(\tau)}\right)\\
+                    \delta_0(\tau) = g_1\left(1+\sum_i g_i\tau^{t_i}\right)\\
+                    \end{array}
 
                 * CPf: f parameter for closed packed term
                 * CPg1: g1 parameter for closed packed term
@@ -3818,81 +4151,111 @@ class MEoS(ThermoAdvanced):
                 * CPti: tau exponent for aditional term of closed packed term
 
             *Special terms*
-                A hardcoded term for any non stndard formulation term
+
+                A hardcoded term for any non standard formulation term
 
                 * special: Name of procedure with hardcoded method
 
 
         **Younglove formulation**
+
             Formulation as explain in [4]_ and [5]_
 
             .. math::
-                \eta = \eta^o(T)+\eta^1(T)\rho+\eta^r(\tau,\delta)
-
-            .. math::
+                \begin{array}[t]{l}
+                \eta = \eta^o(T)+\eta^1(T)\rho+\eta^r(\tau,\delta)\\
                 \eta^1 = F_{[1]}+F_{[2]}\left(F_{[3]}-\ln\left(\frac{T}
-                {F_{[4]}}\right)\right)^2
-
-            .. math::
-                \eta^2 = \exp(F)-\exp(G)
-
-            .. math::
-                G = E_{[1]}+\frac{E_{[2]}}{T}
-
-            .. math::
-                H = \frac{\rho^{0.5}\left(\rho-\rho_c\right)}{\rho_c}
-
-            .. math::
-                F = G + \left(E_{[3]}+\frac{E_{[4]}}{T^{1.5}}\right)\rho^{0.1}+
-                H \left(E_{[5]}+\frac{E_{[6]}}{T}+\frac{E_{[7]}}{T^2}\right)
+                {F_{[4]}}\right)\right)^2\\
+                \eta^2 = \exp(F)-\exp(G)\\
+                G = E_{[1]}+\frac{E_{[2]}}{T}\\
+                H = \frac{\rho^{0.5}\left(\rho-\rho_c\right)}{\rho_c}\\
+                F_{4} = E_{[1]} + E_{[2]} H + \left(E_{[3]} +
+                \frac{E_{[4]}}{T^{1.5}}\right)\rho^{0.1} + H \left(E_{[5]} +
+                \frac{E_{[6]}}{T}+\frac{E_{[7]}}{T^2}\right)\\
+                F_{5} = G + \left(E_{[3]}+\frac{E_{[4]}}{T^{1.5}}\right)\rho^
+                {0.1}+ H \left(E_{[5]}+\frac{E_{[6]}}{T}+\frac{E_{[7]}}{T^2}
+                \right)\\
+                \end{array}
 
             The derived class must define the variables:
+
+                * mod: Boolean with the reference from correlation, True if
+                  [4]_, False if [5]_ for minor changes in correlation,
+                  default False
                 * F: η1 contribution parameters (4 terms)
                 * E: η2 contribution parameters (7 terms)
                 * rhoc: Reducing density, [mol/l]
 
+            Although both references use (almost) same correlation the density
+            is in g/cm³ in [4]_ and mol/l in [5]_, the parameters are maintain
+            with values in references.
+
+        **Extended corresponding states (ECS) model**
+
+            Formulation as explain in [20]_ and [22]_.
+
+            .. math::
+                \begin{array}[t]{l}
+                \eta = \eta^o(T) + \Delta\eta_o(T_o,\rho_o)F_{\eta}(T,\rho)\\
+                \eta^o=\frac{5\sqrt{\pi Mk_bT}}{16\pi\sigma^2\Omega^{(2,2)}}\\
+                T_o = T/f\\
+                \rho_o = \rho h\\
+                f = \frac{T_c}{T_{c0}}\vartheta\\
+                h = \frac{\rho_{c0}}{\rho_c}\varphi\\
+                F_{\eta} = \frac{f^{1/2}}{h^{3/2}}\left(\frac{M}{M_0}\right)^
+                {1/2}\\
+                \end{array}
+
+            where :math:`\varOmega^{(2,2)}` is the collision integral, see
+            :func:`lib.physics.Collision_Neufeld`
+
+            The residual contribution to the viscosity is calculated using
+            the correlation of reference fluid at conformal temperature and
+            density. These are calculated by iteration to meet the conditions
+
+            .. math::
+                \begin{array}[t]{l}
+                \alpha^r(T, \rho) = \alpha_0^r(T_0, \rho_0)\\
+                Z(T, \rho) = Z_0(T_0, \rho_0)\\
+                \end{array}
+
+            So it necessary accurate mEoS for both reference fluid and fluid
+            to calculate viscosity.
+
+            Furthermore the method can be based in experimental data using a
+            correction factor for the conformal density
+
+            .. math::
+                \begin{array}[t]{l}
+                \rho_{0,\eta}(T, \rho) = \rho_0(T, \rho)\psi(\rho_r)\\
+                \psi = \sum_k C_k\rho_r^k
+                \end{array}
+
+
         **Quiñones-Cisneros formulation**
+
             Formulation as explain in [2]_ and [3]_
 
             .. math::
+                \begin{array}[t]{l}
                 \eta = \eta^o + \kappa_iP_{id} + \kappa_r\Delta P_r +
                 \kappa_aP_a + \kappa_{ii}P_{id}^2 + \kappa_{rr}\Delta P_r^2 +
-                \kappa_{aa}P_a^2 + \kappa_{rrr}P_r^3 + \kappa_{aaa}P_a^3
-
-            .. math::
-                \kappa_a = \Gamma\left(a_0+a_1\psi_1+a_2\psi_2\right)
-
-            .. math::
-                \kappa_{aa} = \Gamma^3\left(A_0+A_1\psi_1+A_2\psi_2\right)
-
-            .. math::
-                \kappa_r = \Gamma\left(b_0+b_1\psi_1+b_2\psi_2\right)
-
-            .. math::
-                \kappa_{rr} = \Gamma^3\left(B_0+B_1\psi_1+B_2\psi_2\right)
-
-            .. math::
-                \kappa_i = \Gamma\left(c_0+c_1\psi_1+c_2\psi_2\right)
-
-            .. math::
-                \kappa_{ii} = \Gamma^3\left(C_0+C_1\psi_1+C_2\psi_2\right)
-
-            .. math::
-                \kappa_{rrr} = \Gamma\left(D_0+D_1\psi_1+D_2\psi_2\right)
-
-            .. math::
-                \kappa_{aaa} = \Gamma\left(E_0+E_1\psi_1+E_2\psi_2\right)
-
-            .. math::
-                \Gamma = \frac{T_c}{T}
-
-            .. math::
-                \psi_1 = \exp(\Gamma)-1
-
-            .. math::
-                \psi_2 = \exp(\Gamma^2)-1
+                \kappa_{aa}P_a^2 + \kappa_{rrr}P_r^3 + \kappa_{aaa}P_a^3\\
+                \kappa_a = \Gamma\left(a_0+a_1\psi_1+a_2\psi_2\right)\\
+                \kappa_{aa} = \Gamma^3\left(A_0+A_1\psi_1+A_2\psi_2\right)\\
+                \kappa_r = \Gamma\left(b_0+b_1\psi_1+b_2\psi_2\right)\\
+                \kappa_{rr} = \Gamma^3\left(B_0+B_1\psi_1+B_2\psi_2\right)\\
+                \kappa_i = \Gamma\left(c_0+c_1\psi_1+c_2\psi_2\right)\\
+                \kappa_{ii} = \Gamma^3\left(C_0+C_1\psi_1+C_2\psi_2\right)\\
+                \kappa_{rrr} = \Gamma\left(D_0+D_1\psi_1+D_2\psi_2\right)\\
+                \kappa_{aaa} = \Gamma\left(E_0+E_1\psi_1+E_2\psi_2\right)\\
+                \Gamma = \frac{T_c}{T}\\
+                \psi_1 = \exp(\Gamma)-1\\
+                \psi_2 = \exp(\Gamma^2)-1\\
+                \end{array}
 
             The derived class must define the variables:
+
                 * a: Ka correlation coefficients
                 * A: Kaa correlation coefficients
                 * b: Kr correlation coefficients
@@ -3911,10 +4274,23 @@ class MEoS(ThermoAdvanced):
             Density [kg/m³]
         T : float
             Temperature [K]
-        fase: dict
+        fase : dict
             phase properties
+        coef : dict
+            dictionary with correlation parameters
+        residual : boolean
+           return only the residual contribution. Used in ecs correlation
+
+        Returns
+        -------
+        mu : float
+            Viscosity of fluid, [Pa·s]
+            If residual options is True the returned value would be the
+            residual contribution to viscosity in μPas
         """
-        coef = self._viscosity
+        if coef is False:
+            coef = self._viscosity
+
         if coef:
             M = coef.get("M", self.M)
             if coef["eq"] == 0:
@@ -3923,7 +4299,7 @@ class MEoS(ThermoAdvanced):
                 mu = method(rho, T, fase).muPas
 
             elif coef["eq"] == 1:
-                muo = self._Visco0()
+                muo = self._Visco0(T)
 
                 # Initial-density term, second virial coefficient
                 mud = 0
@@ -3990,6 +4366,13 @@ class MEoS(ThermoAdvanced):
                         den = 1.
 
                     mur += num/den
+
+                # Gaussian terms
+                # Reference: Propane, ethane correlation from Vogel
+                if rho and "nr_gaus" in coef:
+                    for n, b, e in zip(coef["nr_gaus"], coef["br_gaus"],
+                                       coef["er_gaus"]):
+                        mur += n*tau*delta*exp(-b*(delta-1)**2-e*abs(tau-1))
                 mur *= mured
 
                 # Modified Batschinkski-Hildebrand terms with reduced
@@ -4006,67 +4389,118 @@ class MEoS(ThermoAdvanced):
                     delta0 = g1*(1+rest)
                     muCP = f*(delta/(delta0-delta)-delta/delta0)
 
-                # Gaussian terms
-                # Reference: Propane, ethane correlation from Vogel
-                if "nr_gaus" in coef:
-                    for n, b, e in zip(coef["nr_gaus"], coef["br_gaus"],
-                                       coef["er_gaus"]):
-                        mur += n*tau*delta*exp(-b*(delta-1)**2-e*abs(tau-1))
-
                 # Special term hardcoded in component class
                 mue = 0
                 if "special" in coef:
                     method = self.__getattribute__(coef["special"])
                     mue = method(rho, T, fase)
 
-                # print(muo, mud, mur, mue)
+                # Return the residual contribution if it's requested
+                # i.e. in ecs viscosity correlations
+                if residual:
+                    return mud+mur+muCP+mue
+
                 mu = muo+mud+mur+muCP+mue
 
             elif coef["eq"] == 2:
                 # Younglove form
-                rhom = rho/M
-                muo = self._Visco0()
-
                 f = coef["F"]
                 e = coef["E"]
                 mod = coef.get("mod", False)
+                rhoc = coef["rhoc"]
+
+                # Be careful, the fluids I reference use rho and rhoc in g/cm³
+                # But fluids II reference use values in mol/l
+                if mod:
+                    rhogcc = rho/1000
+                    rhoc *= self.M/1000
+                else:
+                    rhogcc = rho/self.M
+                muo = self._Visco0(T)
 
                 mu1 = f[0]+f[1]*(f[2]-log(T/f[3]))**2                   # Eq 21
 
                 G = e[0]+e[1]/T                                         # Eq 23
-                H = rhom**0.5*(rhom-coef["rhoc"])/coef["rhoc"]          # Eq 25
+                H = rhogcc**0.5*(rhogcc-rhoc)/rhoc                      # Eq 25
                 if mod:
                     # Eq 23 in ref 2
-                    F = e[0] + e[1]*H + e[2]*rhom**0.1 + e[3]*H/T**2 + \
-                        e[4]*rhom**0.1/T**1.5 + e[5]/T + e[6]*H/T
+                    F = e[0] + e[1]*H + e[2]*rhogcc**0.1 + e[3]*H/T**2 + \
+                        e[4]*rhogcc**0.1/T**1.5 + e[5]/T + e[6]*H/T
                 else:
                     # Eq 24 in ref 1
-                    F = G + (e[2]+e[3]/T**1.5)*rhom**0.1 + \
+                    F = G + (e[2]+e[3]/T**1.5)*rhogcc**0.1 + \
                         H*(e[4]+e[5]/T+e[6]/T**2)
                 mu2 = exp(F)-exp(G)                                     # Eq 22
 
-                mu = muo+mu1*rhom+mu2                                   # Eq 18
+                mu = muo+mu1*rhogcc+mu2                                 # Eq 18
 
-            elif self._viscosity["eq"] == 3 or self._viscosity["eq"] == "ecs":
+            elif coef["eq"] == 3 or coef["eq"] == "ecs":
                 # Huber ECS model
 
-                Tr = T/self.Tc
-                rhor = rho/self.rhoc
+                tau = self.Tc/T
+                delta = rho/self.rhoc
 
-                fint = 0
-                for n, m in zip(self._viscosity["fint"], self._viscosity["fint_t"]):
-                    fint += n*T**m
+                # Reference fluid
+                ref = coef["ref"]
+                visco0 = ref.__getattribute__(ref, coef["visco"])
 
+                # Calculate the conformal temperature and density
+                def f(parr):
+                    T0, rho0 = parr
+                    tau0 = ref.Tc/T0
+                    delta0 = rho0/ref.rhoc
+                    ar = self._phir(tau, delta)
+                    ar0 = ref()._phir(tau0, delta0)
+                    fird = self._phird(tau, delta)
+                    fird0 = ref()._phird(tau0, delta0)
+                    Z = 1+delta*fird
+                    Z0 = 1+delta0*fird0
+                    return ar-ar0, Z-Z0
+
+                rinput = fsolve(f, [T, rho], full_output=True)
+                if sum(abs(rinput[1]["fvec"])) < 1e-5:
+                    T0, rho0 = rinput[0]
+                    f = T/T0
+                    h = rho0/ref.M/rho*self.M
+                else:
+                    # If solution don't converge use the generalised
+                    # correlation for shape factor gives in Estela-Uribe
+                    self._ecs_msg = "Iteration don't converge"
+
+                    prop = self._ECSEstela(delta, tau, ref)
+                    teta = prop["teta"]
+                    phi = prop["phi"]
+
+                    f = self.Tc/ref.Tc*teta
+                    T0 = T/f
+                    h = ref.rhoc/ref.M * self.M/self.rhoc * phi
+                    rho0 = rho/self.M*h*ref.M
+
+                self._T0_ecs = T0
+                self._rho0_ecs = rho0
+
+                # Define the coef data for calculate the dilute gas viscosity
+                visco = {}
+                visco["omega"] = 5  # Neufeld correlation
+                visco["ek"] = coef["ek"]
+                visco["sigma"] = coef["sigma"]
+                muo = self._Visco0(T, visco)
+
+                # Eq 9
                 psi = 0
-                for n, t, d in zip(self._viscosity["psi"], self._viscosity["psi_t"], self._viscosity["psi_d"]):
-                    psi += n*Tr**t*rhor**d
+                for n, d in zip(coef["psi"], coef["psi_d"]):
+                    psi += n*delta**d
+                rho0 *= psi
 
-                mu = None
+                # Eq 8
+                F = f**0.5/h**(2/3)*(self.M/ref.M)**0.5
 
+                mur = ref()._Viscosity(rho0, T0, fase, visco0, True)
+                mu = muo + mur*F
 
             elif coef["eq"] == 4:
                 # Quiñones-Cisneros correlations
-                muo = self._Visco0()
+                muo = self._Visco0(T)
 
                 Gamma = self.Tc/T                                      # Eq 35
                 psi1 = exp(Gamma)-1.0                                  # Eq 33
@@ -4108,27 +4542,24 @@ class MEoS(ThermoAdvanced):
 
         else:
             # Use the Chung method as default method for no high quality method
-            # muo = MuL_LetsouStiel(T, self.M, self.Tc, self.Pc, self.f_acent)
             muo = MuG_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
                             self.momentoDipolar.Debye, 0)
             mu = MuG_P_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
                              self.momentoDipolar.Debye, 0, rho, muo).muPas
         return unidades.Viscosity(mu, "muPas")
 
-    def _Visco0(self, coef=None):
+    def _Visco0(self, T, coef=None):
         r"""Dilute gas viscosity calculation
 
         .. math::
+            \begin{array}[t]{l}
             \eta^o(T) = \frac{N_{chapman}\left(MT\right)^{t_{chapman}}}
             {\sigma^2\Omega(T^*)} + \sum_{i}^nN_i\tau^{t_i}
             + \frac{\sum_{i}^nN_i\tau^{t_i}}{\sum_{i}^nN_i\tau^{t_i}}
-            + \eta_̣{hc}^o
-
-        .. math::
-            T^* = \frac{T}{ε/k}
-
-        .. math::
-            \tau = \frac{T}{T_r}
+            + \eta_{hc}^o\\
+            T^* = \frac{T}{ε/k}\\
+            \tau = \frac{T}{T_r}\\
+            \end{array}
 
         The collision integral is calculated in separate procedure _Omega, see
         its docs for parameters
@@ -4139,6 +4570,7 @@ class MEoS(ThermoAdvanced):
         method
 
         Champman-Enskop:
+
             * ek: Lennard-Jones energy parameter, [K]
             * sigma: Lennard-Jones size parameter, [nm]
             * Tref: Dilute gas viscosity reference temperature, default=1
@@ -4147,35 +4579,50 @@ class MEoS(ThermoAdvanced):
             * t_chapman: Dilute gas viscosity temperature exponent, default=0.5
 
         Polynomial terms:
+
             * Toref: Polynomial terms reference temperature, default=1
             * no: Polynomial terms coefficient
             * to: Polynomial terms tau exponent
 
         Fractional terms:
+
             * no_num: Fractional numerator coefficient for dilute gas viscosity
             * to_num: Fractional numerator temperature exponent
             * no_den: Fraction denominator coefficient for dilute gas viscosity
             * to_den: Fraction denominator temperature exponent
 
         Custom Hardcoded terms:
+
             * special0: Name of procedure with hardcoded method
+
+        Returns
+        -------
+        muo : float
+            Viscosity of ideal gas, [μPa·s]
         """
         if coef is None:
             coef = self._viscosity
+
+        if not coef:
+            # Special case for no available viscosity, i.e. in case thermal
+            # conductivity is available indeep
+            muo = MuG_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
+                            self.momentoDipolar.Debye, 0)
+            return muo
 
         muo = 0
         M = coef.get("M", self.M)
 
         # Collision integral calculation
         if coef["omega"]:
-            omega = self._Omega(coef)
+            omega = self._Omega(T, coef)
             N_chap = coef.get("n_chapman", 0.0266958)
             t_chap = coef.get("t_chapman", 0.5)
             Tr = coef.get("Tref", 1.)
 
-            muo += N_chap*(M*self.T/Tr)**t_chap/(coef["sigma"]**2*omega)
+            muo += N_chap*(M*T/Tr)**t_chap/(coef["sigma"]**2*omega)
 
-        tau = self.T/coef.get("Toref", 1.)
+        tau = T/coef.get("Toref", 1.)
         # other aditional polynomial terms
         if "no" in coef:
             for n, t in zip(coef["no"], coef["to"]):
@@ -4197,48 +4644,59 @@ class MEoS(ThermoAdvanced):
         # Special hardcoded method:
         if "special0" in coef:
             method = self.__getattribute__(coef["special0"])
-            muo += method()
+            muo += method(T)
 
         return muo
 
     @refDoc(__doi__, [6, 5, 7, 3, 8], tab=8)
-    def _Omega(self, coef):
+    def _Omega(self, T, coef):
         r"""Collision integral calculations
 
         The derived class must define a dict object with the parameters for the
         method:
+
             * omega: Collision integral procedure calculation
+
                 * 0 - None
-                * 1 - Lemmon expression from []: Air, N2, O2...
-                * 2 - Younglove expression from []: C1, C2, C3, iC4, nC4
-                * 3 - Inverse temperature polinomial form exponential (cC6)
-                * 4 - Inverse temperature polinomial form (H2S)
-                * 5 - Neufeld correlation for Lennard-Jones 6-12 potential
+
+                * 1 - Lemmon expression from [6]_: Air, N2, O2...
+
+                    .. math::
+                        \ln \Omega = \sum_i^nb_i\ln\left(T/εk\right)^i
+
+                * 2 - Younglove expression from [5]_: C1, C2, C3, iC4, nC4
+
+                    .. math::
+                        \Omega = \frac{1}{\sum_i^n\left(b_i\frac{εk}{T}
+                        \right)^{(n+2)/3}}
+
+                * 3 - Inverse temperature polinomial form exponential [7]_
+                (cC6)
+
+                    .. math::
+                        \ln \Omega = \sum_i^n \frac{b_i}{T_r^i}
+
+                * 4 - Inverse temperature polinomial form [3]_ (H2S)
+
+                    .. math::
+                        \Omega = \sum_i^n \frac{b_i}{T_r^i}\\
+
+                * 5 - Neufeld correlation for Lennard-Jones 6-12 potential [8]_
+
+                    .. math::
+                        \Omega_5 = \frac{1.16145}{T_r^{0.14874}} + \frac
+                        {0.52487}{\exp(0.7732T_r)} + \frac{2.16178}
+                        {\exp(2.4378T_r)} - 6.435e^{-4} T_r^{0.14874}\sin
+                        \left(\frac{18.0323}{T_r^{0.76830}}-7.27371\right)
 
             * collision: Alternate contributions values for collision integral
 
-        .. math::
-            \Omega_1 = \exp\left(\sum_i^nb_i\ln\left(T/εk\right)^i\right)
-
-        .. math::
-            \Omega_2 = \frac{1}{\sum_i^n\left(b_i\frac{εk}{T}\right)^{(n+2)/3}}
-
-        .. math::
-            \Omega_3 = \exp\left(\sum_{i=0}^n \frac{b_i}{T_r^i}\right)
-
-        .. math::
-            \Omega_4 = \sum_{i=0}^n \frac{b_i}{T_r^i}
-
-        .. math::
-            \Omega_5 = \frac{1.16145}{T_r^{0.14874}} + \frac{0.52487}
-            {\exp(0.7732T_r)} + \frac{2.16178}{\exp(2.4378T_r)} - 6.435e^{-4}
-            T_r^{0.14874}\sin\left(\frac{18.0323}{T_r^{0.76830}}-7.27371\right)
         """
         b = coef.get("collision", None)
         if coef["omega"] == 1:
             if not b:
                 b = [0.431, -0.4623, 0.08406, 0.005341, -0.00331]
-            T_ = log(self.T/coef["ek"])
+            T_ = log(T/coef["ek"])
             suma = 0
             for i, bi in enumerate(b):
                 suma += bi*T_**i
@@ -4249,34 +4707,34 @@ class MEoS(ThermoAdvanced):
                 b = [-3.0328138281, 16.918880086, -37.189364917, 41.288861858,
                      -24.615921140, 8.9488430959, -1.8739245042, 0.20966101390,
                      -0.0096570437074]
-            T_ = coef["ek"]/self.T
+            T_ = coef["ek"]/T
             suma = 0
             for i, bi in enumerate(b):
                 suma += bi*T_**((3.-i)/3.)
             omega = 1./suma
 
-        elif self._viscosity["omega"] == 3:
-            Tr = self.T/coef.get("ek", 1)
+        elif coef["omega"] == 3:
+            Tr = T/coef.get("ek", 1)
             suma = 0
             for i, bi in enumerate(b):
                 suma += bi/Tr**i
             omega = exp(suma)
 
-        elif self._viscosity["omega"] == 4:
-            Tr = self.T/coef.get("ek", 1)
+        elif coef["omega"] == 4:
+            Tr = T/coef.get("ek", 1)
             omega = 0
             for i, bi in enumerate(b):
                 omega += bi/Tr**i
 
-        elif self._viscosity["omega"] == 5:
-            T_ = self.T/coef["ek"]
+        elif coef["omega"] == 5:
+            T_ = T/coef["ek"]
             omega = Collision_Neufeld(T_)
 
         return omega
 
     # Thermal conductivity methods
-    @refDoc(__doi__, [4, 5], tab=8)
-    def _ThCond(self, rho, T, fase):
+    @refDoc(__doi__, [6, 4, 5, 17, 18, 20, 22], tab=8)
+    def _ThCond(self, rho, T, fase, coef=False, contribution=False):
         r"""Thermal conductivity calculation procedure
 
         The derived class must define a dict object with the parameters for the
@@ -4285,7 +4743,9 @@ class MEoS(ThermoAdvanced):
 
             * 0 - Hardcoded for special procedures (i.e.: R23, H2O, ...)
             * 1 - General formulation with different contribution
-            * 2 - Younglove formulation
+            * 2 : Younglove #1 form, used in N2, O2, Ar.
+            * 3 : Younglove #2 form, used in CH4, C2, C3, C4, iC4.
+            * 4 - Extended corresponding states correlation
 
         **Hardcoded procedures**
 
@@ -4300,95 +4760,153 @@ class MEoS(ThermoAdvanced):
             for implement correlations
 
             .. math::
-                \eta = \eta^o(T)+\eta^1(T)\rho+\eta^r(\tau,\delta)+\eta^{CP}
+                \lambda = \lambda_o + \lambda_r + \lambda_c
 
-            *Initial density terms, second virial coefficient*
-
-                .. math::
-                    \eta^1(T) = B_\eta \eta^0
+            *Dilute gas thermal conductivity*
 
                 .. math::
-                    B_\eta = \eta_r B^*_\eta
-
-                .. math::
-                    B^*_\eta = \sum_in_i\tau^t
-
-                * Tref_virial: Initial density reference temperature
-                * muref_virial: Initial density reference viscosity
-                * n_virial: Initial density parameter
-                * t_virial: Initial density tau exponent
-
-            *Residual fluid contribution*
-
-                .. math::
-                    \eta^r(\tau,\delta) = \sum_{i=1}^nN_i\tau^{t_i}\delta^{d_i}
-                    \exp\left(-\gamma_i\delta^{c_i}\right) + \frac{\sum_{i}
+                    \lambda_o = N_o\mu_o +
+                    N_o\mu_o\left(3.75+\sum_i n_i\tau^{t_i}\left(\frac{Cp^o}{R}
+                    -2.5\right)\right) + \sum_i N_i\tau^{t_i} + \frac{\sum_i
                     ^nN_i\tau^{t_i}\delta^{d_i}\exp\left(-\gamma_i\delta^{c_i}
                     \right)}{\sum_{i}^nN_i\tau^{t_i}\delta^{d_i}\exp\left(
                     -\gamma_i\delta^{c_i}\right)}
 
-                * Tref_res: Residual viscosity reference temperature
-                * rhoref_res: Residual viscosity reference density
-                * muref_res: Residual viscosity reference viscosity
-                * nr: Residual viscosity parameter
-                * tr: Residual viscosity tau exponent
-                * dr: Residual viscosity delta exponent
-                * gr: Residual viscosity exponential parameter
-                * cr: Reisidual viscosity delta exponent in exponential term
+                * Toref: Dilute gas reference temperature, default 1
+                * no_visco: Dilute gas viscosity term coefficient
+                * no_viscoCP: Dilute gas specific heat term coefficient
+                * to_viscoCP: Dilute gas specific heat term τ exponent
+                * no: Dilute gas polynomial parameter
+                * to: Dilute gas polynomial tau exponent
+                * no_num: Fractional numerator coefficient
+                * to_num: Fractional numerator τ exponent
+                * no_den: Fractional denominator coefficient
+                * to_den: Fractional denominator τ exponent
 
-                * nr_num: Fractional numerator coefficient
-                * tr_num: Fractional numerator temperature exponent
-                * dr_num: Fractional numerator density exponent
-                * gr_num: Fractional numerator exponential coefficient
-                * cr_num: Fractional numerator exponential density exponent
-
-                * nr_den: Fractional denominator coefficient
-                * tr_den: Fractional denominator temperature exponent
-                * dr_den: Fractional denominator density exponent
-                * gr_den: Fractional denominator exponential coefficient
-                * cr_den: Fractional denominator exponential density exponent
-
-            *Modified Batschinkski-Hildebrand contribution*
+            *Background term*
 
                 .. math::
-                    \eta^{CP} = f\left(\frac{\delta}{\delta_0(\tau)-\delta}-
-                    \frac{\delta}{\delta_0(\tau)}\right)
+                    \frac{\lambda^b}{\lambda_r} = \sum_{i}N_i\tau^{t_i}\delta^
+                    {d_i}\exp\left(-\gamma_i\delta^{c_i}\right)
 
-                .. math::
-                    \delta_0(\tau) = g_1\left(1+\sum_i g_i\tau^{t_i}\right)
-
-                * CPf: f parameter for closed packed term
-                * CPg1: g1 parameter for closed packed term
-                * CPgi: g parameter for aditional term of closed packed term
-                * CPti: tau exponent for aditional term of closed packed term
+                * Tref_res: Background reference temperature
+                * rhoref_res: Background reference density
+                * kref_res: Background reference thermal conductivity
+                * nr: Background thermal conductivity parameter
+                * tr: Background thermal conductivity tau exponent
+                * dr: Background thermal conductivity delta exponent
+                * gr: Background thermal conductivity exponential parameter
+                * cr: Background thermal conductivity delta exponent in
+                exponential term
 
             *Special terms*
-                A hardcoded term for any non stndard formulation term
+
+                A hardcoded term for any non standard formulation term
 
                 * special: Name of procedure with hardcoded method
 
+            *Critical enhancement*
 
-        **Younglove formulation**
-            Formulation as explain in [4]_ and [5]_
+                See thermal conductivity critical enhancement procedure
+                documentation, :func:`MEoS._KCritical`
+
+
+        **Younglove formulation #1**
+
+            Formulation as explain in [4]_
 
             .. math::
-                \lambda = \lambda_0 + \frac{\left(F_0+F_1\rho\right)\rho}{1-F_2\rho}+\lambda_c
+                \begin{array}[t]{l}
+                \lambda = \lambda^o(T)+\lambda^1(T)\rho+\lambda^2(\tau,\delta)
+                +\lambda_c(\tau,\delta)\\
+                \lambda^o = \sum_iG_iT^{(4-1)/3}\\
+                \lambda^1 = F_{[1]}+F_{[2]}\left(F_{[3]}-\ln\left(\frac{T}
+                {F_{[4]}}\right)\right)^2\\
+                \lambda^2 = \exp(F)-\exp(G)\\
+                G = E_{[1]}+\frac{E_{[2]}}{T}\\
+                H = \frac{\rho^{0.5}\left(\rho-\rho_c\right)}{\rho_c}\\
+                F = G + \left(E_{[3]}+\frac{E_{[4]}}{T^{1.5}}\right)\rho^{0.1}+
+                H \left(E_{[5]}+\frac{E_{[6]}}{T}+\frac{E_{[7]}}{T^2}\right)\\
+                \end{array}
+
+            The derived class must define the variables:
+
+                * F: η1 contribution parameters (4 terms)
+                * E: η2 contribution parameters (7 terms)
+                * rhoc: Reducing density, [mol/l]
+
+
+        **Younglove formulation #2**
+
+            Formulation as explain in [5]_
 
             .. math::
-                \lambda_0 = 1000\eta_0\left(C_p^0-2.5R\right)\left(G_1+G_2\epsilon/kT\right]
+                \lambda = \lambda_0 + \frac{\left(F_0+F_1\rho\right)\rho}
+                {1-F_2\rho}+\lambda_c
+
+            .. math::
+                \lambda_0 = \eta_0\left(3.75R+\left(C_p^0-2.5R\right)
+                \left(G_1+G_2\epsilon/kT\right)\right)
 
             .. math::
                 F_0 = \sum_{n=1}^3E_nT^{1-n}
 
             .. math::
-                F_1 = \sum_{n=4}^6E_nT^{1-n}
+                F_1 = \sum_{n=4}^6E_nT^{4-n}
 
             .. math::
-                F_2 = \sum_{n=7}^8E_nT^{1-n}
+                F_2 = \sum_{n=7}^8E_nT^{7-n}
 
             The derived class must define the variables:
+
+                * ek: Lennard-Jones energy parameter, [K]
                 * G: λ0 contribution parameters (2 terms)
                 * E: λ1 contribution parameters (8 terms)
+
+
+        **Extended corresponding states (ECS) model**
+
+            Formulation as explain in [20]_ and [22]_.
+
+            .. math::
+                \begin{array}[t]{l}
+                \lambda = \lambda^{int}(T)+\lambda^{trans}(T, \rho)\\
+                \lambda^{int} = \frac{f_{int}\eta^o}{M}\left(C_p^o-\frac{5}{2}
+                R\right)\\
+                f_{int}=a_0+a_1T\\
+                \lambda^{trans} = \lambda^o+\lambda^r+\lambda^c\\
+                \lambda^o = \frac{15}{4}R\eta^o\\
+                \lambda_r(T,\rho) = \lambda_0^r(T_0,\rho_0)F_{\lambda}\\
+                F_{\lambda} = \frac{f^{1/2}}{h^{3/2}}\left(\frac{M_0}{M}
+                \right)^{1/2}\\
+                \end{array}
+
+            The residual contribution to the thermal conductivity is calculated
+            using the correlation of reference fluid at conformal temperature
+            and density. These are calculated by iteration to meet the
+            conditions
+
+            .. math::
+                \begin{array}[t]{l}
+                \alpha^r(T, \rho) = \alpha_0^r(T_0, \rho_0)\\
+                Z(T, \rho) = Z_0(T_0, \rho_0)\\
+                \end{array}
+
+            So it necessary accurate mEoS for both reference fluid and fluid
+            to calculate thermal conductivity.
+
+            Furthermore the method can be based in experimental data using a
+            correction factor for the conformal density
+
+            .. math::
+                \begin{array}[t]{l}
+                \rho_{0,\lambda}(T, \rho) = \rho_0(T, \rho)\chi(\rho_r)\\
+                \chi = \sum_k b_k\rho_r^k
+                \end{array}
+
+            The critical enhancement is calculated with the Olchowy and Sengers
+            model, see :func:`MEoS._KCritical`.
+
 
         Parameters
         ----------
@@ -4398,8 +4916,18 @@ class MEoS(ThermoAdvanced):
             Temperature [K]
         fase: dict
             phase properties
+        coef : dict
+            dictionary with correlation parameters
+        contribution : boolean
+            return the contribution
+
+        Returns
+        -------
+        k : float
+            Thermal conductivity, [W/m·K]
         """
-        coef = self._thermal
+        if coef is False:
+            coef = self._thermal
 
         if coef:
             # Let define viscosity coefficient to use in thermal conductivity
@@ -4422,22 +4950,22 @@ class MEoS(ThermoAdvanced):
                 # Special term with dilute-gas limit viscosity value
                 # Reference from Lemmon for Air, N2, O2...
                 if "no_visco" in coef:
-                    muo = self._Visco0(visco)
+                    muo = self._Visco0(T, visco)
                     kg += coef["no_visco"]*muo
 
                 # Special term with dilute-gas viscosity and ideal gas isobaric
                 # heat capacity
-                # From Frield echane meos
+                # Reference From Friend ethane correlation
                 if "no_viscoCp" in coef:
                     # Contribution, Eq 14
                     f = 0
                     for n, t in zip(coef["no_viscoCp"], coef["to_viscoCp"]):
                         f += n*Tr**t
 
-                    muo = self._Visco0(visco)
+                    muo = self._Visco0(T, visco)
                     # 1e-6 factor because viscosity is in μPa·s
                     n = 1e-6*self.R/u/Avogadro
-                    kg += muo*n*(3.75+f*(self.cp0/self.R-2.5))
+                    kg += muo*n*(3.75+f*(self.cp0/self.R-2.5))         # Eq 13a
 
                 # Polynomial terms
                 if "to" in coef:
@@ -4455,30 +4983,17 @@ class MEoS(ThermoAdvanced):
                         den += n*Tr**t
                     kg += num/den
 
-                        # if c == -99:
-                            # cpi = 1.+n*(self.cp0.kJkgK-2.5*self.R.kJkgK)
-                            # kg *= cpi
-                        # elif c == -98:
-                            # muo = self._Visco0()
-                            # cpi = self.cp0-R
-                            # kg += n*cpi*muo
-                        # elif c == -96:
-                            # cpi = self.cp0/self.R-2.5
-                            # muo = self._Visco0()
-                            # kg = (kg*cpi+15./4.)*self.R.kJkgK*muo/self.M
-                        # else:
-
                 kg *= coef.get("koref", 1)
 
                 # Backgraund terms
                 kr = 0
                 kc = 0
                 if rho > 0:
+                    Tr = coef.get("Tref_res", self.Tc)
+                    tau = Tr/T
+                    rhor = coef.get("rhoref_res", self.rhoc)
+                    delta = rho/rhor
                     if "nr" in coef:
-                        Tr = coef.get("Tref_res", self.Tc)
-                        tau = Tr/T
-                        rhor = coef.get("rhoref_res", self.rhoc)
-                        delta = rho/rhor
 
                         if "cr" in coef:
                             for n, t, d, c, g in zip(
@@ -4490,24 +5005,53 @@ class MEoS(ThermoAdvanced):
                                     coef["nr"], coef["tr"], coef["dr"]):
                                 kr += n*tau**t*delta**d
 
+                    # numerator of rational poly; denominator of rat. poly;
+                    if "nr_num" in coef:
+                        num = 0
+                        den = 0
+                        if "cr_num" in coef:
+                            for n, t, d, c, g in zip(
+                                    coef["nr_num"], coef["tr_num"],
+                                    coef["dr_num"], coef["cr_num"],
+                                    coef["gr_num"]):
+                                num += n*tau**t*delta**d*exp(-g*delta**c)
+                        else:
+                            for n, t, d in zip(
+                                    coef["nr_num"], coef["tr_num"],
+                                    coef["dr_num"]):
+                                num += n*tau**t*delta**d
+
+                        if "nr_den" in coef:
+                            if "cr_den" in coef:
+                                for n, t, d, c, g in zip(
+                                        coef["nr_den"], coef["tr_den"],
+                                        coef["dr_den"], coef["cr_den"],
+                                        coef["gr_den"]):
+                                    den += n*tau**t*delta**d*exp(-g*delta**c)
+                            else:
+                                for n, t, d in zip(
+                                        coef["nr_den"], coef["tr_den"],
+                                        coef["dr_den"]):
+                                    den += n*tau**t*delta**d
+                        else:
+                            den = 1.
+
+                        kr += num/den
+
                     # Special term with density of saturated vapor factor
                     # Rererence from Friend correlation for methane
                     if "nr_s" in coef:
-                        if T < self.Tc and rho < self.rhoc:
-                            delta_s = self._Vapor_Density(T)
+                        # Eq 16
+                        if T < self.Tc and rho < rhor:
+                            delta_s = self._Vapor_Density(T)/rhor
                         else:
-                            delta_s = 11
+                            # Typo in paper, may be 1, not 11
+                            delta_s = 1
 
+                        # Eq 17
                         for n, t, d, in zip(
                                 coef["nr_s"], coef["tr_s"], coef["dr_s"]):
                             kr += n*tau**t*delta**d/delta_s
-
-
-                        # if "nbden" in self._thermal:
-                            # den = 0
-                            # for n, t, d in zip(self._thermal["nbden"], self._thermal["tbden"], self._thermal["dbden"]):
-                                # den += n*tau**t*delta**d
-                            # kb /= den
 
                     kr *= coef.get("kref_res", 1)
 
@@ -4520,26 +5064,54 @@ class MEoS(ThermoAdvanced):
                     method = self.__getattribute__(coef["special"])
                     ke = method(rho, T, fase)
 
-                # print(kg, kr, kc, ke, kg+kr)
+                if contribution:
+                    return kr+ke
                 k = kg+kr+kc+ke
 
-            elif self._thermal["eq"] == 2:
-                # Younglove form
-                muo = self._Visco0(coef["visco"])
-                print(muo, self.cp0, self.R)
+            elif coef["eq"] == 2:
+                # Younglove #1 form as explain in [4]_
+                rhogcc = rho/1000  # Use the density in g/cm³
+                f = coef["F"]
+                e = coef["E"]
+
+                # Eq 20
+                ko = 0
+                for n, t in zip(coef["no"], coef["to"]):
+                    ko += n*T**t
+
+                k1 = f[0]+f[1]*(f[2]-log(T/f[3]))**2                    # Eq 21
+
+                G = e[0]+e[1]/T                                         # Eq 24
+                H = rhogcc**0.5*(rhogcc-e[7])/e[7]                      # Eq 25
+
+                # Eq 23
+                F = e[0] + e[1]*H + e[2]*rhogcc**0.1 + e[3]*H/T**2 + \
+                    e[4]*rhogcc**0.1/T**1.5 + e[5]/T + e[6]*H/T
+
+                k2 = exp(F)-exp(G)                                      # Eq 22
+
+                # Critical enhancement
+                kc = self._KCritical(rho, T, fase)
+
+                k = ko + k1*rhogcc + k2 + kc
+
+            elif coef["eq"] == 3:
+                # Younglove #2 form as explain in [5]_
+                # Several typo in paper
+                muo = self._Visco0(T)
 
                 # Eq 27
-                kg = 1e-6*muo*(self.cp0-2.5*self.R) * \
-                    (coef["G"][0]+coef["G"][1]*coef["visco"]["ek"]/T)
+                kg = 1e-6*muo*(3.75*self.R+(self.cp0-2.5*self.R) *
+                               (coef["G"][0]+coef["G"][1]*coef["ek"]/T))
 
                 if rho:
-                    E = self._thermal["E"]
+                    E = coef["E"]
                     F0 = E[0] + E[1]/T + E[2]/T**2                      # Eq 28
-                    F1 = E[3]/T**3 + E[4]/T**4 + E[5]/T**5              # Eq 29
-                    F2 = E[6]/T**6 + E[7]/T**7                          # Eq 30
+                    F1 = E[3] + E[4]/T + E[5]/T**2                      # Eq 29
+                    F2 = E[6] + E[7]/T                                  # Eq 30
 
                     rhom = rho/self.M
-                    kb = (F0+F1*rhom)*rhom/(1-F2*rhom)
+                    kb = (F0+F1*rhom)*rhom/(1+F2*rhom)
 
                     # Critical enhancement
                     kc = self._KCritical(rho, T, fase)
@@ -4548,90 +5120,207 @@ class MEoS(ThermoAdvanced):
                     kb = 0
                     kc = 0
 
-                print(kg, kb, kc)
                 k = kg+kb+kc
 
-            elif self._thermal["eq"] == 3:
-                T_ = self._thermal["ek"]/T
-                rhom = rho/self.M
-                suma = 0
-                for i, bi in enumerate(self._thermal["b"]):
-                    suma += bi*T_**((3.-i)/3.)
-                ko = self._thermal["Nchapman"]*T**self._thermal["tchapman"]/(self._thermal["sigma"]**2/suma)
+            elif coef["eq"] == 4 or coef["eq"] == "ecs":
+                # Huber ECS model
 
-                f = self._thermal["F"]
-                e = self._thermal["E"]
-                k1 = f[0]+f[1]*(f[2]-log(T/f[3]))**2
-                kg = ko+k1*rhom
+                Tr = T/self.Tc
+                rhor = rho/self.rhoc
+                tau = 1/Tr
+                delta = rhor
+                muo = self._Visco0(T)
 
-                G = e[0]+e[1]/T
-                H = rhom**0.5*(rhom-self._thermal["rhoc"])/self._thermal["rhoc"]
-                F = G+(e[2]+e[3]*T**-1.5)*rhom**0.1+H*(e[4]+e[5]/T+e[6]/T**2)
-                kb = exp(F)-exp(G)
+                # Reference fluid
+                ref = coef["ref"]
+                thermo0 = ref.__getattribute__(ref, coef["thermo"])
 
-                bl = self._thermal["ff"]*(self._thermal["rm"]**5*rho/1000.*Avogadro/self.M*self._thermal["Nchapman"]/T)**0.5
-                y = 6.0*pi*fase.mu/100000.*bl*(Boltzmann*T*rho/1000.*Avogadro/self.M)**0.5
-                deltaL = 0.0
-                der = self.derivative("P", "rho", "T", fase)
-                if der > 0:
-                    deltaL = Boltzmann*(T*fase.dpdT_rho)**2/(rho/1000.*der)**0.5/y
+                # If viscosity correlation use too a ecs method restore
+                # conformal state and avoid repeat iteration
+                if self._T0_ecs:
+                    T0 = self._T0_ecs
+                    rho0 = self._rho0_ecs
+                    f = T/T0
+                    h = rho0/ref.M/rho*self.M
+
                 else:
-                    deltaL = 0.0
-                kc = deltaL*exp(-18.66*((rho-self.rhoc)/self.rhoc)**4-4.25*((T-self.Tc)/self.Tc)**2)
+                    # Calculate the conformal temperature and density
+                    def f(parr):
+                        T0, rho0 = parr
+                        tau0 = ref.Tc/T0
+                        delta0 = rho0/ref.rhoc
+                        ar = self._phir(tau, delta)
+                        ar0 = ref()._phir(tau0, delta0)
+                        fird = self._phird(tau, delta)
+                        fird0 = ref()._phird(tau0, delta0)
+                        Z = 1+delta*fird
+                        Z0 = 1+delta0*fird0
+                        return ar-ar0, Z-Z0
 
-                k = kg+kb+kc
+                    rinput = fsolve(f, [T, rho], full_output=True)
+                    if sum(abs(rinput[1]["fvec"])) < 1e-5:
+                        T0, rho0 = rinput[0]
+                        f = T/T0
+                        h = rho0/ref.M/rho*self.M
+                        rho0 = rho/self.M*h*ref.M
+                    else:
+                        # If solution don't converge use the generalised
+                        # correlation for shape factor gives in Estela-Uribe
+                        self._ecs_msg = "Iteration don't converge"
 
-            elif self._thermal["eq"] == "ecs":
-                # TODO
-                k = 0
+                        prop = self._ECSEstela(delta, tau, ref)
+                        teta = prop["teta"]
+                        phi = prop["phi"]
+
+                        f = self.Tc/ref.Tc*teta
+                        T0 = T/f
+                        h = ref.rhoc/ref.M * self.M/self.rhoc * phi
+                        rho0 = rho/self.M*h*ref.M
+
+                # Calculate the internal contribution to thermal conductivity
+                fint = 0
+                for n, t in zip(coef["fint"], coef["fint_t"]):
+                    fint += n*T**t
+                kg = muo*fint*(self.cp0.kJkgK-2.5*self.R.kJkgK)         # Eq 24
+
+                # Calculate the dilute gas thermal conductivity
+                ko = 15/4*self.R.kJkgK*muo*1e-3                         # Eq 27
+
+                kr, kc = 0, 0
+                if rho:
+                    # Eq 31
+                    chi = 0
+                    for n, d in zip(coef["chi"], coef["chi_d"]):
+                        chi += n*rhor**d
+                    rho0 *= chi
+
+                    F = f**0.5/h**(2/3)*(ref.M/self.M)**0.5             # Eq 29
+
+                    # Residual contribution using the ecs method
+                    kr = F * ref()._ThCond(rho0, T0, fase, thermo0, True)
+
+                    # Critical enhancement
+                    kc = self._KCritical(rho, T, fase)
+
+                k = kg + ko + kr + kc
 
         else:
-            # Use the Chung method as default method for no high quality method
-            # ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
-            # muo = MuL_LetsouStiel(T, self.M, self.Tc, self.Pc, self.f_acent)
-            # muo = MuG_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
-                            # self.momentoDipolar.Debye, 0)
-            # ko = ThG_Chung(T, self.Tc, self.M, self.f_acent, fase.cv, muo)
-            # k = ThG_P_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
-                            # self.momentoDipolar.Debye, 0, rho, ko)
-            k = 0
+            # Use the Chung method as default method when no high quality
+            # correlation available
+            muo = MuG_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
+                            self.momentoDipolar.Debye, 0)
+            ko = ThG_Chung(T, self.Tc, self.M, self.f_acent, fase.cv, muo)
+            k = ThG_P_Chung(T, self.Tc, 1/self.rhoc, self.M, self.f_acent,
+                            self.momentoDipolar.Debye, 0, rho, ko)
+
+        # Avoid error for complex thermal conductivity
+        if type(k) == complex:
+            k = None
+
         return unidades.ThermalConductivity(k)
 
+    @refDoc(__doi__, [4, 5, 15, 16, 19], tab=8)
     def _KCritical(self, rho, T, fase):
         r"""Enchancement thermal conductivity calculation for critical region
         The model is defined in _thermal["critical"]. The defined models are:
             * 0 : No critical enhancement
-            * 1 : Gaussian term, used in Laesecke correlation for R123
+            * 1 : Younglove #1 form, used in N2, O2, Ar.
+            * 2 : Younglove #2 form, used in CH4, C2, C3, C4, iC4.
             * 3 : Olchowy-Sengers
+            * 4 : Gaussian term, used in Laesecke correlation for R123
+
+        Furthermore, each thermal conductivity correlation can define a special
+        critical enhancement method hardoded as a procedure in its class. For
+        that use the name of procedure in _thermal["critical" must be the name
+        of procedure. See Friend correlation for methane as example.
+
+        **Younglove #1 form**
+
+            Method used in [4]_ and [19]_
+
+            .. math::
+                \begin{array}[t]{l}
+                \Delta \lambda_c = \Delta \lambda' e^{-18.66\left(
+                \frac{T-T_c}{T_c}\right)^2-4.25\left(\frac{\rho-\rho_c}
+                {\rho_c}\right)}\\
+                \Delta \lambda' = \frac{kT^2}{Y} \left(\frac{\partial P}
+                {\partial T} \right)_{\rho} K_T^{1/2}\\
+                Y = 6\pi\eta l\left(kT\rho\frac{N_a}{M}\right)^{1/2}\\
+                l = f(\gamma_m^5\rho\frac{N_a}{M}\frac{e/k}{T})^{1/2}\\
+                K_T = \frac{1}{\rho}\left(\frac{\partial \rho}{\partial P}
+                \right)_T\\
+                \end{array}
+
+            where:
+
+                * k: Boltzmann constant
+                * Na: Avogadro constant
+
+            The derived class must define in the correlation dictionary the
+            variables:
+
+               * rhoc: Critical density, [g/cm³}
+               * Tc: Critical temperature, [K]
+               * ek: Lennard-Jones energy parameter, [K]
+               * f: Potencial function parameter, [-]
+               * gm: Molecular separation parameter, [m]
+
+            This method don't work nowadays, a tiny bug relevant only in
+            region near to critical point.
+
+
+        **Younglove #2 form**
+
+            Method used in [5]_
+
+            .. math::
+                \begin{array}[t]{l}
+                \lambda_c = \frac{\Delta\lambda'}{6Z\pi\eta}
+                e^{X_1\Delta T^4-X_2\Delta\rho^4}\\
+                \Delta\lambda' = X_4k_bP_c\left(\frac{T^*}{\rho^*}
+                \frac{\partial\rho^*}{\partial T^*}\right)^2\xi\\
+                \xi = (\xi^*)^{X_5}\\
+                \xi^* = \rho^*\frac{\partial\rho^*}{\partial P^*}\\
+                P^* = \frac{P}{P_c}\\
+                T^* = \frac{T}{T_c}\\
+                \rho^* = \frac{\rho}{\rho_c}\\
+                \Delta T = \frac{|T-T_c|}{T_c}\\
+                \Delta\rho = \frac{|\rho-\rho_c|}{\rho_c}\\
+                \end{array}
+
+            The derived class must define in the correlation dictionary the
+            variables:
+
+               * rhoc: Critical density, [g/cm³}
+               * Tc: Critical temperature, [K]
+               * X: Array with for parameter Xi of correlation, [-]
+               * Z: Parameter of denominator term, [-]
+
 
         **Olchowy-Sengers**
 
+            Method defined in [16]_, and very popular in the state-of-art
+            thermal conductivity correlations.
+
             .. math::
+                \begin{array}[t]{l}
                 \lambda_c = \rho c_p \frac{R_ok_BT}{6\pi\eta\xi}
-                \left(\bar{\Omega}-\bar{\Omega}_0\right)
-
-            .. math::
+                \left(\bar{\Omega}-\bar{\Omega}_0\right)\\
                 \bar{\Omega} = \frac{2}{\pi}\left[\left(\frac{c_p-c_v}{c_p}
-                \right)\arctan\left(q_D\xi\right)+\frac{c_v}{c_p}q_D\xi\right]
-
-            .. math::
+                \right)\arctan\left(q_D\xi\right)+\frac{c_v}{c_p}q_D\xi\right]\\
                 \bar{\Omega}_0 = \frac{2}{\pi}\left[1-\exp\left(-\frac{1}
                 {\frac{1}{q_D\xi}+\frac{(q_D\xi\rho_c)^2}{\rho^23}}\right)
-                \right]
-
-            .. math::
+                \right]\\
                 \xi = \xi_0\left(\frac{\Delta\tilde{\chi}}{\Gamma}\right)
-                ^{v/\gamma}
-
-            .. math::
+                ^{v/\gamma}\\
                 \Delta\tilde{\chi} = \tilde{\chi}(T,\rho) - \tilde{\chi}
-                (T_R,\rho)\frac{T_R}{T}
-
-            .. math::
+                (T_R,\rho)\frac{T_R}{T}\\
                 \tilde{\chi}(T,\rho) = \frac{P_c\rho}{\rho_c^2}\left(\frac
-                {\partial\rho}{\partial P}\right)_T
+                {\partial\rho}{\partial P}\right)_T\\
+                \end{array}
 
             The derived class must define the variables:
+
                 * Tcref: Reference temperature far above the Tc, [K]
                 * gnu: critical exponent parameter, [-]
                 * gam0: critical exponent parameter, [-]
@@ -4640,13 +5329,18 @@ class MEoS(ThermoAdvanced):
                 * R0: Amplitude parameter, [-]
                 * qd : finite upper cutoff, [m]
 
-        ** Gaussian terms**
+
+        **Gaussian terms**
+
+            Really only used in [15]_ for R123, but implemented here as a
+            general method for possible future use
 
             .. math::
-                \ln\frac{\lambda_c}{\lambda_r} = \sum n\left(\tau-\alfa\right)
+                \ln\frac{\lambda_c}{\lambda_r} = \sum n\left(\tau-\alpha\right)
                 ^t \left(\delta-\beta\right)^d
 
             The derived class must define the variables:
+
                * Trefc: Reference temperature, [K]
                * rhorefc: Reference density, [kg/m³]
                * krefc: Reference thermal conductivity, [W/m·K]
@@ -4656,56 +5350,67 @@ class MEoS(ThermoAdvanced):
                * betac: δ term translation
                * dc: δ exponent
 
-        References
-        ----------
-                   "autor": "Laesecke, A., Perkins, R.A., Howley, J.B.",
-                   "title": "An improved correlation for the thermal "
-                            "conductivity of HCFC123 (2,2-dichloro-1,1,1-"
-                            "trifluoroethane)",
-                   "ref": "Int. J. Refrigeration 19(4) (1996) 231-238",
-        [] Olchowy, G.A., Sengers, J.V. A Simplified Representation for the
-            Thermal Conductivity of Fluids in the Critical Region. Int. J.
-            Thermophys. 10(2) (1989) 417-426
-
         """
         if self._thermal["critical"] == 0:
             # No critical enhancement
             tc = 0
 
         elif self._thermal["critical"] == 1:
-            # Empirical formulation, referenced in Laesecke for R123
-            tau = self._thermal["Trefc"]/T
-            delta = rho/self._thermal["rhorefc"]
+            # Younglove form for fluids I, Ar, N2, O2, explain without typo in
+            # Hanley H.J.M., McCarty, R.D., Haynes, W.M.
+            # The Viscosity and Thermal Conductivity Coefficient for Dense
+            # Gaseous and Liquid Argon, Krypton, Xenon, Nitrogen and Oxigen
+            # J. Phys. Chem. Ref. Data 3(4) (1974) 979-1018
+            # doi: 10.1063/1.3253152
 
-            expo = 0
-            for n, alfa, t, beta, d in zip(
-                    self._thermal["nc"], self._thermal["alfac"],
-                    self._thermal["tc"], self._thermal["betac"],
-                    self._thermal["dc"]):
-                expo += n*(tau+alfa)**t*(delta+beta)**d
-            tc = self._thermal["krefc"]*exp(expo)
+            # FIXME: Dont work, maybe units, maybe typo in paper. I can't find
+            # the problem
+            rhogcc = rho/1000  # Use the density in g/cm³
+            rhoc = self._thermal["rhoc"]
+            Tc = self._thermal["Tc"]
+            f = self._thermal["f"]
+            gm = self._thermal["gm"]  # length in m
+            ek = self._thermal["ek"]
+            Kt = self.derivative("rho", "P", "T", fase)/fase.rho
+
+            # Eq D4
+            l = f*(gm**5*rho*Avogadro/self.M*ek/T)**0.5
+
+            # Eq D3
+            Y = 6*pi*fase.mu*l*(1e-3*Boltzmann*T*rho*Avogadro/self.M)**0.5
+
+            if Kt > 0:
+                # Eq D2
+                dL = Boltzmann*T**2*fase.dpdT_rho**2*Kt**0.5/Y
+            else:
+                dL = 0.0
+
+            # Eq D1
+            tc = dL*exp(-4.25*(abs(rhogcc-rhoc)/rhoc)**4) * \
+                exp(-18.66*(abs(T-Tc)/Tc)**2)*1e-2
 
         elif self._thermal["critical"] == 2:
-            # Younglove form for Propane
-            rhom = rho/self.M
-            Tc = self._thermal.get("Tcref", self.Tc)
-            rhoc = self._thermal.get("rhocref", self.rhoc)
+            # Younglove form for fluids II, CH4, C2, C3, C4
+            Tc = self._thermal.get("Tc", self.Tc)
+            rhoc = self._thermal.get("rhoc", self.rhoc)
+            X = self._thermal["X"]
+            Z = self._thermal["Z"]
 
             # Eq D4
             delT = abs(T-Tc)/Tc
             delrho = abs(rho-rhoc)/rhoc
 
-            X = self._thermal["X"]
-            xi = self.Pc*rho/self.rhoc**2/fase.drhodP_T                 # Eq D3
+            xi = self.Pc*rho/rhoc**2/fase.dpdrho_T                 # Eq D3
 
             # Eq D2
             DLc = X[3]*Boltzmann/self.Pc * \
-                (T/Tc*fase.drhodT_P*self.rhoc/rho)**2*xi**X[2]
-            tc = DLc*exp(-X[0]*delT**4 - X[1]*delrho**4)
-            #/(6*pi*fase.mu*self._thermal["Z"])
+                (T*fase.dpdT_rho*self.rhoc/rho)**2*xi**X[2]
+
+            # Eq D1
+            # The denominator term 6Zπμ is missing in reference
+            tc = DLc*exp(-X[0]*delT**4 - X[1]*delrho**4)/(6*pi*fase.mu*Z)
 
         elif self._thermal["critical"] == 3:
-            # fase.mu = unidades.Viscosity(213.0207196, "muPas")
             # Olchowy-Sengers
             qd = self._thermal["qd"]
             Tref = self._thermal["Tcref"]
@@ -4751,39 +5456,188 @@ class MEoS(ThermoAdvanced):
                     (omega-omega0)
 
         elif self._thermal["critical"] == 4:
-            # Younglove form
-            rhom = rho/self.M
-            Tc = self._thermal["Tcref"]
-            rhoc = self._thermal["rhocref"]
+            # Empirical gaussian formulation, referenced in Laesecke for R123
+            tau = self._thermal["Trefc"]/T
+            delta = rho/self._thermal["rhorefc"]
 
-            # Eq D4
-            delT = abs(T-Tc)/Tc
-            delrho = abs(rhom-rhoc)/rhoc
-
-            Xt = (rhom*self._thermal["Pcref"]/self._thermal["rhocref"]**2/self.derivative("P", "rho", "T", fase))**self._thermal["expo"]
-            parterm = self._thermal["alfa"]*Boltzmann/self._thermal["Pcref"]*(T*fase.dpdT*self._thermal["rhocref"]/rhom)**2*Xt*1e21
-            expterm = exp(-(self._thermal["alfa"]*delT**2+self._thermal["beta"]*delrho**4))
-            tc = parterm*expterm/(6*pi*self._thermal["Xio"]*fase.mu.muPas)*self._thermal["kcref"]
-
-               # "critical": 4,
-               # "Tcref": 150.86, "Pcref": 4905.8, "rhocref": 13.41, "kcref": 1e-3,
-               # "gamma": 1.02,
-               # "expo": 0.46807, "alfa": 39.8, "beta": 5.45, "Xio": 6.0795e-1}
-
-        elif self._thermal["critical"] == "CH4":
-            tau = self.Tc/T
-            delta = rho/self.rhoc
-            ts = (self.Tc-T)/self.Tc
-            ds = (self.rhoc-rho)/self.rhoc
-            xt = 0.28631*delta*tau/self.derivative("P", "rho", "T", fase)
-            ftd = exp(-2.646*abs(ts)**0.5+2.678*ds**2-0.637*ds)
-            tc = 91.855/fase.mu/tau**2*fase.dpdT_rho**2*xt**0.4681*ftd*1e-3
+            expo = 0
+            for n, alfa, t, beta, d in zip(
+                    self._thermal["nc"], self._thermal["alfac"],
+                    self._thermal["tc"], self._thermal["betac"],
+                    self._thermal["dc"]):
+                expo += n*(tau+alfa)**t*(delta+beta)**d
+            tc = self._thermal["krefc"]*exp(expo)
 
         elif isinstance(self._thermal["critical"], str):
             # Hardcoded method
             method = self.__getattribute__(self._thermal["critical"])
             tc = method(rho, T, fase)
         return tc
+
+    @refDoc(__doi__, [21], tab=8)
+    def _ECSEstela(self, delta, tau, ref):
+        r"""Calculation of shape factor for conformal state as explain in [21]_
+
+        The correlation is only recommended for nonpolar fluids so it´s use may
+        be very inaccuracy
+
+        .. math::
+            \begin{array}[t]{l}
+            \vartheta = 1+(\omega-\omega_0)(A_1+A_2e^{-\delta^2}+\Psi_
+            {\vartheta})\\
+            \varphi = \frac{Z_{c0}}{Z_c}(1+(\omega-\omega_0)(A_3+A_4e^
+            {-\delta^2}+\Psi_{\varphi}))\\
+            A_i = a_{i,1}-a_{i,2}\ln\tau\\
+            \Psi_{\vartheta} = b_1\delta e^{-b_2\Delta^2}\\
+            \Psi_{\varphi} = c_1\delta e^{-c_2\Delta^2}\\
+            \Delta = (\delta-1)^2+(\frac{1}{\tau}-1)^2\\
+            \end{array}
+
+        Parameters
+        ----------
+        tau : float
+            Inverse reduced temperature, Tc/T [-]
+        delta : float
+            Reduced density, rho/rhoc [-]
+        ref : lib.meos.MEoS
+            Class with the reference fluid
+
+        Returns
+        -------
+        prop : dict
+            Calculated shape factor: teta, phi.
+        """
+        # Parameters, Table 3, pag 25
+        a = [[0.05899028, -0.93046626], [-0.08809157, 0.18165944],
+             [0.01301722, 0.28587945], [0.00436092, 0.41092573]]
+        b = [0.21343372, -0.64441400]
+        c = [-0.12147697, 0.12392723]
+
+        # Critical compressibility factor
+        Zc = self.Pc/self.rhoc/self.R/self.Tc
+        R = ref.eq[0]["R"]/ref.M*1000
+        Zc0 = ref.Pc/ref.rhoc/R/ref.Tc
+        w = self.f_acent
+        w0 = ref.f_acent
+
+        Delta = (delta-1)**2+(1/tau-1)**2                   # Eq 23
+
+        # Eq 20
+        A1 = a[0][0] - a[0][1]*log(tau)
+        A2 = a[1][0] - a[1][1]*log(tau)
+        A3 = a[2][0] - a[2][1]*log(tau)
+        A4 = a[3][0] - a[3][1]*log(tau)
+
+        phi_teta = b[0]*delta*exp(-b[1]*Delta**2)           # Eq 21
+        phi_phi = c[0]*delta*exp(-c[1]*Delta**2)            # Eq 22
+
+        # Eq 18
+        teta = 1+(w-w0)*(A1+A2*exp(-delta**2)+phi_teta)
+
+        # Eq 19
+        phi = Zc0/Zc*(1+(w-w0)*(A3+A4*exp(-delta**2)+phi_phi))
+
+        prop = {"teta": teta, "phi": phi}
+        return prop
+
+    @refDoc(__doi__, [10], tab=8)
+    def _IdealCurve(self, name, T, rho0=None):
+        r"""Ideal curve pressure calculation procedure. The ideal curves are
+        used as a test for extrapolation behaviour of a EoS. There are curves
+        where the real fluid has a property equal to the value for the ideal
+        gas, compressibility factor and its first derivatives.
+
+        * Classical ideal curve, Z=1
+
+        .. math::
+            \left(\frac{\partial \alpha^r}{\partial \delta}\right)_{\tau} = 0
+
+        * Boyle curve
+
+        .. math::
+            \left(\frac{\partial Z}{\partial \rho}\right)_T
+
+        .. math::
+            \left(\frac{\partial \alpha^r}{\partial \delta}\right)_{\tau}
+            + \delta \left(\frac{\partial^2 \alpha^r}{\partial \delta^2}\right)
+            _{\tau} = 0
+
+        * Joule-Thomson inversion curve
+
+        .. math::
+            \left(\frac{\partial Z}{\partial T}\right)_P
+
+        .. math::
+            \left(\frac{\partial \alpha^r}{\partial \delta}\right)_{\tau}
+            + \delta \left(\frac{\partial^2 \alpha^r}{\partial \delta^2}\right)
+            _{\tau} + \tau \left(\frac{\partial^2 \alpha^r}
+            {\partial \delta \partial \tau}\right) = 0
+
+        * Joule inversion curve
+
+        .. math::
+            \left(\frac{\partial Z}{\partial T}\right)_{\rho}
+
+        .. math::
+            \left(\frac{\partial^2\alpha^r}{\partial \delta \partial \tau}
+            \right) = 0
+
+        Definition and equation based in residual Helmholtz energy from Table
+        4.11, pag.168 in reference [10]_
+
+        Parameters
+        ----------
+        name : str
+            Name of curve to calculate:
+
+                * ideal
+                * boyle
+                * joule-thomson
+                * joule
+
+        T : float
+            Temperature of point to calculate, [K]
+
+        Returns
+        -------
+        P : float
+            Pressure of point, [Pa]
+        """
+        tau = self.Tc/T
+        if name == "ideal":
+            def f(rho):
+                delta = rho/self.rhoc
+                return self._phird(tau, delta)
+        elif name == "boyle":
+            def f(rho):
+                delta = rho/self.rhoc
+                prop = self._eq(rho, T)
+                return prop["fird"]+delta*prop["firdd"]
+        elif name == "joule-thomson":
+            def f(rho):
+                delta = rho/self.rhoc
+                prop = self._eq(rho, T)
+                return prop["fird"]+delta*prop["firdd"]+tau*prop["firdt"]
+        elif name == "joule":
+            def f(rho):
+                prop = self._eq(rho, T)
+                return prop["firdt"]
+
+        if rho0 is None and T < self.Tc:
+            rho0 = self._Liquid_Density(T)*2
+        elif rho0 is None:
+            rho0 = self.rhoc/3
+
+        rinput = fsolve(f, rho0, full_output=True)
+        if rinput[2] == 1 and abs(rinput[1]["fvec"]) < 1e-5:
+            rho = rinput[0][0]
+            delta = rho/self.rhoc
+            P = (1+delta*self._phird(tau, delta))*self.R*T*rho
+            print(name, T, rho, P)
+            return P
+        else:
+            print(rho0, rinput)
+            return 0
 
 
 class MEoSBlend(MEoS):

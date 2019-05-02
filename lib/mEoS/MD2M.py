@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class MD2M(MEoS):
@@ -40,16 +40,17 @@ class MD2M(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.12, "Debye")
     # id = 1837
 
-    CP1 = {"ao": 331.9,
+    f = 8.314472
+    CP1 = {"ao": 331.9/f,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [329620742.8, 0, 2556558319.0, 0],
-           "hyp": [795.1, 0, 1813.8, 0]}
+           "ao_sinh": [777.100/f], "sinh": [1813.8],
+           "ao_cosh": [521.400/f], "cosh": [795.1]}
 
     colonna = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for MD2M of Colonna (2006)",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A.",
                     "title": "Multiparameter equations of state for siloxanes:"
                              " [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and "
                              "[O-Si-(CH3)2]6",
@@ -61,7 +62,6 @@ class MD2M(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 3.033,
-        "Pmin": 0.0000005, "rhomin": 3.032,
 
         "nr1": [1.33840331, -2.62939393, 0.4398383, -0.53496715, 0.1818844,
                 0.40774609e-3],
@@ -88,5 +88,5 @@ class MD2M(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-0.24684e1, -0.71262e1, -0.27601e2, -0.49458e2, -0.24106e2,
-               -0.19370e3],
+              -0.19370e3],
         "t": [0.376, 0.94, 2.9, 5.9, 6.2, 13.0]}

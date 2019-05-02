@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from scipy import exp
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R23(MEoS):
@@ -55,14 +55,12 @@ class R23(MEoS):
            "ao_exp": [1.070326018, 1.566866769, 0.848051597, 1.847243699,
                       1.649657530, 2.043965290],
            "exp": [4368.102594, 1607.104940, 1007.138279, 1973.991027,
-                   1657.461854, 729.455868],
-           "ao_hyp": [], "hyp": []}
+                   1657.461854, 729.455868]}
 
     CP2 = {"ao": 4.0101431,
            "an": [-.55274742e-2, .74008258e-4, -.12590943e-6, .69472178e-10],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     penoncello = {
         "__type__": "Helmholtz",
@@ -79,7 +77,6 @@ class R23(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 475.0, "Pmax": 120000.0, "rhomax": 24.31,
-        "Pmin": 0.058, "rhomin": 24.31,
 
         "nr1": [.7041529e1, -.8259512e1, .805304e-2, -.8617615e-1, .633341e-2],
         "d1": [1, 1, 1, 2, 5],
@@ -108,7 +105,6 @@ class R23(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 473.15, "Pmax": 120000.0, "rhomax": 23.0,
-        "Pmin": 0.05888, "rhomin": 22.851535,
 
         "nr1": [0.350093635099, -0.131185838025e1, -0.254118065769,
                 .104275296122, -.205326997924, .256040993750, .118078220087e-1,
@@ -141,7 +137,6 @@ class R23(MEoS):
         "ref": "NBP",
 
         "Tmin": 90.0, "Tmax": 475.0, "Pmax": 60000.0, "rhomax": 16.65,
-        "Pmin": 2.5664104, "rhomin": 22.851535,
 
         "nr1": [-0.133234251368e1, 0.210373595421e1, -0.376198728030,
                 0.881622087335, -0.272053790906e1, 0.247468024356e1,
@@ -202,7 +197,7 @@ class R23(MEoS):
         delta = rho/self.M-7.5114
         tau = T-299.28
 
-        muo = self._Visco0()
+        muo = self._Visco0(T)
         mug = muo*(Drho/rhol)**C1
         mur = (rho/self.M/rhol)**C1*C2*rhol**2/Drho*T**0.5*exp(
                 rho/self.M/Drho*deltaG/R/self.M/T)

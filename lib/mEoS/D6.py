@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class D6(MEoS):
@@ -40,17 +40,18 @@ class D6(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.559, "Debye")
     # id=1674
 
-    CP1 = {"ao": 468.7,
+    f = 8.314472
+    CP1 = {"ao": 468.7/f,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [425104546.6, 0, 3151243909.0, 0],
-           "hyp": [786.8, 0, 1792.1, 0]}
+           "ao_sinh": [981.2/f], "sinh": [1792.1],
+           "ao_cosh": [686.7/f], "cosh": [786.8]}
 
     colonna = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of "
                     "Colonna (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., and Guardone, A.",
+        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A.",
                     "title": "Multiparameter equations of state for siloxanes:"
                              " [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and "
                              "[O-Si-(CH3)2]6",
@@ -62,7 +63,6 @@ class D6(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.246,
-        "Pmin": 0.00016, "rhomin": 2.245,
 
         "nr1": [1.69156186, -3.37962568, 0.38609039, 0.64598995e-1,
                 0.10589012, 0.45456825e-4],

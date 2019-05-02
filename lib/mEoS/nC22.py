@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC22(MEoS):
@@ -60,7 +60,7 @@ class nC22(MEoS):
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": 298, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 10,
+        "Tmin": 298, "Tmax": 800.0, "Pmax": 200000.0, "rhomax": 10,
 
         "nr1": [0.0423455, 2.370432, -4.30263, -0.4039603, 0.4005704],
         "d1": [4, 1, 1, 2, 3],

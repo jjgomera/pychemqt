@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Toluene(MEoS):
@@ -52,15 +52,13 @@ class Toluene(MEoS):
     CP1 = {"ao": 4.,
            "an": [], "pow": [],
            "ao_exp": [1.6994, 8.0577, 17.059, 8.4567, 8.6423],
-           "exp": [190, 797, 1619, 3072, 7915],
-           "ao_hyp": [], "hyp": []}
+           "exp": [190, 797, 1619, 3072, 7915]}
 
     CP2 = {"ao": -0.321892/8.3143*92.142,
            "an": [0.579338e-2/8.3143*92.142, -0.348446e-5/8.3143*92.142,
                   0.143577e-8/8.3143*92.142, -0.71935e-12/8.3143*92.142],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -77,7 +75,6 @@ class Toluene(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 700.0, "Pmax": 500000.0, "rhomax": 10.581,
-        "Pmin": 0.000039, "rhomin": 10.58,
 
         "nr1": [0.96464, -2.7855, 0.86712, -0.18860, 0.11804, 0.00025181],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -92,7 +89,7 @@ class Toluene(MEoS):
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for toluene of Polt (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -102,7 +99,6 @@ class Toluene(MEoS):
         "ref": "NBP",
 
         "Tmin": 298.0, "Tmax": 673.0, "Pmax": 25000.0, "rhomax": 9.7242,
-        "Pmin": 3.774, "rhomin": 9.3606,
 
         "nr1": [-0.343905499875, 0.737562743137, -0.158601557810,
                 0.113243121503e1, -0.253681929563e1, 0.104584338973e1,
@@ -123,7 +119,7 @@ class Toluene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for toluene of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -134,7 +130,6 @@ class Toluene(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.34060172, 1.01624262, -3.27810202, 9.69209624e-2,
                 2.61950176e-4, -1.58891991e-1],

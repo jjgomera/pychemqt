@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC12(MEoS):
@@ -45,8 +45,7 @@ class nC12(MEoS):
     CP1 = {"ao": 23.085,
            "an": [], "pow": [],
            "ao_exp": [37.776, 29.369, 12.461, 7.7733],
-           "exp": [1280, 2399, 5700, 13869],
-           "ao_hyp": [], "hyp": []}
+           "exp": [1280, 2399, 5700, 13869]}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -62,7 +61,6 @@ class nC12(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 700., "Pmax": 700000.0, "rhomax": 4.53,
-        "Pmin": 0.00063, "rhomin": 4.53,
 
         "nr1": [1.38031, -2.85352, .288897, -0.165993, .0923993, .000282772],
         "d1": [1, 1, 1, 2, 3, 7],

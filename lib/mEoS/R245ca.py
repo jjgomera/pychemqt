@@ -20,9 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
-from lib.mEoS.R134a import R134a
+from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R245ca(MEoS):
@@ -50,14 +50,11 @@ class R245ca(MEoS):
 
     CP1 = {"ao": 8.888,
            "an": [], "pow": [],
-           "ao_exp": [0.8843, 5.331, 14.46],
-           "exp": [865, 2830, 1122],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [0.8843, 5.331, 14.46], "exp": [865, 2830, 1122]}
 
     CP2 = {"ao": -3.8444,
            "an": [5.24008e-1, -3.74976e-4], "pow": [1, 2],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     zhou = {
         "__type__": "Helmholtz",
@@ -74,7 +71,6 @@ class R245ca(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 10000.0, "rhomax": 12.21,
-        "Pmin": 0.0708, "rhomin": 12.21,
 
         "nr1": [0.04489247, 1.526476, -2.408320, -0.5288088, 0.18222346],
         "d1": [4, 1, 1, 2, 3],
@@ -94,24 +90,6 @@ class R245ca(MEoS):
         "gamma3": [1.265, 0.42, 0.864, 1.15],
         "epsilon3": [0.55, 0.724, 0.524, 0.857]}
 
-    ecs = {"__type__": "ECS",
-           "__name__": "Thermodynamic Extended Corresponding States model w/ T- and rho-dependent shape factors.",
-           "__doc__":  u"""Huber, M.L. and Ely, J.F., "A predictive extended corresponding states model for pure and mixed refrigerants including an equation of state for R134a," Int. J. Refrigeration, 17:18-31, 1994.""",
-           "cp": CP2,
-           "ref": R134a,
-           "eq": "helmholtz1",
-           "R": 8.314471,
-
-            "Tmin": 200.0, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 11.995,
-#            "Pmin": aaaaaaa, "rhomin": aaaaaaa,
-
-           "ft": [-0.241011472, -0.788477331],
-           "ft_add": [], "ft_add_exp": [],
-           "fd": [], "fd_exp": [],
-           "ht": [0.160567866e1, -0.727455038],
-           "ht_add": [], "ht_add_exp": [],
-           "hd": [], "hd_exp": []}
-
     eq = zhou,
 
     _surface = {"sigma": [0.069297, -0.022419], "exp": [1.2795, 3.1368]}
@@ -128,25 +106,34 @@ class R245ca(MEoS):
         "n": [-4.65885, -1.03328, -13.5047, -48.4225, -104.097],
         "t": [0.5, 1.09, 2.1, 5.1, 10.4]}
 
-    trnECS = {"eq": "ecs",
-              "__name__": "Extended Corresponding States model",
-              "__doc__": """Huber, M.L., Laesecke, A., and Perkins, R.A., Model for the viscosity and thermal conductivity of refrigerants, including a new correlation for the viscosity of R134a, Ind.Eng.Chem.Res. 42: 3163-3178 (2003).""",
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
 
               "ref": R134a,
-              "ref_eq": "helmholtz1",
-              "eq_visco": "visco0",
-              "eq_thermo": "thermo0",
+              "visco": "visco0",
+              "thermo": "thermo0",
 
-              "f_int": [1.32e-3],
-              "psi": [1.0],
-              "phi": [1.0],
+              "ek": 345.44, "sigma": 0.5505, "omega": 5,
+
+              "psi": [1.13848, -3.32328e-2], "psi_d": [0, 1],
+              "fint": [1.03579e-3, 1.37878e-6], "fint_t": [0, 1],
+              "chi": [1.1627, -4.73491e-2], "chi_d": [0, 1],
 
               "critical": 3,
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.5e-9, "Tcref": 579.49}
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-#    _viscosity=trnECS,
-#    _thermal=trnECS,
+    _viscosity = trnECS,
+    _thermal = trnECS,
 
 
 class Test(TestCase):

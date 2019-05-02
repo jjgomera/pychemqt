@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class iC6(MEoS):
@@ -63,7 +63,6 @@ class iC6(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 1000000.0, "rhomax": 9.38,
-        "Pmin": 7.34e-9, "rhomin": 9.37,
 
         "nr1": [1.1027, -2.9699, 1.0295, -0.21238, 0.11897, 0.00027738],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -90,42 +89,6 @@ class iC6(MEoS):
         "eq": 2,
         "n": [-0.41180e1, -0.61956e1, -0.21190e2, -0.58972e2, -0.15824e3],
         "t": [0.4824, 1.418, 3.32, 7.1, 16.1]}
-
-    visco0 = {"eq": 2, "omega": 3,
-              "__name__": "NIST",
-              "__doi__": {"autor": "",
-                          "title": "Coefficients are taken from NIST14 V9.08",
-                          "ref": "",
-                          "doi": ""},
-
-              "ek": 368.52, "sigma": 0.61222,
-              "n_chapman": 0.2267237/M**0.5,
-              "F": [0, 0, 0, 100.],
-              "E": [-13.294469653994, -466.41004563, 15.438316998,
-                    -3363.2028894, -0.11398677788, 171.32077134, 2849.7100897],
-              "rhoc": 2.727}
-
-    # _viscosity = visco0,
-
-    thermo0 = {"eq": 1, "critical": 0,
-               "__name__": "NIST14",
-               "__doi__": {"autor": "",
-                           "title": "Coefficients are taken from NIST14 V9.08",
-                           "ref": "",
-                           "doi": ""},
-
-               "Tref": 368.52, "kref": 1e-3,
-               "no": [1.35558587, -0.152808259573429, 1],
-               "co": [0, -1, -96],
-
-               "Trefb": 498.05, "rhorefb": 2.727, "krefb": 1e-3,
-               "nb": [13.747515904, 10.1607102792, -7.75232868497,
-                      0.627943006907, 1.9518640415, -0.293574041046],
-               "tb": [0, 0, 0, -1, 0, -1],
-               "db": [1, 3, 4, 4, 5, 5],
-               "cb": [0]*6}
-
-    # _thermal = thermo0,
 
 
 class Test(TestCase):

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Acetone(MEoS):
@@ -63,7 +63,6 @@ class Acetone(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 700000.0, "rhomax": 15.73,
-        "Pmin": 0.0023, "rhomin": 15.72,
 
         "nr1":  [0.90041, -2.1267, -0.083409, 0.065683, 0.00016527],
         "d1": [1, 1, 1, 3, 7],

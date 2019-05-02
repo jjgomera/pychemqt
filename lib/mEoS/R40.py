@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R40(MEoS):
@@ -51,7 +51,7 @@ class R40(MEoS):
     thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R40 of Thol et al (2013)",
-        "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
+        "__doi__": {"autor": "Thol, M., Piazza, L., Span, R.",
                     "title": "A New Functional Form for Equations of State "
                              "for Some Weakly Associating Fluids",
                     "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",
@@ -61,8 +61,7 @@ class R40(MEoS):
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": 230.0, "Tmax": 630.0, "Pmax": 100000.0, "rhomax": 21.78756,
-        "Pmin": 0.9, "rhomin": 21.78756,
+        "Tmin": 175.0, "Tmax": 630.0, "Pmax": 100000.0, "rhomax": 21.78756,
 
         "nr1": [.274572058, .104235924e-1, -.125727710e1, 2.25609199e-3,
                 -3.31830421e-2, .918440878e-1, .261059608e-2],

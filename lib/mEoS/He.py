@@ -21,10 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from unittest import TestCase
 
 from scipy import exp, log
-# from scipy.constants import Avogadro, Boltzmann, pi
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class He(MEoS):
@@ -47,13 +46,12 @@ class He(MEoS):
 
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     Fi2 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
            "ao_pow": [13.628409737, -143.470759602],
-           "ao_exp": [], "titao": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "titao": []}
 
     ortiz = {
         "__type__": "Helmholtz",
@@ -71,7 +69,6 @@ class He(MEoS):
         "rhoc": 17.3837,
 
         "Tmin": Tt, "Tmax": 2000.0, "Pmax": 1000000.0, "rhomax": 141.22,
-        "Pmin": 5.0335, "rhomin": 36.48,
 
         "nr1": [0.014799269, 3.06281562, -4.25338698, 0.05192797,
                 -0.165087335, 0.087236897],
@@ -103,7 +100,7 @@ class He(MEoS):
     mccarty = {
         "__type__": "Helmholtz",
         "__name__": "FEQ of state for helium of McCarty and Arp (1990).",
-        "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
+        "__doi__": {"autor": "McCarty, R.D., Arp, V.D.",
                     "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
                     "doi": "10.1007/978-1-4613-0639-9_174"},
@@ -115,7 +112,6 @@ class He(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73,
-        "Pmin": 4.8565, "rhomin": 36.537,
 
         "nr1": [-0.208984171567e1, 0.381792817549, -0.441393943069e-1,
                 0.954038242224e-1, 0.115744872054e1, -0.287584069992e1,
@@ -145,7 +141,7 @@ class He(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for helium of McCarty and Arp "
                     "(1990).",
-        "__doi__": {"autor": "McCarty, R.D. and Arp, V.D.",
+        "__doi__": {"autor": "McCarty, R.D., Arp, V.D.",
                     "title": "A New Wide Range Equation of State for Helium",
                     "ref": "Adv. Cryo. Eng., 35:1465-1475, 1990",
                     "doi": "10.1007/978-1-4613-0639-9_174"},
@@ -157,7 +153,6 @@ class He(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73,
-        "Pmin": 4.8565, "rhomin": 36.537,
 
         "b": [None, 0.4558980227431e-3, 0.1260692007853e-1, -.7139657549318e-1,
               0.9728903861441e-1, -0.1589302471562, 0.1454229259623e-4,
@@ -187,7 +182,6 @@ class He(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 1500.0, "Pmax": 100000.0, "rhomax": 88.73,
-        "Pmin": 4.8565, "rhomin": 36.537,
 
         "nr1": [-0.45579024006737, 0.12516390754925e1, -0.15438231650621e1,
                 0.20467489707221e-1],
@@ -210,15 +204,26 @@ class He(MEoS):
 
     _surface = {"sigma": [0.0004656, 0.001889, -0.002006],
                 "exp": [1.04, 2.468, 2.661]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [0.517254], "expt1": [0], "expd1": [1],
-                   "a2": [-0.203, 0.039, 7.47],
-                   "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
-    _melting = {"eq": 1, "Tref": 1, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 1500.0,
-                "a1": [-1.7455837, 1.6979793], "exp1": [0, 1.555414],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [0.517254, 0], "b": [-0.203, 0.039], "c": [7.47, 0],
+        "Au": 0, "D": 2}
+
+    _melting = {
+            "eq": 1,
+            "__doi__": {
+                  "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
+                  "title": "Extended and accuracy determination of the "
+                           "melting curves of argon, helium, ice (H2O), and "
+                           "hydrogen (H2)",
+                  "ref": "Physical Review B, 61(10) (2000) 6535-6546",
+                  "doi": "10.1103/PhysRevB.61.6535"},
+
+            "Tmin": Tt, "Tmax": 1500,
+            "Tref": 1, "Pref": 1e9,
+
+            "a1": [1.6067e-3], "exp1": [1.565]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-3.8357, 1.7062, -0.71231, 1.0862],

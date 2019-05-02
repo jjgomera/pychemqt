@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R113(MEoS):
@@ -45,13 +45,12 @@ class R113(MEoS):
     CP1 = {"ao": 3.9999966,
            "an": [], "pow": [],
            "ao_exp": [12.4464495, 2.72181845, 0.692712415, 3.32248298],
-           "exp": [5.1143280e2, 1.60676324e3, 4.20292102e3, 1.60618738e3],
-           "ao_hyp": [], "hyp": []}
+           "exp": [5.1143280e2, 1.60676324e3, 4.20292102e3, 1.60618738e3]}
 
     marx = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-113 of Marx (1992)",
-        "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
+        "__doi__": {"autor": "Marx, V., Pruss, A., Wagner, W.",
                     "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 "
                              "und R 113. Beschreibung des thermodynamishchen "
                              "Zustandsverhaltens bei Temperaturen bis 525 K "
@@ -65,7 +64,6 @@ class R113(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 9.10,
-        "Pmin": 1.87, "rhomin": 9.099,
 
         "nr1": [0.8432092286, -0.2019185967e1, 0.2920612996, 0.5323107661e-1,
                 0.3214971931e-2, 0.4667858574e-4, -0.1227522799e-5],
@@ -96,7 +94,6 @@ class R113(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 9.09,
-        "Pmin": 1.869, "rhomin": 9.0893,
 
         "nr1": [0.10519071e1, -0.28724742e1, 0.41983153, 0.87107788e-1,
                 0.24105194e-3],
@@ -125,52 +122,6 @@ class R113(MEoS):
         "eq": 2,
         "n": [-2.6225, -6.0753, -15.768, -42.361, -7.9071, -319.66],
         "t": [0.379, 1.13, 2.9, 6.0, 7.0, 15.0]}
-
-    visco0 = {"__name__": "Huber (2003)",
-              "__doi__": {
-                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
-                  "title": "Model for the Viscosity and Thermal Conductivity "
-                           "of Refrigerants, Including a New Correlation for "
-                           "the Viscosity of R134a",
-                  "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                  "doi": "10.1021/ie0300880"},
-
-              "eq": 1, "omega": 1,
-              "collision": [0.355404, -0.464337, 0.257353e-1],
-              "ek": 376.035, "sigma": 0.6019,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 0.2509/M**0.5,
-
-              "n_virial": [-0.19572881e2, 0.21973999e3, -0.10153226e4,
-                           0.24710125e4, -0.33751717e4, 0.24916597e4,
-                           -0.78726086e3, 0.14085455e2, -0.34664158],
-              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 376.035, "etaref_virial": 0.13132,
-
-              "Tref_res": 487.21, "rhoref_res": 2.988659*M, "etaref_res": 1310,
-              "n_packed": [3.16369563558749, -0.8901733752064137e-1,
-                           0.1000352946668359],
-              "t_packed": [0, 1, 2],
-              "n_poly": [-0.2069007192080741e-1, 0.3560295489828222e-3,
-                         0.2111018162451597e-2, 0.1396014148308975e-1,
-                         -0.4564350196734897e-2, -0.3515932745836890e-2,
-                         -0.2147633195397038],
-              "t_poly": [0, -6, -2, -0.5, 2, 0, 0],
-              "d_poly": [1, 2, 2, 2, 2, 3, 0],
-              "g_poly": [0, 0, 0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0, 0, 0],
-              "n_num": [0.2147633195397038],
-              "t_num": [0],
-              "d_num": [0],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [0, 0]}
-
-    _viscosity = visco0,
 
 
 class Test(TestCase):

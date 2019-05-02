@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class C1Stearate(MEoS):
@@ -39,18 +39,18 @@ class C1Stearate(MEoS):
     f_acent = 1.02
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [247.115], "pow": [-0.0916606],
-           "ao_exp": [276.94, 408.997, 472.702],
-           "exp": [556.17, 1311.85, 2825.71],
-           "ao_hyp": [], "hyp": []}
+           "an": [247.115/f], "pow": [-0.0916606],
+           "ao_exp": [276.94/f, 408.997/f, 472.702/f],
+           "exp": [556.17, 1311.85, 2825.71]}
 
     huber = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl estearate of Huber"
                     " et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
-                             "L.S., and Bruno, T.J.",
+                             "L.S., Bruno, T.J.",
                     "title": "Model for the Thermodynamic Properties of a "
                              "Biodiesel Fuel",
                     "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
@@ -61,7 +61,6 @@ class C1Stearate(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 2.86,
-        "Pmin": 0.00000576, "rhomin": 2.85,
 
         "nr1": [0.3959635e-1, 2.466654, -3.89595, -0.1167375, 0.4127229e-1],
         "d1": [4, 1, 1, 2, 3],

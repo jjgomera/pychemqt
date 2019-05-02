@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class N2O(MEoS):
@@ -63,7 +63,6 @@ class N2O(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 28.12,
-        "Pmin": 87.84, "rhomin": 28.11,
 
         "nr1":  [0.88045, -2.4235, 0.38237, 0.068917, 0.00020367],
         "d1": [1, 1, 1, 3, 7],

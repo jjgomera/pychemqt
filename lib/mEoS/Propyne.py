@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Propyne(MEoS):
@@ -44,8 +44,7 @@ class Propyne(MEoS):
            "an": [0.484403e-2/8.3143*40.06, -0.347414e-5/8.3143*40.06,
                   0.144887e-8/8.3143*40.06, -0.26815e-12/8.3143*40.06],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     polt = {
         "__type__": "Helmholtz",
@@ -60,8 +59,7 @@ class Propyne(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 474.0, "Pmax": 32000.0, "rhomax": 16.28,
-        "Pmin": 0.2, "rhomin": 22.7,
+        "Tmin": 273, "Tmax": 474.0, "Pmax": 32000.0, "rhomax": 16.28,
 
         "nr1": [0.102590136933e1, -0.220786016506e1, 0.107889905204e1,
                 -0.986950667682, 0.459528109357e1, -0.886063623532e1,

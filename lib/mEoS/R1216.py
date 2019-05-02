@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R1216(MEoS):
@@ -43,8 +43,7 @@ class R1216(MEoS):
     CP1 = {"ao": 5.878676,
            "an": [], "pow": [],
            "ao_exp": [9.351559, 9.192089, 7.983222],
-           "exp": [561, 1486, 7595],
-           "ao_hyp": [], "hyp": []}
+           "exp": [561, 1486, 7595]}
 
     zhou = {
         "__type__": "Helmholtz",
@@ -59,7 +58,6 @@ class R1216(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 12000.0, "rhomax": 12.89,
-        "Pmin": 0.0000936, "rhomin": 12.88,
 
         "nr1": [.37582356e-1, .14558246e1, -.2701615e1, -.3357347, .1885495],
         "d1": [4, 1, 1, 2, 3],

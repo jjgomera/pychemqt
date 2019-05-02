@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class DEE(MEoS):
@@ -51,7 +51,7 @@ class DEE(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for diethyl ether of Thol "
                     "et al. (2013)",
-        "__doi__": {"autor": "Thol, M., Piazza, L., and Span, R.",
+        "__doi__": {"autor": "Thol, M., Piazza, L., Span, R.",
                     "title": "A New Functional Form for Equations of State "
                              "for Some Weakly Associating Fluids",
                     "ref": "Int. J. Thermophys., 35(5):783-811, 2014.",
@@ -62,7 +62,6 @@ class DEE(MEoS):
         "ref": "OTO",
 
         "Tmin": 270.0, "Tmax": 500.0, "Pmax": 40000.0, "rhomax": 10.6851,
-        "Pmin": 0.000001, "rhomin": 10.6851,
 
         "nr1": [0.376700499, -0.116630334, -0.73801498, -0.2725701,
                 -0.04979231, 0.172267029, 0.0044161891],

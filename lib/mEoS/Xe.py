@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Xe(MEoS):
@@ -49,7 +49,7 @@ class Xe(MEoS):
 
     CP1 = {"ao": 2.5,
            "an": [], "pow": [],
-           "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -66,7 +66,6 @@ class Xe(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 700000.0, "rhomax": 28.78,
-        "Pmin": 81.77, "rhomin": 22.59,
 
         "nr1": [0.83115, -2.3553, 0.53904, 0.014382, 0.066309, 0.00019649],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -84,20 +83,24 @@ class Xe(MEoS):
     eq = lemmon,
 
     _surface = {"sigma": [-0.11538, 0.16598], "exp": [1.0512, 1.098]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [10.122], "expt1": [0], "expd1": [1],
-                   "a2": [31.97, 46.97, -82.51, -948.4],
-                   "expt2": [0, 1, 0], "expd2": [2, 2, 2.7]}
-    _melting = {"eq": 1, "Tref": 1, "Pref": 101.325,
-                "Tmin": Tt, "Tmax": 800.0,
-                "a1": [-2573.936225, 0.7983277028], "exp1": [0, 1.589165],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 81.750,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-13.9, 14.0], "exp2": [1.06, 3.1],
-                    "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [10.122, 0], "b": [31.97, 46.97], "c": [-948.4, 0],
+        "Au": 0, "D": 1.7}
+
+    _melting = {
+        "eq": 2,
+        "__doi__": {"autor": "Michels, A., Prins, C.",
+                    "title": "The Melting Lines of Argon, Krypton and Xenon "
+                             "up to 1500 Atm; Representation of the Results "
+                             "by a Law of Corresponding States",
+                    "ref": "Physica 28 (1962) 101-116",
+                    "doi": "10.1016/0031-8914(62)90096-4"},
+
+        "Tmin": Tt, "Tmax": 1300.0,
+        "Tref": 1, "Pref": -2576*101325,
+        "a1": [0.7983277027965369*101325], "exp1": [1.589165]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.60231e1, 0.14989e1, -0.74906, -0.12194e1, -0.44905],
@@ -122,3 +125,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 28.692)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 3063.309)
         self.assertEqual(round(st.w, 3), 125.648)
+
+    def test_Michels(self):
+        # Table I, pag 105
+        self.assertEqual(round(Xe._Melting_Pressure(161.554).atm, 2), 3.66)
+        self.assertEqual(round(Xe._Melting_Pressure(167.154).atm, 2), 147.21)
+        self.assertEqual(round(Xe._Melting_Pressure(191.144).atm, 2), 794.08)
+        self.assertEqual(round(Xe._Melting_Pressure(215.264).atm, 2), 1494.59)

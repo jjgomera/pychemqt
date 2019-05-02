@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class C1Palmitate(MEoS):
@@ -39,19 +39,19 @@ class C1Palmitate(MEoS):
     f_acent = 0.91
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [120.529],
+           "an": [120.529/f],
            "pow": [0.0801627],
-           "ao_exp": [345.62, 289.038, 301.639],
-           "exp": [2952.37, 734.653, 1593.55],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [345.62/f, 289.038/f, 301.639/f],
+           "exp": [2952.37, 734.653, 1593.55]}
 
     huber = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl linoleate of Huber"
                     "et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
-                             "L.S., and Bruno, T.J.",
+                             "L.S., Bruno, T.J.",
                     "title": "Model for the Thermodynamic Properties of a "
                              "Biodiesel Fuel",
                     "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
@@ -62,7 +62,6 @@ class C1Palmitate(MEoS):
         "ref": "NBP",
 
         "Tmin": 302.71, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.36,
-        "Pmin": 0.0000000008, "rhomin": 3.36,
 
         "nr1": [0.4282821e-1, 2.443162, -3.75754, -0.1588526, 0.4055990e-1],
         "d1": [4, 1, 1, 2, 3],

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class CO(MEoS):
@@ -52,15 +52,14 @@ class CO(MEoS):
            "pow": [0, 1],
            "ao_pow": [10.813340744, -19.834733959],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [1.02865, 0.00493, 0, 0],
-           "hyp": [11.6698028, 5.302762306, 0, 0]}
+           "ao_sinh": [1.02865], "sinh": [11.6698028],
+           "ao_cosh": [0.00493], "cosh": [5.302762306]}
 
     CP3 = {"ao": 0.36028218e1,
            "an": [-0.20871594e5, 0.89208708e3, -0.14157993e2, -0.34021345e-3,
                   0.44616091e-6, -0.15154703e-9],
-           "pow": [-3, -2, -1.001, 1, 2, 3],
-           "ao_exp": [0.90426143], "exp": [30000],
-           "ao_hyp": [], "hyp": []}
+           "pow": [-3, -2, -1, 1, 2, 3],
+           "ao_exp": [0.90426143], "exp": [30000]}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -77,7 +76,6 @@ class CO(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 500., "Pmax": 100000.0, "rhomax": 33.84,
-        "Pmin": 15.45, "rhomin": 30.33,
 
         "nr1":  [0.90554, -2.4515, 0.53149, 0.024173, 0.072156, 0.00018818],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -100,11 +98,11 @@ class CO(MEoS):
                     "doi":  ""},
 
         "R": 8.31434,
+        "M": 28.011, "Tc": 132.8, "Pc": 3493.5, "rhoc": 10.85,
         "cp": CP3,
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000., "Pmax": 30000.0, "rhomax": 30.25,
-        "Pmin": 15.423, "rhomin": 30.249,
 
         "b": [None, 0.8845582109949e-2, -0.2236741566840, 0.1742275796442e1,
               -0.2169146998363e3, 0.1721504267082e4, -0.3990514770703e-4,
@@ -127,14 +125,13 @@ class CO(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 500., "Pmax": 100000.0, "rhomax": 33.84,
-        "Pmin": 15.45, "rhomin": 30.33,
 
         "nr1":  [0.92310041400851, -0.248858452058e1, 0.58095213783396,
                  0.028859164394654, 0.070256257276544, 0.21687043269488e-3],
@@ -152,10 +149,20 @@ class CO(MEoS):
 
     _surface = {"sigma": [0.02843],
                 "exp": [1.148]}
-    _melting = {"eq": 1, "Tref": 1, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 1000.0,
-                "a1": [-142.941, 0.0195608], "exp1": [0, 2.10747],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": {"autor": "Barreiros, S.F., Calado, J.C.G., Nunes da "
+                             "Ponte, M.",
+                    "title": "The melting curve of carbon monoxide",
+                    "ref": "J. Chem. Thermodynamics 14 (1982) 1197-1198",
+                    "doi": "10.1016/0021-9614(82)90044-1"},
+
+        "Tmin": Tt, "Tmax": 1000.0,
+        "Tref": 1, "Pref": 1e6,
+        "a0": -142.941,
+        "a1": [0.0195608], "exp1": [2.10747]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.61192e1, 0.10411e1, -0.62162e1, 0.10437e2, -0.76813e1],
@@ -169,30 +176,6 @@ class CO(MEoS):
         "n": [-0.25439e1, -0.55601e1, -0.85276e1, -0.51163e1, -0.17701e2,
               -0.29858e2],
         "t": [0.395, 1.21, 3.0, 3.5, 6.0, 8.0]}
-
-    # thermo0 = {"eq": 1,
-               # "__name__": "NIST14",
-               # "__doi__": {"autor": "",
-                           # "title": "Coefficients are taken from NIST14 v9.08",
-                           # "ref": "",
-                           # "doi": ""},
-
-               # "Tref": 91.7, "kref": 1e-3,
-               # "no": [1.35558587, -0.16380500617, 1],
-               # "co": [0, -1, -96],
-
-               # "Trefb": 132.85, "rhorefb": 10.85, "krefb": 1e-3,
-               # "nb": [4.57815545028, 62.5180582967, -2.52594417152,
-                      # -65.0403809001, 4.06956197472, 18.0214260963],
-               # "tb": [0, 0, 0, -1, 0, -1],
-               # "db": [1, 3, 4, 4, 5, 5],
-               # "cb": [0]*6,
-
-               # "critical": 3,
-               # "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
-               # "gam0": 0.0496, "qd": 1.4449e-9, "Tcref": 199.29}
-
-    # _thermal = thermo0,
 
 
 class Test(TestCase):

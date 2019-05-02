@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Trans_2_butene(MEoS):
@@ -63,7 +63,6 @@ class Trans_2_butene(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 13.141,
-        "Pmin": 0.075, "rhomin": 13.14,
 
         "nr1": [0.81107, -2.8846, 1.0265, 0.016591, 0.086511, 0.00023256],
         "d1": [1, 1, 1, 2, 3, 7],

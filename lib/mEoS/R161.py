@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R161(MEoS):
@@ -56,8 +56,7 @@ class R161(MEoS):
 
     CP1 = {"ao": 3.985,
            "an": [], "pow": [],
-           "ao_exp": [2.077, 9.265, 6.054], "exp": [420, 1548, 3882],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [2.077, 9.265, 6.054], "exp": [420, 1548, 3882]}
 
     qi = {
         "__type__": "Helmholtz",
@@ -69,13 +68,11 @@ class R161(MEoS):
                     "doi": "10.1007/s10765-016-2061-1"},
 
         "R": 8.3144621,
+        "Tc": 375.25, "rhoc": 6.2839,
         "cp": Fi1,
         "ref": "IIR",
 
-        # "rhoc": 6.2839,
-
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 100000.0, "rhomax": 18,
-        # "Pmin": 0.005512, "rhomin": 19.91,
 
         "nr1": [0.005145283, -0.001882274, 1.884722, -3.1819965, -0.24432415,
                 0.27792467],
@@ -112,7 +109,6 @@ class R161(MEoS):
         "ref": {"Tref": 273.15, "Pref": 1., "ho": 28559.6, "so": 167.205},
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 5000.0, "rhomax": 20.0,
-        "Pmin": 0.005512, "rhomin": 19.91,
 
         "nr1": [1.511, -2.3, -0.457, 0.1683, 0.04133],
         "d1": [1, 1, 2, 3, 4],
@@ -146,7 +142,6 @@ class R161(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 50000.0, "rhomax": 20.0,
-        "Pmin": 0.006, "rhomin": 19.95,
 
         "nr1": [0.75688, -1.4110, -0.63922, 0.055685, 0.00028395],
         "d1": [1, 1, 1, 3, 7],
@@ -196,31 +191,19 @@ class R161(MEoS):
                            -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              # "Tref_res": Tc, "rhoref_res": 302.001,
-              # "nr": [-10.28373, 7.65563, 4.842, 0.42223],
-              # "tr": [-0.5, -0.5, -2.5, -0.5],
-              # "dr": [2/3, 5/3, 2/3, 14/3],
+              "Tref_res": Tc, "rhoref_res": 302.001,
+              "nr": [-10.28373, 7.65563, 4.842, 0.42223],
+              "tr": [-0.5, -0.5, -2.5, -0.5],
+              "dr": [2/3, 5/3, 2/3, 14/3],
 
-              # "nr_num": [64.34983, 64.34983],
-              # "tr_num": [-1.5, -0.5],
-              # "dr_num": [2/3, 5/3],
-              # "nr_den": [10.99213, 1],
-              # "tr_den": [-2, -2],
-              # "dr_den": [0, 2],
-
-              "special": "_mur",
-              }
-
-    # FIXME: The viscosity residual term don't work, I can find the error,
-    # maybe a typo in paper
-
-    def _mur(self, rho, T, fase):
-        rhor = rho/302.001
-        Tr = T/375.25
-        mur = -10.28373 + 7.65563*rhor + 4.842*Tr**2 + 0.42223*rhor**4
-        mur += 64.34983*(Tr+rhor)/(10.99213*Tr**2+Tr**2*rhor**2)
-        mur *= rhor**(2/3)*Tr**0.5
-        return mur
+              "nr_num": [64.34983, 64.34983],
+              "tr_num": [-1.5, -0.5],
+              "dr_num": [2/3, 5/3],
+              # The Eq 8 in paper have a typo, the denominator of last term
+              # has a plus but the correlation work with a minus
+              "nr_den": [10.99213, -1],
+              "tr_den": [-2, -2],
+              "dr_den": [0, 2]}
 
     _viscosity = visco0,
 
@@ -244,7 +227,7 @@ class R161(MEoS):
 
                "Tref_res": Tc, "rhoref_res": 302.001, "kref_res": 1e-3,
                "nr": [-8.41553, 7.41456, -39.7744, 44.0586, 106.179, -81.9833,
-                      -53.2351, 37.6052e2, 8.23094, -4.90293],
+                      -53.2351, 37.6052, 8.23094, -4.90293],
                "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
                "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
 
@@ -263,101 +246,92 @@ class Test(TestCase):
         self.assertEqual(round(st.P.MPa, 4), 0.1880)
         self.assertEqual(round(st.Liquido.rho, 2), 789.54)
         self.assertEqual(round(st.Gas.rho, 2), 4.63)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 204.34)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 8.15)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 140.98)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 9.92)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 204.34)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 8.15)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 140.98)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 9.92)
 
         st = R161(T=275, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 0.4639)
         self.assertEqual(round(st.Liquido.rho, 2), 745.02)
         self.assertEqual(round(st.Gas.rho, 2), 10.96)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 152.87)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 8.86)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 125.46)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 13.03)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 152.87)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 8.86)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 125.46)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 13.03)
 
         st = R161(T=300, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 0.9716)
         self.assertEqual(round(st.Liquido.rho, 2), 693.43)
         self.assertEqual(round(st.Gas.rho, 2), 22.76)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 115.89)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 9.64)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 110.40)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 16.56)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 115.89)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 9.64)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 110.40)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 16.56)
 
         st = R161(T=325, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 1.8072)
         self.assertEqual(round(st.Liquido.rho, 2), 631.73)
         self.assertEqual(round(st.Gas.rho, 2), 43.92)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 87.59)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 10.68)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 95.79)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 21.36)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 87.59)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 10.68)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 95.79)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 21.36)
 
         st = R161(T=350, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 3.0880)
         self.assertEqual(round(st.Liquido.rho, 2), 551.03)
         self.assertEqual(round(st.Gas.rho, 2), 84.51)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 63.78)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 12.54)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 81.95)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 30.41)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 63.78)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 12.54)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 81.95)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 30.41)
 
-        # st = R161(T=375, x=0.5)
-        # self.assertEqual(round(st.P.MPa, 4), 5.0211)
-        # self.assertEqual(round(st.Liquido.rho, 2), 335.05)
-        # self.assertEqual(round(st.Gas.rho, 2), 267.62)
-        # self.assertEqual(round(st.Liquido.mu.muPas, 2), 29.92)
-        # self.assertEqual(round(st.Gas.mu.muPas, 2), 23.73)
-        # self.assertEqual(round(st.Liquido.k.mWmK, 2), 134.27)
-        # self.assertEqual(round(st.Gas.k.mWmK, 2), 146.46)
-
-        # # Table 10, pag 10, basic ρ,P,T point for mEoS testing
+        # Table 10, pag 10, basic ρ,P,T point for mEoS testing
         st = R161(T=250, P=1e7)
         self.assertEqual(round(st.rho, 1), 803.6)
-        # self.assertEqual(round(st.mu.muPas, 1), 223.3)
-        # self.assertEqual(round(st.k.mWmK, 1), 147.9)
+        self.assertEqual(round(st.mu.muPas, 1), 223.3)
+        self.assertEqual(round(st.k.mWmK, 1), 147.9)
 
         st = R161(T=275, P=1e7)
         self.assertEqual(round(st.rho, 1), 764.0)
-        # self.assertEqual(round(st.mu.muPas, 1), 169.7)
-        # self.assertEqual(round(st.k.mWmK, 1), 133.1)
+        self.assertEqual(round(st.mu.muPas, 1), 169.6)
+        self.assertEqual(round(st.k.mWmK, 1), 133.1)
 
         st = R161(T=300, P=1e7)
         self.assertEqual(round(st.rho, 1), 719.8)
-        # self.assertEqual(round(st.mu.muPas, 1), 131.8)
-        # self.assertEqual(round(st.k.mWmK, 1), 118.9)
+        self.assertEqual(round(st.mu.muPas, 1), 131.8)
+        self.assertEqual(round(st.k.mWmK, 1), 118.9)
 
         st = R161(T=325, P=1e7)
         self.assertEqual(round(st.rho, 1), 670.0)
-        # self.assertEqual(round(st.mu.muPas, 1), 103.7)
-        # self.assertEqual(round(st.k.mWmK, 1), 105.4)
+        self.assertEqual(round(st.mu.muPas, 1), 103.7)
+        self.assertEqual(round(st.k.mWmK, 1), 105.4)
 
         st = R161(T=350, P=1e7)
         self.assertEqual(round(st.rho, 1), 612.6)
-        # self.assertEqual(round(st.mu.muPas, 1), 81.80)
-        # self.assertEqual(round(st.k.mWmK, 1), 92.7)
+        self.assertEqual(round(st.mu.muPas, 1), 81.80)
+        self.assertEqual(round(st.k.mWmK, 1), 92.7)
 
         st = R161(T=250, P=2e7)
         self.assertEqual(round(st.rho, 1), 815.9)
-        # self.assertEqual(round(st.mu.muPas, 1), 242.0)
-        # self.assertEqual(round(st.k.mWmK, 1), 154.3)
+        self.assertEqual(round(st.mu.muPas, 1), 242.0)
+        self.assertEqual(round(st.k.mWmK, 1), 154.3)
 
         st = R161(T=275, P=2e7)
         self.assertEqual(round(st.rho, 1), 780.1)
-        # self.assertEqual(round(st.mu.muPas, 1), 185.9)
-        # self.assertEqual(round(st.k.mWmK, 1), 140.2)
+        self.assertEqual(round(st.mu.muPas, 1), 185.9)
+        self.assertEqual(round(st.k.mWmK, 1), 140.2)
 
         st = R161(T=300, P=2e7)
         self.assertEqual(round(st.rho, 1), 741.5)
-        # self.assertEqual(round(st.mu.muPas, 1), 147.1)
-        # self.assertEqual(round(st.k.mWmK, 1), 126.9)
+        self.assertEqual(round(st.mu.muPas, 1), 147.1)
+        self.assertEqual(round(st.k.mWmK, 1), 126.9)
 
-        # st = R161(T=350, P=2e7)
-        # self.assertEqual(round(st.rho, 1), 699.9)
-        # self.assertEqual(round(st.mu.muPas, 1), 118.9)
-        # self.assertEqual(round(st.k.mWmK, 1), 114.5)
+        st = R161(T=325, P=2e7)
+        self.assertEqual(round(st.rho, 1), 699.9)
+        self.assertEqual(round(st.mu.muPas, 1), 118.9)
+        self.assertEqual(round(st.k.mWmK, 1), 114.4)
 
         # Table 11, pag 11
         st = R161(T=250, rho=0)
@@ -368,25 +342,14 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 3), 8.255)
         self.assertEqual(round(st.k.mWmK, 3), 9.884)
 
-        # st = R161(T=250, rho=850)
-        # self.assertEqual(round(st.mu.muPas, 3), 308.22)
-        # self.assertEqual(round(st.k.mWmK, 3), 175.48)
+        st = R161(T=250, rho=850)
+        self.assertEqual(round(st.mu.muPas, 2), 308.22)
+        self.assertEqual(round(st.k.mWmK, 2), 175.48)
 
         st = R161(T=375, rho=0)
         self.assertEqual(round(st.mu.muPas, 3), 12.171)
         self.assertEqual(round(st.k.mWmK, 3), 24.517)
 
-        # st = R161(T=375, rho=229)
-        # self.assertEqual(round(st.mu.muPas, 3), 20.859)
-        # self.assertEqual(round(st.k.mWmK, 3), 81.297)
-
-
-if __name__ == "__main__":
-    # st = R161(T=250, rho=850)
-    # print(st.mu.muPas, st.k.mWmK)
-
-    st = R161(T=375, x=0.5)
-    print(st.P.MPa)
-    print(st.Liquido.rho, st.Gas.rho)
-    print(st.Liquido.mu.muPas, st.Gas.mu.muPas)
-    print(st.Liquido.k.mWmK, st.Gas.k.mWmK)
+        st = R161(T=375, rho=229)
+        self.assertEqual(round(st.mu.muPas, 3), 20.859)
+        self.assertEqual(round(st.k.mWmK, 3), 81.297)

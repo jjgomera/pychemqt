@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from scipy import exp
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class H2S(MEoS):
@@ -53,26 +53,26 @@ class H2S(MEoS):
     Fi2 = {"ao_log": [1, 3],
            "pow": [0, 1], "ao_pow": [9.336197742, -16.266508995],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [3.11942, 1.00243, 0, 0],
-           "hyp": [4.914580541, 2.27065398, 0, 0]}
+           "ao_sinh": [3.11942], "sinh": [4.914580541],
+           "ao_cosh": [1.00243], "cosh": [2.27065398]}
 
     Fi3 = {"ao_log": [1, 3.],
            "pow": [0, 1], "ao_pow": [7.881037, -3.20986],
-           "ao_exp": [0.9767422, 2.151898], "titao": [4.506266, 10.15526],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [0.9767422, 2.151898], "titao": [4.506266, 10.15526]}
 
     CP3 = {"ao": 4.1012105,
-           "an": [-0.16720073e-2, 0.75303152e-5, -0.62421053e-8, 0.18098453e-11],
+           "an": [-1.6720073e-3, 7.5303152e-6, -0.62421053e-8, 0.18098453e-11],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
-    CP4 = {"ao": 7.9468/8.3159524*4.184,
+    f = 8.3159524/4.184
+    CP4 = {"ao": 7.9468*f,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [-1.5769761e4/8.3159524*4.184, 2.0329947e6/8.3159524*4.184,
-                      1.3861204e7/8.3159524*4.184, -3.5044957e6/8.3159524*4.184],
-           "hyp": [4.33801e2, 8.43792e2, 1.48143e3, 1.10223e3]}
+           "ao_sinh": [-1.5769761e4*f, 1.3861204e7*f],
+           "sinh": [4.33801e2, 1.48143e3],
+           "ao_cosh": [2.0329947e6*f, -3.5044957e6*f],
+           "cosh": [8.43792e2, 1.10223e3]}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -89,7 +89,6 @@ class H2S(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12,
-        "Pmin": 23.3, "rhomin": 29.12,
 
         "nr1": [0.87641, -2.0367, 0.21634, -0.050199, 0.066994, 0.00019076],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -116,7 +115,6 @@ class H2S(MEoS):
         "ref": {"Tref": 298.15, "Pref": 100., "ho": 0, "so": 0},
 
         "Tmin": 187.67, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.13,
-        "Pmin": 23.3, "rhomin": 29.12,
 
         "nr1": [0.1545780, -0.1717693e1, -0.1595211e1, 0.2046589e1,
                 -0.1690358e1, 0.9483623, -0.6800772e-1, 0.4372273e-2,
@@ -137,7 +135,7 @@ class H2S(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hydrogen sulfide of Polt "
                     "et al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -148,7 +146,6 @@ class H2S(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 760.0, "Pmax": 142000.0, "rhomax": 29.1,
-        "Pmin": 23.85, "rhomin": 29.07,
 
         "nr1": [0.135782366339e1, -0.153224981014e1, 0.329107661253,
                 0.195802782279e1, -0.301125182071e1, -0.126614059078e1,
@@ -181,7 +178,6 @@ class H2S(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 589.0, "Pmax": 55000.0, "rhomax": 29.578,
-        "Pmin": 23.85, "rhomin": 29.07,
 
         "nr1": [0.110928333109e1, 0.188834546108, -0.930906931583,
                 -0.411249591635, 0.140676923412e-1, -0.169077883177e-4,
@@ -212,7 +208,6 @@ class H2S(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12,
-        "Pmin": 23.3, "rhomin": 29.12,
 
         "nr1":  [0.87641, -2.0367, 0.21634, -0.050199, 0.066994, 0.19076e-3],
         "d1": [1, 1, 1, 2, 3, 7],

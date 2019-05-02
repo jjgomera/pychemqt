@@ -88,32 +88,29 @@ class Scrubber(Separador_SolidGas):
                          "Young (1977)"]
 
     __doi__ = [
-        {"autor": "S. JENNINGS",
+        {"autor": "Jennings, S.G.",
          "title": "The Mean Free Path in Air",
-         "ref": "Journal of Aerosol Science - J AEROSOL SCI 01/1988; "
+         "ref": "J. Aerosol Sci. 19(2) (1988) 159-166"
                 "19(2):159-166",
          "doi":  "10.1016/0021-8502(88)90219-4"},
-        {"autor": "Seymour Calvert, Dale Lundgren & Dilip S. Mehta",
+        {"autor": "Calvert, S., Lundgren, D., Mehta, D.S.",
          "title": "Venturi Scrubber Performance",
-         "ref": "Journal of the Air Pollution Control Association, 22:7, "
-                "529-532",
+         "ref": "J. Air Pollution Control Assoc., 22(7) (1972) 529-532",
          "doi":  "10.1080/00022470.1972.10469674"},
-        {"autor": "Shui-Chow Yung, Harry F. Barbarika & Seymour Calvert",
+        {"autor": "Yung, S.-C., Barbarika, H.F., Calvert, S.",
          "title": "Pressure Loss in Venturi Scrubbers",
-         "ref": "Journal of the Air Pollution Control Association, 27:4, "
-                "348-351",
+         "ref": "J. Air Pollution Control Assoc., 27(4) (1977) 348-351",
          "doi":  "10.1080/00022470.1977.10470432"},
-        {"autor": "Howard E. Hesketh",
+        {"autor": "Hesketh, H.E.",
          "title": "Fine Particle Collection Efficiency Related to Pressure "
                   "Drop, Scrubbant and Particle Properties, and Contact "
                   "Mechanism",
-         "ref": "Journal of the Air Pollution Control Association, 24:10, "
-                "939-942",
+         "ref": "J. Air Pollution Control Assoc., 24(10) (1974) 939-942",
          "doi":  "10.1080/00022470.1974.10469992"},
-        {"autor": "Johnstone, H. F.; Feild, R. B.; Tassler, M. C.",
-         "title": "Gas Absorption and Aerosol Collection in a Venturi Atomizer",  # noqa
-         "ref": "Industrial and Engineering Chemistry, Vol. 46, pp. 1601–1608 "
-                "(1954)",
+        {"autor": "Johnstone, H.F., Feild, R.B., Tassler, M.C.",
+         "title": "Gas Absorption and Aerosol Collection in a Venturi "
+                  "Atomizer",
+         "ref": "Ind. Eng. Chemistry 46(8) (1954) 1601-1608",
          "doi":  "10.1021/ie50536a028"},
     ]
 

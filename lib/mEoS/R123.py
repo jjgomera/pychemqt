@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R123(MEoS):
@@ -45,15 +45,13 @@ class R123(MEoS):
     CP1 = {"ao": 2.046009,
            "an": [22.231991/Tc, -11.658491/Tc**2, 2.691665/Tc**3],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     Fi1 = {"ao_log": [1, 1.046009],
            "pow": [0, 1, -1, -2, -3],
            "ao_pow": [-13.23249393, 10.94800494, -11.1159955, 1.94308183,
                       -0.22430542],
-           "ao_exp": [], "titao": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "titao": []}
 
     younglove = {
         "__type__": "MBWR",
@@ -72,7 +70,6 @@ class R123(MEoS):
         "rhoc": 3.596417,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
-        "Pmin": 0.0042, "rhomin": 11.60,
 
         "b": [None, -0.657453133659e-2, 0.293479845842e1, -0.989140469845e2,
               0.201029776013e5, -0.383566527886e7, 0.227587641969e-2,
@@ -104,7 +101,6 @@ class R123(MEoS):
         "rhoc": 3.596417, "M": 152.931,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 40000.0, "rhomax": 11.60,
-        "Pmin": 0.0042, "rhomin": 11.60,
 
         "nr1": [-0.100242647494e2, -0.280607656419, 0.206814471606e-1,
                 -0.284379431451, 0.593928110321e1, -0.936560389528e1,
@@ -146,7 +142,6 @@ class R123(MEoS):
         "M": 152.931, "Tc": 456.82, "rhoc": 553/152.931,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 11.62,
-        "Pmin": 0.0041534, "rhomin": 11.613,
 
         "nr1": [0.1116973e1, -0.3074593e1, 0.51063873, 0.94478812e-1,
                 0.29532752e-3],
@@ -226,7 +221,7 @@ class R123(MEoS):
                "tr": [1.5, 2, 6, 0, 0.5, 1.5, 0, 0.5, 1.5, 0, 0.5, 1.5],
                "dr": [1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4],
 
-               "critical": 1,
+               "critical": 4,
                "Trefc": -456.831, "rhorefc": 3.596417, "krefc": 0.486742e-2,
                "nc": [-100.0, -7.08535],
                "alfac": [-1, 0],

@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class RE143a(MEoS):
@@ -40,11 +40,10 @@ class RE143a(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.32, "Debye")
     # id = 1817
 
-    CP1 = {"ao": 20.37,
-           "an": [], "pow": [],
-           "ao_exp": [0.2918, -1.950e-4, 4.650e-8],
-           "exp": [1, 2, 3],
-           "ao_hyp": [], "hyp": []}
+    f = 8.314472
+    CP1 = {"ao": 20.37/f,
+           "an": [0.2918/f, -1.950e-4/f, 4.650e-8/f], "pow": [1, 2, 3],
+           "ao_exp": [], "exp": []}
 
     akasaka = {
         "__type__": "Helmholtz",
@@ -61,7 +60,6 @@ class RE143a(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 420.0, "Pmax": 7200.0, "rhomax": 12.62,
-        "Pmin": 65.35, "rhomin": 12.62,
 
         "nr1": [0.77715884e1, -0.87042750e1, -0.28095049, 0.14540153,
                 0.92291277e-2],

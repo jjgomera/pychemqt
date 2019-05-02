@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R134a(MEoS):
@@ -63,8 +63,7 @@ class R134a(MEoS):
     # ASHRAE Trans. 95(2):263-283, 1989
     CP1 = {"ao": 19.4006/8.314471,
            "an": [0.258531/8.314471, -1.29665e-4/8.314471], "pow": [1, 2],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     tillner = {
         "__type__": "Helmholtz",
@@ -84,7 +83,6 @@ class R134a(MEoS):
         "Tc": 374.18, "rhoc": 508/M,
 
         "Tmin": Tt, "Tmax": 465.0, "Pmax": 70000.0, "rhomax": 15.60,
-        "Pmin": 0.3896, "rhomin": 15.5942,
 
         "nr1": [0.5586817e-1, 0.498223, 0.2458698e-1, 0.8570145e-3,
                 0.4788584e-3, -0.1800808e1, 0.2671641, -0.4781652e-1],
@@ -118,7 +116,6 @@ class R134a(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 70000.0, "rhomax": 15.60,
-        "Pmin": 0.3922, "rhomin": 15.60,
 
         "b": [None, 0.965209362217e-1, -0.401824768889e1, 0.395239532858e2,
               0.134532868960e4, -0.139439741347e7, -0.309281355175e-2,
@@ -148,7 +145,6 @@ class R134a(MEoS):
         "Tc": 374.18, "rhoc": 508/M,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 15.6,
-        "Pmin": 0.38818, "rhomin": 15.588,
 
         "nr1": [0.106631890000e1, -0.244959700000e1, 0.446457180000e-1,
                 0.756568840000e-1, 0.206520890000e-3],
@@ -165,7 +161,7 @@ class R134a(MEoS):
     astina = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Astina (2004)",
-        "__doi__": {"autor": "Astina, I.M. Sato, H.",
+        "__doi__": {"autor": "Astina, I.M., Sato, H.",
                     "title": "A Fundamental Equation of State for "
                              "1,1,1,2-tetrafluoroethane with an Intermolecular"
                              " Potential Energy Background and Relialbe "
@@ -178,7 +174,6 @@ class R134a(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 460.0, "Pmax": 70000.0, "rhomax": 15.58,
-        "Pmin": 0.327, "rhomin": 15.58,
 
         "nr1": [1.832124209, -2.940698861, 5.156071823e-1, 2.756965911e-1,
                 1.225264939, -6.486749497e-1, -9.286738053e-1, 3.920381291e-1,
@@ -198,7 +193,7 @@ class R134a(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-134a of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -210,7 +205,6 @@ class R134a(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.08605179, 1.03772416, -2.92069735, 9.15573346e-2,
                 2.40541430e-4, -2.00239570e-1],
@@ -242,7 +236,6 @@ class R134a(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 465.0, "Pmax": 70000.0, "rhomax": 15.60,
-        "Pmin": 0.3896, "rhomin": 15.5942,
 
         "nr1": [6.81716385385e-1, -2.35124614105, 6.70216482859e-1,
                 -3.07204611902e-2, 3.74529023556e-1, -1.57205367415e-1,

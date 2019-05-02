@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class neoC5(MEoS):
@@ -48,11 +48,11 @@ class neoC5(MEoS):
            "ao_exp": [14.422, 12.868, 17.247, 12.663],
            "titao": [710/Tc, 1725/Tc, 3280/Tc, 7787/Tc]}
 
-    CP1 = {"ao": 4,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [11.7618, -20.1101, 33.1688, 0],
-           "hyp": [0.635392636*Tc, 1.977271641*Tc, 4.169371131*Tc, 0]}
+    f = 72.151/8.3143
+    CP1 = {"ao": -0.435375*f,
+           "an": [0.96766e-2*f, -0.11533e-4*f, 0.108006e-7*f, -0.44851e-11*f],
+           "pow": [1, 2, 3, 4],
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -69,7 +69,6 @@ class neoC5(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 200000.0, "rhomax": 8.71,
-        "Pmin": 35.4, "rhomin": 8.70,
 
         "nr1": [1.1136, -3.1792, 1.1411, -0.10467, 0.11754, 0.00034058],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -96,7 +95,6 @@ class neoC5(MEoS):
         "ref": "NBP",
 
         "Tmin": 273.0, "Tmax": 498.0, "Pmax": 20000.0, "rhomax": 8.511,
-        "Pmin": 70.6, "rhomin": 8.51,
 
         "nr1": [-0.146552261671e1, 0.199230626557e1, -0.500821886276,
                 0.119809758161e1, -0.363135896710e1, 0.312770556886e1,

@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class D5(MEoS):
@@ -40,11 +40,11 @@ class D5(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.349, "Debye")
     # id=1671
 
-    CP1 = {"ao": -34.898,
-           "an": [1861.5e-3, -1403.4e-6, 500.0e-9],
+    f = 8.314472
+    CP1 = {"ao": -34.898/f,
+           "an": [1861.5e-3/f, -1403.4e-6/f, 500.0e-9/f],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     colonna = {
         "__type__": "Helmholtz",
@@ -61,8 +61,7 @@ class D5(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
-        "Tmin": 300.0, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.83,
-        "Pmin": 0.000005, "rhomin": 2.83,
+        "Tmin": 300, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.83,
 
         "nr1": [1.40844725, -2.29248044, 0.42851607, -0.73506382, 0.16103808,
                 0.29643278e-3],
@@ -89,5 +88,5 @@ class D5(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-0.37577e1, -0.47669e1, -0.24233e2, -0.29872e3, 0.34441e3,
-               -0.32498e3],
+              -0.32498e3],
         "t": [0.459, 1.02, 2.6, 6.7, 7.7, 11.0]}

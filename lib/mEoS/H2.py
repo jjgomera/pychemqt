@@ -20,10 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from scipy import exp, log
+from scipy import exp, log, log10
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class H2(MEoS):
@@ -55,8 +55,8 @@ class H2(MEoS):
            "pow": [0, 1],
            "ao_pow": [13.796443393, -175.864487294],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [0.95806, 0.45444, 1.56039, -1.3756],
-           "hyp": [6.891654113, 9.84763483, 49.76529075, 50.367279301]}
+           "ao_sinh": [0.95806, 1.56039], "sinh": [6.891654113, 49.76529075],
+           "ao_cosh": [0.45444, -1.3756], "cosh": [9.84763483, 50.367279301]}
 
     CP1 = {"ao": 0.72480209e3,
            "an": [0.12155215e11, -0.36396763e10, 0.43375265e9, -0.23085817e8,
@@ -66,8 +66,7 @@ class H2(MEoS):
                   0.66357755e-11],
            "pow": [-7, -6, -5, -4, -3, -2, -1.001, 0.5, 1, 1.5, 2, 2.5, 3, 3.5,
                    4, 5],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     leachman = {
         "__type__": "Helmholtz",
@@ -81,12 +80,11 @@ class H2(MEoS):
                     "doi": "10.1063/1.3160306"},
 
         "R": 8.314472,
+        "Tc": 33.145, "Pc": 1296.4, "rhoc": 15.508,
         "cp": Fi1,
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 2000000.0, "rhomax": 102.0,
-        "Pmin": 7.36, "rhomin": 38.2,
-        "Tc": 33.145, "Pc": 1.2964, "rhoc": 15.508,
 
         "nr1": [-6.93643, 0.01, 2.1101, 4.52059, 0.732564, -1.34086, 0.130985],
         "d1": [1, 4, 1, 1, 2, 2, 3],
@@ -104,38 +102,7 @@ class H2(MEoS):
         "alfa3": [1.685, 0.489, 0.103, 2.506, 1.607],
         "beta3": [0.171, 0.2245, 0.1304, 0.2785, 0.3967],
         "gamma3": [0.7164, 1.3444, 1.4517, 0.7204, 1.5445],
-        "epsilon3": [1.506, 0.156, 1.736, 0.67, 1.662],
-        "nr4": []}
-
-    MBWR = {
-        "__type__": "MBWR",
-        "__name__": "MBWR equation of state for hydrogen of Younglove (1982)",
-        "__doi__": {"autor": "Younglove, B.A.",
-                    "title": "Thermophysical Properties of Fluids. I. Argon, "
-                             "Ethylene, Parahydrogen, Nitrogen, Nitrogen "
-                             "Trifluoride, and Oxygen",
-                    "ref": "J. Phys. Chem. Ref. Data, 11(Suppl. 1) (1982)",
-                    "doi": ""},
-
-        "R": 8.31434,
-        "cp": CP1,
-        "ref": "IIR",
-
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148,
-        "Pmin": 7.70, "rhomin": 38.3,
-        "Tc": 33.19, "Pc": 1.315, "rhoc": 14.94,
-
-        "b": [None, 0.4675528393416e-3, 0.4289274251454e-1, -0.5164085596504,
-              0.2961790279801e1, -0.3027194968412e2, 0.1908100320379e-4,
-              -0.1339776859288e-2, 0.3056473115421, 0.5161197159532e2,
-              0.1999981550224e-6, 0.2896367059356e-3, -0.2257803939041e-1,
-              -0.2287392761826e-5, 0.2446261478645e-4, -0.1718181601119e-2,
-              -0.5465142603459e-6, 0.4051941401315e-8, 0.1157595123961e-5,
-              -0.1269162728389e-7, -0.4983023605519e2, -0.1606676092098e3,
-              -0.1926799185310, 0.9319894638928e1, -0.3222596554434e-3,
-              0.1206839307669e-2, -0.3841588197470e-6, -0.4036157453608e-4,
-              -0.1250868123513e-9, 0.1976107321888e-8, -0.2411883474011e-12,
-              -0.4127551498251e-12, 0.8917972883610e-11]}
+        "epsilon3": [1.506, 0.156, 1.736, 0.67, 1.662]}
 
     GERG = {
         "__type__": "Helmholtz",
@@ -153,7 +120,6 @@ class H2(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148,
-        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.53579928451252e1, -0.62050252530595e1,  0.13830241327086,
                 -0.71397954896129e-1,  0.15474053959733e-1],
@@ -166,10 +132,7 @@ class H2(MEoS):
         "d2": [1, 5, 5, 5, 1, 1, 2, 5, 1],
         "t2": [2.625, 0, 0.25, 1.375, 4, 4.25, 5, 8, 8],
         "c2": [1, 1, 1, 1, 2, 2, 3, 3, 5],
-        "gamma2": [1]*9,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*9}
 
     bender = {
         "__type__": "Helmholtz",
@@ -183,10 +146,9 @@ class H2(MEoS):
 
         "R": 8.3143,
         "cp": CP1,
-        "ref": "IIR",
+        "ref": "NBP",
 
         "Tmin": 18.0, "Tmax": 700.0, "Pmax": 50000.0, "rhomax": 38.74,
-        "Pmin": 8.736, "rhomin": 38.7,
 
         "nr1": [0.133442326203e1, -0.104116843433e1, 0.227202245707,
                 0.300374270906, -0.463984214813, -0.178010492282e1,
@@ -207,27 +169,47 @@ class H2(MEoS):
         "nr3": [],
         "nr4": []}
 
-    # eq = leachman, MBWR, GERG, bender
     eq = leachman, GERG, bender
     _PR = -0.004803
 
     _surface = {"sigma": [-1.4165, 0.746383, 0.675625],
                 "exp": [0.63882, 0.659804, 0.619149]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [2.0306, 0.0056], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [0.181, 0.021, -7.4],
-                   "expt2": [0, 1, 0], "expd2": [2, 2, 3]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 7.3578,
-                "Tmin": Tt, "Tmax": 400.0,
-                "a1": [1], "exp1": [0],
-                "a2": [5626.3, 2717.2], "exp2": [1, 1.83],
-                "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 7.7,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-8.065], "exp2": [0.93],
-                    "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [2.0306, 0.0056], "b": [0.181, 0.021], "c": [-7.4, 0],
+        "Au": 0, "D": 2}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": {
+              "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
+              "title": "Extended and accuracy determination of the melting "
+                       "curves of argon, helium, ice (H2O), and hydrogen (H2)",
+              "ref": "Physical Review B, 61(10) (2000) 6535-6546",
+              "doi": "10.1103/PhysRevB.61.6535"},
+
+        # It used the Eq. 9 in paper, the Eq. 10 is only prefered at very high
+        # pressure, solved only iteratively, out of interest range in pychemqt
+        "Tmin": Tt, "Tmax": 1100,
+        "Tref": 1, "Pref": 1e9,
+        "a1": [1.63e-4], "exp1": [1.824]}
+
+    _sublimation = {
+        "__doi__": {
+            "autor": "McCarty, R.D., Hord, J., Roder, H.M.",
+            "title": "Selected Properties of Hydrogen (Engineering Design "
+                     "Data)",
+            "ref": "NBS Monograph 168, NBS 1981.",
+            "doi": ""},
+        "Tmin": Tt, "Tmax": Tt}
+
+    @classmethod
+    def _Sublimation_Pressure(cls, T):
+        """Special sublimation pressure correlation"""
+        # Use decimal logarithm
+        P = 10**(-43.39/T+2.5*log10(T)+2.047)
+        return unidades.Pressure(P, "mmHg")
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.489789e1, 0.988558, 0.349689, 0.499356],
@@ -276,7 +258,7 @@ class H2(MEoS):
 
     visco1 = {"__name__": "McCarty (1972)",
               "__doi__": {
-                  "autor": "McCarty, R.D. and Weber, L.A.",
+                  "autor": "McCarty, R.D., Weber, L.A.",
                   "title": "Thermophysical Properties of Parahydrogen from "
                            "the Freezing Liquid Line to 5000 R for Pressures "
                            "to 10000 psia",

@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from scipy import exp, arccosh
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class CO2(MEoS):
@@ -48,20 +48,17 @@ class CO2(MEoS):
            "pow": [0, 1],
            "ao_pow": [8.37304456, -3.70454304],
            "ao_exp": [1.99427042, .62105248, .41195293, 1.04028922, .08327678],
-           "titao": [3.15163, 6.11190, 6.77708, 11.32384, 27.08792],
-           "ao_hyp": [], "hyp": []}
+           "titao": [3.15163, 6.11190, 6.77708, 11.32384, 27.08792]}
 
     Fi2 = {"ao_log": [1, 2.50002],
-           "pow": [0, 1],
-           "ao_pow": [11.925152758, -16.118762264],
+           "pow": [0, 1], "ao_pow": [11.925152758, -16.118762264],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [2.04452, -1.06044, 2.03366, 0.01393],
-           "hyp": [3.022758166, -2.844425476, 1.589964364, 1.12159609]}
+           "ao_sinh": [2.04452, 2.03366], "sinh": [3.022758166, 1.589964364],
+           "ao_cosh": [-1.06044, 0.01393], "cosh": [-2.844425476, 1.12159609]}
 
     CP3 = {"ao": 3.5,
            "an": [], "pow": [],
-           "ao_exp": [2, 1, 1], "exp": [960.11, 1932, 3380.2],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [2, 1, 1], "exp": [960.11, 1932, 3380.2]}
 
     span = {
         "__type__": "Helmholtz",
@@ -79,7 +76,6 @@ class CO2(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 800000.0, "rhomax": 37.24,
-        "Pmin": 517.95, "rhomin": 26.777,
 
         "nr1": [0.38856823203161, 0.29385475942740e1, -0.55867188534934e1,
                 -0.76753199592477, 0.31729005580416, 0.54803315897767,
@@ -125,7 +121,7 @@ class CO2(MEoS):
     MBWR = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for carbon dioxide of Ely (1987)",
-        "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
+        "__doi__": {"autor": "Ely, J.F., Magee, J.W., Haynes, W.M.",
                     "title": "Thermophysical properties for special high CO2 "
                              "content mixtures",
                     "ref": "Research Report RR-110, Gas Processors "
@@ -138,7 +134,6 @@ class CO2(MEoS):
         "cp": CP3,
         "ref": "OTO",
 
-        "Tmin": 216.58, "Pmin": 518.2, "rhomin": 26.778,
         "Tmax": 440.1, "Pmax": 40000.0, "rhomax": 27.778,
 
         "b": [None, -0.981851065838e-2, 0.995062267309, -0.228380160313e2,
@@ -169,7 +164,6 @@ class CO2(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 1100., "Pmax": 800000.0, "rhomax": 37.24,
-        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.52646564804653, -0.14995725042592e1, 0.27329786733782,
                 0.12949500022786],
@@ -192,7 +186,7 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Ely "
                     "(1987)",
-        "__doi__": {"autor": "Ely, J.F., Magee, J.W., and Haynes, W.M.",
+        "__doi__": {"autor": "Ely, J.F., Magee, J.W., Haynes, W.M.",
                     "title": "Thermophysical properties for special high CO2 "
                              "content mixtures",
                     "ref": "Research Report RR-110, Gas Processors "
@@ -200,11 +194,11 @@ class CO2(MEoS):
                     "doi": ""},
 
         "R": 8.31434,
+        "M": 44.0098, "Tc": 304.13, "rhoc": 10.63,
         "cp": CP3,
         "ref": "OTO",
 
         "Tmin": 216.58, "Tmax": 1000., "Pmax": 100000.0, "rhomax": 26.776,
-        "Pmin": 518.03, "rhomin": 26.776,
 
         "nr1": [0.485497428986, -0.191900462349e1, 0.451739876847,
                 0.838475229022e-2, 0.310719428397, -0.183619563850,
@@ -242,7 +236,6 @@ class CO2(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 600., "Pmax": 100000.0, "rhomax": 37.24,
-        "Pmin": 517.86, "rhomin": 26.795,
 
         "nr1": [0.89875108, -0.21281985e1, -0.6819032e-1, 0.76355306e-1,
                 0.22053253e-3],
@@ -260,7 +253,7 @@ class CO2(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for carbon dioxide of Sun "
                     "and Ely (2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -272,7 +265,6 @@ class CO2(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [-4.71122371e-1, 9.13375599e-1, -1.96793707, 6.89687161e-2,
                 2.15658922e-4, 9.51876380e-2],
@@ -289,22 +281,27 @@ class CO2(MEoS):
     eq = span, MBWR, GERG, ely, shortSpan, sun
 
     _surface = {"sigma": [0.07863], "exp": [1.254]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [],  "expt0": [], "expd0": [],
-                   "a1": [7.3455, 0.00335], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [83.93, 145.1, -578.8, -1012.],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.55, 2.55]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 517.95,
-                "Tmin": Tt, "Tmax": 1100.0,
-                "a1": [1], "exp1": [0],
-                "a2": [1955.539, 2055.4593], "exp2": [1, 2],
-                "a3": [], "exp3": []}
-    _sublimation = {"eq": 3, "Tref": Tt, "Pref": 517.950,
-                    "Tmin": Tt, "Tmax": Tt,
-                    "a1": [], "exp1": [],
-                    "a2": [-14.740846, 2.4327015, -5.3061778],
-                    "exp2": [1, 1.9, 2.9],
-                    "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [7.3455, 0.00335], "b": [83.93, 145.1], "c": [-578.8, -1012.],
+        "Au": 0, "D": 1.55}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": span["__doi__"],
+
+        "Tmin": Tt, "Tmax": 1100.0,
+        "Tref": Tt, "Pref": 5.1795e5,
+        "a0": 1,
+        "a4": [1955.539, 2055.4593], "exp4": [1, 2]}
+    _sublimation = {
+        "eq": 3,
+        "__doi__": span["__doi__"],
+
+        "Tref": Tt, "Pref": 5.1795e5,
+        "Tmin": Tt, "Tmax": Tt,
+        "a2": [-14.740846, 2.4327015, -5.3061778], "exp2": [1, 1.9, 2.9]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.0602087, 1.9391218, -1.6463597, -3.2995634],
@@ -318,7 +315,54 @@ class CO2(MEoS):
         "n": [-1.7074879, -0.8227467, -4.6008549, -10.111178, -29.742252],
         "t": [0.34, 0.5, 1, 7/3, 14/3]}
 
-    visco0 = {"__name__": "Fenghour (1998)",
+    visco0 = {"__name__": "Laesecke (2017)",
+              "__doi__": {
+                  "autor": "Laesecke, A., Muzny, C.D.",
+                  "title": "Reference Correlation for the Viscosity of Carbon "
+                           "Dioxide",
+                  "ref": "J. Phys. Chem. Ref. Data 46(1) (2017) 013107",
+                  "doi": "10.1063/1.4977429"},
+
+              "eq": 1, "omega": 0,
+
+              "M": 44.0095,
+              "ek": 200.76, "sigma": 0.378421,
+
+              "special0": "_mu0",
+
+              "Tref_virial": 200.76,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": 216.592, "rhoref_res": 1178.53, "muref_res": 94.36,
+              "nr": [0.360603235428487],
+              "tr": [-1],
+              "dr": [3],
+
+              "nr_num": [1, 1],
+              "tr_num": [0, 0],
+              "dr_num": [2, 8.06282737481277],
+              "nr_den": [1, -0.121550806591497],
+              "tr_den": [-1, 0],
+              "dr_den": [0, 0]}
+
+    def _mu0(self, T):
+        """Special term for zero-density viscosity for Herrmann correlation"""
+        # Table 2, Parameters
+        a = [1749.354893188350, -369.069300007128, 5423856.34887691,
+             -2.21283852168356, -269503.247933569, 73145.021531826,
+             5.34368649509278]
+
+        # Eq 4
+        muo = 1.0055*T**0.5/(a[0]+a[1]*T**(1/6)+a[2]*exp(a[3]*T**(1/3)) +
+                             (a[4]+a[5]*T**(1/3))/exp(T**(1/3))+a[6]*T**0.5)
+
+        # Value in mPas in eq, returned in μPas
+        return muo*1e3
+
+    visco1 = {"__name__": "Fenghour (1998)",
               "__doi__": {
                   "autor": "Fenghour, A., Wakeham, W.A., Vesovic, V.",
                   "title": "The Viscosity of Carbon Dioxide",
@@ -340,7 +384,7 @@ class CO2(MEoS):
               "gr": [0, 0, 0, 0, 0],
               "cr": [0, 0, 0, 0, 0]}
 
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -361,9 +405,7 @@ class CO2(MEoS):
               "B": [1.04558e-8, -2.20758e-9, 0.0],
               "C": [1.03255e-6, -8.56207e-7, 3.84384e-7]}
 
-    visco2 = {"eq": 0,
-              "method": "_visco2",
-              "__name__": "Vesovic (1990)",
+    visco3 = {"__name__": "Vesovic (1990)",
               "__doi__": {
                   "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
                            "Sengers, J.V., Watson, J.T.R., Millat, J.",
@@ -371,16 +413,19 @@ class CO2(MEoS):
                   "ref": "J. Phys. Chem. Ref. Data 19(3) (1990) 763-808",
                   "doi": "10.1063/1.555875"},
 
+              "eq": 0,
+              "method": "_visco3",
+
               "omega": 1,
               "ek": 251.196, "sigma": 0.3751,
               "n_chapman": 1.00697/M**0.5*0.3751**2,
               "collision": [0.235156, -0.491266, 5.211155e-2, 5.347906e-2,
                             -1.537102e-2]}
 
-    def _visco2(self, rho, T, fase=None):
+    def _visco3(self, rho, T, fase=None):
 
         # Zero-Density viscosity
-        muo = self._Visco0()
+        muo = self._Visco0(T)
 
         # Gas-phase viscosity
         # Table 8
@@ -395,8 +440,7 @@ class CO2(MEoS):
         Vo = 7.41e-4-3.3e-7*T                                           # Eq 72
         mul = 1/B/(1/rho-Vo)                                            # Eq 70
 
-        # Critical enhancement
-        # TODO: Not implemented
+        # Critical enhancement Not implemented
         muc = 0
 
         # Eq 74, parameters
@@ -411,7 +455,7 @@ class CO2(MEoS):
 
         return unidades.Viscosity(mu, "muPas")
 
-    _viscosity = visco0, visco1, visco2
+    _viscosity = visco0, visco1, visco2, visco3
 
     thermo0 = {"__name__": "Huber (2016)",
                "__doi__": {
@@ -503,14 +547,9 @@ class CO2(MEoS):
 
                "eq": 1,
 
-               "Toref": 251.196, "koref": 1e-3,
-               "no_num": [7.5378307, 4.8109652e-2],
-               "to_num": [0.5, -99],
-               "no_den": [0.4226159, 0.6280115, -0.5387661, 0.6735941,
-                          -0.4362677, 0.2255388],
-               "to_den": [0, 1, 2, 3, 6, 7],
+               "special": "_thermo20",
 
-               "Tref_res": 1., "rhoref_res": 2.272221e-2, "kref_res": 1e-3,
+               "rhoref_res": 1, "kref_res": 1e-3,
                "nr": [2.447164e-2, 8.705605e-5, -6.547950e-8, 6.594919e-11],
                "tr": [0, 0, 0, 0],
                "dr": [1, 2, 3, 4],
@@ -518,6 +557,30 @@ class CO2(MEoS):
                "critical": 3,
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 450.}
+
+    def _thermo20(self, rho, T, fase):
+        """Special method for zero-density thermal conductivity in Vesovic
+        correlation"""
+        T_ = T/251.196
+
+        # Eq 30
+        bi = [0.4226159, 0.6280115, -0.5387661, 0.6735941, 0, 0, -0.4362677,
+              0.2255388]
+        den = 0
+        for i, b in enumerate(bi):
+            den += b/T_**i
+
+        # Eq 31
+        ci = [0, 2.387869e-2, 4.350794, -10.33404, 7.981590, -1.940558]
+        suma = 0
+        for i, c in enumerate(ci):
+            suma += c*(T/100)**(2-i)
+        cint = 1+exp(-183.5/T)*suma
+
+        r = (2/5*cint)**0.5                                             # Eq 12
+        ko = 0.475598*T**0.5*(1+r**2)/den                               # Eq 29
+
+        return ko*1e-3
 
     _thermal = thermo0, thermo1, thermo2
 
@@ -711,27 +774,25 @@ class Test(TestCase):
 
     def test_fenghour(self):
         # Table 13, Pag 44
-        self.assertEqual(round(CO2(T=220, rho=2.440).mu.muPas, 2), 11.06)
-        self.assertEqual(round(CO2(T=300, rho=1.773).mu.muPas, 2), 15.02)
-        self.assertEqual(round(CO2(T=800, rho=0.662).mu.muPas, 2), 35.09)
-        self.assertEqual(round(CO2(T=304, rho=254.320).mu.muPas, 2), 20.90)
-        self.assertEqual(round(CO2(T=220, rho=1194.86).mu.muPas, 2), 269.37)
-        self.assertEqual(round(CO2(T=300, rho=1029.27).mu.muPas, 2), 132.55)
-        self.assertEqual(round(CO2(T=800, rho=407.828).mu.muPas, 2), 48.74)
+        k = {"visco": 1}
+        self.assertEqual(round(CO2(T=220, rho=2.440, **k).mu.muPas, 2), 11.06)
+        self.assertEqual(round(CO2(T=300, rho=1.773, **k).mu.muPas, 2), 15.02)
+        self.assertEqual(round(CO2(T=800, rho=0.662, **k).mu.muPas, 2), 35.09)
+        self.assertEqual(round(CO2(T=304, rho=254.32, **k).mu.muPas, 2), 20.90)
+        self.assertEqual(round(
+            CO2(T=220, rho=1194.86, **k).mu.muPas, 2), 269.37)
+        self.assertEqual(round(
+            CO2(T=300, rho=1029.27, **k).mu.muPas, 2), 132.55)
+        self.assertEqual(round(
+            CO2(T=800, rho=407.828, **k).mu.muPas, 2), 48.74)
 
     def test_Huber(self):
         # Table 7, Pag 15
         self.assertEqual(round(CO2(T=250, rho=0).k.mWmK, 2), 12.99)
         self.assertEqual(round(CO2(T=250, rho=2).k.mWmK, 2), 13.05)
         self.assertEqual(round(CO2(T=250, rho=1058).k.mWmK, 2), 140.00)
-
-        # TODO: Add visco correlation
-        # A. Laesecke and C. D. Muzny
-        # Reference Correlation of the Viscosity of CO2
-        # J. Phys. Chem. Ref. Data
-        # self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 73.04)
-
-        self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 72.28)
+        self.assertEqual(round(CO2(T=310, rho=400).k.mWmK, 2), 73.04)
+        self.assertEqual(round(CO2(T=310, rho=400, visco=1).k.mWmK, 2), 72.28)
 
     def test_Scalabrin(self):
         # Selected values from Table 10, Pag 1568, saturation states
@@ -766,26 +827,48 @@ class Test(TestCase):
             CO2(T=1000, P=2e8, thermal=1).k.mWmK, 2), 116.65)
 
     def test_vesovic(self):
-        # FIXME: Vesovic thermal conductivity correlation dont work
         # Appendix IV, Pag 808
-        st = CO2(T=220, rho=2.440, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 10.90)
+        # Include basic testing for Ely mEoS
+        st = CO2(T=220, P=1e5, eq="ely", visco=3, thermal=2)
+        self.assertEqual(round(st.rho, 3), 2.440)
+        self.assertEqual(round(st.k.mWmK, 2), 10.90)
         self.assertEqual(round(st.mu.muPas, 2), 11.06)
-        st = CO2(T=300, rho=1.773, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 16.77)
+        st = CO2(T=300, P=1e5, eq="ely", visco=3, thermal=2)
+        self.assertEqual(round(st.rho, 3), 1.773)
+        self.assertEqual(round(st.k.mWmK, 2), 16.77)
         self.assertEqual(round(st.mu.muPas, 2), 15.02)
-        st = CO2(T=800, rho=0.662, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 56.65)
+        st = CO2(T=800, P=1e5, eq="ely", visco=3, thermal=2)
+        self.assertEqual(round(st.rho, 3), 0.662)
+        self.assertEqual(round(st.k.mWmK, 2), 56.65)
         self.assertEqual(round(st.mu.muPas, 2), 35.09)
-        st = CO2(T=304, rho=254.3205, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 42.52)
+        st = CO2(T=304, P=7e6, eq="ely", visco=3, thermal=2)
+        self.assertEqual(round(st.rho, 4), 254.3587)
+        self.assertEqual(round(st.k.mWmK, 2), 43.11)
         self.assertEqual(round(st.mu.muPas, 2), 20.80)
-        st = CO2(T=220, rho=1194.86, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 187.50)
-        self.assertEqual(round(st.mu.muPas, 2), 274.22)
-        st = CO2(T=300, rho=1029.27, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 137.61)
+        st = CO2(T=220, P=1.5e7, visco=3, thermal=2)
+        self.assertEqual(round(st.rho, 2), 1194.96)
+        self.assertEqual(round(st.k.mWmK, 2), 187.31)
+        self.assertEqual(round(st.mu.muPas, 2), 274.33)
+        st = CO2(T=300, P=5e7, eq="ely", visco=3, thermal=2)
+        self.assertEqual(round(st.rho, 2), 1029.29)
+        self.assertEqual(round(st.k.mWmK, 2), 137.32)
         self.assertEqual(round(st.mu.muPas, 2), 133.15)
-        st = CO2(T=800, rho=407.828, visco=2)
-        # self.assertEqual(round(st.k.mWmK, 2), 78.47)
+        st = CO2(T=800, P=7.5e7, eq="ely", visco=3, thermal=2)
+        self.assertEqual(round(st.rho, 3), 407.908)
+        self.assertEqual(round(st.k.mWmK, 2), 78.48)
         self.assertEqual(round(st.mu.muPas, 2), 48.62)
+
+    def test_Laesecke(self):
+        self.assertEqual(round(CO2(T=100, rho=0).mu.mPas, 7), 0.0053757)
+
+        # States out of validity of mEoS, use this to bypass complete state
+        # calculation
+        self.assertEqual(round(CO2()._Visco0(2000)*1e-3, 6), 0.066079)
+        self.assertEqual(round(CO2()._Visco0(10000)*1e-3, 5), 0.17620)
+
+        self.assertEqual(round(CO2(T=220, rho=3).mu.mPas, 6), 0.011104)
+        self.assertEqual(round(CO2(T=225, rho=1150).mu.mPas, 5), 0.22218)
+        self.assertEqual(round(CO2(T=300, rho=65).mu.mPas, 6), 0.015563)
+        self.assertEqual(round(CO2(T=300, rho=1400).mu.mPas, 5), 0.50594)
+        self.assertEqual(round(CO2(T=700, rho=100).mu.mPas, 6), 0.033112)
+        self.assertEqual(round(CO2(T=700, rho=1200).mu.mPas, 5), 0.22980)

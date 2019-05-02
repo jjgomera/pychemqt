@@ -18,9 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
-from lib.mEoS.C3 import C3
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R13(MEoS):
@@ -45,14 +45,12 @@ class R13(MEoS):
     CP1 = {"ao": 1.86012334,
            "an": [8.07314520/Tc, -1.87713639/Tc**2, 3.17242858e-2/Tc**3],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     CP2 = {"ao": 2.4766458,
            "an": [0.018074269, 2.1945535e-5, -8.5810657e-8, 6.3199171e-11],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     magee = {
         "__type__": "MBWR",
@@ -71,7 +69,6 @@ class R13(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 403.0, "Pmax": 35000.0, "rhomax": 17.85,
-        "Pmin": 0.00033, "rhomin": 17.84,
 
         "b": [None, 0.427710490378e-2, 0.106603397093e1, -0.383065097813e2,
               0.661580211522e4, -0.800160780370e6, -0.406405755462e-2,
@@ -97,7 +94,6 @@ class R13(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 50000.0, "rhomax": 17.699806,
-        "Pmin": 0.0009047, "rhomin": 17.6998,
 
         "nr1": [-0.628346559920, 0.792797111341, -0.134038992692,
                 0.761143010172, -0.194465098795e1, 0.940938700406,
@@ -131,25 +127,31 @@ class R13(MEoS):
         "n": [-0.31949e1, -0.73425e1, -0.21966e2, -0.51459e2, -0.85359e2],
         "t": [0.414, 1.41, 3.7, 7.7, 15.0]}
 
-    trnECS = {"eq": "ecs",
-              "__name__": "Extended Corresponding States model",
-              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
-                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"},
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
 
               "ref": C3,
-              "ref_eq": "helmholtz1",
-              "eq_visco": "visco0",
-              "eq_thermo": "thermo0",
+              "visco": "visco1",
+              "thermo": "thermo0",
 
+              "ek": 204.0, "sigma": 0.4971, "omega": 5,
+
+              "psi": [0.976177, 1.48047e-2], "psi_d": [0, 1],
               "fint": [1.07447e-3, 6.42373e-7], "fint_t": [0, 1],
-              "psi": [0.976177, 1.48047e-2], "psi_t": [0, 0], "psi_d": [0, 1],
-              "phi": [1.1394, -3.65562e-2], "phi_t": [0, 0], "phi_d": [0, 1],
+              "chi": [1.1394, -3.65562e-2], "chi_d": [0, 1],
 
               "critical": 3,
-              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 3.49636e-10, "Tcref": 453.0}
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+              "gam0": 0.0496, "qd": 3.49636e-10, "Tcref": 453.0}
 
     _viscosity = trnECS,
     _thermal = trnECS,

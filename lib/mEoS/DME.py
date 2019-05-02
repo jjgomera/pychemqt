@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class DME(MEoS):
@@ -44,15 +44,13 @@ class DME(MEoS):
            "pow": [0, 1],
            "ao_pow": [-1.980976, 3.171218],
            "ao_exp": [2.641, 2.123, 8.992, 6.191],
-           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc]}
 
     Fi2 = {"ao_log": [1, 3.039],
            "pow": [0, 1],
            "ao_pow": [-1.928925, 3.150284],
            "ao_exp": [2.641, 2.123, 8.992, 6.191],
-           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [361/Tc, 974/Tc, 1916/Tc, 4150/Tc]}
 
     wu = {
         "__type__": "Helmholtz",
@@ -68,7 +66,6 @@ class DME(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15,
-        "Pmin": 0.0022, "rhomin": 19.15,
 
         "nr1":  [0.29814139e-1, 0.14351700e1, -0.26496400e1, -0.29515532,
                  0.17035607],
@@ -107,7 +104,6 @@ class DME(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96,
-        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1":  [1.22690, -2.47245, 0.119889, 0.0000354],
         "d1": [1, 1, 3, 8],

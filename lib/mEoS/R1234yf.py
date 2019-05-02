@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R1234yf(MEoS):
@@ -44,15 +44,13 @@ class R1234yf(MEoS):
            "pow": [0, 1],
            "ao_pow": [-12.837928, 8.042605],
            "ao_exp": [7.549, 1.537, 2.03, 7.455],
-           "titao": [718/Tc, 877/Tc, 4465/Tc, 1755/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [718/Tc, 877/Tc, 4465/Tc, 1755/Tc]}
 
     Fi2 = {"ao_log": [1, 3],
            "pow": [0, 1],
            "ao_pow": [-11.412027, -52.9180363],
            "ao_exp": [5.2829, 6.96022, 7.04266],
-           "titao": [354/Tc, 965/Tc, 1981/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [354/Tc, 965/Tc, 1981/Tc]}
 
     richter = {
         "__type__": "Helmholtz",
@@ -70,7 +68,6 @@ class R1234yf(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 410.0, "Pmax": 30000.0, "rhomax": 11.64,
-        "Pmin": 31.5, "rhomin": 11.63,
 
         "nr1": [0.04592563, 1.546958, -2.355237, -0.4827835, 0.1758022],
         "d1": [4, 1, 1, 2, 3],
@@ -107,7 +104,6 @@ class R1234yf(MEoS):
         "ref": "IIR",
 
         "Tmin": 240., "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 11.64,
-        "Pmin": 31.5, "rhomin": 11.63,
 
         "nr1": [0.83266757e1, -0.92588001e1, -0.24906043, 0.14422208,
                 0.11679917e-1],

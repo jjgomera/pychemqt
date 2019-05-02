@@ -18,11 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from unittest import TestCase
 from copy import copy
+from unittest import TestCase
 
-from scipy import exp
 from iapws import _Viscosity, _ThCond, _Dielectric, _Tension
+from iapws import _Melting_Pressure, _Sublimation_Pressure
 
 from lib import unidades
 from lib.meos import MEoS
@@ -58,8 +58,8 @@ class H2O(MEoS):
            "pow": [0, 1],
            "ao_pow": [8.203520690, -11.996306443],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [0.01059, -0.98763, 3.06904, 0],
-           "hyp": [0.415386589, 1.763895929, 3.874803739, 0]}
+           "ao_sinh": [0.01059, 3.06904], "sinh": [0.415386589, 3.874803739],
+           "ao_cosh": [-0.98763], "cosh": [1.763895929]}
 
     Fi3 = {"ao_log": [1, 3.00632],
            "pow": [0, 1],
@@ -91,7 +91,6 @@ class H2O(MEoS):
         "ref": {"Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
         "Tmin": Tt, "Tmax": 2000., "Pmax": 2000000.0, "rhomax": 73.96,
-        "Pmin": 0.61248, "rhomin": 55.49696,
 
         "nr1": [0.12533547935523e-1, 0.78957634722828e1, -0.87803203303561e1,
                 0.31802509345418, -0.26145533859358, -0.78199751687981e-2,
@@ -158,7 +157,6 @@ class H2O(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96,
-        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.82728408749586, -0.18602220416584e1, -0.11199009613744e1,
                 0.15635753976056, 0.87375844859025, -0.36674403715731,
@@ -178,7 +176,7 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and "
                     "Wagner-58 coeff (1989).",
-        "__doi__": {"autor": "Saul, A. and Wagner, W.",
+        "__doi__": {"autor": "Saul, A., Wagner, W.",
                     "title": "A Fundamental Equation for Water Covering the"
                              "Range from the Melting Line to 1273 K at"
                              "Pressures up to 25000 MPa",
@@ -187,10 +185,9 @@ class H2O(MEoS):
 
         "R": 8.31434,
         "cp": Fi3,
-        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
+        "ref": {"Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
         "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49,
-        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.8216377478, -0.2543894379, -0.08830868648, -0.8903097248e-6,
                 -0.1241333357e-5, 0.2895590286e-8, 0.1403610309e-10,
@@ -231,7 +228,7 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Saul and "
                     "Wagner-38 coeff (1989).",
-        "__doi__": {"autor": "Saul, A. and Wagner, W.",
+        "__doi__": {"autor": "Saul, A., Wagner, W.",
                     "title": "A Fundamental Equation for Water Covering the"
                              "Range from the Melting Line to 1273 K at"
                              "Pressures up to 25000 MPa",
@@ -240,10 +237,9 @@ class H2O(MEoS):
 
         "R": 8.31434,
         "cp": Fi4,
-        "ref": {"Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
+        "ref": {"Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
         "Tmin": Tt, "Tmax": 1273., "Pmax": 400000.0, "rhomax": 55.49,
-        "Pmin": 0.61166, "rhomin": 55.497,
 
         "nr1": [0.2330009013, -0.1402091128e1, 0.1172248041, -0.1850749499,
                 0.1770110422, .5525151794e-1, -0.341325738e-3, 0.8557274367e-3,
@@ -271,8 +267,8 @@ class H2O(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for water of Sun and Ely"
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
-                    "title": "Universal equation of state for engineering"
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
+                    "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to"
                              "non-polar and polar fluids",
                     "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
@@ -281,10 +277,9 @@ class H2O(MEoS):
         "R": 8.314371357587,
         "cp": Fi1,
         "ref": {"name": "CUSTOM",
-                "Tref": Tt, "Pref": 611.655, "ho": 0.611872, "so": 0},
+                "Tref": Tt, "Pref": 0.611655, "ho": 0.611872, "so": 0},
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [3.46821920e-1, 5.03423025e-1, -3.51059570e-1, 5.07004866e-2,
                 1.99939129e-4, -5.69888763e-1],
@@ -427,39 +422,19 @@ class H2O(MEoS):
 
     @classmethod
     def _Melting_Pressure(cls, T):
-        if 251.165 <= T <= 256.164:
-            Tref = 251.165
-            Pref = 208566.
-            Tita = T/Tref
-            P2 = Pref*(1-0.299948*(1-Tita**60.))
-        elif 256.164 < T <= 273.31:
-            Tref = 256.164
-            Pref = 350100.
-            Tita = T/Tref
-            P2 = Pref*(1-1.18721*(1-Tita**8.))
-        elif 273.31 < T <= 355:
-            Tref = 273.31
-            Pref = 632400.
-            Tita = T/Tref
-            P2 = Pref*(1-1.07476*(1-Tita**4.6))
-        elif 355. < T:
-            Tref = 355
-            Pref = 2216000.
-            Tita = T/Tref
-            P2 = Pref*exp(1.73683*(1-1./Tita)-0.544606e-1*(1-Tita**5) +
-                          0.806106e-7*(1-Tita**22))
-        return unidades.Pressure(P2, "kPa")
+        try:
+            Pm = _Melting_Pressure(T)
+        except NotImplementedError:
+            Pm = None
+        return unidades.Pressure(Pm, "MPa")
 
     @classmethod
     def _Sublimation_Pressure(cls, T):
-        Pref = 611.657
-        Tita = T/cls.Tt
-        a = [-0.212144006e2, 0.273203819e2, -0.61059813e1]
-        expo = [0.333333333e-2, 1.20666667, 1.70333333]
-        suma = 0
-        for ai, expi in zip(a, expo):
-            suma += ai*Tita**expi
-        return unidades.Pressure(exp(suma/Tita)*Pref)
+        try:
+            Ps = _Sublimation_Pressure(T)
+        except NotImplementedError:
+            Ps = None
+        return unidades.Pressure(Ps, "MPa")
 
 
 class Test(TestCase):

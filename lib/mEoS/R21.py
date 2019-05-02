@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R21(MEoS):
@@ -44,8 +44,7 @@ class R21(MEoS):
            "an": [0.12714330e-2/8.31451*102.92, 0.32413520e-6/8.31451*102.92,
                   -2.4924280e-9/8.31451*102.92, 1.7172080e-12/8.31451*102.92],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     platzer = {
         "__type__": "Helmholtz",
@@ -60,7 +59,6 @@ class R21(MEoS):
         "ref": "NBP",
 
         "Tmin": 200.0, "Tmax": 473.19, "Pmax": 137900.0, "rhomax": 15.36,
-        "Pmin": 0.6828e-4, "rhomin": 16.519,
 
         "nr1": [-.44386484873e2, 9.26505600935, -.551709104376, .504676623431,
                 -.732431415692, -.868403860387, .146234705555, -.280576335053,

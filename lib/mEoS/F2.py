@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class F2(MEoS):
@@ -44,14 +44,13 @@ class F2(MEoS):
            "an": [-0.60936946e-4/144.414**4, 0.63196690e-3/144.414**3,
                   -0.74069617e-4/144.414**-2],
            "pow": [4, 3, -2],
-           "ao_exp": [1.0127670],
-           "exp": [1286.12],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [1.0127670], "exp": [1286.12]}
+
     CP2 = {"ao": 0.7593432/8.3143*37.997,
            "an": [0.2883653e-3/8.3143*37.997, -0.4192916e-5/8.3143*37.997,
                   0.2309778e-7/8.3143*37.997, -0.3291582e-10/8.3143*37.997],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [], "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     reuck = {
         "__type__": "Helmholtz",
@@ -68,7 +67,6 @@ class F2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 300.0, "Pmax": 20000.0, "rhomax": 45.47,
-        "Pmin": 0.23881, "rhomin": 44.917,
 
         "nr1": [0.151144749736e1, -0.298666288409e1, 0.329644905098e1,
                 -0.298458624201e1, -0.228688966459e1, -0.109492193400e1,
@@ -92,7 +90,7 @@ class F2(MEoS):
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for fluorine of Polt (1992).",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -102,7 +100,6 @@ class F2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 300.0, "Pmax": 25000.0, "rhomax": 45.14,
-        "Pmin": 0.25394, "rhomin": 44.89,
 
         "nr1": [0.862212325175e-2, 0.162286882091, -0.228707299586e-1,
                 0.624951179331, -0.158918489879e1, 0.195171867807,
@@ -123,10 +120,14 @@ class F2(MEoS):
     eq = reuck, polt
 
     _surface = {"sigma": [0.03978], "exp": [1.218]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 1000,
-                "Tmin": Tt, "Tmax": 300.0,
-                "a1": [.000252, 249.975, -249.9750131], "exp1": [0, 2.1845, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": reuck["__doi__"],
+        "Tmin": Tt, "Tmax": 300.0,
+        "Tref": Tt, "Pref": 238.8,
+        "a2": [988043.478261], "exp2": [2.1845]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.37061e1, -0.81517e2, 0.13743e3, -0.58617e2, -0.13528e1],

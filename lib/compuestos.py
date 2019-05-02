@@ -448,8 +448,8 @@ __doi__ = {
          "doi": "10.1002/aic.690100229"},
     53:
         {"autor": "Younglove, B.A., Ely, J.F.",
-         "title": "Thermophysical Properties of Fluids II: Methane, Ethane, "
-                  "Propne, Isobutane and Normal Butane",
+         "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, "
+                  "Propane, Isobutane, and Normal Butane",
          "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
          "doi": "10.1063/1.555785"},
     54:
@@ -2167,13 +2167,13 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
 
     Selected value from Table 1 in [46]_, hydrogen
 
-    >>> from lib.mEoS import H2
-    >>> y = H2.younglove
+    >>> from lib.mEoS import pH2
+    >>> y = pH2.younglove
     >>> T = 0.904*y["Tc"]
     >>> P = 7.71*y["Pc"]*1e3
-    >>> Ps = H2()._Vapor_Pressure(T)
-    >>> "%0.2f" % MuL_Lucas(T, P, y["Tc"], y["Pc"]*1e3, H2.f_acent, Ps, 1)
-    '1.92'
+    >>> Ps = pH2()._Vapor_Pressure(T)
+    >>> "%0.2f" % MuL_Lucas(T, P, y["Tc"], y["Pc"]*1e3, pH2.f_acent, Ps, 1)
+    '1.00'
     """
     Tr = T/Tc
     # Discard point in gas phase

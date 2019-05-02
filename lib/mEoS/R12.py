@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R12(MEoS):
@@ -45,13 +45,12 @@ class R12(MEoS):
     CP1 = {"ao": 4.003638529,
            "an": [], "pow": [],
            "ao_exp": [3.160638395, .3712598774, 3.562277099, 2.121533311],
-           "exp": [1.4334342e3, 2.4300498e3, 6.8565952e2, 4.1241579e2],
-           "ao_hyp": [], "hyp": []}
+           "exp": [1.4334342e3, 2.4300498e3, 6.8565952e2, 4.1241579e2]}
 
     marx = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-12 of Marx (1992)",
-        "__doi__": {"autor": "Marx, V., Pruss, A., and Wagner, W.",
+        "__doi__": {"autor": "Marx, V., Pruss, A., Wagner, W.",
                     "title": "Neue Zustandsgleichungen fuer R 12, R 22, R 11 "
                              "und R 113. Beschreibung des thermodynamishchen "
                              "Zustandsverhaltens bei Temperaturen bis 525 K "
@@ -60,12 +59,11 @@ class R12(MEoS):
                            "(Waermetechnik/Kaeltetechnik), No. 57, 1992.",
                     "doi": ""},
 
-        "R": 8.314471,
+        "R": 8.314471, "rhoc": 4.672781,
         "cp": CP1,
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 200000.0, "rhomax": 15.13,
-        "Pmin": 0.000243, "rhomin": 15.1253,
 
         "nr1": [2.075343402, -2.962525996, 0.1001589616e-1, 0.1781347612e-1,
                 0.2556929157e-1, 0.2352142637e-2, -0.8495553314e-4],
@@ -98,7 +96,6 @@ class R12(MEoS):
         "M": 120.914, "Tc": 385.12, "rhoc": 565/120.914,
 
         "Tmin": 173.0, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 13.9,
-        "Pmin": 1.1633, "rhomin": 13.892,
 
         "nr1": [0.10557228e1, -0.33312001e1, 0.10197244e1, 0.84155115e-1,
                 0.28520742e-3],

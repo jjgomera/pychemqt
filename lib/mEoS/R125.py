@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R125(MEoS):
@@ -42,11 +43,9 @@ class R125(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.563, "Debye")
     id = 1231
 
-    Fi1 = {"ao_log": [1, -1],
-           "pow": [0, 1, -0.1],
-           "ao_pow": [37.2674, 8.88404, -49.8651],
-           "ao_exp": [2.303, 5.086, 7.3],
-           "titao": [314/Tc, 756/Tc, 1707/Tc]}
+    CP1 = {"ao": 0,
+           "an": [3.063], "pow": [0.1],
+           "ao_exp": [2.303, 5.086, 7.3], "exp": [314, 756, 1707]}
 
     Fi2 = {"ao_log": [1, 4.911212],
            "pow": [0, 1],
@@ -62,19 +61,18 @@ class R125(MEoS):
 
     CP3 = {"ao": 4.3987,
            "an": [0.0242728, -4.099e-6], "pow": [1, 2],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
-
-    CP4 = {"ao": 25.87069,
-           "an": [0.2690914, -1.331388e-4, 4.10133e-9], "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     CP5 = {"ao": 3.111514,
            "an": [10.982115/339.33, -1.843797/339.33**2, 0.019273/339.33**3],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
+
+    # Expression in tau term, dividing by Tc in all terms
+    CP4 = {"ao": 2.9072,
+           "an": [11.5586/339.33, -2.1135/339.33**2],
+           "pow": [1, 2],
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -86,13 +84,12 @@ class R125(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data 34(1) (2005) 69-108",
                     "doi": "10.1063/1.1797813"},
 
-        # FIXME: Check meos phir calculation with exp != 2
         "R": 8.314472,
-        "cp": Fi1,
+        "rhoc": 4.779,
+        "cp": CP1,
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09,
-        "Pmin": 2.914, "rhomin": 14.086,
 
         "nr1": [5.28076, -8.67658, 0.7501127, 0.7590023, 0.01451899],
         "d1": [1, 1, 1, 2, 4],
@@ -127,12 +124,11 @@ class R125(MEoS):
                     "doi": "10.1007/BF01438959"},
 
         "R": 8.314471,
-        "cp": CP4,
+        "cp": CP5,
         "ref": "IIR",
         "Tc": 339.33, "Pc": 3629., "rhoc": 4.75996,
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.10,
-        "Pmin": 2.921, "rhomin": 14.095,
 
         "b": [None, -0.523369607050e-1, 0.378761878904e1, -0.807152818990e2,
               0.115654605248e5, -0.152175619161e7, 0.597541484451e-2,
@@ -161,7 +157,6 @@ class R125(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.09,
-        "Pmin": 2.943, "rhomin": 14.088,
 
         "nr1": [0.12439220, 0.27922179, -1.1822597, 0.23616512, -0.01157181],
         "d1": [1, 2, 2, 3, 2],
@@ -191,7 +186,6 @@ class R125(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 14.11,
-        "Pmin": 2.9562, "rhomin": 14.1,
 
         "nr1": [0.85393382372e-1, -0.133260499658, 0.257817782488,
                 -0.735018179542, -0.787454743426, -0.190320468891e-1,
@@ -223,7 +217,6 @@ class R125(MEoS):
         "M": 120.022, "Tc": 339.33, "rhoc": 571.3/120.022,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 14.1,
-        "Pmin": 2.9213, "rhomin": 14.096,
 
         "nr1": [0.11290996e1, -0.28349269e1, 0.29968733, 0.87282204e-1,
                 0.26347747e-3],
@@ -252,7 +245,6 @@ class R125(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 70000.0, "rhomax": 14.1,
-        "Pmin": 2.94, "rhomin": 14.1,
 
         "nr1": [1.51628822, -1.4959805, -1.2893965, 1.47295195, -2.22976436,
                 1.02082011, -9.61695881e-3, 4.14142522e-2],
@@ -271,7 +263,7 @@ class R125(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-125 of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -279,11 +271,10 @@ class R125(MEoS):
                     "doi": "10.1016/j.fluid.2004.06.028"},
 
         "R": 8.314472,
-        "cp": Fi1,
+        "cp": CP1,
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [7.41057508e-1, 1.13555445, -3.12563760, 9.32031442e-2,
                 2.76844975e-4, -5.64403707e-2],
@@ -297,8 +288,40 @@ class R125(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # TODO: Add Vasserman meos, file in meos todo database
-    eq = lemmon, outcalt, sunaga, piao, shortSpan, astina, sun
+    vasserman = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-125 of Vasserman and"
+                    "Fominsky (2001)",
+        "__doi__": {"autor": "Vasserman A.A., Fominsky D.V.",
+                    "title": "Equations of State for the Ozone-Safe "
+                             "Refrigerants R32 and R125",
+                    "ref": "Int. J. Thermophysics 22(4) (2001) 1089-1098",
+                    "doi": "10.1023/a_1010699806169"},
+
+        "R": 0.069275*M,
+        "Tc": 339.33, "rhoc": 571.29/M,
+        "cp": CP4,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+
+        "nr1": [2.825627e-1, -6.854910e-1, -9.975127e-1, 6.445149e-1,
+                4.024926e-1, -7.060325e-1, 2.621465e-1, 1.118047e-1,
+                -1.217283e-1, -3.381068e-2, 7.828134e-3, 2.074012e-3,
+                -5.912590e-5, 8.017074e-5, -5.547434e-5],
+        "d1": [1, 1, 1, 2, 2, 3, 4, 5, 5, 6, 7, 7, 7, 8, 10],
+        "t1": [0, 1, 3, 1, 3, 1, 2, 0, 2, 0, 1, 2, 4, 3, 1],
+
+        "nr2": [1.203782e-1, 1.687868e1, -6.643158e1, 9.473412e1, -5.988361e1,
+                1.396914e1, 6.765262e-1, -5.880934e-2, -5.648372e-1,
+                1.643516e-1, 6.900750e-1, -1.066543, 3.699827e-1, -4.472888e-2,
+                6.506423e-3, -8.564364e-3],
+        "d2": [1, 2, 2, 2, 2, 2, 3, 4, 4, 5, 6, 6, 6, 7, 10, 10],
+        "t2": [4, 1, 2, 3, 4, 5, 2, 1, 3, 4, 1, 2, 4, 5, 1, 3],
+        "c2": [2]*16,
+        "gamma2": [1]*16}
+
+    eq = lemmon, outcalt, sunaga, piao, shortSpan, astina, vasserman, sun
     _PR = -0.00247
 
     _surface = {"sigma": [0.05252], "exp": [1.237]}
@@ -341,10 +364,36 @@ class R125(MEoS):
 
               "CPf": 141.2564,
               "CPg1": 3.033797,
-              "CPgi": [0.2992464/3.0033797],
+              "CPgi": [0.2992464/3.033797],
               "CPti": [-0.5]}
 
-    _viscosity = visco0,
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
+
+              "ek": 249, "sigma": 0.519, "omega": 5,
+
+              "psi": [1.00907, 1.93968e-2], "psi_d": [0, 1],
+              "fint": [1.18189e-3, 6.63334e-7], "fint_t": [0, 1],
+              "chi": [1.2159, -5.6531e-2], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+              "gam0": 0.0496, "qd": 7.48281e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = visco0, trnECS
 
     thermo0 = {"__name__": "Perkins (2006)",
                "__doi__": {
@@ -372,7 +421,7 @@ class R125(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
                "gam0": 0.0496, "qd": 5.834646e-10, "Tcref": 508.755}
 
-    _thermal = thermo0,
+    _thermal = thermo0, trnECS
 
 
 class Test(TestCase):
@@ -383,44 +432,43 @@ class Test(TestCase):
         self.assertEqual(round(st.h.kJkg, 3), 200)
         self.assertEqual(round(st.s.kJkgK, 5), 1)
 
-        # FIXME: Tiny error in last decimal
         # Table 12, Pag 104
-        # st = R125(T=200, rhom=14)
-        # self.assertEqual(round(st.P.MPa, 6), 42.302520)
-        # self.assertEqual(round(st.cvM.JmolK, 6), 85.816305)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 123.53641)
-        # self.assertEqual(round(st.w, 5), 968.67194)
+        st = R125(T=200, rhom=14)
+        self.assertEqual(round(st.P.MPa, 6), 42.302520)
+        self.assertEqual(round(st.cvM.JmolK, 6), 85.816305)
+        self.assertEqual(round(st.cpM.JmolK, 5), 123.53641)
+        self.assertEqual(round(st.w, 5), 968.67194)
 
-        # st = R125(T=300, rhom=10)
-        # self.assertEqual(round(st.P.MPa, 7), 2.9023498)
-        # self.assertEqual(round(st.cvM.JmolK, 6), 99.919660)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 164.16914)
-        # self.assertEqual(round(st.w, 5), 345.91235)
+        st = R125(T=300, rhom=10)
+        self.assertEqual(round(st.P.MPa, 7), 2.9023498)
+        self.assertEqual(round(st.cvM.JmolK, 6), 99.919660)
+        self.assertEqual(round(st.cpM.JmolK, 5), 164.16914)
+        self.assertEqual(round(st.w, 5), 345.91235)
 
-        # st = R125(T=300, rhom=0.7)
-        # self.assertEqual(round(st.P.MPa, 7), 1.3245058)
-        # self.assertEqual(round(st.cvM.JmolK, 6), 94.823171)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 124.96009)
-        # self.assertEqual(round(st.w, 5), 120.56007)
+        st = R125(T=300, rhom=0.7)
+        self.assertEqual(round(st.P.MPa, 7), 1.3245058)
+        self.assertEqual(round(st.cvM.JmolK, 6), 94.823171)
+        self.assertEqual(round(st.cpM.JmolK, 5), 124.96009)
+        self.assertEqual(round(st.w, 5), 120.56007)
 
-        # st = R125(T=400, rhom=5.0)
-        # self.assertEqual(round(st.P.MPa, 7), 9.0495658)
-        # self.assertEqual(round(st.cvM.JmolK, 5), 114.41819)
-        # self.assertEqual(round(st.cpM.JmolK, 5), 198.11792)
-        # self.assertEqual(round(st.w, 5), 151.53060)
+        st = R125(T=400, rhom=5.0)
+        self.assertEqual(round(st.P.MPa, 7), 9.0495658)
+        self.assertEqual(round(st.cvM.JmolK, 5), 114.41819)
+        self.assertEqual(round(st.cpM.JmolK, 5), 198.11792)
+        self.assertEqual(round(st.w, 5), 151.53060)
 
-        # st = R125(T=339.2, rhom=4.8)
-        # self.assertEqual(round(st.P.MPa, 7), 3.6201215)
-        # self.assertEqual(round(st.cvM.JmolK, 5), 130.63650)
-        # self.assertEqual(round(st.cpM.JmolK, 2), 274863.02)
-        # self.assertEqual(round(st.w, 6), 78.735928)
+        st = R125(T=339.2, rhom=4.8)
+        self.assertEqual(round(st.P.MPa, 7), 3.6201215)
+        self.assertEqual(round(st.cvM.JmolK, 5), 130.63650)
+        self.assertEqual(round(st.cpM.JmolK, 2), 274863.02)
+        self.assertEqual(round(st.w, 6), 78.735928)
 
         # Selected point from Table 9, Appendix B, pag 104
         st = R125(T=R125.Tt, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.00291)
         self.assertEqual(round(st.Liquido.rho, 1), 1690.7)
         self.assertEqual(round(st.Liquido.h.kJkg, 3), 87.130)
-        self.assertEqual(round(st.Liquido.s.kJkgK, 5), 0.49023)
+        self.assertEqual(round(st.Liquido.s.kJkgK, 5), 0.49022)
         self.assertEqual(round(st.Liquido.cv.kJkgK, 4), 0.6776)
         self.assertEqual(round(st.Liquido.cp.kJkgK, 3), 1.035)
         self.assertEqual(round(st.Liquido.w, 1), 932.6)
@@ -684,10 +732,8 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.35860)
 
     def test_Huber(self):
-        # FIXME: Tiny error
-        pass
-
-        # st = R125(T=300, rhom=10.5969998)
-        # self.assertEqual(round(st.mu.muPas, 2), 177.37)
-        # st = R125(T=400, rhom=0.030631)
-        # self.assertEqual(round(st.mu.muPas, 3), 17.070)
+        # Data in text, pag 4452
+        st = R125(T=300, P=1e7)
+        self.assertEqual(round(st.mu.muPas, 2), 177.38)
+        st = R125(T=400, P=101325)
+        self.assertEqual(round(st.mu.muPas, 3), 17.063)

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class SO2(MEoS):
@@ -58,8 +58,7 @@ class SO2(MEoS):
            "an": [0.87348570e-3/8.3143*64.066, -0.45968820e-6/8.3143*64.066,
                   -0.13328400e-11/8.3143*64.066, 0.23785000e-13/8.3143*64.066],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     gao = {
         "__type__": "Helmholtz",
@@ -68,8 +67,7 @@ class SO2(MEoS):
         "__doi__": {
             "autor": "Gao, K., Wu, J., Zhang, P., Lemmon, E.W.",
             "title": "A Helmholtz Energy Equation of State for Sulfur Dioxide",
-            "ref": "J. Chem. Eng. Data, ",
-            # TODO: Complete reference when find internet
+            "ref": "J. Chem. Eng. Data, 61(6) (2016) 2859-2872",
             "doi":  "10.1021/acs.jced.6b00195"},
 
         "R": 8.3144621,
@@ -78,7 +76,6 @@ class SO2(MEoS):
 
         "rhoc": 8.078,
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.40,
-        "Pmin": 1.666, "rhomin": 22.815,
 
         "nr1": [0.01744413, 1.814878, -2.246338, -0.4602906, 0.1097049],
         "d1": [4, 1, 1, 2, 3],
@@ -114,7 +111,6 @@ class SO2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.30,
-        "Pmin": 1.66, "rhomin": 25.29,
 
         "nr1": [0.93061, -1.9528, -0.17467, 0.061524, 0.00017711],
         "d1": [1, 1, 1, 3, 7, ],
@@ -141,8 +137,7 @@ class SO2(MEoS):
         "cp": CP2,
         "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91,
-        "Pmin": 11.82, "rhomin": 23.0,
+        "Tmin": Tt, "Tmax": 523.0, "Pmax": 32000.0, "rhomax": 22.91,
 
         "nr1": [0.789407019882, -0.170449580056e1, 0.115984637964e1,
                 -0.576307837294, 0.249237283833e1, -0.518115678632e1,

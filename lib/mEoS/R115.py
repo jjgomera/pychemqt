@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R115(MEoS):
@@ -44,15 +45,12 @@ class R115(MEoS):
 
     CP1 = {"ao": 4,
            "an": [], "pow": [],
-           "ao_exp": [7.142, 10.61],
-           "exp": [289, 1301],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [7.142, 10.61], "exp": [289, 1301]}
 
     CP2 = {"ao": 2.4409547,
            "an": [0.053544743, -0.81861429e-4, 0.10410538e-6, -0.71645701e-10],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -69,7 +67,6 @@ class R115(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 60000.0, "rhomax": 11.3,
-        "Pmin": 2.2, "rhomin": 11.3,
 
         "nr1": [1.20873, -3.54460, 0.745302, 0.114128, 0.000436572],
         "d1": [1, 1, 1, 3, 7],
@@ -95,7 +92,6 @@ class R115(MEoS):
         "ref": "NBP",
 
         "Tmin": 200.0, "Tmax": 450.0, "Pmax": 7000.0, "rhomax": 10.7,
-        "Pmin": 6.213, "rhomin": 10.743,
 
         "nr1": [-0.377294477051, -0.695891789165e-1, 0.206972205161,
                 0.266609543946, -0.117158857583e1, 0.817521154071,
@@ -128,6 +124,35 @@ class R115(MEoS):
         "eq": 2,
         "n": [-3.5696, -8.3593, -340.07, 401.14, 84.442, -221.37],
         "t": [0.421, 1.5, 4.7, 5.0, 5.4, 6.0]}
+
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
+
+              "ek": 201.9, "sigma": 0.5876, "omega": 5,
+
+              "psi": [1.1838, -5.91896e-2], "psi_d": [0, 1],
+              "fint": [1.25079e-3, 2.96636e-7], "fint_t": [0, 1],
+              "chi": [1.0343, -2.16614e-3], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+              "gam0": 0.0496, "qd": 3.72933e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS,
+    _thermal = trnECS,
 
 
 class Test(TestCase):

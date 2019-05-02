@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R32(MEoS):
@@ -59,8 +60,13 @@ class R32(MEoS):
            "an": [-0.06304821/8.314471, 3.757936e-4/8.314471,
                   -3.219812e-7/8.314471],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
+
+    # Expression in tau term, dividing by Tc in all terms
+    CP3 = {"ao": 4.3914,
+           "an": [-2.5143/351.35, 5.3885/351.35**2, -1.6057/351.35*3],
+           "pow": [1, 2, 3],
+           "ao_exp": [], "exp": []}
 
     tillner = {
         "__type__": "Helmholtz",
@@ -79,7 +85,6 @@ class R32(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 435.0, "Pmax": 70000.0, "rhomax": 27.4734,
-        "Pmin": 0.480e-1, "rhomin": 27.4734,
 
         "nr1": [0.1046634e1, -0.5451165, -0.2448595e-2, -0.4877002e-1,
                 0.3520158e-1, 0.1622750e-2, 0.2377225e-4, 0.2914900e-1],
@@ -110,7 +115,6 @@ class R32(MEoS):
         "Tc": 351.35, "rhoc": 427/M, "Pc": 5795,
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 27.41,
-        "Pmin": 0.047922, "rhomin": 27.41,
 
         "nr1": [0.92876414, -2.4673952, 0.40129043, 0.055101049, 1.1559754e-4],
         "d1": [1, 1, 1, 3, 7],
@@ -138,7 +142,6 @@ class R32(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 450.0, "Pmax": 72000.0, "rhomax": 27.48,
-        "Pmin": 0.0485, "rhomin": 27.47,
 
         "nr1": [2.118688, -4.531096, 1.442456, 2.053906e-1, -1.311675e-1,
                 1.022272e-2],
@@ -171,7 +174,6 @@ class R32(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 60000.0, "rhomax": 27.48,
-        "Pmin": 0.0477, "rhomin": 27.48,
 
         "b": [None, -0.131275405202e-3, 0.899927934911, -0.281400805178e2,
               0.436091182784e4, -0.837235280004e6, -0.782176408963e-6,
@@ -189,7 +191,7 @@ class R32(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-32 of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -201,7 +203,6 @@ class R32(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [2.75866232e-1, 9.26526641e-1, -2.44296579, 5.34289357e-2,
                 1.06739638e-4, 3.46487335e-2],
@@ -215,10 +216,44 @@ class R32(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = tillner, outcalt, shortSpan, astina, sun
+    vasserman = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R-32 of Vasserman and"
+                    "Fominsky (2001)",
+        "__doi__": {"autor": "Vasserman A.A., Fominsky D.V.",
+                    "title": "Equations of State for the Ozone-Safe "
+                             "Refrigerants R32 and R125",
+                    "ref": "Int. J. Thermophysics 22(4) (2001) 1089-1098",
+                    "doi": "10.1023/a_1010699806169"},
+
+        "R": 0.159821*M,
+        "Tc": 351.35, "rhoc": 427/M,
+        "cp": CP3,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
+
+        "nr1": [1.183486, -2.430934, -1.472179e-2, -4.506743e-1, 1.721527,
+                -1.349166, -6.052212e-1, 9.265910e-1, 8.081905e-2,
+                -1.999587e-1, 3.655934e-3, 8.217181e-3, -3.230880e-3,
+                5.778584e-3, -2.536027e-6],
+        "d1": [1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 4, 5, 6, 6, 10],
+        "t1": [0, 1, 4, 0, 1, 2, 1, 2, 0, 2, 3, 2, 0, 1, 0],
+
+        "nr2": [-6.546357e-2, -2.784785e-1, 1.113400, -2.954417, 4.898234,
+                -2.354906, -7.709682e-1, 6.502963e-1, 2.168338e-1,
+                -5.499117e-1, 1.978099e-2, 9.535163e-2, -1.425744e-2,
+                3.921874e-3],
+        "d2": [1, 1, 2, 2, 2, 2, 3, 4, 5, 5, 6, 6, 8, 9],
+        "t2": [4, 5, 1, 2, 4, 5, 5, 5, 3, 4, 3, 5, 4, 2],
+        "c2": [2]*14,
+        "gamma2": [1]*14}
+
+    eq = tillner, outcalt, shortSpan, astina, vasserman, sun
     _PR = 0.00585
 
     _surface = {"sigma": [0.07147], "exp": [1.246]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.74883e1, 0.19697e1, -0.17496e1, -0.40224e1, 0.15209e1],
@@ -232,26 +267,34 @@ class R32(MEoS):
         "n": [-.22002e1, -.5972e1, -.14571e2, -.42598e2, .42686e1, -.73373e2],
         "t": [0.336, 0.98, 2.7, 5.7, 6.5, 11.0]}
 
-    thermo0 = {"eq": 1,
-               "__name__": "Marsh (2002)",
-               "__doc__": """Unpublished; however the fit uses the functional form found in: Marsh, K., Perkins, R., and Ramires, M.L.V., "Measurement and Correlation of the Thermal Conductivity of Propane from 86 to 600 K at Pressures to 70 MPa," J. Chem. Eng. Data, 47(4):932-940, 2002""",
+    trnECS = {"__name__": "Huber (2003)",
 
-               "Tref": 351.255, "kref": 1,
-               "no": [0.106548e-1, -0.194174e-1, 0.254295e-1],
-               "co": [0, 1, 2],
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
 
-               "Trefb": 351.255, "rhorefb": 8.1500846, "krefb": 1,
-               "nb": [0.221878e-1, -0.215336e-1, 0.283523, -0.169164, -0.297237,
-                      .191614, .105727, -.665397e-1, -.123172e-1, 0.766378e-2],
-               "tb": [0, 1]*5,
-               "db": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
-               "cb": [0]*10,
+              "eq": "ecs",
 
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5.582925e-10, "Tcref": 526.8825}
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
 
-    # _thermal = thermo0,
+              "ek": 289.65, "sigma": 0.4098, "omega": 5,
+
+              "psi": [0.7954, 5.42658e-2], "psi_d": [0, 1],
+              "fint": [4.36654e-4, 1.78134e-6], "fint_t": [0, 1],
+              "chi": [1.2942, -9.24549e-2], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS,
+    _thermal = trnECS,
 
 
 class Test(TestCase):

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R365mfc(MEoS):
@@ -62,7 +62,6 @@ class R365mfc(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 500.0, "Pmax": 35000.0, "rhomax": 9.3,
-        "Pmin": 2.478, "rhomin": 9.3,
 
         "nr1": [2.20027, -2.86240, 0.384559, -0.621227, 0.0665967],
         "d1": [1, 1, 2, 2, 4],

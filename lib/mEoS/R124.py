@@ -18,8 +18,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R124(MEoS):
@@ -31,7 +32,7 @@ class R124(MEoS):
     _refPropName = "R124"
     _coolPropName = "R124"
     rhoc = unidades.Density(560.)
-    Tc = unidades.Temperature(395.425)
+    Tc = unidades.Temperature(395.43)
     Pc = unidades.Pressure(3624.295, "kPa")
     M = 136.4762  # g/mol
     Tt = unidades.Temperature(74.)
@@ -41,17 +42,15 @@ class R124(MEoS):
     # id = 1629
 
     CP1 = {"ao": 3.175638,
-           "an": [14.77947*Tc, -5.2420986*Tc**2, 1.3381596*Tc**3],
+           "an": [14.77947/Tc, -5.2420986/Tc**2, 1.3381596/Tc**3],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     CP2 = {"ao": 3.20532538,
-           "an": [13.4403357*395.62, -2.32192933*395.62**2,
-                  -0.422826803*395.62**3],
+           "an": [13.4403357/395.62, -2.32192933/395.62**2,
+                  -0.422826803/395.62**3],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     vries = {
         "__type__": "Helmholtz",
@@ -69,7 +68,6 @@ class R124(MEoS):
         "ref": "IIR",
 
         "Tmin": 120.0, "Tmax": 470.0, "Pmax": 40000.0, "rhomax": 13.5758,
-        "Pmin": 0.00000000032, "rhomin": 13.5758,
 
         "nr1": [-0.1262962e-1, 0.2168373e1, -0.3330033e1, 0.1610361,
                 -0.9666145e-4, 0.1191310e-1, -0.2880217e-2, 0.1681346e-2,
@@ -104,7 +102,6 @@ class R124(MEoS):
         "ref": "IIR",
 
         "Tmin": 120.0, "Tmax": 475.0, "Pmax": 36000.0, "rhomax": 13.98,
-        "Pmin": 0.00000000032, "rhomin": 14.54,
 
         "b": [None, -0.195111839846e-1, 0.299978502039e1, -0.845849168162e2,
               0.146720754658e5, -0.232549336572e7, 0.938866046628e-3,
@@ -133,3 +130,32 @@ class R124(MEoS):
         "eq": 2,
         "n": [-2.8551, -6.385, -17.616, -37.828, -23.785, -134.59],
         "t": [0.388, 1.17, 3.0, 6.0, 8.0, 15.0]}
+
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
+
+              "ek": 275.8, "sigma": 0.5501, "omega": 5,
+
+              "psi": [1.04253, 1.38528e-3], "psi_d": [0, 1],
+              "fint": [1.1769e-3, 6.78397e-7], "fint_t": [0, 1],
+              "chi": [1.0898, -1.54229e-2], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS,
+    _thermal = trnECS,

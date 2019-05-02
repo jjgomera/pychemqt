@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class C1Linolenate(MEoS):
@@ -39,18 +39,18 @@ class C1Linolenate(MEoS):
     f_acent = 1.14
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
 
+    f = 8.314472
     CP1 = {"ao": 0.0,
-           "an": [79.5913], "pow": [0.214648],
-           "ao_exp": [290.379, 81.4323, 474.881],
-           "exp": [1213.24, 578.752, 2799.79],
-           "ao_hyp": [], "hyp": []}
+           "an": [79.5913/f], "pow": [0.214648],
+           "ao_exp": [290.379/f, 81.4323/f, 474.881/f],
+           "exp": [1213.24, 578.752, 2799.79]}
 
     huber = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methyl linoleate of Huber"
                     "et al. (2009).",
         "__doi__": {"autor": "Huber, M.L., Lemmon, E.W., Kazakov, A., Ott, "
-                             "L.S., and Bruno, T.J.",
+                             "L.S., Bruno, T.J.",
                     "title": "Model for the Thermodynamic Properties of a "
                              "Biodiesel Fuel",
                     "ref": "Energy Fuels, 23 (7) (2009) 3790–3797",
@@ -61,7 +61,6 @@ class C1Linolenate(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 1000.0, "Pmax": 50000.0, "rhomax": 3.29,
-        "Pmin": 1.e-17, "rhomin": 3.28,
 
         "nr1": [0.4070829e-1, 2.412375, -3.756194, -0.1526466, 0.4682918e-1],
         "d1": [4, 1, 1, 2, 3],
@@ -73,14 +72,13 @@ class C1Linolenate(MEoS):
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
 
-        "nr3": [2.180707e1, -0.7537264, -0.4347781],
+        "nr3": [2.180707, -0.7537264, -0.4347781],
         "d3": [1, 1, 3],
         "t3": [2.5, 3.0, 3.1],
         "alfa3": [1.1, 1.6, 1.1],
         "beta3": [0.9, 0.65, 0.75],
         "gamma3": [1.14, 0.65, 0.77],
-        "epsilon3": [0.79, 0.9, 0.76],
-        "nr4": []}
+        "epsilon3": [0.79, 0.9, 0.76]}
 
     eq = huber,
 

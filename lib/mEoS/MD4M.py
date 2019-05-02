@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class MD4M(MEoS):
@@ -39,11 +39,11 @@ class MD4M(MEoS):
     f_acent = 0.825
     momentoDipolar = unidades.DipoleMoment(1.308, "Debye")
 
-    CP1 = {"ao": -20.071,
-           "an": [2228.5e-3, -1311.4e-6, 286.2e-9],
+    f = 8.314472
+    CP1 = {"ao": -20.071/f,
+           "an": [2228.5e-3/f, -1311.4e-6/f, 286.2e-9/f],
            "pow": [1, 2, 3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     colonna = {
         "__type__": "Helmholtz",
@@ -59,8 +59,7 @@ class MD4M(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
-        "Tmin": 300, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.09,
-        "Pmin": 0.000000001, "rhomin": 2.09,
+        "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.09,
 
         "nr1": [1.18492421, -1.87465636, -0.65713510e-1, -0.61812689,
                 0.19535804, 0.50678740e-3],

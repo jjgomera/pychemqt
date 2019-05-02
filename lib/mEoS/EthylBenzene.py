@@ -22,8 +22,8 @@ from unittest import TestCase
 
 from scipy import exp
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class EthylBenzene(MEoS):
@@ -54,7 +54,7 @@ class EthylBenzene(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ethylbenzene of Zhou et "
                     "al. (2012).",
-        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., and Wu, J.",
+        "__doi__": {"autor": "Zhou, Y., Lemmon, E.W., Wu, J.",
                     "title": "Thermodynamic Properties of o-Xylene, m-Xylene, "
                              "p-Xylene, and Ethylbenzene",
                     "ref": "J. Phys. Chem. Ref. Data 41, 023103 (2012).",
@@ -65,7 +65,6 @@ class EthylBenzene(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 700.0, "Pmax": 60000.0, "rhomax": 9.124,
-        "Pmin": 0.000004002, "rhomin": 9.123,
 
         "nr1": [0.0018109418, -0.076824284, 0.041823789, 1.5059649, -2.4122441,
                 -0.47788846, 0.18814732],

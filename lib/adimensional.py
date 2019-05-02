@@ -58,7 +58,7 @@ __doi__ = {
     2:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
-         "ref": "McGraw-Hill Professional, 2008.",
+         "ref": "McGraw-Hill (2008)",
          "doi": ""}}
 
 

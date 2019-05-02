@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class R116(MEoS):
@@ -42,24 +43,16 @@ class R116(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 236
 
-    Fi1 = {"ao_log": [1, 3.],
-           "pow": [0, 1],
-           "ao_pow": [-10.7088650331, 8.9148979056],
-           "ao_exp": [2.4818, 7.0622, 7.9951],
-           "titao": [190/Tc, 622/Tc, 1470/Tc]}
-
     CP1 = {"ao": 4,
            "an": [], "pow": [],
            "ao_exp": [2.4818, 7.0622, 7.9951],
-           "exp": [190, 655, 1470],
-           "ao_hyp": [], "hyp": []}
+           "exp": [190, 622, 1470]}
 
     CP2 = {"ao": 27.4009901,
            "an": [-2.6057376855e-6, 9.7501305219e-10, -6559.250418,
                   787904.9649, -34166787.86],
            "pow": [2, 3, -1.001, -2, -3],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -72,11 +65,11 @@ class R116(MEoS):
                     "doi":  "10.1021/je050186n"},
 
         "R": 8.314472,
-        "cp": Fi1,
-        "ref": "NBP",
+        "rhoc": 4.444,
+        "cp": CP1,
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.31,
-        "Pmin": 26.1, "rhomin": 12.3,
 
         "nr1": [1.1632, -2.8123, 0.77202, -0.14331, 0.10227, 0.00024629],
         "d1": [1, 1, 1, 2, 3, 7],
@@ -101,11 +94,9 @@ class R116(MEoS):
 
         "R": 8.31451,
         "cp": CP2,
-        "ref": "NBP",
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 425.0, "Pmax": 50000.0, "rhomax": 12.23,
-        "Pmin": 32.09, "rhomin": 12.231,
-        "Pmin": 32.09, "rhomin": 12.231,
 
         "nr1": [2.1775273, -5.5052198, -1.3675742, -8.1284229e-1,
                 -4.0207525e-1, 2.5890073, 1.4500537, -1.0445036, 9.8965288e-1,
@@ -137,71 +128,34 @@ class R116(MEoS):
         "n": [-3.4135, -.14529e3, .23651e3, -.22276e3, .23103e3, -.17433e3],
         "t": [0.428, 2.0, 2.24, 3.0, 4.0, 5.0]}
 
-    visco0 = {"eq": 1, "omega": 1,
-              "collision": [0.355404, -0.464337, 0.257353e-1],
-              "__name__": "Huber (2003)",
-              "__doi__": {"autor": "Huber, M.L., Laesecke, A., and Perkins, R.A.",
-                          "title": "Model for the Viscosity and Thermal Conductivity of Refrigerants, Including a New Correlation for the Viscosity of R134a",
-                          "ref": "Ind. Eng. Chem. Res., 2003, 42 (13), pp 3163–3178",
-                          "doi": "10.1021/ie0300880"},
+    trnECS = {"__name__": "Huber (2003)",
 
-              "ek": 226.16, "sigma": 0.5249,
-              "Tref": 1., "rhoref": 1.*M,
-              "n_chapman": 0.2509/M**0.5,
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
 
-              "n_virial": [-0.19572881e2, 0.21973999e3, -0.10153226e4,
-                           0.24710125e4, -0.33751717e4, 0.24916597e4,
-                           -0.78726086e3, 0.14085455e2, -0.34664158],
-              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
-              "Tref_virial": 226.16, "etaref_virial": 0.08709,
+              "eq": "ecs",
 
-              "Tref_res": 513.9, "rhoref_res": 5.991*M, "etaref_res": 1000,
-              "n_packed": [3.16369563558749, -0.8901733752064137e-1,
-                           0.1000352946668359],
-              "t_packed": [0, 1, 2],
-              "n_poly": [-0.2069007192080741e-1, 0.3560295489828222e-3,
-                         0.2111018162451597e-2, 0.1396014148308975e-1,
-                         -0.4564350196734897e-2, -0.3515932745836890e-2,
-                         -0.2147633195397038],
-              "t_poly": [0, -6, -2, -0.5, 2, 0, 0],
-              "d_poly": [1, 2, 2, 2, 2, 3, 0],
-              "g_poly": [0, 0, 0, 0, 0, 0, -1],
-              "c_poly": [0, 0, 0, 0, 0, 0, 0],
-              "n_num": [0.2147633195397038],
-              "t_num": [0],
-              "d_num": [0],
-              "g_num": [0],
-              "c_num": [0],
-              "n_den": [1, -1],
-              "t_den": [0, 0],
-              "d_den": [0, 1],
-              "g_den": [1, 0],
-              "c_den": [0, 0]}
+              "ref": C3,
+              "visco": "visco1",
+              "thermo": "thermo0",
 
-    _viscosity = visco0,
+              "ek": 226.16, "sigma": 0.5249, "omega": 5,
 
-    thermo0 = {"eq": 1,
-               "__name__": "Perkins (2000)",
-               "__doi__": {"autor": "Perkins, R.A., Laesecke, A., Howley, J., Ramires, M.L.V., Gurova, A.N., and Cusco, L.",
-                           "title": "Experimental thermal conductivity values for the IUPAC round-robin sample of 1,1,1,2-tetrafluoroethane (R134a)",
-                           "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
-                           "doi": ""},
+              "psi": [1.21996, -6.47835e-2], "psi_d": [0, 1],
+              "fint": [1.32e-3], "fint_t": [0],
+              "chi": [1.1804, -5.39975e-2], "chi_d": [0, 1],
 
-               "Tref": 1, "kref": 1.05,
-               "no": [-1.05248e-2, 8.00982e-5],
-               "co": [0, 1],
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-               "Trefb": 1.0, "rhorefb": 4.444, "krefb": 1.64e-3,
-               "nb": [1.836526, 5.126143, -1.436883, 6.261441e-1],
-               "tb": [0, 0, 0, 0],
-               "db": [1, 2, 3, 4],
-               "cb": [0, 0, 0, 0],
-
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496e-1, "qd": 0.5e-9, "Tcref": 439.545}
-
-    _thermal = thermo0,
+    _viscosity = trnECS,
+    _thermal = trnECS,
 
 
 class Test(TestCase):

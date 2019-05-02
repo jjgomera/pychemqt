@@ -218,7 +218,7 @@ __doi__ = {
                 "Technology, Trondheim, 1989.",
          "doi": ""},
     18:
-        {"autor": "Hall, K. R., Yarborough, L.",
+        {"autor": "Hall, K.R., Yarborough, L.",
          "title": "New Simple Correlation for Predicting Critical Volume",
          "ref": "Chemical Engineering (November 1971): 76",
          "doi": ""},
@@ -254,7 +254,7 @@ __doi__ = {
         {"autor": "Lee, B.I., Kesler, M.G.",
          "title": "A Generalized Thermodynamic Correlation Based on "
                   "Three-Parameter Corresponding States",
-         "ref": "AIChE J. 21(3) (1975) 510-527",
+         "ref": "AIChE Journal 21(3) (1975) 510-527",
          "doi": "10.1002/aic.690210313"},
     26:
         {"autor": "Riazi, M.R., Al-Sahhaf, T.A., Sl-Shammari M.A.",
@@ -377,13 +377,6 @@ __doi__ = {
         {"autor": "Tsonopoulos, C., Heidman, J.L., Hwang, S.C.",
          "title": "Thermodynamic and Transport Properties of Coal Liquids",
          "ref": "An Exxon Monograph, Wiley, New York, 1986",
-         "doi": ""},
-
-
-    66:
-        {"autor": "",
-         "title": "",
-         "ref": "",
          "doi": ""},
         }
 

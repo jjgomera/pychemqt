@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class DMC(MEoS):
@@ -44,13 +44,12 @@ class DMC(MEoS):
            "pow": [0, 1],
            "ao_pow": [4.9916462, -0.1709449],
            "ao_exp": [1.48525, 0.822585, 16.2453, 1.15925],
-           "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [21/Tc, 1340/Tc, 1672/Tc, 7395/Tc]}
 
     zhou = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for DMC of Zhou (2011).",
-        "__doi__": {"autor": "Zhou, Y., Wu, J., and Lemmon, E.W.",
+        "__doi__": {"autor": "Zhou, Y., Wu, J., Lemmon, E.W.",
                     "title": "Thermodynamic Properties of Dimethyl Carbonate",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 40, No. 4 2011",
                     "doi":  "10.1063/1.3664084"},
@@ -58,8 +57,7 @@ class DMC(MEoS):
         "cp": Fi1,
         "ref": {"Tref": 298.15, "Pref": 1.0, "ho": 26712.371, "so": 109.66202},
 
-        "Tmin": Tt, "Tmax": 400.0, "Pmax": 60000.0, "rhomax": 12.107,
-        "Pmin": 2.2495, "rhomin": 12.107,
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 60000.0, "rhomax": 12.107,
 
         "nr1": [0.52683187e-3, 1.353396, -2.649283, -0.2785412, 0.1742554,
                 0.031606252],

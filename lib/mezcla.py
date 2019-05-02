@@ -170,8 +170,8 @@ __doi__ = {
          "doi": "10.1021/ie00076a024"},
     16:
         {"autor": "Younglove, B.A., Ely, J.F.",
-         "title": "Thermophysical Properties of Fluids II: Methane, Ethane, "
-                  "Propne, Isobutane and Normal Butane",
+         "title": "Thermophysical Properties of Fluids. II. Methane, Ethane, "
+                  "Propane, Isobutane, and Normal Butane",
          "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
          "doi": "10.1063/1.555785"},
     17:

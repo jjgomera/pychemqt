@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC11(MEoS):
@@ -47,8 +47,7 @@ class nC11(MEoS):
            "ao_pow": [-3.515339, 28.27708, -136.8378, -46.40384, 107.1876,
                       1.419929],
            "tau*logtau": -31.81246,
-           "ao_exp": [], "titao": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "titao": []}
 
     aleksandrov = {
         "__type__": "Helmholtz",
@@ -66,7 +65,6 @@ class nC11(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 700., "Pmax": 500000.0, "rhomax": 4.97,
-        "Pmin": 0.0004461, "rhomin": 4.962,
 
         "nr1": [-0.66172706, 1.3375396, -2.5608399, 0.1067891, 0.28873614e-3,
                 0.49587209e-1],

@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class nC16(MEoS):
@@ -62,8 +62,7 @@ class nC16(MEoS):
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": Tt, "Tmax": 700.0, "Pmax": 200000.0, "rhomax": 10,
-        # "Pmin": 0.580, "rhomin": 8.165,
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 200000.0, "rhomax": 10,
 
         "nr1": [0.03965879, 1.945813, -3.738575, -0.3428167, 0.3427022],
         "d1": [4, 1, 1, 2, 3],
@@ -95,11 +94,13 @@ class nC16(MEoS):
         "t": [0.39, 0.84, 1.27, 1.72, 2.26]}
 
     # The paper has a typo, and the N6 in saturated vapor density is missing
-    # TODO: Do a correlation myself
+    # Do a correlation myself
     _vapor_Density = {
         "eq": 2,
-        "n": [-5.0096, 0.9061, -61.4138, -143.5222, -369.0229],
-        "t": [0.44, 2.32, 1.75, 4.4, 9.97, 20.9]}
+        # "n": [-5.0096, 0.9061, -61.4138, -143.5222, -369.0229],
+        # "t": [0.44, 2.32, 1.75, 4.4, 9.97, 20.9]}
+        "n": [-9.47682338, -9.4767733, -10.02912522, -4.06049714, -34.0409857],
+        "t": [3.76792237, 3.76792787, 1.33565281, 0.41355594, 3.76792704]}
 
     visco0 = {"__name__": "Meng (2018)",
               "__doi__": {

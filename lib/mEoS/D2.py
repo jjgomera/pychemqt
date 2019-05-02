@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class D2(MEoS):
@@ -61,8 +61,7 @@ class D2(MEoS):
                   -0.53819932e-08, 0.89310438e-12],
            "pow": [1, 1.5, 2, 3, 4],
            "ao_exp": [0.18403263e2, -0.21257617e2, 0.41091635e1],
-           "exp": [319, 361, 518],
-           "ao_hyp": [], "hyp": []}
+           "exp": [319, 361, 518]}
 
     richardson = {
         "__type__": "Helmholtz",
@@ -78,7 +77,6 @@ class D2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 600.0, "Pmax": 2000000.0, "rhomax": 43.351,
-        "Pmin": 17.189, "rhomin": 43.351,
 
         "nr1": [0.006267958, 10.53609, -10.14149, 0.356061, 0.1824472,
                 -1.129638, -0.0549812, -0.6791329],
@@ -102,7 +100,7 @@ class D2(MEoS):
         "epsilon3": [1.46, 1.7864, 1.647, 0.541, 0.969, 1.892, 1.076],
         "nr4": []}
 
-    MBWR = {
+    mccarty = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for deuterium of McCarty (1989)",
         "__doi__": {"autor": "McCarty, R.D.",
@@ -116,7 +114,6 @@ class D2(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 423.0, "Pmax": 320000.0, "rhomax": 43.38,
-        "Pmin": 19.462, "rhomin": 43.365,
 
         "b": [None, 0.4894244053982e-4, 0.5600164604601e-1, -0.6301493491211,
               0.2538329946038e1, 0.1723475985309e3, 0.2956238369436e-4,
@@ -130,8 +127,7 @@ class D2(MEoS):
               -0.8834384656760e-8, -0.1081622159862e-8, -0.1478159334303e-10,
               0.7926922356112e-11, 0.5721547329378e-11]}
 
-    # eq = richardson, MBWR
-    eq = richardson,
+    eq = richardson, mccarty
 
     _surface = {"sigma": [0.009376], "exp": [1.258]}
     _vapor_Pressure = {

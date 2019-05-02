@@ -21,8 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from math import exp
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class iC4(MEoS):
@@ -50,42 +50,38 @@ class iC4(MEoS):
            "pow": [0, 1],
            "ao_pow": [11.60865546, -5.29450411],
            "ao_exp": [4.94641014, 4.09475197, 15.6632824, 9.73918122],
-           "titao": [0.9512779015, 2.3878958853, 4.3469042691, 10.3688586351],
-           "ao_hyp": [], "hyp": []}
+           "titao": [0.9512779015, 2.3878958853, 4.3469042691, 10.3688586351]}
 
     Fi2 = {"ao_log": [1, 3.06714],
            "pow": [0, 1],
            "ao_pow": [20.413726078, -94.467620036],
            "ao_exp": [], "titao": [],
-           "ao_hyp": [8.97575, 5.25156, 25.1423, 16.1388],
-           "hyp": [1.074673199, 0.485556021, 4.671261865, 2.19158348]}
+           "ao_sinh": [8.97575, 25.1423], "sinh": [1.074673199, 4.671261865],
+           "ao_cosh": [5.25156, 16.1388], "cosh": [0.485556021, 2.19158348]}
 
     Fi3 = {"ao_log": [1, 3.059347],
+           "ao_pow": [-6.026745, -5.035251],
            "pow": [0, 1],
-           "ao_pow": [-5.404217, 4.91136],
-           "ao_exp": [4.940314, 4.090139, 15.68832, 9.739581],
-           "titao": [0.9508183, 2.383449, 10.38655, 4.347095],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [4.940314, 4.090139, 9.739581, 15.68832],
+           "titao": [0.9508183, 2.383449, 10.38655, 4.347095]}
 
     CP4 = {"ao": -1.7231723278e1,
            "an": [1.7027919006e7, -4.7269724737e5, 4.7301406581e3,
                   5.8491344291e-2, 8.9440351886e-6, -1.8274599197e-8],
-           "pow": [-3, -2, -1.001, 1, 2, 3],
-           "ao_exp": [-1.9283021962e1], "exp": [3000],
-           "ao_hyp": [], "hyp": []}
+           "pow": [-3, -2, -1, 1, 2, 3],
+           "ao_exp": [-1.9283021962e1], "exp": [3000]}
 
     CP5 = {"ao": 4.06714,
            "an": [], "pow": [],
            "ao_exp": [], "exp": [],
-           "ao_hyp": [8.97575, 5.25156, 25.1423, 16.1388],
-           "hyp": [438.27, 198.018, 1905.02, 893.765]}
+           "ao_sinh": [8.97575, 25.1423], "sinh": [438.27, 1905.02],
+           "ao_cosh": [5.25156, 16.1388], "cosh": [198.018, 893.765]}
 
     CP6 = {"ao": 0.397893/8.3143*58.124,
            "an": [0.412501e-2/8.3143*58.124, -0.196195e-6/8.3143*58.124,
                   0.380185e-8/8.3143*58.124, -0.523950e-11/8.3143*58.124],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     buecker = {
         "__type__": "Helmholtz",
@@ -103,7 +99,6 @@ class iC4(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 35000.0, "rhomax": 12.9,
-        "Pmin": 0.0000219, "rhomin": 12.74,
 
         "nr1":  [0.20686820727966e1, -0.36400098615204e1, 0.51968754427244,
                  0.17745845870123, -0.12361807851599, 0.45145314010528e-1,
@@ -130,11 +125,11 @@ class iC4(MEoS):
         "gamma3": [1.16, 1.13],
         "epsilon3": [0.85, 1.]}
 
-    MBWR = {
+    younglove = {
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for isobutane of Younglove and "
                     "Ely (1987)",
-        "__doi__": {"autor": "Younglove, B.A. and Ely, J.F.",
+        "__doi__": {"autor": "Younglove, B.A., Ely, J.F.",
                     "title": "Thermophysical Properties of Fluids. II. "
                              "Methane, Ethane, Propane, Isobutane, and Normal "
                              "Butane",
@@ -142,11 +137,12 @@ class iC4(MEoS):
                     "doi": "10.1063/1.555785"},
 
         "R": 8.31434,
+        "M": 58.125, "Tt": 113.55, "Tc": 407.85, "Pc": 3640, "rhoc": 3.86,
+
         "cp": CP4,
-        "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 17932.6, "so": 295.390},
+        "ref": {"Tref": 300, "Pref": 101.325, "ho": 17896.45, "so": 295.48},
 
         "Tmin": 113.55, "Tmax": 600.0, "Pmax": 35000.0, "rhomax": 12.89,
-        "Pmin": 1.948e-5, "rhomin": 12.755,
 
         "b": [None, 0.1307325972e-1, 0.3927802742, -0.3185427394e2,
               0.7608825192e4, -0.1753919859e7, -0.2090019755e-2, 8.959557971,
@@ -174,7 +170,6 @@ class iC4(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9,
-        "Pmin": 7.36, "rhomin": 38.2,
 
         "nr1":  [0.10429331589100e1, -0.28184272548892e1, 0.86176232397850,
                  -0.10613619452487, 0.98615749302134e-1, 0.23948208682322e-3],
@@ -192,18 +187,18 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Miyamoto "
                     "and Watanabe (2001)",
-        "__doi__": {"autor": "Miyamoto, H. and Watanabe, K.",
+        "__doi__": {"autor": "Miyamoto, H., Watanabe, K.",
                     "title": "A Thermodynamic Property Model for Fluid-Phase "
                              "Isobutane",
                     "ref": "Int. J. Thermophys., 23(2) (2002) 477-499",
                     "doi": "10.1023/A:1015161519954"},
 
         "R": 8.314472,
+        "M": 58.1222, "Tc": 407.817, "rhoc": 224.36/58.1222,
         "cp": Fi3,
         "ref": "IIR",
 
         "Tmin": 113.56, "Tmax": 573.0, "Pmax": 35000.0, "rhomax": 12.9,
-        "Pmin": 0.000021, "rhomin": 12.738,
 
         "nr1":  [2.892737e-1, -1.342570, -7.976713e-3, 2.025793e-1,
                  -4.241612e-2, 2.617971e-3, 5.068955e-5, -1.144596e-6],
@@ -215,7 +210,7 @@ class iC4(MEoS):
                 -1.382675e-2, 8.876254e-5],
         "d2": [3, 3, 8, 5, 6, 1, 5, 7, 2, 3, 15],
         "t2": [1.5, 1.75, -0.25, 3, 3, 4, 2, -1, 2, 19, 5],
-        "c2": [21, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3],
+        "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*11}
 
     shortSpan = {
@@ -234,7 +229,6 @@ class iC4(MEoS):
         "M": 58.123, "Tc": 407.817, "rhoc": 224.36/58.123,
 
         "Tmin": 113.55, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 12.89,
-        "Pmin": 0.000020860, "rhomin": 12.784,
 
         "nr1":  [0.10429332e1, -0.28184273e1, 0.86176232, -0.10613619,
                  0.986157490e-1, 0.23948209e-3],
@@ -251,7 +245,7 @@ class iC4(MEoS):
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Polt (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -262,7 +256,6 @@ class iC4(MEoS):
         "ref": "NBP",
 
         "Tmin": 120.0, "Tmax": 498.0, "Pmax": 35000.0, "rhomax": 12.89,
-        "Pmin": 0.46491e-4, "rhomin": 12.649,
 
         "nr1":  [-0.958589873652, 0.818846326211, -0.115814967179,
                  0.345513148715, -0.168751721524e1, 0.936693300209,
@@ -284,7 +277,7 @@ class iC4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for isobutane of Sun and Ely "
                     "(2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -296,7 +289,6 @@ class iC4(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.18083775, 9.46903331e-1, -2.90618044, 8.51346220e-2,
                 2.79868503e-4, -1.68266335e-1],
@@ -310,19 +302,23 @@ class iC4(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    # eq = buecker, MBWR, GERG, miyamoto, shortSpan, polt, sun
-    eq = buecker, GERG, miyamoto, shortSpan, polt, sun
+    eq = buecker, younglove, GERG, miyamoto, shortSpan, polt, sun
 
     _surface = {"sigma": [-0.01639, 0.06121], "exp": [2.102, 1.304]}
-    _dielectric = {"eq": 3, "Tref": 273.16, "rhoref": 1000.,
-                   "a0": [0.388417],  "expt0": [-1.], "expd0": [1.],
-                   "a1": [20.534, 0.02], "expt1": [0, 1], "expd1": [1, 1],
-                   "a2": [126.25, 52.91, -7501.4, -2672.9],
-                   "expt2": [0, 1, 0, 1], "expd2": [2, 2, 2.9, 2.9]}
-    _melting = {"eq": 1, "Tref": Tt, "Pref": 0.000022891,
-                "Tmin": Tt, "Tmax": 575.0,
-                "a1": [-1953637129., 1953637130.], "exp1": [0, 6.12],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+    _dielectric = {
+        "eq": 1,
+        "a": [20.534, 0.020], "b": [126.25, 52.91], "c": [-7501.4, -2672.9],
+        "Au": 106.1, "D": 1.9}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": buecker["__doi__"],
+
+        "Tmin": Tt, "Tmax": 575.0,
+        "Tref": Tt, "Pref": 0.0219,
+        "a0": 1,
+        "a2": [1.95363716e9], "exp2": [6.12]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-6.85093103, 1.36543198, -1.32542691, -2.56190994],
@@ -368,10 +364,10 @@ class iC4(MEoS):
 
               "special": "_mur"}
 
-    def _mu0(self):
+    def _mu0(self, T):
         """Special term for zero-density viscosity for Herrmann correlation"""
         Tc = 407.81
-        tau = Tc/self.T
+        tau = Tc/T
 
         npf = 1.032954077e3
         n00 = 1.6520217e3
@@ -436,7 +432,6 @@ class iC4(MEoS):
               "eq": 2, "omega": 2,
 
               "ek": 418.0, "sigma": 0.509217,
-              "n_chapman": 0.203525266/M**0.5,
 
               "F": [1.687838652, 0.0, 1.40, 407.85],
               "E": [-0.2055498053e2, 0.1357076181e4, 0.1893774336e2,
@@ -480,15 +475,16 @@ class iC4(MEoS):
                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
                    "doi": "10.1063/1.555785"},
 
-               "eq": 2,
+               "eq": 3,
 
-               "visco": visco1,
+               "ek": 418.0,
                "G": [0.1449797353e1, -0.1685643887],
                "E": [0.4307008989e-2, -0.1509010974e1, 0.4693712392e3,
                      -0.3554280979e-3, 0.1841552874, -0.3892338766e2,
                      -0.9354624917e-1, 0.7114330590e1],
 
                "critical": 2,
+               "Tc": 407.85, "rhoc": 3.86*58.125,
                "X": [0.0034718, 10.1207, 0.466392, 1.00344],
                "Z": 9.10218e-10}
 
@@ -653,6 +649,244 @@ class Test(TestCase):
         self.assertEqual(round(st.cp.kJkgK, 4), 2.0224)
         self.assertEqual(round(st.w, 2), 1398.87)
 
+    def test_younglove(self):
+        # The saturation point use the ancillary equation for calculate
+        # pressure and density, so the values differ of values give by mBWR,
+        # so not used for testing
+        kw = {"eq": "younglove", "visco": 2, "thermal": 1}
+
+        # Selected point from Appendix G, Pag 688, single phase region
+        st = iC4(T=120, P=1e4, **kw)
+        self.assertEqual(round(st.rho, 1), 735.1)
+        self.assertEqual(round(st.rhoM, 2), 12.65)
+        self.assertEqual(round(st.uM.kJkmol, -1), -23160)
+        self.assertEqual(round(st.hM.kJkmol, -1), -23160)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 113.9)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 74.26)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 100.1)
+        self.assertEqual(round(st.w, 0), 1698)
+        self.assertEqual(round(st.mu.muPas, -1), 6160)
+        self.assertEqual(round(st.k, 3), 0.116)
+
+        st = iC4(T=200, P=5e4, **kw)
+        self.assertEqual(round(st.rho, 1), 657.6)
+        self.assertEqual(round(st.rhoM, 2), 11.31)
+        self.assertEqual(round(st.uM.kJkmol, -1), -14600)
+        self.assertEqual(round(st.hM.kJkmol, -1), -14590)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 168.3)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 82.19)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 114.9)
+        self.assertEqual(round(st.w, 0), 1319)
+        self.assertEqual(round(st.mu.muPas, 0), 545)
+        self.assertEqual(round(st.k, 3), 0.135)
+
+        st = iC4(T=520, P=1e5, **kw)
+        self.assertEqual(round(st.rho, 3), 1.350)
+        self.assertEqual(round(st.rhoM, 5), 0.02323)
+        self.assertEqual(round(st.uM.kJkmol, -1), 41570)
+        self.assertEqual(round(st.hM.kJkmol, -1), 45880)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 364.1)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 145.4)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 153.9)
+        self.assertEqual(round(st.w, 1), 279.4)
+        self.assertEqual(round(st.mu.muPas, 1), 12.8)
+        self.assertEqual(round(st.k, 4), 0.0452)
+
+        st = iC4(T=300, P=101325, **kw)
+        self.assertEqual(round(st.rho, 3), 2.423)
+        self.assertEqual(round(st.rhoM, 5), 0.04169)
+        self.assertEqual(round(st.uM.kJkmol, -1), 15470)
+        self.assertEqual(round(st.hM.kJkmol, -1), 17900)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 295.5)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 89.80)
+        self.assertEqual(round(st.cpM.kJkmolK, 2), 99.19)
+        self.assertEqual(round(st.w, 1), 212.1)
+        self.assertEqual(round(st.mu.muPas, 2), 7.56)
+        self.assertEqual(round(st.k, 4), 0.0161)
+
+        st = iC4(T=250, P=2e5, **kw)
+        self.assertEqual(round(st.rho, 1), 606.4)
+        self.assertEqual(round(st.rhoM, 2), 10.43)
+        self.assertEqual(round(st.uM.kJkmol, 0), -8563)
+        self.assertEqual(round(st.hM.kJkmol, 0), -8543)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 195.2)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 90.00)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 127.2)
+        self.assertEqual(round(st.w, 0), 1070)
+        self.assertEqual(round(st.mu.muPas, 0), 263)
+        self.assertEqual(round(st.k, 3), 0.117)
+
+        st = iC4(T=600, P=3e5, **kw)
+        self.assertEqual(round(st.rho, 3), 3.523)
+        self.assertEqual(round(st.rhoM, 5), 0.06062)
+        self.assertEqual(round(st.uM.kJkmol, -1), 53820)
+        self.assertEqual(round(st.hM.kJkmol, -1), 58770)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 378.1)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 162.1)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 170.8)
+        self.assertEqual(round(st.w, 1), 298.3)
+        self.assertEqual(round(st.mu.muPas, 1), 14.6)
+        self.assertEqual(round(st.k, 4), 0.0578)
+
+        st = iC4(T=330, P=5e5, **kw)
+        self.assertEqual(round(st.rho, 2), 11.77)
+        self.assertEqual(round(st.rhoM, 4), 0.2024)
+        self.assertEqual(round(st.uM.kJkmol, -1), 17780)
+        self.assertEqual(round(st.hM.kJkmol, -1), 20250)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 290.4)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 100.4)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 113.8)
+        self.assertEqual(round(st.w, 1), 206.9)
+        self.assertEqual(round(st.mu.muPas, 2), 8.61)
+        self.assertEqual(round(st.k, 4), 0.0200)
+
+        st = iC4(T=320, P=8e5, **kw)
+        self.assertEqual(round(st.rho, 1), 522.3)
+        self.assertEqual(round(st.rhoM, 3), 8.986)
+        self.assertEqual(round(st.uM.kJkmol, 0), 1074)
+        self.assertEqual(round(st.hM.kJkmol, 0), 1163)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 229.1)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 105.0)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 151.7)
+        self.assertEqual(round(st.w, 1), 692.0)
+        self.assertEqual(round(st.mu.muPas, 0), 120)
+        self.assertEqual(round(st.k, 4), 0.0866)
+
+        st = iC4(T=460, P=1e6, **kw)
+        self.assertEqual(round(st.rho, 2), 16.26)
+        self.assertEqual(round(st.rhoM, 4), 0.2798)
+        self.assertEqual(round(st.uM.kJkmol, -1), 32750)
+        self.assertEqual(round(st.hM.kJkmol, -1), 36330)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 325.9)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 132.6)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 143.7)
+        self.assertEqual(round(st.w, 1), 249.2)
+        self.assertEqual(round(st.mu.muPas, 1), 11.9)
+        self.assertEqual(round(st.k, 4), 0.0371)
+
+        st = iC4(T=372, P=2e6, **kw)
+        self.assertEqual(round(st.rho, 1), 432.9)
+        self.assertEqual(round(st.rhoM, 3), 7.448)
+        self.assertEqual(round(st.uM.kJkmol, 0), 9576)
+        self.assertEqual(round(st.hM.kJkmol, 0), 9844)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 253.7)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 119.3)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 193.0)
+        self.assertEqual(round(st.w, 1), 388.4)
+        self.assertEqual(round(st.mu.muPas, 1), 66.1)
+        self.assertEqual(round(st.k, 4), 0.0674)
+
+        st = iC4(T=400, P=3e6, **kw)
+        self.assertEqual(round(st.rho, 2), 96.31)
+        self.assertEqual(round(st.rhoM, 3), 1.657)
+        self.assertEqual(round(st.uM.kJkmol, -1), 22000)
+        self.assertEqual(round(st.hM.kJkmol, -1), 23810)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 289.0)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 130.2)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 250.2)
+        self.assertEqual(round(st.w, 1), 145.1)
+        self.assertEqual(round(st.mu.muPas, 1), 13.9)
+        # The point near critical point differ in thermal conductivity
+        # because the reference calculate compresibility (Kt) with a special
+        # scaled equation
+        # self.assertEqual(round(st.k, 4), 0.0404)
+
+        st = iC4(T=438, P=4e6, **kw)
+        self.assertEqual(round(st.rho, 1), 103.9)
+        self.assertEqual(round(st.rhoM, 3), 1.788)
+        self.assertEqual(round(st.uM.kJkmol, -1), 26780)
+        self.assertEqual(round(st.hM.kJkmol, -1), 29010)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 300.0)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 135.9)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 199.2)
+        self.assertEqual(round(st.w, 1), 173.6)
+        self.assertEqual(round(st.mu.muPas, 1), 15.3)
+        self.assertEqual(round(st.k, 4), 0.0413)
+
+        st = iC4(T=200, P=5e6, **kw)
+        self.assertEqual(round(st.rho, 1), 661.5)
+        self.assertEqual(round(st.rhoM, 2), 11.38)
+        self.assertEqual(round(st.uM.kJkmol, -1), -14720)
+        self.assertEqual(round(st.hM.kJkmol, -1), -14290)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 167.6)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 82.21)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 114.4)
+        self.assertEqual(round(st.w, 0), 1352)
+        self.assertEqual(round(st.mu.muPas, 0), 577)
+        self.assertEqual(round(st.k, 3), 0.137)
+
+        st = iC4(T=440, P=6e6, **kw)
+        self.assertEqual(round(st.rho, 1), 255.1)
+        self.assertEqual(round(st.rhoM, 3), 4.389)
+        self.assertEqual(round(st.uM.kJkmol, -1), 22760)
+        self.assertEqual(round(st.hM.kJkmol, -1), 24130)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 287.2)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 139.4)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 298.3)
+        self.assertEqual(round(st.w, 1), 172.8)
+        self.assertEqual(round(st.mu.muPas, 1), 27.8)
+        self.assertEqual(round(st.k, 4), 0.0589)
+
+        st = iC4(T=200, P=7e6, **kw)
+        self.assertEqual(round(st.rho, 1), 663.0)
+        self.assertEqual(round(st.rhoM, 2), 11.41)
+        self.assertEqual(round(st.uM.kJkmol, -1), -14770)
+        self.assertEqual(round(st.hM.kJkmol, -1), -14160)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 167.4)
+        self.assertEqual(round(st.cvM.kJkmolK, 2), 82.24)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 114.2)
+        self.assertEqual(round(st.w, 0), 1364)
+        self.assertEqual(round(st.mu.muPas, 0), 589)
+        self.assertEqual(round(st.k, 3), 0.137)
+
+        st = iC4(T=530, P=8e6, **kw)
+        self.assertEqual(round(st.rho, 1), 148.0)
+        self.assertEqual(round(st.rhoM, 3), 2.546)
+        self.assertEqual(round(st.uM.kJkmol, -1), 38730)
+        self.assertEqual(round(st.hM.kJkmol, -1), 41870)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 322.8)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 152.7)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 192.8)
+        self.assertEqual(round(st.w, 1), 231.4)
+        self.assertEqual(round(st.mu.muPas, 1), 20.2)
+        self.assertEqual(round(st.k, 4), 0.0594)
+
+        st = iC4(T=420, P=1e7, **kw)
+        self.assertEqual(round(st.rho, 1), 405.0)
+        self.assertEqual(round(st.rhoM, 3), 6.968)
+        self.assertEqual(round(st.uM.kJkmol, -1), 16310)
+        self.assertEqual(round(st.hM.kJkmol, -1), 17750)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 270.9)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 129.2)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 186.4)
+        self.assertEqual(round(st.w, 1), 411.3)
+        self.assertEqual(round(st.mu.muPas, 1), 57.5)
+        self.assertEqual(round(st.k, 4), 0.0667)
+
+        st = iC4(T=560, P=2e7, **kw)
+        self.assertEqual(round(st.rho, 1), 303.1)
+        self.assertEqual(round(st.rhoM, 3), 5.215)
+        self.assertEqual(round(st.uM.kJkmol, -1), 39260)
+        self.assertEqual(round(st.hM.kJkmol, -1), 43090)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 319.4)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 157.9)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 195.7)
+        self.assertEqual(round(st.w, 1), 380.8)
+        self.assertEqual(round(st.mu.muPas, 1), 37.4)
+        self.assertEqual(round(st.k, 4), 0.0772)
+
+        st = iC4(T=600, P=3.5e7, **kw)
+        self.assertEqual(round(st.rho, 1), 358.6)
+        self.assertEqual(round(st.rhoM, 3), 6.170)
+        self.assertEqual(round(st.uM.kJkmol, -1), 44210)
+        self.assertEqual(round(st.hM.kJkmol, -1), 49880)
+        self.assertEqual(round(st.sM.kJkmolK, 1), 326.6)
+        self.assertEqual(round(st.cvM.kJkmolK, 1), 165.6)
+        self.assertEqual(round(st.cpM.kJkmolK, 1), 194.4)
+        self.assertEqual(round(st.w, 1), 532.1)
+        self.assertEqual(round(st.mu.muPas, 1), 48.0)
+        self.assertEqual(round(st.k, 4), 0.0857)
+
     def test_shortSpan(self):
         # Table III, Pag 46
         st = iC4(T=700, rho=200, eq="shortSpan")
@@ -663,13 +897,6 @@ class Test(TestCase):
         st2 = iC4(T=750, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 210.32)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37469)
-
-    # def test_custom(self):
-        # """Test for other model not tested"""
-        # # Reference state for Miyamoto correlation
-        # st = iC4(T=273.15, x=0.0, eq="miyamoto")
-        # self.assertEqual(round(st.h.kJkg, 0), 200)
-        # self.assertEqual(round(st.s.kJkgK, 2), 1)
 
     def test_herrmann(self):
         # Table 6, Pag 17

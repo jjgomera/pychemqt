@@ -20,10 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from scipy import exp
-
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Cyclohexane(MEoS):
@@ -51,14 +49,12 @@ class Cyclohexane(MEoS):
            "pow": [0, 1],
            "ao_pow": [0.9891140602, 1.6359660572],
            "ao_exp": [0.83775, 16.036, 24.636, 7.1715],
-           "titao": [773/Tc, 941/Tc, 2185/Tc, 4495/Tc],
-           "ao_hyp": [], "hyp": []}
+           "titao": [773/Tc, 941/Tc, 2185/Tc, 4495/Tc]}
 
     CP1 = {"ao": 9.368327211,
            "an": [-56214088, 0.01526155409, -3.6352468e-6],
            "pow": [-3, 1, 2],
-           "ao_exp": [23.766589], "exp": [2000],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [23.766589], "exp": [2000]}
 
     zhou = {
         "__type__": "Helmholtz",
@@ -76,7 +72,6 @@ class Cyclohexane(MEoS):
         "ref": "NBP",
 
         "Tmin": 279.86, "Tmax": 700.0, "Pmax": 250000.0, "rhomax": 10.3,
-        "Pmin": 5.2402, "rhomin": 9.403,
 
         "nr1": [0.05483581, 1.607734, -2.375928, -0.5137709, 0.1858417],
         "d1": [4, 1, 1, 2, 3],
@@ -114,7 +109,6 @@ class Cyclohexane(MEoS):
         "Tt": 279.47, "Tc": 553.64, "rhoc": 3.244, "M": 84.1608,
 
         "Tmin": 279.47, "Tmax": 700.0, "Pmax": 80000.0, "rhomax": 9.77,
-        "Pmin": 5.2538, "rhomin": 9.4045,
 
         "nr1": [0.8425412659, -0.3138388327e1, 0.1679072631e1, -0.153819249,
                 0.1984911143, -0.144532594, 0.3746346428e-3, 0.1861479616e-3,
@@ -148,7 +142,6 @@ class Cyclohexane(MEoS):
         "Tc": 553.60, "rhoc": 273.02/84.161, "M": 84.161,
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 9.77,
-        "Pmin": 5.2428, "rhomin": 9.3999,
 
         "nr1": [0.10232354e1, -0.29204964e1, 0.10736630e1, -0.19573985,
                 0.12228111, 0.28943321e-3],
@@ -166,7 +159,7 @@ class Cyclohexane(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclohexane of Sun and "
                     "Ely (2004)",
-        "__doi__": {"autor": "Sun, L. and Ely, J.F.",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
                     "title": "Universal equation of state for engineering "
                              "application: Algorithm and  application to "
                              "non-polar and polar fluids",
@@ -178,7 +171,6 @@ class Cyclohexane(MEoS):
         "ref": {"Tref": 279.47, "Pref": 101.325, "ho": 33884.8, "so": 96.612},
 
         "Tmin": Tt, "Tmax": 620.0, "Pmax": 800000.0, "rhomax": 40.,
-        "Pmin": 0.1, "rhomin": 40.,
 
         "nr1": [1.27436292, 1.15372124, -3.86726473, 8.84627298e-2,
                 2.76478090e-4, 7.26682313e-2],
@@ -195,10 +187,19 @@ class Cyclohexane(MEoS):
     eq = zhou, penoncello, shortSpan, sun
 
     _surface = {"sigma": [0.06485], "exp": [1.263]}
-    _melting = {"eq": 1, "Tref": 1, "Pref": 700,
-                "Tmin": Tt, "Tmax": 370.0,
-                "a1": [0.1329969885, -374.255624], "exp1": [1.41, 0],
-                "a2": [], "exp2": [], "a3": [], "exp3": []}
+
+    _melting = {
+        "eq": 1,
+        "__doi__": {"autor": "Wisotzki, K.D., Wǘrflinger, A.",
+                    "title": "PVT Data for Liquid and Solid Cyclohexane, "
+                             "Cyclohexanone and Cyclopentanol up to 3000 bar",
+                    "ref": "J. Phis. Chem. Solids 43(1) (1982) 13-20",
+                    "doi": "10.1016/0022-3697(82)90167-6"},
+
+        "Tmin": Tt, "Tmax": 700.0,
+        "Tref": 279.7, "Pref": 1,
+        "a2": [3834e5], "exp2": [1.41]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.0342, 1.7311, -1.7572, -3.3406],
@@ -361,3 +362,8 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 3), 15.093)
         st = Cyclohexane(T=700, rhom=7.4765)
         self.assertEqual(round(st.mu.muPas, 3), 176.749)
+
+    def test_Wisotzki(self):
+        # Table 6, pag 19
+        self.assertEqual(round(
+            Cyclohexane._Melting_Pressure(329.7).bar, 0), 1001)

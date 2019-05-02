@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R1233zd(MEoS):
@@ -44,8 +44,7 @@ class R1233zd(MEoS):
     CP1 = {"ao": 4.0,
            "an": [], "pow": [],
            "ao_exp": [11.765, 8.6848],
-           "exp": [630, 2230],
-           "ao_hyp": [], "hyp": []}
+           "exp": [630, 2230]}
 
     mondejar = {
         "__type__": "Helmholtz",
@@ -64,7 +63,6 @@ class R1233zd(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 100000.0, "rhomax": 11.41,
-        "Pmin": 0.25, "rhomin": 11.41,
 
         "nr1": [0.0478487, 1.60644, -2.27161, -0.530687, 0.169641],
         "d1": [4, 1, 1, 2, 3],
@@ -106,8 +104,7 @@ class R1233zd(MEoS):
                    "title": "Measurement and Correlation of the Thermal "
                             "Conductivity of trans-1-Chloro-3,3,3-"
                             "trifluoropropene (R1233zd(E))",
-                   # TODO Fix reference
-                   "ref": "J. Chem. Eng. Data XX(X) (2017)",
+                   "ref": "J. Chem. Eng. Data 62(9) (2017) 2659-2665",
                    "doi": "10.1021/acs.jced.7b00106"},
 
                "eq": 1,

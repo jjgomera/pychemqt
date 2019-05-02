@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class COS(MEoS):
@@ -63,7 +63,6 @@ class COS(MEoS):
         "ref": "NBP",
 
         "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 22.52,
-        "Pmin": 0.064, "rhomin": 22.5,
 
         "nr1": [0.94374, -2.5348, 0.59058, -0.021488, 0.082083, 0.00024689],
         "d1": [1, 1, 1, 2, 3, 7],

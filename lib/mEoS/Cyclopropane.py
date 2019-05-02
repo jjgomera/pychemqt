@@ -18,8 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class Cyclopropane(MEoS):
@@ -44,14 +44,13 @@ class Cyclopropane(MEoS):
            "an": [-0.90530700e-2/8.3143*42.081, 0.50550400e-4/8.3143*42.081,
                   -0.77223700e-7/8.3143*42.081, 0.40538000e-10/8.3143*42.081],
            "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopropane of Polt et "
                     "al. (1992)",
-        "__doi__": {"autor": "Polt, A., Platzer, B., and Maurer, G.",
+        "__doi__": {"autor": "Polt, A., Platzer, B., Maurer, G.",
                     "title": "Parameter der thermischen Zustandsgleichung von "
                              "Bender fuer 14 mehratomige reine Stoffe",
                     "ref": "Chem. Technik 22(1992)6 , 216/224",
@@ -61,8 +60,7 @@ class Cyclopropane(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
-        "Tmin": 273.0, "Tmax": 473.0, "Pmax": 28000.0, "rhomax": 15.595,
-        "Pmin": 342.71, "rhomin": 15.595,
+        "Tmin": 273, "Tmax": 473.0, "Pmax": 28000.0, "rhomax": 15.595,
 
         "nr1": [-0.137016097588e1, 0.212444673002e1, -0.578908942724,
                 -0.115633726379e1, 0.252574014413e1, -0.282265442929e1,

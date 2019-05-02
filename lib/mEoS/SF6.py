@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class SF6(MEoS):
@@ -50,27 +50,24 @@ class SF6(MEoS):
            "pow": [0, 1],
            "ao_pow": [11.638611086, -6.392241811],
            "ao_exp": [3.66118232, 7.87885103, 3.45981679],
-           "titao": [1.617282065, 2.747115139, 4.232907175],
-           "ao_hyp": [], "hyp": []}
+           "titao": [1.617282065, 2.747115139, 4.232907175]}
 
     CP1 = {"ao": 3.9837756784,
            "an": [], "pow": [],
            "ao_exp": [2.2181851010, -1.0921337374e1, 3.3102497939,
                       17.5189671483, 2.8903523803],
-           "exp": [1114.38, 925.64, 499.26, 884.9, 1363.93],
-           "ao_hyp": [], "hyp": []}
+           "exp": [1114.38, 925.64, 499.26, 884.9, 1363.93]}
 
     CP2 = {"ao": -0.376915e-1/8.3143*146.05,
            "an": [0.305814e-2/8.3143*146.05, -0.237654e-5/8.3143*146.05],
            "pow": [1, 2],
-           "ao_exp": [], "exp": [],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [], "exp": []}
 
     guder = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for sulfur hexafluoride of "
                     "Guder and Wagner (2009)",
-        "__doi__": {"autor": "Guder, C. and Wagner, W.",
+        "__doi__": {"autor": "Guder, C., Wagner, W.",
                     "title": "A Reference Equation of State for the "
                              "Thermodynamic Properties of Sulfur Hexafluoride "
                              "(SF6) for Temperatures from the Melting Line to "
@@ -83,7 +80,6 @@ class SF6(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 625.0, "Pmax": 150000.0, "rhomax": 14.5,
-        "Pmin": 231.429, "rhomin": 12.632,
 
         "nr1": [.54958259132835, -.87905033269396, -.84656969731452,
                 .27692381593529, -.49864958372345e01, .48879127058055e01,
@@ -130,7 +126,6 @@ class SF6(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 55000.0, "rhomax": 12.7,
-        "Pmin": 224.36, "rhomin": 12.677,
 
         "nr1": [0.26945570453, -0.554046585076, -0.929624636454, .505661081063,
                 -0.683495847809, 0.579161832426, -0.122636218956,
@@ -163,7 +158,6 @@ class SF6(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 12.65,
-        "Pmin": 221.22, "rhomin": 12.645,
 
         "nr1": [0.12279403e1, -0.33035623e1, 0.12094019e1, -0.12316,
                 0.11044657, 0.32952153e-3],
@@ -192,7 +186,6 @@ class SF6(MEoS):
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 523.0, "Pmax": 40000.0, "rhomax": 13.133,
-        "Pmin": 236.73, "rhomin": 12.712,
 
         "nr1": [0.131111896375, -0.792338803106, 0.580899809209,
                 0.153233600406e1, -0.485096079094e1, 0.482411603806e1,
@@ -214,21 +207,24 @@ class SF6(MEoS):
 
     _surface = {"sigma": [0.0538, -4.064e-5], "exp": [1.271, 0.2116]}
     _melting = {
+        "eq": 2,
         "__doi__": {
             "autor": "Harvey, A.H.",
             "title": "On the Melting Curve of Sulfur Hexafluoride",
             "ref": "J. Phys. Chem. Ref. Data 46(4) (2017) 043102",
             "doi": "10.1063/1.5005537"},
 
-        "eq": 1, "Tref": Tt, "Pref": 1,
-        "a1": [231.429, 223.7e3, -223.7e3],
-        "exp1": [0, 1.555, 0],
-        "a2": [], "exp2": [], "a3": [], "exp3": []}
+        "Tmin": Tt, "Tmax": 625,
+        "Tref": Tt, "Pref": 231429,
+        "a2": [223.7e6], "exp2": [1.555]}
+
     _sublimation = {
-        "eq": 2, "Tref": Tt, "Pref": 231.429,
+        "eq": 2,
+        "__doi__": guder["__doi__"],
+
+        "Tref": Tt, "Pref": 231429,
         "Tmin": Tt, "Tmax": Tt,
-        "a1": [-11.6942141, 11.6942141], "exp1": [-1.07, 0],
-        "a2": [], "exp2": [], "a3": [], "exp3": []}
+        "a2": [-11.6942141], "exp2": [-1.07]}
 
     _vapor_Pressure = {
         "eq": 3,

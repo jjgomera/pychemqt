@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from lib.meos import MEoS
 from lib import unidades
+from lib.meos import MEoS
 
 
 class R13I1(MEoS):
@@ -43,8 +43,7 @@ class R13I1(MEoS):
 
     CP1 = {"ao": 4.,
            "an": [], "pow": [],
-           "ao_exp": [6.2641], "exp": [694],
-           "ao_hyp": [], "hyp": []}
+           "ao_exp": [6.2641], "exp": [694]}
 
     lemmon = {
         "__type__": "Helmholtz",
@@ -61,7 +60,6 @@ class R13I1(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 420., "Pmax": 20000.0, "rhomax": 14.1,
-        "Pmin": 0.0004623, "rhomin": 14.05,
 
         "nr1": [1.12191, -3.08087, 1.11307, -0.184885, 0.110971, 0.000325],
         "d1": [1, 1, 1, 2, 3, 7],
