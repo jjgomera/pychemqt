@@ -118,6 +118,7 @@ class F2(MEoS):
         "gamma2": [0.9225328]*6}
 
     eq = reuck, polt
+    _PR = [-0.65, -12.4149]
 
     _surface = {"sigma": [0.03978], "exp": [1.218]}
 

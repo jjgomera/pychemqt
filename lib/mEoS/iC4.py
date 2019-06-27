@@ -303,6 +303,7 @@ class iC4(MEoS):
         "gamma2": [1]*8}
 
     eq = buecker, younglove, GERG, miyamoto, shortSpan, polt, sun
+    _PR = [-0.1838, -15.4885]
 
     _surface = {"sigma": [-0.01639, 0.06121], "exp": [2.102, 1.304]}
     _dielectric = {

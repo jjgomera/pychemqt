@@ -86,6 +86,7 @@ class EthylBenzene(MEoS):
         "epsilon3": [0.5494, 0.7235, 0.493, 0.8566]}
 
     eq = zhou,
+    _PR = [0.0092, -19.9297]
 
     _vapor_Pressure = {
         "eq": 3,

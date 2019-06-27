@@ -165,7 +165,6 @@ class Ethanol(MEoS):
         "gamma2": [1]*8}
 
     eq = schroeder, dillon, sun
-    _PR = 0.0043733
 
     _surface = {"sigma": [0.05], "exp": [0.952]}
 

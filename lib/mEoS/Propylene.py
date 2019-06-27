@@ -186,6 +186,7 @@ class Propylene(MEoS):
         "gamma2": [1]*14}
 
     eq = lemmon, overhoff, angus
+    _PR = [-0.1815, -16.3103]
 
     _surface = {"sigma": [0.05268], "exp": [1.186]}
 

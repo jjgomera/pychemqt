@@ -170,7 +170,6 @@ class H2(MEoS):
         "nr4": []}
 
     eq = leachman, GERG, bender
-    _PR = -0.004803
 
     _surface = {"sigma": [-1.4165, 0.746383, 0.675625],
                 "exp": [0.63882, 0.659804, 0.619149]}

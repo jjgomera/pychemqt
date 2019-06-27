@@ -200,7 +200,6 @@ class He(MEoS):
         "nr4": []}
 
     eq = ortiz, mccarty, MBWR, GERG
-    _PR = -0.005886
 
     _surface = {"sigma": [0.0004656, 0.001889, -0.002006],
                 "exp": [1.04, 2.468, 2.661]}

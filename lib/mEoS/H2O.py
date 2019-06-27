@@ -294,7 +294,7 @@ class H2O(MEoS):
         "gamma2": [1]*8}
 
     eq = iapws, GERG, saul, saul2, sun
-    _PR = 0.0043451
+    _PR = [0.1994, -30.0536]
 
     _surface = {"sigma": [-0.1306, 0.2151], "exp": [2.471, 1.233]}
     _melting = {"Tmin": 251.165, "Tmax": 370.0}

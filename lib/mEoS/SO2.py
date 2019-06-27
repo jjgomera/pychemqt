@@ -155,6 +155,7 @@ class SO2(MEoS):
         "gamma2": [1]*6}
 
     eq = gao, lemmon, polt
+    _PR = [-0.068, -18.12]
 
     _surface = {"sigma": [0.0803, 0.0139, -0.0114],
                 "exp": [0.928, 1.57, 0.364]}

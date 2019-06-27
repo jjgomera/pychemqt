@@ -249,6 +249,7 @@ class Ethylene(MEoS):
         "gamma2": [1]*8}
 
     eq = smukala, mccarty, jahangiri, shortSpan, sun
+    _PR = [-0.2301, -15.7070]
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}
     _dielectric = {

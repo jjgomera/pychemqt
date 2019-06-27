@@ -109,6 +109,7 @@ class nC10(MEoS):
         "gamma2": [1]*6}
 
     eq = lemmon, GERG
+    _PR = [0.0838, -23.0757]
 
     _surface = {"sigma": [0.05473], "exp": [1.29]}
     _dielectric = {

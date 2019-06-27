@@ -250,7 +250,7 @@ class R32(MEoS):
         "gamma2": [1]*14}
 
     eq = tillner, outcalt, shortSpan, astina, vasserman, sun
-    _PR = 0.00585
+    _PR = [0.18086, -25.5000]
 
     _surface = {"sigma": [0.07147], "exp": [1.246]}
 

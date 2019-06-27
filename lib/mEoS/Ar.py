@@ -240,7 +240,7 @@ class Ar(MEoS):
               -0.1492178536e-9, -0.1001356071e-7, 0.2933963216e-6]}
 
     eq = tegeler, younglove, GERG, stewart, shortSpan
-    _PR = -0.0034
+    _PR = [-0.7976, -11.5724]
 
     _surface = {"sigma": [0.037], "exp": [1.25]}
     _dielectric = {

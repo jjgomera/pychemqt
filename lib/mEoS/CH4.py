@@ -274,6 +274,7 @@ class CH4(MEoS):
         "gamma2": [1]*8}
 
     eq = setzmann, younglove, GERG, friend, shortSpan, sun
+    _PR = [-0.5997, -12.094]
 
     _surface = {"sigma": [0.03825, -0.006024, -0.0007065],
                 "exp": [1.191, 5.422, 0.6161]}

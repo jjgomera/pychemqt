@@ -268,6 +268,7 @@ class R152a(MEoS):
         "gamma2": [1]*9}
 
     eq = MBWR, outcalt, kim, tillner, shortSpan, astina
+    _PR = [0.1115, -23.1484]
 
     _surface = {"sigma": [0.05808], "exp": [1.2115]}
     _vapor_Pressure = {

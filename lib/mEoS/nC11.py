@@ -80,6 +80,7 @@ class nC11(MEoS):
         "gamma2": [1]*8}
 
     eq = aleksandrov,
+    _PR = [0.1099, -26.8035]
 
     _vapor_Pressure = {
         "eq": 3,

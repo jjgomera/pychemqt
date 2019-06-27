@@ -81,6 +81,7 @@ class Xe(MEoS):
         "nr4": []}
 
     eq = lemmon,
+    _PR = [-0.5639, -12.9972]
 
     _surface = {"sigma": [-0.11538, 0.16598], "exp": [1.0512, 1.098]}
     _dielectric = {

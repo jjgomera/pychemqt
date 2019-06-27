@@ -185,6 +185,7 @@ class Cyclohexane(MEoS):
         "gamma2": [1]*8}
 
     eq = zhou, penoncello, shortSpan, sun
+    _PR = [-0.1387, -16.9135]
 
     _surface = {"sigma": [0.06485], "exp": [1.263]}
 

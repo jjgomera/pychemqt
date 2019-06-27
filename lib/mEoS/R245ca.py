@@ -91,6 +91,7 @@ class R245ca(MEoS):
         "epsilon3": [0.55, 0.724, 0.524, 0.857]}
 
     eq = zhou,
+    _PR = [-0.0856, -17.8089]
 
     _surface = {"sigma": [0.069297, -0.022419], "exp": [1.2795, 3.1368]}
     _vapor_Pressure = {

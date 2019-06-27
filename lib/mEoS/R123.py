@@ -156,6 +156,7 @@ class R123(MEoS):
         "gamma2": [1]*7}
 
     eq = younglove, tillner, shortSpan
+    _PR = [-0.0632, -18.6191]
 
     _surface = {"sigma": [0.056151], "exp": [1.2367]}
     _vapor_Pressure = {

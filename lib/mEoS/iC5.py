@@ -186,6 +186,7 @@ class iC5(MEoS):
         "gamma2": [0.48056842]*2}
 
     eq = lemmon, GERG, polt, starling
+    _PR = [-0.0840, -17.8184]
 
     _surface = {"sigma": [0.051], "exp": [1.209]}
     _dielectric = {

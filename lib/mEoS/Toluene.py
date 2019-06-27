@@ -144,6 +144,7 @@ class Toluene(MEoS):
         "gamma2": [1]*8}
 
     eq = lemmon, polt, sun
+    _PR = [-0.0016, -19.6281]
 
     _surface = {"sigma": [0.06897], "exp": [1.291]}
     _vapor_Pressure = {

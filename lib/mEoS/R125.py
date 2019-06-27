@@ -322,7 +322,7 @@ class R125(MEoS):
         "gamma2": [1]*16}
 
     eq = lemmon, outcalt, sunaga, piao, shortSpan, astina, vasserman, sun
-    _PR = -0.00247
+    _PR = [-0.0748, -17.9879]
 
     _surface = {"sigma": [0.05252], "exp": [1.237]}
     _vapor_Pressure = {

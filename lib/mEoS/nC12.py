@@ -73,6 +73,7 @@ class nC12(MEoS):
         "gamma2": [1]*6}
 
     eq = lemmon,
+    _PR = [0.1099, -26.8035]
 
     _surface = {"sigma": [0.0154, 0.0480],
                 "exp": [4.18, 1.17]}

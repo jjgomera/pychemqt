@@ -85,6 +85,7 @@ class pXylene(MEoS):
         "epsilon3": [0.54944, 0.7234, 0.4926, 0.8459]}
 
     eq = zhou,
+    _PR = [0.0380, -20.8346]
 
     _vapor_Pressure = {
         "eq": 3,

@@ -252,6 +252,7 @@ class nC5(MEoS):
               -8.37595968663, -1.35160880503e3]}
 
     eq = shortSpan, GERG, polt, starling, sun, ratanapisit
+    _PR = [-0.0752, -17.5]
 
     _surface = {"sigma": [0.08015, 0.004384, -0.03437],
                 "exp": [1.408, 1.031, 1.818]}

@@ -113,6 +113,7 @@ class R116(MEoS):
         "gamma2": [1]*8}
 
     eq = lemmon, kozlov
+    _PR = [-0.2951, -15.3806]
 
     _surface = {"sigma": [0.047593, -0.0073402], "exp": [1.2666, 1.9892]}
     _vapor_Pressure = {

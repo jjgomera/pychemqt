@@ -75,6 +75,7 @@ class Butene_1(MEoS):
         "gamma2": [1]*6}
 
     eq = lemmon,
+    _PR = [-0.2050, -16.0087]
 
     _surface = {"sigma": [0.05644], "exp": [1.248]}
     _vapor_Pressure = {

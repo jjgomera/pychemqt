@@ -110,6 +110,7 @@ class R12(MEoS):
         "gamma2": [1]*7}
 
     eq = marx, shortSpan
+    _PR = [-0.1824, -16.2971]
 
     _surface = {"sigma": [-0.000124, 0.05662], "exp": [0.4318, 1.263]}
 

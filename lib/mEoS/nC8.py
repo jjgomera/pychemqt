@@ -218,6 +218,7 @@ class nC8(MEoS):
         "gamma2": [1]*8}
 
     eq = shortSpan, GERG, polt, starling, sun
+    _PR = [0.0526, -21.0808]
 
     _surface = {"sigma": [0.34338, -0.50634, 0.2238],
                 "exp": [1.6607, 1.9632, 2.3547]}

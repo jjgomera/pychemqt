@@ -75,6 +75,7 @@ class iButene(MEoS):
         "gamma2": [1]*6}
 
     eq = lemmon,
+    _PR = [-0.1815, -16.3103]
 
     _surface = {"sigma": [0.0545], "exp": [1.23]}
     _vapor_Pressure = {

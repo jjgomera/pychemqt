@@ -112,6 +112,7 @@ class R13(MEoS):
         "gamma2": [0.98230055]*6}
 
     eq = magee, platzer
+    _PR = [-0.2395, -15.5913]
 
     _surface = {"sigma": [0.05045], "exp": [1.269]}
     _vapor_Pressure = {

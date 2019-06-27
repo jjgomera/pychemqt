@@ -217,6 +217,7 @@ class nC6(MEoS):
         "gamma2": [1]*8}
 
     eq = shortSpan, GERG, polt, starling, sun
+    _PR = [-0.0051, -19.3689]
 
     _surface = {"sigma": [0.210952, -0.158485], "exp": [1.0962, 1.05893]}
     _dielectric = {

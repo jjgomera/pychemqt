@@ -78,6 +78,7 @@ class R114(MEoS):
         "gamma2": [1.21103865]*6}
 
     eq = platzer,
+    _PR = [-0.1804, -16.3839]
 
     _surface = {"sigma": [0.05239], "exp": [1.258]}
     _vapor_Pressure = {

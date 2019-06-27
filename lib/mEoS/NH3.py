@@ -182,6 +182,7 @@ class NH3(MEoS):
         "gamma2": [1]*8}
 
     eq = tillner, ahrendts, shortSpan, sun
+    _PR = [0.1491, -26.0703]
 
     _surface = {"sigma": [0.1028, -0.09453], "exp": [1.211, 5.585]}
     _melting = {

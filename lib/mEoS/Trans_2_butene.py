@@ -75,6 +75,7 @@ class Trans_2_butene(MEoS):
         "gamma2": [1]*6}
 
     eq = lemmon,
+    _PR = [-0.1594, -16.6119]
 
     _vapor_Pressure = {
         "eq": 3,

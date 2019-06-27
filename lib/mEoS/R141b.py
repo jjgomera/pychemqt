@@ -77,6 +77,7 @@ class R141b(MEoS):
         "gamma2": [1]*7}
 
     eq = lemmon,
+    _PR = [-0.1122, -17.5406]
 
     _surface = {"sigma": [7.3958e-5, 0.059941], "exp": [0.066331, 1.2214]}
     _vapor_Pressure = {

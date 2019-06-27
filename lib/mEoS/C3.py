@@ -310,6 +310,7 @@ class C3(MEoS):
         "gamma2": [1]*8}
 
     eq = lemmon, younglove, buecker, GERG, miyamoto, shortSpan, sun
+    _PR = [-0.2124, -14.8203]
 
     _surface = {"sigma": [0.05334, -0.01748], "exp": [1.235, 4.404]}
 

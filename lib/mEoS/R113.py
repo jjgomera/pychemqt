@@ -108,6 +108,7 @@ class R113(MEoS):
         "gamma2": [1]*7}
 
     eq = marx, shortSpan
+    _PR = [-0.1805, -16.2738]
 
     _surface = {"sigma": [0.0556], "exp": [1.24]}
     _vapor_Pressure = {

@@ -224,6 +224,7 @@ class nC7(MEoS):
               3.93007045330e1, 3.88225605345e3]}
 
     eq = shortSpan, GERG, polt, starling,  # ratanapisit
+    _PR = [0.0074, -19.6376]
 
     _surface = {"sigma": [0.07765, -0.02599], "exp": [1.319, 1.6]}
     _dielectric = {

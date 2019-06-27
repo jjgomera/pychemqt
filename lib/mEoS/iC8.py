@@ -80,7 +80,6 @@ class iC8(MEoS):
         "nr4": []}
 
     eq = blackham,
-    _PR = -0.0058658
 
     _surface = {"sigma": [0.0476182, 5.992036e-17], "exp": [1.1914, 2.1914]}
     _vapor_Pressure = {

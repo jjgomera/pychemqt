@@ -146,6 +146,7 @@ class CO(MEoS):
         "gamma2": [1]*6}
 
     eq = lemmon, mccarty, GERG
+    _PR = [-1.1087, -10.2779]
 
     _surface = {"sigma": [0.02843],
                 "exp": [1.148]}

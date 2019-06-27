@@ -177,6 +177,7 @@ class R143a(MEoS):
         "gamma2": [1]*7}
 
     eq = lemmon, outcalt, li, shortSpan
+    _PR = [0.0889, -22.5000]
 
     _surface = {"sigma": [0.05416], "exp": [1.255]}
     _vapor_Pressure = {

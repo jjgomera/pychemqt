@@ -279,6 +279,7 @@ class CO2(MEoS):
         "gamma2": [1]*8}
 
     eq = span, MBWR, GERG, ely, shortSpan, sun
+    _PR = [-0.16, -16.4341]
 
     _surface = {"sigma": [0.07863], "exp": [1.254]}
     _dielectric = {

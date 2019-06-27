@@ -83,6 +83,7 @@ class Cyclopentane(MEoS):
         "epsilon3": [0.684, 0.7, 0.77, 0.625, 0.42]}
 
     eq = gedanitz,
+    _PR = [-0.1387, -16.9135]
 
     _vapor_Pressure = {
         "eq": 3,

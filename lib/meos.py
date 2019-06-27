@@ -248,10 +248,11 @@ __doi__ = {
          "ref": "Ind. Eng. Chem. Fund. 15(1) (1976) 59-64",
          "doi": "10.1021/i160057a011"},
     13:
-        {"autor": "Péneloux, A, Rauzy, E., Frèze, R.",
-         "title": "A Consistent Correction for Redlich-Kwong-Soave Volumes",
-         "ref": "Fluid Phase Equilibria 8 (1982) 7-23",
-         "doi": "10.1016/0378-3812(82)80002-2"},
+        {"autor": "Lin, H., Duan, Y.-Y.",
+         "title": "Empirical correction to the Peng-Robinson equation of "
+                  "state for the saturated region",
+         "ref": "Fluid Phase Equilibria 233 (2005) 194-203",
+         "doi": "10.1016/j.fluid.2005.05.008"},
     14:
         {"autor": "Bell, I.H., Jäger, A.",
          "title": "Helmholtz Energy Transformations of Common Cubic Equations "
@@ -2262,6 +2263,9 @@ class MEoS(ThermoAdvanced):
         if x == 0:
             rhoL = rho
             liquido = self._eq(rhoL, T)
+            if self._code == "PR":
+                v = self.vtPR()
+                liquido["v"] = v
             propiedades = liquido
         elif x == 1:
             rhoG = rho
@@ -2270,6 +2274,9 @@ class MEoS(ThermoAdvanced):
         else:
             liquido = self._eq(rhoL, T)
             vapor = self._eq(rhoG, T)
+            if self._code == "PR":
+                v = self.vtPR()
+                liquido["v"] = v
 
         if self.kwargs["P"]:
             P = self.kwargs["P"]
@@ -3727,6 +3734,85 @@ class MEoS(ThermoAdvanced):
         prop["D"] = D
 
         return prop
+
+    @refDoc(__doi__, [12, 13, 14], tab=8)
+    def _PengRobinson(self, rho, T):
+        r"""Residual contribution to the free Helmholtz energy and derivatives
+        for Peng-Robinson cubic equation of state as explain in [12]_.
+        Optionally can use the Lin-Duan volume correction as explain in [13]_
+        Helmholtz energy and derivatives calculation defined in [14]_.
+
+        Parameters
+        ----------
+        rho : float
+            Density, [kg/m³]
+        T : float
+            Temperature, [K]
+
+        Returns
+        -------
+        prop : dict
+            Dictionary with residual adimensional helmholtz energy and
+            derivatives:
+                * fir  [-]
+                * firt: [∂fir/∂τ]δ,x  [-]
+                * fird: [∂fir/∂δ]τ,x  [-]
+                * firtt: [∂²fir/∂τ²]δ,x  [-]
+                * firdt: [∂²fir/∂τ∂δ]x  [-]
+                * firdd: [∂²fir/∂δ²]τ,x  [-]
+        """
+        Tc = self.Tc
+
+        delta = rho/self.rhoc/self.M*1000
+        tau = Tc/T
+
+        kw = {}
+        kw["rhoc"] = self.rhoc
+        kw["Tc"] = self.Tc
+
+        kw["b"] = 0.0778*R*self.Tc/self.Pc
+        kw["Delta1"] = 1+2**0.5
+        kw["Delta2"] = 1-2**0.5
+
+        a = 0.457235*R**2*self.Tc**2/self.Pc
+
+        m = 0.37464+1.54226*self.f_acent-0.26992*self.f_acent**2
+        alfa = a*(1+m*(1-(T/Tc)**0.5))**2
+        B = 1+m*(1-1/tau**0.5)
+        kw["a"] = alfa
+        kw["dat"] = a*m*B/tau**1.5
+        kw["datt"] = a*m/2*(m*Tc/tau**3/Tc-3*B/tau**2.5)
+        kw["dattt"] = 3*a*m/4*(-3*m*Tc/tau**4/Tc+5*B/tau**3.5)
+
+        prop = CubicHelmholtz(tau, delta, **kw)
+
+        return prop
+
+    @refDoc(__doi__, [13], tab=8)
+    def vtPR(self):
+        """Volume translation for Peng-Robinson equation of state for liquid
+        phase as explain in [13]_
+
+        Returns
+        -------
+        v : float
+            Specific volume, [m³/kg]
+        """
+        if self._PR:
+            b, g = self._PR
+        else:
+            # Generalized correlation
+            b = -2.8431*exp(-64.2184*(0.3074-self.Zc))+0.1735           # Eq 12
+            g = -99.2558+301.6201*self.Zc                               # Eq 13
+
+        Tr = 1/tau
+        f = b+(1-b)*exp(g*abs(1-Tr))                                    # Eq 10
+
+        cc = (0.3074-self.Zc)*self.R*self.Tc/self.Pc                    # Eq 9
+        c = cc * f                                                      # Eq 8
+
+        v = 1./rho-c                                                    # Eq 2
+        return v
 
     def derivative(self, z, x, y, fase):
         """Calculate generic partial derivative: (δz/δx)y

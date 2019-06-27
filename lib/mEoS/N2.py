@@ -288,7 +288,7 @@ class N2(MEoS):
         "gamma2": [1]*8}
 
     eq = span, younglove, GERG, jacobsen, shortSpan, sun
-    _PR = -0.004032
+    _PR = [-0.7468, -11.9697]
 
     _surface = {"sigma": [0.02898], "exp": [1.246]}
     _dielectric = {

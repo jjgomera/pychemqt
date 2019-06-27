@@ -117,6 +117,7 @@ class R236fa(MEoS):
               0.973194908842e1, -0.935516922205e3]}
 
     eq = pan, outcalt
+    _PR = [-0.0413, -18.8297]
 
     _surface = {"sigma": [0.05389], "exp": [1.249]}
     _vapor_Pressure = {

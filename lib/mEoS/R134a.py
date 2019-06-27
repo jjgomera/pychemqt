@@ -259,7 +259,7 @@ class R134a(MEoS):
         "gamma2": [1]*19}
 
     eq = tillner, MBWR, shortSpan, astina, sun, huber
-    _PR = 0.001032
+    _PR = [0.0336, -21.3339]
 
     _surface = {"sigma": [0.05801], "exp": [1.241]}
     _vapor_Pressure = {

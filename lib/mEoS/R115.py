@@ -110,6 +110,7 @@ class R115(MEoS):
         "gamma2": [1.50553819]*6}
 
     eq = lemmon, platzer
+    _PR = [-0.1373, -19.0]
 
     _surface = {"sigma": [0.04771], "exp": [1.246]}
     _vapor_Pressure = {

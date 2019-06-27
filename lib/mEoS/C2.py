@@ -285,6 +285,7 @@ class C2(MEoS):
         "gamma2": [1]*8}
 
     eq = buecker, younglove, GERG, friend, shortSpan, sun
+    _PR = [-0.2955, -14.9384]
 
     _surface = {"sigma": [0.07602, -0.02912], "exp": [1.32, 1.676]}
     _dielectric = {

@@ -138,6 +138,7 @@ class R41(MEoS):
               -0.204419971811e-4, 0.245556593457e-3]}
 
     eq = lemmon, lemmon2, haynes
+    _PR = [0.1367, -26.7571]
 
     _surface = {"sigma": [0.05049], "exp": [1.242]}
     _vapor_Pressure = {

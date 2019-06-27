@@ -154,6 +154,7 @@ class R22(MEoS):
         "gamma2": [1]*7}
 
     eq = kamei, wagner, shortSpan
+    _PR = [-0.1257, -16.9587]
 
     _surface = {"sigma": [3.0587, -2.99856], "exp": [1.41809, 1.42291]}
     _vapor_Pressure = {

@@ -84,6 +84,7 @@ class mXylene(MEoS):
         "epsilon3": [0.713, 0.9169, 0.6897, 0.7245]}
 
     eq = zhou,
+    _PR = [0.0465, -21.1362]
 
     _surface = {"sigma": [0.0661], "exp": [1.29]}
     _vapor_Pressure = {

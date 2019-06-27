@@ -196,7 +196,7 @@ class O2(MEoS):
         "gamma2": [1]*6}
 
     eq = schmidt, younglove, GERG, shortSpan
-    _PR = -0.003157
+    _PR = [-0.6368, -12.4332]
 
     _surface = {"sigma": [0.03843], "exp": [1.225]}
     _dielectric = {

@@ -75,6 +75,7 @@ class Cis_2_butene(MEoS):
         "gamma2": [1]*6}
 
     eq = lemmon,
+    _PR = [-0.1193, -17.2151]
 
     _vapor_Pressure = {
         "eq": 3,
