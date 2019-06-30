@@ -146,6 +146,39 @@ class Novec649(MEoS):
 
     _viscosity = visco0,
 
+    thermo0 = {"__name__": "Perkins (2018)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Huber, M.L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conducitivity of 1,1,1,2,2,4,5,5,5-Nanofluoro-4-"
+                            "(trifluromethyl)-3-pentanone",
+                   "ref": "J. Phys. Chem. Ref. Data 47(4) (2018) 043101",
+                   # TODO: Search final reference
+                   "ref": "J. Chem. Eng. Data ",
+                   "doi": "10.1021/acs.jced.8b00132"},
+
+               "eq": 1,
+
+               "Toref": Tc, "koref": 1,
+               "no_num": [1.54022e-3, -15.0745e-3, 49.0451e-3, -60.7192e-3,
+                          46.2647e-3, -3.16935e-3],
+               "to_num": [0, 1, 2, 3, 4, 5],
+               "no_den": [-0.211741, 1.16696, -1.15574, 1.0],
+               "to_den": [0, 1, 2, 3],
+
+               "Tref_res": Tc, "rhoref_res": rhoc, "kref_res": 1,
+               "nr": [-0.0234542, 0.0158544, 0.0418017, -0.0334181, -0.0274745,
+                      0.0282766, 0.00932188, -0.0103009, -0.00111766,
+                      0.00147852],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 2.51e-10,
+               "gam0": 0.061, "qd": 0.334e-9, "Tcref": 1.5*Tc}
+
+    _thermal = thermo0,
+
 
 class Test(TestCase):
 
@@ -195,3 +228,11 @@ class Test(TestCase):
         self.assertEqual(round(Novec649(T=350, rho=4.42).mu.muPas, 2), 12.65)
         self.assertEqual(round(
             Novec649(T=350, rho=1595.99).mu.muPas, 2), 587.87)
+
+    def test_perkins(self):
+        # Table 3, pag 5
+        self.assertEqual(round(Novec649(T=300, rho=0).k.WmK, 6), 0.011876)
+        self.assertEqual(round(Novec649(T=300, rho=5.5).k.WmK, 6), 0.011813)
+        self.assertEqual(round(Novec649(T=300, rho=1673.3).k.WmK, 6), 0.065209)
+        self.assertEqual(round(Novec649(T=445, rho=0).k.WmK, 6), 0.022632)
+        self.assertEqual(round(Novec649(T=445, rho=685).k.WmK, 6), 0.036507)
