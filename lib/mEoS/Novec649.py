@@ -39,7 +39,7 @@ class Novec649(MEoS):
     Tt = unidades.Temperature(165)
     Tb = unidades.Temperature(322.202)
     f_acent = 0.471
-    momentoDipolar = unidades.DipoleMoment(0.36, "Debye")
+    momentoDipolar = unidades.DipoleMoment(0.43, "Debye")
 
     Fi1 = {"ao_log": [1, 29.8],
            "pow": [0, 1],
@@ -102,6 +102,50 @@ class Novec649(MEoS):
         "n": [-1.6073, -5.8095, -17.824, -61.012, -151.3],
         "t": [0.291, 0.82, 2.45, 5.5, 12]}
 
+    def _Visco0(self, T, coef=None):
+        """Special dilute gas viscosity correlation"""
+        muo = MEoS._Visco0(self, T)
+
+        # Correction parameter
+        mur = 131.3*self.momentoDipolar/(self.Tc/self.rhoc)**0.5         # Eq 7
+        Fc = 1 - 0.2756*self.f_acent + 0.059035*mur**4                   # Eq 6
+
+        muo *= Fc
+        return muo
+
+    visco0 = {"__name__": "Wen (2017)",
+              "__doi__": {
+                  "autor": "Wen, C., Meng, X., Huber, M.L., Wu, J.",
+                  "title": "Measurement and Correlation of the Viscosity of "
+                           "1,1,1,2,2,4,5,5,5-Nanofluoro-4-(trifluromethyl)-"
+                           "3-pentanone",
+                  # TODO: Search final reference
+                  "ref": "J. Chem. Eng. Data ",
+                  "doi": "10.1021/acs.jced.7b00572"},
+
+              "eq": 1, "omega": 5,
+
+              "ek": 350.84, "sigma": 0.6509,
+
+              "Tref_virial": 350.84,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "Tref_res": Tc, "rhoref_res": rhoc,
+              "nr": [22.0057],
+              "tr": [-0.5],
+              "dr": [2/3],
+              "nr_num": [231.063],
+              "tr_num": [-0.5],
+              "dr_num": [2/3],
+              "nr_den": [0.423359, -0.122057, 18.4610, -11.1393, 1.67777],
+              "tr_den": [0, 0, -1, -1, -1],
+              "dr_den": [0, 1, 0, 1, 2]}
+
+    _viscosity = visco0,
+
 
 class Test(TestCase):
 
@@ -136,3 +180,18 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 3), 319.294)
         self.assertEqual(round(st.cpM.JmolK, 3), 365.304)
         self.assertEqual(round(st.w, 3), 512.603)
+
+    def test_Wen(self):
+        # Table 4, pag 6
+        self.assertEqual(round(Novec649(T=250, rho=0).mu.muPas, 2), 8.09)
+        self.assertEqual(round(Novec649(T=250, rho=0.41).mu.muPas, 2), 8.33)
+        self.assertEqual(round(
+            Novec649(T=250, rho=1809.77).mu.muPas, 1), 2377.5)
+        self.assertEqual(round(Novec649(T=300, rho=0).mu.muPas, 2), 9.77)
+        self.assertEqual(round(Novec649(T=300, rho=3.89).mu.muPas, 2), 10.85)
+        self.assertEqual(round(
+            Novec649(T=300, rho=1701.48).mu.muPas, 1), 1059.7)
+        self.assertEqual(round(Novec649(T=350, rho=0).mu.muPas, 2), 11.43)
+        self.assertEqual(round(Novec649(T=350, rho=4.42).mu.muPas, 2), 12.65)
+        self.assertEqual(round(
+            Novec649(T=350, rho=1595.99).mu.muPas, 2), 587.87)
