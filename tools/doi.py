@@ -163,7 +163,9 @@ class ShowReference(QtWidgets.QDialog):
                         itemModule.addChildren([itemSubModule])
                         for key2 in sorted(module.__doi__[key].keys()):
                             link = module.__doi__[key][key2]
-                            if library == "EoS":
+                            if key == "lib.EoS.Cubic":
+                                title = key2
+                            elif library == "EoS":
                                 title = ""
                             else:
                                 title = key2.replace("_", "")
@@ -226,9 +228,9 @@ class ShowReference(QtWidgets.QDialog):
             file2 = os.path.join("doc", title) + ".pdf"
             print(file2, os.path.isfile(file2))
             if os.path.isfile(file):
-                subprocess.Popen(['evince', file])
+                subprocess.Popen(['atril', file])
             elif os.path.isfile(file2):
-                subprocess.Popen(['evince', file2])
+                subprocess.Popen(['atril', file2])
         elif item.parent():
             url = QtCore.QUrl("http://dx.doi.org/%s" % item.text(4))
             QtGui.QDesktopServices.openUrl(url)

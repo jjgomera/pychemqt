@@ -29,7 +29,7 @@ from scipy.optimize import fsolve
 
 from lib import unidades
 from lib.eos import EoS
-from lib.EoS import cubic
+from lib.EoS.Cubic import SRK
 from lib.physics import R_atml
 from lib.bip import Kij
 
@@ -41,7 +41,7 @@ class BWRS(EoS):
 
     def __init__(self, T, P, mezcla):
         self.T = unidades.Temperature(T)
-        self.P = unidades.Pressure(P, "atm")
+        self.P = unidades.Pressure(P)
         self.componente = mezcla.componente
         self.zi = mezcla.fraccion
         self.kij = Kij("BWRS")
@@ -120,7 +120,7 @@ class BWRS(EoS):
         Vm = lambda V: self.P.atm-R_atml*self.T/V - (Bo*R_atml*self.T-Ao-Co/self.T**2+Do/self.T**3-Eo/self.T**4)/V**2 - (b*R_atml*self.T-a-d/self.T)/V**3 - alfa*(a+d/self.T)/V**6 - c/self.T**2/V**3*(1+gamma/V**2)*exp(-gamma/V**2)
 
         # Usamos SRK para estimar los volumenes de ambas fases usados como valores iniciales en la iteeración
-        srk=cubic.SRK(T, P, mezcla)
+        srk=SRK(T, P, mezcla)
         Z_srk=srk.Z
         Vgo=Z_srk[0]*R_atml*T/P
         Vlo=Z_srk[1]*R_atml*T/P
@@ -132,7 +132,6 @@ class BWRS(EoS):
         self.H_exc=(Bo*R_atml*self.T-2*Ao-4*Co/self.T**2+5*Do/self.T**3-6*Eo/self.T**4)/self.V+(2*b*R_atml*self.T-3*a-4*d/self.T)/2/self.V**2+alfa/5*(6*a+7*d/self.T)/self.V**5+c/gamma/self.T**2*(3-(3+gamma/self.V**2/2-gamma**2/self.V**4)*exp(-gamma/self.V**2))
 
         self.x, self.xi, self.yi, self.Ki=self._Flash()
-
 
     def _fug(self, Z, xi):
         rho=self.P.atm/Z/R_atml/self.T
@@ -184,10 +183,12 @@ class BWRS(EoS):
 
         return Ao, Bo, Co, Do, Eo, a, b, c, d, alfa, gamma
 
+
 _all = [BWRS]
 
+
 if __name__ == "__main__":
-    from lib.corriente import Mezcla
-    mezcla = Mezcla(ids=[10, 38, 22, 61], fraccionMolar=[0.3, 0.5, 0.05, 0.15])
-    eq = BWRS(340, 1., mezcla)
+    from lib.mezcla import Mezcla
+    mezcla = Mezcla(2, ids=[10, 38, 22, 61], caudalUnitarioMolar=[0.3, 0.5, 0.05, 0.15])
+    eq = BWRS(340, 101325, mezcla)
     print(eq.x)
