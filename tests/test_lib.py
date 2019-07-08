@@ -25,3 +25,7 @@ TestLib.addTest(TestMEOS)
 # Add lib.EoS submodule test
 for module in EoS.__all__:
     TestLib.addTest(DocTestSuite(module))
+
+# Add lib.EoS.Cubic submodule test
+for module in EoS.Cubic._all:
+    TestLib.addTest(DocTestSuite(module.__module__))
