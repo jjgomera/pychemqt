@@ -103,6 +103,8 @@ docs/lib.thread.rst
 docs/lib.unidades.rst
 docs/lib.utilities.rst
 
+docs/lib.EoS.Cubic.*
+
 # Script propios
 .script/
 iapws

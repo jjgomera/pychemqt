@@ -144,7 +144,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pychemqt'
-copyright = u'2018, Juan José Gómez Romera'
+copyright = u'2019, Juan José Gómez Romera'
 author = u'Juan José Gómez Romera'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -419,3 +419,6 @@ def Autogenerate_MEoS(app):
     print('cd .. && python3 docs/generateMEOSrst.py')
     subprocess.check_output(
         ['bash', '-c', 'cd .. && python3 docs/generateMEOSrst.py'])
+    print('cd .. && python3 docs/generateEoSrst.py')
+    subprocess.check_output(
+        ['bash', '-c', 'cd .. && python3 docs/generateEoSrst.py'])

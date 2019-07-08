@@ -1,4 +1,4 @@
-lib.eos.virial module
+lib.EoS.virial module
 =====================
 
 Virial equation of state implementation
