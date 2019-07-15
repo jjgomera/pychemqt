@@ -2273,7 +2273,7 @@ for _clas in _all:
         doc += os.linesep + os.linesep
 
     # Add doctest example
-    doc += "Example" + os.linesep
+    doc += "Examples" + os.linesep
     doc += "--------" + os.linesep + os.linesep
     title = _clas.__name__
     for test in _clas.__test__:

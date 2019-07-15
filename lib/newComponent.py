@@ -846,8 +846,8 @@ class Joback(GroupContribution):
         T : float
             Temperature, [K]
 
-        Return
-        ------
+        Returns
+        -------
         mu : float
             Viscosity, [Pas]
         """
@@ -862,8 +862,8 @@ class Joback(GroupContribution):
         T : float
             Temperature, [K]
 
-        Return
-        ------
+        Returns
+        -------
         cp0 : float
             Ideal gas specific heat, [J/kgK]
         """
@@ -1432,8 +1432,8 @@ class Constantinou(GroupContribution):
         T : float
             Temperature, [K]
 
-        Return
-        ------
+        Returns
+        -------
         cp0 : float
             Ideal gas specific heat, [J/kgK]
         """
@@ -3674,8 +3674,8 @@ class Nannoolal(GroupContribution):
         T : float
             Temperature, [K]
 
-        Return
-        ------
+        Returns
+        -------
         Pv : float
             Vapor Pressure, [Pa]
         """
@@ -3692,8 +3692,8 @@ class Nannoolal(GroupContribution):
         T : float
             Temperature, [K]
 
-        Return
-        ------
+        Returns
+        -------
         mu : float
             Viscosity, [Pas]
         """
@@ -5091,8 +5091,8 @@ def cpLS_Hurst(group):
     group : dict
         Atomic composition of component
 
-    Return
-    ------
+    Returns
+    -------
     cpL : float
         Liquid heat capacity, []
     cpS : float

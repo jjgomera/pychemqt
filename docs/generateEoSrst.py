@@ -33,6 +33,7 @@ txt += "    :maxdepth: 1" + os.linesep + os.linesep
 for mod in lib.EoS.Cubic._all:
     txt += "    lib.EoS.Cubic.%s" % mod.__name__ + os.linesep
 
+txt += os.linesep
 txt += "Furthemore in a separated file it's the common functionality"
 txt += os.linesep + os.linesep
 
@@ -48,6 +49,7 @@ txt += "----------" + os.linesep
 for id, rf in lib.EoS.cubic.__doi__.items():
     id = str(id)
     txt += ".. [%s] %s; %s. %s" % (id, rf["autor"], rf["title"], rf["ref"])
+    txt += os.linesep
 
 with open("docs/lib.EoS.Cubic.rst", "w") as file:
     file.write(txt)
@@ -70,8 +72,12 @@ for mod in lib.EoS.Cubic._all:
         print("", file=file)
         print("References", file=file)
         print("----------", file=file)
-        lnk = mod.__doi__
-        ref = ".. [1] %s; %s, %s" % (lnk["autor"], lnk["title"], lnk["ref"])
-        if lnk["doi"]:
-            ref += ", http://dx.doi.org/%s" % lnk["doi"]
-        print(ref, file=file)
+
+        count = 1
+        for lnk in mod.__doi__:
+            ref = ".. [%i] %s; %s, %s" % (
+                count, lnk["autor"], lnk["title"], lnk["ref"])
+            if lnk["doi"]:
+                ref += ", http://dx.doi.org/%s" % lnk["doi"]
+            count += 1
+            print(ref, file=file)

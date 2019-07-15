@@ -48,7 +48,7 @@ for mod in lib.mEoS.__all__:
     txt += "* Tb: " + mod.Tb.str + os.linesep
     txt += "* Acentric factor: %s" % mod.f_acent + os.linesep
     txt += "* Dipole moment: %s" % mod.momentoDipolar.get_str("Debye")
-    txt += os.linesep
+    txt += os.linesep + os.linesep
 
     txt += "Equation of state" + os.linesep
     txt += "-----------------" + os.linesep + os.linesep
@@ -68,7 +68,7 @@ for mod in lib.mEoS.__all__:
             txt += "* %s; %s. %s" % (rf["autor"], rf["title"], rf["ref"])
             if rf["doi"]:
                 txt += ", http://dx.doi.org/%s" % rf["doi"]
-            txt += os.linesep
+            txt += os.linesep + os.linesep
 
     if mod._thermal:
         txt += "Thermal Conductivity" + os.linesep
@@ -78,12 +78,12 @@ for mod in lib.mEoS.__all__:
             txt += "* %s; %s. %s" % (rf["autor"], rf["title"], rf["ref"])
             if rf["doi"]:
                 txt += ", http://dx.doi.org/%s" % rf["doi"]
-            txt += os.linesep
+            txt += os.linesep + os.linesep
 
     imageFname = "docs/images/%s.png" % mod.__name__
     if os.path.isfile(imageFname):
         txt += os.linesep + "Calculation example" + os.linesep
-        txt += "-------------" + os.linesep
+        txt += "-------------------"
         txt += os.linesep + os.linesep
         txt += "Using the first option for equation of state, we can get this "
         txt += "diagram plots with the liquid-gas saturation region:"

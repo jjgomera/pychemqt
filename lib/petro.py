@@ -1739,8 +1739,8 @@ def D86_TBP_Riazi(Ti, Xi=None, reverse=False):
     TBP : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example 3.2 from [29]_
 
     >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
@@ -1812,8 +1812,8 @@ def D86_TBP_Daubert(Ti, Xi=None, T50=None, reverse=False):
     TBP : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example from [20]_
 
     >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
@@ -1910,8 +1910,8 @@ def SD_D86_Riazi(Ti, Xi=None, F=None):
     D86 : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example 3.5 from [29]_
 
     >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
@@ -1974,8 +1974,8 @@ def SD_D86_Daubert(Ti, Xi=None, SD50=None):
     TBP : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example from [20]_
 
     >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9, 1]
@@ -2060,8 +2060,8 @@ def D86_EFV(Ti, Xi=None, SG=None, reverse=False):
     EFV : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example 3.2 from [29]_
 
     >>> X = [0, 0.1, 0.3, 0.5, 0.7, 0.9]
@@ -2128,8 +2128,8 @@ def SD_TBP(Ti, Xi=None, SD50=None):
     TBP : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example from [20]_
 
     >>> X = [0.05, 0.1, 0.3, 0.5, 0.7, 0.9, 0.95]
@@ -2209,8 +2209,8 @@ def D1160_TBP_10mmHg(Ti, Xi=None, reverse=False):
     TBP : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example 3.6 from [29]_
 
     >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
@@ -2261,8 +2261,8 @@ def Tb_Pressure(T, P, Kw=None, reverse=False):
     TBP : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example from [20]_
 
     >>> T = unidades.Temperature(365, "F")
@@ -2317,8 +2317,8 @@ def curve_Predicted(x, T):
     TBP : list
         Calculated distillation data
 
-    Example
-    -------
+    Examples
+    --------
     Example 4.7 from [54]_
 
     >>> xw = [0.261, 0.254, 0.183, 0.14, 0.01, 0.046, 0.042, 0.024, 0.015, \
@@ -3364,8 +3364,8 @@ class Petroleo(newComponente):
     fit_curve : array
         Array of fit parameter of curve distillation [To, A, B]
 
-    Example
-    -------
+    Examples
+    --------
     Example from [20]_, procedure 2B1.1
 
     >>> X = [0.1, 0.3, 0.5, 0.7, 0.9]
