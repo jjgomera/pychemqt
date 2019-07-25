@@ -27,6 +27,18 @@ from scipy.constants import R
 from lib.EoS.cubic import Cubic, CubicHelmholtz
 
 
+dat = {
+    135: [-1.11765, -1.81779, 0.47892, 3],
+    129: [0.82082, -2.80514, 0, 0],
+    62: [0.60462, -2.56713, 0, 0],
+    22: [1.94572, -3.59956, -0.37410, 2],
+    49: [0.63199, -2.69935, 0, 0],
+    50: [0.66433, -2.39792, -0.00669, 10],
+    2: [0.32274, -1.47606, -0.02025, 6],
+    140: [0.19454, -1.45357, 0.32485, -0.5],
+    46: [0.09339, -1.26573, 0, 0],
+    1: [-0.72258, 1.08363, -1.4928e-6, -8]}
+
 class PT(Cubic):
     r"""Patel-Teja cubic equation of state implementation
     
@@ -75,17 +87,26 @@ class PT(Cubic):
 
     __title__="Patel-Teja (1982)"
     __status__="PT"
-    __doi__ = {
+    __doi__ = (
+            {
         "autor": "Patel, N.C., Teja, A.S.",
         "title": "A New Cubic Equation of State for Fluids and Fluid Mixtures",
         "ref": "Chem. Eng. Sci. 37(3) (1982) 463-473",
         "doi": "10.1016/0009-2509(82)80099-7"},
+            {
+        "autor": "Patel, N.C.",
+        "title": "Improvements of the Patel-Teja Equation of State",
+        "ref": "Int. J. Thermophysics 17(3) (1996) 673-682",
+        "doi": "10.1007/bf01441513"})
 
     def __init__(self, T, P, mezcla):
         """Initialization procedure
         
         Parameters
         ----------
+        
+        The library implement too the enhancement alfa function for several
+        compounds given in [2]_
 
         """
 
@@ -116,7 +137,13 @@ class PT(Cubic):
             # Eq 9
             Omegaa = 3*xic**2 + 3*(1-2*xic)*Omegab + Omegab**2 + 1 - 3*xic
 
-            alfa = (1+f*(1-(T/cmp.Tc)**0.5))**2
+            if cmp.id in dat:
+                c1, c2, c3, n = dat[cmp.id]
+                alfa = 1 + c1*(T/cmp.Tc-1) + c2*((T/cmp.Tc)**0.5-1) + \
+                    c3*((T/cmp.Tc)**n-1)
+            else:
+                alfa = (1+f*(1-(T/cmp.Tc)**0.5))**2
+
             ai.append(Omegaa*alfa*R**2*cmp.Tc**2/cmp.Pc)
 
         am, bm, cm = self._mixture(None, mezcla.ids, [ai, bi, ci])
