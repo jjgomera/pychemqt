@@ -189,39 +189,18 @@ class EoS(object):
     def _Dew_P(self):
         def f(P):
             eq=self.__class__(self.T, P, self.mezcla)
-            return sum([x/k for k, x in zip(eq.Ki, self.fraccion)])-1.
+            return sum([x/k for k, x in zip(eq.Ki, self.zi)])-1.
 
         P=fsolve(f, self.P.atm)
         return unidades.Pressure(P, "atm")
 
+    # @property
+    # def H_exc(self):
 
 
 
 
 
-
-
-def PT_lib(compuesto, T):
-    """Librería de cálculo de la ecuación de estado de Patel-Teja"""
-    if compuesto.Tc!=0 and compuesto.Pc!=0 and compuesto.vc!=0:
-        Zc=compuesto.Pc.atm*compuesto.vc*compuesto.peso_molecular/R_atml/compuesto.Tc
-    else:
-        Zc=0.329032+0.076799*compuesto.f_acent-0.0211947*compuesto.f_acent**2
-
-    c=(1-3*Zc)*R_atml*compuesto.Tc/compuesto.Pc.atm
-    omega=roots([1, 2-3*Zc, 3*Zc**2, -Zc**3])
-    Bpositivos=[]
-    for i in omega:
-        if i>0:
-            Bpositivos.append(i)
-    omegab=min(Bpositivos)
-    b=omegab*R_atml*compuesto.Tc/compuesto.Pc.atm
-
-    f=0.452413+1.30982*compuesto.f_acent-0.295937*compuesto.f_acent**2
-    alfa=(1+f*(1-sqrt(T/compuesto.Tc)))**2
-    omegaa=3*Zc**2+3*(1-2*Zc)*omegab+omegab**2+1-3*Zc
-    a=omegaa*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm**2*alfa
-    return a, b, c
 
 def PTC_lib(compuesto, T):
     """Librería de cálculo de la ecuación de estado de Patel-Teja-Crause"""
@@ -590,21 +569,6 @@ def ESD_lib(compuesto, T):
         z=self.ESD_Z(T, P)
         return unidades.SpecificVolume(P/z/R_atml/T*self.peso_molecular)
 
-
-def Z_PT(self):
-    """Factor de compresibilidad según la ecuación de estado de Patel_Teja"""
-    ai=[]
-    bi=[]
-    ci=[]
-    for componente in self.componente:
-        a, b, c=componente.PT_lib(self.T)
-        ai.append(a)
-        bi.append(b)
-        ci.append(c)
-    a, b, c=self.Mixing_Rule([ai, bi], self.kij)
-    Z=self.Z_Cubic_EoS(b, a, b+c, -c*b, b)
-    self.titail, self.titaiv=self.Fugacidad_Cubic_EoS(Z, b, a, ai, bi, (b+c)/b, -c*b)
-    return Z
 
 def Z_PTV(self):
     """Factor de compresibilidad según la ecuación de estado de Patel_Teja Valderrama (1990)"""
