@@ -32,7 +32,7 @@ class PR(Cubic):
         P = \frac{RT}{V-b}-\frac{a}{V\left(V+b\right)+b\left(V-b\right)}\\
         a = 0.45747\frac{R^2T_c^{2.5}}{P_c}\alpha\\
         b = 0.0778\frac{RT_c}{P_c}\\
-        \alpha^{0.5} = 1 + k\left(1-Tr^{0.5}\right)\\
+        \alpha^{0.5} = 1 + m\left(1-Tr^{0.5}\right)\\
         m = 0.37464 + 1.54226\omega-0.26992\omega^2\\
         \end{array}
 

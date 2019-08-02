@@ -262,4 +262,3 @@ if __name__ == "__main__":
     print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
     eq = PRSV2(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
-

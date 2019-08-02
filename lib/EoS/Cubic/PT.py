@@ -114,9 +114,9 @@ class PT(Cubic):
         self.P = P
         self.mezcla = mezcla
 
+        ai = []
         bi = []
         ci = []
-        ai = []
         for cmp in mezcla.componente:
             # Generalization Eq 20-21
             f = 0.452413 + 1.30982*cmp.f_acent - 0.295937*cmp.f_acent**2

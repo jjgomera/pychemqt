@@ -55,7 +55,7 @@ class RK(Cubic):
         "title": "On the Thermodynamnics of Solutions V. An Equation of State."
                  " Fugacities of Gaseous Solutions",
         "ref": "Chem. Rev. 44 (1949) 233-244",
-        "doi": "10.1021/cr60137a013"}
+        "doi": "10.1021/cr60137a013"},
 
     def __init__(self, T, P, mezcla):
         ai = []

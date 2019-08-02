@@ -34,8 +34,8 @@ class vdW(Cubic):
     .. math::
         \begin{array}[t]{l}
         P = \frac{RT}{V-b}-\frac{a}{V^2}\\
-        a = 0.421875\frac{R^2T_c^2}{P_c}
-        b = 0.125\frac{RT_c}{P_c}
+        a = 0.421875\frac{R^2T_c^2}{P_c}\\
+        b = 0.125\frac{RT_c}{P_c}\\
         \end{array}
 
     Examples
@@ -58,7 +58,7 @@ class vdW(Cubic):
         "autor": "van der Waals, J.D.",
         "title": "Over de Continuiteit van den Gas- En Vloestoftoestand",
         "ref": "Dissertation, Leiden University, Leiden, Niederlande, 1873",
-        "doi": ""}
+        "doi": ""},
 
     def __init__(self, T, P, mezcla):
 
