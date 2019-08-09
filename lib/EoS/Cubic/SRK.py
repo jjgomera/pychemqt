@@ -97,10 +97,12 @@ class SRK(Cubic):
     def _lib(self, cmp, T):
         ao = 0.42747*R**2*cmp.Tc**2/cmp.Pc                              # Eq 5
         b = 0.08664*R*cmp.Tc/cmp.Pc                                     # Eq 6
-        m = 0.48 + 1.574*cmp.f_acent - 0.176*cmp.f_acent**2             # Eq 15
-        alfa = (1+m*(1-(T/cmp.Tc)**0.5))**2                             # Eq 13
+        alfa = self._alfa(cmp, T)
         return ao*alfa, b
 
+    def _alfa(self, cmp, T):
+        m = 0.48 + 1.574*cmp.f_acent - 0.176*cmp.f_acent**2             # Eq 15
+        return (1+m*(1-(T/cmp.Tc)**0.5))**2                             # Eq 13
 
 class SRKPeneloux(SRK):
     """Equation of state of Soave-Redlich-Kwong (1972) with volume translation
