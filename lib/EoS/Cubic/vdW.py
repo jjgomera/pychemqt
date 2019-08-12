@@ -66,8 +66,8 @@ class vdW(Cubic):
 
         ai = []
         bi = []
-        for componente in mezcla.componente:
-            a, b = self.__lib(componente)
+        for cmp in mezcla.componente:
+            a, b = self.__lib(cmp)
             ai.append(a)
             bi.append(b)
 

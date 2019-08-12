@@ -175,89 +175,13 @@ class TB(Cubic):
         self.P = P
         self.mezcla = mezcla
 
-        ao = []
         ai = []
         bi = []
         ci = []
         di = []
         for cmp in mezcla.componente:
-            Tr = T/cmp.Tc
+            a, b, c, d = self.__lib(cmp, T)
 
-            TcPci = cmp.Tc*cmp.Pc.MPa
-            if cmp.f_acent < 0.225:
-                # Eq 36
-                TcPcH = 775.9 + 12003*cmp.f_acent - 57335*cmp.f_acent**2 + \
-                    91393*cmp.f_acent**3
-            elif cmp.f_acent <=1:
-                TcPcH = 1876 - 1160*cmp.f_acent                         # Eq 37
-            else:
-                TcPcH = TcPci
-
-            if cmp.f_acent >= -0.14:
-                # Eq 34
-                Zc = 0.29 - 0.0885*cmp.f_acent - 0.0005/(TcPci**0.5-TcPcH**0.5)
-            else:
-                Zc = 0.3024
-
-            Xc = 1.075*Zc                                               # Eq 28
-            d = 0.341*cmp.Vc.ccg*cmp.M - 0.005                          # Eq 29
-
-            # Convert d from cc/mol to m3/mol
-            d /= 1e6
-
-            Dc = d*cmp.Pc/R/cmp.Tc                                      # Eq 12
-            Cc = 1-3*Xc                                                 # Eq 6
-
-            # Bc calculated ad the smallest positive root of Eq 8
-            B = roots([1, 2-3*Xc, 3*Xc**2, -Dc**2-Xc**3])
-            Bpositivos=[]
-            for Bi in B:
-                if Bi > 0:
-                    Bpositivos.append(Bi)
-            Bc = min(Bpositivos)
-
-            Ac = 3*Xc**2 + 2*Bc*Cc + Bc + Cc + Bc**2 + Dc**2            # Eq 7
-            
-            if cmp.id in dat:
-                q1, q2 = dat[cmp.id]
-            else:
-                if cmp.id == 212 and Tr <= 1:
-                    q1 = -0.31913
-                elif cmp.f_acent < -0.1:
-                    # Eq 30
-                    q1 = 0.66208 + 4.63961*cmp.f_acent + 7.45183*cmp.f_acent**2
-                elif cmp.f_acent <= 0.4:
-                    # Eq 32
-                    q1 = 0.35 + 0.7924*cmp.f_acent + 0.1875*cmp.f_acent**2 - \
-                        28.93*(0.3-Zc)**2
-                elif cmp.f_acent > 0.4:
-                    # Eq 33
-                    q1 = 0.32 + 0.9424*cmp.f_acent - 28.93*(0.3-Zc)**2
-
-                if cmp.f_acent < -0.0423:
-                    q2 = 0
-                elif cmp.f_acent <= 0.3:
-                    # Eq 26
-                    q2 = 0.05246 + 1.15058*cmp.f_acent - \
-                        1.99348*cmp.f_acent**2 + 1.5949*cmp.f_acent**3 - \
-                        1.39267*cmp.f_acent**4
-                else:
-                    q2 = 0.17959 + 0.23471*cmp.f_acent                  # Eq 27
-
-            alfa = exp(q1*(1-Tr))
-            ac = Ac*R**2*cmp.Tc**2/cmp.Pc
-            a = ac*alfa                                                 # Eq 23
-
-            if T <= cmp.Tc:
-                beta = 1 + q2*(1 - Tr + log(Tr))                        # Eq 19
-            else:
-                beta = 1
-            bc = Bc*R*cmp.Tc/cmp.Pc
-            b = bc*beta                                                 # Eq 18
-
-            c = Cc*R*cmp.Tc/cmp.Pc
-
-            ao.append(ac)
             ai.append(a)
             bi.append(b)
             ci.append(c)
@@ -265,7 +189,6 @@ class TB(Cubic):
 
         am, bm, cm, dm = self._mixture(None, mezcla.ids, [ai, bi, ci, di])
 
-        self.ao = ao
         self.ai = ai
         self.bi = bi
         self.b = bm
@@ -273,22 +196,86 @@ class TB(Cubic):
         self.delta = bm+cm
         self.epsilon = -bm*cm - dm**2
 
-        # self.u = 2
-        # self.w = -1
-
         super(TB, self).__init__(T, P, mezcla)
 
-        # Tr = mezcla.Tc
-        # tau = Tr/T
-        # rhor = 1/mezcla.Vc/1000  # m3/mol
-        # # rhor = 1
-        # print("V", self.V)
-        # rho = 1/self.V[0]
-        # delta = rho/rhor
-        # print(delta, rho, rhor)
-        # print((self.Z[0]-1))
+    def __lib(self, cmp, T):
+        Tr = T/cmp.Tc
 
-        # self._phir(mezcla, tau, delta, T, rho, ao, ai, C1, C2, C3)
+        TcPci = cmp.Tc*cmp.Pc.MPa
+        if cmp.f_acent < 0.225:
+            # Eq 36
+            TcPcH = 775.9 + 12003*cmp.f_acent - 57335*cmp.f_acent**2 + \
+                91393*cmp.f_acent**3
+        elif cmp.f_acent <=1:
+            TcPcH = 1876 - 1160*cmp.f_acent                         # Eq 37
+        else:
+            TcPcH = TcPci
+
+        if cmp.f_acent >= -0.14:
+            # Eq 34
+            Zc = 0.29 - 0.0885*cmp.f_acent - 0.0005/(TcPci**0.5-TcPcH**0.5)
+        else:
+            Zc = 0.3024
+
+        Xc = 1.075*Zc                                               # Eq 28
+        d = 0.341*cmp.Vc.ccg*cmp.M - 0.005                          # Eq 29
+
+        # Convert d from cc/mol to m3/mol
+        d /= 1e6
+
+        Dc = d*cmp.Pc/R/cmp.Tc                                      # Eq 12
+        Cc = 1-3*Xc                                                 # Eq 6
+
+        # Bc calculated ad the smallest positive root of Eq 8
+        B = roots([1, 2-3*Xc, 3*Xc**2, -Dc**2-Xc**3])
+        Bpositivos=[]
+        for Bi in B:
+            if Bi > 0:
+                Bpositivos.append(Bi)
+        Bc = min(Bpositivos)
+
+        Ac = 3*Xc**2 + 2*Bc*Cc + Bc + Cc + Bc**2 + Dc**2            # Eq 7
+
+        if cmp.id in dat:
+            q1, q2 = dat[cmp.id]
+        else:
+            if cmp.id == 212 and Tr <= 1:
+                q1 = -0.31913
+            elif cmp.f_acent < -0.1:
+                # Eq 30
+                q1 = 0.66208 + 4.63961*cmp.f_acent + 7.45183*cmp.f_acent**2
+            elif cmp.f_acent <= 0.4:
+                # Eq 32
+                q1 = 0.35 + 0.7924*cmp.f_acent + 0.1875*cmp.f_acent**2 - \
+                    28.93*(0.3-Zc)**2
+            elif cmp.f_acent > 0.4:
+                # Eq 33
+                q1 = 0.32 + 0.9424*cmp.f_acent - 28.93*(0.3-Zc)**2
+
+            if cmp.f_acent < -0.0423:
+                q2 = 0
+            elif cmp.f_acent <= 0.3:
+                # Eq 26
+                q2 = 0.05246 + 1.15058*cmp.f_acent - \
+                    1.99348*cmp.f_acent**2 + 1.5949*cmp.f_acent**3 - \
+                    1.39267*cmp.f_acent**4
+            else:
+                q2 = 0.17959 + 0.23471*cmp.f_acent                  # Eq 27
+
+        alfa = exp(q1*(1-Tr))
+        ac = Ac*R**2*cmp.Tc**2/cmp.Pc
+        a = ac*alfa                                                 # Eq 23
+
+        if T <= cmp.Tc:
+            beta = 1 + q2*(1 - Tr + log(Tr))                        # Eq 19
+        else:
+            beta = 1
+        bc = Bc*R*cmp.Tc/cmp.Pc
+        b = bc*beta                                                 # Eq 18
+
+        c = Cc*R*cmp.Tc/cmp.Pc
+
+        return a, b, c, d
 
 
     def TB_Fugacidad(self, T, P):
@@ -447,158 +434,7 @@ class TB(Cubic):
         return -(T*dpdt+v*dpdv)/Cp/dpdv
 
 
-
-
-    def _phir(self, mezcla, tau, delta, T, rho, ao, ai, C1, C2, C3):
-
-        Tr = mezcla.Tc
-
-        # Eq 64-67
-        Di = []
-        Dt = []
-        Dtt = []
-        Dttt = []
-        for cmp in mezcla.componente:
-            tc = cmp.Tc
-            Di.append(1-(Tr/tc)**0.5/tau**0.5)
-            Dt.append((Tr/tc)**0.5/2/tau**1.5)
-            Dtt.append(-3*(Tr/tc)**0.5/4/tau**2.5)
-            Dttt.append(15*(Tr/tc)**0.5/8/tau**3.5)
-
-        # Eq 63
-        Bi = []
-        for c1, c2, c3, d in zip(C1, C2, C3, Di):
-            Bi.append(1+c1*d+c2*d**2+c3*d**3)
-
-        # Eq 69-71
-        Bt = []
-        Btt = []
-        Bttt = []
-        for c1, c2, c3, d, dt, dtt, dttt in zip(C1, C2, C3, Di, Dt, Dtt, Dttt):
-            cs = (c1, c2, c3)
-            bt = 0
-            btt = 0
-            bttt = 0
-            for n, c in enumerate(cs):
-                n += 1
-                bt += n*c*d**(n-1)*dt
-                btt += n*c*((n-1)*dt**2+d*dtt)*d**(n-2)
-                bttt += n*c*(3*(n-1)*d*dt*dtt+(n**2-3*n+2)*dt**3+d**2*dttt)*d**(n-3)
-            Bt.append(bt)
-            Btt.append(btt)
-            Bttt.append(bttt)
-
-        # Eq 73-75
-        dait = []
-        daitt = []
-        daittt = []
-        for a, B, bt, btt, bttt in zip(ao, Bi, Bt, Btt, Bttt):
-            dait.append(2*a*B*bt)
-            daitt.append(2*a*(B*btt+bt**2))
-            daittt.append(2*a*(B*bttt+3*bt*btt))
-
-        # Eq 52
-        uij = []
-        for aii in ai:
-            uiji = []
-            for ajj in ai:
-                uiji.append(aii*ajj)
-            uij.append(uiji)
-
-        # Eq 59-61
-        duijt = []
-        duijtt = []
-        duijttt = []
-        for aii, diit, diitt, diittt in zip(ai, dait, daitt, daittt):
-            duijit = []
-            duijitt = []
-            duijittt = []
-            for ajj, djjt, djjtt, djjttt in zip(ai, dait, daitt, daittt):
-                duijit.append(aii*djjt + ajj*diit)
-                duijitt.append(aii*djjtt + 2*diit*djjt + ajj*diitt)
-                duijittt.append(aii*djjttt + 3*diit*djjtt + 3*diitt*djjt + ajj*diittt)
-            duijt.append(duijit)
-            duijtt.append(duijitt)
-            duijttt.append(duijittt)
-
-        # Eq 54-56
-        daijt = []
-        daijtt = []
-        daijttt = []
-        for uiji, duijit, duijitt, duijittt, kiji in zip(
-                uij, duijt, duijtt, duijttt, self.kij):
-            daijit = []
-            daijitt = []
-            daijittt = []
-            for u, ut, utt, uttt, k in zip(uiji, duijit, duijitt, duijittt, kiji):
-                daijit.append((1-k)/2/u**0.5*ut)
-                daijitt.append((1-k)/4/u**1.5*(2*u*utt-ut**2))
-                daijittt.append((1-k)/8/u**2.5*(4*u**2*uttt - 6*u*ut*utt + 3*ut**3))
-            daijt.append(daijit)
-            daijtt.append(daijitt)
-            daijttt.append(daijittt)
-
-        # Eq 51
-        damt = 0
-        damtt = 0
-        damttt = 0
-        for xi, daijit, daijitt, daijittt in zip(mezcla.fraccion, daijt, daijtt, daijttt):
-            for xj, dat, datt, dattt in zip(mezcla.fraccion, daijit, daijitt, daijittt):
-                damt += xi*xj*dat
-                damtt += xi*xj*datt
-                damttt += xi*xj*dattt
-
-        kw = {}
-        kw["rhoc"] = 1/mezcla.Vc
-        kw["Tc"] = mezcla.Tc
-        kw["Delta1"] = 1+2**0.5
-        kw["Delta2"] = 1-2**0.5
-        kw["b"] = self.b
-        kw["a"] = self.tita
-        kw["dat"] = damt
-        kw["datt"] = damtt
-        kw["dattt"] = damttt
-
-        print(tau, delta, kw)
-        fir = CubicHelmholtz(tau, delta, **kw)
-        # print(fir)
-        print(delta, fir["fird"], R, T, rho)
-        print("P", (1+delta*fir["fird"])*R*T*rho*1000)
-
-    def _alfa(self, cmp, T):
-        if cmp.id == 62 and T/cmp.Tc < 0.85:
-            # Special case for water from [2]_
-            alfa = (1.0085677 + 0.82154*(1-(T/cmp.Tc)**0.5))**2         # Eq 6
-            m = 0
-        else:
-            m = 0.37464 + 1.54226*cmp.f_acent - 0.2699*cmp.f_acent**2   # Eq 18
-            alfa = (1+m*(1-(T/cmp.Tc)**0.5))**2                         # Eq 17
-        return m, alfa
-
-
-
 if __name__ == "__main__":
-    # from lib.corriente import Mezcla
-    # from lib.compuestos import Componente
-    # from lib.mEoS import C3
-
-    # c3 = Componente(4)
-    # c3.M = C3.M
-    # c3.Pc = C3.Pc
-    # c3.Tc = C3.Tc
-    # c3.f_acent = C3.f_acent
-    
-    # mix = Mezcla(5, customCmp=[c3], caudalMolar=1, fraccionMolar=[1])
-    # eq = PR(300, 42.477e5, mix)
-    # print(eq.V)
-
-    # mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
-    # eq = PR(300, 42.477e5, mix)
-    # print(eq.V)
-
-    # st = C3(T=300, P=42.477e5)
-    # print(st.v*st.M)
-    
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     eq = TB(300, 9.9742e5, mix)
