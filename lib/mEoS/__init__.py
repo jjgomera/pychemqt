@@ -193,7 +193,7 @@ __all__ = Nobles + Gases + Alkanes + Naphthenes + Alkenes + Heteroatom + \
 
 
 # Id of compound supported for meos library
-id_mEoS = [i.id for i in __all__ if i.id]
+id_mEoS = [i.id for i in __all__]
 
 
 # Add references from equation hardcoded in __doi__ property
