@@ -45,9 +45,9 @@ with open(fp) as file:
 
 
 class PRMathiasCopeman(Cubic):
-    """Mathias-Copeman alpha temperature dependency modification of
-    Peng-Robinson cubic equation of state
-    
+    r"""Mathias-Copeman alpha temperature dependency modification of
+    Peng-Robinson cubic equation of state, [1]_
+
     .. math::
         \begin{array}[t]{l}
         P = \frac{RT}{V-b}-\frac{a}{V\left(V+b\right)+b\left(V-b\right)}\\
@@ -57,19 +57,24 @@ class PRMathiasCopeman(Cubic):
         c_2\left(1-Tr^{0.5}\right)^2 + c_3\left(1-Tr^{0.5}\right)^3\\
         \end{array}
 
+    In case T > Tc it use a special alpha temperature dependence give in [3]_
+
+    .. math::
+        \alpha^{0.5} = 1 + c_1\left(1-Tr^{0.5}\right)
+
     The C1, C2 and C3 parameters are those given in [2]_
     """
-    __title__="PR-Mathias-Copeman (1983)"
-    __status__="PR-MC"
+    __title__ = "PR-Mathias-Copeman (1983)"
+    __status__ = "PR-MC"
     __doi__ = (
-            {
+      {
         "autor": "Mathias, P.M., Copeman, T.W.",
         "title": "Extension of the Peng-Robinson Equation of State to Complex "
                  "Mixtures: Evaluation of the Various Forms of the Local "
                  "Composition Concept",
         "ref": "Fluid Phase Equilibria 13 (1983) 91-108",
         "doi": "10.1016/0378-3812(83)80084-3"},
-            {
+      {
         "autor": "Horstmann, S., Jabloniec, A., Krafczyk, J., Fischer, K., "
                  "Gmehling, J.",
         "title": "PSRK group contribution equation of state: comprehensive "
@@ -77,7 +82,7 @@ class PRMathiasCopeman(Cubic):
                  "and α-function parameters for 1000 components",
         "ref": "Fluid Phase Equilibria 227 (2005) 157-164",
         "doi": "10.1016/j.fluid.2004.11.002"},
-            {
+      {
         "autor": "Coquelet, C., Chapoy, A., Richon, D.",
         "title": "Development of a New Alpha Function for the Peng-Robinson "
                  "Equation of State: Comparative Study of Alpha Function "
@@ -88,7 +93,7 @@ class PRMathiasCopeman(Cubic):
 
     def __init__(self, T, P, mezcla):
         """Initialization procedure
-        
+
         Parameters
         ----------
 
@@ -97,7 +102,7 @@ class PRMathiasCopeman(Cubic):
         self.T = T
         self.P = P
         self.mezcla = mezcla
-        
+
         ao = []
         bi = []
         ai = []
@@ -118,10 +123,10 @@ class PRMathiasCopeman(Cubic):
             bi.append(0.0778*R*cmp.Tc/cmp.Pc)
 
             term = 1-(T/cmp.Tc)**0.5
-            # if T > cmp.Tc:
-                # alfa = (1 + c1*term)**2
-            # else:
-            alfa = (1 + c1*term + c2*term**2 + c3*term**3)**2
+            if T > cmp.Tc:
+                alfa = (1 + c1*term)**2
+            else:
+                alfa = (1 + c1*term + c2*term**2 + c3*term**3)**2
             ai.append(ao[-1]*alfa)
 
             C1.append(c1)
@@ -136,14 +141,6 @@ class PRMathiasCopeman(Cubic):
         self.tita = am
         self.delta = 2*bm
         self.epsilon = -bm**2
-
-        # tdadt=0
-        # for i in range(len(mezcla.componente)):
-            # for j in range(len(mezcla.componente)):
-                # tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-        # self.dTitadT=tdadt
-        # self.u=2
-        # self.w=-1
 
         super(PRMathiasCopeman, self).__init__(T, P, mezcla)
         print(1/self.Vl, 1/self.Vg)
