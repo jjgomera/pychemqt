@@ -26,9 +26,6 @@ from scipy.constants import R
 from lib.EoS.cubic import Cubic, CubicHelmholtz
 
 
-# TODO: Upgrade CAS-number for oxygen in database and in MathiasCopeman.csv
-# Correct value in mEoS.O2, mising last term in other place
-
 # Load parameters from database file
 dat = {}
 fp = os.path.join(os.environ["pychemqt"], "dat", "MathiasCopeman.csv")
