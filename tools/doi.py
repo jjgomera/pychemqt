@@ -157,8 +157,25 @@ class ShowReference(QtWidgets.QDialog):
                 self.tree.addTopLevelItem(itemModule)
                 for key in sorted(module.__doi__.keys()):
 
+                    if key == "lib.EoS.Cubic":
+                        itemSubModule = QtWidgets.QTreeWidgetItem([key])
+                        itemModule.addChildren([itemSubModule])
+                        for key2 in sorted(module.__doi__[key].keys()):
+                            itemSubModule2 = QtWidgets.QTreeWidgetItem([key2])
+                            itemSubModule.addChildren([itemSubModule2])
+                            for link in module.__doi__[key][key2]:
+                                item = QtWidgets.QTreeWidgetItem([
+                                    "", link["autor"], link["title"],
+                                    link["ref"], link["doi"]])
+                                if findFile(link):
+                                    icon = QtGui.QIcon(QtGui.QPixmap(
+                                        os.path.join(
+                                            IMAGE_PATH, "button", "ok.png")))
+                                    item.setIcon(0, icon)
+                                itemSubModule2.addChild(item)
+
                     # Special case for submodules
-                    if "EoS" in library:
+                    elif "EoS" in library:
                         itemSubModule = QtWidgets.QTreeWidgetItem([key])
                         itemModule.addChildren([itemSubModule])
                         for key2 in sorted(module.__doi__[key].keys()):
@@ -228,9 +245,9 @@ class ShowReference(QtWidgets.QDialog):
             file2 = os.path.join("doc", title) + ".pdf"
             print(file2, os.path.isfile(file2))
             if os.path.isfile(file):
-                subprocess.Popen(['atril', file])
+                subprocess.Popen(['evince', file])
             elif os.path.isfile(file2):
-                subprocess.Popen(['atril', file2])
+                subprocess.Popen(['evince', file2])
         elif item.parent():
             url = QtCore.QUrl("http://dx.doi.org/%s" % item.text(4))
             QtGui.QDesktopServices.openUrl(url)
