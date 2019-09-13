@@ -20,9 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from PyQt5.QtWidgets import QApplication
 
+from lib.EoS import cubic
+from lib.EoS.cubic import alfa
 from . import BWRS
 from . import Cubic
-from .Cubic.cubic import alfa
 from . import Grayson_Streed
 from . import Lee_Kesler
 from . import virial
@@ -45,3 +46,6 @@ __doi__ = {}
 for obj in __all__:
     if "__doi__" in obj.__dict__:
         __doi__[obj.__name__] = obj.__doi__
+
+# Add cubic library
+__doi__["lib.EoS.cubic"] = cubic.__doi__
