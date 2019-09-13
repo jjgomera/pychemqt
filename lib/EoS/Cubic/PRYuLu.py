@@ -20,13 +20,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy.constants import R
 
-from lib.bip import Kij
-from lib.EoS.cubic import Cubic, CubicHelmholtz
+from lib.EoS.cubic import Cubic
 
 
 class PRYuLu(Cubic):
-    """Peng-Robinxon equation of state modified by Yu-Lu
+    r"""Peng-Robinson equation of state modified by Yu-Lu
 
+    .. math::
+        \begin{array}[t]{l}
+        P = \frac{RT}{V-b}-\frac{a}{V\left(V+c\right)+b\left(3V+c\right)}\\
+        a = \Omega_{ac}\frac{R^2T_c^2}{P_c}\alpha\\
+        b = \Omega_{bc}\frac{RT_c}{P_c}\\
+        c = \Omega_{cc}\frac{RT_c}{P_c}\\
+        \Omega_{ac} = 0.468630-0.0379304\omega+0.00751969\omega^2\\
+        \Omega_{bc} = 0.0892828-0.0340903\omega-0.00518289\omega^2\\
+        \Omega_{cc} = w \Omega_{bc}
+        c = wb\\
+        w+3 = u = 1.70083+0.648463\omega+0.895926\omega^2\\
+        \alpha = 10^{M\left(A_0+A_1T_r+A_2T_r"2\right)\left(1-T_r\right)}\\
+        \end{array}
+
+    The alpha parameter depend of acentric factor. For ω ≤ 0.49:
+
+    .. math::
+        \begin{array}[t]{l}
+        M = 0.406846+1.87907\omega-0.792636\omega^2+0.737519\omega^3\\
+        A_0 = 0.536843\\
+        A_1 = -0.39244\\
+        A_2 = 0.26507\\
+        \end{array}
+
+    For 0.49 < ω ≤ 1:
+
+    .. math::
+        \begin{array}[t]{l}
+        M = 0.581981-0.171416\omega-1.84441\omega^2+1.19047\omega^3\\
+        A_0 = 0.79355\\
+        A_1 = -0.53409\\
+        A_2 = 0.37273\\
+        \end{array}
     """
 
     __title__ = "PR-Yu-Lu (1987)"
@@ -40,10 +72,10 @@ class PRYuLu(Cubic):
 
     def __init__(self, T, P, mezcla):
         """Initialization procedure
-        
+
         Parameters
         ----------
-        
+
         """
 
         self.T = T
@@ -65,14 +97,14 @@ class PRYuLu(Cubic):
         self.bi = bi
         self.b = bm
         self.tita = am
-        self.delta = 3*bm + cm 
+        self.delta = 3*bm + cm
         self.epsilon = bm*cm
 
         super(PRYuLu, self).__init__(T, P, mezcla)
 
     def _lib(self, cmp, T):
         Tr = T/cmp.Tc
-        
+
         # Eq 14
         Omegaa = 0.468630 - 0.0378304*cmp.f_acent + 0.00751969*cmp.f_acent**2
 
@@ -100,11 +132,11 @@ class PRYuLu(Cubic):
             A0 = 0.79355
             A1 = -0.53409
             A2 = 0.37273
-        
-        # Eq 17
+
         if Tr > 1:
             alfa = 10**(M*(A0 + A1 + A2)*(1-Tr))
         else:
+            # Eq 17
             alfa = 10**(M*(A0 + A1*Tr + A2*Tr**2)*(1-Tr))
 
         a = Omegaa*alfa*R**2*cmp.Tc**2/cmp.Pc                           # Eq 10
@@ -114,7 +146,6 @@ class PRYuLu(Cubic):
         return a, b, c
 
 
-
 if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
@@ -122,4 +153,3 @@ if __name__ == "__main__":
     print('%0.1f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
     eq = PRYuLu(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
-

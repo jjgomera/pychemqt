@@ -51,7 +51,7 @@ class PRMathiasCopeman(Cubic):
     .. math::
         \begin{array}[t]{l}
         P = \frac{RT}{V-b}-\frac{a}{V\left(V+b\right)+b\left(V-b\right)}\\
-        a = 0.45747\frac{R^2T_c^{2.5}}{P_c}\alpha\\
+        a = 0.45747\frac{R^2T_c^2}{P_c}\alpha\\
         b = 0.0778\frac{RT_c}{P_c}\\
         \alpha^{0.5} = 1 + c_1\left(1-Tr^{0.5}\right) +
         c_2\left(1-Tr^{0.5}\right)^2 + c_3\left(1-Tr^{0.5}\right)^3\\

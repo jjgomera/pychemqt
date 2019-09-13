@@ -20,24 +20,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from math import exp
 
-from scipy.constants import R
 
 from lib.EoS.Cubic.PR import PR
 
 
 class PRGasem(PR):
-    """Peng-Robinson cubic equation of state with a modified dependence of 
-    temperature by Gassem
+    r"""Peng-Robinson cubic equation of state with a modified dependence of
+    temperature by Gassem [1]_
 
     .. math::
         \alpha = \exp\left(\left(A+BT_r\right)
         \left(1-T_r^{C+D\omega+E\omega^2}\right)\right)
-    
-    where A, B, C, D and E are parameters adjust 
-    
+
+    where A, B, C, D and E are correlation parameters generalized
     """
-    __title__="PR Gasem (2001)"
-    __status__="PRGasem"
+    __title__ = "PR Gasem (2001)"
+    __status__ = "PRGasem"
     __doi__ = {
         "autor": "Gasem, K.A.M., Gao, W., Pan, R.L., Robinson Jr, R.L.",
         "title": "A modified temperature dependence for the Peng-Robinson "

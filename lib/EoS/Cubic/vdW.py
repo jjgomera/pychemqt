@@ -18,18 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-import os
-
 from scipy.constants import R
 
-from lib.bip import Kij, Mixing_Rule
 from lib.EoS.cubic import Cubic
 
 
 class vdW(Cubic):
-    r"""Equation of state of van der Waals (1873)
-    This equation is not accuracy and is implemented only by its historic
-    relevance, so this is the first cubic equation of state.
+    r"""Equation of state of van der Waals (1873), [1]_.
 
     .. math::
         \begin{array}[t]{l}
@@ -37,6 +32,9 @@ class vdW(Cubic):
         a = 0.421875\frac{R^2T_c^2}{P_c}\\
         b = 0.125\frac{RT_c}{P_c}\\
         \end{array}
+
+    This equation is not accuracy and it's implemented only by its historic
+    relevance because it's the first cubic equation of state.
 
     Examples
     --------
@@ -61,8 +59,9 @@ class vdW(Cubic):
         "doi": ""},
 
     def __init__(self, T, P, mezcla):
-
-        x = mezcla.fraccion
+        self.T = T
+        self.P = P
+        self.mezcla = mezcla
 
         ai = []
         bi = []
@@ -71,8 +70,7 @@ class vdW(Cubic):
             ai.append(a)
             bi.append(b)
 
-        self.kij = Kij(mezcla.ids)
-        am, bm = Mixing_Rule(x, [ai, bi], self.kij)
+        am, bm = self._mixture(None, mezcla.ids, [ai, bi])
 
         self.ai = ai
         self.bi = bi
@@ -81,7 +79,6 @@ class vdW(Cubic):
         self.delta = 0
         self.epsilon = 0
 
-
         super(vdW, self).__init__(T, P, mezcla)
 
     def __lib(self, cmp):
@@ -89,15 +86,6 @@ class vdW(Cubic):
         b = 0.125*R*cmp.Tc/cmp.Pc
         return a, b
 
-    # From Tarek
-    # Zv in reference has a typo, the expressed polynomial has other high root
-    # >>> from lib.corriente import Mezcla
-    # >>> mix = Mezcla(1, ids=[4], caudalUnitarioMasico=[1.])
-    # >>> T = unidades.Temperature(100, "F")
-    # >>> P = unidades.Pressure(185, "psi")
-    # >>> eq = vdW(T, P, mix)
-    # >>> '%0.5f %0.5f' % (eq.Zl, eq.Zv)
-    # '0.07533 0.84348'
 
 if __name__ == "__main__":
     from lib.mezcla import Mezcla

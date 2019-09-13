@@ -25,7 +25,7 @@ from lib.EoS.cubic import Cubic
 
 
 class RK(Cubic):
-    """Equation of state of Redlich-Kwong (1949)
+    r"""Equation of state of Redlich-Kwong (1949), [1]_.
 
     .. math::
         \begin{array}[t]{l}
@@ -74,10 +74,6 @@ class RK(Cubic):
         self.tita = a
         self.delta = b
         self.epsilon = 0
-
-        # #TODO: Find relation between u,w y tita,delta, epsilon...
-        # self.u = 1
-        # self.w = 0
 
         super(RK, self).__init__(T, P, mezcla)
 

@@ -20,14 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy.constants import R
 
-from lib.bip import Kij
-from lib.EoS.cubic import Cubic, CubicHelmholtz
+from lib.EoS.cubic import Cubic
 
 
+class ALS1983(Cubic):
+    r"""Adachi modification to SRK cubic equation of state [1]_
 
-class Adachi1983(Cubic):
-    r"""Adachi modification to SRK cubic equation of state
-    
     .. math::
         \begin{array}[t]{l}
         P = \frac{RT}{V-b_1}-\frac{a}{\left(V-b_2\right)\left(V+b_3\right)}\\
@@ -50,9 +48,8 @@ class Adachi1983(Cubic):
         \end{array}
     """
 
-
-    __title__="Adachi (1983)"
-    __status__="Adachi83"
+    __title__ = "Adachi (1983)"
+    __status__ = "Adachi83"
     __doi__ = {
         "autor": "Adachi, Y., Lu, B.C.-Y., Sugie, H.",
         "title": "A Four-Parameter Equation of State",
@@ -61,12 +58,9 @@ class Adachi1983(Cubic):
 
     def __init__(self, T, P, mezcla):
         """Initialization procedure
-        
+
         Parameters
         ----------
-        
-        The library implement too the enhancement alfa function for several
-        compounds given in [2]_
 
         """
 
@@ -105,15 +99,15 @@ class Adachi1983(Cubic):
         self.delta = b3m-b2m
         self.epsilon = -b2m*b3m
 
-        super(Adachi1983, self).__init__(T, P, mezcla)
+        super(ALS1983, self).__init__(T, P, mezcla)
 
 
 if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
-    eq = Adachi1983(300, 9.9742e5, mix)
+    eq = ALS1983(300, 9.9742e5, mix)
     print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
-    eq = Adachi1983(300, 42.477e5, mix)
+    eq = ALS1983(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
 
 

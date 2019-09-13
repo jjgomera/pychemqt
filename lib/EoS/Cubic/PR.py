@@ -20,55 +20,62 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy.constants import R
 
-from lib.bip import Kij, Mixing_Rule
 from lib.EoS.cubic import Cubic, CubicHelmholtz
 
 
 class PR(Cubic):
-    """Peng-Robinson cubic equation of state
-    
+    r"""Peng-Robinson cubic equation of state, [1]_
+
     .. math::
         \begin{array}[t]{l}
         P = \frac{RT}{V-b}-\frac{a}{V\left(V+b\right)+b\left(V-b\right)}\\
-        a = 0.45747\frac{R^2T_c^{2.5}}{P_c}\alpha\\
+        a = 0.45747\frac{R^2T_c^2}{P_c}\alpha\\
         b = 0.0778\frac{RT_c}{P_c}\\
         \alpha^{0.5} = 1 + m\left(1-Tr^{0.5}\right)\\
         m = 0.37464 + 1.54226\omega-0.26992\omega^2\\
         \end{array}
 
+    This EoS include too a special alpha temperature dependence for water as
+    described in [2]_
+
     Examples
     --------
-    Example 4.3 from 1_, Propane saturated at 300K
+    Example 4.3 from [3]_, Propane saturated at 300K
 
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = PR(300, 9.9742e5, mix)
     >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
     '2039 86.7'
-
-    # Tiny desviation
-    # '2038 86.8'
     >>> eq = PR(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
     '84.1'
+
+    # Tiny desviation
+    # '2038 86.8'
     """
 
     __title__ = "Peng-Robinson (1976)"
     __status__ = "PR76"
     __doi__ = (
-            {
+      {
         "autor": "Peng, D.-Y., Robinson, D.B.",
         "title": "A New Two-Constant Equation of State",
         "ref": "Ind. Eng. Chem. Fund. 15(1) (1976) 59-64",
         "doi": "10.1021/i160057a011"},
-            {
+      {
         "autor": "Peng, D.-Y., Robinson, D.B.",
         "title": "Two- and Three-Phase Equilibrium Calculations for Coal "
                  "Gasification and Related Processes",
         "ref": "in Newman, Barner, Klein, Sandler (Eds.). Thermodynamic of "
-               "Aqueous Systems with Industrial Applications. ACS (1980), pag."
-               " 393-414",
-        "doi": "10.1021/bk-1980-0133.ch020"})
+               "Aqueous Systems with Industrial Applications. ACS (1980), "
+               "pag. 393-414",
+        "doi": "10.1021/bk-1980-0133.ch020"},
+      {
+         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+         "title": "The Properties of Gases and Liquids 5th Edition",
+         "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""})
 
     OmegaA = 0.45724
     OmegaB = 0.0778
@@ -90,7 +97,7 @@ class PR(Cubic):
             b = self.OmegaB*R*cmp.Tc/cmp.Pc                             # Eq 10
 
             m, alfa = self._alfa(cmp, T)
-        
+
             ao.append(a0)
             ai.append(a0*alfa)
             bi.append(b)
@@ -98,7 +105,7 @@ class PR(Cubic):
             C2.append(0)
             C3.append(0)
 
-        am, bm = self._mixture(None, mezcla.ids, [ai, bi])
+        am, bm = self._mixture("PR", mezcla.ids, [ai, bi])
 
         self.ao = ao
         self.C1 = C1
@@ -113,9 +120,6 @@ class PR(Cubic):
         # print("tita", am)
         # print("kij", self.kij)
         # print("ai", ai)
-
-        # self.u = 2
-        # self.w = -1
 
         super(PR, self).__init__(T, P, mezcla)
 
@@ -258,48 +262,6 @@ class PR(Cubic):
         return m, alfa
 
 
-class PR78(PR):
-    """Peng-Robinson cubic equation of state
-    
-    .. math::
-        \begin{array}[t]{l}
-        P = \frac{RT}{V-b}-\frac{a}{V\left(V+b\right)+b\left(V-b\right)}\\
-        a = 0.45747\frac{R^2T_c^{2.5}}{P_c}\alpha\\
-        b = 0.0778\frac{RT_c}{P_c}\\
-        \alpha^{0.5} = 1 + m\left(1-Tr^{0.5}\right)\\
-        m = 0.37464 + 1.54226\omega-0.26992\omega^2\\
-        \end{array}
-
-    """
-
-    __title__ = "Peng-Robinson (1978)"
-    __status__ = "PR78"
-    __doi__ = (
-            {
-        "autor": "Peng, D.-Y., Robinson, D.B.",
-        "title": "A New Two-Constant Equation of State",
-        "ref": "Ind. Eng. Chem. Fund. 15(1) (1976) 59-64",
-        "doi": "10.1021/i160057a011"},
-            {
-        "autor": "Peng, D.-Y., Robinson, D.B.",
-        "title": "Two- and Three-Phase Equilibrium Calculations for Coal "
-                 "Gasification and Related Processes",
-        "ref": "in Newman, Barner, Klein, Sandler (Eds.). Thermodynamic of "
-               "Aqueous Systems with Industrial Applications. ACS (1980), pag."
-               " 393-414",
-        "doi": "10.1021/bk-1980-0133.ch020"})
-
-    def _alfa(self, cmp, T):
-        if cmp.f_acent <= 0.491:
-            m = 0.3746 + 1.54226*cmp.f_acent - 0.26992*cmp.f_acent**2
-        else:
-            m = 0.379642 + 1.48503*cmp.f_acent - 0.164423*cmp.f_acent**2 + \
-                0.016666*cmp.f_acent**3
-        alfa = (1+m*(1-(T/cmp.Tc)**0.5))**2                         # Eq 17
-        return m, alfa
-
-
-
 if __name__ == "__main__":
     # from lib.corriente import Mezcla
     # from lib.compuestos import Componente
@@ -310,7 +272,7 @@ if __name__ == "__main__":
     # c3.Pc = C3.Pc
     # c3.Tc = C3.Tc
     # c3.f_acent = C3.f_acent
-    
+
     # mix = Mezcla(5, customCmp=[c3], caudalMolar=1, fraccionMolar=[1])
     # eq = PR(300, 42.477e5, mix)
     # print(eq.V)
@@ -321,11 +283,10 @@ if __name__ == "__main__":
 
     # st = C3(T=300, P=42.477e5)
     # print(st.v*st.M)
-    
+
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     eq = PR(300, 9.9742e5, mix)
     print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
     eq = PR(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
-
