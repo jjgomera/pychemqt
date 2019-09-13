@@ -44,6 +44,9 @@ txt += "    :private-members:" + os.linesep
 txt += "    :show-inheritance:" + os.linesep
 txt += "    :member-order: bysource" + os.linesep + os.linesep
 
+txt += os.linesep + ".. automodule:: lib.EoS.Cubic" + os.linesep
+
+
 txt += "References" + os.linesep
 txt += "----------" + os.linesep
 for id, rf in lib.EoS.cubic.__doi__.items():

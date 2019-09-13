@@ -13,13 +13,29 @@ for library in all:
     __import__("lib.%s" % library)
     module = lib.__getattribute__(library)
 
-    # Special case for metalibreries
-    if library in ["mEoS", "EoS"]:
+    # Special case for mEoS library
+    if library == "mEoS":
         for cmp in module.__doi__:
             for eq in module.__doi__[cmp]:
                 rf = module.__doi__[cmp][eq]
                 if rf not in total:
                     total.append(rf)
+        continue
+
+    # Special case for EoS library
+    if library == "EoS":
+        for cmp in module.__doi__:
+            if cmp == "lib.EoS.Cubic":
+                for eq in module.__doi__[cmp]:
+                    lst = module.__doi__[cmp][eq]
+                    for rf in lst:
+                        if rf not in total:
+                            total.append(rf)
+            else:
+                for eq in module.__doi__[cmp]:
+                    rf = module.__doi__[cmp][eq]
+                    if rf not in total:
+                        total.append(rf)
         continue
 
     # General case for simple libraries

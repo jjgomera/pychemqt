@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Pychemqt, Chemical Engineering Process simulator
+r"""Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2017, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,36 +15,85 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Virial equation of state implementation
-###############################################################################
+Library with the implementantion of a generic cubic equation of state with the
+form
+
+.. math::
+    P = \frac{RT}{V-b}-\frac{\alpha(T)}{V^2+\delta V+\epsilon}
+
+Expressing as a cubic polynomy in compressibility factor easy to solve
+
+.. math::
+    Z^3 + \left(\delta'-B'-1\right)Z^2 +
+    \left(a'+\epsilon'-\delta'\left(b'+1\right)\right)Z -
+    \left(\epsilon'\left(b'+1\right)+a'b'\right) = 0
+
+using the adimensional parameters
+
+.. math::
+    \begin{array}[t]{l}
+    a' = \frac{aP}{RT}\\
+    b' = \frac{bP}{RT}\\
+    \delta' = \frac{\delta P}{RT}\\
+    \epsilon' = \frac{\epsilon P}{RT}\\
+    \end{array}
+
+Each cubic EoS implemented here would a specific form of this general
+expression changing the values of δ, ε and the expresion of α(T)
+"""
+
 
 from scipy import roots, r_, log, exp, sqrt
+from scipy.constants import R
 
 from PyQt5.QtWidgets import QApplication
 
-from lib import unidades, config
+from lib import unidades
+# from lib.corriente import Mezcla
 from lib.eos import EoS
 from lib.physics import R_atml
-from lib.bip import Kij
+from lib.bip import Kij, Mixing_Rule
+from lib.utilities import refDoc
 
 
-# # TODO: Añadir parametros S1,S2 a la base de datos, API databook, pag 823
-# self.SRKGraboski = [0, 0]
-
-# # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/Melhem, Almeida - A data Bank of Parameters for the Attractive-Aznar Telles.pdf
-# self.Melhem = [0, 0]          #Alcoholes en archivo de abajo
+# TODO: Add parameters, file
+# Melhem, Almeida - A data Bank of Parameters for the Attractive-Aznar Telles
 # self.Almeida = [0, 0]
 
-# # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/alfas.pdf
+# TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/alfas.pdf
 # self.Mathias = 0
-# self.MathiasCopeman = [0, 0, 0]
 # self.Adachi = [0, 0]
 # self.Andoulakis = [0, 0, 0]
-# self.Yu_Lu = [0, 0, 0]
+
+__doi__ = {
+    1:
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+         "title": "The Properties of Gases and Liquids 5th Edition",
+         "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""},
+    2:
+        {"autor": "Ahmed, T.",
+         "title": "Equations of State and PVT Analysis: Applications for"
+                  "Improved Reservoir Modeling, 2nd Edition",
+         "ref": "Gulf Professional Publishing, 2016, ISBN 9780128015704,",
+         "doi": "10.1016/B978-0-12-801570-4.00002-7"},
+    3:
+        {"autor": "Bell, I.H., Jäger, A.",
+         "title": "Helmholtz Energy Transformations of Common Cubic Equations "
+                  "of State for Use with Pure Fluids and Mixtures",
+         "ref": "J. Res. of NIST 121 (2016) 236-263",
+         "doi": "10.6028/jres.121.011"},
+
+    4:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+        }
+
 
 alfa = (QApplication.translate("pychemqt", "Original"),
         "Boston-Mathias",
@@ -52,1051 +101,379 @@ alfa = (QApplication.translate("pychemqt", "Original"),
         "Doridon")
 
 
+@refDoc(__doi__, [3])
+def CubicHelmholtz(tau, delta, **kw):
+    r"""Residual contribution to the free Helmholtz energy from a generic cubic
+    equation of state with the form:
+
+    .. math::
+        P = \frac{RT}{V-b}-\frac{\alpha(T)}{\left(v+\Delta_1b\right)
+        \left(v+\Delta_2b\right)}
+
+    From this formulation it's possible calculate the Helmholtz free energy
+    with the equation:
+
+    .. math::
+        \alpha^r = \phi^{(-)}-\frac{\tau\alpha}{RT_c}\phi^{(+)}
+
+    Parameters
+    ----------
+    tau : float
+        Inverse reduced temperature, Tc/T [-]
+    delta : float
+        Reduced density, rho/rhoc [-]
+    kw : list
+        Aditional parameters specific of cubic equation of state
+        The parameters include: rhoc, Tc, b, alfa, Delta1, Delta2
+
+    Returns
+    -------
+    prop : dictionary with residual adimensional helmholtz energy and deriv
+        fir  [-]
+        firt: [∂fir/∂τ]δ,x  [-]
+        fird: [∂fir/∂δ]τ,x  [-]
+        firtt: [∂²fir/∂τ²]δ,x  [-]
+        firdt: [∂²fir/∂τ∂δ]x  [-]
+        firdd: [∂²fir/∂δ²]τ,x  [-]
+    """
+    b = kw["b"]
+    a = kw["a"]
+    dat = kw["dat"]
+    datt = kw["datt"]
+    dattt = kw["dattt"]
+    Delta1 = kw["Delta1"]
+    Delta2 = kw["Delta2"]
+
+    rhoc = kw.get("rhoc", 1)
+    Tc = kw.get("Tc", 1)
+    phi1 = -log(1-b*delta*rhoc)
+    if Delta1 == Delta2:
+        # Special case using the l'Hôpital's rule
+        phi2 = rhoc*delta
+    else:
+        phi2 = log((Delta1*b*rhoc*delta+1)/(Delta2*b*rhoc*delta+1)) / \
+            b/(Delta1-Delta2)
+
+    phi1d = b*rhoc/(1-b*delta*rhoc)
+    phi1dd = b**2*rhoc**2/(1-b*delta*rhoc)**2
+    phi1ddd = 2*b**3*rhoc**3/(1-b*delta*rhoc)**3
+
+    PI12 = (1+Delta1*b*rhoc*delta) * (1+Delta2*b*rhoc*delta)
+    PI12d = b*rhoc * (2*Delta1*Delta2*b*delta*rhoc + Delta1 + Delta2)
+    PI12dd = 2*Delta1*Delta2*b**2*rhoc**2
+
+    phi2d = rhoc/PI12
+    phi2dd = -rhoc*PI12d/PI12**2
+    phi2ddd = rhoc*(-PI12*PI12dd+2*PI12d**2)/PI12**3
+
+    fir = phi1 - tau*a/R/Tc*phi2
+    fird = phi1d - tau*a/R/Tc*phi2d
+    firdd = phi1dd - tau*a/R/Tc*phi2dd
+    firddd = phi1ddd - tau*a/R/Tc*phi2ddd
+
+    # Eq 32
+    dtat = tau*dat + a
+    dtatt = tau*datt + 2*dat
+    dtattt = tau*dattt + 3*datt
+
+    firt = -dtat/R/Tc * phi2
+    firtt = -dtatt/R/Tc * phi2
+    firttt = -dtattt/R/Tc * phi2
+    firdt = -dtat/R/Tc * phi2d
+    firddt = -dtat/R/Tc * phi2dd
+    firdtt = -dtatt/R/Tc * phi2d
+
+    prop = {}
+    prop["fir"] = fir
+    prop["fird"] = fird
+    prop["firt"] = firt
+    prop["firdd"] = firdd
+    prop["firdt"] = firdt
+    prop["firtt"] = firtt
+    prop["firddd"] = firddd
+    prop["firddt"] = firddt
+    prop["firdtt"] = firdtt
+    prop["firttt"] = firttt
+
+    prop["B"] = 0
+    prop["C"] = 0
+    prop["D"] = 0
+
+    return prop
+
+
+@refDoc(__doi__, [1, 2])
 class Cubic(EoS):
-    """Clase que modela de manera generalizada las ecuaciones de estado cúbicas
-    ref. Prausnick  Propiedades de gases y liquidos, pag 203"""
+    r"""Class to implement the common functionality of cubic equation of state
+
+    This class implement a general cubic equation of state in the form:
+
+    .. math::
+        P = \frac{RT}{V-b}-\frac{\alpha(T)}{V^2+\delta V+\epsilon}
+
+    .. math::
+        P = \frac{RT}{V-b}-\frac{\alpha(T)}{\left(V+\delta_1b\right)
+        \left(V+\delta_2b\right)}
+
+    .. math::
+        \delta_1 = -\frac{\sqrt{\delta^2-4\epsilon}-\delta}{2b}
+
+    .. math::
+        \delta_2 = -\frac{\sqrt{\delta^2-4\epsilon}+\delta}{2b}
+    """
+
     def __init__(self, T, P, mezcla):
-        self.T=unidades.Temperature(T)
-        self.P=unidades.Pressure(P, "atm")
-        self.mezcla=mezcla
-        self.componente=mezcla.componente
-        self.fraccion=mezcla.fraccion
+        P_atm = P/101325
+        self.T = unidades.Temperature(T)
+        self.P = unidades.Pressure(P)
+        self.mezcla = mezcla
+        self.componente = mezcla.componente
+        self.zi = mezcla.fraccion
 
-        self.B=self.b*self.P.atm/R_atml/self.T
-        self.Tita=self.tita*self.P.atm/(R_atml*self.T)**2
+        self.B = self.b*P/R/T
+        self.Tita = self.tita*P/(R*T)**2
 
-        delta=self.delta*self.P.atm/R_atml/self.T
-        epsilon=self.epsilon*(self.P.atm/R_atml/self.T)**2
-        eta=self.eta*self.P.atm/R_atml/self.T
-        Z=roots([1, delta-self.B-1, self.Tita+epsilon-delta*(self.B+1), -epsilon*(self.B+1)-self.Tita*eta])
-        self.Z=r_[Z[0].real, Z[2].real]
+        delta = self.delta*P/R/T
+        epsilon = self.epsilon*(P/R/T)**2
 
-        self.V=self.Z*R_atml*self.T/self.P.atm  #mol/l
-        self.x, self.xi, self.yi, self.Ki=self._Flash()
-        self.H_exc=-(self.tita+self.dTitadT)/R_atml/self.T/(self.delta**2-4*self.epsilon)**0.5*log((2*self.V+self.delta-(self.delta**2-4*self.epsilon)**0.5)/(2*self.V+self.delta+(self.delta**2-4*self.epsilon)**0.5))+1-self.Z
+        # δ1, δ2 calculated from polynomial factorization
+        self.delta1 = ((self.delta**2-4*self.epsilon)**0.5-self.delta)/2/self.b
+        self.delta2 = ((self.delta**2-4*self.epsilon)**0.5+self.delta)/2/self.b
+
+        # Eq 4-6.3 in [1]_
+        coeff = [1, delta-self.B-1, self.Tita+epsilon-delta*(self.B+1),
+                 -epsilon*(self.B+1)-self.Tita*self.B]
+        Z = roots(coeff)
+        # print("Z", Z)
+        # TODO: use the anallycal solution, Span, pag 50
+
+        # Set the minimum and maximum root values as liquid and gas Z values
+        self.Z = r_[Z[0].real, Z[2].real]
+        self.Zl = min(Z).real
+        self.Zg = max(Z).real
+
+        self.V = self.Z*R_atml*T/P_atm  # l/mol
+        self.rho = 1/self.V
+        self.Vl = unidades.MolarVolume(self.Zl*R*T/P, "m3mol")   # l/mol
+        self.Vg = unidades.MolarVolume(self.Zg*R*T/P, "m3mol")  # l/mol
+
+        # tau = mezcla.Tc/T
+        # delta = self.V[0]*mezcla.Vc
+        # kw = {}
+        # print(CubicHelmholtz(tau, delta, **kw))
+
+
+        # print(coeff, Z)
+        # self.x, self.xi, self.yi, self.Ki = self._Flash()
+
+        # dep_v = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[0], T)
+        # dep_l = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[1], T)
+
+    def _mixture(self, eq, ids, par):
+        self.kij = Kij(ids, eq)
+        mixpar = Mixing_Rule(self.mezcla.fraccion, par, self.kij)
+        return mixpar
+
+    # def _PHIO(self, cp, Tc):
+        # """Convert cp dict in phi0 dict when the cp expression isn't in
+        # Helmholtz free energy terms"""
+        # co = cp["ao"]-1
+        # ti = []
+        # ci = []
+        # for n, t in zip(cp["an"], cp["pow"]):
+            # ti.append(-t)
+            # ci.append(-n/(t*(t+1))*Tc**t)
+
+        # # The integration constant are difficult to precalculate as depend of
+        # # resitual Helmholtz free energy. It's easier use a offset system
+        # # saved the values in database and retrieve for each reference state
+        # cI = 0
+        # cII = 0
+
+        # Fi0 = {"ao_log": [1,  co],
+               # "pow": [0, 1] + ti,
+               # "ao_pow": [cII, cI] + ci}
+
+        # return Fi0
+
+    # def _phi0i(self, cp, tau, delta):
+        # r"""Ideal gas Helmholtz free energy and derivatives
+        # The ideal gas specific heat can have different contributions
+
+        # .. math::
+            # \frac{C_p^o}{R} = c_o + \sum_i c_iT_r^i
+
+        # The dict with the definition of ideal gas specific heat must define
+        # the parameters:
+
+            # * ao: Independent of temperature coefficient
+            # * an: Polynomial term coefficient
+            # * pow: Polynomial term temperature exponent
+
+        # Parameters
+        # ----------
+        # cp : dict
+            # Ideal gas properties parameters, can be in Cp term of directly in
+            # helmholtz free energy
+        # tau : float
+            # Inverse reduced temperature, Tc/T [-]
+        # delta : float
+            # Reduced density, rho/rhoc [-]
+
+        # Returns
+        # -------
+        # prop : dictionary with ideal adimensional helmholtz energy and deriv
+            # fio  [-]
+            # fiot: [∂fio/∂τ]δ  [-]
+            # fiod: [∂fio/∂δ]τ  [-]
+            # fiott: [∂²fio/∂τ²]δ  [-]
+            # fiodt: [∂²fio/∂τ∂δ]  [-]
+            # fiodd: [∂²fio/∂δ²]τ  [-]
+        # """
+
+        # Fi0 = self._PHIO(cp)
+
+        # fio = Fi0["ao_log"][1]*log(tau)
+        # fiot = Fi0["ao_log"][1]/tau
+        # fiott = -Fi0["ao_log"][1]/tau**2
+
+        # if delta:
+            # fiod = 1/delta
+            # fiodd = -1/delta**2
+        # else:
+            # fiod, fiodd = 0, 0
+        # fiodt = 0
+
+        # for n, t in zip(Fi0["ao_pow"], Fi0["pow"]):
+            # fio += n*tau**t
+            # if t != 0:
+                # fiot += t*n*tau**(t-1)
+            # if t not in [0, 1]:
+                # fiott += n*t*(t-1)*tau**(t-2)
+
+        # prop = {}
+        # prop["fio"] = fio
+        # prop["fiot"] = fiot
+        # prop["fiott"] = fiott
+        # prop["fiod"] = fiod
+        # prop["fiodd"] = fiodd
+        # prop["fiodt"] = fiodt
+        # return prop
+
+    # def _phi0(self, tau, delta):
+        # fio = fiod = fiodd = fiot = fiott = fiodt = 0
+        # for cmp, x in zip(self.mezcla.componente, self.mezcla.fraccion):
+            # phii = self._phi0i(cp, tau, delta)
+            # fio += x*phii["fio"] + x*log(x)
+            # fiod += x*phii["fiod"] + x*log(x)
+            # fiodd += x*phii["fiodd"] + x*log(x)
+            # fiot += x*phii["fiot"] + x*log(x)
+            # fiott += x*phii["fiott"] + x*log(x)
+            # fiodt += x*phii["fiodt"] + x*log(x)
+
+        # prop = {}
+        # prop["fio"] = fio
+        # prop["fiot"] = fiot
+        # prop["fiott"] = fiott
+        # prop["fiod"] = fiod
+        # prop["fiodd"] = fiodd
+        # prop["fiodt"] = fiodt
+        # return prop
+
+    # def _ideal(self, tau, delta):
+        # fio = self._phi0(tau, delta)
+        # p = {}
+        # p["U"] = fio["fiot"]
+        # p["H"] = 1 + fio["fiot"]
+        # p["S"] = fio["fiot"]-fio["fio"]
+        # p["cv"] = -fio["fiott"]
+
+        # return p
+
+    def _excess(self, tau, delta):
+        fir = self.fir["fir"]
+        fird = self.fir["fird"]
+        firt = self.fir["firt"]
+        firtt = self.fir["firtt"]
+        p = {}
+        p["Z"] = 1 + delta*fird
+        p["H"] = tau*firt + delta*fird
+        p["S"] = tau*firt - fir
+        p["cv"] = -tau**2*firtt
+
+        return p
+
+    def _departure(self, a, b, d, e, TdadT, V, T):
+        """Calculate departure function, Table 6-3 from [1]"""
+        Z = 1 + b/(V-b) - a*V/R_atml/T/(V**2+d*V+e)
+
+        # Numerador and denominator used in several expression
+        K = (d**2-4*e)**0.5
+        num = 2*V + d - K
+        den = 2*V + d + K
+        kw = {}
+        kw["Z"] = Z
+        if K:
+            kw["H"] = 1 - (a+TdadT)/R_atml/T/K*log(num/den) - Z
+            kw["S"] = TdadT/R_atml/K*log(num/den) - log(Z*(1-b/V))
+            kw["A"] = -a/R_atml/T/K*log(num/den) + log(Z*(1-b/V))
+            kw["f"] = a/R_atml/T/K*log(num/den) - log(Z*(1-b/V)) - (1-Z)
+        else:
+            kw["H"] = 1 - Z
+            kw["S"] = -log(Z*(1-b/V))
+            kw["A"] = log(Z*(1-b/V))
+            kw["f"] = -log(Z*(1-b/V)) - (1-Z)
+        return kw
+
+    def _fug(self, Z, xi):
+        """Calculate partial fugacities coefficieint of components
+
+        References
+        ----------
+        mollerup, Chap 2, pag 64 and so
+        """
+        V = Z*R_atml*self.T/self.P
+
+        g = log(V-self.b) - log(V)                                     # Eq 61
+        f = 1/R_atml/self.b/(self.delta1-self.delta2) * \
+            log((V+self.delta1*self.b)/(V+self.delta2*self.b))         # Eq 62
+
+        gB = -1/(V-self.b)                                             # Eq 80
+        
+        An = -g                                                        # Eq 75
+        AB = -n*gB-D/self.T*fB                                         # Eq 78
+        AD = -f/self.T                                                 # Eq 79
+
+        # Ch.3, Eq 66
+        dAni = An+AB*Bi+AD*Di
+
+        # Ch.2, Eq 13
+        fi = dAni - log(Z)
+        return
+
+        
 
     def _fug(self, Z, xi):
         Ai=[]
         for i in range(len(self.componente)):
             suma=0
             for j in range(len(self.componente)):
-                suma+=self.fraccion[j]*self.ai[j]**0.5*(1-self.kij[i][j])
+                suma+=self.zi[j]*self.ai[j]**0.5*(1-self.kij[i][j])
             Ai.append(1/self.tita*2*self.ai[i]**0.5*suma)
         tita=[]
         for i in range(len(self.componente)):
             tita.append(exp(self.bi[i]/self.b*(Z-1)-log(Z-self.B)-self.Tita/self.B/sqrt(self.u**2-4*self.w)*(Ai[i]-self.bi[i]/self.b)*log((Z+self.B/2*(self.u+sqrt(self.u**2-4*self.w)))/(Z+self.B/2*(self.u-sqrt(self.u**2-4*self.w))))).real)
         return tita
 
-
-class _2ParameterCubic(Cubic):
-    pass
-
-class van_Waals(Cubic):
-    """Ecuación de estado de van der Waals
-        van der Waals, J.D. Over de continuiteit van den gas- en vloestof-toestand. Dissertation, Leiden University, Leiden, Niederlande, 1873."""
-    __title__="van der Waals (1890)"
-    __status__="vdW"
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        for componente in mezcla.componente:
-            a, b=self.__lib(componente)
-            ai.append(a)
-            bi.append(b)
-        self.kij=Kij(None)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=0
-        self.epsilon=0
-        self.eta=b
-
-        #TODO: Find relation between u,w y tita,delta, epsilon...
-        self.u=0
-        self.w=0
-
-        self.dTitadT=0
-        super(van_Waals, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto):
-        a=0.421875*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.125*R_atml*compuesto.Tc/compuesto.Pc.atm
-        return  a, b
-
-
-class RK(Cubic):
-    """Ecuación de estado de Redlich-Kwong
-    Redlich, O.; Kwong, J.N.S., On The Thermodynamics of Solutions. Chem. Rev. 1949, 44, 233."""
-    __title__="Redlich-Kwong (1949)"
-    __status__="RK"
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        for componente in mezcla.componente:
-            a, b=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-        self.kij=Kij(None)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        #TODO: Find relation between u,w y tita,delta, epsilon...
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(RK, self).__init__(T, P, mezcla)
-
-    def __lib(self, compuesto, T):
-        a=0.42747*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        alfa=compuesto.tr(T)**-0.5
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        return  a*alfa, b
-
-
-class Wilson(Cubic):
-    """Ecuación de estado de Wilson 1964
-    Wilson, G. M.: Adv. Cryogenic Eng., 9: 168 (1964)."""
-    __title__="Wilson (1964)"
-    __status__="Wilson"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        for componente in mezcla.componente:
-            a, b=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-        self.kij=Kij(None)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(Wilson, self).__init__(T, P, mezcla)
-
-    def __lib(self, compuesto, T):
-        """Librería de cálculo de la ecuación de estado de Wilson"""
-        a=0.42747*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        alfa=1+(1.57+1.62*compuesto.f_acent/(compuesto.tr(T)-1))*compuesto.tr(T)
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        return  a*alfa, b
-
-
-class Fuller(Cubic):
-    """Ecuación de estado de Fuller 1976
-    Fuller, G. G.: Ind. Eng. Chem. Fundam., 15: 254 (1976)."""
-    __title__="Fuller (1976)"
-    __status__="Fuller"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        ci=[]
-        for componente in mezcla.componente:
-            a, b, c=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            ci.append(ac)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mix_van_der_Waals([ai, bi, ci], self.kij)
-        tdadt=0
-
-        self.ai=ai
-        self.bi=bi
-        self.ci=ci
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=c
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(Fuller, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        #FIXME: La expresión para calcular beta no es correcta, necesita el valor de b que se culcula a partir de el, algún fallo habra en la bibliografia
-        b=compuesto.vc*compuesto.peso_molecular
-        beta=b/compuesto.vc*compuesto.peso_molecular
-        c=1/beta*(sqrt(1/beta-0.75)-1.5)
-        Wb=beta*((1-beta)*(2+c*beta)-(1+c*beta))/((2+c*beta)*(1-beta)**2)
-        b=Wb*R_atml*compuesto.Tc/compuesto.Pc.atm
-        Wa=(1+c*beta)**2*Wb/beta/(1-beta)**2/(2+c*beta)
-        m=0.48+1.574*compuesto.f_acent-0.176*compuesto.f_acent**2
-        q=(beta/0.26)**0.25*m
-        alfa=(1+q*(1-compuesto.tr(T)**0.5))**2
-        a=Wa*R_atml**2*compuesto.Tc*alfa/compuesto.Pc.atm
-        return  a, b, c
-
-
-class SRK(Cubic):
-    """Ecuación de estado de Soave-Redlich-Kwong
-    Soave, G. Equilibrium constants from a modified Redlich-Kwong equation of state. Chem. Eng. Sci. 1972, 27, 1197."""
-    __title__="SRK (1972)"
-    __status__="SRK"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(SRK, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        """Librería de cálculo de la ecuación de estado de Soave-Redlich-Kwong,"""
-        Tr=T/compuesto.Tc
-        ac=0.42748*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        m=0.48+1.574*compuesto.f_acent-0.176*compuesto.f_acent**2
-
-        Config=config.getMainWindowConfig()
-        Alpha_Mathias=Config.getint("Thermo","Alfa")
-        if Alpha_Mathias==1 and Tr>1:
-            d=1.+m/2.
-            c=1.-1./d
-            alfa=exp(c*(1-Tr**d))**2
-        else:
-            alfa=(1+m*(1-Tr**0.5))**2
-        return ac*alfa, b, ac, m
-
-
-class SRK_API(Cubic):
-    """Ecuación de estado de Soave-Redlich-Kwong modificada publicada en el API Technical Databook
-    Soave, G.: Inst. Chem. Eng. Symp. Ser., 56(1.2): 1 (1979)."""
-    __title__="SRK-API (1979)"
-    __status__="SRK-API"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mix_van_der_Waals([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(SRK_API, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        """Librería de cálculo de la ecuación de estado de Soave-Redlich-Kwong,"""
-        Tr=T/compuesto.Tc
-        ac=0.42748*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        m=0.48505+1.55171*compuesto.f_acent-0.15613*compuesto.f_acent**2
-
-        Config=config.getMainWindowConfig()
-        Alpha_Mathias=Config.getint("Thermo","Alfa")
-        if Alpha_Mathias==1 and Tr>1:
-            d=1.+m/2.
-            c=1.-1./d
-            alfa=exp(c*(1-Tr**d))**2
-        else:
-            alfa=(1+m*(1-Tr**0.5))**2
-        return ac*alfa, b, ac, m
-
-
-class MSRK(Cubic):
-    """Ecuación de estado de Soave-Redlich-Kwong modificada de dos parámetros
-    Soave, G.: Chem. Eng. Sci., 39: 357 (1984)."""
-    __title__="M-SRK (1984)"
-    __status__="MSRK"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mix_van_der_Waals([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(MSRK, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        ac=0.42748*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        if compuesto.MSRK[0]==0 and compuesto.MSRK[1]==0:
-            m=0.48+1.574*compuesto.f_acent-0.176*compuesto.f_acent**2
-            alf=alfa=(1+m*(1-compuesto.tr(T)**0.5))**2
-        else:
-            m=0.48+1.574*compuesto.f_acent-0.176*compuesto.f_acent**2
-            alf=1.+(1-compuesto.tr(T))*(compuesto.MSRK[0]+compuesto.MSRK[1]/compuesto.tr(T))
-        return ac*alf, b, ac, m
-
-
-class SRK_Graboski(Cubic):
-    """Ecuación de estado de Soave-Redlich-Kwong Graboski Daubert API 8D4.1, par 820
-       Graboski, M. S., Daubert, T. E., “A Modified Soave Equation of State for Phase Equilibrium Calculations-II. Systems Containing CO,, H,S, N2, and C0,”Ind. Eng. Chem. ProcessDes. Develop. 17 (1978)."""
-    __title__="SRK-Graboski-Daubert (1978)"
-    __status__="SRK-GD"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        for componente in mezcla.componente:
-            a, b=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mix_van_der_Waals([ai, bi], self.kij)
-        tdadt=0
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(SRK_Thorwart, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        a=0.42748*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        if not compuesto.SRKGraboski[1]:
-            m=0.48505+1.55171*compuesto.f_acent-0.15613*compuesto.f_acent**2
-
-            Config=config.getMainWindowConfig()
-            Alpha_Mathias=Config.getint("Thermo","Alfa")
-            if Alpha_Mathias==1 and Tr>1:
-                d=1.+m/2.
-                c=1.-1./d
-                alfa=exp(c*(1-Tr**d))**2
-            else:
-                alfa=(1+m*(1-Tr**0.5))**2
-        elif not compuesto.SRKGraboski[0]:
-            S1=0.48508+1.55171*compuesto.f_acent-0.15613*compuesto.f_acent**2
-            S2=compuesto.SRKGraboski[1]
-            alfa=(1+S1*(1-Tr**0.5)+S2*(1-Tr**0.5)/Tr**0.5)**2
-        return  a*alfa, b
-
-
-class SRK_Mathias(Cubic):
-    """Ecuación de estado de Soave-Redlich-Kwong modificada por Mathias
-    Mathias, P.M.: A versatile phase equilibrium equation of state. Industrial and Engineering Chemistry PRocess Design and Development 22, 385-391 (1983)"""
-    __title__="SRK-Mathias (1983)"
-    __status__="SRK-Math"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(SRK, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        """Librería de cálculo de la ecuación de estado de Soave-Redlich-Kwong,"""
-        Tr=T/compuesto.Tc
-        ac=0.42748*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        m=0.48508+1.55191*compuesto.f_acent-0.15613*compuesto.f_acent**2
-
-        Config=config.getMainWindowConfig()
-        Alpha_Mathias=Config.getint("Thermo","Alfa")
-        if Alpha_Mathias==1 and Tr>1:
-            d=1.+m/2.+0.3*compuesto.Mathias
-            c=1.-1./d
-            alfa=exp(c*(1-Tr**d))**2
-        else:
-            alfa=(1+m*(1-Tr**0.5)*compuesto.Mathias*(1-Tr)*(0.7-Tr))**2
-        return ac*alfa, b, ac, m
-
-
-class SRK_Adachi(Cubic):
-    """Ecuación de estado de Soave-Redlich-Kwong modificada por Adachi-Lu
-   Adachi, Y., Lu, B.C.Y.: Simplest equation of state for vapor-liquid equilibrium calculation: a modification of the van der Walls equation. Journal of the American Institute of Chemical Engineers 30, 991-993 (1984)"""
-    __title__="SRK-Adachi-Lu (1984)"
-    __status__="SRK-Adachi"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(SRK, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        """Librería de cálculo de la ecuación de estado de Soave-Redlich-Kwong,"""
-        Tr=T/compuesto.Tc
-        ac=0.42748*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        m=0.48508+1.55191*compuesto.f_acent-0.15613*compuesto.f_acent**2
-        alfa=compuesto.Adachi[0]*10**(compuesto.Adachi[1]*(1-Tr))
-        return ac*alfa, b, ac, m
-
-
-class SRK_Androulakis(Cubic):
-    """Ecuación de estado de Soave-Redlich-Kwong modificada por Androulakis
-    Andoulakis I.P., Kalospiros, N.S., Tassios, D.P.: Thermophysical properties of pure polar and nonpolar compounds with a modified vdW-711 equation of state. Fluid Phase Equilibria 45, 135-163 (1989)"""
-    __title__="SRK-Androulakis (1984)"
-    __status__="SRK-And"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(SRK)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=b
-        self.epsilon=0
-        self.eta=b
-
-        self.u=1
-        self.w=0
-
-        self.dTitadT=tdadt
-        super(SRK, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        """Librería de cálculo de la ecuación de estado de Soave-Redlich-Kwong,"""
-        Tr=T/compuesto.Tc
-        ac=0.42748*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.08664*R_atml*compuesto.Tc/compuesto.Pc.atm
-        m=0.48508+1.55191*compuesto.f_acent-0.15613*compuesto.f_acent**2
-
-        Config=config.getMainWindowConfig()
-        Alpha_Mathias=Config.getint("Thermo","Alfa")
-        if Alpha_Mathias==1 and Tr>1:
-            alfa=exp(compuesto.Androulakis[0]*(1-Tr**(2./3)))
-        else:
-            alfa=(1+compuesto.Androulakis[0]*(1-Tr**(2./3))+compuesto.Androulakis[1]*(1-Tr**(2./3))**2+compuesto.Androulakis[2]*(1-Tr**(2./3))**3)**2
-        return ac*alfa, b, ac, m
-
-
-class PR(Cubic):
-    """Ecuación de estado de Peng Robinson
-    Peng, D.-Y.; Robinson, D.B. A New Two-Constant Equation of State. I&EC Fundam. 1976, 15(1), 59."""
-    __title__="Peng-Robinson (1976)"
-    __status__="PR"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        a=0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
-        m=0.37464+1.54226*compuesto.f_acent-0.26992*compuesto.f_acent**2
-
-        Config=config.getMainWindowConfig()
-        Alpha_Mathias=Config.getint("Thermo","Alfa")
-        if Alpha_Mathias==1 and Tr>1:
-            d=1.+m/2.
-            c=1.-1./d
-            alfa=exp(c*(1-Tr**d))**2
-        else:
-            alfa=(1+m*(1-Tr**0.5))**2
-        return a*alfa, b, a, m
-
-
-
-class PRSV(Cubic):
-    """Ecuación de estado de Peng Robinson modificada por Stryjek y Vera, v1"""
-    __title__="PR-SV (1986)"
-    __status__="PR-SV"
-    __doi__ = {"autor": "Stryjek, R.; Vera, J.H.",
-               "title": "PRSV: An improved peng—Robinson equation of state for pure compounds and mixtures",
-               "ref": "Can. J. Chem. Eng. 1986, 64: 323–333",
-               "doi":  "10.1002/cjce.5450640224"},
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, k=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(k)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR_SV, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        w = compuesto.f_acent
-        if w>=0.49:
-            ko=0.378893+1.4897153*w-0.17131848*w**2+0.0196554*w**3
-        else:
-            ko=0.37464+1.54226*w-0.26992*w**2
-
-        if compuesto.PRSV_k1:
-            # TODO: Add data from journal to database
-            k1 = compuesto.PRSV_k1
-        elif Tr>=0.7:
-            k1=0
-        elif 1<compuesto.C<=18:
-            k1=[-0.00159, 0.02669, 0.03136, 0.03443, 0.03946, 0.05104, 0.04648,
-                0.04464, 0.04104, 0.04510, 0.02919, 0.05426, 0.04157, 0.02686,
-                0.01892, 0.02665, 0.04048, 0.08291][compuesto.C]
-        else:
-            k1=0
-        k=ko+k1*(1.+sqrt(Tr))*(0.7-Tr)
-        alfa=(1+k*(1-Tr**0.5))**2
-        a=0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
-
-        return a*alfa, b, a, k
-
-
-class PRSV2(Cubic):
-    """Ecuación de estado de Peng Robinson modificada por Stryjek y Vera, v2"""
-    __title__="PR-SV2 (1986)"
-    __status__="PR-SV2"
-    __doi__ = {"autor": "Stryjek, R.; Vera, J.H.",
-               "title": "PRSV2: A cubic equation of state for accurate vapor—liquid equilibria calculations",
-               "ref": "Can. J. Chem. Eng., 64: 820–826",
-               "doi":  "10.1002/cjce.5450640516"},
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, k=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(k)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR_SV, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        w = compuesto.f_acent
-        if w>=0.49:
-            ko=0.378893+1.4897153*w-0.17131848*w**2+0.0196554*w**3
-        else:
-            ko=0.37464+1.54226*w-0.26992*w**2
-
-        if compuesto.PRSV_k1 and compuesto.PRSV_k2:
-            # TODO: Add data from journal to database
-            k1 = compuesto.PRSV_k1
-            k2 = compuesto.PRSV_k2
-            k3 = compuesto.PRSV_k3
-        else:
-            # Use PRSV V1
-            k2 = 0
-            K3 = 0
-            if Tr>=0.7:
-                k1=0
-            elif 1<compuesto.C<=18:
-                k1=[-0.00159, 0.02669, 0.03136, 0.03443, 0.03946, 0.05104,
-                    0.04648, 0.04464, 0.04104, 0.04510, 0.02919, 0.05426,
-                    0.04157, 0.02686, 0.01892, 0.02665, 0.04048, 0.08291][compuesto.C]
-            else:
-                k1=0
-        k = ko+(k1+k2*(k3-Tr)*(1-Tr**0.5))*(1+Tr**0.5)*(0.7-Tr)
-        alfa = (1+k*(1-Tr**0.5))**2
-        a = 0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b = 0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
-
-        return a*alfa, b, a, k
-
-
-class PR_Gasem(Cubic):
-    """Ecuación de estado de Peng Robinson modificada por Gasem (2001)
-    Gasem, Gao, Pan & Robinson: Fluid Phase Equilibria, 181, 113-125 (2001)"""
-    __title__="PR Gassem (2001)"
-    __status__="PR-Gas"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR_Gasem, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        m=0.134+0.508*compuesto.f_acent-0.0467*compuesto.f_acent**2
-        alfa=exp((2.+0.836*Tr)*(1-Tr**m))
-        a=0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
-        return a*alfa, b, a, m
-
-
-class PR_Melhem(Cubic):
-    """Ecuación de estado de Peng Robinson modificada por Melhem
-    Melhem, G.A.; Saini, R.; Goodwin, B.M. A Modified Peng-Robinson Equation of State. Fluid Phase Eq. 1989, 47, 189."""
-    __title__="PR Melhem (1989)"
-    __status__="PR-Mel"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        for componente in mezcla.componente:
-            a, b, ac=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR_Melhem, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        alfa=exp(compuesto.Melhem[0]*(1-Tr)+compuesto.Melhem[1]*(1-Tr**0.5)**2)
-        a=0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
-        return a*alfa, b, a
-
-
-class PR_Almeida(Cubic):
-    """Ecuación de estado de Peng Robinson modificada por Almeida
-    Almeida, G.S.; Aznar, M. and Silva Telles, A., Uma Nova Forma de Dependência com a Temperatura do Termo Atrativo de Equaçöes de Estado Cúbicas, RBE, Cad. Eng. Quim., 8, 95-123, (1991)"""
-    __title__="PR Almeida (1991)"
-    __status__="PR-Alm"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        for componente in mezcla.componente:
-            a, b, ac=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR_Almeida, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        alfa=exp(compuesto.Almeida[0]*(1-Tr)*abs(1-Tr)**(compuesto.Almeida[2]-1)+compuesto.Almeida[1]*(Tr**-1-1))
-        a=0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
-        return a*alfa, b, a
-
-
-class PR_Mathias_Copeman(Cubic):
-    """Ecuación de estado de Peng-Robinson modificada por Mathias-Copeman
-    Mathias, P.M., Copeman, T.W.: Extension of the Peng-Robinson equation of the various forms of the local composition concept. Fluid Phase Equilibria 13, 91-108."""
-    __title__="PR-Mathias-Copeman (1983)"
-    __status__="PR-MC"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR_Mathias_Copeman, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        a=0.457235*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        b=0.077796*R_atml*compuesto.Tc/compuesto.Pc.atm
-
-        Config=config.getMainWindowConfig()
-        Alpha_Mathias=Config.getint("Thermo","Alfa")
-        if Alpha_Mathias==1 and Tr>1:
-            alfa=(1+compuesto.MathiasCopeman[0]*(1-Tr**0.5))**2
-        else:
-            alfa=(1+compuesto.MathiasCopeman[0]*(1-Tr**0.5)+compuesto.MathiasCopeman[1]*(1-Tr**0.5)**2+compuesto.MathiasCopeman[2]*(1-Tr**0.5)**3)**2
-        return a*alfa, b, a, m
-
-
-class PR_Yu_Lu(Cubic):
-    """Ecuación de estado de Peng-Robinson modificada por Yu Lu
-    Yu, J.-M.; Lu, B.C.-Y. A three-parameter cubic equation of state for asymmetric mixture density calculations. Fluid Phase Eq. 1987, 34, 1."""
-    __title__="PR-Yu Lu (1987)"
-    __status__="PR-YL"
-
-    def __init__(self, T, P, mezcla):
-        ai=[]
-        bi=[]
-        aci=[]
-        mi=[]
-        for componente in mezcla.componente:
-            a, b, ac, m=self.__lib(componente, T)
-            ai.append(a)
-            bi.append(b)
-            aci.append(ac)
-            mi.append(m)
-        self.kij=Kij(PR)
-        a, b=mezcla.Mixing_Rule([ai, bi], self.kij)
-        tdadt=0
-        for i in range(len(mezcla.componente)):
-            for j in range(len(mezcla.componente)):
-                tdadt-=mezcla.fraccion[i]*mezcla.fraccion[j]*mi[j]*(aci[i]*aci[j]*mezcla.componente[j].tr(T))**0.5*(1-self.kij[i][j])
-
-        self.ai=ai
-        self.bi=bi
-        self.b=b
-        self.tita=a
-        self.delta=2*b
-        self.epsilon=-b**2
-        self.eta=b
-
-        self.u=2
-        self.w=-1
-
-        self.dTitadT=tdadt
-        super(PR_Yu_Lu, self).__init__(T, P, mezcla)
-
-
-    def __lib(self, compuesto, T):
-        Tr=T/compuesto.Tc
-        ac=(0.46863-0.0378304*compuesto.f_acent-0.00751969*compuesto.f_acent**2)*R_atml**2*compuesto.Tc**2/compuesto.Pc.atm
-        if compuesto.Yu_Lu==[0, 0, 0]:
-            if compuesto.f_acent<=0.49:
-                m=0.406846+1.87907*compuesto.f_acent-0.792636*compuesto.f_acent**2+0.737519*compuesto.f_acent**3
-                A0=0.535843
-                A1=-0.39244
-                A2=0.26507
-            else:
-                m=0.581981+0.17141*compuesto.f_acent-1.84441*compuesto.f_acent**2+1.19047*compuesto.f_acent**3
-                A0=0.79355
-                A1=-0.53409
-                A2=0.37273
-        else:
-            A0, A1, A2=compuesto.Yu_Lu
-        if Tr<1:
-            alfa=10**(m*(A0+A1*Tr+A2*Tr**2)*(1-Tr))
-        else:
-            alfa=10**(m*(A0+A1+A2)*(1-Tr))
-        b=(0.0892828-0.0640903*compuesto.f_acent-0.00518289*compuesto.f_acent**2)*R_atml*compuesto.Tc/compuesto.Pc.atm
-        c=b*(-1.29917+0.648463*compuesto.f_acent+0.895926*compuesto.f_acent**2)
-        return ac*alfa, b, c
-
-
-
-_all=[van_Waals, RK, Wilson, Fuller, SRK, SRK_API, MSRK, SRK_Graboski, PR, PRSV, PR_Gasem, PR_Melhem, PR_Almeida]
-
-if __name__ == "__main__":
-    from lib.corriente import Mezcla
-    mezcla = Mezcla(1, ids=[98], caudalUnitarioMasico=[1.])
-    for T in [125, 135, 145, 165, 185, 205]:
-        eq = Virial(T, 1, mezcla)
-        print(eq.H_exc)
+# if __name__ == "__main__":
+    # # from lib.mezcla import Mezcla
+    # # mix = Mezcla(1, ids=[62], caudalUnitarioMasico=[1.])
+    # # # mix = Mezcla(tipo=5, caudalMolar=1, ids=[2, 47, 98], fraccionMolar=[0.5, 0.3, 0.2])
+    # # eq = SRK(300, 101325, mix)
+    # # print(1/eq.V)
+    # # # for T in [125, 135, 145, 165, 185, 205]:
+        # # # eq = SRK(T, 1, mezcla)
+        # # # print(eq.H_exc)
+    # # from lib.mEoS import H2O
+    # # st = H2O(T=300, P=101325)
+    # # print(st.Z, st.rho)
