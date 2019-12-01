@@ -33,7 +33,7 @@ __all__ = ["EoS", "mEoS"]
 
 for file in files:
     fname, ext = os.path.splitext(os.path.basename(file))
-    if fname != "__init__":
+    if fname != "__init__" and fname not in ["project"]:
         __all__.append(fname)
 
 for module in __all__:
