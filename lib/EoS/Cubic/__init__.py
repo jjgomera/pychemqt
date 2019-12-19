@@ -158,6 +158,7 @@ from lib.EoS.Cubic.PR78 import PR78
 from lib.EoS.Cubic.PRMathiasCopeman import PRMathiasCopeman
 from lib.EoS.Cubic.PRGasem import PRGasem
 from lib.EoS.Cubic.PRMelhem import PRMelhem
+from lib.EoS.Cubic.PRAlmeida import PRAlmeida
 from lib.EoS.Cubic.PRSV import PRSV
 from lib.EoS.Cubic.PRSV2 import PRSV2
 from lib.EoS.Cubic.PRTwu import PRTwu
@@ -177,12 +178,12 @@ _all = [vdW,
         RK,
         SRK, SRKPeneloux, MSRK, SRKAPI,
         PR, PR78, PRMathiasCopeman,
-        PRGasem, PRMelhem, PRSV, PRSV2, PRTwu, PRYuLu,
+        PRGasem, PRMelhem, PRAlmeida, PRSV, PRSV2, PRTwu, PRYuLu,
         ALS1983,
         PT, PTV, PTVC,
         TB, TBS
         ]
-# _all= [SRK_API, PR_Almeida]
+# _all= [SRK_API]
 
 
 # Add references from equations hardcoded in __doi__ property
