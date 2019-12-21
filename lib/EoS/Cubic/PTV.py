@@ -74,3 +74,14 @@ class PTV(PT):
         c = Omegac*R*cmp.Tc/cmp.Pc
 
         return a*alfa, b, c
+
+
+# Aznar, M., Silva-Telles, A., Valderrama, J.O.
+# Parameters for the Attractive Coefficient of the Patel-Teja-Valderrama
+# Equation of State
+# Chem. Eng. Comm. 190(10) (2003) 1411-1426
+# 10.1080/00986440302156
+# This paper give selected parameters for the three-parameter form of the
+# temperature dependence of the attractive term applied to PTV cubic EoS. The
+# paper give only values for 50 selected compounds, to get the complete list
+# is necessary ask to author

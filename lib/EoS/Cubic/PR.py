@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+from math import exp
+
 from scipy.constants import R
 
 from lib.EoS.cubic import Cubic, CubicHelmholtz
@@ -38,6 +40,16 @@ class PR(Cubic):
     This EoS include too a special alpha temperature dependence for water as
     described in [2]_
 
+    In supercritical states, the α temperature dependence use the
+    Boston-Mathias expression, [4]_.
+
+    .. math::
+        \begin{array}[t]{l}
+        \alpha = \exp\left(c\left(1-T_r^d\right)\right)\\
+        d = 1+\frac{m}{2}\\
+        c = \frac{m}{d}\\
+        \end{array}
+
     Examples
     --------
     Example 4.3 from [3]_, Propane saturated at 300K
@@ -51,8 +63,7 @@ class PR(Cubic):
     >>> '%0.1f' % (eq.Vl.ccmol)
     '84.1'
 
-    # Tiny desviation
-    # '2038 86.8'
+    There are a tiny desviation, 2038 86.8 for two phases state.
     """
 
     __title__ = "Peng-Robinson (1976)"
@@ -75,6 +86,12 @@ class PR(Cubic):
          "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""},
+      {
+         "autor": "Boston, J.F., Mathias, P.M.",
+         "title": "Phase Equilibria in a Third-Generation Process Simulator",
+         "ref": "Presented at: 'Phase Equilibria and Fluid Properties in the "
+                "Chemical Industries', Berlin, March 17-21, 1980.",
          "doi": ""})
 
     OmegaA = 0.45724
@@ -252,12 +269,21 @@ class PR(Cubic):
         print("P", (1+delta*fir["fird"])*R*T*rho*1000)
 
     def _alfa(self, cmp, T):
-        if cmp.id == 62 and T/cmp.Tc < 0.85:
+        Tr = T/cmp.Tc
+        m = 0.37464 + 1.54226*cmp.f_acent - 0.2699*cmp.f_acent**2   # Eq 18
+
+        if cmp.id == 62 and Tr < 0.85:
             # Special case for water from [2]_
             alfa = (1.0085677 + 0.82154*(1-(T/cmp.Tc)**0.5))**2         # Eq 6
             m = 0
+
+        elif Tr > 1:
+            # Use the Boston-Mathias supercritical extrapolation, ref [4]_
+            d = 1+m/2                                                   # Eq 10
+            c = m/d                                                     # Eq 11
+            alfa = exp(c*(1-Tr**d))                                     # Eq 9
+
         else:
-            m = 0.37464 + 1.54226*cmp.f_acent - 0.2699*cmp.f_acent**2   # Eq 18
             alfa = (1+m*(1-(T/cmp.Tc)**0.5))**2                         # Eq 17
         return m, alfa
 

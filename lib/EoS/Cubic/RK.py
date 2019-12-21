@@ -36,7 +36,7 @@ class RK(Cubic):
 
     Examples
     --------
-    Example 4.3 from 1_, Propane saturated at 300K
+    Example 4.3 from [2]_, Propane saturated at 300K
 
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
@@ -50,12 +50,18 @@ class RK(Cubic):
 
     __title__ = "Redlich-Kwong (1949)"
     __status__ = "RK"
-    __doi__ = {
+    __doi__ = (
+      {
         "autor": "Redlich, O., Kwong, J.N.S.",
         "title": "On the Thermodynamnics of Solutions V. An Equation of State."
                  " Fugacities of Gaseous Solutions",
         "ref": "Chem. Rev. 44 (1949) 233-244",
         "doi": "10.1021/cr60137a013"},
+      {
+         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+         "title": "The Properties of Gases and Liquids 5th Edition",
+         "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""})
 
     def __init__(self, T, P, mezcla):
         ai = []

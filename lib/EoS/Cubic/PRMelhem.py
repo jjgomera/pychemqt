@@ -153,7 +153,7 @@ class PRMelhem(PR):
             m, n = dat[cmp.id]
             alfa = exp(m*(1-T/cmp.Tc) + n*(1-(T/cmp.Tc)**0.5)**2)       # Eq 1
         else:
-            alfa = PR._alfa(self, cmp, T)
+            m, alfa = PR._alfa(self, cmp, T)
         return 0, alfa
 
 
