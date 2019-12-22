@@ -90,12 +90,12 @@ class ALS1983(Cubic):
             b2i.append(B2*R*cmp.Tc/cmp.Pc)
             b3i.append(B3*R*cmp.Tc/cmp.Pc)
 
-        am, b1m, b2m, b3m = self._mixture(None, mezcla.ids, [ai, b1i, b2i, b3i])
+        a, b1m, b2m, b3m = self._mixture(None, mezcla.ids, [ai, b1i, b2i, b3i])
 
         self.ai = ai
         self.bi = b1i
         self.b = b1m
-        self.tita = am
+        self.tita = a
         self.delta = b3m-b2m
         self.epsilon = -b2m*b3m
 
@@ -109,5 +109,3 @@ if __name__ == "__main__":
     print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
     eq = ALS1983(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
-
-

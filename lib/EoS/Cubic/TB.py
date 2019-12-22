@@ -149,9 +149,8 @@ class TB(Cubic):
     >>> '%0.1f' % (eq.Vl.ccmol)
     '89.1'
 
-    # Tiny desviation
-    # '2025 89.4'
-    # '88.3'
+    There are a tiny desviation, 2025 89.4 for two phases state and 88.3 for
+    single phase state
     """
 
     __title__ = "Trebble-Bishnoi (1987)"

@@ -45,6 +45,8 @@ from lib.EoS.Cubic.PTVC import PTVC
 from lib.EoS.Cubic.TB import TB
 from lib.EoS.Cubic.TBS import TBS
 
+from lib.EoS.Cubic.Nasrifar import Nasrifar
+
 
 _all = [vdW,
         RK,
@@ -53,7 +55,8 @@ _all = [vdW,
         PRGasem, PRMelhem, PRAlmeida, PRSV, PRSV2, PRTwu, PRYuLu,
         ALS1983,
         PT, PTV, PTVC,
-        TB, TBS
+        TB, TBS,
+        Nasrifar
         ]
 # _all= [SRK_API]
 

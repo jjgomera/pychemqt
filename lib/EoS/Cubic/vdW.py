@@ -38,7 +38,7 @@ class vdW(Cubic):
 
     Examples
     --------
-    Example 4.3 from 1_, Propane saturated at 300K
+    Example 4.3 from [2]_, Propane saturated at 300K
 
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
@@ -52,11 +52,17 @@ class vdW(Cubic):
 
     __title__ = "van der Waals (1890)"
     __status__ = "vdW"
-    __doi__ = {
+    __doi__ = (
+      {
         "autor": "van der Waals, J.D.",
         "title": "Over de Continuiteit van den Gas- En Vloestoftoestand",
         "ref": "Dissertation, Leiden University, Leiden, Niederlande, 1873",
         "doi": ""},
+      {
+         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+         "title": "The Properties of Gases and Liquids 5th Edition",
+         "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""})
 
     def __init__(self, T, P, mezcla):
         self.T = T
