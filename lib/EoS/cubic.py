@@ -43,6 +43,13 @@ using the adimensional parameters
 
 Each cubic EoS implemented here would a specific form of this general
 expression changing the values of δ, ε and the expresion of α(T)
+
+Each equation is specially suitable for different compounds, for example, the
+Schmidt-Wenzel (SW) equation (1980) and the Adachi-Lu-Sugie (ALS) equation
+(1983) are good for methane to n-decane. The Yu-Lu (YL) equation (1987) was
+designed for asymmetric nonpolar mixtures, but not for polar substances. The
+Iwai-Margerum-Lu (IML) equation ( 1987) was developed for polar substances, but
+not suitable for nonpolar substances with large molecular weight.
 """
 
 

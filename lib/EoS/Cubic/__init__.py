@@ -33,6 +33,7 @@ from lib.EoS.Cubic.PRMelhem import PRMelhem
 from lib.EoS.Cubic.PRAlmeida import PRAlmeida
 from lib.EoS.Cubic.PRSV import PRSV
 from lib.EoS.Cubic.PRSV2 import PRSV2
+from lib.EoS.Cubic.PRZV import PRZV
 from lib.EoS.Cubic.PRTwu import PRTwu
 from lib.EoS.Cubic.PRYuLu import PRYuLu
 
@@ -52,7 +53,7 @@ _all = [vdW,
         RK,
         SRK, SRKPeneloux, MSRK, SRKAPI,
         PR, PR78, PRMathiasCopeman,
-        PRGasem, PRMelhem, PRAlmeida, PRSV, PRSV2, PRTwu, PRYuLu,
+        PRGasem, PRMelhem, PRAlmeida, PRSV, PRSV2, PRZV, PRTwu, PRYuLu,
         ALS1983,
         PT, PTV, PTVC,
         TB, TBS,
