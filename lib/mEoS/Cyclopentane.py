@@ -98,6 +98,47 @@ class Cyclopentane(MEoS):
         "n": [-0.0559, -6.4211, -46.926, 28.082, -70.838],
         "t": [0.1, 0.65, 3.2, 3.55, 7.5]}
 
+    visco0 = {"__name__": "Tasidou (2019)",
+              "__doi__": {
+                  "autor": "Tasidou, K.A., Huber, M.L., Assael, M.J.",
+                  "title": "Reference Correlation for the Viscosity of "
+                           "Cyclopentane from the Triple Point to 460 K and "
+                           "up to 380 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 48(4) (2019) 043101",
+                  "doi": "10.1063/1.5128321"},
+
+              "eq": 1, "omega": 1,
+
+              "ek": 406.3, "sigma": 0.5131,
+              "n_chapman": 0.021357,
+              "collision": [0.31504, -0.33671],
+
+              "Tref_virial": 406.3,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special residual term for Tasidou correlation"""
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+
+        # Table 3
+        c = [-2.99929507, -6.794935626e1, 3.73688216e1, -3.016898187e2,
+             -2.99929507, -5.842162628e-5, -2.816914446e-5, -3.637791924e-5,
+             2.99929507, -4.4337653e1]
+
+        # Eq 8
+        mur = (rhor**(2/3)*Tr**0.5)*(
+                c[0] + c[1]*rhor+c[2]*rhor/Tr**3 + c[3]*rhor/(rhor+c[4]-Tr) +
+                (c[5] + c[6]*Tr)/(rhor+c[7]) + (c[8]+c[9]*rhor**2)/Tr**2)
+        return mur
+
+    _viscosity = visco0,
+
     thermo0 = {"__name__": "Vassiliou (2015)",
                "__doi__": {
                    "autor": "Vassiliou, C.-M., Assael, M.J., Huber, M.L., "
@@ -165,4 +206,20 @@ class Test(TestCase):
     def test_Vassiliou(self):
         # Section 3.1.2, Pag 7
         # Viscosity value different to used in paper
-        self.assertEqual(round(Cyclopentane(T=512, rho=400).k.mWmK, 3), 68.661)
+        self.assertEqual(round(Cyclopentane(T=512, rho=400).k.mWmK, 3), 67.332)
+
+    def test_Tasidou(self):
+        # Selected values from Table 7, saturation states
+        st = Cyclopentane(T=180, x=0.5)
+        self.assertEqual(round(st.Liquido.mu.muPas, 0), 3053)
+        self.assertEqual(round(st.Gas.mu.muPas, 3), 5.058)
+
+        st = Cyclopentane(T=450, x=0.5)
+        self.assertEqual(round(st.Liquido.mu.muPas, 1), 107.1)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 13.82)
+
+        # Selected values from Table 8
+        self.assertEqual(round(Cyclopentane(T=180, P=1e5).mu.muPas, 1), 3055.8)
+        self.assertEqual(round(Cyclopentane(T=210, P=1e7).mu.muPas, 1), 1651.0)
+        self.assertEqual(round(Cyclopentane(T=450, P=2e8).mu.muPas, 1), 561.6)
+        self.assertEqual(round(Cyclopentane(T=330, P=1e5).mu.muPas, 2), 8.51)
