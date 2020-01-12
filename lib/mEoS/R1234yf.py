@@ -135,6 +135,42 @@ class R1234yf(MEoS):
         "n": [-0.23511e1, -0.11515e2, -0.53984e1, -0.37937e2],
         "t": [0.355, 2.45, 1.0, 5.1]}
 
+    visco0 = {"__name__": "Huber (2016)",
+              "__doi__": {
+                  "autor": "Huber, M.L., Assael, M.J.",
+                  "title": "Correlation for the Viscosity of "
+                           "2,3,3,3-tetrafluoroprop-1-ene (R1234yf) and "
+                           "trans-1,3,3,3-tetrafluropropene (R1234ze(E))",
+                  "ref": "Int. J. Refrigeration 71 (2016) 39-45",
+                  "doi": "10.1016/j.ijrefrig.2016.08.007"},
+
+              "eq": 1, "omega": 0,
+              "ek": 275, "sigma": 0.531,
+
+              "no_num": [-836950, 6336.28, -2.3547, 0.0395563],
+              "to_num": [0, 1, 2, 3],
+              "no_den": [39509.1, 121.018, 1],
+              "to_den": [0, 1, 2],
+
+              "Tref_virial": 275,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.01251,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "nr": [-0.19425910, -2.079577245],
+              "tr": [-0.5, -0.5],
+              "dr": [2/3, 5/3],
+
+              "nr_num": [-43.47027288],
+              "tr_num": [-0.5],
+              "dr_num": [5/3],
+              "nr_den": [-3.53682791, 1],
+              "tr_den": [-1, -1],
+              "dr_den": [0, 1]}
+
+    _viscosity = visco0,
+
     thermo0 = {"__name__": "Perkins (2011)",
                "__doi__": {
                    "autor": "Perkins, R.A., Huber, M.L.",
@@ -173,7 +209,7 @@ class Test(TestCase):
         # Critical enhancement fail because viscosity correlation
         st = R1234yf(T=250, P=5e4)
         self.assertEqual(round(st.rho, 5), 2.80006)
-        self.assertEqual(round(st.k, 7), 0.0098480)
+        self.assertEqual(round(st.k, 7), 0.0098482)
 
         st = R1234yf(T=300, P=1e5)
         self.assertEqual(round(st.rho, 6), 4.671553)
@@ -181,8 +217,15 @@ class Test(TestCase):
 
         st = R1234yf(T=250, P=2e7)
         self.assertEqual(round(st.rho, 2), 1299.50)
-        self.assertEqual(round(st.k, 6), 0.088620)
+        self.assertEqual(round(st.k, 6), 0.088580)
 
         st = R1234yf(T=300, P=2e7)
         self.assertEqual(round(st.rho, 2), 1182.05)
-        self.assertEqual(round(st.k, 6), 0.075360)
+        self.assertEqual(round(st.k, 6), 0.075254)
+
+    def test_Huber(self):
+        # Section 2.4
+        self.assertEqual(round(R1234yf(T=300, rhom=0).mu.muPas, 3), 11.579)
+        self.assertEqual(round(R1234yf(T=300, rhom=0.044).mu.muPas, 3), 11.549)
+        self.assertEqual(round(
+            R1234yf(T=300, rhom=10.522).mu.muPas, 3), 217.97)
