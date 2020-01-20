@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from lib.EoS.Cubic.vdW import vdW
 from lib.EoS.Cubic.RK import RK
+from lib.EoS.Cubic.RKTwu import RKTwu
 from lib.EoS.Cubic.SRK import SRK
 from lib.EoS.Cubic.SRKPeneloux import SRKPeneloux
 from lib.EoS.Cubic.MSRK import MSRK
@@ -51,7 +52,7 @@ from lib.EoS.Cubic.Kubic import Kubic
 
 
 _all = [vdW,
-        RK,
+        RK, RKTwu,
         SRK, SRKPeneloux, MSRK, SRKAPI,
         PR, PR78, PRMathiasCopeman,
         PRGasem, PRMelhem, PRAlmeida, PRSV, PRSV2, PRZV, PRTwu, PRYuLu,
