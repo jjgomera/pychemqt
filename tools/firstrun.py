@@ -272,7 +272,7 @@ def Preferences():
         {"start": 250.0, "end": 320.0, "step": 1.0, "color": "#aa0000",
          "linewidth": 0.8, "linestyle": ":", "label": "False",
          "units": "False", "position": 90},
-        {"start": 0.8, "end": 1.0, "step": 0.01, "color": "#00aa00",
+        {"start": 0.7, "end": 1.3, "step": 0.01, "color": "#00aa00",
          "linewidth": 0.8, "linestyle": ":", "label": "False",
          "units": "False", "position": 90}]
     for linea, value in zip(lineas, values):

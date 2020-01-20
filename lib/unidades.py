@@ -238,7 +238,7 @@ class unidad(float):
         logging.debug("%s, %f" % (self.__class__.__name__, self._data))
 
     def __new__(cls, data, unit="", magnitud=""):
-        """Constructor to let multiple paramter input in float"""
+        """Constructor to let multiple parameter input in float"""
         if not magnitud:
             magnitud = cls.__name__
         if data is None:
