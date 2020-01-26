@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+from scipy.constants import R
+
 from lib.EoS.Cubic.SRK import SRK
 
 
@@ -331,7 +333,15 @@ class MSRK(SRK):
         \alpha = 1 + m\left(1-Tr\right) + n\left(\frac{1}{T_R}-1\right)\\
         \end{array}
 
-    m and n are compound specific parameters, compiled from [4]_ and [5]_
+    m and n are compound specific parameters, compiled from [4]_ and [5]_, in
+    case compound with no available parameters use the generalized correlation
+    give in [6]_.
+
+    .. math::
+        \begin{array}[t]{l}
+        m = 0.4745 + 2.7349\omega Z_c + 6.0984\left(\omega Z_c\right)^2\\
+        m = 0.0674 + 2.1031\omega Z_c + 3.9512\left(\omega Z_c\right)^2\\
+        \end{array}
 
     Examples
     --------
@@ -379,10 +389,11 @@ class MSRK(SRK):
          "ref": "J. Fluorine Chem. 43(1) (1989) 87-104",
          "doi": "10.1016/s0022-1139(00)81638-3"},
       {
-         "autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+         "autor": "Valderrama, J.O., De la Puente, H., Ibrahim, A.A.",
+         "title": "Generalization of a Polar-Fluid Soave-Redlich-Kwong "
+                  "Equation of State",
+         "ref": "Fluid Phase Equilibria 93 (1994) 377-383",
+         "doi": "10.1016/0378-3812(94)87021-7"},
       )
 
     def _alfa(self, cmp, T):
@@ -391,9 +402,14 @@ class MSRK(SRK):
         SRK alpha expresion"""
         if cmp.id in dat:
             m, n = dat[cmp.id]
-            alfa = 1 + m*(1-T/cmp.Tc) + n*(cmp.Tc/T-1)                  # Eq 7
         else:
-            alfa = SRK._alfa(self, cmp, T)
+            # Generalized correlation from Valderrama et al., [6]_
+            Zc = cmp.Pc.kPa*cmp.Vc*cmp.M/R/cmp.Tc
+            x = cmp.f_acent*Zc
+            m = 0.4745 + 2.7349*x + 6.0984*x**2                         # Eq 4
+            n = 0.0674 + 2.1031*x + 3.9512*x**2                         # Eq 5
+
+        alfa = 1 + m*(1-T/cmp.Tc) + n*(cmp.Tc/T-1)                      # Eq 7
         return alfa
 
 
