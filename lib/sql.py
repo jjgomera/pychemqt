@@ -135,16 +135,13 @@ def transformElement(elemento):
     vals.append(elemento[28])
     vals.append(elemento[29])
     vals.append(elemento[30])
-    if elemento[31]:
-        vals += elemento[31]
-    else:
-        vals += [0.0, 0.0]
+    vals.append(elemento[31])
     vals.append(elemento[32])
     vals.append(elemento[33])
-    vals.append(elemento[34])
+    vals.append(str(elemento[34]))
     vals.append(str(elemento[35]))
     vals.append(str(elemento[36]))
-    vals.append(str(elemento[37]))
+    vals.append(elemento[37])
     vals.append(elemento[38])
     vals.append(elemento[39])
     vals.append(elemento[40])
@@ -154,14 +151,13 @@ def transformElement(elemento):
     vals.append(elemento[44])
     vals.append(elemento[45])
     vals.append(elemento[46])
-    vals.append(elemento[47])
-    vals.append(str(elemento[48]))
+    vals.append(str(elemento[47]))
+    vals.append(elemento[48])
     vals.append(elemento[49])
     vals.append(elemento[50])
-    vals.append(elemento[51])
-    vals.append(elemento[53])
+    vals.append(elemento[52])
     try:
-        vals.append(elemento[59])
+        vals.append(elemento[58])
     except:
         vals.append("")
     return vals
@@ -220,7 +216,7 @@ def updateElement(elemento, indice):
         "tension_DIPPR_D", "tension_DIPPR_E", "tension_DIPPR_tmin",
         "tension_DIPPR_tmax", "dipole", "V_liq",
         "Rackett", "SG", "f_acent",
-        "SolubilityParameter", "watson", "MSRK_A", "MSRK_B", "Stiehl",
+        "SolubilityParameter", "watson", "Stiehl",
         "Tb", "Tf", "CAS", "alternateFormula", "UNIFAC",
         "Dm", "Eps_k", "UNIQUAC_area", "UNIQUAC_volumen",
         "f_acent_MSRK", "Hf",

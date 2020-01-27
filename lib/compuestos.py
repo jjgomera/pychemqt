@@ -5029,8 +5029,8 @@ class Componente(object):
         self.SG = cmp[124]
         self.Tc = unidades.Temperature(cmp[4])
         self.Pc = unidades.Pressure(cmp[5], "atm")
-        self.Tb = unidades.Temperature(cmp[131])
-        self.Tf = unidades.Temperature(cmp[132])
+        self.Tb = unidades.Temperature(cmp[129])
+        self.Tf = unidades.Temperature(cmp[130])
         if cmp[125] != 0:
             self.f_acent = cmp[125]
         elif self.Pc and self.Tc and self.Tb:
@@ -5058,8 +5058,8 @@ class Componente(object):
 
         # Parametric parameters
         self.antoine = cmp[14:17]
-        self.antoine += cmp[152:156]
-        self.wagner = cmp[156:160]
+        self.antoine += cmp[150:154]
+        self.wagner = cmp[154:158]
         self._parametricMu = cmp[21:23]
         self._parametricSigma = cmp[23:25]
         self.henry = cmp[17:21]
@@ -5088,38 +5088,31 @@ class Componente(object):
 
         self.SolubilityParameter = unidades.SolubilityParameter(cmp[126])
         self.Kw = cmp[127]
-        self.MSRK = cmp[128:130]
-        self.stiel = cmp[130]
-        self.CASNumber = cmp[133]
-        self.alternateFormula = cmp[134]
-        self.UNIFAC = eval(cmp[135])
+        self.stiel = cmp[128]
+        self.CASNumber = cmp[131]
+        self.alternateFormula = cmp[132]
+        self.UNIFAC = eval(cmp[133])
 
-        self.Dm = cmp[136]
-        self.ek = cmp[137]
+        self.Dm = cmp[134]
+        self.ek = cmp[135]
 
-        self.UNIQUAC_area = cmp[138]
-        self.UNIQUAC_volumen = cmp[139]
-        if cmp[140] == 0.0:
-            # See reference, really only use for MSRK:
-            # Compilation of Parameters for a Polar Fluid Soave-Redlich-Kwong
-            # Equation of State
-            # Jamal A. Sandarusi, Arthur J. Kidney, and Victor F. Yesavage
-            # Ind. Eng. Chem. Proc. Des. Dev.; 1988, 25, 957-963
+        self.UNIQUAC_area = cmp[136]
+        self.UNIQUAC_volumen = cmp[137]
+        if cmp[138] == 0.0:
             self.f_acent_mod = cmp[125]
-
         else:
-            self.f_acent_mod = cmp[140]
-        self.Hf = unidades.Enthalpy(cmp[141]/self.M)
-        self.Gf = unidades.Enthalpy(cmp[142]/self.M)
-        self.wilson = cmp[143]
-        self.NetHeating = unidades.Enthalpy(cmp[144]/self.M)
-        self.GrossHeating = unidades.Enthalpy(cmp[145]/self.M)
-        self.Synonyms = cmp[146]
-        self.V_char = cmp[147]
-        self.calor_formacion_solido = cmp[148]
-        self.energia_formacion_solido = cmp[149]
-        self.PolarParameter = cmp[150]
-        self.smile = cmp[151]
+            self.f_acent_mod = cmp[138]
+        self.Hf = unidades.Enthalpy(cmp[139]/self.M)
+        self.Gf = unidades.Enthalpy(cmp[140]/self.M)
+        self.wilson = cmp[141]
+        self.NetHeating = unidades.Enthalpy(cmp[142]/self.M)
+        self.GrossHeating = unidades.Enthalpy(cmp[143]/self.M)
+        self.Synonyms = cmp[144]
+        self.V_char = cmp[145]
+        self.calor_formacion_solido = cmp[146]
+        self.energia_formacion_solido = cmp[147]
+        self.PolarParameter = cmp[148]
+        self.smile = cmp[149]
 
         # Molecule graphic plot from smile code
         if self.smile and os.environ["pybel"] == "True":
@@ -5295,7 +5288,7 @@ class Componente(object):
 
     @refDoc(__doi__, [5], tab=8)
     def _so(self, T):
-        """Ideal gas entropy calculation from polinomial coefficient of
+        r"""Ideal gas entropy calculation from polinomial coefficient of
         specific heat saved in database
         Coefficient in database are in the form [A,B,C,D,E,F]
         Explained in procedure 7A1.1, pag 543

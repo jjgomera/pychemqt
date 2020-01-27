@@ -29,7 +29,9 @@ from lib.plot import Plot
 from lib.compuestos import (Componente, MuL_Parametric, Pv_Antoine, Pv_Wagner,
                             Tension_Parametric, Henry, DIPPR)
 from lib import unidades, sql
+from lib.EoS.Cubic.MSRK import dat as MSRKdat
 from lib.config import IMAGE_PATH
+
 from UI.inputTable import InputTableDialog, eqDIPPR
 from UI.delegate import SpinEditor
 from UI.widgets import Entrada_con_unidades, Tabla, okToContinue, QLabelMath
@@ -1468,9 +1470,10 @@ class View_Component(QtWidgets.QDialog):
         self.SigmaParametric.fill(self.cmp._parametricSigma)
         self.Henry.fill(self.cmp.henry)
 
-        if self.cmp.MSRK[0] != 0 and self.cmp.MSRK[1] != 0:
-            self.MSRKa.setValue(self.cmp.MSRK[0])
-            self.MSRKb.setValue(self.cmp.MSRK[1])
+        if index in MSRKdat:
+            self.MSRKa.setValue(MSRKdat[index][0])
+            self.MSRKb.setValue(MSRKdat[index][1])
+
         if self.cmp.SolubilityParameter:
             self.SolubilityPar.setValue(self.cmp.SolubilityParameter)
         if self.cmp.dipole:
