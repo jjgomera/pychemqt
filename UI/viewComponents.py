@@ -29,8 +29,17 @@ from lib.plot import Plot
 from lib.compuestos import (Componente, MuL_Parametric, Pv_Antoine, Pv_Wagner,
                             Tension_Parametric, Henry, DIPPR)
 from lib import unidades, sql
-from lib.EoS.Cubic.MSRK import dat as MSRKdat
 from lib.config import IMAGE_PATH
+from lib.EoS.Cubic.MSRK import dat as MSRKdat
+from lib.EoS.Cubic.PRMelhem import dat as Melhemdat
+from lib.EoS.Cubic.SRKAPI import S1, S2
+from lib.EoS.Cubic.PRMathiasCopeman import dat as Mathiasdat
+from lib.EoS.Cubic.PRSV import dat as PRSVdat
+from lib.EoS.Cubic.PRZV import dat as PRZVdat
+from lib.EoS.Cubic.PRAlmeida import dat as Almeidadat
+from lib.EoS.Cubic.PT import dat as PTdat
+from lib.EoS.Cubic.TB import dat as TBdat
+from lib.EoS.Cubic.TBS import dat as TBSdat
 
 from UI.inputTable import InputTableDialog, eqDIPPR
 from UI.delegate import SpinEditor
@@ -247,7 +256,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             if args[1]:
                 string += "%+0.3fgT" % args[1]
             if args[2]:
-                string += "%+0.3g \ln(T)" % args[2]
+                string += r"%+0.3g \ln(T)" % args[2]
             if args[3]:
                 string += "%+0.3gT^{%0.3g}" % (args[3], args[4])
             string += "}$"
@@ -361,7 +370,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
                 size="10", va="center")
 
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-        ylabel = "$"+self.proptex+",\;"+self.unit.text()+"$"
+        ylabel = "$"+self.proptex+r",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
         dialog.exec_()
 
@@ -417,10 +426,10 @@ class Parametric_widget(QtWidgets.QGroupBox):
         "viscosity": r"$\mu=e^{A\left(\frac{1}{T}-\frac{1}{B}\right)}$"}
     dict_prop = {
         "henry": "K_H",
-        "tension": "\sigma",
+        "tension": r"\sigma",
         "antoine": "P_v",
         "wagner": "P_v",
-        "viscosity": "\mu_g"}
+        "viscosity": r"\mu_g"}
     dict_count = {
         "henry": 4,
         "tension": 2,
@@ -458,7 +467,6 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.count = self.dict_count[prop]
 
         layout = QtWidgets.QGridLayout(self)
-        self.formula = QtWidgets.QLabel()
         self.formula = QLabelMath(self.latex)
         layout.addWidget(self.formula, 0, 1, 1, 5)
         self.btnFit = QtWidgets.QToolButton()
@@ -714,7 +722,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 size="10", va="center")
 
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
-        ylabel = "$"+self.prop+",\;"+self.unit.text()+"$"
+        ylabel = "$"+self.prop+r",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
         dialog.exec_()
 
@@ -1147,25 +1155,307 @@ class View_Component(QtWidgets.QDialog):
             unidades.Pressure, index, "henry", parent=self)
         self.Henry.valueChanged.connect(self.setDirty)
         lytEOS.addWidget(self.Henry, 1, 1, 2, 1)
+        lytEOS.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 5, 1)
 
-        grpMSRK = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
-            "pychemqt", "MSRK Coefficients"))
-        lytEOS.addWidget(grpMSRK, 1, 2)
+        grp = QtWidgets.QGroupBox("Cubic")
+        lyt = QtWidgets.QVBoxLayout(grp)
+        self.cubicElection = QtWidgets.QComboBox()
+        lyt.addWidget(self.cubicElection)
+        self.cubicStacked = QtWidgets.QStackedWidget()
+        lyt.addWidget(self.cubicStacked)
+        lytEOS.addWidget(grp, 1, 2, 2, 1)
+
+        grpMSRK = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpMSRK)
+        self.cubicElection.addItem("MSRK")
         lyt_MSRK = QtWidgets.QGridLayout(grpMSRK)
-        lyt_MSRK.addWidget(QtWidgets.QLabel("A"), 1, 1)
+        math = r"$\alpha=1+m\left(1-Tr\right)+n\left(\frac{1}{T_R}-1\right)$"
+        formulaMSRK = QLabelMath(math)
+        lyt_MSRK.addWidget(formulaMSRK, 1, 1, 1, 3)
+        lyt_MSRK.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_MSRK.addWidget(QtWidgets.QLabel("m"), 3, 1)
         self.MSRKa = Entrada_con_unidades(float)
         self.MSRKa.valueChanged.connect(self.setDirty)
-        lyt_MSRK.addWidget(self.MSRKa, 1, 2)
-        lyt_MSRK.addWidget(QtWidgets.QLabel("B"), 2, 1)
+        lyt_MSRK.addWidget(self.MSRKa, 3, 2)
+        lyt_MSRK.addWidget(QtWidgets.QLabel("n"), 4, 1)
         self.MSRKb = Entrada_con_unidades(float)
         self.MSRKb.valueChanged.connect(self.setDirty)
-        lyt_MSRK.addWidget(self.MSRKb, 2, 2)
+        lyt_MSRK.addWidget(self.MSRKb, 4, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(partial(self.help, "lib.EoS.Cubic.MSRK.html"))
+        lyt_MSRK.addWidget(button, 4, 6)
+        lyt_MSRK.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 5, 5)
+
+        grpMelhem = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpMelhem)
+        self.cubicElection.addItem("PR_Melhem")
+        lyt_Melhem = QtWidgets.QGridLayout(grpMelhem)
+        math = r"$\alpha = \exp\left(m\left(1-T_r\right) +"
+        math += r"n \left(1-\sqrt{T_r}\right)^2\right)$"
+        formulaMelhem = QLabelMath(math)
+        lyt_Melhem.addWidget(formulaMelhem, 1, 1, 1, 2)
+        lyt_Melhem.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_Melhem.addWidget(QtWidgets.QLabel("m"), 3, 1)
+        self.Melhemm = Entrada_con_unidades(float)
+        self.Melhemm.valueChanged.connect(self.setDirty)
+        lyt_Melhem.addWidget(self.Melhemm, 3, 2)
+        lyt_Melhem.addWidget(QtWidgets.QLabel("n"), 4, 1)
+        self.Melhemn = Entrada_con_unidades(float)
+        self.Melhemn.valueChanged.connect(self.setDirty)
+        lyt_Melhem.addWidget(self.Melhemn, 4, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.PRMelhem.html"))
+        lyt_Melhem.addWidget(button, 4, 6)
+        lyt_Melhem.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 5, 5)
+
+        grpSRKAPI = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpSRKAPI)
+        self.cubicElection.addItem("SRK-API")
+        lyt_SRKAPI = QtWidgets.QGridLayout(grpSRKAPI)
+        math = r"$\alpha^{0.5} = 1 + S_1\left(1-\sqrt{Tr}\right) + "
+        math += r"S_2\frac{\left(1-\sqrt{Tr}\right)}{\sqrt{T_r}}$"
+        formulaSRKAPI = QLabelMath(math)
+        lyt_SRKAPI.addWidget(formulaSRKAPI, 1, 1, 1, 2)
+        lyt_SRKAPI.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_SRKAPI.addWidget(QLabelMath("$S_1$"), 3, 1)
+        self.SRKAPIS1 = Entrada_con_unidades(float)
+        self.SRKAPIS1.valueChanged.connect(self.setDirty)
+        lyt_SRKAPI.addWidget(self.SRKAPIS1, 3, 2)
+        lyt_SRKAPI.addWidget(QLabelMath("$S_2$"), 4, 1)
+        self.SRKAPIS2 = Entrada_con_unidades(float)
+        self.SRKAPIS2.valueChanged.connect(self.setDirty)
+        lyt_SRKAPI.addWidget(self.SRKAPIS2, 4, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.SRKAPI.html"))
+        lyt_SRKAPI.addWidget(button, 4, 6)
+        lyt_SRKAPI.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 5, 5)
+
+        grpMathias = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpMathias)
+        self.cubicElection.addItem("PR-Mathias-Copeman")
+        lyt_Mathias = QtWidgets.QGridLayout(grpMathias)
+        lyt_Mathias.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_Mathias.addWidget(QLabelMath("$C_1$"), 3, 1)
+        self.MathiasCopemanC1 = Entrada_con_unidades(float)
+        self.MathiasCopemanC1.valueChanged.connect(self.setDirty)
+        lyt_Mathias.addWidget(self.MathiasCopemanC1, 3, 2)
+        lyt_Mathias.addWidget(QLabelMath("$C_2$"), 4, 1)
+        self.MathiasCopemanC2 = Entrada_con_unidades(float)
+        self.MathiasCopemanC2.valueChanged.connect(self.setDirty)
+        lyt_Mathias.addWidget(self.MathiasCopemanC2, 4, 2)
+        lyt_Mathias.addWidget(QLabelMath("$C_3$"), 5, 1)
+        self.MathiasCopemanC3 = Entrada_con_unidades(float)
+        self.MathiasCopemanC3.valueChanged.connect(self.setDirty)
+        lyt_Mathias.addWidget(self.MathiasCopemanC3, 5, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.PRMathiasCopeman.html"))
+        lyt_Mathias.addWidget(button, 5, 6)
+        lyt_Mathias.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 6, 5)
+
+        grpSV = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpSV)
+        self.cubicElection.addItem("PR-Stryjek-Vera")
+        lyt_SV = QtWidgets.QGridLayout(grpSV)
+        lyt_SV.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_SV.addWidget(QLabelMath("$K_1$"), 3, 1)
+        self.SVk0 = Entrada_con_unidades(float)
+        self.SVk0.valueChanged.connect(self.setDirty)
+        lyt_SV.addWidget(self.SVk0, 3, 2)
+        lyt_SV.addWidget(QLabelMath("$K_2$"), 4, 1)
+        self.SVk1 = Entrada_con_unidades(float)
+        self.SVk1.valueChanged.connect(self.setDirty)
+        lyt_SV.addWidget(self.SVk1, 4, 2)
+        lyt_SV.addWidget(QLabelMath("$K_3$"), 5, 1)
+        self.SVk2 = Entrada_con_unidades(float)
+        self.SVk2.valueChanged.connect(self.setDirty)
+        lyt_SV.addWidget(self.SVk2, 5, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.PRSV2.html"))
+        lyt_SV.addWidget(button, 5, 6)
+        lyt_SV.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 6, 5)
+
+        grpZV = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpZV)
+        self.cubicElection.addItem("PR-Zaboloy-Vera")
+        lyt_ZV = QtWidgets.QGridLayout(grpZV)
+        lyt_ZV.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_ZV.addWidget(QLabelMath("$K_1$"), 3, 1)
+        self.ZVk1 = Entrada_con_unidades(float)
+        self.ZVk1.valueChanged.connect(self.setDirty)
+        lyt_ZV.addWidget(self.ZVk1, 3, 2)
+        lyt_ZV.addWidget(QLabelMath("$K_2$"), 4, 1)
+        self.ZVk2 = Entrada_con_unidades(float)
+        self.ZVk2.valueChanged.connect(self.setDirty)
+        lyt_ZV.addWidget(self.ZVk2, 4, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.PRZV.html"))
+        lyt_ZV.addWidget(button, 4, 6)
+        lyt_ZV.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 5, 5)
+
+        grpAlmeida = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpAlmeida)
+        self.cubicElection.addItem("PR-Almeida")
+        lyt_Almeida = QtWidgets.QGridLayout(grpAlmeida)
+        math = r"$\alpha = \exp\left(m\left(1-T_r\right)\left|1-T_r\right|^"
+        math += r"{\Gamma-1} + n\left(\frac{1}{Tr}-\right)\right)$"
+        formulaAlmeida = QLabelMath(math)
+        lyt_Almeida.addWidget(formulaAlmeida, 1, 1, 1, 2)
+        lyt_Almeida.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_Almeida.addWidget(QtWidgets.QLabel("m"), 3, 1)
+        self.Almeidam = Entrada_con_unidades(float)
+        self.Almeidam.valueChanged.connect(self.setDirty)
+        lyt_Almeida.addWidget(self.Almeidam, 3, 2)
+        lyt_Almeida.addWidget(QtWidgets.QLabel("n"), 4, 1)
+        self.Almeidan = Entrada_con_unidades(float)
+        self.Almeidan.valueChanged.connect(self.setDirty)
+        lyt_Almeida.addWidget(self.Almeidan, 4, 2)
+        lyt_Almeida.addWidget(QLabelMath(r"$\Gamma$"), 5, 1)
+        self.AlmeidaG = Entrada_con_unidades(float)
+        self.AlmeidaG.valueChanged.connect(self.setDirty)
+        lyt_Almeida.addWidget(self.AlmeidaG, 5, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.PRAlmeida.html"))
+        lyt_Almeida.addWidget(button, 5, 6)
+        lyt_Almeida.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 6, 5)
+
+        grpPT = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpPT)
+        self.cubicElection.addItem("PR-Patel-Teja")
+        lyt_PT = QtWidgets.QGridLayout(grpPT)
+        lyt_PT.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 2, 3)
+        lyt_PT.addWidget(QLabelMath(r"$\zeta_c$"), 3, 1)
+        self.PTZc = Entrada_con_unidades(float)
+        self.PTZc.valueChanged.connect(self.setDirty)
+        lyt_PT.addWidget(self.PTZc, 3, 2)
+        lyt_PT.addWidget(QtWidgets.QLabel("F"), 4, 1)
+        self.PTF = Entrada_con_unidades(float)
+        self.PTF.valueChanged.connect(self.setDirty)
+        lyt_PT.addWidget(self.PTF, 4, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.PT.html"))
+        lyt_PT.addWidget(button, 4, 6)
+        lyt_PT.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 6, 5)
+
+        grpTB = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpTB)
+        self.cubicElection.addItem("Trebble-Bishnoi")
+        lyt_TB = QtWidgets.QGridLayout(grpTB)
+        lyt_TB.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 3, 3)
+        lyt_TB.addWidget(QLabelMath(r"$q_1$"), 4, 1)
+        self.TBq1 = Entrada_con_unidades(float)
+        self.TBq1.valueChanged.connect(self.setDirty)
+        lyt_TB.addWidget(self.TBq1, 4, 2)
+        lyt_TB.addWidget(QLabelMath(r"$q_2$"), 5, 1)
+        self.TBq2 = Entrada_con_unidades(float)
+        self.TBq2.valueChanged.connect(self.setDirty)
+        lyt_TB.addWidget(self.TBq2, 5, 2)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.TB.html"))
+        lyt_TB.addWidget(button, 5, 6)
+        lyt_TB.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 6, 5)
+
+        grpTBS = QtWidgets.QWidget()
+        self.cubicStacked.addWidget(grpTBS)
+        self.cubicElection.addItem("Trebble-Bishnoi-Salim")
+        lyt_TBS = QtWidgets.QGridLayout(grpTBS)
+        lyt_TBS.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 3, 3)
+        lyt_TBS.addWidget(QLabelMath(r"$\zeta_c$"), 4, 1)
+        self.TBSZc = Entrada_con_unidades(float)
+        self.TBSZc.valueChanged.connect(self.setDirty)
+        lyt_TBS.addWidget(self.TBSZc, 4, 2)
+        lyt_TBS.addWidget(QtWidgets.QLabel("m"), 5, 1)
+        self.TBSm = Entrada_con_unidades(float)
+        self.TBSm.valueChanged.connect(self.setDirty)
+        lyt_TBS.addWidget(self.TBSm, 5, 2)
+        lyt_TBS.addWidget(QtWidgets.QLabel("p"), 4, 4)
+        self.TBSp = Entrada_con_unidades(float)
+        self.TBSp.valueChanged.connect(self.setDirty)
+        lyt_TBS.addWidget(self.TBSp, 4, 5)
+        lyt_TBS.addWidget(QtWidgets.QLabel("d"), 5, 4)
+        self.TBSd = Entrada_con_unidades(float)
+        self.TBSd.valueChanged.connect(self.setDirty)
+        lyt_TBS.addWidget(self.TBSd, 5, 5)
+        button = QtWidgets.QToolButton(self)
+        button.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
+        button.clicked.connect(
+            partial(self.help, "lib.EoS.Cubic.TBS.html"))
+        lyt_TBS.addWidget(button, 5, 7)
+        lyt_TBS.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 7, 6)
+
         lytEOS.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 1, 3)
-        lytEOS.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 1)
+            QtWidgets.QSizePolicy.Expanding), 5, 5)
+        self.cubicElection.currentIndexChanged.connect(
+            self.cubicStacked.setCurrentIndex)
 
         # Others tab
         tab8 = QtWidgets.QWidget()
@@ -1386,6 +1676,29 @@ class View_Component(QtWidgets.QDialog):
         self.Henry.clear()
         self.MSRKa.clear()
         self.MSRKb.clear()
+        self.Melhemm.clear()
+        self.Melhemn.clear()
+        self.SRKAPIS1.clear()
+        self.SRKAPIS2.clear()
+        self.MathiasCopemanC1.clear()
+        self.MathiasCopemanC2.clear()
+        self.MathiasCopemanC3.clear()
+        self.SVk0.clear()
+        self.SVk1.clear()
+        self.SVk2.clear()
+        self.ZVk1.clear()
+        self.ZVk2.clear()
+        self.Almeidam.clear()
+        self.Almeidan.clear()
+        self.AlmeidaG.clear()
+        self.PTZc.clear()
+        self.PTF.clear()
+        self.TBq1.clear()
+        self.TBq2.clear()
+        self.TBSZc.clear()
+        self.TBSm.clear()
+        self.TBSp.clear()
+        self.TBSd.clear()
         self.SolubilityPar.clear()
         self.Dipole.clear()
         self.MolecularDiameter.clear()
@@ -1474,6 +1787,48 @@ class View_Component(QtWidgets.QDialog):
             self.MSRKa.setValue(MSRKdat[index][0])
             self.MSRKb.setValue(MSRKdat[index][1])
 
+        if index in Melhemdat:
+            self.Melhemm.setValue(Melhemdat[index][0])
+            self.Melhemn.setValue(Melhemdat[index][1])
+
+        if index in S1:
+            self.SRKAPIS1.setValue(S1[index])
+        if index in S2:
+            self.SRKAPIS2.setValue(S2[index])
+
+        if self.cmp.CASNumber in Mathiasdat:
+            self.MathiasCopemanC1.setValue(Mathiasdat[self.cmp.CASNumber][0])
+            self.MathiasCopemanC2.setValue(Mathiasdat[self.cmp.CASNumber][1])
+            self.MathiasCopemanC3.setValue(Mathiasdat[self.cmp.CASNumber][2])
+
+        if index in PRSVdat:
+            self.SVk0.setValue(PRSVdat[index][0])
+            self.SVk1.setValue(PRSVdat[index][1])
+            self.SVk2.setValue(PRSVdat[index][2])
+
+        if index in PRZVdat:
+            self.ZVk1.setValue(PRZVdat[index][0])
+            self.ZVk2.setValue(PRZVdat[index][1])
+
+        if index in Almeidadat:
+            self.Almeidam.setValue(Almeidadat[index][0])
+            self.Almeidan.setValue(Almeidadat[index][1])
+            self.AlmeidaG.setValue(Almeidadat[index][2])
+
+        if index in PTdat:
+            self.PTZc.setValue(PTdat[index][0])
+            self.PTF.setValue(PTdat[index][1])
+
+        if index in TBdat:
+            self.TBq1.setValue(TBdat[index][0])
+            self.TBq2.setValue(TBdat[index][1])
+
+        if index in TBSdat:
+            self.TBSZc.setValue(TBSdat[index][0])
+            self.TBSm.setValue(TBSdat[index][1])
+            self.TBSp.setValue(TBSdat[index][2])
+            self.TBSd.setValue(TBSdat[index][3])
+
         if self.cmp.SolubilityParameter:
             self.SolubilityPar.setValue(self.cmp.SolubilityParameter)
         if self.cmp.dipole:
@@ -1556,10 +1911,11 @@ class View_Component(QtWidgets.QDialog):
         new.append(self.SolubilityPar.value)
         new.append(self.watson.value)
 
-        msrk = []
-        msrk.append(self.MSRKa.value)
-        msrk.append(self.MSRKb.value)
-        new.append(msrk)
+        # TODO: Add support for save equation parameter in a file
+        # msrk = []
+        # msrk.append(self.MSRKa.value)
+        # msrk.append(self.MSRKb.value)
+        # new.append(msrk)
 
         new.append(self.stiel.value)
         new.append(self.Tb.value)
@@ -1618,7 +1974,7 @@ class View_Component(QtWidgets.QDialog):
             else:
                 self.reject()
         else:
-                self.reject()
+            self.reject()
 
     def setReadOnly(self, bool):
         self.formula1.setReadOnly(bool)
@@ -1644,6 +2000,29 @@ class View_Component(QtWidgets.QDialog):
         self.cpf.setReadOnly(bool)
         self.MSRKa.setReadOnly(bool)
         self.MSRKb.setReadOnly(bool)
+        self.Melhemm.setReadOnly(bool)
+        self.Melhemn.setReadOnly(bool)
+        self.SRKAPIS1.setReadOnly(bool)
+        self.SRKAPIS2.setReadOnly(bool)
+        self.MathiasCopemanC1.setReadOnly(bool)
+        self.MathiasCopemanC2.setReadOnly(bool)
+        self.MathiasCopemanC3.setReadOnly(bool)
+        self.SVk0.setReadOnly(bool)
+        self.SVk1.setReadOnly(bool)
+        self.SVk2.setReadOnly(bool)
+        self.ZVk1.setReadOnly(bool)
+        self.ZVk2.setReadOnly(bool)
+        self.Almeidam.setReadOnly(bool)
+        self.Almeidan.setReadOnly(bool)
+        self.AlmeidaG.setReadOnly(bool)
+        self.PTZc.setReadOnly(bool)
+        self.PTF.setReadOnly(bool)
+        self.TBq1.setReadOnly(bool)
+        self.TBq2.setReadOnly(bool)
+        self.TBSZc.setReadOnly(bool)
+        self.TBSm.setReadOnly(bool)
+        self.TBSp.setReadOnly(bool)
+        self.TBSd.setReadOnly(bool)
         self.SolubilityPar.setReadOnly(bool)
         self.Dipole.setReadOnly(bool)
         self.MolecularDiameter.setReadOnly(bool)
@@ -1661,10 +2040,21 @@ class View_Component(QtWidgets.QDialog):
         self.EpsK.setReadOnly(bool)
         self.watson.setReadOnly(bool)
 
+    def help(self, page):
+        # First search for a local documentation build
+        # By default in docs/_build/html/
+        path = os.path.join(os.environ["pychemqt"], "docs") + os.sep
+        if os.path.isdir(path):
+            indexpath = os.path.join(path, "_build", "html", page)
+            url = QtCore.QUrl(indexpath)
+        else:
+            url = QtCore.QUrl("http://pychemqt.readthedocs.io/")
+        QtGui.QDesktopServices.openUrl(url)
+
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = View_Component(5)
+    Dialog = View_Component(500)
     Dialog.show()
     sys.exit(app.exec_())
