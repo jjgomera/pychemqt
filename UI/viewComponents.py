@@ -907,9 +907,6 @@ class View_Component(QtWidgets.QDialog):
             "pychemqt", "Expanded Formula"))
         lytGeneral.addWidget(labelFormula2, 5, 1)
         self.formula2 = QtWidgets.QLabel()
-        self.formula2.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.formula2.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.formula2.setAlignment(QtCore.Qt.AlignCenter)
         lytGeneral.addWidget(self.formula2, 5, 2, 6, 1)
         if os.environ["pybel"] != "True":
             labelFormula2.setVisible(False)
@@ -1722,10 +1719,12 @@ class View_Component(QtWidgets.QDialog):
         self.alternateName.setText(self.cmp.Synonyms)
         self.CAS.setText(self.cmp.CASNumber)
         self.formula1.setText(self.cmp.formula)
+
         if self.cmp.smile and os.environ["pybel"] == "True":
-            self.formula2.setPixmap(
-                QtGui.QPixmap(self.cmp.imageFile.name))
             self.smile.setText(self.cmp.smile)
+            pix = QtGui.QIcon(self.cmp.imageFile.name).pixmap(100, 100)
+            self.formula2.setPixmap(pix)
+
         if self.cmp.UNIFAC != []:
             self.UNIFAC.setRowCount(len(self.cmp.UNIFAC))
             for i in range(len(self.cmp.UNIFAC)):
