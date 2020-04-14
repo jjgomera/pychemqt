@@ -88,7 +88,8 @@ class Chart(QtWidgets.QDialog):
         self.plt.fig.canvas.mpl_connect('button_press_event', self.click)
         layout.addWidget(self.plt, 2, 1, 1, 4)
 
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        btBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Close, self)
         butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "image.png")),
             QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
@@ -113,8 +114,9 @@ class Chart(QtWidgets.QDialog):
         self.plot()
 
         logo = image.imread(os.path.join(IMAGE_PATH, "pychemqt_98.png"))
-        self.logo = self.plt.fig.figimage(logo, 0, 0, zorder=1, alpha=0.5)
-        self.showMaximized()
+        newax = self.plt.fig.add_axes(self.locLogo, anchor='SW')
+        newax.imshow(logo, alpha=0.5)
+        newax.axis('off')
 
     def configure(self):
         dlg = self.configDialog(self.Preferences)
@@ -139,33 +141,12 @@ class Chart(QtWidgets.QDialog):
         """Define the functionality when click the calculate point button"""
         pass
 
-    def resizeEvent(self, event):
-        """Implement resizeEvent to recalculate the new position of image"""
-        self.refixImage()
-        QtWidgets.QDialog.resizeEvent(self, event)
-
-    def refixImage(self, event=None):
-        """Recalculate image position as resize/move window"""
-        xmin, xmax = self.plt.ax.get_xlim()
-        ymin, ymax = self.plt.ax.get_ylim()
-        x, y = self.plt.ax.transData.transform_point(self.PosLogo)
-        hlogo, wlogo = self.logo.get_size()
-        if self.PosLogo[0] == 1:
-            x -= wlogo
-        if self.PosLogo[1] == 1:
-            y -= hlogo
-
-        self.logo.ox = x
-        self.logo.oy = y
-
-        self.plt.draw()
-
 
 class Moody(Chart):
     """Moody chart dialog"""
     title = QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
     configDialog = ConfigDialog
-    PosLogo = 5e3, 1.2e-2
+    locLogo = (0.3, 0.15, 0.1, 0.1)
 
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""
@@ -182,6 +163,11 @@ class Moody(Chart):
         """Update input and graph annotate when mouse click over chart"""
         Re = event.xdata
         f = event.ydata
+
+        # Exit if click event if out of axis
+        if Re is None:
+            return
+
         ed = None
         method = self.Preferences.getint("Moody", "method")
         fanning = self.Preferences.getboolean("Moody", "fanning")
@@ -395,7 +381,7 @@ class CalculateDialog(QtWidgets.QDialog):
         layout.addWidget(label, 1, 0)
         self.metodos = QtWidgets.QComboBox()
         for f in f_list:
-            line = f.__doc__.split("\n")[1]
+            line = f.__doc__.split("\n")[0]
             year = line.split(" ")[-1]
             name = line.split(" ")[-3]
             doc = name + " " + year

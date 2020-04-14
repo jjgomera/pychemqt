@@ -100,7 +100,7 @@ class Standing_Katz(Chart):
         "pychemqt",
         "Standing and Katz compressivitity factors chart for natural gas")
     configDialog = ConfigDialog
-    PosLogo = 8, 0.5
+    locLogo = (0.8, 0.15, 0.1, 0.1)
 
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """
