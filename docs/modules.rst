@@ -6,3 +6,4 @@ API reference
 
    lib
    tools
+   plots
