@@ -1517,7 +1517,7 @@ class View_Component(QtWidgets.QDialog):
         lytOthers.addWidget(self.UNIQUACVolume, 2, 5)
         lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Wilson volume")), 3, 4)
-        self.wilson = Entrada_con_unidades(float)
+        self.wilson = Entrada_con_unidades(unidades.MolarVolume)
         self.wilson.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.wilson, 3, 5)
         lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(

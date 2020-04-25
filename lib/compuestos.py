@@ -5104,7 +5104,7 @@ class Componente(object):
             self.f_acent_mod = cmp[138]
         self.Hf = unidades.Enthalpy(cmp[139]/self.M)
         self.Gf = unidades.Enthalpy(cmp[140]/self.M)
-        self.wilson = cmp[141]
+        self.wilson = unidades.MolarVolume(cmp[141], "ccmol")
         self.NetHeating = unidades.Enthalpy(cmp[142]/self.M)
         self.GrossHeating = unidades.Enthalpy(cmp[143]/self.M)
         self.Synonyms = cmp[144]
