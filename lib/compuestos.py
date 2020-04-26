@@ -5098,10 +5098,7 @@ class Componente(object):
 
         self.UNIQUAC_area = cmp[136]
         self.UNIQUAC_volumen = cmp[137]
-        if cmp[138] == 0.0:
-            self.f_acent_mod = cmp[125]
-        else:
-            self.f_acent_mod = cmp[138]
+        self.f_acent_mod = cmp[138]
         self.Hf = unidades.Enthalpy(cmp[139]/self.M)
         self.Gf = unidades.Enthalpy(cmp[140]/self.M)
         self.wilson = unidades.MolarVolume(cmp[141], "ccmol")
