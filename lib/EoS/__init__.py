@@ -34,6 +34,7 @@ K_name = [k.__title__.split(" (")[0] for k in K]
 K_status = [k.__status__ for k in K]
 H = Cubic._all + BWRS._all + Lee_Kesler._all
 H_name = [h.__title__.split(" (")[0] for h in H]
+H_status = [h.__status__ for h in H]
 
 mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
 cp_ideal = (QApplication.translate("pychemqt", "Ideal"), "DIPPR")
@@ -47,5 +48,12 @@ for obj in __all__:
     if "__doi__" in obj.__dict__:
         __doi__[obj.__name__] = obj.__doi__
 
+    # Add references in modules with only a equation
+    if len(obj._all) == 1:
+        for obj2 in obj._all:
+            if "__doi__" in obj2.__dict__:
+                __doi__[obj.__name__] = dict(enumerate(obj2.__doi__))
+
 # Add cubic library
 __doi__["lib.EoS.cubic"] = cubic.__doi__
+
