@@ -31,10 +31,9 @@ Module for implement physics correlation:
 '''
 
 
-from math import exp, pi, cos, acos, sin
+from math import exp, sin, cos, acos
 
 from scipy.constants import R, calorie, liter, atm, Btu, lb
-from scipy.special import cbrt
 
 from lib.utilities import refDoc
 
@@ -81,31 +80,90 @@ def weibull(escala, start, forma):
 
 
 # Mathematical special functions
-def root_poly3(a1, a2, a3):
-    """Roots for a cubic polinomy, x^3 + a1*x^2 + a2*x + a3"""
-    Q = (3*a2-a1**2)/9.
-    L = (9*a1*a2-27*a3-2*a1**3)/54.
-    D = Q**3+L**2
-    if D < 0:
-        tita = acos(L/(-Q**3)**0.5)
-        z1 = 2*(-Q)**0.5*cos(tita/3.+2.*pi/3)-a1/3.
-        z2 = 2*(-Q)**0.5*cos(tita/3.+4.*pi/3)-a1/3.
-        z3 = 2*(-Q)**0.5*cos(tita/3.)-a1/3.
-        z = [z1, z2, z3]
-    else:
-        S1 = cbrt((L+D**0.5))
-        S2 = cbrt((L-D**0.5))
-        if D > 0:
-            z = [S1+S2-a1/3.]
-        else:
-            z1 = cbrt(L)+cbrt(L)-a1/3.
-            z2 = -cbrt(L)-a1/3.
-            z = [z1, z2]
-#    print z[0]+z[1]+z[2], -a1
-#    print z[0]*z[1]+z[1]*z[2]+z[2]*z[0], a2
-#    print z[0]*z[1]*z[2], -a3
-    z.sort()
-    return z
+def cubicCardano(a, b, c, d):
+    """
+    Implementation of Cardano formula to find all roots in a cubic equation
+    faster than with scipy.roots
+
+    .. math::
+       ax^3 + bx^2 + cx + d = 0
+
+    Algorithms referenced at http://www.1728.org/cubic2.htm
+
+    Parameters
+    ----------
+    a : float
+        Third grade coefficient, [-]
+    b : float
+        Second grade coefficient, [-]
+    c : float
+        First grade coefficient, [-]
+    d : float
+        Zero grade coefficient, [-]
+
+    Returns
+    -------
+    root : list
+        Solution list, [-]
+
+    Examples
+    --------
+    # (x+2)^3
+
+    >>> "%i %i %i" % (cubicCardano(1, 6, 12, 8))
+    '2 2 2'
+
+    # (x-2)^3
+
+    >>> "%i %i %i" % (cubicCardano(1, -6, 12, -8))
+    '-2 -2 -2'
+
+    >>> "%.1f %.1f %.1f" % (cubicCardano(2, -4, -22, 24))
+    '-3.0 1.0 4.0'
+
+    >>> "{:.4f} {:.4f} {:.4f}".format(*cubicCardano(3, -10, 14, 27))
+    '-1.0000 2.1667+2.0750j 2.1667-2.0750j'
+    """
+
+    f = ((3*c/a) - (b**2/a**2))/3
+    g = ((2*b**3/a**3) - (9*b*c/a**2) + (27*d/a))/27
+    h = g**2/4 + f**3/27
+
+    if f == 0 and g == 0 and h == 0:
+        # All 3 roots are real and equal
+        x1 = abs((d/a))**(1/3) * (1, -1)[d/a < 0]
+        return x1, x1, x1
+
+    elif h <= 0:
+        # All 3 roots are real
+
+        i = (g**2/4 - h)**0.5
+        j = i**(1/3)
+        k = acos(-g/(2*i))
+        L = -j
+        M = cos(k/3)
+        N = 3**0.5*sin(k/3)
+        P = -b/(3*a)
+
+        x1 = 2*j*cos(k/3) - b/(3*a)
+        x2 = L*(M+N) + P
+        x3 = L*(M-N) + P
+
+        return tuple(sorted((x1, x2, x3)))
+
+    elif h > 0:
+        # One real root and two conjugate complex roots
+
+        R = -g/2 + h**0.5
+        S = abs(R)**(1/3) * (1, -1)[R < 0]
+        T = -g/2 - h**0.5
+        U = abs(T)**(1/3) * (1, -1)[T < 0]
+
+        x1 = S + U - b/(3*a)
+        x2 = -(S+U)/2 - b/(3*a) + 1j*(S-U)*3**0.5/2
+        x3 = -(S+U)/2 - b/(3*a) - 1j*(S-U)*3**0.5/2
+
+        return x1, x2, x3
 
 
 # Other
@@ -199,32 +257,38 @@ def Collision_Neufeld(T, l=2, s=2):
 
 if __name__ == "__main__":
 
-    from pylab import arange, plot, grid, show
-    x = arange(0, 2.5, 0.01)
-    y = weibull(0.5, 0, 1.).cdf(x)
-    z = weibull(1, 0, 1).pdf(x)
-    w = weibull(1.5, 0, 1).pdf(x)
-    v = weibull(5, 0, 1).pdf(x)
-    plot(x, y)
-    plot(x, z)
-    plot(x, w)
-    plot(x, v)
-    grid(True)
-    show()
+    # from pylab import arange, plot, grid, show
+    # x = arange(0, 2.5, 0.01)
+    # y = weibull(0.5, 0, 1.).cdf(x)
+    # z = weibull(1, 0, 1).pdf(x)
+    # w = weibull(1.5, 0, 1).pdf(x)
+    # v = weibull(5, 0, 1).pdf(x)
+    # plot(x, y)
+    # plot(x, z)
+    # plot(x, w)
+    # plot(x, v)
+    # grid(True)
+    # show()
 
-#    import time
-#    from scipy import roots
-#
-#    def scipy(a, b, c):
-#        z=roots([1, a, b, c])
-#        return z
-#
-#    inicio=time.time()
-#    print scipy(-1., 0.29664, -0.026584)
-#    fin=time.time()
-#    print "scipy.roots:", (fin-inicio)*1000., "ms"
-#
-#    inicio=time.time()
-#    print root_poly3(-1., 0.29664, -0.026584)
-#    fin=time.time()
-#    print "alg.roots:", (fin-inicio)*1000., "ms"
+    import time
+    from pprint import pprint
+    from scipy import roots
+
+    args = [1, -1.0, 0.14358582833553338, -0.004243577526503186]
+
+    # # args = [1, -1, 0.6269002858464162, -0.07953977078483085]
+
+    inicio=time.time()
+    pprint(roots(args))
+    fin=time.time()
+    print("scipy.roots:", (fin-inicio)*1000., "ms")
+
+    inicio=time.time()
+    pprint(cubicCardano(*args))
+    fin=time.time()
+    print("alg.roots:", (fin-inicio)*1000., "ms")
+
+
+
+
+
