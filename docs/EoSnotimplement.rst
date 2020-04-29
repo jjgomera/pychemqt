@@ -1,13 +1,9 @@
 
 Other equations don't implemented
 
-.. toctree::
-   
-    EoSnotimplement 
-
 
 Clausius (1881)
----------------
+^^^^^^^^^^^^^^^
 
 Historical equation of state
 
@@ -23,7 +19,7 @@ Clausius, R., “Ueber das Verhaiten der Kohlensaure in Bezug auf Druck,
 Volumen und Temperatur”, Ann. Phys. Chem. 9 (1880) 337-359
 
 Wilson (1964)
--------------
+^^^^^^^^^^^^^
 
 Modified RK temperature dependence
 
@@ -39,7 +35,7 @@ Redlich-Kwong Equation of State. Adv. Cryog. Eng. 9(D2) (1964) 168-176.
 
 
 HPW (1976)
-----------
+^^^^^^^^^^
 
 Hederer, Peter, Wenzel equation of state, published like PR in 1976.
 
@@ -56,7 +52,7 @@ http://dx.doi.org/10.1016/0300-9467(76)80039-1
 
 
 vdW Adachi (1984)
------------------
+^^^^^^^^^^^^^^^^^
 
 Adachi modification to van der Waals original correlation using a logaritmic
 temperature dependence for a
@@ -78,7 +74,7 @@ calculation: a Modification of the van der Walls Equation. AIChE J. 30(6)
 
 
 Usdin-McAuliffe (1976)
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^
 
 Incomplete study to improve SRK72 EoS liquid density prediction
 
@@ -123,7 +119,7 @@ http://dx.doi.org/10.1016/0009-2509(76)87030-3
 
 
 Toghiani-Vismanath (1986)
--------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Equation intended to polar substances using the associating paramter of Halm
 and Stiel, χ. Not implemented because this parameter is not available in
@@ -191,7 +187,7 @@ http://dx.doi.org/10.1021/i200033a032
 
 
 Harmens-Knapp (1980)
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 Developed only with data of normal fluids, alkanes and several nonpolar gases
 so not appropiate for general use
@@ -238,7 +234,7 @@ http://dx.doi.org/10.1021/i160075a010
 
 
 Fuller (1976)
--------------
+^^^^^^^^^^^^^
 
 Fuller modified the SRK to improve liquid densities prediction accuracy.
 
@@ -279,7 +275,7 @@ http://dx.doi.org/10.1021/i160060a005
 
 
 Mathias (1983)
---------------
+^^^^^^^^^^^^^^
 
 Modification of temperature dependence of α for SRK
 
@@ -299,8 +295,48 @@ Mathias, P.M. A Versatile Phase Equilibrium Equation of State. Ind. Eng. Chem.
 Process Des. Dev. 22(3) (1983) 385-391, http://dx.doi.org/10.1021/i200022a008.
 
 
-Raimondi (1980)
+Martin (1979)
+^^^^^^^^^^^^^
+
+.. math::
+    \begin{array}[t]{l}
+    P = \frac{RT}{V-b}-\frac{a(T)}{\left(V+c\right)^2}\\
+    a(T) = \frac{27}{64} \frac{R^2T_c^2}{P_c}T_r^{-n}\\
+    b = \left(0.857Z_c-0.1674\right)\frac{RT_c}{P_c}\\
+    c = \left(-0.857Z_c+0.2924\right)\frac{RT_c}{P_c}\\
+    \end{array}
+
+This equation require a compound specific parameters, the temperature exponent
+n, determined by equating the slope of the critical isochore to the slope of
+the vapour pressure curve at the critical point.
+
+Martin, J.J. Cubic Equations of State-Which?. Ind. Eng. Chem. Fundam. 18(2)
+(1979) 81-97, http://dx.doi.org/10.1021/i160070a001.
+
+
+Rogalski (1990)
 ---------------
+
+Modified version of the volume-corrected Peng-Robinson equation state
+
+.. math::
+    \begin{array}[t]{l}
+    P = \frac{RT}{V-b}-\frac{a}{\left(V+4.82843b\right)}\\
+    \end{array}
+
+This method has several alpha temperature dependence calculation by chemical
+type of compounds, furthermore the calculation of pseudovolume is calculated
+with a group contribution method.
+
+Rogalski, M., Carrier, B., Solimando, R., Péneloux, A. Correlation and
+Prediction of Physical Properties of Hydrocarbons with the Modified
+Peng-Robinson Equation of State. 2. Representation of the Vapor Pressures and
+of the Molar Volumes. Ind. Eng. Chem. Res. 29(4) (1990) 659-666,
+http://dx.doi.org/10.1021/ie00100a026.
+
+
+Raimondi (1980)
+^^^^^^^^^^^^^^^
 
 Modification of temperature dependence of α for SRK
 
@@ -349,8 +385,24 @@ Equilibrium Calculations. Chem. Eng. Sci. 35(6) (1980) 1269-1275,
 http://dx.doi.org/10.1016/0009-2509(80)85119-0
 
 
+Gibbons-Laughton (1984)
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Modification of temperature dependence of α for SRK
+
+.. math::
+    \alpha = 1 + X\left(T_r-1\right) + Y\left(\sqrt{T_r}-1\right)\\
+
+X and Y are compound specific properties chosen by minimising the error in
+the complete vapour pressure curve.
+
+Gibbons, R.M., Laughton, A.P. An Equation of State for Polar and Non-polar
+Substances and Mixtures. J. Chem. Soc., Faraday Trans. 2 80(9) (1984)
+1019-1038, http://dx.doi.org/10.1039/F29848001019.
+
+
 Ishikawa-Chung-Lu (1980)
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 Mixture of hard sphere model with RK atractive term.
 
@@ -377,7 +429,7 @@ https://doi.org/10.1002/aic.690260307.
 
 
 vdW711 (1989)
--------------
+^^^^^^^^^^^^^
 
 van der Waals volume translation equation with a modified α temperature
 dependence.
@@ -416,7 +468,7 @@ http://doi.org/10.1016/0378-3812(89)80254-7.
 
 
 Schmidt-Wenzel (1980)
----------------------
+^^^^^^^^^^^^^^^^^^^^^
 
 Generalized form of van der Waals cubic equation of state.
 
@@ -443,6 +495,7 @@ Generalized form of van der Waals cubic equation of state.
 
 Schmidt, G., Wenzel, H. A Modified van der Waals Type Equation of State. Chem.
 Eng. Sci. 35(7) (1980) 1503-1512, http://doi.org/10.1016/0009-2509(80)80044-3.
+
 
 
 

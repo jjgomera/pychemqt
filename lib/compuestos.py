@@ -2796,7 +2796,7 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
 
 @refDoc(__doi__, [51])
 def MuG_Jossi(Tc, Pc, rhoc, M, rho, muo):
-    r"""Calculate the viscosity of a compressed gas using the Lucas correlation
+    r"""Calculate the viscosity of a compressed gas using the Jossi correlation
 
     .. math::
         \left[\left(\mu-\mu^o\right)\xi_T+1\right]^{1/4}=1.023+0.23364\rho_r+

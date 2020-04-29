@@ -465,7 +465,7 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
         Temperature [K]
     Tc : float
         Critical temperature [K]
-    Pc : float:w
+    Pc : float
         Critical pressure
     w : float
         Acentric factor [-]
@@ -961,7 +961,8 @@ class Virial(EoS):
                         Cij[i, j] = C_OrbeyVera(self.T, Tcij, Pcij, wij)
                     else:
                         Zcij = Pcij*Vcij/R/Tcij
-                        Cij[i, j] = C_LiuXiang(self.T, Tcij, Pcij, wij, Zcij)[0]
+                        Cij[i, j] = C_LiuXiang(
+                            self.T, Tcij, Pcij, wij, Zcij)[0]
 
         C, Ct, Ctt = 0, 0, 0
         for i, xi in enumerate(self.fraccion):
