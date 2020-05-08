@@ -181,6 +181,13 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(self.Corr_ThGMix, 9, 7)
 
         layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Fixed,
+            QtWidgets.QSizePolicy.Fixed), 12, 0)
+        self.rhoLEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Use liquid density from EoS if available"))
+        layout.addWidget(self.rhoLEoS, 13, 0, 1, 8)
+
+        layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 15, 8)
 
@@ -218,6 +225,8 @@ class UI_confTransport_widget(QtWidgets.QWidget):
             self.Corr_ThGMix.setCurrentIndex(
                 config.getint("Transport", "Corr_ThCondGMix"))
 
+            self.rhoLEoS.setChecked(config.getboolean("Transport", "RhoLEoS"))
+
     def value(self, config):
         """Function to wizard result"""
         if not config.has_section("Transport"):
@@ -250,6 +259,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         config.set("Transport", "ThCondGMix", str(self.ThGMix.currentIndex()))
         config.set("Transport", "Corr_ThCondGMix",
                    str(self.Corr_ThGMix.currentIndex()))
+        config.set("Transport", "RhoLEoS", str(self.rhoLEoS.isChecked()))
         return config
 
     @classmethod
@@ -274,6 +284,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         config.set("Transport", "ThCondLMix", "0")
         config.set("Transport", "ThCondGMix", "0")
         config.set("Transport", "Corr_ThCondGMix", "0")
+        config.set("Transport", "RhoLEoS", "False")
         return config
 
 

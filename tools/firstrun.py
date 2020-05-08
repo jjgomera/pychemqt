@@ -416,6 +416,8 @@ def config():
     config.set("Transport", "Corr_MuGMix", "0")
     config.set("Transport", "Corr_ThCondGMix", "0")
 
+    config.set("Transport", "RhoLEoS", "False")
+
     # Units
     config.add_section("Units")
     config.set("Units", "System", "0")

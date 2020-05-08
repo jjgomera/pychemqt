@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from scipy import exp, log10
+from scipy import exp, log10, log
 from scipy.constants import R
 from scipy.optimize import fsolve
 
@@ -50,7 +50,7 @@ class Grayson_Streed(EoS):
     The modified parameters of correlation are given in [2]_
 
     Liquid solution are considered regualar solutions, and the liquid activity
-    coefficient are calculated using the Hildebrand correlation:
+    coefficient are calculated using the Scatchard-Hildebrand correlation:
 
     .. math::
         \begin{array}[t]{l}
@@ -58,10 +58,24 @@ class Grayson_Streed(EoS):
         \bar{\delta} = \frac{\sum_i{x_iV_i\delta_i}}{\sum_j{x_jV_j}}\\
         \end{array}
 
-    The fugacity coefficient of vapor is calculate using the Redlich-Kwong
-    cubic equation of state.
+    Optionally can use the Flory-Huggins extension as is given in [3]_:
+
+    .. math::
+        \begin{array}[t]{l}
+        \ln{\gamma_i} = \frac{V_i\left(\delta_i-\bar{\delta}\right)^2}{RT}
+        + \ln{\Theta_i} + 1 - \Theta_i\\
+        \Theta_i = \frac{V_i}{\sum_i{x_iV_i}}\\
+        \end{array}
+
+    The fugacity coefficient of vapor is calculated using the
+    :doc:`Redlich-Kwong <lib.EoS.Cubic.RK>` cubic equation of state.
 
     This model is applicable to systems of non-polar hydrocarbons
+
+    Parameters
+    ----------
+    flory : boolean
+        Use the Flory-Huggins extension to regular solutions
     """
 
     __title__ = "Grayson Streed (1961)"
@@ -80,18 +94,22 @@ class Grayson_Streed(EoS):
                  "Hydrogen-Hydrocarbon Systems",
         "ref": "6th World Petroleum Congress, Frankfurt am Main, Germany, "
                "19-26 June (1963) 169-181",
-        "doi": ""}
-      )
+        "doi": ""},
+      {
+        "autor": "Walas, S.M.",
+        "title": "Phase Equiibria in Chemical Engineering",
+        "ref": "Butterworth-Heinemann, 1985",
+        "doi": "10.1016/C2013-0-04304-6"})
 
-    def __init__(self, T, P, mezcla):
-        EoS.__init__(self, T, P, mezcla)
+    def __init__(self, T, P, mezcla, **kwargs):
+        EoS.__init__(self, T, P, mezcla, **kwargs)
         self.rk = RK(self.T, self.P, self.mezcla)
 
         self.x, self.xi, self.yi, self.Ki = self._Flash()
-        # print("q = ", self.x)
-        # print("x = ", self.xi)
-        # print("y = ", self.yi)
-        # print("K = ", self.Ki)
+        print("q = ", self.x)
+        print("x = ", self.xi)
+        print("y = ", self.yi)
+        print("K = ", self.Ki)
 
     def _nio(self):
         """Liquid fugacity coefficient"""
@@ -100,7 +118,6 @@ class Grayson_Streed(EoS):
             Tr = self.T/cmp.Tc
             Pr = self.P/cmp.Pc
 
-            # Using acentric factor from table
             # Modified Parameters from [2]_
             if cmp.id == 1:  # Hydrogen
                 A = [1.50709, 2.74283, -.0211, .00011, 0, .008585, 0, 0, 0, 0]
@@ -121,16 +138,20 @@ class Grayson_Streed(EoS):
 
             # Eq 2
             nio.append(10**(logn0 + cmp.f_acent_mod*logn1))
+            # The correlation use the modified acentric factor table
 
         return nio
 
-    def _k(self, xi, yi):
-        """Equilibrium ratio calculation"""
-        # Gas phase fugacity
-        fiV = self.rk._fug(self.rk.Zg, yi)
+    def _gi(self, xi):
+        """Liquid activity coefficient"""
+        Vm = 0
+        for x, cmp in zip(xi, self.componente):
+            Vm += x*cmp.wilson.m3mol
 
-        # Liquid activity coefficient
-        # Eq 6
+        phi = []
+        for cmp in self.componente:
+            phi.append(cmp.wilson.m3mol/Vm)
+
         sum1 = 0
         sum2 = 0
         for x, cmp in zip(xi, self.componente):
@@ -140,18 +161,17 @@ class Grayson_Streed(EoS):
 
         # Eq 5
         gi = []
-        for cmp in self.componente:
+        for cmp, phii in zip(self.componente, phi):
+            # Scatchard-Hildebrand regular solution activity-coefficient
             g = cmp.wilson.m3mol*(cmp.SolubilityParameter-d_)**2/R/self.T
+
+            # Flory-Huggins extension
+            if self.kwargs.get("flory", 0):
+                g += log(phii) + 1 - phii
+
             gi.append(exp(g))
 
-        nio = self._nio()
-
-        fiL = [n*g for n, g in zip(nio, gi)]
-        # print("νio: ", nio)
-        # print("gi: ", gi)
-        # print("fiv:", fiV)
-
-        return fiL, fiV
+        return gi
 
     def _Flash(self):
         """Cálculo de los coeficientes de reparto entre fases, Ref Naji - Conventional and rapid flash claculations"""
@@ -191,7 +211,11 @@ class Grayson_Streed(EoS):
                         xi.append(zi/(1+q*(ki-1)))
                         yi.append(zi*ki/(1+q*(ki-1)))
 
-                    tital, titav = self._k(xi, yi)
+                    titav = self.rk._fug(self.rk.Zg, yi)
+
+                    gi = self._gi(xi)
+                    nio = self._nio()
+                    tital = [n*g for n, g in zip(nio, gi)]
 
                     fiv = [z*t*self.P for z, t in zip(yi, titav)]
                     fil = [z*t*self.P for z, t in zip(xi, tital)]
@@ -202,7 +226,6 @@ class Grayson_Streed(EoS):
                         break
                     else:
                         Ki = [l/v for l, v in zip(tital, titav)]
-                        print(tital, titav)
 
         return q, xi, yi, Ki
 
@@ -232,7 +255,7 @@ if __name__ == "__main__":
     mezcla=Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
     P = unidades.Pressure(485, "psi")
     T = unidades.Temperature(100, "F")
-    eq = Grayson_Streed(T, P, mezcla)
+    eq = Grayson_Streed(T, P, mezcla, flory=1)
 
     # Example 4.2, pag 89
     # mezcla = Mezcla(1, ids=[4, 40], caudalUnitarioMasico=[26.92, 73.08])

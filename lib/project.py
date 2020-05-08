@@ -245,6 +245,10 @@ class Project(object):
             for option, value in options.items():
                 config.set(section, option, value)
 
+        # FIXME: Delete this section when all project were updates with last
+        # configuration options
+        config.set("Transport", "RhoLEoS", "False")
+
         self.setConfig(config)
         if not huella:
             os.rename(conf_dir+"pychemqtrc_temporal", conf_dir+"pychemqtrc_temporal_bak")
