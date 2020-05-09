@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from scipy import exp, log10, log
 from scipy.constants import R
-from scipy.optimize import fsolve
 
 from lib.eos import EoS
 from lib.EoS.Cubic import RK
@@ -70,12 +69,33 @@ class Grayson_Streed(EoS):
     The fugacity coefficient of vapor is calculated using the
     :doc:`Redlich-Kwong <lib.EoS.Cubic.RK>` cubic equation of state.
 
-    This model is applicable to systems of non-polar hydrocarbons
+    This model is applicable to systems of non-polar hydrocarbons, for vapor-
+    liquid equilibrium. It's use the value of gas density from Redlich-Kwong
+    equation, but don't support the liquid density or the enthalpy calculation.
 
     Parameters
     ----------
     flory : boolean
         Use the Flory-Huggins extension to regular solutions
+
+    Examples
+    --------
+    Example 7.2 from [4]_, liquid-vapor flash of a mixture of hydrogen,
+    methane, benzene and toluene
+
+    >>> from lib.corriente import Mezcla
+    >>> from lib import unidades
+    >>> zi = [0.31767, 0.58942, 0.07147, 0.02144]
+    >>> mix = Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=zi)
+    >>> P = unidades.Pressure(485, "psi")
+    >>> T = unidades.Temperature(100, "F")
+    >>> eq = Grayson_Streed(T, P, mix, flory=0)
+    >>> "β = %0.4f" % eq.x
+    'β = 0.9106'
+    >>> "xi = %0.4f %0.4f %0.4f %0.4f" % tuple(eq.xi)
+    'xi = 0.0043 0.0576 0.7095 0.2287'
+    >>> "yi = %0.4f %0.4f %0.4f %0.4f" % tuple(eq.yi)
+    'yi = 0.3484 0.6416 0.0088 0.0011'
     """
 
     __title__ = "Grayson Streed (1961)"
@@ -103,13 +123,19 @@ class Grayson_Streed(EoS):
 
     def __init__(self, T, P, mezcla, **kwargs):
         EoS.__init__(self, T, P, mezcla, **kwargs)
-        self.rk = RK(self.T, self.P, self.mezcla)
+        self.rk = RK(T, P, mezcla)
 
-        self.x, self.xi, self.yi, self.Ki = self._Flash()
-        print("q = ", self.x)
-        print("x = ", self.xi)
-        print("y = ", self.yi)
-        print("K = ", self.Ki)
+        self.x, Zl, Zg, self.xi, self.yi, self.Ki = self._Flash()
+
+        self.Zg = self.rk.Zg
+        self.rhoG = self.rk.rhoG
+
+        self.Zl = None
+        self.rhoL = None
+        # print("q = ", self.x)
+        # print("x = ", self.xi)
+        # print("y = ", self.yi)
+        # print("K = ", self.Ki)
 
     def _nio(self):
         """Liquid fugacity coefficient"""
@@ -173,61 +199,20 @@ class Grayson_Streed(EoS):
 
         return gi
 
-    def _Flash(self):
-        """Cálculo de los coeficientes de reparto entre fases, Ref Naji - Conventional and rapid flash claculations"""
-        # Initial estimation using Wilson correlation, Eq 19
-        Ki = self._nio()
+    def _fug(self, xi, yi):
+        gi = self._gi(xi)
+        nio = self._nio()
+        tital = [n*g for n, g in zip(nio, gi)]
 
-        def RR(q):
-            # Rachford-Rice equation
-            f = 0
-            for zi, ki in zip(self.zi, Ki):
-                f += zi*(1-ki)/(1+q*(ki-1))
-            return f
+        a, b, delta, epsilon = self.rk._GEOS(yi)
+        B = b*self.P/R/self.T
+        A = a*self.P/(R*self.T)**2
+        titav = self.rk._fugacity(self.rk.Zg, yi, A, B)
 
-        if RR(0) > 0 and RR(1) > 0:
-            # q>1, superheated gas
-            xi = self.zi
-            yi = self.zi
-            q = 1
-        elif RR(0) < 0 and RR(1) < 0:
-            # q<0, subcooled liquid
-            xi = self.zi
-            yi = self.zi
-            q = 0
-        else:
-            q = 0.5
-            while True:
-                qo = q
-                solucion = fsolve(RR, q, full_output=True)
-                if solucion[2] != 1:
-                    print(solucion)
-                    break
-                else:
-                    q = solucion[0][0]
-                    xi = []
-                    yi = []
-                    for zi, ki in zip(self.zi, Ki):
-                        xi.append(zi/(1+q*(ki-1)))
-                        yi.append(zi*ki/(1+q*(ki-1)))
+        return tital, titav
 
-                    titav = self.rk._fug(self.rk.Zg, yi)
-
-                    gi = self._gi(xi)
-                    nio = self._nio()
-                    tital = [n*g for n, g in zip(nio, gi)]
-
-                    fiv = [z*t*self.P for z, t in zip(yi, titav)]
-                    fil = [z*t*self.P for z, t in zip(xi, tital)]
-
-                    # criterio de convergencia Eq 21
-                    err = sum([abs(l/v-1) for l, v in zip(fil, fiv)])
-                    if err < 1e-12 and (q-qo)**2 < 1e-15:
-                        break
-                    else:
-                        Ki = [l/v for l, v in zip(tital, titav)]
-
-        return q, xi, yi, Ki
+    def _Z(self, xi):
+        return None,
 
 
 _all = [Grayson_Streed]
@@ -255,7 +240,10 @@ if __name__ == "__main__":
     mezcla=Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
     P = unidades.Pressure(485, "psi")
     T = unidades.Temperature(100, "F")
-    eq = Grayson_Streed(T, P, mezcla, flory=1)
+    eq = Grayson_Streed(T, P, mezcla, flory=0)
+
+    # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22], caudalUnitarioMolar=[1]*10)
+    # eq = Grayson_Streed(293.15, 5e6, mix, flory=0)
 
     # Example 4.2, pag 89
     # mezcla = Mezcla(1, ids=[4, 40], caudalUnitarioMasico=[26.92, 73.08])
