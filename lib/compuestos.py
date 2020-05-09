@@ -1684,7 +1684,7 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
 
 
 @refDoc(__doi__, [6, 1, 5, 7])
-def Pv_Wagner(T, args, Tc, Pc):
+def Pv_Wagner(T, Tc, Pc, args):
     r"""Calculates vapor pressure of a fluid using the Wagner correlation
 
     .. math::
@@ -4515,6 +4515,48 @@ def Tension_Miqueu(T, Tc, Vc, M, w):
     return unidades.Tension(sigma, "mNm")
 
 
+@refDoc(__doi__, [1])
+def CpL_Poling(T, Tc, w, Cpgo):
+    r"""Calculate liquid isobaric heat capacitiy with the CSP method reported
+    in [1]_, Eq 6-6.
+
+    .. math::
+        \frac{C_p-C_p^o}{R} = 1.586 + \frac{0.49}{1-T_r} + \omega\left(4.2775 +
+        \frac{6.3\left(1-T_r\right)^{1/3}}{T_r} + \frac{0.4355}{1-T_r}\right)
+
+    Parameters
+    ----------
+    T : float
+        Temperature, [K]
+    Tc : float
+        Critical temperature, [K]
+    w : float
+        Acentric factor, [-]
+    Cpgo : float
+        Isobaric ideal gas heat capacity, [J/mol/K]
+
+    Returns
+    -------
+    Cplm : float
+        Liquid constant-pressure heat capacitiy, [J/mol/K]
+
+    Notes
+    -----
+    This correlation fail with associating compound
+
+    Examples
+    --------
+
+    Example 6-3 from [1]_, possible bug in reference
+
+    >>> "%0.1f" % CpL_Poling(350.0, 435.5, 0.203, 91.21)
+    '143.8'
+    """
+    Tr = T/Tc
+    Cpr = 1.586 + 0.49/(1-Tr) + \
+        w*(4.2775 + 6.3*(1-Tr)**(1/3)/Tr + 0.4355/(1-Tr))
+    return Cpgo + R*Cpr
+
 # Acentric factor
 @refDoc(__doi__, [4])
 def facent_LeeKesler(Tb, Tc, Pc):
@@ -5322,9 +5364,11 @@ class Componente(object):
         if Pcorr is None or method >= len(Componente.METHODS_RhoLP):
             Pcorr = self.Config.getint("Transport", "Corr_RhoL")
 
+        if T > self.Tc:
+            T = 0.9*self.Tc
+
         # Calculate of low pressure viscosity
-        if method == 0 and self._dipprRhoL and \
-                self._dipprRhoL[6] <= T <= self._dipprRhoL[7]:
+        if method == 0 and self._dipprRhoL:
             rhos = DIPPR("rhoL", T, self._dipprRhoL[:-2], M=self.M, Tc=self.Tc)
         elif method == 1 and self.rackett != 0 and T < self.Tc:
             rhos = RhoL_Rackett(T, self.Tc, self.Pc, self.rackett, self.M)
@@ -5458,9 +5502,11 @@ class Componente(object):
         if Pcorr is None or method >= len(Componente.METHODS_ThLP):
             Pcorr = self.Config.getint("Transport", "Corr_ThCondL")
 
+        if T > self.Tc:
+            T = 0.9*self.Tc
+
         # Calculate of low pressure viscosity
-        if method == 0 and self._dipprKL and \
-                self._dipprKL[6] <= T <= self._dipprKL[7]:
+        if method == 0 and self._dipprKL:
             ko = DIPPR("kL", T, self._dipprKL[:-2], M=self.M, Tc=self.Tc)
         elif method == 1 and T < self.Tc:
             ko = ThL_Pachaiyappan(T, self.Tc, self.M, rho, self.branched)
@@ -5513,8 +5559,7 @@ class Componente(object):
             Pcorr = self.Config.getint("Transport", "Corr_ThCondG")
 
         # Calculate of low pressure viscosity
-        if method == 0 and self._dipprKG and \
-                self._dipprKG[6] <= T <= self._dipprKG[7]:
+        if method == 0 and self._dipprKG:
             ko = DIPPR("kG", T, self._dipprKG[:-2], M=self.M, Tc=self.Tc)
         elif method == 1:
             cp = self.Cp_Gas_DIPPR(T)
@@ -5541,7 +5586,7 @@ class Componente(object):
                 ko = ThG_MisicThodos(T, self.Tc, self.Pc, self.M, cp)
 
         # Add correction factor for high pressure
-        if P < 1e6:
+        if P < 1e7:
             k = ko
         elif self.id in [1, 46, 47, 48, 50, 51, 111]:
             k = ThG_NonHydrocarbon(T, P, self.id)
@@ -5738,6 +5783,12 @@ class Componente(object):
     def Tension(self, T):
         """Liquid surface tension procedure using the method defined in
         preferences"""
+
+        # Calculate this property only if the Temperature is below critical
+        # temperature
+        if T > self.Tc:
+            return 0
+
         method = self.kwargs["Tension"]
         if method is None or method >= len(Componente.METHODS_Tension):
             method = self.Config.getint("Transport", "Tension")
@@ -5788,9 +5839,14 @@ class Componente(object):
         """Calculate the specific heat of solid using the DIPPR equations"""
         return DIPPR("cpS", T, self._dipprCpS[:-2], M=self.M, Tc=self.Tc)
 
-    def Cp_Liquido_DIPPR(self, T):
-        """Calculate the specific heat of liquid using the DIPPR equations"""
         return DIPPR("cpL", T, self._dipprCpL[:-2], M=self.M, Tc=self.Tc)
+
+    def Cp_Liquido(self, T):
+        if self._dipprCpL:
+            return DIPPR("cpL", T, self._dipprCpL[:-2], M=self.M, Tc=self.Tc)
+        else:
+            Cpo = self._Cpo(T)
+            return CpL_Poling(T, self.Tc, self.f_acent, Cpo)
 
     def Cp_Gas_DIPPR(self, T):
         """Calculate the specific heat of gas using the DIPPR equations"""
@@ -5807,7 +5863,7 @@ class Componente(object):
 
     def Fase(self, T, P):
         """Método que calcula el estado en el que se encuentra la sustancia"""
-        Pv = self.Pv(T).atm
+        Pv = self.Pv(T)
         if Pv > P:
             return 1
         else:

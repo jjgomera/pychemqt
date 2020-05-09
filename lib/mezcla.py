@@ -703,6 +703,9 @@ def RhoL_AaltoKeskinenMix(T, P, xi, Tci, Pci, Vci, wi, Mi, rhos):
     # Eq A5
     wm = 0
     for x, w in zip(xi, wi):
+        # Avoid problem with square root of negative number, hydrogen, methane
+        if w < 0:
+            w = 0
         wm += x*w**0.5
     wm *= wm
 
@@ -3269,7 +3272,7 @@ class Mezcla(config.Entity):
 
     Parameters
     ----------
-    tipo: int
+    tipo : int
         kind of mix definition:
 
             * 0 : Undefined
@@ -3625,6 +3628,13 @@ class Mezcla(config.Entity):
             Cp += xi*cmp.Cp_Gas_DIPPR(T)
         return unidades.SpecificHeat(Cp)
 
+    def Cp_Liquido(self, T):
+        """Calculate specific heat from liquid, API procedure 7D1.9, pag 714"""
+        Cp = 0
+        for xi, cmp in zip(self.fraccion_masica, self.componente):
+            Cp += xi*cmp.Cp_Liquido(T)
+        return unidades.SpecificHeat(Cp)
+
     def RhoL(self, T, P):
         """Calculate the density of liquid phase using any of available
         correlation"""
@@ -3795,7 +3805,7 @@ class Mezcla(config.Entity):
         return unidades.Tension(tension)
 
     def ThCond_Liquido(self, T, P, rho):
-        """General method for calculate surface tension"""
+        """General method for calculate thermal conductivity of liquid"""
         method = self.kwargs["ThCondLMix"]
         if method is None or method >= len(Mezcla.METHODS_ThL):
             method = self.Config.getint("Transport", "ThCondLMix")
@@ -3934,3 +3944,15 @@ class Mezcla(config.Entity):
 # TODO:
 # ThL_Rowley
 # Parachor method for tension
+
+
+if __name__ == '__main__':
+    # T = unidades.Temperature(400, "F")
+    # mezcla = Mezcla(1, ids=[4, 40], caudalUnitarioMasico=[26.92, 73.08])
+    # print(mezcla.Tension(T))
+
+    mezcla = Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[
+        0.004397674808848511, 0.057137022156057246, 0.7079892468704139, 0.23047605616468061])
+    P = unidades.Pressure(485, "psi")
+    T = unidades.Temperature(100, "F")
+    print(mezcla.RhoL(T, P))
