@@ -18,9 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+from math import log, exp
+
 from scipy.constants import R
 
-from lib.bip import Kij, Mixing_Rule
 from lib.EoS.cubic import Cubic
 
 
@@ -63,25 +64,25 @@ class RK(Cubic):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def __init__(self, T, P, mezcla):
+    def _cubicDefinition(self):
         ai = []
         bi = []
-        for componente in mezcla.componente:
-            a, b = self._lib(componente, T)
+        for componente in self.componente:
+            a, b = self._lib(componente, self.T)
             ai.append(a)
             bi.append(b)
 
-        self.kij = Kij(mezcla.ids)
-        a, b = Mixing_Rule(mezcla.fraccion, [ai, bi], self.kij)
-
         self.ai = ai
         self.bi = bi
-        self.b = b
-        self.tita = a
-        self.delta = b
-        self.epsilon = 0
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(RK, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm = self._mixture("RK", xi, [self.ai, self.bi])
+
+        delta = bm
+        epsilon = 0
+        return am, bm, delta, epsilon
 
     def _lib(self, cmp, T):
         a = 0.42747*R**2*cmp.Tc**2/cmp.Pc
@@ -89,11 +90,28 @@ class RK(Cubic):
         b = 0.08664*R*cmp.Tc/cmp.Pc
         return a*alfa, b
 
+    def _fugacity(self, Z, zi, A, B):
+        tita = []
+        for Bi, Ai in zip(self.Bi, self.Ai):
+            rhs = Bi/B*(Z-1) - log(Z-B) + A/B*(Bi/B-2*(Ai/A)**0.5) * log(1+B/Z)
+            tita.append(exp(rhs))
+
+        return tita
+
 
 if __name__ == "__main__":
     from lib.mezcla import Mezcla
-    mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
-    eq = RK(300, 9.9742e5, mix)
-    print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
-    eq = RK(300, 42.477e5, mix)
-    print('%0.1f' % (eq.Vl.ccmol))
+    from lib import unidades
+    # mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
+    # eq = RK(300, 9.9742e5, mix)
+    # print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
+    # eq = RK(300, 42.477e5, mix)
+    # print('%0.1f' % (eq.Vl.ccmol))
+
+    # mix = Mezcla(2, ids=[10, 38, 22, 61], caudalUnitarioMolar=[0.3, 0.5, 0.05, 0.15])
+    # eq = RK(340, 101325, mix)
+
+    mezcla=Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
+    P = unidades.Pressure(485, "psi")
+    T = unidades.Temperature(100, "F")
+    eq = RK(T, P, mezcla, flory=1)
