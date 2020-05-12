@@ -20,7 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from math import exp
 
-
 from lib.EoS.Cubic.PR import PR
 
 
@@ -44,6 +43,7 @@ class PRGasem(PR):
         "doi": "10.1016/s0378-3812(01)00488-5"},
 
     def _alfa(self, cmp, T):
+        """Modified correlation"""
         Tr = T/cmp.Tc
 
         # Parameters, Table 5

@@ -91,18 +91,8 @@ class PRMathiasCopeman(Cubic):
         "ref": "Int. J. Thermophys. 25(1) (2004) 133-158",
         "doi": "10.1023/b_ijot.0000022331.46865.2f"})
 
-    def __init__(self, T, P, mezcla):
-        """Initialization procedure
-
-        Parameters
-        ----------
-
-        """
-
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
-
+    def _cubicDefinition(self, T, P, mezcla):
+        """Definition of coefficients for generic cubic equation of state"""
         ao = []
         bi = []
         ai = []

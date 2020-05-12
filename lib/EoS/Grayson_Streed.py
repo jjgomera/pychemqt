@@ -80,8 +80,8 @@ class Grayson_Streed(EoS):
 
     Examples
     --------
-    Example 7.2 from [4]_, liquid-vapor flash of a mixture of hydrogen,
-    methane, benzene and toluene
+    Example 7.2 from [4]_, pag 279, liquid-vapor flash equilibrium of a mixture
+    of hydrogen, methane, benzene and toluene.
 
     >>> from lib.corriente import Mezcla
     >>> from lib import unidades
@@ -119,7 +119,14 @@ class Grayson_Streed(EoS):
         "autor": "Walas, S.M.",
         "title": "Phase Equiibria in Chemical Engineering",
         "ref": "Butterworth-Heinemann, 1985",
-        "doi": "10.1016/C2013-0-04304-6"})
+        "doi": "10.1016/C2013-0-04304-6"},
+      {
+        "autor": "Henley, E.J., Seader, J.D.",
+        "title": "Equilibrium-Stage Separation Operations in Chemical "
+                 "Engineering",
+        "ref": "John Wiley & Sons, 1981",
+        "doi": ""}
+      )
 
     def __init__(self, T, P, mezcla, **kwargs):
         EoS.__init__(self, T, P, mezcla, **kwargs)
@@ -222,27 +229,16 @@ if __name__ == "__main__":
     from lib.corriente import Mezcla
     from lib import unidades
 
-#    mezcla=SRK(350, 1, Mezcla([4, 5, 6, 7, 8, 10, 11, 12, 13], [0.02361538, 0.2923077, 0.3638462, 0.02769231, 0.01153846, 0.01769231, 0.03007692, 0.2093846, 0.02384615]))
-#    mezcla=Grayson_Streed(350, 1, Mezcla([4, 5, 6, 7, 8, 10, 11, 12, 13], [0.02361538, 0.2923077, 0.3638462, 0.02769231, 0.01153846, 0.01769231, 0.03007692, 0.2093846, 0.02384615]))
-
-#    print mezcla._Bubble_T(), mezcla._Dew_T()
-#    print mezcla.T, mezcla.x
-
-    # mezcla=Mezcla(2, ids=[10, 38, 22, 61], caudalUnitarioMolar=[0.3, 0.5, 0.05, 0.15])
-#    for t in range(300, 345, 1):
-#        eq=SRK(t, 1., mezcla )
-#        print t, eq.x
-    # eq = Grayson_Streed(340, 101325, mezcla)
-    # print(eq.x)
-
     # Example 7.2, pag 153
     # Method pag 107
-    mezcla=Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
+    mezcla = Mezcla(2, ids=[1, 2, 40, 41],
+                    caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
     P = unidades.Pressure(485, "psi")
     T = unidades.Temperature(100, "F")
     eq = Grayson_Streed(T, P, mezcla, flory=0)
 
-    # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22], caudalUnitarioMolar=[1]*10)
+    # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22],
+    #              caudalUnitarioMolar=[1]*10)
     # eq = Grayson_Streed(293.15, 5e6, mix, flory=0)
 
     # Example 4.2, pag 89

@@ -46,10 +46,10 @@ class PRTwu(PR):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = PRTwu(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2039 86.8'
-    >>> eq = PRTwu(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
+    '86.8'
+    >>> eq = PRTwu(300, 42.477e5, mix)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '84.1'
 
     It give better result than in example references
@@ -74,6 +74,7 @@ class PRTwu(PR):
     OmegaB = 0.0777960739039
 
     def _alfa(self, cmp, T):
+        """Modified α correlation"""
         Tr = T/cmp.Tc
 
         if Tr <= 1:

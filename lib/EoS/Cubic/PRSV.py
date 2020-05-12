@@ -239,10 +239,10 @@ class PRSV(Cubic):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = PRSV(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2040 86.8'
-    >>> eq = PRSV(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
+    '86.8'
+    >>> eq = PRSV(300, 42.477e5, mix)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '84.2'
     """
 
@@ -268,16 +268,12 @@ class PRSV(Cubic):
         "ref": "McGraw-Hill, New York, 2001",
         "doi": ""})
 
-    def __init__(self, T, P, mezcla):
-
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
-
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
         ai = []
         bi = []
-        for cmp in mezcla.componente:
-            Tr = T/cmp.Tc
+        for cmp in self.componente:
+            Tr = self.T/cmp.Tc
 
             k = self._k(cmp, Tr)
 
@@ -288,16 +284,17 @@ class PRSV(Cubic):
             ai.append(ao*alfa)
             bi.append(b)
 
-        am, bm = self._mixture(None, mezcla.ids, [ai, bi])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = 2*bm
-        self.epsilon = -bm**2
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(PRSV, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm = self._mixture(None, xi, [self.ai, self.bi])
+
+        delta = 2*bm
+        epsilon = -bm**2
+        return am, bm, delta, epsilon
 
     def _k(self, cmp, Tr):
         # Eq 11

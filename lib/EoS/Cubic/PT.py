@@ -157,10 +157,10 @@ class PT(Cubic):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = PT(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2048 90.9'
-    >>> eq = PT(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
+    '90.9'
+    >>> eq = PT(300, 42.477e5, mix)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '88.1'
     """
 
@@ -190,39 +190,31 @@ class PT(Cubic):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def __init__(self, T, P, mezcla):
-        """Initialization procedure
-
-        Parameters
-        ----------
-
-        The library implement too the enhancement alfa function for several
-        compounds given in [2]_
-        """
-
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
 
         ai = []
         bi = []
         ci = []
-        for cmp in mezcla.componente:
-            a, b, c = self._lib(cmp, T)
+        for cmp in self.componente:
+            a, b, c = self._lib(cmp, self.T)
             ai.append(a)
             bi.append(b)
             ci.append(c)
 
-        am, bm, cm = self._mixture(None, mezcla.ids, [ai, bi, ci])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = bm+cm
-        self.epsilon = -bm*cm
+        self.ci = ci
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(PT, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm, cm = self._mixture(None, xi, [self.ai, self.bi, self.ci])
+
+        delta = bm+cm
+        epsilon = -bm*cm
+
+        return am, bm, delta, epsilon
 
     def _lib(self, cmp, T):
         if cmp.id in dat:

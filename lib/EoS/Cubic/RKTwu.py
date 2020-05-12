@@ -51,12 +51,14 @@ class RKTwu(RK):
         "doi": "10.1016/0378-3812(94)02602-w"},
 
     def _lib(self, cmp, T):
+        """Modified parameteres correlations"""
         a = 0.42748023354*R**2*cmp.Tc**2/cmp.Pc
         alfa = self._alpha(cmp, T)
         b = 0.086640349965*R*cmp.Tc/cmp.Pc
         return a*alfa, b
 
     def _alpha(self, cmp, T):
+        """Modified α expression"""
         Tr = T/cmp.Tc
 
         if Tr <= 1:

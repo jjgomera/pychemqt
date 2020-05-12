@@ -43,10 +43,10 @@ class vdW(Cubic):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = vdW(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2177 145.4'
-    >>> eq = vdW(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
+    '145.4'
+    >>> eq = vdW(300, 42.477e5, mix)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '135.5'
     """
 
@@ -64,39 +64,40 @@ class vdW(Cubic):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def __init__(self, T, P, mezcla):
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
+
+        # Schmidt-Wenzel factorization of terms
+        self.u = 0
+        self.w = 0
 
         ai = []
         bi = []
-        for cmp in mezcla.componente:
-            a, b = self.__lib(cmp)
+        for cmp in self.componente:
+            a = 0.421875*R**2*cmp.Tc**2/cmp.Pc
+            b = 0.125*R*cmp.Tc/cmp.Pc
             ai.append(a)
             bi.append(b)
 
-        am, bm = self._mixture(None, mezcla.ids, [ai, bi])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = 0
-        self.epsilon = 0
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(vdW, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm = self._mixture(None, xi, [self.ai, self.bi])
 
-    def __lib(self, cmp):
-        a = 0.421875*R**2*cmp.Tc**2/cmp.Pc
-        b = 0.125*R*cmp.Tc/cmp.Pc
-        return a, b
+        delta = 0
+        epsilon = 0
+
+        return am, bm, delta, epsilon
 
 
 if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     eq = vdW(300, 9.9742e5, mix)
-    print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
+    print(eq.Vl.ccmol)
     eq = vdW(300, 42.477e5, mix)
-    print('%0.1f' % (eq.Vl.ccmol))
+    print(eq._Z())
+    print('%0.1f' % (eq.Vg.ccmol))

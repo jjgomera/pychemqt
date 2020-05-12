@@ -59,6 +59,14 @@ class SRK(Cubic):
         b_3 = 0.25\left(4 - 7m + m^2\right)\\
         \end{array}
 
+
+    Parameters
+    ----------
+    alpha : int
+        Correlation index for alpha expresion at supercritical temperatures:
+            * 0 - Boston
+            * 1 - Nasrifar
+
     Examples
     --------
     Example 4.3 from [2]_, Propane saturated at 300K
@@ -66,10 +74,10 @@ class SRK(Cubic):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = SRK(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2065 98.4'
-    >>> eq = SRK(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
+    '98.4'
+    >>> eq = SRK(300, 42.477e5, mix)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '95.1'
     """
 
@@ -101,34 +109,31 @@ class SRK(Cubic):
          "doi": "10.1021/ie049545i"},
       )
 
-    def __init__(self, T, P, mezcla, **kwargs):
-        """
-        Aditional parameters:
-
-        alpha: special procedure for supercritical alpha temperature dependence
-        """
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
-        self.kwargs = kwargs
+    def _cubicDefinition(self):
+        """Definition of coefficients for generic cubic equation of state"""
+        # Schmidt-Wenzel factorization of terms
+        self.u = 1
+        self.w = 0
 
         ai = []
         bi = []
-        for cmp in mezcla.componente:
-            a, b = self._lib(cmp, T)
+        for cmp in self.componente:
+            a, b = self._lib(cmp, self.T)
             ai.append(a)
             bi.append(b)
 
-        am, bm = self._mixture("SRK", mezcla.ids, [ai, bi])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = bm
-        self.epsilon = 0
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(SRK, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm = self._mixture("SRK", xi, [self.ai, self.bi])
+
+        delta = bm
+        epsilon = 0
+
+        return am, bm, delta, epsilon
 
     def _lib(self, cmp, T):
         ao = 0.42747*R**2*cmp.Tc**2/cmp.Pc                              # Eq 5
@@ -137,11 +142,32 @@ class SRK(Cubic):
         return ao*alfa, b
 
     def _alfa(self, cmp, T):
+        """α parameter calculation procedure, separate of general procedure
+        to let define derived equation where only change this term.
+
+        This method use the original alpha formulation for temperatures below
+        the critical temperature and can choose by configuration between:
+
+         * Boston-Mathias formulation
+         * Nasrifar-Bolland formulation
+
+        Parameters
+        ----------
+        cmp : componente.Componente
+            Componente instance
+        T : float
+            Temperature, [K]
+
+        Returns
+        -------
+        alpha : float
+            alpha parameter of equation, [-]
+        """
         Tr = T/cmp.Tc
         m = 0.48 + 1.574*cmp.f_acent - 0.175*cmp.f_acent**2             # Eq 15
 
         if Tr > 1:
-            alfa = self.kwargs.get("alfa", 0)
+            alfa = self.kwargs.get("alpha", 0)
             if alfa == 0:
                 # Use the Boston-Mathias supercritical extrapolation, ref [3]_
                 d = 1+m/2                                               # Eq 10
@@ -162,7 +188,7 @@ class SRK(Cubic):
 if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
-    eq = SRK(300, 9.9742e5, mix, alpha=1)
-    print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
+    # eq = SRK(300, 9.9742e5, mix, alpha=1)
+    # print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
     eq = SRK(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))

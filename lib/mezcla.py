@@ -76,11 +76,12 @@ from math import pi
 
 from numpy.linalg import solve
 from scipy import log, log10, exp
+from scipy.constants import R
 
 from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
                             RhoL_TaitCostald, RhoL_Nasrifar, MuG_DeanStiel,
                             MuG_API, ThG_StielThodos)
-from lib.physics import R_atml, R, Collision_Neufeld
+from lib.physics import R_atml, Collision_Neufeld
 from lib import unidades, config
 from lib.utilities import refDoc
 

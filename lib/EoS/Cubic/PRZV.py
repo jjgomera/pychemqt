@@ -178,7 +178,7 @@ class PRZV(PR):
             Trbp = cmp.Tb/cmp.Tc
 
             # TODO: The correlation use the triple point temperature dont
-            # available in database, using melting point
+            # available in database, using normal melting point
             Trtp = cmp.Tf/cmp.Tc
 
             alfatp = PR._alfa(self, cmp, cmp.Tf)[1]

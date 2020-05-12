@@ -512,7 +512,13 @@ dat = {
 
 
 class PRAlmeida(PR):
-    """Peng-Robinson temperature dependence modification by Almeida et al.
+    r"""Peng-Robinson temperature dependence modification by Almeida et al.
+
+    .. math::
+        \alpha = \exp\left(m\left(1-T_r\right)\left|1-T_r\right|^{\Gamma-1} +
+        n\left(\frac{1}{Tr}-\right)\right)
+
+    where m, n and Γ are adjustable parameters compound specific get in [2]_
     """
     __title__ = "PR Almeida (1991)"
     __status__ = "PRAlm"

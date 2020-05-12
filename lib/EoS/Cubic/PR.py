@@ -18,12 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
-from math import exp, log
+from math import exp
 
 from scipy.constants import R
-from scipy.optimize import fsolve
 
-from lib.EoS.cubic import Cubic, CubicHelmholtz
+from lib.EoS.cubic import Cubic
 
 
 class PR(Cubic):
@@ -58,13 +57,11 @@ class PR(Cubic):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = PR(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2039 86.7'
-    >>> eq = PR(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
+    '86.7'
+    >>> eq = PR(300, 42.477e5, mix)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '84.1'
-
-    There are a tiny desviation, 2038 86.8 for two phases state.
     """
 
     __title__ = "Peng-Robinson (1976)"
@@ -100,11 +97,16 @@ class PR(Cubic):
 
     def _cubicDefinition(self):
         """Definition of individual components coefficients"""
+
+        # Schmidt-Wenzel factorization of terms
+        self.u = 1+2**0.5
+        self.w = 1-2**0.5
+
         ao = []
         ai = []
         bi = []
         mi = []
-        for cmp in self.mezcla.componente:
+        for cmp in self.componente:
             a0 = self.OmegaA*R**2*cmp.Tc**2/cmp.Pc                      # Eq 9
             b = self.OmegaB*R*cmp.Tc/cmp.Pc                             # Eq 10
 
@@ -122,18 +124,62 @@ class PR(Cubic):
         self.Bi = [bi*self.P/R/self.T for bi in self.bi]
         self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-    def _GEOS(self, xi):
-        # δ1, δ2 calculated from polynomial factorization
-        # self.u = ((self.delta**2-4*self.epsilon)**0.5 + self.delta)/2/self.b
-        # self.w = -((self.delta**2-4*self.epsilon)**0.5 - self.delta)/2/self.b
+    def _alfa(self, cmp, T):
+        """α parameter calculation procedure, separate of general procedure
+        to let define derived equation where only change this term like the
+        1978 version.
 
+        This method use the original alpha formulation for temperatures below
+        the critical temperature and the Boston-Mathias formulation for
+        supercritical states.
+
+        The procedure return too the m parameters because it's used in
+        Helmholtz formulation
+
+        Parameters
+        ----------
+        cmp : componente.Componente
+            Componente instance
+        T : float
+            Temperature, [K]
+
+        Returns
+        -------
+        m : float
+            m parameter of equation, [-]
+        alpha : float
+            alpha parameter of equation, [-]
+        """
+        Tr = T/cmp.Tc
+        m = 0.37464 + 1.54226*cmp.f_acent - 0.2699*cmp.f_acent**2   # Eq 18
+
+        if cmp.id == 62 and Tr < 0.85:
+            # Special case for water from [2]_
+            alfa = (1.0085677 + 0.82154*(1-(T/cmp.Tc)**0.5))**2         # Eq 6
+            m = 0
+
+        elif Tr > 1:
+            # Use the Boston-Mathias supercritical extrapolation, ref [4]_
+            d = 1+m/2                                                   # Eq 10
+            c = m/d                                                     # Eq 11
+            alfa = exp(c*(1-Tr**d))                                     # Eq 9
+
+        else:
+            alfa = (1+m*(1-(T/cmp.Tc)**0.5))**2                         # Eq 17
+        return m, alfa
+
+    def _GEOS(self, xi):
         am, bm = self._mixture("PR", xi, [self.ai, self.bi])
+
         delta = 2*bm
         epsilon = -bm**2
         return am, bm, delta, epsilon
 
     def _da(self, tau, zi):
-        """Calculate the derivatives of α"""
+        """Calculate the derivatives of α, this procedure is used for Helmholtz
+        energy formulation of EoS for calculation of properties, alternate alfa
+        formulation must define this procedure for any change of formulation
+        """
 
         Tr, rhor = self._Tr()
 
@@ -248,35 +294,6 @@ class PR(Cubic):
         kw["daxi"] = daxi
         return kw
 
-    def _phir(self, tau, delta, xi, a, b):
-
-        kw = self._da(tau, xi)
-
-        kw["rhoc"] = 1/self.mezcla.Vc
-        kw["Tc"] = self.mezcla.Tc
-        kw["Delta1"] = 1+2**0.5
-        kw["Delta2"] = 1-2**0.5
-        kw["bi"] = self.bi
-        kw["b"] = b
-        kw["a"] = a
-
-        fir = CubicHelmholtz(tau, delta, **kw)
-        # print(delta, fir["fird"], R, T, rho)
-        # print("P", (1+delta*fir["fird"])*R*T*rho*1000)
-        # print(self._excess(tau, delta, fir))
-        # print("fir: ", fir["fir"])
-        # print("fird: ", fir["fird"]*delta)
-        # print("firt: ", fir["firt"]*tau)
-        # print("firdd: ", fir["firdd"]*delta**2)
-        # print("firdt: ", fir["firdt"]*delta*tau)
-        # print("firtt: ", fir["firtt"]*tau**2)
-        # print("firddd: ", fir["firddd"]*delta**3)
-        # print("firddt: ", fir["firddt"]*delta**2*tau)
-        # print("firdtt: ", fir["firdtt"]*delta*tau**2)
-        # print("firttt: ", fir["firttt"]*tau**3)
-
-        return fir
-
     # def _fug(self, Zl, xi, Zv, yi, A, B):
         # tital = self._fugl(Zl, xi, A, B)
         # titav = self._fugl(Zv, yi, A, B)
@@ -291,28 +308,6 @@ class PR(Cubic):
         # pprint(titav)
         # pprint(titav2)
         # return tital, titav
-
-    def _fugacity(self, Z, zi, A, B):
-        # Precalculation of inner sum in equation
-        aij = []
-        for ai, kiji in zip(self.Ai, self.kij):
-            suma = 0
-            for xj, aj, kij in zip(zi, self.Ai, kiji):
-                suma += xj*(1-kij)*(ai*aj)**0.5
-            aij.append(suma)
-
-        tita = []
-        for Bi, aai in zip(self.Bi, aij):
-            # rhs = Bi/self.B*(Z-1) - log(Z-self.B) + \
-                # self.Tita/self.B/(self.u-self.w)*(
-                    # Bi/self.B-2/self.tita*aai) * \
-                # log((ZZ+self.u*self.B)/(Z+self.w*self.B))
-            rhs = Bi/B*(Z-1) - log(Z-B) + \
-                A/B/(2*2**0.5)*(Bi/B-2/A*aai) * \
-                log((Z+(1+2**0.5)*B)/(Z+(1-2**0.5)*B))
-            tita.append(exp(rhs))
-
-        return tita
 
     # def _fug2(self, Z, xi):
     def _fugl2(self, Z, zi, a, b):
@@ -343,25 +338,6 @@ class PR(Cubic):
         fi = [x*rho*R*self.T*exp(nfni) for x, nfni in zip(zi, nfirni)]
         # print("fug_helm: ", fi)
         return fi
-
-    def _alfa(self, cmp, T):
-        Tr = T/cmp.Tc
-        m = 0.37464 + 1.54226*cmp.f_acent - 0.2699*cmp.f_acent**2   # Eq 18
-
-        if cmp.id == 62 and Tr < 0.85:
-            # Special case for water from [2]_
-            alfa = (1.0085677 + 0.82154*(1-(T/cmp.Tc)**0.5))**2         # Eq 6
-            m = 0
-
-        elif Tr > 1:
-            # Use the Boston-Mathias supercritical extrapolation, ref [4]_
-            d = 1+m/2                                                   # Eq 10
-            c = m/d                                                     # Eq 11
-            alfa = exp(c*(1-Tr**d))                                     # Eq 9
-
-        else:
-            alfa = (1+m*(1-(T/cmp.Tc)**0.5))**2                         # Eq 17
-        return m, alfa
 
 
 if __name__ == "__main__":
@@ -408,10 +384,11 @@ if __name__ == "__main__":
     # mix = Mezcla(2, ids=[2, 4], caudalUnitarioMolar=[0.234, 0.766])
     # eq = PR(420, 1e7, mix)
 
-    # mezcla=Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
-    # P = unidades.Pressure(485, "psi")
-    # T = unidades.Temperature(100, "F")
-    # eq = PR(T, P, mezcla, flory=1)
+    # Example 2.3
+    mezcla = Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
+    P = unidades.Pressure(485, "psi")
+    T = unidades.Temperature(120, "F")
+    eq = PR(T, P, mezcla)
 
-    mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22], caudalUnitarioMolar=[1]*10)
-    eq = PR(293.15, 5e6, mix)
+    # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22], caudalUnitarioMolar=[1]*10)
+    # eq = PR(293.15, 5e6, mix)

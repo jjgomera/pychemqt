@@ -350,10 +350,10 @@ class MSRK(SRK):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = MSRK(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2063 98.2'
+    >>> '%0.1f' % ( eq.Vl.ccmol)
+    '98.2'
     >>> eq = MSRK(300, 42.477e5, mix)
-    >>> '%0.1f' % (eq.Vl.ccmol)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '94.9'
     """
     __title__ = "M-SRK (1979)"

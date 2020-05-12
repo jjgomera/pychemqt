@@ -56,23 +56,14 @@ class ALS1983(Cubic):
         "ref": "Fluid Phase Equilibria 11 (1983) 29-48",
         "doi": "10.1016/0378-3812(83)85004-3"},
 
-    def __init__(self, T, P, mezcla):
-        """Initialization procedure
-
-        Parameters
-        ----------
-
-        """
-
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
 
         ai = []
         b1i = []
         b2i = []
         b3i = []
-        for cmp in mezcla.componente:
+        for cmp in self.componente:
 
             B1 = 0.08974 - 0.03452*cmp.f_acent + 0.0033*cmp.f_acent**2
             B2 = 0.03686 + 0.00405*cmp.f_acent - 0.01073*cmp.f_acent**2 + \
@@ -83,29 +74,32 @@ class ALS1983(Cubic):
                 0.00576*cmp.f_acent**3
 
             m = 0.4070 + 1.3787*cmp.f_acent - 0.2933*cmp.f_acent**2
-            alfa = 1+m*(1-(T/cmp.Tc)**0.5)**2
+            alfa = 1+m*(1-(self.T/cmp.Tc)**0.5)**2
 
             ai.append(A*alfa*R**2*cmp.Tc**2/cmp.Pc)
             b1i.append(B1*R*cmp.Tc/cmp.Pc)
             b2i.append(B2*R*cmp.Tc/cmp.Pc)
             b3i.append(B3*R*cmp.Tc/cmp.Pc)
 
-        a, b1m, b2m, b3m = self._mixture(None, mezcla.ids, [ai, b1i, b2i, b3i])
-
         self.ai = ai
         self.bi = b1i
-        self.b = b1m
-        self.tita = a
-        self.delta = b3m-b2m
-        self.epsilon = -b2m*b3m
+        self.b2i = b2i
+        self.b3i = b3i
 
-        super(ALS1983, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        coef = [self.ai, self.bi, self.b2i, self.b3i]
+        am, b1m, b2m, b3m = self._mixture(None, xi, coef)
+
+        delta = b3m-b2m
+        epsilon = -b2m*b3m
+
+        return am, b1m, delta, epsilon
 
 
 if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     eq = ALS1983(300, 9.9742e5, mix)
-    print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
-    eq = ALS1983(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
+    eq = ALS1983(300, 42.477e5, mix)
+    print('%0.1f' % (eq.Vg.ccmol))

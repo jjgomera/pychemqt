@@ -44,10 +44,10 @@ class SRKPeneloux(SRK):
     >>> from lib.mezcla import Mezcla
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = SRKPeneloux(300, 9.9742e5, mix)
-    >>> '%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol)
-    '2055 84.4'
-    >>> eq = SRKPeneloux(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
+    '84.4'
+    >>> eq = SRKPeneloux(300, 42.477e5, mix)
+    >>> '%0.1f' % (eq.Vg.ccmol)
     '82.7'
 
     # Tiny desviation

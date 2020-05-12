@@ -47,7 +47,6 @@ class Kubic(Cubic):
         - \frac{18.059421}{T_r^3} + \frac{3.514050}{T_r^4}\\
         \omega' = 0.000756+0.90984\omega+0.16226\omega^2+0.14549\omega^3\\
         \end{array}
-
     """
 
     __title__ = "Kubic (1982)"
@@ -59,32 +58,31 @@ class Kubic(Cubic):
         "ref": "Fluid Phase Equilibria 9 (1982) 79-97",
         "doi": "10.1016/0378-3812(82)85006-1"},
 
-    def __init__(self, T, P, mezcla):
-
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
 
         ai = []
         bi = []
         ci = []
-        for cmp in mezcla.componente:
-            a, b, c = self._lib(cmp, T)
+        for cmp in self.componente:
+            a, b, c = self._lib(cmp, self.T)
 
             ai.append(a)
             bi.append(b)
             ci.append(c)
 
-        am, bm, cm = self._mixture(None, mezcla.ids, [ai, bi, ci])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = 2*cm
-        self.epsilon = cm**2
+        self.ci = ci
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(Kubic, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm, cm = self._mixture(None, xi, [self.ai, self.bi, self.ci])
+
+        delta = 2*cm
+        epsilon = cm**2
+        return am, bm, delta, epsilon
 
     def _lib(self, cmp, T):
 

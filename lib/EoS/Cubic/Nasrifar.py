@@ -57,30 +57,31 @@ class Nasrifar(Cubic):
         "ref": "Fluid Phase Equilibria 190 (2001) 73-88",
         "doi": "10.1016/s0378-3812(01)00592-1"},
 
-    def __init__(self, T, P, mezcla):
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
 
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
+        # Schmidt-Wenzel factorization of terms
+        self.u = 1+3**0.5
+        self.w = 1-3**0.5
 
         ai = []
         bi = []
-        for cmp in mezcla.componente:
-            a, b = self._lib(cmp, T)
-
+        for cmp in self.componente:
+            a, b = self._lib(cmp, self.T)
             ai.append(a)
             bi.append(b)
 
-        am, bm = self._mixture(None, mezcla.ids, [ai, bi])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = 2*bm
-        self.epsilon = -2*bm**2
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(Nasrifar, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm = self._mixture(None, xi, [self.ai, self.bi])
+
+        delta = 2*bm
+        epsilon = -2*bm**2
+        return am, bm, delta, epsilon
 
     def _lib(self, cmp, T):
 
@@ -112,6 +113,11 @@ if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     eq = Nasrifar(300, 9.9742e5, mix)
-    print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
-    eq = Nasrifar(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
+    eq = Nasrifar(300, 42.477e5, mix)
+    print('%0.1f' % (eq.Vg.ccmol))
+
+    mix = Mezcla(5, ids=[46, 2], caudalMolar=1, fraccionMolar=[0.04752, 0.95248])
+    eq = Nasrifar(105, 5e7, mix)
+    print(eq.rhoL.kmolm3)
+

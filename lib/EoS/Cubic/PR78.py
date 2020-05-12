@@ -52,6 +52,7 @@ class PR78(PR):
         "doi": "10.1021/bk-1980-0133.ch020"})
 
     def _alfa(self, cmp, T):
+        """Custom expression for α"""
         if cmp.f_acent <= 0.491:
             m = 0.3746 + 1.54226*cmp.f_acent - 0.26992*cmp.f_acent**2
         else:

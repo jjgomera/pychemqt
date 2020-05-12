@@ -153,34 +153,36 @@ class TBS(Cubic):
         "ref": "Fluid Phase Equilibria 65 (1991) 59-71",
         "doi": "10.1016/0378-3812(91)87017-4"},
 
-    def __init__(self, T, P, mezcla):
-
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
 
         ai = []
         bi = []
         ci = []
         di = []
-        for cmp in mezcla.componente:
-            a, b, c, d = self.__lib(cmp, T)
+        for cmp in self.componente:
+            a, b, c, d = self.__lib(cmp, self.T)
 
             ai.append(a)
             bi.append(b)
             ci.append(c)
             di.append(d)
 
-        am, bm, cm, dm = self._mixture(None, mezcla.ids, [ai, bi, ci, di])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = bm+cm
-        self.epsilon = -bm*cm - dm**2
+        self.ci = ci
+        self.di = di
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        super(TBS, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        coef = [self.ai, self.bi, self.ci, self.di]
+        am, bm, cm, dm = self._mixture(None, xi, coef)
+
+        delta = bm+cm
+        epsilon = -bm*cm - dm**2
+
+        return am, bm, delta, epsilon
 
     def __lib(self, cmp, T):
         Tr = T/cmp.Tc
@@ -216,7 +218,7 @@ class TBS(Cubic):
         for Bi in B:
             if Bi > 0:
                 Bpositivos.append(Bi)
-        Bc = min(Bpositivos)
+        Bc = min(Bpositivos).real
 
         Ac = 3*Xc**2 + 2*Bc*Cc + Bc + Cc + Bc**2 + Dc**2                # Eq 7
         ac = Ac*R**2*cmp.Tc**2/cmp.Pc
@@ -232,6 +234,6 @@ if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     eq = TBS(300, 9.9742e5, mix)
-    print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
-    eq = TBS(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
+    eq = TBS(300, 42.477e5, mix)
+    print('%0.1f' % (eq.Vg.ccmol))

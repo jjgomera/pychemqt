@@ -160,8 +160,10 @@ def cubicCardano(a, b, c, d):
         U = abs(T)**(1/3) * (1, -1)[T < 0]
 
         x1 = S + U - b/(3*a)
-        x2 = -(S+U)/2 - b/(3*a) + 1j*(S-U)*3**0.5/2
-        x3 = -(S+U)/2 - b/(3*a) - 1j*(S-U)*3**0.5/2
+        x2 = complex(-(S+U)/2 - b/(3*a) + 1j*(S-U)*3**0.5/2)
+        x3 = complex(-(S+U)/2 - b/(3*a) - 1j*(S-U)*3**0.5/2)
+        # Complex root converted from numpy.complex type to let a exception
+        # sort typeerror detect complex values in
 
         return x1, x2, x3
 

@@ -15,22 +15,24 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with stream definition
-#   -Corriente: Stream general class model
-#   -PsyStream: Stream specified as psychrometric state
-###############################################################################
 
+Module with stream definition:
+
+  * :class:`Corriente`: Stream general class model
+  * :class:`PsyStream`: Stream specified as psychrometric state
+
+"""
 
 import logging
 import os
 
 from PyQt5.QtWidgets import QApplication
+from scipy.constants import R
 
-from lib.physics import R_atml, R
+from lib.physics import R_atml
 from lib import unidades, config
 from lib import EoS, mEoS, gerg, iapws97, freeSteam, refProp, coolProp
 from lib.solids import Solid

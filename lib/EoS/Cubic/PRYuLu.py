@@ -70,37 +70,29 @@ class PRYuLu(Cubic):
         "ref": "Fluid Phase Equilibria 34 (1987) 1-19",
         "doi": "10.1016/0378-3812(87)85047-1"},
 
-    def __init__(self, T, P, mezcla):
-        """Initialization procedure
-
-        Parameters
-        ----------
-
-        """
-
-        self.T = T
-        self.P = P
-        self.mezcla = mezcla
-
+    def _cubicDefinition(self):
+        """Definition of individual components coefficients"""
         ai = []
         bi = []
         ci = []
-        for cmp in mezcla.componente:
-            a, b, c = self._lib(cmp, T)
+        for cmp in self.componente:
+            a, b, c = self._lib(cmp, self.T)
             ai.append(a)
             bi.append(b)
             ci.append(c)
 
-        am, bm, cm = self._mixture(None, mezcla.ids, [ai, bi, ci])
-
         self.ai = ai
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = 3*bm + cm
-        self.epsilon = bm*cm
+        self.ci = ci
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
 
-        super(PRYuLu, self).__init__(T, P, mezcla)
+    def _GEOS(self, xi):
+        am, bm, cm = self._mixture(xi, [self.ai, self.bi, self.ci])
+
+        delta = 3*bm + cm
+        epsilon = bm*cm
+        return am, bm, delta, epsilon
 
     def _lib(self, cmp, T):
         Tr = T/cmp.Tc

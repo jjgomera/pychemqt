@@ -53,22 +53,17 @@ not suitable for nonpolar substances with large molecular weight.
 """
 
 
-from scipy import roots, r_, log, exp, sqrt
+from scipy import log, exp
 from scipy.constants import R
 
 from PyQt5.QtWidgets import QApplication
 
 from lib import unidades
-# from lib.corriente import Mezcla
 from lib.eos import EoS
-from lib.physics import R_atml
+from lib.physics import R_atml, cubicCardano
 from lib.bip import Kij, Mixing_Rule
 from lib.utilities import refDoc
 
-
-# TODO: Add parameters, file
-# Melhem, Almeida - A data Bank of Parameters for the Attractive-Aznar Telles
-# self.Almeida = [0, 0]
 
 # TODO: Añadir parámetros, archivo /media/datos/Biblioteca/archivos/alfas.pdf
 # self.Mathias = 0
@@ -229,179 +224,239 @@ class Cubic(EoS):
         \delta_2 = -\frac{\sqrt{\delta^2-4\epsilon}+\delta}{2b}
     """
 
-    def __init__(self, T, P, mezcla):
-        P_atm = P/101325
-        self.T = unidades.Temperature(T)
-        self.P = unidades.Pressure(P)
-        self.mezcla = mezcla
-        self.componente = mezcla.componente
-        self.zi = mezcla.fraccion
+    def __init__(self, T, P, mezcla, **kwargs):
+        EoS.__init__(self, T, P, mezcla, **kwargs)
 
-        self.B = self.b*P/R/T
-        self.Tita = self.tita*P/(R*T)**2
+        self._cubicDefinition()
 
-        delta = self.delta*P/R/T
-        epsilon = self.epsilon*(P/R/T)**2
+        self.x, self.Zl, self.Zg, self.xi, self.yi, self.Ki = self._Flash()
+        # print("q = ", self.x)
+        # print("x = ", self.xi)
+        # print("y = ", self.yi)
+        # print("K = ", self.Ki)
 
-        # δ1, δ2 calculated from polynomial factorization
-        self.delta1 = ((self.delta**2-4*self.epsilon)**0.5-self.delta)/2/self.b
-        self.delta2 = ((self.delta**2-4*self.epsilon)**0.5+self.delta)/2/self.b
+        if self.Zl:
+            self.Vl = unidades.MolarVolume(self.Zl*R*T/P, "m3mol")   # l/mol
+            self.rhoL = unidades.MolarDensity(self.P/self.Zl/R/self.T, "molm3")
+        else:
+            self.Vl = None
+            self.rhoL = None
 
-        # Eq 4-6.3 in [1]_
-        coeff = [1, delta-self.B-1, self.Tita+epsilon-delta*(self.B+1),
-                 -epsilon*(self.B+1)-self.Tita*self.B]
-        Z = roots(coeff)
-        # print("Z", Z)
-        # TODO: use the anallycal solution, Span, pag 50
-
-        # Set the minimum and maximum root values as liquid and gas Z values
-        self.Z = r_[Z[0].real, Z[2].real]
-        self.Zl = min(Z).real
-        self.Zg = max(Z).real
-
-        self.V = self.Z*R_atml*T/P_atm  # l/mol
-        self.rho = 1/self.V
-        self.Vl = unidades.MolarVolume(self.Zl*R*T/P, "m3mol")   # l/mol
-        self.Vg = unidades.MolarVolume(self.Zg*R*T/P, "m3mol")  # l/mol
+        if self.Zg:
+            self.Vg = unidades.MolarVolume(self.Zg*R*T/P, "m3mol")  # l/mol
+            self.rhoG = unidades.MolarDensity(self.P/self.Zg/R/self.T, "molm3")
+        else:
+            self.Vg = None
+            self.rhoG = None
 
         # tau = mezcla.Tc/T
-        # delta = self.V[0]*mezcla.Vc
+        # delta = self.V[-1]*mezcla.Vc
         # kw = {}
         # print(CubicHelmholtz(tau, delta, **kw))
 
+        # dep_v = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[-1], T)
+        # dep_l = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[0], T)
 
-        # print(coeff, Z)
-        # self.x, self.xi, self.yi, self.Ki = self._Flash()
+        # Tr, rhor = self._Tr()
 
-        # dep_v = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[0], T)
-        # dep_l = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[1], T)
+        # rho = 0/self.V[0]
+        # tau = Tr/self.T
+        # delta = rho/rhor
 
-    def _mixture(self, eq, ids, par):
-        self.kij = Kij(ids, eq)
-        mixpar = Mixing_Rule(self.mezcla.fraccion, par, self.kij)
+        # self._phir(tau, delta, self.T, rho)
+        # print(self._fug(self.Zg, self.zi))
+        # print(self._fug2(self.Zg, self.zi))
+
+    def _cubicDefinition(self):
+        """Definition of individual component parameters of generalized cubic
+        equation of state, running only at initiation of EoS, its calculation
+        don't depend composition"""
+        pass
+
+    def _GEOS(self, xi):
+        """Definition of parameters of generalized cubic equation of state,
+        each child class must define in this procedure the values of mixture
+        a, b, delta, epsilon. The returned values are not dimensionless.
+
+        Parameters
+        ----------
+        xi : list
+            Molar fraction of component in mixture, [-]
+
+        Returns
+        -------
+        parameters : list
+            Mixture parameters of equation, a, b, c, d
+        """
+        pass
+
+    def _Z(self, xi=None):
+        """Calculate root of cubic polynomial in terms of GCEoS as give in
+        [1]_.
+
+        Parameters
+        ----------
+        xi : list
+            Molar fraction of component in mixture, [-]
+
+        Returns
+        -------
+        Z : list
+            List with real root of equation
+        """
+        # If xi parameters is not specified use the input fraction
+        if not xi:
+            xi = self.zi
+
+        tita, b, delta, epsilon = self._GEOS(xi)
+        B = b*self.P/R/self.T
+        A = tita*self.P/(R*self.T)**2
+
+        D = delta*self.P/R/self.T
+        E = epsilon*(self.P/R/self.T)**2
+
+        # Eq 4-6.3 in [1]_http://rain-alarm.com/
+        # η by default set to b to reduce terms, if any equations need that
+        # term redefine this procedure
+        coeff = (1, D-B-1, A+E-D*(B+1), -E*(B+1)-A*B)
+        Z = cubicCardano(*coeff)
+
+        # Sort Z values, if typeerror is raise return is because there is
+        # complex root, so return only the real root
+        try:
+            Z = sorted(map(float, Z))
+        except TypeError:
+            Z = Z[0:1]
+
+        return Z
+
+    def _fug(self, xi, yi):
+        """Fugacities oc component in mixture calculation
+
+        Parameters
+        ----------
+        xi : list
+            Molar fraction of component in liquid phase, [-]
+        yi : list
+            Molar fraction of component in vapor phase, [-]
+
+        Returns
+        -------
+        tital : list
+            List with liquid phase component fugacities
+        titav : list
+            List with vapour phase component fugacities
+        """
+        al, bl, deltal, epsilonl = self._GEOS(xi)
+        Bl = bl*self.P/R/self.T
+        Al = al*self.P/(R*self.T)**2
+        Zl = self._Z(xi)[0]
+        tital = self._fugacity(Zl, xi, Al, Bl)
+
+        Zv = self._Z(yi)[-1]
+        av, bv, deltav, epsilonv = self._GEOS(yi)
+        Bv = bv*self.P/R/self.T
+        Av = av*self.P/(R*self.T)**2
+        titav = self._fugacity(Zv, yi, Av, Bv)
+        return tital, titav
+
+    def _fugacity(self, Z, zi, A, B):
+        """Fugacity for individual components in a mixture using the GEoS in
+        the Schmidt-Wenzel formulation, so the subclass must define the
+        parameters u and w in the EoS
+
+        Any other subclass with different formulation must overwrite this
+        method
+        """
+        # Precalculation of inner sum in equation
+        aij = []
+        for ai, kiji in zip(self.Ai, self.kij):
+            suma = 0
+            for xj, aj, kij in zip(zi, self.Ai, kiji):
+                suma += xj*(1-kij)*(ai*aj)**0.5
+            aij.append(suma)
+
+        tita = []
+        for Bi, aai in zip(self.Bi, aij):
+            rhs = Bi/B*(Z-1) - log(Z-B) + A/B/(self.u-self.w)*(
+                    Bi/B-2/A*aai) * log((Z+self.u*B)/(Z+self.w*B))
+            tita.append(exp(rhs))
+
+        return tita
+
+    def _mixture(self, eq, xi, par):
+        """Apply mixing rules to individual parameters to get the mixture
+        parameters for EoS
+
+        Although it possible use any of available mixing rules, for now other
+        properties calculation as fugacity helmholtz free energy are defined
+        using the vdW mixing rules.
+
+        Parameters
+        ----------
+        eq : str
+            codename of equation, PR, SRK...
+        xi : list
+            Molar fraction of component, [-]
+        par : list
+            list with individual parameters of equation, [-]
+
+        Returns
+        -------
+        mixpar : list
+            List with mixture parameters, [-]
+        """
+        self.kij = Kij(self.mezcla.ids, eq)
+        mixpar = Mixing_Rule(xi, par, self.kij)
         return mixpar
 
-    # def _PHIO(self, cp, Tc):
-        # """Convert cp dict in phi0 dict when the cp expression isn't in
-        # Helmholtz free energy terms"""
-        # co = cp["ao"]-1
-        # ti = []
-        # ci = []
-        # for n, t in zip(cp["an"], cp["pow"]):
-            # ti.append(-t)
-            # ci.append(-n/(t*(t+1))*Tc**t)
+    def _Tr(self):
+        # Definition of reducing parameters
+        if len(self.mezcla.ids) > 1:
+            # Mixture as one-fluid
+            Tr = 1
+            rhor = 1
+        else:
+            # Pure fluid
+            Tr = self.mezcla.Tc
+            rhor = 1/self.mezcla.Vc/1000  # m3/mol
 
-        # # The integration constant are difficult to precalculate as depend of
-        # # resitual Helmholtz free energy. It's easier use a offset system
-        # # saved the values in database and retrieve for each reference state
-        # cI = 0
-        # cII = 0
+        return Tr, rhor
 
-        # Fi0 = {"ao_log": [1,  co],
-               # "pow": [0, 1] + ti,
-               # "ao_pow": [cII, cI] + ci}
+    def _phir(self, tau, delta, xi, a, b):
 
-        # return Fi0
+        kw = self._da(tau, xi)
 
-    # def _phi0i(self, cp, tau, delta):
-        # r"""Ideal gas Helmholtz free energy and derivatives
-        # The ideal gas specific heat can have different contributions
+        kw["rhoc"] = 1/self.mezcla.Vc
+        kw["Tc"] = self.mezcla.Tc
+        kw["Delta1"] = self.u
+        kw["Delta2"] = self.w
+        kw["bi"] = self.bi
+        kw["b"] = b
+        kw["a"] = a
 
-        # .. math::
-            # \frac{C_p^o}{R} = c_o + \sum_i c_iT_r^i
+        fir = CubicHelmholtz(tau, delta, **kw)
+        # print(delta, fir["fird"], R, T, rho)
+        # print("P", (1+delta*fir["fird"])*R*T*rho*1000)
+        # print(self._excess(tau, delta, fir))
+        # print("fir: ", fir["fir"])
+        # print("fird: ", fir["fird"]*delta)
+        # print("firt: ", fir["firt"]*tau)
+        # print("firdd: ", fir["firdd"]*delta**2)
+        # print("firdt: ", fir["firdt"]*delta*tau)
+        # print("firtt: ", fir["firtt"]*tau**2)
+        # print("firddd: ", fir["firddd"]*delta**3)
+        # print("firddt: ", fir["firddt"]*delta**2*tau)
+        # print("firdtt: ", fir["firdtt"]*delta*tau**2)
+        # print("firttt: ", fir["firttt"]*tau**3)
 
-        # The dict with the definition of ideal gas specific heat must define
-        # the parameters:
+        return fir
 
-            # * ao: Independent of temperature coefficient
-            # * an: Polynomial term coefficient
-            # * pow: Polynomial term temperature exponent
-
-        # Parameters
-        # ----------
-        # cp : dict
-            # Ideal gas properties parameters, can be in Cp term of directly in
-            # helmholtz free energy
-        # tau : float
-            # Inverse reduced temperature, Tc/T [-]
-        # delta : float
-            # Reduced density, rho/rhoc [-]
-
-        # Returns
-        # -------
-        # prop : dictionary with ideal adimensional helmholtz energy and deriv
-            # fio  [-]
-            # fiot: [∂fio/∂τ]δ  [-]
-            # fiod: [∂fio/∂δ]τ  [-]
-            # fiott: [∂²fio/∂τ²]δ  [-]
-            # fiodt: [∂²fio/∂τ∂δ]  [-]
-            # fiodd: [∂²fio/∂δ²]τ  [-]
-        # """
-
-        # Fi0 = self._PHIO(cp)
-
-        # fio = Fi0["ao_log"][1]*log(tau)
-        # fiot = Fi0["ao_log"][1]/tau
-        # fiott = -Fi0["ao_log"][1]/tau**2
-
-        # if delta:
-            # fiod = 1/delta
-            # fiodd = -1/delta**2
-        # else:
-            # fiod, fiodd = 0, 0
-        # fiodt = 0
-
-        # for n, t in zip(Fi0["ao_pow"], Fi0["pow"]):
-            # fio += n*tau**t
-            # if t != 0:
-                # fiot += t*n*tau**(t-1)
-            # if t not in [0, 1]:
-                # fiott += n*t*(t-1)*tau**(t-2)
-
-        # prop = {}
-        # prop["fio"] = fio
-        # prop["fiot"] = fiot
-        # prop["fiott"] = fiott
-        # prop["fiod"] = fiod
-        # prop["fiodd"] = fiodd
-        # prop["fiodt"] = fiodt
-        # return prop
-
-    # def _phi0(self, tau, delta):
-        # fio = fiod = fiodd = fiot = fiott = fiodt = 0
-        # for cmp, x in zip(self.mezcla.componente, self.mezcla.fraccion):
-            # phii = self._phi0i(cp, tau, delta)
-            # fio += x*phii["fio"] + x*log(x)
-            # fiod += x*phii["fiod"] + x*log(x)
-            # fiodd += x*phii["fiodd"] + x*log(x)
-            # fiot += x*phii["fiot"] + x*log(x)
-            # fiott += x*phii["fiott"] + x*log(x)
-            # fiodt += x*phii["fiodt"] + x*log(x)
-
-        # prop = {}
-        # prop["fio"] = fio
-        # prop["fiot"] = fiot
-        # prop["fiott"] = fiott
-        # prop["fiod"] = fiod
-        # prop["fiodd"] = fiodd
-        # prop["fiodt"] = fiodt
-        # return prop
-
-    # def _ideal(self, tau, delta):
-        # fio = self._phi0(tau, delta)
-        # p = {}
-        # p["U"] = fio["fiot"]
-        # p["H"] = 1 + fio["fiot"]
-        # p["S"] = fio["fiot"]-fio["fio"]
-        # p["cv"] = -fio["fiott"]
-
-        # return p
-
-    def _excess(self, tau, delta):
-        fir = self.fir["fir"]
-        fird = self.fir["fird"]
-        firt = self.fir["firt"]
-        firtt = self.fir["firtt"]
+    def _excess(self, tau, delta, phir):
+        fir = phir["fir"]
+        fird = phir["fird"]
+        firt = phir["firt"]
+        firtt = phir["firtt"]
         p = {}
         p["Z"] = 1 + delta*fird
         p["H"] = tau*firt + delta*fird
@@ -432,55 +487,41 @@ class Cubic(EoS):
             kw["f"] = -log(Z*(1-b/V)) - (1-Z)
         return kw
 
-    def _fug(self, Z, xi):
-        """Calculate partial fugacities coefficieint of components
+    # def _fug2(self, Z, xi):
+        # """Calculate partial fugacities coefficieint of components
 
-        References
-        ----------
-        mollerup, Chap 2, pag 64 and so
-        """
-        V = Z*R_atml*self.T/self.P
+        # References
+        # ----------
+        # mollerup, Chap 2, pag 64 and so
+        # """
+        # V = Z*R_atml*self.T/self.P
 
-        g = log(V-self.b) - log(V)                                     # Eq 61
-        f = 1/R_atml/self.b/(self.delta1-self.delta2) * \
-            log((V+self.delta1*self.b)/(V+self.delta2*self.b))         # Eq 62
+        # g = log(V-self.b) - log(V)                                     # Eq 61
+        # f = 1/R_atml/self.b/(self.delta1-self.delta2) * \
+            # log((V+self.delta1*self.b)/(V+self.delta2*self.b))         # Eq 62
 
-        gB = -1/(V-self.b)                                             # Eq 80
-        
-        An = -g                                                        # Eq 75
-        AB = -n*gB-D/self.T*fB                                         # Eq 78
-        AD = -f/self.T                                                 # Eq 79
+        # gB = -1/(V-self.b)                                             # Eq 80
 
-        # Ch.3, Eq 66
-        dAni = An+AB*Bi+AD*Di
+        # An = -g                                                        # Eq 75
+        # AB = -n*gB-D/self.T*fB                                         # Eq 78
+        # AD = -f/self.T                                                 # Eq 79
 
-        # Ch.2, Eq 13
-        fi = dAni - log(Z)
-        return
+        # # Ch.3, Eq 66
+        # dAni = An+AB*Bi+AD*Di
 
-        
+        # # Ch.2, Eq 13
+        # fi = dAni - log(Z)
+        # return fi
 
-    def _fug(self, Z, xi):
-        Ai=[]
-        for i in range(len(self.componente)):
-            suma=0
-            for j in range(len(self.componente)):
-                suma+=self.zi[j]*self.ai[j]**0.5*(1-self.kij[i][j])
-            Ai.append(1/self.tita*2*self.ai[i]**0.5*suma)
-        tita=[]
-        for i in range(len(self.componente)):
-            tita.append(exp(self.bi[i]/self.b*(Z-1)-log(Z-self.B)-self.Tita/self.B/sqrt(self.u**2-4*self.w)*(Ai[i]-self.bi[i]/self.b)*log((Z+self.B/2*(self.u+sqrt(self.u**2-4*self.w)))/(Z+self.B/2*(self.u-sqrt(self.u**2-4*self.w))))).real)
-        return tita
-
-# if __name__ == "__main__":
-    # # from lib.mezcla import Mezcla
-    # # mix = Mezcla(1, ids=[62], caudalUnitarioMasico=[1.])
-    # # # mix = Mezcla(tipo=5, caudalMolar=1, ids=[2, 47, 98], fraccionMolar=[0.5, 0.3, 0.2])
-    # # eq = SRK(300, 101325, mix)
-    # # print(1/eq.V)
-    # # # for T in [125, 135, 145, 165, 185, 205]:
-        # # # eq = SRK(T, 1, mezcla)
-        # # # print(eq.H_exc)
-    # # from lib.mEoS import H2O
-    # # st = H2O(T=300, P=101325)
-    # # print(st.Z, st.rho)
+    # def _fug(self, Z, xi):
+        # Ai=[]
+        # for i in range(len(self.componente)):
+            # suma=0
+            # for j in range(len(self.componente)):
+                # suma+=self.zi[j]*self.ai[j]**0.5*(1-self.kij[i][j])
+            # Ai.append(1/self.tita*2*self.ai[i]**0.5*suma)
+        # tita=[]
+        # for i in range(len(self.componente)):
+            # tita.append(exp(self.bi[i]/self.b*(Z-1)-log(Z-self.B)-self.Tita/self.B/sqrt(self.u**2-4*self.w)*(Ai[i]-self.bi[i]/self.b)*log((Z+self.B/2*(self.u+sqrt(self.u**2-4*self.w)))/(Z+self.B/2*(self.u-sqrt(self.u**2-4*self.w))))).real)
+        # print("fug:", tita)
+        # return tita

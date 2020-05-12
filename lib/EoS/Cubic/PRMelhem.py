@@ -145,7 +145,7 @@ class PRMelhem(PR):
         "autor": "Melhem, G.A., Saini, R., Goodwin, B.M.",
         "title": "A Modified Peng-Robinson Equation of State",
         "ref": "Fluid Phase Equilibria 47 (1989) 189-237",
-        "doi": "10.1016_0378-3812(89)80176-1"},
+        "doi": "10.1016/0378-3812(89)80176-1"},
 
     def _alfa(self, cmp, T):
         # m,n parameters compound specific
