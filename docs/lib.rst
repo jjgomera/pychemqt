@@ -8,6 +8,7 @@ Submodules
     :maxdepth: 2
    
     lib.adimensional
+    lib.atmosphere
     lib.bip
     lib.compuestos
     lib.corriente
