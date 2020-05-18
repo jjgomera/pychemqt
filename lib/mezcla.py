@@ -3283,6 +3283,11 @@ class Mezcla(config.Entity):
             * 4 : Mass flow and mass fractions
             * 5 : Molar flow and molar fractions
             * 6 : Molar flow and mass fractions
+
+    ids : list
+        Index of component in database, [-]
+    customCmp : list
+        List with additional component defined out of main database
     fraccionMolar: list
         Molar fraccion list of compounds, [-]
     fraccionMasica: list
@@ -3401,7 +3406,7 @@ class Mezcla(config.Entity):
     >>> "%0.4f %0.4f" % (c0.ThCond_Gas(*args), c1.ThCond_Gas(*args))
     '0.0187 0.0197'
     >>> "%0.4f" % c2.ThCond_Gas(*args)
-    '0.0223'
+    '0.0224'
 
     Example 10-6 from [3]_; 75.5% methane, 24.5% CO2 at 370.8K and 174.8bar
     Here the Chung method is the best option to get the low pressure thermal
@@ -3418,7 +3423,9 @@ class Mezcla(config.Entity):
     >>> "%0.4f" % c2.ThCond_Gas(*args)
     '0.0580'
     """
-    kwargs = {"caudalMasico": 0.0,
+    kwargs = {"ids": [],
+              "customCmp": [],
+              "caudalMasico": 0.0,
               "caudalMolar": 0.0,
               "caudalUnitarioMolar": [],
               "caudalUnitarioMasico": [],
@@ -3462,6 +3469,9 @@ class Mezcla(config.Entity):
         self.Config = config.getMainWindowConfig()
         if self.kwargs["ids"]:
             self.ids = self.kwargs.get("ids")
+        elif self.kwargs["customCmp"]:
+            # Initialice ids variable to avoid acumulate in several instances
+            self.ids = []
         else:
             txt = self.Config.get("Components", "Components")
             if isinstance(txt, str):
@@ -3469,6 +3479,10 @@ class Mezcla(config.Entity):
             else:
                 self.ids = txt
         self.componente = [Componente(int(i), **kwargs) for i in self.ids]
+        for cmp in self.kwargs["customCmp"]:
+            self.componente.append(cmp)
+            self.ids.append(0)
+
         fraccionMolar = self.kwargs.get("fraccionMolar", None)
         fraccionMasica = self.kwargs.get("fraccionMasica", None)
         caudalMasico = self.kwargs.get("caudalMasico", None)
@@ -3596,8 +3610,18 @@ class Mezcla(config.Entity):
             array.append(value)
         return array
 
+    @refDoc(__doi__, [2], tab=8)
     def _Ho(self, T):
-        """Ideal gas enthalpy"""
+        r"""Ideal gas enthalpy, referenced in API procedure 7B4.1, pag 645
+        
+        .. math::
+            H_m^o = \sum_i x_wH_i^o
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+        """
         h = 0
         for xw, cmp in zip(self.fraccion_masica, self.componente):
             h += xw*cmp._Ho(T)
