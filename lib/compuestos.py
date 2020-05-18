@@ -5059,6 +5059,8 @@ class Componente(object):
         if not id:
             return
 
+        # FIXME DATABASE: Meanwhile check type here
+
         self._bool = True
         self.id = id
         self.kwargs = Componente.kwargs.copy()
@@ -5074,7 +5076,7 @@ class Componente(object):
         self.Tb = unidades.Temperature(cmp[129])
         self.Tf = unidades.Temperature(cmp[130])
         if cmp[125] != 0:
-            self.f_acent = cmp[125]
+            self.f_acent = float(cmp[125])
         elif self.Pc and self.Tc and self.Tb:
             self.f_acent = self._f_acent()
         else:

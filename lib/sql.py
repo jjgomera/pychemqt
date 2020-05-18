@@ -257,7 +257,7 @@ def deleteElement(indice):
 def getElement(indice):
     """Get element from database
     indice: index in databank of element"""
-    if indice > 1000:
+    if indice > 2000:
         db_Custom = sqlite3.connect(databank_Custom_name).cursor()
         db_Custom.execute("select * from compuestos where id==%i" % indice)
         componente = db_Custom.fetchone()

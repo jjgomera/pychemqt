@@ -244,7 +244,7 @@ class unidad(float):
         if data is None:
             data = 0
         elif unit:
-            data = cls._getBaseValue(data, unit, magnitud)
+            data = cls._getBaseValue(float(data), unit, magnitud)
 
         return float.__new__(cls, data)
 
@@ -1034,6 +1034,7 @@ class Pressure(unidad):
             self.code = "n/a"
         else:
             self.code = ""
+            data = float(data)
 
         if not magnitud:
             magnitud = self.__class__.__name__

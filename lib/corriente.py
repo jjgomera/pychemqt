@@ -42,7 +42,7 @@ from lib.thermo import ThermoWater, ThermoAdvanced, ThermoRefProp
 
 
 class Corriente(config.Entity):
-    """ Class to model a stream object
+    """Class to model a stream object
     Parameters:
         -T: temperature, Kelvin
         -P: Pressure, Pa
