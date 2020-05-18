@@ -146,6 +146,11 @@ def CubicHelmholtz(tau, delta, **kw):
     Delta1 = kw["Delta1"]
     Delta2 = kw["Delta2"]
 
+    # This parameters are necessary only for multicomponent mixtures to
+    # calculate fugacity coefficient
+    bi = kw.get("bi", None)
+    daxi = kw.get("daxi", None)
+
     rhoc = kw.get("rhoc", 1)
     Tc = kw.get("Tc", 1)
     phi1 = -log(1-b*delta*rhoc)
@@ -201,6 +206,29 @@ def CubicHelmholtz(tau, delta, **kw):
     prop["C"] = 0
     prop["D"] = 0
 
+    if bi:
+        # Composition derivatives for fugacity coefficient calculation
+        c = 1/b
+        dbxi = bi                                                      # Eq 132
+        A = log((delta*rhoc*b*Delta1+1)/(delta*rhoc*b*Delta2+1))       # Eq 103
+
+        dAxi = [delta*rhoc*db*(Delta1-Delta2)/PI12 for db in dbxi]     # Eq 104
+        dcxi = [-db/b**2 for db in dbxi]                               # Eq 107
+
+        phi1xi = [delta*rhoc*db/(1-delta*rhoc*b) for db in dbxi]       # Eq 80
+
+        # Eq 111
+        phi2xi = [(A*dc + c*dA)/(Delta1-Delta2) for dc, dA in zip(dcxi, dAxi)]
+
+        dtaxi = [tau*da for da in daxi]
+
+        # Eq 77
+        phirxi = []
+        for dt, p1x, p2x in zip(dtaxi, phi1xi, phi2xi):
+            phirxi.append(p1x - 1/R/Tc*(dt*phi2 + tau*a*p2x))
+
+        prop["firxi"] = phirxi
+
     return prop
 
 
@@ -228,12 +256,22 @@ class Cubic(EoS):
         EoS.__init__(self, T, P, mezcla, **kwargs)
 
         self._cubicDefinition()
+        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
+        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
-        self.x, self.Zl, self.Zg, self.xi, self.yi, self.Ki = self._Flash()
-        # print("q = ", self.x)
-        # print("x = ", self.xi)
-        # print("y = ", self.yi)
-        # print("K = ", self.Ki)
+        if self.mezcla.Tc < T:
+            self.x = 1
+            self.xi = self.zi
+            self.yi = self.zi
+            self.Zg = self._Z(self.zi)[-1]
+            self.Zl = None
+
+        else:
+            self.x, self.Zl, self.Zg, self.xi, self.yi, self.Ki = self._Flash()
+            # print("q = ", self.x)
+            # print("x = ", self.xi)
+            # print("y = ", self.yi)
+            # print("K = ", self.Ki)
 
         if self.Zl:
             self.Vl = unidades.MolarVolume(self.Zl*R*T/P, "m3mol")   # l/mol
@@ -257,15 +295,8 @@ class Cubic(EoS):
         # dep_v = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[-1], T)
         # dep_l = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[0], T)
 
-        # Tr, rhor = self._Tr()
-
-        # rho = 0/self.V[0]
-        # tau = Tr/self.T
-        # delta = rho/rhor
-
-        # self._phir(tau, delta, self.T, rho)
-        # print(self._fug(self.Zg, self.zi))
-        # print(self._fug2(self.Zg, self.zi))
+        # rho = self.rhoG.molm3
+        # self._phir(self.T, rho, self.yi)
 
     def _cubicDefinition(self):
         """Definition of individual component parameters of generalized cubic
@@ -290,7 +321,7 @@ class Cubic(EoS):
         """
         pass
 
-    def _Z(self, xi=None):
+    def _Z(self, xi=None, T=None, P=None):
         """Calculate root of cubic polynomial in terms of GCEoS as give in
         [1]_.
 
@@ -307,13 +338,17 @@ class Cubic(EoS):
         # If xi parameters is not specified use the input fraction
         if not xi:
             xi = self.zi
+        if not T:
+            T = self.T
+        if not P:
+            P = self.P
 
         tita, b, delta, epsilon = self._GEOS(xi)
-        B = b*self.P/R/self.T
-        A = tita*self.P/(R*self.T)**2
+        B = b*P/R/T
+        A = tita*P/(R*T)**2
 
-        D = delta*self.P/R/self.T
-        E = epsilon*(self.P/R/self.T)**2
+        D = delta*P/R/T
+        E = epsilon*(P/R/T)**2
 
         # Eq 4-6.3 in [1]_http://rain-alarm.com/
         # η by default set to b to reduce terms, if any equations need that
@@ -330,7 +365,7 @@ class Cubic(EoS):
 
         return Z
 
-    def _fug(self, xi, yi):
+    def _fug(self, xi, yi, T=None, P=None):
         """Fugacities oc component in mixture calculation
 
         Parameters
@@ -347,16 +382,21 @@ class Cubic(EoS):
         titav : list
             List with vapour phase component fugacities
         """
+        if not T:
+            T = self.T
+        if not P:
+            P = self.P
+
         al, bl, deltal, epsilonl = self._GEOS(xi)
-        Bl = bl*self.P/R/self.T
-        Al = al*self.P/(R*self.T)**2
-        Zl = self._Z(xi)[0]
+        Bl = bl*P/R/T
+        Al = al*P/(R*T)**2
+        Zl = self._Z(xi, T, P)[0]
         tital = self._fugacity(Zl, xi, Al, Bl)
 
-        Zv = self._Z(yi)[-1]
+        Zv = self._Z(yi, T, P)[-1]
         av, bv, deltav, epsilonv = self._GEOS(yi)
-        Bv = bv*self.P/R/self.T
-        Av = av*self.P/(R*self.T)**2
+        Bv = bv*P/R/T
+        Av = av*P/(R*T)**2
         titav = self._fugacity(Zv, yi, Av, Bv)
         return tital, titav
 
@@ -377,9 +417,9 @@ class Cubic(EoS):
             aij.append(suma)
 
         tita = []
-        for Bi, aai in zip(self.Bi, aij):
-            rhs = Bi/B*(Z-1) - log(Z-B) + A/B/(self.u-self.w)*(
-                    Bi/B-2/A*aai) * log((Z+self.u*B)/(Z+self.w*B))
+        for bi, aai in zip(self.Bi, aij):
+            rhs = bi/B*(Z-1) - log(Z-B) + A/B/(self.u-self.w)*(
+                    bi/B-2/A*aai) * log((Z+self.u*B)/(Z+self.w*B))
             tita.append(exp(rhs))
 
         return tita
@@ -412,7 +452,7 @@ class Cubic(EoS):
 
     def _Tr(self):
         # Definition of reducing parameters
-        if len(self.mezcla.ids) > 1:
+        if len(self.mezcla.componente) > 1:
             # Mixture as one-fluid
             Tr = 1
             rhor = 1
@@ -423,12 +463,19 @@ class Cubic(EoS):
 
         return Tr, rhor
 
-    def _phir(self, tau, delta, xi, a, b):
+    def _phir(self, T, rho, xi):
+
+        Tr, rhor = self._Tr()
+
+        tau = Tr/T
+        delta = rho/rhor
+        a, b, d, e = self._GEOS(xi)
 
         kw = self._da(tau, xi)
 
-        kw["rhoc"] = 1/self.mezcla.Vc
-        kw["Tc"] = self.mezcla.Tc
+        Tr, rhor = self._Tr()
+        kw["rhoc"] = rhor
+        kw["Tc"] = Tr
         kw["Delta1"] = self.u
         kw["Delta2"] = self.w
         kw["bi"] = self.bi
@@ -436,8 +483,6 @@ class Cubic(EoS):
         kw["a"] = a
 
         fir = CubicHelmholtz(tau, delta, **kw)
-        # print(delta, fir["fird"], R, T, rho)
-        # print("P", (1+delta*fir["fird"])*R*T*rho*1000)
         # print(self._excess(tau, delta, fir))
         # print("fir: ", fir["fir"])
         # print("fird: ", fir["fird"]*delta)
@@ -449,6 +494,10 @@ class Cubic(EoS):
         # print("firddt: ", fir["firddt"]*delta**2*tau)
         # print("firdtt: ", fir["firdtt"]*delta*tau**2)
         # print("firttt: ", fir["firttt"]*tau**3)
+        # T = Tr/tau
+        # rho = rhor*delta
+        # print("P", (1+delta*fir["fird"])*R*T*rho)
+        # print(delta, fir["fird"], R, T, rho)
 
         return fir
 

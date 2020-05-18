@@ -23,7 +23,7 @@ import os
 
 from scipy.constants import R
 
-from lib.EoS.cubic import Cubic, CubicHelmholtz
+from lib.EoS.cubic import Cubic
 
 
 # Load parameters from database file
@@ -63,6 +63,53 @@ class PRMathiasCopeman(Cubic):
         \alpha^{0.5} = 1 + c_1\left(1-Tr^{0.5}\right)
 
     The C1, C2 and C3 parameters are those given in [2]_
+
+    Parameters
+    ----------
+    alpha : int
+        Correlation index for alpha expresion at supercritical temperatures:
+            * 0 - Original
+            * 1 - Coquelet formulation
+
+    Examples
+    --------
+    Helmholtz energy formulation example for supplementary documentatión from
+    [4]_, the critical parameter are override for the valued used in paper
+    to get the values of test
+
+    >>> from lib.mezcla import Mezcla
+    >>> from lib.compuestos import Componente
+    >>> ch4 = Componente(2)
+    >>> ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
+    >>> o2 = Componente(47)
+    >>> o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
+    >>> ar = Componente(98)
+    >>> ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+    >>> mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
+    >>> eq = PRMathiasCopeman(800, 34933409.8798343, mix)
+    >>> fir = eq._phir(800, 5000, eq.yi)
+    >>> delta = 5000
+    >>> tau = 1/800
+    >>> print("fir: %0.15f" % (fir["fir"]))
+    fir: 0.034118184296355
+    >>> print("fird: %0.15f" % (fir["fird"]*delta))
+    fird: 0.050381225002564
+    >>> print("firt: %0.14f" % (fir["firt"]*tau))
+    firt: 0.10841024634867
+    >>> print("firdd: %0.15f" % (fir["firdd"]*delta**2))
+    firdd: 0.031329489702333
+    >>> print("firdt: %0.15f" % (fir["firdt"]*delta*tau))
+    firdt: 0.098515746761245
+    >>> print("firtt: %0.14f" % (fir["firtt"]*tau**2))
+    firtt: -0.55088266208097
+    >>> print("firddd: %0.16f" % (fir["firddd"]*delta**3))
+    firddd: -0.0018875965519497
+    >>> print("firddt: %0.15f" % (fir["firddt"]*delta**2*tau))
+    firddt: -0.016659995071735
+    >>> print("firdtt: %0.14f" % (fir["firdtt"]*delta*tau**2))
+    firdtt: -0.50060412793624
+    >>> print("firttt: %0.13f" % (fir["firttt"]*tau**3))
+    firttt: 2.5911592464473
     """
     __title__ = "PR-Mathias-Copeman (1983)"
     __status__ = "PR-MC"
@@ -89,17 +136,28 @@ class PRMathiasCopeman(Cubic):
                  "Models for Pure Gases (Natural Gas Components) and "
                  "Water-Gas Systems",
         "ref": "Int. J. Thermophys. 25(1) (2004) 133-158",
-        "doi": "10.1023/b_ijot.0000022331.46865.2f"})
+        "doi": "10.1023/b_ijot.0000022331.46865.2f"},
+      {
+        "autor": "Bell, I.H., Jäger, A.",
+        "title": "Helmholtz Energy Transformations of Common Cubic Equations "
+                 "of State for Use with Pure Fluids and Mixtures",
+        "ref": "J. Res. of NIST 121 (2016) 236-263",
+        "doi": "10.6028/jres.121.011"})
 
-    def _cubicDefinition(self, T, P, mezcla):
+    def _cubicDefinition(self):
         """Definition of coefficients for generic cubic equation of state"""
+
+        # Schmidt-Wenzel factorization of terms
+        self.u = 1+2**0.5
+        self.w = 1-2**0.5
+
         ao = []
         bi = []
         ai = []
         C1 = []
         C2 = []
         C3 = []
-        for cmp in mezcla.componente:
+        for cmp in self.componente:
             if cmp.CASNumber in dat:
                 c1, c2, c3 = dat[cmp.CASNumber]
             else:
@@ -112,8 +170,10 @@ class PRMathiasCopeman(Cubic):
             ao.append(0.45724*R**2*cmp.Tc**2/cmp.Pc)
             bi.append(0.0778*R*cmp.Tc/cmp.Pc)
 
-            term = 1-(T/cmp.Tc)**0.5
-            if T > cmp.Tc:
+            term = 1-(self.T/cmp.Tc)**0.5
+
+            alfa = self.kwargs.get("alpha", 0)
+            if self.T/cmp.Tc > 1 and alfa == 1:
                 alfa = (1 + c1*term)**2
             else:
                 alfa = (1 + c1*term + c2*term**2 + c3*term**3)**2
@@ -123,46 +183,42 @@ class PRMathiasCopeman(Cubic):
             C2.append(c2)
             C3.append(c3)
 
-        am, bm = self._mixture(None, mezcla.ids, [ai, bi])
-
         self.ai = ai
+        self.ao = ao
         self.bi = bi
-        self.b = bm
-        self.tita = am
-        self.delta = 2*bm
-        self.epsilon = -bm**2
+        self.C1 = C1
+        self.C2 = C2
+        self.C3 = C3
 
-        super(PRMathiasCopeman, self).__init__(T, P, mezcla)
-        print(1/self.Vl, 1/self.Vg)
-        print(self.rho)
+    def _GEOS(self, xi):
+        am, bm = self._mixture(None, xi, [self.ai, self.bi])
 
-        Tr = 1
-        tau = Tr/T
-        self.rho = self.rho[0]*1000  # m3/mol
-        rhor = 1  # m3/mol
-        delta = self.rho/rhor
+        delta = 2*bm
+        epsilon = -bm**2
 
-        self._phir(tau, delta, ao, ai, C1, C2, C3)
-        excess = self._excess(tau, delta)
-        H_exc = excess["H"]*R*T/mezcla.M
-        print(self.mezcla._Ho(T), H_exc)
+        return am, bm, delta, epsilon
 
-    def _phir(self, tau, delta, ao, ai, C1, C2, C3):
+    def _da(self, tau, x):
+        """Calculate the derivatives of α, this procedure is used for Helmholtz
+        energy formulation of EoS for calculation of properties, alternate alfa
+        formulation must define this procedure for any change of formulation
+        """
+        C1 = self.C1
+        C2 = self.C2
+        C3 = self.C3
 
-        # Tr = self.mezcla.Tc
-        Tr = 1
+        Tr, rhor = self._Tr()
 
         # Eq 64-67
         Di = []
         Dt = []
         Dtt = []
         Dttt = []
-        for cmp in self.mezcla.componente:
-            tc = cmp.Tc
-            Di.append(1-(Tr/tc)**0.5/tau**0.5)
-            Dt.append((Tr/tc)**0.5/2/tau**1.5)
-            Dtt.append(-3*(Tr/tc)**0.5/4/tau**2.5)
-            Dttt.append(15*(Tr/tc)**0.5/8/tau**3.5)
+        for cmp in self.componente:
+            Di.append(1-(Tr/cmp.Tc)**0.5/tau**0.5)
+            Dt.append((Tr/cmp.Tc)**0.5/2/tau**1.5)
+            Dtt.append(-3*(Tr/cmp.Tc)**0.5/4/tau**2.5)
+            Dttt.append(15*(Tr/cmp.Tc)**0.5/8/tau**3.5)
 
         # Eq 63
         Bi = []
@@ -182,7 +238,8 @@ class PRMathiasCopeman(Cubic):
                 n += 1
                 bt += n*c*d**(n-1)*dt
                 btt += n*c*((n-1)*dt**2+d*dtt)*d**(n-2)
-                bttt += n*c*(3*(n-1)*d*dt*dtt+(n**2-3*n+2)*dt**3+d**2*dttt)*d**(n-3)
+                bttt += n*c*(3*(n-1)*d*dt*dtt+(n**2-3*n+2)*dt**3+d**2*dttt) * \
+                    d**(n-3)
             Bt.append(bt)
             Btt.append(btt)
             Bttt.append(bttt)
@@ -191,16 +248,16 @@ class PRMathiasCopeman(Cubic):
         dait = []
         daitt = []
         daittt = []
-        for a, B, bt, btt, bttt in zip(ao, Bi, Bt, Btt, Bttt):
+        for a, B, bt, btt, bttt in zip(self.ao, Bi, Bt, Btt, Bttt):
             dait.append(2*a*B*bt)
             daitt.append(2*a*(B*btt+bt**2))
             daittt.append(2*a*(B*bttt+3*bt*btt))
 
         # Eq 52
         uij = []
-        for aii in ai:
+        for aii in self.ai:
             uiji = []
-            for ajj in ai:
+            for ajj in self.ai:
                 uiji.append(aii*ajj)
             uij.append(uiji)
 
@@ -208,14 +265,15 @@ class PRMathiasCopeman(Cubic):
         duijt = []
         duijtt = []
         duijttt = []
-        for aii, diit, diitt, diittt in zip(ai, dait, daitt, daittt):
+        for aii, diit, diitt, diittt in zip(self.ai, dait, daitt, daittt):
             duijit = []
             duijitt = []
             duijittt = []
-            for ajj, djjt, djjtt, djjttt in zip(ai, dait, daitt, daittt):
+            for ajj, djjt, djjtt, djjttt in zip(self.ai, dait, daitt, daittt):
                 duijit.append(aii*djjt + ajj*diit)
                 duijitt.append(aii*djjtt + 2*diit*djjt + ajj*diitt)
-                duijittt.append(aii*djjttt + 3*diit*djjtt + 3*diitt*djjt + ajj*diittt)
+                duijittt.append(
+                    aii*djjttt + 3*diit*djjtt + 3*diitt*djjt + ajj*diittt)
             duijt.append(duijit)
             duijtt.append(duijitt)
             duijttt.append(duijittt)
@@ -229,10 +287,12 @@ class PRMathiasCopeman(Cubic):
             daijit = []
             daijitt = []
             daijittt = []
-            for u, ut, utt, uttt, k in zip(uiji, duijit, duijitt, duijittt, kiji):
+            for u, ut, utt, uttt, k in zip(
+                    uiji, duijit, duijitt, duijittt, kiji):
                 daijit.append((1-k)/2/u**0.5*ut)
                 daijitt.append((1-k)/4/u**1.5*(2*u*utt-ut**2))
-                daijittt.append((1-k)/8/u**2.5*(4*u**2*uttt - 6*u*ut*utt + 3*ut**3))
+                daijittt.append(
+                    (1-k)/8/u**2.5*(4*u**2*uttt - 6*u*ut*utt + 3*ut**3))
             daijt.append(daijit)
             daijtt.append(daijitt)
             daijttt.append(daijittt)
@@ -241,42 +301,77 @@ class PRMathiasCopeman(Cubic):
         damt = 0
         damtt = 0
         damttt = 0
-        for xi, daijit, daijitt, daijittt in zip(self.mezcla.fraccion, daijt, daijtt, daijttt):
-            for xj, dat, datt, dattt in zip(self.mezcla.fraccion, daijit, daijitt, daijittt):
+        for xi, daijit, daijitt, daijittt in zip(x, daijt, daijtt, daijttt):
+            for xj, dat, datt, dattt in zip(x, daijit, daijitt, daijittt):
                 damt += xi*xj*dat
                 damtt += xi*xj*datt
                 damttt += xi*xj*dattt
 
+        # Eq 126
+        aij = []
+        for a_i in self.ai:
+            aiji = []
+            for a_j in self.ai:
+                aiji.append((a_i*a_j)**0.5)
+            aij.append(aiji)
+
+        daxi = []
+        for i, (xi, aiji) in enumerate(zip(x, aij)):
+            daxij = 0
+            for xj, a in zip(x, aiji):
+                daxij += 2*xj*a
+            daxi.append(daxij)
+
         kw = {}
-        # kw["rhoc"] = 1/self.mezcla.Vc
-        # kw["Tc"] = self.mezcla.Tc
-        kw["Delta1"] = 1+2**0.5
-        kw["Delta2"] = 1-2**0.5
-        kw["b"] = self.b
-        kw["a"] = self.tita
         kw["dat"] = damt
         kw["datt"] = damtt
         kw["dattt"] = damttt
+        kw["daxi"] = daxi
 
-        print(tau, delta, kw)
-        p = CubicHelmholtz(tau, delta, **kw)
-        p["tau"] = tau
-        p["delta"] = delta
-        print("fir: ", p["fir"])
-        print("fird: ", p["fird"]*delta)
-        print("firt: ", p["firt"]*tau)
-        print("firdd: ", p["firdd"]*delta**2)
-        print("firdt: ", p["firdt"]*delta*tau)
-        print("firtt: ", p["firtt"]*tau**2)
-        print("firddd: ", p["firddd"]*delta**3)
-        print("firddt: ", p["firddt"]*delta**2*tau)
-        print("firdtt: ", p["firdtt"]*delta*tau**2)
-        print("firttt: ", p["firttt"]*tau**3)
-        print("P", (1+delta*p["fird"])*R*self.T*self.rho-self.P)
-        self.fir = p
+        return kw
 
 
 if __name__ == "__main__":
+    # from lib.mezcla import Mezcla
+    # mix = Mezcla(tipo=5, caudalMolar=1, ids=[2, 47, 98], fraccionMolar=[0.5, 0.3, 0.2])
+    # # eq = PRMathiasCopeman(800, 36937532, mix)
+    # eq = PRMathiasCopeman(800, 34925714.27837578, mix)
+
+    
+# Methane, O2, Ar
+# Tc = (190.564, 154.581, 150.687)
+# Pc = (4599200, 5042800, 4863000)
+# f_acent = (0.01100, 0.02200, -0.00200)
+# x = (0.50000, 0.30000, 0.20000)
     from lib.mezcla import Mezcla
-    mix = Mezcla(tipo=5, caudalMolar=1, ids=[2, 47, 98], fraccionMolar=[0.5, 0.3, 0.2])
-    eq = PRMathiasCopeman(800, 34937532, mix)
+    from lib.compuestos import Componente
+
+    ch4 = Componente(2)
+    ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
+
+    o2 = Componente(47)
+    o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
+
+    ar = Componente(98)
+    ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+
+    mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
+                 fraccionMolar=[0.5, 0.3, 0.2])
+    print(2222)
+    eq = PRMathiasCopeman(800, 34933409.8798343, mix)
+    print(eq._phir(800, 5000, eq.yi))
+
+    from lib.mezcla import Mezcla
+    from lib.compuestos import Componente
+    ch4 = Componente(2)
+    ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
+    o2 = Componente(47)
+    o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
+    ar = Componente(98)
+    ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+    mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
+                 fraccionMolar=[0.5, 0.3, 0.2])
+    eq = PRMathiasCopeman(800, 34933409.8798343, mix)
+  
+    eq = PRMathiasCopeman(800, 34933409.8798343, mix)
+    print(eq._phir(800, 5000, eq.yi))

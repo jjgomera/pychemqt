@@ -121,8 +121,6 @@ class PR(Cubic):
         self.mi = mi
         self.ai = ai
         self.bi = bi
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
     def _alfa(self, cmp, T):
         """α parameter calculation procedure, separate of general procedure
@@ -148,17 +146,20 @@ class PR(Cubic):
         m : float
             m parameter of equation, [-]
         alpha : float
-            alpha parameter of equation, [-]
+            Correlation for alpha expresion at supercritical temperatures:
+            * 0 - Original
+            * 1 - Boston-Mathias
         """
         Tr = T/cmp.Tc
-        m = 0.37464 + 1.54226*cmp.f_acent - 0.2699*cmp.f_acent**2   # Eq 18
+        alfaconf = self.kwargs.get("alpha", 0)
+        m = 0.37464 + 1.54226*cmp.f_acent - 0.26992*cmp.f_acent**2      # Eq 18
 
         if cmp.id == 62 and Tr < 0.85:
             # Special case for water from [2]_
             alfa = (1.0085677 + 0.82154*(1-(T/cmp.Tc)**0.5))**2         # Eq 6
             m = 0
 
-        elif Tr > 1:
+        elif Tr > 1 and alfaconf == 1:
             # Use the Boston-Mathias supercritical extrapolation, ref [4]_
             d = 1+m/2                                                   # Eq 10
             c = m/d                                                     # Eq 11
@@ -175,12 +176,11 @@ class PR(Cubic):
         epsilon = -bm**2
         return am, bm, delta, epsilon
 
-    def _da(self, tau, zi):
+    def _da(self, tau, x):
         """Calculate the derivatives of α, this procedure is used for Helmholtz
         energy formulation of EoS for calculation of properties, alternate alfa
         formulation must define this procedure for any change of formulation
         """
-
         Tr, rhor = self._Tr()
 
         # Eq 64-67
@@ -188,12 +188,11 @@ class PR(Cubic):
         Dt = []
         Dtt = []
         Dttt = []
-        for cmp in self.mezcla.componente:
-            tc = cmp.Tc
-            Di.append(1-(Tr/tc)**0.5/tau**0.5)
-            Dt.append((Tr/tc)**0.5/2/tau**1.5)
-            Dtt.append(-3*(Tr/tc)**0.5/4/tau**2.5)
-            Dttt.append(15*(Tr/tc)**0.5/8/tau**3.5)
+        for cmp in self.componente:
+            Di.append(1-(Tr/cmp.Tc)**0.5/tau**0.5)
+            Dt.append((Tr/cmp.Tc)**0.5/2/tau**1.5)
+            Dtt.append(-3*(Tr/cmp.Tc)**0.5/4/tau**2.5)
+            Dttt.append(15*(Tr/cmp.Tc)**0.5/8/tau**3.5)
 
         # Eq 63
         Bi = []
@@ -205,9 +204,9 @@ class PR(Cubic):
         Btt = []
         Bttt = []
         for c1, d, dt, dtt, dttt in zip(self.mi, Di, Dt, Dtt, Dttt):
-            Bt.append(c1**dt)
-            Btt.append(c1*(d*dtt)/d)
-            Bttt.append(c1*(d**2*dttt)/d**2)
+            Bt.append(c1*dt)
+            Btt.append(c1*d*dtt*d**-1)
+            Bttt.append(c1*d**2*dttt*d**-2)
 
         # Eq 73-75
         dait = []
@@ -237,8 +236,8 @@ class PR(Cubic):
             for ajj, djjt, djjtt, djjttt in zip(self.ai, dait, daitt, daittt):
                 duijit.append(aii*djjt + ajj*diit)
                 duijitt.append(aii*djjtt + 2*diit*djjt + ajj*diitt)
-                duijittt.append(aii*djjttt + 3*diit*djjtt + 3*diitt*djjt +
-                                ajj*diittt)
+                duijittt.append(
+                    aii*djjttt + 3*diit*djjtt + 3*diitt*djjt + ajj*diittt)
             duijt.append(duijit)
             duijtt.append(duijitt)
             duijttt.append(duijittt)
@@ -256,8 +255,8 @@ class PR(Cubic):
                     uiji, duijit, duijitt, duijittt, kiji):
                 daijit.append((1-k)/2/u**0.5*ut)
                 daijitt.append((1-k)/4/u**1.5*(2*u*utt-ut**2))
-                daijittt.append((1-k)/8/u**2.5 *
-                                (4*u**2*uttt - 6*u*ut*utt + 3*ut**3))
+                daijittt.append(
+                    (1-k)/8/u**2.5*(4*u**2*uttt - 6*u*ut*utt + 3*ut**3))
             daijt.append(daijit)
             daijtt.append(daijitt)
             daijttt.append(daijittt)
@@ -266,8 +265,8 @@ class PR(Cubic):
         damt = 0
         damtt = 0
         damttt = 0
-        for xi, daijit, daijitt, daijittt in zip(zi, daijt, daijtt, daijttt):
-            for xj, dat, datt, dattt in zip(zi, daijit, daijitt, daijittt):
+        for xi, daijit, daijitt, daijittt in zip(x, daijt, daijtt, daijttt):
+            for xj, dat, datt, dattt in zip(x, daijit, daijitt, daijittt):
                 damt += xi*xj*dat
                 damtt += xi*xj*datt
                 damttt += xi*xj*dattt
@@ -281,9 +280,9 @@ class PR(Cubic):
             aij.append(aiji)
 
         daxi = []
-        for i, (xi, aiji) in enumerate(zip(zi, aij)):
+        for i, (xi, aiji) in enumerate(zip(x, aij)):
             daxij = 0
-            for xj, a in zip(zi, aiji):
+            for xj, a in zip(x, aiji):
                 daxij += 2*xj*a
             daxi.append(daxij)
 
@@ -292,24 +291,9 @@ class PR(Cubic):
         kw["datt"] = damtt
         kw["dattt"] = damttt
         kw["daxi"] = daxi
+
         return kw
 
-    # def _fug(self, Zl, xi, Zv, yi, A, B):
-        # tital = self._fugl(Zl, xi, A, B)
-        # titav = self._fugl(Zv, yi, A, B)
-
-        # tital2 = self._fugl2(self.Zl, xi)
-        # titav2 = self._fugl2(self.Zg, yi)
-        # from pprint import pprint
-        # print("tital:")
-        # pprint(tital)
-        # pprint(tital2)
-        # print("titav:")
-        # pprint(titav)
-        # pprint(titav2)
-        # return tital, titav
-
-    # def _fug2(self, Z, xi):
     def _fugl2(self, Z, zi, a, b):
 
         Tr, rhor = self._Tr()
@@ -341,38 +325,8 @@ class PR(Cubic):
 
 
 if __name__ == "__main__":
-    from lib.corriente import Mezcla
-    from lib import unidades
-    # from lib.compuestos import Componente
-    # from lib.mEoS import C3
-
-    # c3 = Componente(4)
-    # c3.M = C3.M
-    # c3.Pc = C3.Pc
-    # c3.Tc = C3.Tc
-    # c3.f_acent = C3.f_acent
-
-    # mix = Mezcla(5, customCmp=[c3], caudalMolar=1, fraccionMolar=[1])
-    # eq = PR(300, 42.477e5, mix)
-    # print(eq.V)
-
-    # mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
-    # eq = PR(300, 42.477e5, mix)
-    # print(eq.V)
-
-    # st = C3(T=300, P=42.477e5)
-    # print(st.v*st.M)
-
-    # mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
-    # eq = PR(300, 9.9742e5, mix)
-    # print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
-    # eq = PR(300, 42.477e5, mix)
-    # print('%0.1f' % (eq.Vl.ccmol))
-    # print('V = %0.1f' % (1/eq.Vl.m3kmol*eq.mezcla.M))
-
-    # mezcla = Mezcla(1, ids=[4], caudalUnitarioMasico=[1])
-    # eq = PR(300, 101325, mezcla)
-    # print('V = %0.4f' % (1/eq.Vg.m3kmol*eq.mezcla.M))
+    # from lib.corriente import Mezcla
+    # from lib import unidades
 
     # mix = Mezcla(5, ids=[2, 47, 98], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
     # eq = PR(800, 34.933e6, mix)
@@ -384,11 +338,51 @@ if __name__ == "__main__":
     # mix = Mezcla(2, ids=[2, 4], caudalUnitarioMolar=[0.234, 0.766])
     # eq = PR(420, 1e7, mix)
 
-    # Example 2.3
-    mezcla = Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
-    P = unidades.Pressure(485, "psi")
-    T = unidades.Temperature(120, "F")
-    eq = PR(T, P, mezcla)
+    # Example 2.3, Seader, pag 27
+    # mezcla = Mezcla(2, ids=[1, 2, 40, 41], caudalUnitarioMolar=[0.3177, 0.5894, 0.0715, 0.0214])
+    # P = unidades.Pressure(500, "psi")
+    # T = unidades.Temperature(120, "F")
+    # eq = PR(T, P, mezcla)
+    # print(T)
+    # print(eq.x)
+    # print([x*(1-eq.x)*5597 for x in eq.xi])
+    # print([y*eq.x*5597 for y in eq.yi])
+    # print(eq.Ki)
+    # # print(eq._Bubble_T())
+    # print(eq._Dew_T())
 
     # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22], caudalUnitarioMolar=[1]*10)
-    # eq = PR(293.15, 5e6, mix)
+    # eq = PR(293.15, 8.769e6, mix)
+    # print(eq._Bubble_T()-273.15)
+
+    # mix = Mezcla(2, ids=[2, 3, 4], caudalUnitarioMolar=[0.3, 0.3, 0.4])
+    # eq = PR(293.15, 2e6, mix)
+    # print(eq._Dew_T()-273.15)
+
+    # # Examples ref [2]_ eos
+    # x1 = [0.39842, 0.29313, 0.20006, 0.07143, 0.03696]
+    # x2 = [0.014, 0.943, 0.027, 0.0074, 0.0049, 0.001, 0.0027]
+    # x3 = [0.6436, 0.0752, 0.0474, 0.0412, 0.0297, 0.0138, 0.0303, 0.0371,
+          # 0.0415, 0.0402]
+    # mix1 = Mezcla(2, ids=[3, 4, 6, 8, 10], caudalUnitarioMolar=x1)
+    # mix2 = Mezcla(2, ids=[46, 2, 3, 4, 6, 8, 10], caudalUnitarioMolar=x2)
+    # mix3 = Mezcla(2, ids=[2, 3, 4, 6, 8, 10, 11, 12, 13, 14], caudalUnitarioMolar=x3)
+    # eq = PR(270, 1.044e6, mix1)
+    # print(eq._Bubble_P())
+
+    from lib.mezcla import Mezcla
+    from lib import unidades
+    from lib.compuestos import Componente
+
+    ch4 = Componente(2)
+    ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
+
+    o2 = Componente(47)
+    o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
+
+    ar = Componente(98)
+    ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+
+    mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
+    eq = PR(800, 36451227.541284114, mix)
+    eq._phir(800, 5000, eq.yi)

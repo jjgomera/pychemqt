@@ -32,6 +32,48 @@ class PR78(PR):
         \alpha^{0.5} = 1 + m\left(1-Tr^{0.5}\right)\\
         m = 0.37464 + 1.54226\omega-0.26992\omega^2\\
         \end{array}
+
+    Examples
+    --------
+    Helmholtz energy formulation example for supplementary documentatión from
+    [4]_, the critical parameter are override for the valued used in paper to
+    get the values of test with high precision
+
+    >>> from lib.mezcla import Mezcla
+    >>> from lib import unidades
+    >>> from lib.compuestos import Componente
+    >>> ch4 = Componente(2)
+    >>> ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
+    >>> o2 = Componente(47)
+    >>> o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
+    >>> ar = Componente(98)
+    >>> ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+    >>> mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
+    ...              fraccionMolar=[0.5, 0.3, 0.2])
+    >>> eq = PR(800, 36451227.52066596, mix)
+    >>> fir = eq._phir(800, 5000, eq.yi)
+    >>> delta = 5000
+    >>> tau = 1/800
+    >>> print("fir: %0.15f" % (fir["fir"]))
+    fir: 0.084339749584296
+    >>> print("fird: %0.15f" % (fir["fird"]*delta))
+    fird: 0.096019116018396
+    >>> print("firt: %0.14f" % (fir["firt"]*tau))
+    firt: -0.10134978074971
+    >>> print("firdd: %0.15f" % (fir["firdd"]*delta**2))
+    firdd: 0.023611667278971
+    >>> print("firdt: %0.15f" % (fir["firdt"]*delta*tau))
+    firdt: -0.092099683110520
+    >>> print("firtt: %0.15f" % (fir["firtt"]*tau**2))
+    firtt: -0.078186052271240
+    >>> print("firddd: %0.16f" % (fir["firddd"]*delta**3))
+    firddd: 0.0017433108161805
+    >>> print("firddt: %0.15f" % (fir["firddt"]*delta**2*tau))
+    firddt: 0.015574974734224
+    >>> print("firdtt: %0.15f" % (fir["firdtt"]*delta*tau**2))
+    firdtt: -0.071050085995025
+    >>> print("firttt: %0.14f" % (fir["firttt"]*tau**3))
+    firttt: 0.11727907840686
     """
 
     __title__ = "Peng-Robinson (1978)"
@@ -54,7 +96,7 @@ class PR78(PR):
     def _alfa(self, cmp, T):
         """Custom expression for α"""
         if cmp.f_acent <= 0.491:
-            m = 0.3746 + 1.54226*cmp.f_acent - 0.26992*cmp.f_acent**2
+            m = 0.37464 + 1.54226*cmp.f_acent - 0.26992*cmp.f_acent**2
         else:
             m = 0.379642 + 1.48503*cmp.f_acent - 0.164423*cmp.f_acent**2 + \
                 0.016666*cmp.f_acent**3

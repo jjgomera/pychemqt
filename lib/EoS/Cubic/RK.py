@@ -79,8 +79,6 @@ class RK(Cubic):
 
         self.ai = ai
         self.bi = bi
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
     def _lib(self, cmp, T):
         a0 = 0.42747*R**2*cmp.Tc**2/cmp.Pc

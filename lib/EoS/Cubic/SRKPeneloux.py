@@ -68,16 +68,16 @@ class SRKPeneloux(SRK):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def _lib(self, cmp, T):
-        a, b = SRK._lib(self, cmp, T)
+    def _lib(self, cmp):
+        ao, b = SRK._lib(self, cmp)
         c = 0.40768*R*cmp.Tc/cmp.Pc*(0.29441-cmp.rackett)               # Eq 8
-        return a, b-c
+        return ao, b-c
 
 
 if __name__ == "__main__":
     from lib.mezcla import Mezcla
     mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     eq = SRKPeneloux(300, 9.9742e5, mix)
-    print('%0.0f %0.1f' % (eq.Vg.ccmol, eq.Vl.ccmol))
-    eq = SRKPeneloux(300, 42.477e5, mix)
     print('%0.1f' % (eq.Vl.ccmol))
+    eq = SRKPeneloux(300, 42.477e5, mix)
+    print('%0.1f' % (eq.Vg.ccmol))
