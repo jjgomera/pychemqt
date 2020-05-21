@@ -107,9 +107,7 @@ class PR(Cubic):
         bi = []
         mi = []
         for cmp in self.componente:
-            a0 = self.OmegaA*R**2*cmp.Tc**2/cmp.Pc                      # Eq 9
-            b = self.OmegaB*R*cmp.Tc/cmp.Pc                             # Eq 10
-
+            a0, b = self._lib(cmp)
             m, alfa = self._alfa(cmp, self.T)
 
             ao.append(a0)
@@ -121,6 +119,11 @@ class PR(Cubic):
         self.mi = mi
         self.ai = ai
         self.bi = bi
+
+    def _lib(self, cmp):
+        a0 = self.OmegaA*R**2*cmp.Tc**2/cmp.Pc                      # Eq 9
+        b = self.OmegaB*R*cmp.Tc/cmp.Pc                             # Eq 10
+        return a0, b
 
     def _alfa(self, cmp, T):
         """α parameter calculation procedure, separate of general procedure

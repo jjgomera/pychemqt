@@ -30,7 +30,8 @@ class PR78(PR):
         a = 0.45747\frac{R^2T_c^2}{P_c}\alpha\\
         b = 0.0778\frac{RT_c}{P_c}\\
         \alpha^{0.5} = 1 + m\left(1-Tr^{0.5}\right)\\
-        m = 0.37464 + 1.54226\omega-0.26992\omega^2\\
+        m = 0.37464 + 1.54226\omega-0.26992\omega^2 if \omega < 0.491\\
+        m = 0.379642 + 1.48503\omega - 0.164423*\omega^2 + 0.016666*\omega^3\\
         \end{array}
 
     Examples
