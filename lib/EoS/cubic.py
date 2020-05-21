@@ -287,6 +287,8 @@ class Cubic(EoS):
             self.Vg = None
             self.rhoG = None
 
+        self._volumeCorrection()
+
         # tau = mezcla.Tc/T
         # delta = self.V[-1]*mezcla.Vc
         # kw = {}
@@ -296,7 +298,13 @@ class Cubic(EoS):
         # dep_l = self._departure(self.tita, self.b, self.delta, self.epsilon, self.dTitadT, self.V[0], T)
 
         # rho = self.rhoG.molm3
-        # self._phir(self.T, rho, self.yi)
+        # from pprint import pprint
+        # print("rho", rho)
+        # pprint(self._phir(self.T, rho, self.yi))
+
+    def _volumeCorrection(self):
+        """Apply volume correction to the rhoL property"""
+        pass
 
     def _cubicDefinition(self):
         """Definition of individual component parameters of generalized cubic

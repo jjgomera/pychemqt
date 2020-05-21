@@ -20,7 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy.constants import R
 
-from lib.EoS.Cubic.SRK import SRK
+from lib import unidades
+from lib.EoS.Cubic import SRK
 
 
 class SRKPeneloux(SRK):
@@ -45,10 +46,10 @@ class SRKPeneloux(SRK):
     >>> mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     >>> eq = SRKPeneloux(300, 9.9742e5, mix)
     >>> '%0.1f' % (eq.Vl.ccmol)
-    '84.4'
+    '93.1'
     >>> eq = SRKPeneloux(300, 42.477e5, mix)
     >>> '%0.1f' % (eq.Vg.ccmol)
-    '82.7'
+    '89.7'
 
     # Tiny desviation
     '2061 94.2'
@@ -68,10 +69,20 @@ class SRKPeneloux(SRK):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def _lib(self, cmp):
-        ao, b = SRK._lib(self, cmp)
-        c = 0.40768*R*cmp.Tc/cmp.Pc*(0.29441-cmp.rackett)               # Eq 8
-        return ao, b-c
+    def _volumeCorrection(self):
+        """Apply volume correction to the rhoL property"""
+        c = 0
+        for cmp, x in zip(self.componente, self.xi):
+            c += 0.40768*R*cmp.Tc/cmp.Pc*(0.29441-cmp.rackett)           # Eq 8
+
+        if self.rhoL:
+            v = self.Vl.m3mol-c
+            self.rhoL = unidades.MolarDensity(1/v, "molm3")
+            self.Vl = unidades.MolarVolume(v, "m3mol")
+        if self.rhoG:
+            v = self.Vg.m3mol-c
+            self.rhoG = unidades.MolarDensity(1/v, "molm3")
+            self.Vg = unidades.MolarVolume(v, "m3mol")
 
 
 if __name__ == "__main__":
