@@ -70,13 +70,13 @@ class PRYuLu(Cubic):
         "ref": "Fluid Phase Equilibria 34 (1987) 1-19",
         "doi": "10.1016/0378-3812(87)85047-1"},
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
         ai = []
         bi = []
         ci = []
         for cmp in self.componente:
-            a, b, c = self._lib(cmp, self.T)
+            a, b, c = self._lib(cmp, T)
             ai.append(a)
             bi.append(b)
             ci.append(c)
@@ -84,8 +84,6 @@ class PRYuLu(Cubic):
         self.ai = ai
         self.bi = bi
         self.ci = ci
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
 
     def _GEOS(self, xi):
         am, bm, cm = self._mixture(xi, [self.ai, self.bi, self.ci])

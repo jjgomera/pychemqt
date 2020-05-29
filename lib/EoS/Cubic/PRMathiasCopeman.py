@@ -144,7 +144,7 @@ class PRMathiasCopeman(Cubic):
         "ref": "J. Res. of NIST 121 (2016) 236-263",
         "doi": "10.6028/jres.121.011"})
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of coefficients for generic cubic equation of state"""
 
         # Schmidt-Wenzel factorization of terms
@@ -170,10 +170,10 @@ class PRMathiasCopeman(Cubic):
             ao.append(0.45724*R**2*cmp.Tc**2/cmp.Pc)
             bi.append(0.0778*R*cmp.Tc/cmp.Pc)
 
-            term = 1-(self.T/cmp.Tc)**0.5
+            term = 1-(T/cmp.Tc)**0.5
 
             alfa = self.kwargs.get("alpha", 0)
-            if self.T/cmp.Tc > 1 and alfa == 1:
+            if T/cmp.Tc > 1 and alfa == 1:
                 alfa = (1 + c1*term)**2
             else:
                 alfa = (1 + c1*term + c2*term**2 + c3*term**3)**2

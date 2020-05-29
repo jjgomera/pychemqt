@@ -93,9 +93,9 @@ class Grayson_Streed(EoS):
     >>> "β = %0.4f" % eq.x
     'β = 0.9106'
     >>> "xi = %0.4f %0.4f %0.4f %0.4f" % tuple(eq.xi)
-    'xi = 0.0043 0.0576 0.7095 0.2287'
+    'xi = 0.0043 0.0576 0.7096 0.2286'
     >>> "yi = %0.4f %0.4f %0.4f %0.4f" % tuple(eq.yi)
-    'yi = 0.3484 0.6416 0.0088 0.0011'
+    'yi = 0.3485 0.6417 0.0088 0.0011'
     """
 
     __title__ = "Grayson Streed (1961)"
@@ -144,12 +144,13 @@ class Grayson_Streed(EoS):
         # print("y = ", self.yi)
         # print("K = ", self.Ki)
 
-    def _nio(self):
+    def _nio(self, T, P):
         """Liquid fugacity coefficient"""
+
         nio = []
         for cmp in self.componente:
-            Tr = self.T/cmp.Tc
-            Pr = self.P/cmp.Pc
+            Tr = T/cmp.Tc
+            Pr = P/cmp.Pc
 
             # Modified Parameters from [2]_
             if cmp.id == 1:  # Hydrogen
@@ -175,7 +176,7 @@ class Grayson_Streed(EoS):
 
         return nio
 
-    def _gi(self, xi):
+    def _gi(self, xi, T):
         """Liquid activity coefficient"""
         Vm = 0
         for x, cmp in zip(xi, self.componente):
@@ -196,7 +197,7 @@ class Grayson_Streed(EoS):
         gi = []
         for cmp, phii in zip(self.componente, phi):
             # Scatchard-Hildebrand regular solution activity-coefficient
-            g = cmp.wilson.m3mol*(cmp.SolubilityParameter-d_)**2/R/self.T
+            g = cmp.wilson.m3mol*(cmp.SolubilityParameter-d_)**2/R/T
 
             # Flory-Huggins extension
             if self.kwargs.get("flory", 0):
@@ -206,19 +207,23 @@ class Grayson_Streed(EoS):
 
         return gi
 
-    def _fug(self, xi, yi):
-        gi = self._gi(xi)
-        nio = self._nio()
+    def _fug(self, xi, yi, T, P):
+        gi = self._gi(xi, T)
+        nio = self._nio(T, P)
         tital = [n*g for n, g in zip(nio, gi)]
 
+        self.rk._cubicDefinition(T)
+        Bi = [bi*P/R/T for bi in self.rk.bi]
+        Ai = [ai*P/(R*T)**2 for ai in self.rk.ai]
+        Z = self.rk._Z(yi, T, P)[-1]
         a, b, delta, epsilon = self.rk._GEOS(yi)
-        B = b*self.P/R/self.T
-        A = a*self.P/(R*self.T)**2
-        titav = self.rk._fugacity(self.rk.Zg, yi, A, B)
+        B = b*P/R/T
+        A = a*P/(R*T)**2
+        titav = self.rk._fugacity(Z, yi, A, B, Ai, Bi)
 
         return tital, titav
 
-    def _Z(self, xi):
+    def _Z(self, xi, T, P):
         return None,
 
 
@@ -231,11 +236,11 @@ if __name__ == "__main__":
 
     # Example 7.2, pag 153
     # Method pag 107
-    mezcla = Mezcla(2, ids=[1, 2, 40, 41],
-                    caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
-    P = unidades.Pressure(485, "psi")
-    T = unidades.Temperature(100, "F")
-    eq = Grayson_Streed(T, P, mezcla, flory=0)
+    # mezcla = Mezcla(2, ids=[1, 2, 40, 41],
+                    # caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
+    # P = unidades.Pressure(485, "psi")
+    # T = unidades.Temperature(100, "F")
+    # eq = Grayson_Streed(T, P, mezcla, flory=0)
 
     # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22],
     #              caudalUnitarioMolar=[1]*10)
@@ -246,3 +251,17 @@ if __name__ == "__main__":
     # P = unidades.Pressure(410.3, "psi")
     # T = unidades.Temperature(400, "F")
     # eq = Grayson_Streed(T, P, mezcla)
+
+    # Example 6.7, Wallas, pag 342, dew point calculation
+    mezcla = Mezcla(2, ids=[23, 5], caudalUnitarioMolar=[0.607, 0.393])
+    P = unidades.Pressure(20, "atm")
+    eq = Grayson_Streed(400, P, mezcla, flory=0)
+    print(eq._Dew_T(P))
+    eq = Grayson_Streed(300, P, mezcla, flory=0)
+    print(eq._Dew_T(P))
+
+    # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22],
+                 # caudalUnitarioMolar=[1]*10)
+    # eq = Grayson_Streed(293.15, 8.769e6, mix, flory=0)
+
+    print(eq._Bubble_T(P))

@@ -95,7 +95,7 @@ class PR(Cubic):
     OmegaA = 0.45724
     OmegaB = 0.0778
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
 
         # Schmidt-Wenzel factorization of terms
@@ -108,7 +108,7 @@ class PR(Cubic):
         mi = []
         for cmp in self.componente:
             a0, b = self._lib(cmp)
-            m, alfa = self._alfa(cmp, self.T)
+            m, alfa = self._alfa(cmp, T)
 
             ao.append(a0)
             ai.append(a0*alfa)
@@ -328,7 +328,7 @@ class PR(Cubic):
 
 
 if __name__ == "__main__":
-    # from lib.corriente import Mezcla
+    from lib.corriente import Mezcla
     # from lib import unidades
 
     # mix = Mezcla(5, ids=[2, 47, 98], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
@@ -363,29 +363,33 @@ if __name__ == "__main__":
     # print(eq._Dew_T()-273.15)
 
     # # Examples ref [2]_ eos
-    # x1 = [0.39842, 0.29313, 0.20006, 0.07143, 0.03696]
-    # x2 = [0.014, 0.943, 0.027, 0.0074, 0.0049, 0.001, 0.0027]
-    # x3 = [0.6436, 0.0752, 0.0474, 0.0412, 0.0297, 0.0138, 0.0303, 0.0371,
-          # 0.0415, 0.0402]
-    # mix1 = Mezcla(2, ids=[3, 4, 6, 8, 10], caudalUnitarioMolar=x1)
-    # mix2 = Mezcla(2, ids=[46, 2, 3, 4, 6, 8, 10], caudalUnitarioMolar=x2)
-    # mix3 = Mezcla(2, ids=[2, 3, 4, 6, 8, 10, 11, 12, 13, 14], caudalUnitarioMolar=x3)
-    # eq = PR(270, 1.044e6, mix1)
-    # print(eq._Bubble_P())
+    x1 = [0.39842, 0.29313, 0.20006, 0.07143, 0.03696]
+    x2 = [0.014, 0.943, 0.027, 0.0074, 0.0049, 0.001, 0.0027]
+    x3 = [0.6436, 0.0752, 0.0474, 0.0412, 0.0297, 0.0138, 0.0303, 0.0371,
+          0.0415, 0.0402]
+    mix1 = Mezcla(2, ids=[3, 4, 6, 8, 10], caudalUnitarioMolar=x1)
+    mix2 = Mezcla(2, ids=[46, 2, 3, 4, 6, 8, 10], caudalUnitarioMolar=x2)
+    mix3 = Mezcla(2, ids=[2, 3, 4, 6, 8, 10, 11, 12, 13, 14], caudalUnitarioMolar=x3)
+    # eq = PR(370, 1e6, mix3)
+    # print(eq._Dew_T(5e6))
 
-    from lib.mezcla import Mezcla
-    from lib import unidades
-    from lib.compuestos import Componente
+    eq = PR(270, 1e7, mix3)
+    print(eq._Bubble_P(370)[0]*1e-6)
+    print(eq._Dew_P(480)[0]*1e-6)
 
-    ch4 = Componente(2)
-    ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
+    # from lib.mezcla import Mezcla
+    # from lib import unidades
+    # from lib.compuestos import Componente
 
-    o2 = Componente(47)
-    o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
+    # ch4 = Componente(2)
+    # ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
 
-    ar = Componente(98)
-    ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+    # o2 = Componente(47)
+    # o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
 
-    mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
-    eq = PR(800, 36451227.541284114, mix)
-    eq._phir(800, 5000, eq.yi)
+    # ar = Componente(98)
+    # ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+
+    # mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
+    # eq = PR(800, 36451227.541284114, mix)
+    # eq._phir(800, 5000, eq.yi)

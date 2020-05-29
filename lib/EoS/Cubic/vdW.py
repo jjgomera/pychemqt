@@ -64,7 +64,7 @@ class vdW(Cubic):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T=None):
         """Definition of individual components coefficients"""
 
         # Schmidt-Wenzel factorization of terms
@@ -81,8 +81,6 @@ class vdW(Cubic):
 
         self.ai = ai
         self.bi = bi
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
     def _GEOS(self, xi):
         am, bm = self._mixture(None, xi, [self.ai, self.bi])

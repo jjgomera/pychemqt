@@ -57,7 +57,7 @@ class Nasrifar(Cubic):
         "ref": "Fluid Phase Equilibria 190 (2001) 73-88",
         "doi": "10.1016/s0378-3812(01)00592-1"},
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
 
         # Schmidt-Wenzel factorization of terms
@@ -67,14 +67,12 @@ class Nasrifar(Cubic):
         ai = []
         bi = []
         for cmp in self.componente:
-            a, b = self._lib(cmp, self.T)
+            a, b = self._lib(cmp, T)
             ai.append(a)
             bi.append(b)
 
         self.ai = ai
         self.bi = bi
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
     def _GEOS(self, xi):
         am, bm = self._mixture(None, xi, [self.ai, self.bi])

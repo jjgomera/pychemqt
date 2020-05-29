@@ -150,7 +150,7 @@ class SRK(Cubic):
          "doi": "10.1021/ie049545i"},
       )
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of coefficients for generic cubic equation of state"""
         # Schmidt-Wenzel factorization of terms
         self.u = 1
@@ -162,7 +162,7 @@ class SRK(Cubic):
         mi = []
         for cmp in self.componente:
             a0, b = self._lib(cmp)
-            alfa = self._alfa(cmp, self.T)
+            alfa = self._alfa(cmp, T)
             m = self._m(cmp)
             ao.append(a0)
             ai.append(a0*alfa)
@@ -356,8 +356,9 @@ class SRK(Cubic):
         return kw
 
 if __name__ == "__main__":
-    # from lib.mezcla import Mezcla
-    # from lib import unidades
+    from lib.mezcla import Mezcla
+    from lib import unidades
+
     # # mix = Mezcla(5, ids=[4], caudalMolar=1, fraccionMolar=[1])
     # # eq = SRK(300, 9.9742e5, mix, alpha=1)
     # # print('%0.1f' % (eq.Vl.ccmol))
@@ -383,18 +384,14 @@ if __name__ == "__main__":
     # print([y*eq.x*5597 for y in eq.yi])
     # print(eq.Ki)
 
-    from lib.mezcla import Mezcla
-    from lib.compuestos import Componente
+    # Example 6.6 wallas
+    P = unidades.Pressure(20, "atm")
+    mix = Mezcla(5, ids=[23, 5], caudalMolar=1, fraccionMolar=[0.607, 0.393])
+    eq1 = SRK(300, P, mix)
+    eq2 = SRK(400, P, mix)
+    print(eq1._Dew_T(P))
+    print(eq2._Dew_T(P))
 
-    ch4 = Componente(2)
-    ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
-
-    o2 = Componente(47)
-    o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
-
-    ar = Componente(98)
-    ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
-
-    mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
-    eq = SRK(800, 37495409.72414042, mix)
-    eq._phir(800, 5000, eq.yi)
+    # eq = SRK(500, P, mezcla)
+    # print(eq._Dew_T(P))
+ 

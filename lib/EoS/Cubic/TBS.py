@@ -153,7 +153,7 @@ class TBS(Cubic):
         "ref": "Fluid Phase Equilibria 65 (1991) 59-71",
         "doi": "10.1016/0378-3812(91)87017-4"},
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
 
         ai = []
@@ -161,7 +161,7 @@ class TBS(Cubic):
         ci = []
         di = []
         for cmp in self.componente:
-            a, b, c, d = self.__lib(cmp, self.T)
+            a, b, c, d = self.__lib(cmp, T)
 
             ai.append(a)
             bi.append(b)
@@ -172,8 +172,6 @@ class TBS(Cubic):
         self.bi = bi
         self.ci = ci
         self.di = di
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
     def _GEOS(self, xi):
         coef = [self.ai, self.bi, self.ci, self.di]

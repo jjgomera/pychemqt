@@ -56,7 +56,7 @@ class ALS1983(Cubic):
         "ref": "Fluid Phase Equilibria 11 (1983) 29-48",
         "doi": "10.1016/0378-3812(83)85004-3"},
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
 
         ai = []
@@ -74,7 +74,7 @@ class ALS1983(Cubic):
                 0.00576*cmp.f_acent**3
 
             m = 0.4070 + 1.3787*cmp.f_acent - 0.2933*cmp.f_acent**2
-            alfa = 1+m*(1-(self.T/cmp.Tc)**0.5)**2
+            alfa = 1+m*(1-(T/cmp.Tc)**0.5)**2
 
             ai.append(A*alfa*R**2*cmp.Tc**2/cmp.Pc)
             b1i.append(B1*R*cmp.Tc/cmp.Pc)

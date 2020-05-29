@@ -173,14 +173,14 @@ class TB(Cubic):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
         ai = []
         bi = []
         ci = []
         di = []
         for cmp in self.componente:
-            a, b, c, d = self.__lib(cmp, self.T)
+            a, b, c, d = self.__lib(cmp, T)
 
             ai.append(a)
             bi.append(b)
@@ -191,8 +191,6 @@ class TB(Cubic):
         self.bi = bi
         self.ci = ci
         self.di = di
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
     def _GEOS(self, xi):
         coef = [self.ai, self.bi, self.ci, self.di]

@@ -255,15 +255,13 @@ class Cubic(EoS):
     def __init__(self, T, P, mezcla, **kwargs):
         EoS.__init__(self, T, P, mezcla, **kwargs)
 
-        self._cubicDefinition()
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
+        self._cubicDefinition(T)
 
         if self.mezcla.Tc < T:
             self.x = 1
             self.xi = self.zi
             self.yi = self.zi
-            self.Zg = self._Z(self.zi)[-1]
+            self.Zg = self._Z(self.zi, T, P)[-1]
             self.Zl = None
 
         else:
@@ -299,17 +297,17 @@ class Cubic(EoS):
 
         # rho = self.rhoG.molm3
         # from pprint import pprint
-        # print("rho", rho)
         # pprint(self._phir(self.T, rho, self.yi))
 
     def _volumeCorrection(self):
         """Apply volume correction to the rhoL property"""
         pass
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual component parameters of generalized cubic
-        equation of state, running only at initiation of EoS, its calculation
-        don't depend composition"""
+        equation of state, its calculation don't depend composition"""
+        # TODO: Split fixed paremeters calculation from temperature dependences
+        # to speed up
         pass
 
     def _GEOS(self, xi):
@@ -329,7 +327,7 @@ class Cubic(EoS):
         """
         pass
 
-    def _Z(self, xi=None, T=None, P=None):
+    def _Z(self, xi, T, P):
         """Calculate root of cubic polynomial in terms of GCEoS as give in
         [1]_.
 
@@ -337,20 +335,18 @@ class Cubic(EoS):
         ----------
         xi : list
             Molar fraction of component in mixture, [-]
+        T : float
+            Temperature, [K]
+        P : float
+            Pressure, [Pa]
 
         Returns
         -------
         Z : list
             List with real root of equation
         """
-        # If xi parameters is not specified use the input fraction
-        if not xi:
-            xi = self.zi
-        if not T:
-            T = self.T
-        if not P:
-            P = self.P
 
+        self._cubicDefinition(T)
         tita, b, delta, epsilon = self._GEOS(xi)
         B = b*P/R/T
         A = tita*P/(R*T)**2
@@ -373,7 +369,7 @@ class Cubic(EoS):
 
         return Z
 
-    def _fug(self, xi, yi, T=None, P=None):
+    def _fug(self, xi, yi, T, P):
         """Fugacities oc component in mixture calculation
 
         Parameters
@@ -382,6 +378,10 @@ class Cubic(EoS):
             Molar fraction of component in liquid phase, [-]
         yi : list
             Molar fraction of component in vapor phase, [-]
+        T : float
+            Temperature, [K]
+        P : float
+            Pressure, [Pa]
 
         Returns
         -------
@@ -390,25 +390,24 @@ class Cubic(EoS):
         titav : list
             List with vapour phase component fugacities
         """
-        if not T:
-            T = self.T
-        if not P:
-            P = self.P
+        self._cubicDefinition(T)
+        Bi = [bi*P/R/T for bi in self.bi]
+        Ai = [ai*P/(R*T)**2 for ai in self.ai]
 
         al, bl, deltal, epsilonl = self._GEOS(xi)
         Bl = bl*P/R/T
         Al = al*P/(R*T)**2
         Zl = self._Z(xi, T, P)[0]
-        tital = self._fugacity(Zl, xi, Al, Bl)
+        tital = self._fugacity(Zl, xi, Al, Bl, Ai, Bi)
 
         Zv = self._Z(yi, T, P)[-1]
         av, bv, deltav, epsilonv = self._GEOS(yi)
         Bv = bv*P/R/T
         Av = av*P/(R*T)**2
-        titav = self._fugacity(Zv, yi, Av, Bv)
+        titav = self._fugacity(Zv, yi, Av, Bv, Ai, Bi)
         return tital, titav
 
-    def _fugacity(self, Z, zi, A, B):
+    def _fugacity(self, Z, zi, A, B, Ai, Bi):
         """Fugacity for individual components in a mixture using the GEoS in
         the Schmidt-Wenzel formulation, so the subclass must define the
         parameters u and w in the EoS
@@ -418,14 +417,14 @@ class Cubic(EoS):
         """
         # Precalculation of inner sum in equation
         aij = []
-        for ai, kiji in zip(self.Ai, self.kij):
+        for ai, kiji in zip(Ai, self.kij):
             suma = 0
-            for xj, aj, kij in zip(zi, self.Ai, kiji):
+            for xj, aj, kij in zip(zi, Ai, kiji):
                 suma += xj*(1-kij)*(ai*aj)**0.5
             aij.append(suma)
 
         tita = []
-        for bi, aai in zip(self.Bi, aij):
+        for bi, aai in zip(Bi, aij):
             rhs = bi/B*(Z-1) - log(Z-B) + A/B/(self.u-self.w)*(
                     bi/B-2/A*aai) * log((Z+self.u*B)/(Z+self.w*B))
             tita.append(exp(rhs))
@@ -459,7 +458,7 @@ class Cubic(EoS):
         return mixpar
 
     def _Tr(self):
-        # Definition of reducing parameters
+        """Definition of reducing parameters"""
         if len(self.mezcla.componente) > 1:
             # Mixture as one-fluid
             Tr = 1

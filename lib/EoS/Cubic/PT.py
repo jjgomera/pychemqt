@@ -190,14 +190,14 @@ class PT(Cubic):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
 
         ai = []
         bi = []
         ci = []
         for cmp in self.componente:
-            a, b, c = self._lib(cmp, self.T)
+            a, b, c = self._lib(cmp, T)
             ai.append(a)
             bi.append(b)
             ci.append(c)
@@ -205,8 +205,6 @@ class PT(Cubic):
         self.ai = ai
         self.bi = bi
         self.ci = ci
-        self.Bi = [bi*self.P/R/self.T for bi in self.bi]
-        self.Ai = [ai*self.P/(R*self.T)**2 for ai in self.ai]
 
     def _GEOS(self, xi):
         am, bm, cm = self._mixture(None, xi, [self.ai, self.bi, self.ci])

@@ -62,7 +62,7 @@ class RK(Cubic):
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})
 
-    def _cubicDefinition(self):
+    def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
 
         # Schmidt-Wenzel factorization of terms
@@ -72,7 +72,7 @@ class RK(Cubic):
         ai = []
         bi = []
         for cmp in self.componente:
-            a, b = self._lib(cmp, self.T)
+            a, b = self._lib(cmp, T)
 
             ai.append(a)
             bi.append(b)
@@ -82,7 +82,7 @@ class RK(Cubic):
 
     def _lib(self, cmp, T):
         a0 = 0.42747*R**2*cmp.Tc**2/cmp.Pc
-        alfa = (self.T/cmp.Tc)**-0.5
+        alfa = (T/cmp.Tc)**-0.5
         b = 0.08664*R*cmp.Tc/cmp.Pc
         return a0*alfa, b
 
