@@ -242,14 +242,7 @@ class IAPWS97(ThermoWater):
         self.v = unidades.SpecificVolume(st.v)
         self.rho = unidades.Density(st.rho)
 
-        cp0 = {}
-        cp0["v"] = st.v0
-        cp0["h"] = st.h0*1000
-        cp0["s"] = st.s0*1000
-        cp0["cp"] = st.cp0*1000
-        cp0["cv"] = st.cv0*1000
-        cp0["w"] = st.w0
-        self._cp0(cp0)
+        self._cp0()
 
         self.Liquido = ThermoWater()
         self.Gas = ThermoWater()
@@ -287,6 +280,32 @@ class IAPWS97(ThermoWater):
 
             self.Hvap = unidades.Enthalpy(st.Hvap, "kJkg")
             self.Svap = unidades.SpecificHeat(st.Svap, "kJkgK")
+
+    def _cp0(self):
+        "Set ideal properties to state"""
+        self.v0 = unidades.SpecificVolume(None)
+        self.rho0 = unidades.Density(None)
+        self.h0 = unidades.Enthalpy(None)
+        self.u0 = unidades.Enthalpy(None)
+        self.s0 = unidades.SpecificHeat(None)
+        self.a0 = unidades.Enthalpy(None)
+        self.g0 = unidades.Enthalpy(None)
+
+        self.cp0 = unidades.SpecificHeat(None)
+        self.cv0 = unidades.SpecificHeat(None)
+        self.cp0_cv = unidades.Dimensionless(None)
+        self.w0 = unidades.Speed(None)
+        self.gamma0 = self.cp0_cv
+
+        self.rhoM0 = unidades.MolarDensity(None)
+        self.hM0 = unidades.MolarEnthalpy(None)
+        self.uM0 = unidades.MolarEnthalpy(None)
+        self.sM0 = unidades.MolarSpecificHeat(None)
+        self.aM0 = unidades.MolarEnthalpy(None)
+        self.gM0 = unidades.MolarEnthalpy(None)
+        self.cpM0 = unidades.MolarSpecificHeat(None)
+        self.cvM0 = unidades.MolarSpecificHeat(None)
+
 
     def fill(self, fase, st):
         """Fill phase properties"""
