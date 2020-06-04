@@ -197,8 +197,8 @@ for module, use in optional_modules:
         # Check required version
         if module == "CoolProp":
             import CoolProp.CoolProp as CP
-            version = CP.get_global_param_string(b"version")
-            mayor, minor, rev = map(int, version.split(b"."))
+            version = CP.get_global_param_string("version")
+            mayor, minor, rev = map(int, version.split("."))
             if mayor < 6:
                 print("Find CoolProp %s but CoolProp 6 required" % version)
                 os.environ[module] = ""
