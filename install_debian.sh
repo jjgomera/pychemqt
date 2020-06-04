@@ -114,4 +114,4 @@ cp python3.2/rptest.py /usr/local/lib/python3.5/dist-packages
 pip3 install ezodf lxml
 pip3 install openpyxl
 pip3 install xlwt
-pip3 install openbabel
+pip3 install pybel
