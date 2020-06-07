@@ -18,6 +18,8 @@ import os
 import shutil
 import subprocess
 import sys
+from urllib.request import urlopen
+from urllib.error import URLError
 
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -404,6 +406,12 @@ autodoc_default_options = {
     'special-members': '__init__',
     'undoc-members': None,
 }
+
+# Let mathjax render expression without internet conection
+try:
+    response = urlopen('https://www.google.com/', timeout=10)
+except URLError:
+    mathjax_path = '/usr/share/javascript/mathjax/MathJax.js?config=default.js'
 
 
 def setup(app):
