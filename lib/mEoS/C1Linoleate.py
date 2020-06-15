@@ -42,8 +42,7 @@ class C1Linoleate(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.79, "Debye")
 
     f = 8.314472
-    CP1 = {"ao": 0.0,
-           "an": [190.986/f],
+    CP1 = {"an": [190.986/f],
            "pow": [0.020213],
            "ao_exp": [437.371/f, 287.222/f, 321.956/f],
            "exp": [3052.11, 746.631, 1624.33]}

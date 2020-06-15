@@ -40,7 +40,6 @@ class RE347mcc(MEoS):
     momentoDipolar = unidades.DipoleMoment(3.13, "Debye")
 
     CP1 = {"ao": 13.09,
-           "an": [], "pow": [],
            "ao_exp": [13.78, 14.21], "exp": [2045, 850]}
 
     zhou = {

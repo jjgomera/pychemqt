@@ -42,8 +42,6 @@ class MD2M(MEoS):
 
     f = 8.314472
     CP1 = {"ao": 331.9/f,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
            "ao_sinh": [777.100/f], "sinh": [1813.8],
            "ao_cosh": [521.400/f], "cosh": [795.1]}
 

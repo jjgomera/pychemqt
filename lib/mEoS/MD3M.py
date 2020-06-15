@@ -41,8 +41,6 @@ class MD3M(MEoS):
 
     f = 8.314472
     CP1 = {"ao": 463.2/f,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
            "ao_sinh": [957.2/f, ], "sinh": [2117.1],
            "ao_cosh": [738.3/f], "cosh": [908.5]}
 

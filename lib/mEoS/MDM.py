@@ -42,8 +42,6 @@ class MDM(MEoS):
 
     f = 8.314472
     CP1 = {"ao": 275.1/f,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": [],
            "ao_sinh": [612.9/f], "sinh": [1829.6],
            "ao_cosh": [413.0/f], "cosh": [802.6]}
 

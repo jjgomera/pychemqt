@@ -42,8 +42,7 @@ class C3Cyclohexane(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 184
 
-    CP1 = {"ao": 0.0,
-           "an": [9.29427],
+    CP1 = {"an": [9.29427],
            "pow": [0.385871],
            "ao_exp": [1.37051, 106.426, 313.713],
            "exp": [173295, 561.14, 1919.52]}

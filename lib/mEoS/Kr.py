@@ -44,8 +44,7 @@ class Kr(MEoS):
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
-           "ao_pow": [-3.7506412806, 3.7798018435],
-           "ao_exp": [], "titao": []}
+           "ao_pow": [-3.7506412806, 3.7798018435]}
 
     lemmon = {
         "__type__": "Helmholtz",

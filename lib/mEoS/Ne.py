@@ -43,9 +43,7 @@ class Ne(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 107
 
-    CP1 = {"ao": 2.5,
-           "an": [], "pow": [],
-           "ao_exp": [], "exp": []}
+    CP1 = {"ao": 2.5}
 
     katti = {
         "__type__": "Helmholtz",

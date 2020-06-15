@@ -56,7 +56,6 @@ class pH2(MEoS):
     # Younglove use a fractional correlation depend of temperature not easy
     # of implement here
     CP1 = {"ao": 2.5,
-           "an": [], "pow": [],
            "ao_exp": [4.30256, 13.0289, -47.7365, 50.0013, -18.6261, 0.993973,
                       0.536078],
            "exp": [499, 826.5, 970.8, 1166.2, 1341.4, 5395, 10185]}

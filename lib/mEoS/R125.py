@@ -43,8 +43,7 @@ class R125(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.563, "Debye")
     id = 1231
 
-    CP1 = {"ao": 0,
-           "an": [3.063], "pow": [0.1],
+    CP1 = {"an": [3.063], "pow": [0.1],
            "ao_exp": [2.303, 5.086, 7.3], "exp": [314, 756, 1707]}
 
     Fi2 = {"ao_log": [1, 4.911212],
@@ -60,19 +59,16 @@ class R125(MEoS):
            "titao": [4.907126427, 2.080818176]}
 
     CP3 = {"ao": 4.3987,
-           "an": [0.0242728, -4.099e-6], "pow": [1, 2],
-           "ao_exp": [], "exp": []}
+           "an": [0.0242728, -4.099e-6], "pow": [1, 2]}
 
     CP5 = {"ao": 3.111514,
            "an": [10.982115/339.33, -1.843797/339.33**2, 0.019273/339.33**3],
-           "pow": [1, 2, 3],
-           "ao_exp": [], "exp": []}
+           "pow": [1, 2, 3]}
 
     # Expression in tau term, dividing by Tc in all terms
     CP4 = {"ao": 2.9072,
            "an": [11.5586/339.33, -2.1135/339.33**2],
-           "pow": [1, 2],
-           "ao_exp": [], "exp": []}
+           "pow": [1, 2]}
 
     lemmon = {
         "__type__": "Helmholtz",

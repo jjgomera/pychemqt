@@ -42,8 +42,7 @@ class MD4M(MEoS):
     f = 8.314472
     CP1 = {"ao": -20.071/f,
            "an": [2228.5e-3/f, -1311.4e-6/f, 286.2e-9/f],
-           "pow": [1, 2, 3],
-           "ao_exp": [], "exp": []}
+           "pow": [1, 2, 3]}
 
     colonna = {
         "__type__": "Helmholtz",

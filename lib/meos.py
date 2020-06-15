@@ -1242,7 +1242,7 @@ class MEoS(ThermoAdvanced):
         elif eq == "GERG":
             try:
                 self._constants = self.GERG
-            except:
+            except AttributeError:
                 self._constants = self.eq[0]
         elif self.eq[eq]["__type__"] == "Helmholtz":
             self._constants = self.eq[eq]
@@ -1255,9 +1255,9 @@ class MEoS(ThermoAdvanced):
         visco = self.kwargs["visco"]
         thermal = self.kwargs["thermal"]
         if self._viscosity:
-            self._viscosity = self._viscosity[visco]
+            self._viscosity = self.__class__._viscosity[visco]
         if self._thermal:
-            self._thermal = self._thermal[thermal]
+            self._thermal = self.__class__._thermal[thermal]
 
         # Configure custom parameter from eq
         if "M" in self._constants:
@@ -2999,7 +2999,7 @@ class MEoS(ThermoAdvanced):
                 * so: Entropy in reference state, [kJ/kg·K]
         """
         # Variable to avoid rewrite and save the h-s offset status application
-        applyOffset = "ao" in self._constants["cp"] or ref is not None
+        applyOffset = "ao_log" not in self._constants["cp"] or ref is not None
 
         if ref is None:
             rf = self._constants["ref"]
@@ -3120,19 +3120,23 @@ class MEoS(ThermoAdvanced):
     def _PHIO(self, cp):
         """Convert cp dict in phi0 dict when the cp expression isn't in
         Helmholtz free energy terms"""
-        co = cp["ao"]-1
+        co = cp.get("ao", 0) - 1
         ti = []
         ci = []
         taulogtau = 0
-        for n, t in zip(cp["an"], cp["pow"]):
-            if t == -1:
-                # Special case of tau*logtau term
-                taulogtau = -n/self.Tc
-            else:
-                ti.append(-t)
-                ci.append(-n/(t*(t+1))*self.Tc**t)
+        if "an" in cp:
+            for n, t in zip(cp["an"], cp["pow"]):
+                if t == -1:
+                    # Special case of tau*logtau term
+                    taulogtau = -n/self.Tc
+                else:
+                    ti.append(-t)
+                    ci.append(-n/(t*(t+1))*self.Tc**t)
 
-        titao = [fi/self.Tc for fi in cp["exp"]]
+        titao = []
+        if "exp" in cp:
+            titao = [fi/self.Tc for fi in cp["exp"]]
+
         sinh = [fi/self.Tc for fi in cp.get("sinh", [])]
         cosh = [fi/self.Tc for fi in cp.get("cosh", [])]
 
@@ -3145,7 +3149,7 @@ class MEoS(ThermoAdvanced):
         Fi0 = {"ao_log": [1,  co],
                "pow": [0, 1] + ti,
                "ao_pow": [cII, cI] + ci,
-               "ao_exp": cp["ao_exp"],
+               "ao_exp": cp.get("ao_exp", []),
                "titao": titao,
                "ao_sinh": cp.get("ao_sinh", []),
                "sinh": sinh,
@@ -3218,17 +3222,19 @@ class MEoS(ThermoAdvanced):
         fiodt = 0
 
         R_ = cp.get("R", self._constants["R"])
-        for n, t in zip(Fi0["ao_pow"], Fi0["pow"]):
-            fio += n*tau**t
-            if t != 0:
-                fiot += t*n*tau**(t-1)
-            if t not in [0, 1]:
-                fiott += n*t*(t-1)*tau**(t-2)
+        if "pow" in Fi0:
+            for n, t in zip(Fi0["ao_pow"], Fi0["pow"]):
+                fio += n*tau**t
+                if t != 0:
+                    fiot += t*n*tau**(t-1)
+                if t not in [0, 1]:
+                    fiott += n*t*(t-1)*tau**(t-2)
 
-        for n, g in zip(Fi0["ao_exp"], Fi0["titao"]):
-            fio += n*log(1-exp(-g*tau))
-            fiot += n*g*((1-exp(-g*tau))**-1-1)
-            fiott -= n*g**2*exp(-g*tau)*(1-exp(-g*tau))**-2
+        if "ao_exp" in Fi0:
+            for n, g in zip(Fi0["ao_exp"], Fi0["titao"]):
+                fio += n*log(1-exp(-g*tau))
+                fiot += n*g*((1-exp(-g*tau))**-1-1)
+                fiott -= n*g**2*exp(-g*tau)*(1-exp(-g*tau))**-2
 
         # Special case for τ·ln(τ) terms (i.e. undecane, D2O)
         if "tau*logtau" in Fi0:

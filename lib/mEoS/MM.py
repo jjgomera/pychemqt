@@ -51,8 +51,7 @@ class MM(MEoS):
     f = 8.314472
     CP1 = {"ao": 51.894/f,
            "an": [741.34e-3/f, -416e-6/f, 70e-9/f],
-           "pow": [1, 2, 3],
-           "ao_exp": [], "exp": []}
+           "pow": [1, 2, 3]}
 
     thol = {
         "__type__": "Helmholtz",

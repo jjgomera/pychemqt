@@ -45,7 +45,7 @@ from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
 
 __version__ = "0.1.0"
 
-other_window = (plots.Binary_distillation, UI_Tables.TablaMEoS,
+other_window = (plots.Binary_distillation, UI_Tables.table.TablaMEoS,
                 UI_Tables.PlotMEoS)
 other_window_names = [cl.__name__ for cl in other_window]
 
@@ -1337,13 +1337,13 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     other[ind] = ventana
 
                     # Add dependences from other windows
-                    if widget["external_dependences"]:
+                    if widget.get("external_dependences", None):
                         data["external_dependences"].add(
                             widget["external_dependences"])
 
                 data["other"] = other
 
-                # python set are not serializable so convert to lis s
+                # python set are not serializable so convert to list
                 data["external_dependences"] = list(
                     data["external_dependences"])
 

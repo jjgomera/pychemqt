@@ -46,8 +46,7 @@ class nC11(MEoS):
            "pow": [-3, -2, -1, 0, 1, 2],
            "ao_pow": [-3.515339, 28.27708, -136.8378, -46.40384, 107.1876,
                       1.419929],
-           "tau*logtau": -31.81246,
-           "ao_exp": [], "titao": []}
+           "tau*logtau": -31.81246}
 
     aleksandrov = {
         "__type__": "Helmholtz",

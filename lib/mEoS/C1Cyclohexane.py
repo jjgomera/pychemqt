@@ -44,8 +44,7 @@ class C1Cyclohexane(MEoS):
 
     CP1 = {"ao": 2.04122,
            "an": [0.016417, 0.000185315, -3.14826e-7, 1.65567e-10],
-           "pow": [1, 2, 3, 4],
-           "ao_exp": [], "exp": []}
+           "pow": [1, 2, 3, 4]}
 
     lemmon = {
         "__type__": "Helmholtz",

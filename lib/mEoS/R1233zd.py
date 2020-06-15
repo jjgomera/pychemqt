@@ -42,7 +42,6 @@ class R1233zd(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.44, "Debye")
 
     CP1 = {"ao": 4.0,
-           "an": [], "pow": [],
            "ao_exp": [11.765, 8.6848],
            "exp": [630, 2230]}
 

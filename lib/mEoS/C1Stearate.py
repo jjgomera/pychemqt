@@ -40,8 +40,7 @@ class C1Stearate(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.54, "Debye")
 
     f = 8.314472
-    CP1 = {"ao": 0.0,
-           "an": [247.115/f], "pow": [-0.0916606],
+    CP1 = {"an": [247.115/f], "pow": [-0.0916606],
            "ao_exp": [276.94/f, 408.997/f, 472.702/f],
            "exp": [556.17, 1311.85, 2825.71]}
 

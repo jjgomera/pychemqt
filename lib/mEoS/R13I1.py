@@ -42,7 +42,6 @@ class R13I1(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.92, "Debye")
 
     CP1 = {"ao": 4.,
-           "an": [], "pow": [],
            "ao_exp": [6.2641], "exp": [694]}
 
     lemmon = {

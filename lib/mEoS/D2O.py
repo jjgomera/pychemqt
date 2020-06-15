@@ -55,8 +55,7 @@ class D2O(MEoS):
            "ao_pow": [0.3087155964e2, -.3827264031e2, 0.4424799189,
                       -.1256336874e1, 0.2843343470, -.2401555088e-1],
            "tau*logtau": -.1288399716e2,
-           "tau*logdelta": 0.4415884023e1,
-           "ao_exp": [], "titao": []}
+           "tau*logdelta": 0.4415884023e1}
 
     herrig = {
         "__type__": "Helmholtz",
