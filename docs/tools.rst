@@ -9,5 +9,5 @@ Submodules
    
     tools.qtelemental
     tools.UI_psychrometry
-    tools.UITables
+    tools.UI_Tables
     tools.UI_unitConverter

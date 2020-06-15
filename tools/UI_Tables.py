@@ -137,7 +137,7 @@ def getMethod():
 
 
 class plugin(object):
-    """Common functionality to add to menu and dialog"""
+    """Common functionality to add to menu and dialog in main window"""
 
     def _txt(self):
         """Common widget names
@@ -482,8 +482,9 @@ class plugin(object):
             j = dlg.ejeY.currentIndex()
             if j >= i:
                 j += 1
-            x = ThermoAdvanced.propertiesKey()[i]
-            y = ThermoAdvanced.propertiesKey()[j]
+            prop = ThermoAdvanced.propertiesKey()
+            x = prop[i]
+            y = prop[j]
 
             if dlg.Xscale.isChecked():
                 xscale = "log"
@@ -496,7 +497,7 @@ class plugin(object):
             self.plot(x, y, xscale, yscale)
 
     def plot3D(self):
-        """Add a generic 2D plot to project"""
+        """Add a generic 3D plot to project"""
         dlg = Plot3D(self.parent())
         if dlg.exec_():
             i = dlg.ejeX.currentIndex()
@@ -508,9 +509,10 @@ class plugin(object):
                 k += 1
             if j >= i:
                 j += 1
-            x = ThermoAdvanced.propertiesKey()[i]
-            y = ThermoAdvanced.propertiesKey()[j]
-            z = ThermoAdvanced.propertiesKey()[k]
+            prop = ThermoAdvanced.propertiesKey()
+            x = prop[i]
+            y = prop[j]
+            z = prop[k]
             self.plot(x, y, z=z)
 
     def plot(self, x, y, xscale=None, yscale=None, z=""):
@@ -520,17 +522,17 @@ class plugin(object):
         xscale: scale for axis x
         yscale: scale for axis y
         z: property for axis z, optional to 3D plot"""
-        index = self.config.getint("MEoS", "fluid")
-        fluid = mEoS.__all__[index]
-        filename = "%s.pkl" % (fluid.formula)
+        fluid = getClassFluid(self.config)
+        method = getMethod()
+        filename = "%s-%s.pkl" % (method, fluid.name)
 
         if z:
             title = QtWidgets.QApplication.translate(
-                "pychemqt", "Plot %s: %s=f(%s,%s)" % (fluid.formula, z, y, x))
+                "pychemqt", "Plot %s: %s=f(%s,%s)" % (fluid.name, z, y, x))
             dim = 3
         else:
             title = QtWidgets.QApplication.translate(
-                "pychemqt", "Plot %s: %s=f(%s)" % (fluid.formula, y, x))
+                "pychemqt", "Plot %s: %s=f(%s)" % (fluid.name, y, x))
             dim = 2
         grafico = PlotMEoS(dim=dim, parent=self.parent(), filename=filename)
         grafico.setWindowTitle(title)
@@ -538,19 +540,19 @@ class plugin(object):
         grafico.y = y
         grafico.z = z
 
-        unitx = meos.units[meos.keys.index(x)].magnitudes()[0][0]
-        unity = meos.units[meos.keys.index(y)].magnitudes()[0][0]
+        unitx = UNITS[KEYS.index(x)].magnitudes()[0][0]
+        unity = UNITS[KEYS.index(y)].magnitudes()[0][0]
         i = self.config.getint("Units", unitx)
         j = self.config.getint("Units", unity)
-        xtxt = "%s, %s" % (x, meos.units[meos.keys.index(x)].__text__[i])
-        ytxt = "%s, %s" % (y, meos.units[meos.keys.index(y)].__text__[j])
+        xtxt = "%s, %s" % (x, UNITS[KEYS.index(x)].__text__[i])
+        ytxt = "%s, %s" % (y, UNITS[KEYS.index(y)].__text__[j])
         grafico.plot.ax.set_xlabel(xtxt)
         grafico.plot.ax.set_ylabel(ytxt)
         if z:
             grafico.z = z
-            unitz = meos.units[meos.keys.index(z)].magnitudes()[0][0]
+            unitz = UNITS[KEYS.index(z)].magnitudes()[0][0]
             k = self.config.getint("Units", unitz)
-            ztxt = "%s, %s" % (z, meos.units[meos.keys.index(z)].__text__[k])
+            ztxt = "%s, %s" % (z, UNITS[KEYS.index(z)].__text__[k])
             grafico.plot.ax.set_zlabel(ztxt)
 
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
@@ -566,7 +568,8 @@ class plugin(object):
             QtWidgets.QApplication.processEvents()
             data = self.calculatePlot(fluid)
             conf = {}
-            conf["fluid"] = index
+            conf["method"] = method
+            conf["fluid"] = self.config.getint("MEoS", "fluid")
             conf["eq"] = self.config.getint("MEoS", "eq")
             conf["visco"] = self.config.getint("MEoS", "visco")
             conf["thermal"] = self.config.getint("MEoS", "thermal")
@@ -579,9 +582,9 @@ class plugin(object):
         grafico.config = data["config"]
 
         if z:
-            plot2D3D(grafico, data, self.parent().Preferences, x, y, z)
+            plot2D3D(grafico, data, config.Preferences, x, y, z)
         else:
-            plot2D3D(grafico, data, self.parent().Preferences, x, y)
+            plot2D3D(grafico, data, config.Preferences, x, y)
 
             if not xscale:
                 if x in ["P", "rho", "v"]:
@@ -596,7 +599,7 @@ class plugin(object):
                     yscale = "linear"
             grafico.plot.ax.set_yscale(yscale)
 
-        grid = self.parent().Preferences.getboolean("MEOS", "grid")
+        grid = config.Preferences.getboolean("MEOS", "grid")
         grafico.plot.ax._gridOn = grid
         grafico.plot.ax.grid(grid)
 
@@ -608,62 +611,70 @@ class plugin(object):
         """Calculate data for plot
             fluid: class of meos fluid to calculate"""
         data = {}
-        points = get_points(self.parent().Preferences)
+        points = get_points(config.Preferences)
+        method = getMethod()
 
-        # Calculate melting line
-        if fluid._melting:
-            self.parent().statusbar.showMessage(
-                QtWidgets.QApplication.translate(
-                    "pychemqt", "Calculating melting line..."))
-            T = linspace(fluid._melting["Tmin"], fluid._melting["Tmax"],
-                         points)
-            fluidos = []
-            for Ti in T:
-                P = fluid._Melting_Pressure(Ti)
-                fluido = calcPoint(fluid, self.config, T=Ti, P=P)
-                if fluido:
-                    fluidos.append(fluido)
-                self.parent().progressBar.setValue(5*len(fluidos)/len(T))
-                QtWidgets.QApplication.processEvents()
-            if fluidos:
-                data["melting"] = {}
-                for x in ThermoAdvanced.propertiesKey():
-                    dat_propiedad = []
-                    for fluido in fluidos:
-                        num = fluido.__getattribute__(x)
-                        if num is not None:
-                            dat_propiedad.append(num._data)
-                        else:
-                            dat_propiedad.append(None)
-                    data["melting"][x] = dat_propiedad
+        # Melting and sublimation line only supported in internal meos method
+        if method == "MEOS":
+            # Calculate melting line
+            if fluid._melting:
+                self.parent().statusbar.showMessage(
+                    QtWidgets.QApplication.translate(
+                        "pychemqt", "Calculating melting line..."))
+                T = linspace(fluid._melting["Tmin"], fluid._melting["Tmax"],
+                             points)
+                fluidos = []
+                for Ti in T:
+                    P = fluid._Melting_Pressure(Ti)
+                    fluido = calcPoint(fluid, self.config, T=Ti, P=P)
+                    if fluido:
+                        fluidos.append(fluido)
+                    self.parent().progressBar.setValue(5*len(fluidos)/len(T))
+                    QtWidgets.QApplication.processEvents()
+                if fluidos:
+                    data["melting"] = {}
+                    for x in ThermoAdvanced.propertiesKey():
+                        dat_propiedad = []
+                        for fluido in fluidos:
+                            num = fluido.__getattribute__(x)
+                            if num is not None:
+                                if x in ["fi", "f"]:
+                                    num = num[0]
+                                dat_propiedad.append(num._data)
+                            else:
+                                dat_propiedad.append(None)
+                        data["melting"][x] = dat_propiedad
 
-        # Calculate sublimation line
-        if fluid._sublimation:
-            self.parent().statusbar.showMessage(
-                QtWidgets.QApplication.translate(
-                    "pychemqt", "Calculating sublimation line..."))
-            T = linspace(fluid._sublimation["Tmin"],
-                         fluid._sublimation["Tmax"], points)
-            fluidos = []
-            for Ti in T:
-                P = fluid._Sublimation_Pressure(Ti)
-                fluido = calcPoint(fluid, self.config, T=Ti, P=P)
-                if fluido:
-                    fluidos.append(fluido)
-                self.parent().progressBar.setValue(5+5*len(fluidos)/len(T))
-                QtWidgets.QApplication.processEvents()
-            if fluidos:
-                data["sublimation"] = {}
-                for x in ThermoAdvanced.propertiesKey():
-                    dat_propiedad = []
-                    for fluido in fluidos:
-                        num = fluido.__getattribute__(x)
-                        if num is not None:
-                            dat_propiedad.append(num._data)
-                        else:
-                            dat_propiedad.append(None)
-                    data["sublimation"][x] = dat_propiedad
+            # Calculate sublimation line
+            if fluid._sublimation:
+                self.parent().statusbar.showMessage(
+                    QtWidgets.QApplication.translate(
+                        "pychemqt", "Calculating sublimation line..."))
+                T = linspace(fluid._sublimation["Tmin"],
+                             fluid._sublimation["Tmax"], points)
+                fluidos = []
+                for Ti in T:
+                    P = fluid._Sublimation_Pressure(Ti)
+                    fluido = calcPoint(fluid, self.config, T=Ti, P=P)
+                    if fluido:
+                        fluidos.append(fluido)
+                    self.parent().progressBar.setValue(5+5*len(fluidos)/len(T))
+                    QtWidgets.QApplication.processEvents()
+                if fluidos:
+                    data["sublimation"] = {}
+                    for x in ThermoAdvanced.propertiesKey():
+                        dat_propiedad = []
+                        for fluido in fluidos:
+                            num = fluido.__getattribute__(x)
+                            if num is not None:
+                                if x in ["fi", "f"]:
+                                    num = num[0]
+                                dat_propiedad.append(num._data)
+                            else:
+                                dat_propiedad.append(None)
+                        data["sublimation"][x] = dat_propiedad
 
+        # Define the saturation temperature
         T = list(concatenate([linspace(fluid.Tt, 0.9*fluid.Tc, points),
                               linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points),
                               linspace(0.99*fluid.Tc, fluid.Tc, points)]))
@@ -673,34 +684,30 @@ class plugin(object):
         # Calculate saturation
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating Liquid-Vapour saturation line..."))
-        # if x == "P" and y == "T":
-        #     fases = [0]
-        # else:
-        fases = [0, 1]
-        for fase in fases:
+        for fase in [0, 1]:
             fluidos = []
             for Ti in T:
-                fluidos.append(fluid(T=Ti, x=fase))
+                fluidos.append(fluid._new(T=Ti, x=fase))
                 self.parent().progressBar.setValue(
                     10+5*fase+5*len(fluidos)/len(T))
                 QtWidgets.QApplication.processEvents()
 
             data["saturation_%i" % fase] = {}
-            for x in ThermoAdvanced.propertiesKey():
+            for key in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
-                    num = fluido.__getattribute__(x)
-                    if num is not None:
-                        dat_propiedad.append(num._data)
-                    else:
-                        dat_propiedad.append(None)
-                data["saturation_%i" % fase][x] = dat_propiedad
+                    if fluido.status:
+                        p = fluido.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        dat_propiedad.append(p)
+                data["saturation_%i" % fase][key] = dat_propiedad
 
         # Calculate isoquality lines
         data["x"] = {}
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoquality lines..."))
-        values = self.LineList("Isoquality", self.parent().Preferences)
+        values = self.LineList("Isoquality", config.Preferences)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
                                   "T", "x", T, value, 20, i, 20,
@@ -710,23 +717,44 @@ class plugin(object):
             for x in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
-                    num = fluido.__getattribute__(x)
-                    if num is not None:
-                        dat_propiedad.append(num._data)
+                    if fluido is not None and fluido.status:
+                        p = fluido.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        dat_propiedad.append(p)
                     else:
                         dat_propiedad.append(None)
                 data["x"][value][x] = dat_propiedad
 
-        eq = fluid.eq[self.parent().currentConfig.getint("MEoS", "eq")]
+        # Get limit equation
+        if method == "MEOS":
+            eq = fluid.eq[self.parent().currentConfig.getint("MEoS", "eq")]
+            Tmin = eq["Tmin"]
+            Tmax = eq["Tmax"]
+
+            Tt = eq.get("Tt", fluid.Tt)
+            if Tmin > Tt:
+                Lt = fluid(T=Tmin, x=0)
+            else:
+                Lt = fluid(T=Tt, x=0)
+            Pmin = Lt.P
+
+            Pmax = eq["Pmax"]*1000
+        elif method == "COOLPROP":
+            Tmin = fluid.eq["Tmin"]
+            Tmax = fluid.eq["Tmax"]
+            Pmin = fluid.eq["Pmin"]
+            Pmax = fluid.eq["Pmax"]
+        elif method == "REFPROP":
+            pass
+
         T = list(concatenate(
-            [linspace(eq["Tmin"], 0.9*fluid.Tc, points),
+            [linspace(Tmin, 0.9*fluid.Tc, points),
              linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points),
              linspace(0.99*fluid.Tc, fluid.Tc, points),
              linspace(fluid.Tc, 1.01*fluid.Tc, points),
              linspace(1.01*fluid.Tc, 1.1*fluid.Tc, points),
-             linspace(1.1*fluid.Tc, eq["Tmax"], points)]))
-        Pmin = eq["Pmin"]*1000
-        Pmax = eq["Pmax"]*1000
+             linspace(1.1*fluid.Tc, Tmax, points)]))
         P = list(concatenate(
             [logspace(log10(Pmin), log10(0.9*fluid.Pc), points),
              linspace(0.9*fluid.Pc, 0.99*fluid.Pc, points),
@@ -742,101 +770,111 @@ class plugin(object):
         data["T"] = {}
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isotherm lines..."))
-        values = self.LineList("Isotherm", self.parent().Preferences, fluid)
+        values = self.LineList("Isotherm", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
                                   "P", "T", P, value, 40, i, 10,
                                   len(values), self.parent().progressBar)
             data["T"][value] = {}
-            for x in ThermoAdvanced.propertiesKey():
+            for key in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
-                    num = fluido.__getattribute__(x)
-                    if num is not None:
-                        dat_propiedad.append(num._data)
+                    if fluido is not None and fluido.status:
+                        p = fluido.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        dat_propiedad.append(p)
                     else:
                         dat_propiedad.append(None)
-                data["T"][value][x] = dat_propiedad
+                data["T"][value][key] = dat_propiedad
 
         # Calculate isobar lines
         data["P"] = {}
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isobar lines..."))
-        values = self.LineList("Isobar", self.parent().Preferences, fluid)
+        values = self.LineList("Isobar", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
                                   "T", "P", T, value, 50, i, 10,
                                   len(values), self.parent().progressBar)
             data["P"][value] = {}
-            for x in ThermoAdvanced.propertiesKey():
+            for key in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
-                    num = fluido.__getattribute__(x)
-                    if num is not None:
-                        dat_propiedad.append(num._data)
+                    if fluido is not None and fluido.status:
+                        p = fluido.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        dat_propiedad.append(p)
                     else:
                         dat_propiedad.append(None)
-                data["P"][value][x] = dat_propiedad
+                data["P"][value][key] = dat_propiedad
 
         # Calculate isochor lines
         data["v"] = {}
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isochor lines..."))
-        values = self.LineList("Isochor", self.parent().Preferences, fluid)
+        values = self.LineList("Isochor", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
                                   "T", "v", T, value, 60, i, 10,
                                   len(values), self.parent().progressBar)
             data["v"][value] = {}
-            for x in ThermoAdvanced.propertiesKey():
+            for key in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
-                    num = fluido.__getattribute__(x)
-                    if num is not None:
-                        dat_propiedad.append(num._data)
+                    if fluido is not None and fluido.status:
+                        p = fluido.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        dat_propiedad.append(p)
                     else:
                         dat_propiedad.append(None)
-                data["v"][value][x] = dat_propiedad
+                data["v"][value][key] = dat_propiedad
 
         # Calculate isoenthalpic lines
         data["h"] = {}
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoenthalpic lines..."))
-        vals = self.LineList("Isoenthalpic", self.parent().Preferences, fluid)
+        vals = self.LineList("Isoenthalpic", config.Preferences, fluid)
         for i, value in enumerate(vals):
             fluidos = calcIsoline(fluid, self.config,
-                                  "T", "h", T, value, 70, i, 10,
+                                  "P", "h", P, value, 70, i, 10,
                                   len(values), self.parent().progressBar)
             data["h"][value] = {}
-            for x in ThermoAdvanced.propertiesKey():
+            for key in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
-                    num = fluido.__getattribute__(x)
-                    if num is not None:
-                        dat_propiedad.append(num._data)
+                    if fluido is not None and fluido.status:
+                        p = fluido.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        dat_propiedad.append(p)
                     else:
                         dat_propiedad.append(None)
-                data["h"][value][x] = dat_propiedad
+                data["h"][value][key] = dat_propiedad
 
         # Calculate isoentropic lines
         data["s"] = {}
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoentropic lines..."))
-        values = self.LineList("Isoentropic", self.parent().Preferences, fluid)
+        values = self.LineList("Isoentropic", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
-                                  "T", "s", T, value, 80, i, 20,
+                                  "P", "s", P, value, 80, i, 20,
                                   len(values), self.parent().progressBar)
             data["s"][value] = {}
-            for x in ThermoAdvanced.propertiesKey():
+            for key in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
-                    num = fluido.__getattribute__(x)
-                    if num is not None:
-                        dat_propiedad.append(num._data)
+                    if fluido is not None and fluido.status:
+                        p = fluido.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        dat_propiedad.append(p)
                     else:
                         dat_propiedad.append(None)
-                data["s"][num][x] = dat_propiedad
+                data["s"][value][key] = dat_propiedad
 
         return data
 
@@ -864,7 +902,7 @@ class plugin(object):
             else:
                 prop = {"Isoenthalpic": "h",
                         "Isoentropic": "s"}
-                fc = fluid(T=fluid.Tc, rho=fluid.rhoc)
+                fc = fluid._new(T=fluid.Tc, rho=fluid.rhoc)
                 t.append(fc.__getattribute__(prop[name]))
         return t
 
@@ -875,6 +913,8 @@ class Menu(QtWidgets.QMenu, plugin):
     def __init__(self, parent=None):
         title = QtWidgets.QApplication.translate("pychemqt", "MEoS properties")
         super(Menu, self).__init__(title, parent)
+        self.setIcon(QtGui.QIcon(
+            os.path.join(config.IMAGE_PATH, "button", "tables.png")))
         self.aboutToShow.connect(self.aboutToShow_menu)
 
     def aboutToShow_menu(self):
@@ -1395,17 +1435,15 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
 
         # Cp tab
         if "ao_log" in eq["cp"]:
+            # Cp0 form
             tab1 = QtWidgets.QWidget()
             tabWidget.addTab(
                 tab1, QtWidgets.QApplication.translate("pychemqt", "Phi0"))
             gridLayout_Ideal = QtWidgets.QGridLayout(tab1)
-            mathTex = r"$\frac{C_p^o}{R}=\sum n_i\tau^{d_i}+"
-            mathTex += r"\sum m_j(\theta_j\tau)^2\frac{e^{\theta_j\tau}}"
-            mathTex += r"{(e^{\theta_j\tau}-1)^2}"
-            mathTex += r"+\sum l_k\left(\frac{\phi_k\tau}"
-            mathTex += r"{\sinh(\phi_k\tau)}\right)^2"
-            mathTex += r"+\sum l_k\left(\frac{\phi_k\tau}"
-            mathTex += r"{\cosh(\phi_k\tau)}\right)^2$"
+            mathTex = r"$\alpha^o=\ln\delta + c_o\ln\tau + \sum c_i\tau^{n_i} "
+            mathTex += r"+ \sum_j m_j \ln (1-e^{-\theta_j\tau}) + "
+            mathTex += r"\sum_k l_k\ln|\sinh(\psi_k\tau)| - "
+            mathTex += r"\sum l_k\ln|\cosh(\psi_k\tau)|$"
             label = QLabelMath(mathTex)
             gridLayout_Ideal.addWidget(label, 1, 1, 1, 3)
             self.Tabla_Cp_poly = Tabla(
@@ -1419,6 +1457,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             gridLayout_Ideal.addWidget(self.Tabla_Cp_hyp, 2, 3)
 
         else:
+            # Phi0 form
             tab1 = QtWidgets.QWidget()
             tabWidget.addTab(
                 tab1, QtWidgets.QApplication.translate("pychemqt", "Cp"))
@@ -1551,28 +1590,42 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
         format = {"format": 1, "total": 5}
 
         if "ao_log" in eq["cp"]:
+            # Phi_o term
             self.Tabla_Cp_poly.setColumn(
                 0, eq["cp"]["ao_pow"], **format)
             self.Tabla_Cp_poly.setColumn(1, eq["cp"]["pow"], **format)
             self.Tabla_Cp_poly.resizeColumnsToContents()
-            self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
-            self.Tabla_Cp_exp.setColumn(1, eq["cp"]["titao"], **format)
-            self.Tabla_Cp_exp.resizeColumnsToContents()
+            if "ao_exp" in eq["cp"]:
+                self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
+                self.Tabla_Cp_exp.setColumn(1, eq["cp"]["titao"], **format)
+                self.Tabla_Cp_exp.resizeColumnsToContents()
             if "hyp" in eq["cp"]:
                 self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
                 self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
                 self.Tabla_Cp_hyp.resizeColumnsToContents()
         else:
-            self.Tabla_Cp_poly.setColumn(
-                0, [eq["cp"]["ao"]] + eq["cp"]["an"], **format)
-            self.Tabla_Cp_poly.setColumn(1, [0]+eq["cp"]["pow"], **format)
-            self.Tabla_Cp_poly.resizeColumnsToContents()
-            self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
-            self.Tabla_Cp_exp.setColumn(1, eq["cp"]["exp"], **format)
-            self.Tabla_Cp_exp.resizeColumnsToContents()
-            self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
-            self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
-            self.Tabla_Cp_hyp.resizeColumnsToContents()
+            # Cp term
+            an = eq["cp"].get("an", [])
+            t = eq["cp"].get("pow", [])
+            ao = eq["cp"].get("ao", 0)
+            if ao:
+                an.insert(0, ao)
+                t.insert(0, 0)
+
+            if an:
+                self.Tabla_Cp_poly.setColumn(0, an, **format)
+                self.Tabla_Cp_poly.setColumn(1, t, **format)
+                self.Tabla_Cp_poly.resizeColumnsToContents()
+
+            if "ao_exp" in eq["cp"]:
+                self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
+                self.Tabla_Cp_exp.setColumn(1, eq["cp"]["exp"], **format)
+                self.Tabla_Cp_exp.resizeColumnsToContents()
+
+            if "hyp" in eq["cp"]:
+                self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
+                self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
+                self.Tabla_Cp_hyp.resizeColumnsToContents()
 
         if eq["__type__"] == "Helmholtz":
             if eq.get("nr1", []):
@@ -2621,19 +2674,17 @@ def _getData(fluid, keys, phase=True, unit=None, table=True):
         table: boolean if the values are for a table, the none values are repr
             as text msg
     """
-    # Define the undefined values
-    if table:
-        undef = QtWidgets.QApplication.translate("pychemqt", "undefined")
-    else:
-        undef = None
-
+    print(keys)
+    print(phase)
+    print(unit)
+    print(table)
     fila = []
     for i, key in enumerate(keys):
         if not key:
             continue
         p = fluid.__getattribute__(key)
-        if p is None:
-            txt = undef
+        if isinstance(p, str):
+            txt = p
         else:
             if unit and unit[i]:
                 txt = p.__getattribute__(unit[i])
@@ -2645,8 +2696,8 @@ def _getData(fluid, keys, phase=True, unit=None, table=True):
         if phase and key in ThermoAdvanced.propertiesPhase():
             # Liquid
             p = fluid.Liquido.__getattribute__(key)
-            if p is None:
-                txt = undef
+            if isinstance(p, str):
+                txt = p
             elif isinstance(p, unidades.unidad):
                 if unit and unit[i]:
                     txt = p.__getattribute__(unit[i])
@@ -2657,8 +2708,8 @@ def _getData(fluid, keys, phase=True, unit=None, table=True):
             fila.append(txt)
             # Gas
             p = fluid.Gas.__getattribute__(key)
-            if p is None:
-                txt = undef
+            if isinstance(p, str):
+                txt = p
             elif isinstance(p, unidades.unidad):
                 if unit and unit[i]:
                     txt = p.__getattribute__(unit[i])
@@ -2819,8 +2870,8 @@ class TablaMEoS(Tabla):
         plot = self._getPlot()
         if plot:
             data = plot._getData()
-            pref = QtWidgets.QApplication.translate("pychemqt", "Table from ")
-            title = self.windowTitle().split(pref)[1]
+            pref = QtWidgets.QApplication.translate("pychemqt", "Table from")
+            title = self.windowTitle().split(pref)[1][1:]
             for row in rows:
                 if title == QtWidgets.QApplication.translate(
                         "pychemqt", "Melting Line"):
@@ -3010,6 +3061,8 @@ class TablaMEoS(Tabla):
         else:
             data = float(self.item(row, column).text())
             value = unit(data, unit.__units__[self.orderUnit[column]])
+        print(key, value)
+        print(self.Point)
         self.Point(**{key: value})
 
         # If the Point is calculated, get data
@@ -3065,7 +3118,7 @@ class TablaMEoS(Tabla):
         # Set calculate point readOnly
         if not self.readOnly:
             flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-            color = self.parent.Preferences.get("General", 'Color_ReadOnly')
+            color = config.Preferences.get("General", 'Color_ReadOnly')
             for i, bool in enumerate(self.columnReadOnly):
                 if not bool:
                     self.item(row, i).setFlags(flags)
@@ -3172,11 +3225,13 @@ class TablaMEoS(Tabla):
         data["data"] = self.data
 
     @classmethod
-    def readFromJSON(self, data, parent):
+    def readFromJSON(cls, data, parent):
         """Load data table from saved file"""
 
         # Get units
         all = unidades._all
+        for i, u in enumerate(all):
+            print(i, u)
         all.append(unidades.Dimensionless)
         units = [all[i] for i in data["unit"]]
 
@@ -3651,7 +3706,7 @@ class PlotMEoS(QtWidgets.QWidget):
         self.gridToggleAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Toggle &Grid"),
             self.grid, checkable=True, parent=self)
-        grid = self.parent.Preferences.getboolean("MEOS", "grid")
+        grid = config.Preferences.getboolean("MEOS", "grid")
         self.gridToggleAction.setChecked(grid)
 
         if dim == 2:
@@ -3755,6 +3810,7 @@ class PlotMEoS(QtWidgets.QWidget):
     def click(self, event):
         """Update input and graph annotate when mouse click over chart"""
         # Accept only left click
+        print(event, self.x, self.y)
         if event.button != 1:
             return
         units = {"x": unidades.Dimensionless,
@@ -3771,11 +3827,12 @@ class PlotMEoS(QtWidgets.QWidget):
 
             fluid = mEoS.__all__[self.config["fluid"]]
             kwargs = {self.x: x, self.y: y}
+            print(fluid, self.config, kwargs)
             fluido = calcPoint(fluid, self.config, **kwargs)
             if fluido and fluido.status and \
                     fluido._constants["Tmin"] <= fluido.T and \
                     fluido.T <= fluido._constants["Tmax"] and \
-                    fluido._constants["Pmin"] <= fluido.P.kPa and \
+                    0 < fluido.P.kPa and \
                     fluido.P.kPa <= fluido._constants["Pmax"]:
                 self.plot.lx.set_ydata(event.ydata)
                 self.plot.ly.set_xdata(event.xdata)
@@ -3803,58 +3860,139 @@ class PlotMEoS(QtWidgets.QWidget):
             anotation.remove()
         self.plot.draw()
 
-    def writeToStream(self, stream):
-        """Dump plot to project file"""
-        stream.writeString(self.filename)
-        stream.writeString(self.windowTitle())
-        stream.writeString(self.x)
-        stream.writeString(self.y)
-        stream.writeString(self.z)
+    def writeToJSON(self, data):
+        """Write instance parameter to file"""
+        data["filename"] = self.filename
+        data["windowTitle"] = self.windowTitle()
+        data["x"] = self.x
+        data["y"] = self.y
+        data["z"] = self.z
 
         # TODO: Add support for save font properties
-        stream.writeQString(self.plot.ax.get_title())
-        stream.writeString(self.plot.ax.title.get_color())
-        stream.writeQString(QtCore.QString(self.plot.ax.get_xlabel()))
-        stream.writeString(self.plot.ax.xaxis.get_label().get_color())
-        stream.writeQString(QtCore.QString(self.plot.ax.get_ylabel()))
-        stream.writeString(self.plot.ax.yaxis.get_label().get_color())
+        # Title format
+        title = {}
+        title["txt"] = self.plot.ax.get_title()
+        title["color"] = self.plot.ax.title.get_color()
+        title["family"] = self.plot.ax.title.get_fontfamily()
+        title["style"] = self.plot.ax.title.get_style()
+        title["weight"] = self.plot.ax.title.get_weight()
+        title["stretch"] = self.plot.ax.title.get_stretch()
+        title["size"] = self.plot.ax.title.get_size()
+        data["title"] = title
+
+        # xlabel format
+        xlabel = {}
+        xlabel["txt"] = self.plot.ax.get_xlabel()
+        xlabel["color"] = self.plot.ax.xaxis.get_label().get_color()
+        xlabel["family"] = self.plot.ax.xaxis.get_label().get_fontfamily()
+        xlabel["style"] = self.plot.ax.xaxis.get_label().get_style()
+        xlabel["weight"] = self.plot.ax.xaxis.get_label().get_weight()
+        xlabel["stretch"] = self.plot.ax.xaxis.get_label().get_stretch()
+        xlabel["size"] = self.plot.ax.xaxis.get_label().get_size()
+        data["xlabel"] = xlabel
+
+        # ylable format
+        ylabel = {}
+        ylabel["txt"] = self.plot.ax.get_ylabel()
+        ylabel["color"] = self.plot.ax.yaxis.get_label().get_color()
+        ylabel["family"] = self.plot.ax.yaxis.get_label().get_fontfamily()
+        ylabel["style"] = self.plot.ax.yaxis.get_label().get_style()
+        ylabel["weight"] = self.plot.ax.yaxis.get_label().get_weight()
+        ylabel["stretch"] = self.plot.ax.yaxis.get_label().get_stretch()
+        ylabel["size"] = self.plot.ax.yaxis.get_label().get_size()
+        data["ylabel"] = ylabel
+
+        # zlable format
+        zlabel = {}
         if self.z:
-            stream.writeQString(QtCore.QString(self.plot.ax.get_zlabel()))
-            stream.writeString(self.plot.ax.zaxis.get_label().get_color())
-        stream.writeBool(self.plot.ax._gridOn)
-        stream.writeString(self.plot.ax.get_xscale())
-        stream.writeString(self.plot.ax.get_yscale())
+            zlabel["txt"] = self.plot.ax.get_zlabel()
+            zlabel["color"] = self.plot.ax.zaxis.get_label().get_color()
+            zlabel["family"] = self.plot.ax.zaxis.get_label().get_fontfamily()
+            zlabel["style"] = self.plot.ax.zaxis.get_label().get_style()
+            zlabel["weight"] = self.plot.ax.zaxis.get_label().get_weight()
+            zlabel["stretch"] = self.plot.ax.zaxis.get_label().get_stretch()
+            zlabel["size"] = self.plot.ax.zaxis.get_label().get_size()
+        data["zlabel"] = zlabel
+
+        data["grid"] = self.plot.ax._gridOn
+        data["xscale"] = self.plot.ax.get_xscale()
+        data["yscale"] = self.plot.ax.get_yscale()
         xmin, xmax = self.plot.ax.get_xlim()
-        stream.writeFloat(xmin)
-        stream.writeFloat(xmax)
+        data["xmin"] = xmin
+        data["xmax"] = xmax
         ymin, ymax = self.plot.ax.get_ylim()
-        stream.writeFloat(ymin)
-        stream.writeFloat(ymax)
+        data["ymin"] = ymin
+        data["ymax"] = ymax
         if self.z:
             zmin, zmax = self.plot.ax.get_zlim()
-            stream.writeFloat(zmin)
-            stream.writeFloat(zmax)
+            data["zmin"] = zmin
+            data["zmax"] = zmax
+        else:
+            data["zmin"] = None
+            data["zmax"] = None
 
-        # Margins
-        stream.writeFloat(self.plot.fig.subplotpars.left)
-        stream.writeFloat(self.plot.fig.subplotpars.bottom)
-        stream.writeFloat(self.plot.fig.subplotpars.right)
-        stream.writeFloat(self.plot.fig.subplotpars.top)
+        data["marginleft"] = self.plot.fig.subplotpars.left
+        data["marginbottom"] = self.plot.fig.subplotpars.bottom
+        data["marginright"] = self.plot.fig.subplotpars.right
+        data["margintop"] = self.plot.fig.subplotpars.top
 
         # Config
-        stream.writeInt32(self.config["fluid"])
-        stream.writeInt32(self.config["eq"])
-        stream.writeInt32(self.config["visco"])
-        stream.writeInt32(self.config["thermal"])
+        data["fluid"] = self.config["fluid"]
+        data["eq"] = self.config["eq"]
+        data["visco"] = self.config["visco"]
+        data["thermal"] = self.config["thermal"]
+
+        # data
+        lines = {}
+        for line in self.plot.ax.lines[2:]:
+            dat = {}
+            dat["x"] = list(line.get_xdata())
+            dat["y"] = list(line.get_ydata())
+            dat["label"] = line.get_label()
+
+            # line style
+            dat["lw"] = line.get_lw()
+            dat["ls"] = line.get_ls()
+            dat["marker"] = line.get_marker()
+            dat["color"] = line.get_color()
+            dat["ms"] = line.get_ms()
+            dat["mfc"] = line.get_mfc()
+            dat["mew"] = line.get_mew()
+            dat["mec"] = line.get_mec()
+            dat["visible"] = line.get_visible()
+            dat["antialiased"] = line.get_antialiased()
+
+            # line text
+            # saturation and melting line dont define it at plot creation
+            try:
+                text = {}
+                text["visible"] = line.text.get_visible()
+                text["txt"] = line.text.get_text()
+                text["rot"] = line.text.get_rotation()
+                text["pos"] = line.text.pos
+                text["family"] = line.text.get_fontfamily()
+                text["style"] = line.text.get_style()
+                text["weight"] = line.text.get_weight()
+                text["stretch"] = line.text.get_stretch()
+                text["size"] = line.text.get_size()
+                text["va"] = line.text.get_va()
+            except AttributeError:
+                text = {"visible": False, "txt": "", "pos": 50, "rot": 0,
+                        "family": "sans-serif", "style": "normal",
+                        "weight": "normal", "stretch": "normal",
+                        "size": "small", "va": "center"}
+            dat["annotation"] = text
+
+            lines[line._label] = dat
+        data["lines"] = lines
 
     @classmethod
-    def readFromStream(cls, stream, parent):
-        """Procedure to load from project file"""
-        filename = stream.readString().decode("utf-8")
-        title = stream.readString().decode("utf-8")
-        x = stream.readString().decode("utf-8")
-        y = stream.readString().decode("utf-8")
-        z = stream.readString().decode("utf-8")
+    def readFromJSON(cls, data, parent):
+        filename = data["filename"]
+        title = data["windowTitle"]
+        x = data["x"]
+        y = data["y"]
+        z = data["z"]
         if z:
             dim = 3
         else:
@@ -3865,77 +4003,112 @@ class PlotMEoS(QtWidgets.QWidget):
         grafico.z = z
         grafico.setWindowTitle(title)
 
-        xtxt = "%s, %s" % (x, meos.units[meos.keys.index(x)].text())
-        ytxt = "%s, %s" % (y, meos.units[meos.keys.index(y)].text())
-        grafico.plot.ax.set_xlabel(xtxt)
-        grafico.plot.ax.set_ylabel(ytxt)
-        if z:
-            ztxt = "%s, %s" % (z, meos.units[meos.keys.index(z)].text())
-            grafico.plot.ax.set_zlabel(ztxt)
+        title = data["title"]["txt"]
+        if title:
+            grafico.plot.ax.set_title(title)
+            grafico.plot.ax.title.set_color(data["title"]["color"])
+            grafico.plot.ax.title.set_family(data["title"]["family"])
+            grafico.plot.ax.title.set_style(data["title"]["style"])
+            grafico.plot.ax.title.set_weight(data["title"]["weight"])
+            grafico.plot.ax.title.set_stretch(data["title"]["stretch"])
+            grafico.plot.ax.title.set_size(data["title"]["size"])
 
-        plotTitle = stream.readQString()
-        if plotTitle:
-            grafico.plot.ax.set_title(str(plotTitle))
-        titleColor = stream.readString().decode("utf-8")
-        grafico.plot.ax.title.set_color(titleColor)
-        xlabel = stream.readQString()
+        xlabel = data["xlabel"]["txt"]
         if xlabel:
-            grafico.plot.ax.set_xlabel(str(xlabel))
-        xlabelColor = stream.readString().decode("utf-8")
-        grafico.plot.ax.xaxis.get_label().set_color(xlabelColor)
-        ylabel = stream.readQString()
+            grafico.plot.ax.set_xlabel(xlabel)
+            label = grafico.plot.ax.xaxis.get_label()
+            label.set_color(data["xlabel"]["color"])
+            label.set_family(data["xlabel"]["family"])
+            label.set_style(data["xlabel"]["style"])
+            label.set_weight(data["xlabel"]["weight"])
+            label.set_stretch(data["xlabel"]["stretch"])
+            label.set_size(data["xlabel"]["size"])
+
+        ylabel = data["ylabel"]["txt"]
         if ylabel:
-            grafico.plot.ax.set_ylabel(str(ylabel))
-        ylabelColor = stream.readString().decode("utf-8")
-        grafico.plot.ax.yaxis.get_label().set_color(ylabelColor)
+            grafico.plot.ax.set_ylabel(ylabel)
+            label = grafico.plot.ax.yaxis.get_label()
+            label.set_color(data["ylabel"]["color"])
+            label.set_family(data["ylabel"]["family"])
+            label.set_style(data["ylabel"]["style"])
+            label.set_weight(data["ylabel"]["weight"])
+            label.set_stretch(data["ylabel"]["stretch"])
+            label.set_size(data["ylabel"]["size"])
+
         if z:
-            zlabel = stream.readQString()
+            zlabel = data["zlabel"]["txt"]
             if zlabel:
-                grafico.plot.ax.set_zlabel(str(zlabel))
-            zlabelColor = stream.readString().decode("utf-8")
-            grafico.plot.ax.zaxis.get_label().set_color(zlabelColor)
+                grafico.plot.ax.set_zlabel(zlabel)
+                label = grafico.plot.ax.zaxis.get_label()
+                label.set_color(data["zlabel"]["color"])
+                label.set_family(data["zlabel"]["family"])
+                label.set_style(data["zlabel"]["style"])
+                label.set_weight(data["zlabel"]["weight"])
+                label.set_stretch(data["zlabel"]["stretch"])
+                label.set_size(data["zlabel"]["size"])
 
-        grid = stream.readBool()
-        grafico.plot.ax._gridOn = grid
-        grafico.plot.ax.grid(grid)
-        xscale = stream.readString().decode("utf-8")
-        yscale = stream.readString().decode("utf-8")
+        grafico.plot.ax._gridOn = data["grid"]
+        grafico.plot.ax.grid(data["grid"])
 
-        xmin = stream.readFloat()
-        xmax = stream.readFloat()
-        grafico.plot.ax.set_xlim(xmin, xmax)
-        ymin = stream.readFloat()
-        ymax = stream.readFloat()
-        grafico.plot.ax.set_ylim(ymin, ymax)
+        grafico.plot.ax.set_xlim(data["xmin"], data["xmax"])
+        grafico.plot.ax.set_ylim(data["ymin"], data["ymax"])
         if z:
-            zmin = stream.readFloat()
-            zmax = stream.readFloat()
-            grafico.plot.ax.set_zlim(zmin, zmax)
+            grafico.plot.ax.set_zlim(data["zmin"], data["zmax"])
 
-        data = grafico._getData()
-        if z:
-            plot2D3D(grafico, data, parent.Preferences, x, y, z)
-        else:
-            plot2D3D(grafico, data, parent.Preferences, x, y)
+        for label, line in data["lines"].items():
+            x = line["x"]
+            y = line["y"]
 
-        if xscale:
-            grafico.plot.ax.set_xscale(xscale)
-        if yscale:
-            grafico.plot.ax.set_yscale(yscale)
+            format = {}
+            format["lw"] = line["lw"]
+            format["ls"] = line["ls"]
+            format["marker"] = line["marker"]
+            format["color"] = line["color"]
+            format["ms"] = line["ms"]
+            format["mfc"] = line["mfc"]
+            format["mew"] = line["mew"]
+            format["mec"] = line["mec"]
+
+            ln, = grafico.plot.ax.plot(x, y, label=label, **format)
+            ln.set_visible(line["visible"])
+            ln.set_antialiased(line["antialiased"])
+
+            txt = line["annotation"]["txt"]
+            rot = line["annotation"]["rot"]
+            pos = line["annotation"]["pos"]
+            i = int(len(x)*pos/100)
+            kw = {}
+            kw["ha"] = "center"
+            kw["rotation_mode"] = "anchor"
+            for key in ("va", "visible", "family", "style", "weight",
+                        "stretch", "size"):
+                kw[key] = line["annotation"][key]
+
+            if i >= len(x):
+                i = len(x)-1
+            text = grafico.plot.ax.text(x[i], y[i], txt, rotation=rot, **kw)
+
+            # We creating a link between line and its annotation text
+            ln.text = text
+            # We save position value in % unit to avoid index find
+            ln.text.pos = pos
+
+        grafico.plot.ax.set_xscale(data["xscale"])
+        grafico.plot.ax.set_yscale(data["yscale"])
 
         # Load margins
-        left = stream.readFloat()
-        bottom = stream.readFloat()
-        right = stream.readFloat()
-        top = stream.readFloat()
+        left = data["marginleft"]
+        bottom = data["marginbottom"]
+        right = data["marginright"]
+        top = data["margintop"]
         grafico.plot.fig.subplots_adjust(left, bottom, right, top)
 
         # Load config
         conf = {}
-        conf["fluid"] = stream.readInt32()
-        conf["eq"] = stream.readInt32()
-        conf["visco"] = stream.readInt32()
-        conf["thermal"] = stream.readInt32()
+        conf["fluid"] = data["fluid"]
+        conf["eq"] = data["eq"]
+        conf["visco"] = data["visco"]
+        conf["thermal"] = data["thermal"]
         grafico.config = conf
 
         return grafico
@@ -4084,7 +4257,7 @@ class Plot3D(QtWidgets.QDialog):
 
 
 class EditPlot(QtWidgets.QWidget):
-    """Dialog to edit plot"""
+    """Dialog to edit plot. This dialog let user change plot p"""
     def __init__(self, plotMEoS, mainwindow, parent=None):
         super(EditPlot, self).__init__(parent)
         self.setWindowTitle(
@@ -4152,15 +4325,89 @@ class EditPlot(QtWidgets.QWidget):
         self.markeredgecolor = ColorSelector()
         layout.addWidget(self.markeredgecolor, 7, 3)
 
+        grpAnnotate = QtWidgets.QGroupBox(
+            QtWidgets.QApplication.translate("pychemqt", "Annotation"))
+        layout.addWidget(grpAnnotate, 8, 1, 1, 3)
+        lytAnnotation = QtWidgets.QGridLayout(grpAnnotate)
+        self.annotationVisible = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "Visible"))
+        lytAnnotation.addWidget(self.annotationVisible, 1, 1, 1, 3)
+
+        lytTitle = QtWidgets.QHBoxLayout()
+        label = QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Label"))
+        lytTitle.addWidget(label)
+        # self.annotationLabel = QtWidgets.QLineEdit()
+        self.annotationLabel = InputFont()
+        lytTitle.addWidget(self.annotationLabel)
+        lytAnnotation.addLayout(lytTitle, 2, 1, 1, 3)
+
+        lytPosition = QtWidgets.QHBoxLayout()
+        lytPosition.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Location")))
+        self.labelAnnotationPos = Entrada_con_unidades(
+            int, value=50, width=40, frame=False, readOnly=True, suffix="%",
+            showNull=True)
+        self.labelAnnotationPos.setFixedWidth(40)
+        lytPosition.addWidget(self.labelAnnotationPos)
+        self.annotationPos = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.annotationPos.setRange(0, 100)
+        self.annotationPos.setValue(50)
+        self.annotationPos.valueChanged.connect(
+            partial(self._updateLabel, self.labelAnnotationPos))
+        lytPosition.addWidget(self.annotationPos)
+        lytAnnotation.addLayout(lytPosition, 3, 1, 1, 3)
+
+        lytAngle = QtWidgets.QHBoxLayout()
+        lytAngle.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Rotation")))
+        self.labelAnnotationRot = Entrada_con_unidades(
+            int, value=50, width=40, frame=False, readOnly=True, suffix="º",
+            showNull=True)
+        self.labelAnnotationRot.setFixedWidth(40)
+        lytAngle.addWidget(self.labelAnnotationRot)
+        self.annotationRot = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.annotationRot.setRange(0, 360)
+        self.annotationRot.setValue(0)
+        self.annotationRot.valueChanged.connect(
+            partial(self._updateLabel, self.labelAnnotationRot))
+        lytAngle.addWidget(self.annotationRot)
+        lytAnnotation.addLayout(lytAngle, 4, 1, 1, 3)
+
+        lytVA = QtWidgets.QHBoxLayout()
+        lytVA.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Aligment")))
+        self.annotationVA = QtWidgets.QComboBox()
+        alignment = [
+            QtWidgets.QApplication.translate("pychemqt", "Center"),
+            QtWidgets.QApplication.translate("pychemqt", "Top"),
+            QtWidgets.QApplication.translate("pychemqt", "Bottom"),
+            QtWidgets.QApplication.translate("pychemqt", "Baseline"),
+            QtWidgets.QApplication.translate("pychemqt", "Center baseline")]
+        for alig in alignment:
+            self.annotationVA.addItem(alig)
+        lytVA.addWidget(self.annotationVA)
+        lytVA.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding))
+        lytAnnotation.addLayout(lytVA, 5, 1, 1, 3)
+
+        self.annotationVisible.stateChanged.connect(
+            self.annotationLabel.setEnabled)
+        self.annotationVisible.stateChanged.connect(
+            self.annotationPos.setEnabled)
+        self.annotationVisible.stateChanged.connect(
+            self.annotationRot.setEnabled)
+
         self.visible = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Visible"))
-        layout.addWidget(self.visible, 8, 1, 1, 3)
+        layout.addWidget(self.visible, 13, 1, 1, 3)
         self.antialiases = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Antialiases"))
-        layout.addWidget(self.antialiases, 9, 1, 1, 3)
+        layout.addWidget(self.antialiases, 14, 1, 1, 3)
 
         layoutButton = QtWidgets.QHBoxLayout()
-        layout.addLayout(layoutButton, 10, 1, 1, 3)
+        layout.addLayout(layoutButton, 15, 1, 1, 3)
         self.botonAdd = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"] + "/images/button/add.png")), "")
         self.botonAdd.clicked.connect(self.add)
@@ -4199,7 +4446,25 @@ class EditPlot(QtWidgets.QWidget):
         self.visible.toggled.connect(partial(self.changeValue, "visible"))
         self.antialiases.toggled.connect(
             partial(self.changeValue, "antialiases"))
+
+        self.annotationVisible.toggled.connect(
+            partial(self.changeValue, "textVisible"))
+        self.annotationLabel.textChanged.connect(
+            partial(self.changeValue, "textLabel"))
+        self.annotationLabel.colorChanged.connect(
+                partial(self.changeValue, "textcolor"))
+        self.annotationLabel.fontChanged.connect(
+            partial(self.changeValue, "textfont"))
+        self.annotationPos.valueChanged.connect(
+            partial(self.changeValue, "textPos"))
+        self.annotationRot.valueChanged.connect(
+            partial(self.changeValue, "textRot"))
+        self.annotationVA.currentIndexChanged.connect(
+            partial(self.changeValue, "textVA"))
         self.lista.setCurrentRow(0)
+
+    def _updateLabel(self, label, value):
+        label.setValue(value)
 
     def update(self, i):
         """Fill format widget with value of selected line"""
@@ -4217,6 +4482,16 @@ class EditPlot(QtWidgets.QWidget):
         self.visible.setChecked(linea.get_visible())
         self.antialiases.setChecked(linea.get_antialiased())
 
+        try:
+            self.annotationVisible.setChecked(linea.text.get_visible())
+            self.annotationLabel.setText(linea.text.get_text())
+            self.annotationPos.setValue(linea.text.pos)
+            self.annotationRot.setValue(linea.text.get_rotation())
+            va = ["center", "top", "bottom", "baseline", "center_baseline"]
+            self.annotationVA.setCurrentIndex(va.index(linea.text.get_va()))
+        except AttributeError:
+            self.annotationVisible.setChecked(False)
+
     def changeValue(self, key, value):
         """Update plot data"""
         linea = self.fig.ax.lines[self.lista.currentRow()+2]
@@ -4230,8 +4505,29 @@ class EditPlot(QtWidgets.QWidget):
                 "mew": linea.set_mew,
                 "mec": linea.set_mec,
                 "visible": linea.set_visible,
-                "antialiases": linea.set_antialiased}
-        if key in ("ls", "marker", "color", "mfc", "mec"):
+                "antialiases": linea.set_antialiased,
+                "textVisible": linea.text.set_visible,
+                "textLabel": linea.text.set_text,
+                "textcolor": linea.text.set_color,
+                "textfont": linea.text.set_fontproperties,
+                "textPos": linea.text.set_position,
+                "textRot": linea.text.set_rotation,
+                "textVA": linea.text.set_va}
+
+        if key == "textPos":
+            linea.text.pos = value
+            xi = linea.get_xdata()
+            yi = linea.get_ydata()
+            i = int(len(xi)*value/100)
+            if i >= len(xi):
+                i = len(yi)-1
+            value = xi[i], yi[i]
+        elif key == "textVA":
+            va = ["center", "top", "bottom", "baseline", "center_baseline"]
+            value = va[value]
+        elif key == "textfont":
+            value = convertFont(value)
+        elif key in ("ls", "marker", "color", "mfc", "mec"):
             value = str(value)
         func[key](value)
         if key == "label":
@@ -4243,9 +4539,10 @@ class EditPlot(QtWidgets.QWidget):
         """Add a isoline to plot"""
         dialog = AddLine()
         if dialog.exec_():
-            points = get_points(self.mainwindow.Preferences)
+            points = get_points(config.Preferences)
             self.mainwindow.progressBar.setVisible(True)
             index = self.mainwindow.currentConfig.getint("MEoS", "fluid")
+            # fluid = getClassFluid(self.config)
             fluid = mEoS.__all__[index]
             prop = dialog.tipo.currentIndex()
             value = dialog.input[prop].value
@@ -4258,7 +4555,8 @@ class EditPlot(QtWidgets.QWidget):
                 linspace(fluid.Tc, 1.01*fluid.Tc, points),
                 linspace(1.01*fluid.Tc, 1.1*fluid.Tc, points),
                 linspace(1.1*fluid.Tc, eq["Tmax"], points)]))
-            Pmin = eq["Pmin"]*1000
+
+            Pmin = fluid(T=eq["Tmin"], x=0).P
             Pmax = eq["Pmax"]*1000
             P = list(concatenate([
                 logspace(log10(Pmin), log10(0.9*fluid.Pc), points),
@@ -4355,13 +4653,17 @@ class EditPlot(QtWidgets.QWidget):
                 dat_propiedad = []
                 for fluido in fluidos:
                     num = fluido.__getattribute__(x)
-                    if num is not None:
+                    if isinstance(num, str):
+                        dat_propiedad.append(num)
+                    elif x in ("f", "fi"):
+                        dat_propiedad.append(num[0])
+                    elif num is not None:
                         dat_propiedad.append(num._data)
                     else:
                         dat_propiedad.append(None)
                 line[value][x] = dat_propiedad
 
-            style = getLineFormat(self.mainwindow.Preferences, name)
+            style = getLineFormat(config.Preferences, name)
             functionx = _getunitTransform(self.plotMEoS.x)
             functiony = _getunitTransform(self.plotMEoS.y)
             functionz = _getunitTransform(self.plotMEoS.z)
@@ -4389,7 +4691,7 @@ class EditPlot(QtWidgets.QWidget):
 
         # Remove data from file
         data = self.plotMEoS._getData()
-        txt = str(self.lista.currentItem().text()).split()
+        txt = self.lista.currentItem().text().split()
         var = txt[0]
         units = {"T": unidades.Temperature,
                  "P": unidades.Pressure,
@@ -4605,7 +4907,7 @@ class EditAxis(QtWidgets.QDialog):
         if key in ("titlecolor", "xlabelcolor", "ylabelcolor"):
             value = str(value)
         if key in ("titlefont", "xlabelfont", "ylabelfont"):
-            value = self.convertFont(value)
+            value = convertFont(value)
 
         if key in ("xmin", "xmax"):
             xmin = self.axisX.min.value
@@ -4623,16 +4925,39 @@ class EditAxis(QtWidgets.QDialog):
             f[key](value)
         self.fig.draw()
 
-    def convertFont(self, font):
-        """Convert QFont to FontProperties to use in matplotlib"""
-        family = str(font.family())
-        if str(font.style()) in ("normal", "italic", "oblique"):
-            style = str(font.style())
-        else:
-            style = None
-        font = FontProperties(family, style, None, font.stretch(),
-                              font.weight(), font.pointSize())
-        return font
+
+def convertFont(qfont):
+    """Convert qt QFont class properties to FontProperties to use in
+    matplotlib
+
+    Parameters
+    ----------
+    qfont : QFont
+        QFont with properties to extract
+
+    Returns
+    -------
+    font : FontProperties
+        FontProperties instance to use in any matplotlib text instance
+    """
+    family = str(qfont.family())
+
+    # Matplotlib use 0-1000 scale, qt only 0-100 scale
+    weight = 10*qfont.weight()
+
+    if qfont.style() == 0:
+        style = "normal"
+    elif qfont.style() == 1:
+        style = "italic"
+    elif qfont.style() == 2:
+        style = "oblique"
+    else:
+        style = None
+    print(family, style, qfont.stretch(), weight, qfont.pointSize())
+    font = FontProperties(family, style, None, qfont.stretch(),
+                          weight, qfont.pointSize())
+
+    return font
 
 
 class AxisWidget(QtWidgets.QGroupBox):
@@ -4676,30 +5001,30 @@ def calcIsoline(f, config, var, fix, vvar, vfix, ini, step, end, total, bar):
 
             fluidos.append(fluido)
             # FIXME: Fix added point order
-#            if var in ("T", "P") and fix in ("T", "P"):
-#                if fase is None:
-#                    fase = fluido.x
-#                if fase != fluido.x and fase <= 0:
-#                    if fluido.P < f.Pc and fluido.T < f.Tc:
-#                        fluido_x0 = calcPoint(f, config, **{fix: vfix, "x": 0.})
-#                        fluidos.insert(-1, fluido_x0)
-#                elif fase != fluido.x and fase >= 1:
-#                    if fluido.P < f.Pc and fluido.T < f.Tc:
-#                        fluido_x1 = calcPoint(f, config, **{fix: vfix, "x": 1.})
-#                        fluidos.insert(-1, fluido_x1)
-#                if fase != fluido.x and fluido.x >= 1:
-#                    if fluido.P < f.Pc and fluido.T < f.Tc:
-#                        fluido_x1 = calcPoint(f, config, **{fix: vfix, "x": 1.})
-#                        fluidos.insert(-1, fluido_x1)
-##                        rhoo = fluido_x1.rho
-##                        To = fluido_x1.T
-#                elif fase != fluido.x and fluido.x <= 0:
-#                    if fluido.P < f.Pc and fluido.T < f.Tc:
-#                        fluido_x0 = calcPoint(f, config, **{fix: vfix, "x": 0.})
-#                        fluidos.insert(-1, fluido_x0)
-##                        rhoo = fluido_x0.rho
-##                        To = fluido_x0.T
-#                fase = fluido.x
+            # if var in ("T", "P") and fix in ("T", "P"):
+                # if fase is None:
+                    # fase = fluido.x
+                # if fase != fluido.x and fase <= 0:
+                    # if fluido.P < f.Pc and fluido.T < f.Tc:
+                        # fluido_x0 = calcPoint(f, config, **{fix: vfix, "x": 0.})
+                        # fluidos.insert(-1, fluido_x0)
+                # elif fase != fluido.x and fase >= 1:
+                    # if fluido.P < f.Pc and fluido.T < f.Tc:
+                        # fluido_x1 = calcPoint(f, config, **{fix: vfix, "x": 1.})
+                        # fluidos.insert(-1, fluido_x1)
+                # if fase != fluido.x and fluido.x >= 1:
+                    # if fluido.P < f.Pc and fluido.T < f.Tc:
+                        # fluido_x1 = calcPoint(f, config, **{fix: vfix, "x": 1.})
+                        # fluidos.insert(-1, fluido_x1)
+# #                        rhoo = fluido_x1.rho
+# #                        To = fluido_x1.T
+                # elif fase != fluido.x and fluido.x <= 0:
+                    # if fluido.P < f.Pc and fluido.T < f.Tc:
+                        # fluido_x0 = calcPoint(f, config, **{fix: vfix, "x": 0.})
+                        # fluidos.insert(-1, fluido_x0)
+# #                        rhoo = fluido_x0.rho
+# #                        To = fluido_x0.T
+                # fase = fluido.x
 
         bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(vvar))
         QtWidgets.QApplication.processEvents()
@@ -4726,7 +5051,7 @@ def getLineFormat(Preferences, name):
     """get matplotlib line format from preferences
         Preferences: configparser instance with pycheqmt preferences
         name: name of isoline"""
-    format = formatLine(Prefernces, "MEOS", name)
+    format = formatLine(Preferences, "MEOS", name)
 
     # Anotation
     if name != "saturation":
@@ -4748,7 +5073,7 @@ def plotIsoline(data, axis, title, unidad, grafico, transform, **format):
         grafico: PlotMEoS instance to plot data
         transform: unit transform function for use configurated units in plots
         format: any matplotlib plot kwargs
-        """
+    """
     x, y, z = axis
     fx, fy, fz = transform
     xscale = grafico.plot.ax.get_xscale()
@@ -4763,41 +5088,56 @@ def plotIsoline(data, axis, title, unidad, grafico, transform, **format):
         label = "%s =%s" % (title, unidad(key).str)
         if z:
             zi = list(map(fz, data[key][z]))
-            grafico.plot.ax.plot(xi, yi, zi, label=label, **format)
+            line, = grafico.plot.ax.plot(xi, yi, zi, label=label, **format)
         else:
-            grafico.plot.ax.plot(xi, yi, label=label, **format)
+            line, = grafico.plot.ax.plot(xi, yi, label=label, **format)
 
         # Add annotate for isolines
-        if annotate and not z:
-            if variable and unit:
-                txt = label
-            elif variable:
-                txt = "%s =%s" % (title, unidad(key).config())
-            elif unit:
-                txt = unidad(key).str
-            else:
-                txt = unidad(key).config()
+        # if annotate and not z:
+        if variable and unit:
+            txt = label
+        elif variable:
+            txt = "%s =%s" % (title, unidad(key).config())
+        elif unit:
+            txt = unidad(key).str
+        else:
+            txt = unidad(key).config()
 
-            xmin, xmax = grafico.plot.ax.get_xlim()
-            ymin, ymax = grafico.plot.ax.get_ylim()
+        xmin, xmax = grafico.plot.ax.get_xlim()
+        ymin, ymax = grafico.plot.ax.get_ylim()
 
-            i = int(len(xi)*pos/100)
-            if pos > 50:
-                j = i-10
-            else:
-                j = i+10
-            if xscale == "log":
-                fx = (log(xi[i])-log(xi[j]))/(log(xmax)-log(xmin))
-            else:
-                fx = (xi[i]-xi[j])/(xmax-xmin)
-            if yscale == "log":
-                fy = (log(yi[i])-log(yi[j]))/(log(ymax)-log(ymin))
-            else:
-                fy = (yi[i]-yi[j])/(ymax-ymin)
+        i = int(len(xi)*pos/100)
+        if i >= len(xi):
+            i = len(yi)-1
+        print(xi)
 
-            rot = atan(fy/fx)*360/2/pi
-            grafico.plot.ax.annotate(txt, (xi[i], yi[i]), rotation=rot,
-                                     size="small", ha="center", va="center")
+        if pos > 50:
+            j = i-10
+        else:
+            j = i+10
+        if xscale == "log":
+            f_x = (log(xi[i])-log(xi[j]))/(log(xmax)-log(xmin))
+        else:
+            f_x = (xi[i]-xi[j])/(xmax-xmin)
+        if yscale == "log":
+            f_y = (log(yi[i])-log(yi[j]))/(log(ymax)-log(ymin))
+        else:
+            f_y = (yi[i]-yi[j])/(ymax-ymin)
+
+        rot = atan(f_y/f_x)*360/2/pi
+
+        kw = {}
+        kw["ha"] = "center"
+        kw["va"] = "center_baseline"
+        kw["rotation_mode"] = "anchor"
+        kw["rotation"] = rot
+        kw["size"] = "small"
+        text = grafico.plot.ax.text(xi[i], yi[i], txt, **kw)
+
+        line.text = text
+        line.text.pos = pos
+        if not annotate:
+            text.set_visible(False)
 
 
 def plot2D3D(grafico, data, Preferences, x, y, z=None):
@@ -4879,7 +5219,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
         format = getLineFormat(Preferences, "Isochor")
         plotIsoline(data["v"], (x, y, z), "v", unidades.SpecificVolume,
                     grafico, transform, **format)
-        # Plot isodeensity lines
+        # Plot isodensity lines
         if "rho" in data:
             plotIsoline(data["rho"], (x, y, z), "rho", unidades.Density,
                         grafico, transform, **format)
@@ -4906,7 +5246,7 @@ def _getunitTransform(eje):
         return None
     elif eje == "T":
         index = config.getMainWindowConfig().getint("Units", "Temperature")
-        func = [None, unidades.K2C, unidades.K2R, unidades.K2F, unidades.K2Re]
+        func = [float, unidades.K2C, unidades.K2R, unidades.K2F, unidades.K2Re]
         return func[index]
     else:
         unit = meos.units[meos.keys.index(eje)]
@@ -4916,32 +5256,44 @@ def _getunitTransform(eje):
 
 def calcPoint(fluid, config, **kwargs):
     """Procedure to calculate point state and check state in P-T range of eq"""
-    if isinstance(config, dict):
-        option = config
-    else:
-        option = {}
-        option["eq"] = config.getint("MEoS", "eq")
-        option["visco"] = config.getint("MEoS", "visco")
-        option["thermal"] = config.getint("MEoS", "thermal")
-    kwargs.update(option)
-    Tmin = fluid.eq[option["eq"]]["Tmin"]
-    Tmax = fluid.eq[option["eq"]]["Tmax"]
-    Pmin = fluid.eq[option["eq"]]["Pmin"]*1000
-    Pmax = fluid.eq[option["eq"]]["Pmax"]*1000
+    method = getMethod()
+    if method == "MEOS":
+        if isinstance(config, dict):
+            option = config
+        else:
+            option = {}
+            option["eq"] = config.getint("MEoS", "eq")
+            option["visco"] = config.getint("MEoS", "visco")
+            option["thermal"] = config.getint("MEoS", "thermal")
+        kwargs.update(option)
+        Tmin = fluid.eq[option["eq"]]["Tmin"]
+        Tmax = fluid.eq[option["eq"]]["Tmax"]
+        Pmin = fluid(T=fluid.eq[option["eq"]]["Tmin"], x=0).P
+        Pmax = fluid.eq[option["eq"]]["Pmax"]*1000
+    elif method == "COOLPROP":
+        Tmin = fluid.eq["Tmin"]
+        Tmax = fluid.eq["Tmax"]
+        Pmin = fluid.eq["Pmin"]
+        Pmax = fluid.eq["Pmax"]
+    elif method == "REFPROP":
+        pass
+
     if "T" in kwargs:
         if kwargs["T"] < Tmin or kwargs["T"] > Tmax:
             return None
     if "P" in kwargs:
         if kwargs["P"] < Pmin-1 or kwargs["P"] > Pmax+1:
             return None
-    fluido = fluid(**kwargs)
+    fluido = fluid._new(**kwargs)
 
     if fluido.status not in [1, 3]:
         return None
-    if fluido._melting and fluido._melting["Tmin"] <= fluido.T\
-            <= fluido._melting["Tmax"]:
-        Pmel = fluido._Melting_Pressure(fluido.T)
-        Pmax = min(Pmax, Pmel)
+
+    if method == "MEOS":
+        if fluido._melting and fluido._melting["Tmin"] <= fluido.T\
+                <= fluido._melting["Tmax"]:
+            Pmel = fluido._Melting_Pressure(fluido.T)
+            Pmax = min(Pmax, Pmel)
 
     if fluido.P < Pmin-1 or fluido.P > Pmax+1 or fluido.T < Tmin\
             or fluido.T > Tmax:
@@ -4955,7 +5307,8 @@ if __name__ == "__main__":
 
     conf = config.getMainWindowConfig()
 
-    SteamTables = Ui_ChooseFluid()
+    # SteamTables = Ui_ChooseFluid()
+    SteamTables = Dialog_InfoFluid(mEoS.He)
     # SteamTables = AddPoint(conf)
     # SteamTables=AddLine(None)
     # SteamTables=transportDialog(mEoS.__all__[2])
