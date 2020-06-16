@@ -4193,8 +4193,8 @@ class MEoS(ThermoAdvanced):
             Pref = coef["Pref"]
             Tita = T/Tref
             suma = 0
-            if "a0" in cls._melting:
-                suma += cls._melting["a0"]
+            if "a0" in coef:
+                suma += coef["a0"]
 
             if "a1" in coef:
                 for a, t in zip(coef["a1"], coef["exp1"]):
@@ -4208,11 +4208,11 @@ class MEoS(ThermoAdvanced):
                 for a, t in zip(coef["a3"], coef["exp3"]):
                     suma += a*log(Tita)**t
 
-            if cls._sublimation["eq"] == 1:
+            if coef["eq"] == 1:
                 P = suma*Pref
-            elif cls._sublimation["eq"] == 2:
+            elif coef["eq"] == 2:
                 P = exp(suma)*Pref
-            elif cls._sublimation["eq"] == 3:
+            elif coef["eq"] == 3:
                 P = exp(Tref/T*suma)*Pref
             return unidades.Pressure(P)
         else:
