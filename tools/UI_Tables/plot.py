@@ -53,7 +53,7 @@ from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
                         MarkerCombo, ColorSelector, InputFont)
 
 # from .table import TablaMEoS
-from .lib import calcPoint
+from .library import calcPoint
 
 
 class PlotMEoS(QtWidgets.QWidget):

@@ -43,7 +43,7 @@ from UI.widgets import (Entrada_con_unidades, createAction, Status, Tabla,
                         NumericFactor)
 
 from .plot import PlotMEoS, Plot3D
-from .lib import get_propiedades, _getData, getClassFluid
+from .library import get_propiedades, _getData, getClassFluid
 
 
 # Table data

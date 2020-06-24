@@ -20,8 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###############################################################################
 # Library function for plugin
-#   - getClassFluid: Return the thermo class to calculate
 #   - getMethod: Return the thermo method name to use
+#   - getClassFluid: Return the thermo class to calculate
 #   - calcPoint: Calculate point state and check state in P-T range of eq
 #   - get_propiedades: Get the properties to show in tables
 #   - _getData: Get values of properties in fluid
@@ -39,32 +39,6 @@ KEYS = ThermoAdvanced.propertiesKey()
 UNITS = ThermoAdvanced.propertiesUnit()
 
 
-def getClassFluid(conf):
-    """Return the thermo class to calculate
-    Really return the base instance to add kwargs to calculate"""
-    pref = ConfigParser()
-    pref.read(config.conf_dir + "pychemqtrc")
-
-    if pref.getboolean("MEOS", 'coolprop') and \
-            pref.getboolean("MEOS", 'refprop'):
-        # RefProp case, the base instance with the ids kwargs to define the
-        # defined compount
-        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
-        fluid = refProp.RefProp(ids=[id])
-
-    elif pref.getboolean("MEOS", 'coolprop'):
-        # CoolProp case, the base instance with the ids kwargs to define the
-        # defined compount
-        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
-        fluid = coolProp.CoolProp(ids=[id])
-
-    else:
-        # MEOS case, the instance of specified mEoS subclass
-        fluid = mEoS.__all__[conf.getint("MEoS", "fluid")]()
-
-    return fluid
-
-
 def getMethod():
     """Return the thermo method name to use"""
     pref = ConfigParser()
@@ -78,6 +52,30 @@ def getMethod():
     else:
         txt = "MEOS"
     return txt
+
+
+def getClassFluid(conf):
+    """Return the thermo class to calculate
+    Really return the base instance to add kwargs to calculate"""
+    method = getMethod()
+
+    if method == "REFPROP":
+        # RefProp case, the base instance with the ids kwargs to define the
+        # defined compount
+        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
+        fluid = refProp.RefProp(ids=[id])
+
+    elif method == "COOLPROP":
+        # CoolProp case, the base instance with the ids kwargs to define the
+        # defined compount
+        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
+        fluid = coolProp.CoolProp(ids=[id])
+
+    else:
+        # MEOS case, the instance of specified mEoS subclass
+        fluid = mEoS.__all__[conf.getint("MEoS", "fluid")]()
+
+    return fluid
 
 
 def calcPoint(fluid, config, **kwargs):
@@ -115,15 +113,18 @@ def calcPoint(fluid, config, **kwargs):
     if fluido.status not in [1, 3]:
         return None
 
+    # Discard any point below the melting line, in solid state
     if method == "MEOS":
-        if fluido._melting and fluido._melting["Tmin"] <= fluido.T\
+        if fluido._melting and fluido._melting["Tmin"] <= fluido.T \
                 <= fluido._melting["Tmax"]:
             Pmel = fluido._Melting_Pressure(fluido.T)
             Pmax = min(Pmax, Pmel)
 
+    # Discard any point out of limit of equation
     if fluido.P < Pmin-1 or fluido.P > Pmax+1 or fluido.T < Tmin\
             or fluido.T > Tmax:
         return None
+
     return fluido
 
 
@@ -168,8 +169,16 @@ def _getData(fluid, keys, phase=True, unit=None, table=True):
         if not key:
             continue
         p = fluid.__getattribute__(key)
+
+        print(i, key, p)
+
+        if isinstance(p, list):
+            p = p[0]
+
         if isinstance(p, str):
             txt = p
+        # elif isinstance(p, list):
+            # txt = repr(p)
         else:
             if unit and unit[i]:
                 txt = p.__getattribute__(unit[i])

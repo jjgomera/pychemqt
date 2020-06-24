@@ -34,8 +34,7 @@ from lib.thermo import ThermoAdvanced
 from UI.delegate import CheckEditor
 from UI.widgets import Entrada_con_unidades
 
-
-N_PROP = len(ThermoAdvanced.properties())
+from tools.UI_Tables.library import N_PROP
 
 
 class Ui_ReferenceState(QtWidgets.QDialog):
@@ -85,11 +84,11 @@ class Ui_ReferenceState(QtWidgets.QDialog):
             10, 10, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 7, 7)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(
+        buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 8, 1, 1, 7)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        layout.addWidget(buttonBox, 8, 1, 1, 7)
 
         if config and config.has_option("MEoS", "reference"):
             self.setEnabled(False)
@@ -264,3 +263,14 @@ class Ui_Properties(QtWidgets.QDialog):
         """Check if button are enabled or disabled"""
         self.ButtonArriba.setEnabled(fila >= 1)
         self.ButtonAbajo.setEnabled(fila < self.prop.rowCount()-1)
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+
+    SteamTables = Ui_Properties()
+    # SteamTables = Ui_ReferenceState()
+
+    SteamTables.show()
+    sys.exit(app.exec_())

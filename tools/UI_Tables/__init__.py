@@ -45,7 +45,7 @@ from .chooseFluid import Ui_ChooseFluid
 from .reference import Ui_ReferenceState, Ui_Properties
 from .plot import PlotMEoS, Plot2D, Plot3D, calcIsoline, get_points, plot2D3D
 from .table import Ui_Saturation, Ui_Isoproperty, createTabla
-from .lib import getClassFluid, getMethod, calcPoint, N_PROP, KEYS, UNITS
+from .library import getClassFluid, getMethod, calcPoint, N_PROP, KEYS, UNITS
 
 
 class plugin(object):
