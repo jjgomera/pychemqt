@@ -1218,8 +1218,9 @@ class InputFont(QtWidgets.QWidget):
         layout.setSpacing(0)
 
         self.lineEdit = QtWidgets.QLineEdit()
-        self.lineEdit.setSizePolicy(
-            QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
+        self.lineEdit.setFixedHeight(24)
+        # self.lineEdit.setSizePolicy(
+            # QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         layout.addWidget(self.lineEdit)
         self.fontButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"] +

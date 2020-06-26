@@ -77,7 +77,7 @@ class H2O(MEoS):
 
     iapws = {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for water of Wagner and"
+        "__name__": u"Helmholtz equation of state for water of Wagner and "
                     u"Pruß (2002).",
         "__doi__": {"autor": u"Wagner, W., Pruß, A.",
                     "title": "The IAPWS Formulation 1995 for the Thermodynamic"

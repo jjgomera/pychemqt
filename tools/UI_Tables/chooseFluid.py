@@ -147,7 +147,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
 
                 if visible >= id:
                     break
-            # Add the element hidden above the selected one
+            # Add the hidden element above the selected one
             id += hiden
         return id
 
@@ -383,7 +383,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
         """eq: dict with equation parameter"""
         super(Widget_MEoS_Data, self).__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
-        txt = " ".join((eq["__doi__"]["autor"], eq["__doi__"]["title"],
+        txt = "; ".join((eq["__doi__"]["autor"], eq["__doi__"]["title"],
                         eq["__doi__"]["ref"]))
         ref = QtWidgets.QLabel(txt)
         ref.setWordWrap(True)
@@ -442,7 +442,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
 
         if eq["__type__"] == "Helmholtz":
             mathTex = r"$\alpha = \alpha^o+\alpha_{Pol}^r+\alpha_{Exp}^r+"
-            mathTex += r"\alpha_{GBS}^r+\alpha_{NA}^r+\alpha_{HE}^r$"
+            mathTex += r"\alpha_{GBS}^r+\alpha_{NA}^r$"
             label = QLabelMath(mathTex)
             gridLayout.addWidget(label, 2, 1)
 
@@ -511,34 +511,18 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 stretch=False, readOnly=True)
             gridLayout_NA.addWidget(self.Tabla_noanalytic, 3, 1)
 
-            # Hard Sphere tab
-            tab6 = QtWidgets.QWidget()
-            tabWidget.addTab(
-                tab6,
-                QtWidgets.QApplication.translate("pychemqt", "Hard Sphere"))
-            gridLayout_HE = QtWidgets.QGridLayout(tab6)
-            mathTex = r"$\alpha_{HE}^r=(\varphi^2-1)\ln(1-\xi)+\frac"
-            mathTex += r"{(\varphi^2+3\varphi)\xi-3\varphi\xi^2}{(1-\xi)^2}$"
-            label = QLabelMath(mathTex)
-            gridLayout_HE.addWidget(label, 1, 1, 1, 2)
-            gridLayout_HE.addWidget(QtWidgets.QLabel("φ:"), 2, 1)
-            self.fi = Entrada_con_unidades(float, readOnly=True)
-            gridLayout_HE.addWidget(self.fi, 2, 2)
-            gridLayout_HE.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 3, 1, 1, 2)
-
         elif eq["__type__"] == "MBWR":
             # Pestaña MBWR
-            tab2 = QtWidgets.QWidget()
-            tabWidget.addTab(
-                tab2, QtWidgets.QApplication.translate("pychemqt", "MBWR"))
-            gridLayout_MBWR = QtWidgets.QGridLayout(tab2)
             mathTex = r"$P=\rho RT+\sum_{n=2}^{9}\alpha_n\rho^n + "
             mathTex += r"e^{-\delta^2} \sum_{10}^{15} \alpha_n"
             mathTex += r"\rho^{2n-17}$"
             label = QLabelMath(mathTex)
-            gridLayout_MBWR.addWidget(label, 1, 1)
+            gridLayout.addWidget(label, 2, 1)
+
+            tab2 = QtWidgets.QWidget()
+            tabWidget.addTab(
+                tab2, QtWidgets.QApplication.translate("pychemqt", "MBWR"))
+            gridLayout_MBWR = QtWidgets.QGridLayout(tab2)
             self.Tabla_MBWR = Tabla(
                 1, horizontalHeader=["b"], stretch=False, readOnly=True)
             gridLayout_MBWR.addWidget(self.Tabla_MBWR, 2, 1)
@@ -557,11 +541,16 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             if "ao_exp" in eq["cp"]:
                 self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
                 self.Tabla_Cp_exp.setColumn(1, eq["cp"]["titao"], **format)
-                self.Tabla_Cp_exp.resizeColumnsToContents()
+            else:
+                self.Tabla_Cp_exp.setEnabled(False)
+            self.Tabla_Cp_exp.resizeColumnsToContents()
+
             if "hyp" in eq["cp"]:
                 self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
                 self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
-                self.Tabla_Cp_hyp.resizeColumnsToContents()
+            else:
+                self.Tabla_Cp_hyp.setEnabled(False)
+            self.Tabla_Cp_hyp.resizeColumnsToContents()
         else:
             # Cp term
             an = eq["cp"].get("an", [])
@@ -574,29 +563,41 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             if an:
                 self.Tabla_Cp_poly.setColumn(0, an, **format)
                 self.Tabla_Cp_poly.setColumn(1, t, **format)
-                self.Tabla_Cp_poly.resizeColumnsToContents()
+            else:
+                self.Tabla_Cp_poly.setEnabled(False)
+            self.Tabla_Cp_poly.resizeColumnsToContents()
 
             if "ao_exp" in eq["cp"]:
                 self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
                 self.Tabla_Cp_exp.setColumn(1, eq["cp"]["exp"], **format)
-                self.Tabla_Cp_exp.resizeColumnsToContents()
+            else:
+                self.Tabla_Cp_exp.setEnabled(False)
+            self.Tabla_Cp_exp.resizeColumnsToContents()
 
             if "hyp" in eq["cp"]:
                 self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
                 self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
-                self.Tabla_Cp_hyp.resizeColumnsToContents()
+            else:
+                self.Tabla_Cp_hyp.setEnabled(False)
+            self.Tabla_Cp_hyp.resizeColumnsToContents()
 
         if eq["__type__"] == "Helmholtz":
             if eq.get("nr1", []):
                 self.Tabla_lineal.setColumn(0, eq["nr1"], **format)
                 self.Tabla_lineal.setColumn(1, eq["t1"], **format)
                 self.Tabla_lineal.setColumn(2, eq["d1"], **format)
+            else:
+                self.Tabla_lineal.setEnabled(False)
+
             if eq.get("nr2", []):
                 self.Tabla_exponential.setColumn(0, eq["nr2"], **format)
                 self.Tabla_exponential.setColumn(1, eq["t2"], **format)
                 self.Tabla_exponential.setColumn(2, eq["d2"], **format)
                 self.Tabla_exponential.setColumn(3, eq["gamma2"], **format)
                 self.Tabla_exponential.setColumn(4, eq["c2"], **format)
+            else:
+                self.Tabla_exponential.setEnabled(False)
+
             if eq.get("nr3", []):
                 self.Tabla_gauss.setColumn(0, eq["nr3"], **format)
                 self.Tabla_gauss.setColumn(1, eq["t3"], **format)
@@ -605,6 +606,9 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 self.Tabla_gauss.setColumn(4, eq["beta3"], **format)
                 self.Tabla_gauss.setColumn(5, eq["gamma3"], **format)
                 self.Tabla_gauss.setColumn(6, eq["epsilon3"], **format)
+            else:
+                self.Tabla_gauss.setEnabled(False)
+
             if eq.get("nr4", []):
                 self.Tabla_noanalytic.setColumn(0, eq["nr4"], **format)
                 self.Tabla_noanalytic.setColumn(1, eq["a4"], **format)
@@ -614,6 +618,9 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 self.Tabla_noanalytic.setColumn(5, eq["C"], **format)
                 self.Tabla_noanalytic.setColumn(6, eq["D"], **format)
                 self.Tabla_noanalytic.setColumn(7, eq["beta4"], **format)
+            else:
+                self.Tabla_noanalytic.setEnabled(False)
+
             self.Tabla_lineal.resizeColumnsToContents()
             self.Tabla_exponential.resizeColumnsToContents()
             self.Tabla_gauss.resizeColumnsToContents()
@@ -629,7 +636,6 @@ class transportDialog(QtWidgets.QDialog):
     def __init__(self, element, parent=None):
         super(transportDialog, self).__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
-        self.element = element
 
         tabWidget = QtWidgets.QTabWidget()
         gridLayout.addWidget(tabWidget, 1, 1)
@@ -638,28 +644,28 @@ class transportDialog(QtWidgets.QDialog):
         tab3 = QtWidgets.QWidget()
         tabWidget.addTab(
             tab3, QtWidgets.QApplication.translate("pychemqt", "Viscosity"))
-        gridLayout_viscosity = QtWidgets.QGridLayout(tab3)
+        lyt_viscosity = QtWidgets.QGridLayout(tab3)
 
-        gridLayout_viscosity.addWidget(QtWidgets.QLabel(
+        lyt_viscosity.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate(
                 "pychemqt", "Equation")+": "), 1, 1)
-        self.eqVisco = QtWidgets.QComboBox()
-        gridLayout_viscosity.addWidget(self.eqVisco, 1, 2)
-        gridLayout_viscosity.addItem(QtWidgets.QSpacerItem(
+        eqVisco = QtWidgets.QComboBox()
+        lyt_viscosity.addWidget(eqVisco, 1, 2)
+        lyt_viscosity.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Fixed), 1, 3)
-        self.stackedVisco = QtWidgets.QStackedWidget()
-        gridLayout_viscosity.addWidget(self.stackedVisco, 2, 1, 1, 3)
-        self.eqVisco.currentIndexChanged.connect(
-            self.stackedVisco.setCurrentIndex)
+        stackedVisco = QtWidgets.QStackedWidget()
+        lyt_viscosity.addWidget(stackedVisco, 2, 1, 1, 3)
+        eqVisco.currentIndexChanged.connect(
+            stackedVisco.setCurrentIndex)
 
         if element._viscosity is not None:
             for eq in element._viscosity:
                 widget = Widget_Viscosity_Data(element, eq)
-                self.stackedVisco.addWidget(widget)
-                self.eqVisco.addItem(eq["__name__"])
+                stackedVisco.addWidget(widget)
+                eqVisco.addItem(eq["__name__"])
         else:
-            self.eqVisco.addItem(QtWidgets.QApplication.translate(
+            eqVisco.addItem(QtWidgets.QApplication.translate(
                 "pychemqt", "Not Implemented"))
 
         # Tab thermal conductivity
@@ -667,65 +673,74 @@ class transportDialog(QtWidgets.QDialog):
         tabWidget.addTab(tab4,
                          QtWidgets.QApplication.translate(
                              "pychemqt", "Thermal Conductivity"))
-        gridLayout_conductivity = QtWidgets.QGridLayout(tab4)
+        lyt_conductivity = QtWidgets.QGridLayout(tab4)
 
-        gridLayout_conductivity.addWidget(QtWidgets.QLabel(
+        lyt_conductivity.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Equation")+": "),
             1, 1)
-        self.eqThermo = QtWidgets.QComboBox()
-        gridLayout_conductivity.addWidget(self.eqThermo, 1, 2)
-        gridLayout_conductivity.addItem(QtWidgets.QSpacerItem(
+        eqThermo = QtWidgets.QComboBox()
+        lyt_conductivity.addWidget(eqThermo, 1, 2)
+        lyt_conductivity.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Fixed), 1, 3)
-        self.stackedThermo = QtWidgets.QStackedWidget()
-        gridLayout_conductivity.addWidget(self.stackedThermo, 2, 1, 1, 3)
-        self.eqThermo.currentIndexChanged.connect(
-            self.stackedThermo.setCurrentIndex)
+        stackedThermo = QtWidgets.QStackedWidget()
+        lyt_conductivity.addWidget(stackedThermo, 2, 1, 1, 3)
+        eqThermo.currentIndexChanged.connect(
+            stackedThermo.setCurrentIndex)
 
         if element._thermal is not None:
             for eq in element._thermal:
                 widget = Widget_Conductivity_Data(element, eq)
-                self.stackedThermo.addWidget(widget)
-                self.eqThermo.addItem(eq["__name__"])
+                stackedThermo.addWidget(widget)
+                eqThermo.addItem(eq["__name__"])
         else:
-            self.eqThermo.addItem(QtWidgets.QApplication.translate(
+            eqThermo.addItem(QtWidgets.QApplication.translate(
                 "pychemqt", "Not Implemented"))
 
         # Tab dielectric constant
         tab1 = QtWidgets.QWidget()
         tabWidget.addTab(
             tab1, QtWidgets.QApplication.translate("pychemqt", "Dielectric"))
-        gridLayout_dielectric = QtWidgets.QGridLayout(tab1)
+        lyt_dielectric = QtWidgets.QGridLayout(tab1)
 
         if element._Dielectric != meos.MEoS._Dielectric:
             label = QtWidgets.QLabel(element._Dielectric.__doc__)
             label.setWordWrap(True)
-            gridLayout_dielectric.addWidget(label, 1, 1)
-            self.codigo_Dielectric = SimplePythonEditor()
-            self.codigo_Dielectric.setText(
+            lyt_dielectric.addWidget(label, 1, 1)
+            codigo_Dielectric = SimplePythonEditor()
+            codigo_Dielectric.setText(
                 inspect.getsource(element._Dielectric))
-            gridLayout_dielectric.addWidget(self.codigo_Dielectric, 2, 1)
+            lyt_dielectric.addWidget(codigo_Dielectric, 2, 1)
         elif element._dielectric:
-            label = QtWidgets.QLabel(element._Dielectric.__doc__)
-            label.setWordWrap(True)
-            gridLayout_dielectric.addWidget(label, 1, 1)
+            if element._dielectric["eq"] == 1:
+                txt1 = r"$P = \frac{\epsilon-1}{\epsilon+2}$"
+            else:
+                txt1 = r"$P = \frac{(\epsilon-1)(2\epsilon+1}{9\epsilon}$"
+            label1 = QLabelMath(txt1)
+            lyt_dielectric.addWidget(label1, 1, 1)
+            txt2 = r"$\frac{P}{\rho} = A_{\epsilon} + \frac{A_{\mu}}{T} + "
+            txt2 += r"B_{\epsilon}\rho + C\rho^D$"
+            label2 = QLabelMath(txt2)
+            lyt_dielectric.addWidget(label2, 2, 1)
 
-            self.Table_Dielectric = Tabla(
+            Table_Dielectric = Tabla(
                 1, verticalHeader=True, filas=5, stretch=False, readOnly=True)
-            gridLayout_dielectric.addWidget(self.Table_Dielectric, 2, 1)
+            lyt_dielectric.addWidget(Table_Dielectric, 3, 1)
             i = 0
             for key, valor in element._dielectric.items():
-                self.Table_Dielectric.setVerticalHeaderItem(
+                if key == "eq":
+                    continue
+                Table_Dielectric.setVerticalHeaderItem(
                     i, QtWidgets.QTableWidgetItem(key))
-                self.Table_Dielectric.setItem(
+                Table_Dielectric.setItem(
                     0, i, QtWidgets.QTableWidgetItem(str(valor)))
                 i += 1
-            self.Table_Dielectric.resizeColumnsToContents()
+            Table_Dielectric.resizeColumnsToContents()
         else:
-            gridLayout_dielectric.addWidget(QtWidgets.QLabel(
+            lyt_dielectric.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
-            gridLayout_dielectric.addItem(QtWidgets.QSpacerItem(
+            lyt_dielectric.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
@@ -734,32 +749,32 @@ class transportDialog(QtWidgets.QDialog):
         tabWidget.addTab(
             tab2,
             QtWidgets.QApplication.translate("pychemqt", "Surface Tension"))
-        gridLayout_surface = QtWidgets.QGridLayout(tab2)
+        lyt_surface = QtWidgets.QGridLayout(tab2)
 
         if element._Surface != meos.MEoS._Surface:
             label = QtWidgets.QLabel(element._Surface.__doc__)
             label.setWordWrap(True)
-            gridLayout_surface.addWidget(label, 1, 1)
-            self.codigo_Surface = SimplePythonEditor()
-            self.codigo_Surface.setText(inspect.getsource(element._Surface))
-            gridLayout_surface.addWidget(self.codigo_Surface, 2, 1)
+            lyt_surface.addWidget(label, 1, 1)
+            code_Surface = SimplePythonEditor()
+            code_Surface.setText(inspect.getsource(element._Surface))
+            lyt_surface.addWidget(code_Surface, 2, 1)
         elif element._surface:
-            label = QtWidgets.QLabel(element._Surface.__doc__)
-            label.setWordWrap(True)
-            gridLayout_surface.addWidget(label, 1, 1)
+            txt = r"$\sigma=\sum_i \sigma_i\left(1-\frac{T}{T_c}\right)^{n_i}$"
+            label = QLabelMath(txt)
+            lyt_surface.addWidget(label, 1, 1)
 
-            self.Table_Surface = Tabla(
+            Table_Surface = Tabla(
                 2, horizontalHeader=["σ", "n"], verticalHeader=True,
                 stretch=False, readOnly=True)
-            self.Table_Surface.setColumn(0, element._surface["sigma"])
-            self.Table_Surface.setColumn(1, element._surface["exp"])
-            gridLayout_surface.addWidget(self.Table_Surface, 2, 1)
-            self.Table_Surface.resizeColumnsToContents()
+            Table_Surface.setColumn(0, element._surface["sigma"])
+            Table_Surface.setColumn(1, element._surface["exp"])
+            lyt_surface.addWidget(Table_Surface, 2, 1)
+            Table_Surface.resizeColumnsToContents()
         else:
-            gridLayout_surface.addWidget(QtWidgets.QLabel(
+            lyt_surface.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
-            gridLayout_surface.addItem(QtWidgets.QSpacerItem(
+            lyt_surface.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
@@ -768,37 +783,48 @@ class transportDialog(QtWidgets.QDialog):
         tabWidget.addTab(
             tab5,
             QtWidgets.QApplication.translate("pychemqt", "Liquid Density"))
-        gridLayout_liquid_density = QtWidgets.QGridLayout(tab5)
+        lyt_liquid_density = QtWidgets.QGridLayout(tab5)
 
         if element._Liquid_Density != meos.MEoS._Liquid_Density:
             label = QtWidgets.QLabel(element._Liquid_Density.__doc__)
             label.setWordWrap(True)
-            gridLayout_liquid_density.addWidget(label, 1, 1)
-            self.codigo_Liquid_Density = SimplePythonEditor()
-            self.codigo_Liquid_Density.setText(
+            lyt_liquid_density.addWidget(label, 1, 1)
+            code_Liquid_Density = SimplePythonEditor()
+            code_Liquid_Density.setText(
                 inspect.getsource(element._Liquid_Density))
-            gridLayout_liquid_density.addWidget(
-                self.codigo_Liquid_Density, 2, 1)
+            lyt_liquid_density.addWidget(
+                code_Liquid_Density, 2, 1)
         elif element._liquid_Density:
             label = QtWidgets.QLabel(element._Liquid_Density.__doc__)
             label.setWordWrap(True)
-            gridLayout_liquid_density.addWidget(label, 1, 1)
+            lyt_liquid_density.addWidget(label, 1, 1)
 
-            self.Table_Liquid_Density = Tabla(
+            if element._liquid_Density["eq"] in [2, 3]:
+                mathTex = r"$\ln \frac{\rho_l}{\rho_c} = "
+            else:
+                mathTex = r"$\frac{\rho_l}{\rho_c} = "
+
+            if element._liquid_Density["eq"] == 1:
+                mathTex += r"1 + "
+            elif element._liquid_Density["eq"] == 3:
+                mathTex += r"\frac{T_c}{T} "
+
+            mathTex += r"\sum_i n_i\theta^{t_i}$"
+            label2 = QLabelMath(mathTex)
+            lyt_liquid_density.addWidget(label2, 2, 1)
+
+            Table_Liquid_Density = Tabla(
                 2, horizontalHeader=["n", "t"],
                 verticalHeader=True, stretch=False, readOnly=True)
-            self.Table_Liquid_Density.setColumn(
-                0, element._liquid_Density["n"])
-            self.Table_Liquid_Density.setColumn(
-                1, element._liquid_Density["t"])
-            gridLayout_liquid_density.addWidget(
-                self.Table_Liquid_Density, 2, 1)
-            self.Table_Liquid_Density.resizeColumnsToContents()
+            Table_Liquid_Density.setColumn(0, element._liquid_Density["n"])
+            Table_Liquid_Density.setColumn(1, element._liquid_Density["t"])
+            lyt_liquid_density.addWidget(Table_Liquid_Density, 3, 1)
+            Table_Liquid_Density.resizeColumnsToContents()
         else:
-            gridLayout_liquid_density.addWidget(QtWidgets.QLabel(
+            lyt_liquid_density.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
-            gridLayout_liquid_density.addItem(QtWidgets.QSpacerItem(
+            lyt_liquid_density.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
@@ -807,34 +833,47 @@ class transportDialog(QtWidgets.QDialog):
         tabWidget.addTab(
             tab6,
             QtWidgets.QApplication.translate("pychemqt", "Vapor Density"))
-        gridLayout_vapor_density = QtWidgets.QGridLayout(tab6)
+        lyt_vapor_density = QtWidgets.QGridLayout(tab6)
 
         if element._Vapor_Density != meos.MEoS._Vapor_Density:
             label = QtWidgets.QLabel(element._Vapor_Density.__doc__)
             label.setWordWrap(True)
-            gridLayout_vapor_density.addWidget(label, 1, 1)
-            self.codigo_Vapor_Density = SimplePythonEditor()
-            self.codigo_Vapor_Density.setText(
+            lyt_vapor_density.addWidget(label, 1, 1)
+            code_Vapor_Density = SimplePythonEditor()
+            code_Vapor_Density.setText(
                 inspect.getsource(element._Vapor_Density))
-            gridLayout_vapor_density.addWidget(self.codigo_Vapor_Density, 2, 1)
+            lyt_vapor_density.addWidget(code_Vapor_Density, 2, 1)
         elif element._vapor_Density:
             label = QtWidgets.QLabel(element._Vapor_Density.__doc__)
             label.setWordWrap(True)
-            gridLayout_vapor_density.addWidget(label, 1, 1)
+            lyt_vapor_density.addWidget(label, 1, 1)
 
-            self.Table_Vapor_Density = Tabla(
+            if element._vapor_Density["eq"] in [2, 3]:
+                mathTex = r"$\ln \frac{\rho_v}{\rho_c} = "
+            else:
+                mathTex = r"$\frac{\rho_v}{\rho_c} = "
+
+            if element._vapor_Density["eq"] == 1:
+                mathTex += r"1 + "
+            elif element._vapor_Density["eq"] == 3:
+                mathTex += r"\frac{T_c}{T} "
+
+            mathTex += r"\sum_i n_i\theta^{t_i}$"
+            label2 = QLabelMath(mathTex)
+            lyt_vapor_density.addWidget(label2, 2, 1)
+
+            Table_Vapor_Density = Tabla(
                 2, horizontalHeader=["n", "t"], verticalHeader=True,
                 stretch=False, readOnly=True)
-            self.Table_Vapor_Density.setColumn(0, element._vapor_Density["n"])
-            self.Table_Vapor_Density.setColumn(
-                1, element._vapor_Density["t"])
-            gridLayout_vapor_density.addWidget(self.Table_Vapor_Density, 2, 1)
-            self.Table_Vapor_Density.resizeColumnsToContents()
+            Table_Vapor_Density.setColumn(0, element._vapor_Density["n"])
+            Table_Vapor_Density.setColumn(1, element._vapor_Density["t"])
+            lyt_vapor_density.addWidget(Table_Vapor_Density, 3, 1)
+            Table_Vapor_Density.resizeColumnsToContents()
         else:
-            gridLayout_vapor_density.addWidget(QtWidgets.QLabel(
+            lyt_vapor_density.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
-            gridLayout_vapor_density.addItem(QtWidgets.QSpacerItem(
+            lyt_vapor_density.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
@@ -843,37 +882,48 @@ class transportDialog(QtWidgets.QDialog):
         tabWidget.addTab(
             tab7,
             QtWidgets.QApplication.translate("pychemqt", "Vapor Pressure"))
-        gridLayout_vapor_pressure = QtWidgets.QGridLayout(tab7)
+        lyt_vapor_pressure = QtWidgets.QGridLayout(tab7)
 
         if element._Vapor_Pressure != meos.MEoS._Vapor_Pressure:
             label = QtWidgets.QLabel(element._Vapor_Pressure.__doc__)
             label.setWordWrap(True)
-            gridLayout_vapor_pressure.addWidget(label, 1, 1)
-            self.codigo_Vapor_Pressure = SimplePythonEditor()
-            self.codigo_Vapor_Pressure.setText(
+            lyt_vapor_pressure.addWidget(label, 1, 1)
+            code_Vapor_Pressure = SimplePythonEditor()
+            code_Vapor_Pressure.setText(
                 inspect.getsource(element._Vapor_Pressure))
-            gridLayout_vapor_pressure.addWidget(
-                self.codigo_Vapor_Pressure, 2, 1)
+            lyt_vapor_pressure.addWidget(
+                code_Vapor_Pressure, 2, 1)
         elif element._vapor_Pressure:
             label = QtWidgets.QLabel(element._Vapor_Pressure.__doc__)
             label.setWordWrap(True)
-            gridLayout_vapor_pressure.addWidget(label, 1, 1)
+            lyt_vapor_pressure.addWidget(label, 1, 1)
 
-            self.Table_Vapor_Pressure = Tabla(
+            if element._vapor_Pressure["eq"] in [2, 3]:
+                mathTex = r"$\ln \frac{P_v}{P_c} = "
+            else:
+                mathTex = r"$\frac{P_v}{P_c} = "
+
+            if element._vapor_Pressure["eq"] == 1:
+                mathTex += r"1 + "
+            elif element._vapor_Pressure["eq"] == 3:
+                mathTex += r"\frac{T_c}{T} "
+
+            mathTex += r"\sum_i n_i\theta^{t_i}$"
+            label2 = QLabelMath(mathTex)
+            lyt_vapor_pressure.addWidget(label2, 2, 1)
+
+            Table_Vapor_Pressure = Tabla(
                 2, horizontalHeader=["n", "t"], verticalHeader=True,
                 stretch=False, readOnly=True)
-            self.Table_Vapor_Pressure.setColumn(
-                0, element._vapor_Pressure["n"])
-            self.Table_Vapor_Pressure.setColumn(
-                1, element._vapor_Pressure["t"])
-            gridLayout_vapor_pressure.addWidget(
-                self.Table_Vapor_Pressure, 2, 1)
-            self.Table_Vapor_Pressure.resizeColumnsToContents()
+            Table_Vapor_Pressure.setColumn(0, element._vapor_Pressure["n"])
+            Table_Vapor_Pressure.setColumn(1, element._vapor_Pressure["t"])
+            lyt_vapor_pressure.addWidget(Table_Vapor_Pressure, 3, 1)
+            Table_Vapor_Pressure.resizeColumnsToContents()
         else:
-            gridLayout_vapor_pressure.addWidget(QtWidgets.QLabel(
+            lyt_vapor_pressure.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
-            gridLayout_vapor_pressure.addItem(QtWidgets.QSpacerItem(
+            lyt_vapor_pressure.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
@@ -882,39 +932,65 @@ class transportDialog(QtWidgets.QDialog):
         tabWidget.addTab(
             tab8,
             QtWidgets.QApplication.translate("pychemqt", "Melting Pressure"))
-        gridLayout_melting_pressure = QtWidgets.QGridLayout(tab8)
+        lyt_melting = QtWidgets.QGridLayout(tab8)
 
-        if element._Melting_Pressure != meos.MEoS._Melting_Pressure:
+        if inspect.getsource(element._Melting_Pressure) != \
+                inspect.getsource(meos.MEoS._Melting_Pressure):
             label = QtWidgets.QLabel(element._Melting_Pressure.__doc__)
             label.setWordWrap(True)
-            gridLayout_melting_pressure.addWidget(label, 1, 1)
-            self.codigo_Melting_Pressure = SimplePythonEditor()
-            self.codigo_Melting_Pressure.setText(
+            lyt_melting.addWidget(label, 1, 1)
+            code_Melting = SimplePythonEditor()
+            code_Melting.setText(
                 inspect.getsource(element._Melting_Pressure))
-            gridLayout_melting_pressure.addWidget(
-                self.codigo_Melting_Pressure, 2, 1)
+            lyt_melting.addWidget(
+                code_Melting, 2, 1)
         elif element._melting:
-            label = QtWidgets.QLabel(element._Melting_Pressure.__doc__)
-            label.setWordWrap(True)
-            gridLayout_melting_pressure.addWidget(label, 1, 1)
+            if "__doi__" in element._melting:
+                eq = element._melting["__doi__"]
+                ref = "; ".join((eq["autor"], eq["title"], eq["ref"]))
+                ref += os.linesep
+                label2 = QtWidgets.QLabel(ref)
+                label2.setWordWrap(True)
+                lyt_melting.addWidget(label2, 1, 1)
 
-            self.Table_Melting_Pressure = Tabla(
-                6, horizontalHeader=["a1", "n1", "a2", "n2", "a3", "n3"],
-                verticalHeader=True, stretch=False, readOnly=True)
-            self.Table_Melting_Pressure.setColumn(0, element._melting["a1"])
-            self.Table_Melting_Pressure.setColumn(1, element._melting["exp1"])
-            self.Table_Melting_Pressure.setColumn(2, element._melting["a2"])
-            self.Table_Melting_Pressure.setColumn(3, element._melting["exp2"])
-            self.Table_Melting_Pressure.setColumn(4, element._melting["a3"])
-            self.Table_Melting_Pressure.setColumn(5, element._melting["exp3"])
-            gridLayout_melting_pressure.addWidget(
-                self.Table_Melting_Pressure, 2, 1)
-            self.Table_Melting_Pressure.resizeColumnsToContents()
+            if element._melting["eq"] == 1:
+                mathTex = r"$\frac{P_m}{P_r} = "
+            elif element._melting["eq"] == 2:
+                mathTex = r"$P_m - P_r = "
+            elif element._melting["eq"] == 3:
+                mathTex = r"$\ln \frac{P_m}{P_r} = "
+
+            mathTex += r"a_o + \sum a_1\theta^{n_1} + "
+            mathTex += r"\sum a_2\left(\theta^{n_2}-1\right) + "
+            mathTex += r"\sum a_3\log \theta^{n_3} + "
+            mathTex += r"\sum a_4\left(\theta-1\right)^{n_4}$"
+            label = QLabelMath(mathTex)
+            lyt_melting.addWidget(label, 2, 1)
+
+            header = ["a1", "n1", "a2", "n2", "a3", "n3", "a4", "n4"]
+            Table_Melting = Tabla(
+                8, horizontalHeader=header, verticalHeader=True,
+                stretch=False, readOnly=True)
+            if "a1" in element._melting:
+                Table_Melting.setColumn(0, element._melting["a1"])
+                Table_Melting.setColumn(1, element._melting["exp1"])
+            if "a2" in element._melting:
+                Table_Melting.setColumn(2, element._melting["a2"])
+                Table_Melting.setColumn(3, element._melting["exp2"])
+            if "a3" in element._melting:
+                Table_Melting.setColumn(4, element._melting["a3"])
+                Table_Melting.setColumn(5, element._melting["exp3"])
+            if "a4" in element._melting:
+                Table_Melting.setColumn(6, element._melting["a4"])
+                Table_Melting.setColumn(7, element._melting["exp4"])
+            lyt_melting.addWidget(
+                Table_Melting, 3, 1)
+            Table_Melting.resizeColumnsToContents()
         else:
-            gridLayout_melting_pressure.addWidget(QtWidgets.QLabel(
+            lyt_melting.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
-            gridLayout_melting_pressure.addItem(QtWidgets.QSpacerItem(
+            lyt_melting.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
@@ -924,81 +1000,65 @@ class transportDialog(QtWidgets.QDialog):
             tab9,
             QtWidgets.QApplication.translate(
                 "pychemqt", "Sublimation Pressure"))
-        gridLayout__sublimation_pressure = QtWidgets.QGridLayout(tab9)
+        lyt_sublimation = QtWidgets.QGridLayout(tab9)
 
-        if element._Sublimation_Pressure != meos.MEoS._Sublimation_Pressure:
+        if inspect.getsource(element._Sublimation_Pressure) != \
+                inspect.getsource(meos.MEoS._Sublimation_Pressure):
             label = QtWidgets.QLabel(element._Sublimation_Pressure.__doc__)
             label.setWordWrap(True)
-            gridLayout__sublimation_pressure.addWidget(label, 1, 1)
-            self.codigo_Sublimation_Pressure = SimplePythonEditor()
-            self.codigo_Sublimation_Pressure.setText(
+            lyt_sublimation.addWidget(label, 1, 1)
+            code_Sublimation = SimplePythonEditor()
+            code_Sublimation.setText(
                 inspect.getsource(element._Sublimation_Pressure))
-            gridLayout__sublimation_pressure.addWidget(
-                self.codigo_Sublimation_Pressure, 2, 1)
+            lyt_sublimation.addWidget(
+                code_Sublimation, 2, 1)
         elif element._sublimation:
-            label = QtWidgets.QLabel(element._Melting_Pressure.__doc__)
-            label.setWordWrap(True)
-            gridLayout__sublimation_pressure.addWidget(label, 1, 1)
+            if "__doi__" in element._sublimation:
+                eq = element._sublimation["__doi__"]
+                ref = "; ".join((eq["autor"], eq["title"], eq["ref"]))
+                ref += os.linesep
+                label2 = QtWidgets.QLabel(ref)
+                label2.setWordWrap(True)
+                lyt_sublimation.addWidget(label2, 1, 1)
 
-            self.Table_Sublimation_Pressure = Tabla(
+            if element._sublimation["eq"] == 1:
+                mathTex = r"$\frac{P_s}{P_r} = "
+            elif element._sublimation["eq"] == 2:
+                mathTex = r"$P_s - P_r = "
+            elif element._sublimation["eq"] == 3:
+                mathTex = r"$\ln \frac{P_s}{P_r} = "
+
+            mathTex += r"a_o + \sum a_1 \theta^{t_1} + "
+            mathTex += r"\sum a_2\left(1-\theta\right)^{t_2} + "
+            mathTex += r"\sum a_i\log \theta^{t_i}$"
+            label = QLabelMath(mathTex)
+            lyt_sublimation.addWidget(label, 2, 1)
+
+            Table_Sublimation = Tabla(
                 6, horizontalHeader=["a1", "n1", "a2", "n2", "a3", "n3"],
                 verticalHeader=True, stretch=False, readOnly=True)
-            self.Table_Sublimation_Pressure.setColumn(
-                0, element._sublimation["a1"])
-            self.Table_Sublimation_Pressure.setColumn(
-                1, element._sublimation["exp1"])
-            self.Table_Sublimation_Pressure.setColumn(
-                2, element._sublimation["a2"])
-            self.Table_Sublimation_Pressure.setColumn(
-                3, element._sublimation["exp2"])
-            self.Table_Sublimation_Pressure.setColumn(
-                4, element._sublimation["a3"])
-            self.Table_Sublimation_Pressure.setColumn(
-                5, element._sublimation["exp3"])
-            gridLayout__sublimation_pressure.addWidget(
-                self.Table_Sublimation_Pressure, 2, 1)
-            self.Table_Sublimation_Pressure.resizeColumnsToContents()
+            if "a1" in element._sublimation:
+                Table_Sublimation.setColumn(0, element._sublimation["a1"])
+                Table_Sublimation.setColumn(1, element._sublimation["exp1"])
+            if "a2" in element._sublimation:
+                Table_Sublimation.setColumn(2, element._sublimation["a2"])
+                Table_Sublimation.setColumn(3, element._sublimation["exp2"])
+            if "a3" in element._sublimation:
+                Table_Sublimation.setColumn(4, element._sublimation["a3"])
+                Table_Sublimation.setColumn(5, element._sublimation["exp3"])
+            lyt_sublimation.addWidget(Table_Sublimation, 3, 1)
+            Table_Sublimation.resizeColumnsToContents()
         else:
-            gridLayout__sublimation_pressure.addWidget(QtWidgets.QLabel(
+            lyt_sublimation.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
-            gridLayout__sublimation_pressure.addItem(QtWidgets.QSpacerItem(
+            lyt_sublimation.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 2, 1)
 
-        # Tab Peng-Robinson
-        tab10 = QtWidgets.QWidget()
-        tabWidget.addTab(
-            tab10,
-            QtWidgets.QApplication.translate("pychemqt", "Peng-Robinson"))
-        gridLayout_PengRobinson = QtWidgets.QGridLayout(tab10)
-
-        if element._PR:
-            label = QtWidgets.QLabel(element._PengRobinson.__doc__)
-            label.setWordWrap(True)
-            gridLayout_PengRobinson.addWidget(label, 1, 1, 1, 3)
-            gridLayout_PengRobinson.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Fixed,
-                QtWidgets.QSizePolicy.Fixed), 2, 1, 1, 3)
-            gridLayout_PengRobinson.addWidget(QtWidgets.QLabel("C"), 3, 1)
-            self.PR = Entrada_con_unidades(
-                float, decimales=6, value=element._PR, readOnly=True)
-            gridLayout_PengRobinson.addWidget(self.PR, 3, 2)
-            gridLayout_PengRobinson.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 3)
-        else:
-            gridLayout_PengRobinson.addWidget(QtWidgets.QLabel(
-                QtWidgets.QApplication.translate(
-                    "pychemqt", "No Peneloux correction")), 1, 1)
-            gridLayout_PengRobinson.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
-
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Close)
-        self.buttonBox.clicked.connect(self.reject)
-        gridLayout.addWidget(self.buttonBox, 2, 1)
+        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        btBox.clicked.connect(self.reject)
+        gridLayout.addWidget(btBox, 2, 1)
 
 
 class Widget_Viscosity_Data(QtWidgets.QWidget):
@@ -1020,198 +1080,178 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
 
         if eq["eq"] == 0:
             # Hardcoded method, show code
-            self.codigo_Viscosity = SimplePythonEditor()
+            code_Viscosity = SimplePythonEditor()
             code = ""
             for method in eq.get("__code__", ()):
                 code += inspect.getsource(method)
                 code += os.linesep
             code += inspect.getsource(
                 element.__getattribute__(element, eq["method"]))
-            self.codigo_Viscosity.setText(code)
-            gridLayout.addWidget(self.codigo_Viscosity, 2, 1, 1, 3)
+            code_Viscosity.setText(code)
+            gridLayout.addWidget(code_Viscosity, 2, 1, 1, 3)
+
         elif eq["eq"] == 1:
             gridLayout.addWidget(QtWidgets.QLabel("ε/k"), 4, 1)
-            self.ek = Entrada_con_unidades(
-                float, value=eq["ek"], readOnly=True)
-            gridLayout.addWidget(self.ek, 4, 2)
+            ek = Entrada_con_unidades(
+                float, value=eq.get("ek", 0), readOnly=True)
+            gridLayout.addWidget(ek, 4, 2)
             gridLayout.addWidget(QtWidgets.QLabel("σ"), 5, 1)
-            self.sigma = Entrada_con_unidades(
-                float, value=eq["sigma"], readOnly=True)
-            gridLayout.addWidget(self.sigma, 5, 2)
+            sigma = Entrada_con_unidades(
+                float, value=eq.get("sigma", 0), readOnly=True)
+            gridLayout.addWidget(sigma, 5, 2)
             tab = QtWidgets.QTabWidget()
             gridLayout.addWidget(tab, 6, 1, 1, 3)
 
             # Integral collision
-            self.Tabla_Collision = Tabla(
+            Tabla_Collision = Tabla(
                 1, horizontalHeader=["b"], stretch=False, readOnly=True)
             if "collision" in eq:
-                self.Tabla_Collision.setColumn(0, eq["collision"])
-                self.Tabla_Collision.resizeColumnsToContents()
+                Tabla_Collision.setColumn(0, eq["collision"])
             else:
-                self.Tabla_Collision.setDisabled(True)
+                Tabla_Collision.setDisabled(True)
+            Tabla_Collision.resizeColumnsToContents()
             tab.addTab(
-                self.Tabla_Collision,
+                Tabla_Collision,
                 QtWidgets.QApplication.translate("pychemqt", "Collision"))
 
             # Virial
-            self.Tabla_Virial = Tabla(
+            Tabla_Virial = Tabla(
                 2, horizontalHeader=["n", "t"], stretch=False, readOnly=True)
             if "n_virial" in eq:
-                self.Tabla_Virial.setColumn(0, eq["n_virial"])
-                self.Tabla_Virial.setColumn(1, eq["t_virial"])
-                self.Tabla_Virial.resizeColumnsToContents()
+                Tabla_Virial.setColumn(0, eq["n_virial"])
+                Tabla_Virial.setColumn(1, eq["t_virial"])
             else:
-                self.Tabla_Virial.setDisabled(True)
-            tab.addTab(self.Tabla_Virial,
+                Tabla_Virial.setDisabled(True)
+            Tabla_Virial.resizeColumnsToContents()
+            tab.addTab(Tabla_Virial,
                        QtWidgets.QApplication.translate("pychemqt", "Virial"))
 
             # Close-packed
-            self.Tabla_Packed = Tabla(
-                2, horizontalHeader=["n", "t"], stretch=False, readOnly=True)
-            if "n_packed" in eq:
-                self.Tabla_Packed.setColumn(0, eq["n_packed"])
-                self.Tabla_Packed.setColumn(1, eq["t_packed"])
-                self.Tabla_Packed.resizeColumnsToContents()
+            Tabla_Packed = Tabla(4, horizontalHeader=["f", "g1", "g", "t"],
+                                 stretch=False, readOnly=True)
+            if "CPf" in eq:
+                Tabla_Packed.setColumn(0, [eq["CPf"]])
+                Tabla_Packed.setColumn(1, [eq["CPg1"]])
+                Tabla_Packed.setColumn(2, eq["CPgi"])
+                Tabla_Packed.setColumn(3, eq["CPgi"])
             else:
-                self.Tabla_Packed.setDisabled(True)
-            tab.addTab(self.Tabla_Packed, QtWidgets.QApplication.translate(
+                Tabla_Packed.setDisabled(True)
+            Tabla_Packed.resizeColumnsToContents()
+            tab.addTab(Tabla_Packed, QtWidgets.QApplication.translate(
                 "pychemqt", "Close-packed density"))
 
             # polynomial term
-            self.Tabla_Visco1 = Tabla(
+            Tabla_Visco1 = Tabla(
                 5, horizontalHeader=["n", "t", "d", "g", "c"], stretch=False,
                 readOnly=True)
-            if "n_poly" in eq:
-                self.Tabla_Visco1.setColumn(0, eq["n_poly"])
-                self.Tabla_Visco1.setColumn(1, eq["t_poly"])
-                self.Tabla_Visco1.setColumn(2, eq["d_poly"])
-                self.Tabla_Visco1.setColumn(3, eq["g_poly"])
-                self.Tabla_Visco1.setColumn(4, eq["c_poly"])
-                self.Tabla_Visco1.resizeColumnsToContents()
+            if "nr" in eq:
+                Tabla_Visco1.setColumn(0, eq["nr"])
+                Tabla_Visco1.setColumn(1, eq["tr"])
+                Tabla_Visco1.setColumn(2, eq["dr"])
+                if "gr" in eq:
+                    Tabla_Visco1.setColumn(3, eq["gr"])
+                    Tabla_Visco1.setColumn(4, eq["cr"])
             else:
-                self.Tabla_Visco1.setDisabled(True)
+                Tabla_Visco1.setDisabled(True)
+            Tabla_Visco1.resizeColumnsToContents()
             tab.addTab(
-                self.Tabla_Visco1,
+                Tabla_Visco1,
                 QtWidgets.QApplication.translate("pychemqt", "Polinomial"))
 
             # numerator of rational poly
-            self.Tabla_numerator = Tabla(
+            Tabla_numerator = Tabla(
                 5, horizontalHeader=["n", "t", "d", "g", "c"], stretch=False,
                 readOnly=True)
-            if "n_num" in eq:
-                self.Tabla_numerator.setColumn(0, eq["n_num"])
-                self.Tabla_numerator.setColumn(1, eq["t_num"])
-                self.Tabla_numerator.setColumn(2, eq["d_num"])
-                self.Tabla_numerator.setColumn(3, eq["c_num"])
-                self.Tabla_numerator.setColumn(4, eq["g_num"])
-                self.Tabla_numerator.resizeColumnsToContents()
+            if "nr_num" in eq:
+                Tabla_numerator.setColumn(0, eq["nr_num"])
+                Tabla_numerator.setColumn(1, eq["tr_num"])
+                Tabla_numerator.setColumn(2, eq["dr_num"])
+                if "gr_num" in eq:
+                    Tabla_numerator.setColumn(3, eq["gr_num"])
+                    Tabla_numerator.setColumn(4, eq["cr_num"])
             else:
-                self.Tabla_numerator.setDisabled(True)
+                Tabla_numerator.setDisabled(True)
+            Tabla_numerator.resizeColumnsToContents()
             tab.addTab(
-                self.Tabla_numerator,
+                Tabla_numerator,
                 QtWidgets.QApplication.translate("pychemqt", "Numerator"))
 
             # denominator of rational poly
-            self.Tabla_denominator = Tabla(
+            Tabla_denominator = Tabla(
                 5, horizontalHeader=["n", "t", "d", "g", "c"], stretch=False,
                 readOnly=True)
-            if "n_den" in eq:
-                self.Tabla_denominator.setColumn(0, eq["n_den"])
-                self.Tabla_denominator.setColumn(1, eq["t_den"])
-                self.Tabla_denominator.setColumn(2, eq["d_den"])
-                self.Tabla_denominator.setColumn(3, eq["c_den"])
-                self.Tabla_denominator.setColumn(4, eq["g_den"])
-                self.Tabla_denominator.resizeColumnsToContents()
+            if "nr_den" in eq:
+                Tabla_denominator.setColumn(0, eq["nr_den"])
+                Tabla_denominator.setColumn(1, eq["tr_den"])
+                Tabla_denominator.setColumn(2, eq["dr_den"])
+                Tabla_denominator.setColumn(
+                    3, eq.get("cr_den", [0]*len(eq["nr_den"])))
+                Tabla_denominator.setColumn(
+                    4, eq.get("gr_den", [0]*len(eq["nr_den"])))
             else:
-                self.Tabla_denominator.setDisabled(True)
+                Tabla_denominator.setDisabled(True)
+            Tabla_denominator.resizeColumnsToContents()
             tab.addTab(
-                self.Tabla_denominator,
+                Tabla_denominator,
                 QtWidgets.QApplication.translate("pychemqt", "Denominator"))
             gridLayout.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 10, 3)
 
         elif eq["eq"] == 2:
-            gridLayout.addWidget(QtWidgets.QLabel("ε/k"), 4, 1)
-            self.ek = Entrada_con_unidades(
-                float, value=eq["ek"], readOnly=True)
-            gridLayout.addWidget(self.ek, 4, 2)
-            gridLayout.addWidget(QtWidgets.QLabel("σ"), 5, 1)
-            self.sigma = Entrada_con_unidades(
-                float, value=eq["sigma"], readOnly=True)
-            gridLayout.addWidget(self.sigma, 5, 2)
-            self.Tabla_Visco2 = Tabla(
+            Tabla_Visco2 = Tabla(
                 3, horizontalHeader=["b", "F", "E"], stretch=False,
                 readOnly=True)
             if "collision" in eq:
-                self.Tabla_Visco2.setColumn(0, eq["collision"])
-            self.Tabla_Visco2.setColumn(1, eq["F"])
-            self.Tabla_Visco2.setColumn(2, eq["E"])
-            self.Tabla_Visco2.resizeColumnsToContents()
-            gridLayout.addWidget(self.Tabla_Visco2, 6, 1, 1, 3)
+                Tabla_Visco2.setColumn(0, eq["collision"])
+            Tabla_Visco2.setColumn(1, eq["F"])
+            Tabla_Visco2.setColumn(2, eq["E"])
+            Tabla_Visco2.resizeColumnsToContents()
+            gridLayout.addWidget(Tabla_Visco2, 6, 1, 1, 3)
             gridLayout.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 10, 3)
 
         elif eq["eq"] == 3:
-            self.Tabla_Visco3 = Tabla(
-                8, stretch=False, readOnly=True,
-                horizontalHeader=["n-poly", "t-poly", "n-num", "t-num",
-                                  "d-num", "n-den", "t-den", "d-den"])
-            if "n_poly" in eq:
-                self.Tabla_Visco3.setColumn(0, eq["n_poly"])
-                self.Tabla_Visco3.setColumn(1, eq["t_poly"])
-            if "n_num" in eq:
-                self.Tabla_Visco3.setColumn(2, eq["n_num"])
-                self.Tabla_Visco3.setColumn(3, eq["t_num"])
-                self.Tabla_Visco3.setColumn(4, eq["d_num"])
-            if "n_den" in eq:
-                self.Tabla_Visco3.setColumn(5, eq["n_den"])
-                self.Tabla_Visco3.setColumn(6, eq["t_den"])
-                self.Tabla_Visco3.setColumn(7, eq["d_den"])
-            self.Tabla_Visco3.resizeColumnsToContents()
-            gridLayout.addWidget(self.Tabla_Visco3, 4, 1, 1, 3)
-            gridLayout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 10, 3)
+            # ecs formulation
+            gridLayout.addWidget(QtWidgets.QLabel("ε/k"), 4, 1)
+            ek = Entrada_con_unidades(
+                float, value=eq.get("ek", None), readOnly=True)
+            gridLayout.addWidget(ek, 4, 2)
+            gridLayout.addWidget(QtWidgets.QLabel("σ"), 5, 1)
+            sigma = Entrada_con_unidades(
+                float, value=eq.get("sigma", None), readOnly=True)
+            gridLayout.addWidget(sigma, 5, 2)
+
+            gridLayout.addWidget(QtWidgets.QLabel(
+                QtWidgets.QApplication.translate("pychemqt", "ECS formulation")
+                + ": " + eq["ref"]), 5, 1, 1, 2)
 
         elif eq["eq"] == 4:
+            # Quiñones-Cisneros formulation
             gridLayout.addWidget(QtWidgets.QLabel("ε/k"), 4, 1)
-            self.ek = Entrada_con_unidades(
+            ek = Entrada_con_unidades(
                 float, value=eq.get("ek", None), readOnly=True)
-            gridLayout.addWidget(self.ek, 4, 2)
+            gridLayout.addWidget(ek, 4, 2)
             gridLayout.addWidget(QtWidgets.QLabel("σ"), 5, 1)
-            self.sigma = Entrada_con_unidades(
+            sigma = Entrada_con_unidades(
                 float, value=eq.get("sigma", None), readOnly=True)
-            gridLayout.addWidget(self.sigma, 5, 2)
-            self.Tabla_Visco4 = Tabla(
-                7, stretch=False, readOnly=True,
-                horizontalHeader=["a", "b", "c", "A", "B", "C", "D"])
+            gridLayout.addWidget(sigma, 5, 2)
+            Tabla_Visco4 = Tabla(
+                8, stretch=False, readOnly=True,
+                horizontalHeader=["a", "b", "c", "A", "B", "C", "D", "E"])
             format = {"format": 1, "decimales": 10}
-            self.Tabla_Visco4.setColumn(0, eq["a"], **format)
-            self.Tabla_Visco4.setColumn(1, eq["b"], **format)
-            self.Tabla_Visco4.setColumn(2, eq["c"], **format)
-            self.Tabla_Visco4.setColumn(3, eq["A"], **format)
-            self.Tabla_Visco4.setColumn(4, eq["B"], **format)
-            self.Tabla_Visco4.setColumn(5, eq["C"], **format)
-            # self.Tabla_Visco4.setColumn(6, eq["D"], **format)
-            self.Tabla_Visco4.resizeColumnsToContents()
-            gridLayout.addWidget(self.Tabla_Visco4, 6, 1, 1, 3)
-            gridLayout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 10, 3)
-
-        elif eq["eq"] == 5:
-            gridLayout.addWidget(QtWidgets.QLabel("w"), 4, 1)
-            self.w = Entrada_con_unidades(float, value=eq["w"], readOnly=True)
-            gridLayout.addWidget(self.w, 4, 2)
-            gridLayout.addWidget(QtWidgets.QLabel("mur"), 5, 1)
-            self.mur = Entrada_con_unidades(
-                float, value=eq["mur"], readOnly=True)
-            gridLayout.addWidget(self.mur, 5, 2)
-            gridLayout.addWidget(QtWidgets.QLabel("ε/k"), 6, 1)
-            self.k = Entrada_con_unidades(float, value=eq["k"], readOnly=True)
-            gridLayout.addWidget(self.k, 6, 2)
+            Tabla_Visco4.setColumn(0, eq["a"], **format)
+            Tabla_Visco4.setColumn(1, eq["b"], **format)
+            Tabla_Visco4.setColumn(2, eq["c"], **format)
+            Tabla_Visco4.setColumn(3, eq["A"], **format)
+            Tabla_Visco4.setColumn(4, eq["B"], **format)
+            Tabla_Visco4.setColumn(5, eq["C"], **format)
+            if "D" in eq:
+                Tabla_Visco4.setColumn(6, eq["D"], **format)
+                Tabla_Visco4.setColumn(7, eq["E"], **format)
+            Tabla_Visco4.resizeColumnsToContents()
+            gridLayout.addWidget(Tabla_Visco4, 6, 1, 1, 3)
             gridLayout.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 10, 3)
@@ -1236,88 +1276,79 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
 
         if eq["eq"] == 0:
             # Hardcoded method, show code
-            self.code = SimplePythonEditor()
-            code = ""
+            code = SimplePythonEditor()
+            txt = ""
             for method in eq.get("__code__", ()):
-                code += inspect.getsource(method)
-                code += os.linesep
-            code += inspect.getsource(
+                txt += inspect.getsource(method)
+                txt += os.linesep
+            txt += inspect.getsource(
                 element.__getattribute__(element, eq["method"]))
-            self.code.setText(code)
-            gridLayout.addWidget(self.code, 2, 1, 1, 3)
+            code.setText(txt)
+            gridLayout.addWidget(code, 2, 1, 1, 3)
 
         elif eq["eq"] == 1:
-            self.Tabla_Therm1 = Tabla(
-                11, stretch=False, readOnly=True,
-                horizontalHeader=["no", "co", "noden", "toden", "nb", "tb",
-                                  "db", "cb", "nbden", "tbden", "dbden"])
+            gridLayout.addWidget(QtWidgets.QLabel("No_visco"), 3, 1)
+            no = Entrada_con_unidades(
+                float, value=eq.get("no_visco", 0), readOnly=True)
+            gridLayout.addWidget(no, 3, 2)
+            Tabla_Therm1 = Tabla(
+                13, stretch=False, readOnly=True,
+                horizontalHeader=["no_viscoCP", "to_viscoCP", "no", "to",
+                                  "no_num", "to_num", "no_den", "to_den",
+                                  "nr", "tr", "dr", "gr", "cr"])
+            if "no_viscoCP" in eq:
+                Tabla_Therm1.setColumn(0, eq["no_viscoCP"])
+                Tabla_Therm1.setColumn(1, eq["to_viscoCP"])
             if "no" in eq:
-                self.Tabla_Therm1.setColumn(0, eq["no"])
-                self.Tabla_Therm1.setColumn(1, eq["co"])
-            if "noden" in eq:
-                self.Tabla_Therm1.setColumn(2, eq["noden"])
-                self.Tabla_Therm1.setColumn(3, eq["toden"])
-            if "nb" in eq:
-                self.Tabla_Therm1.setColumn(4, eq["nb"])
-                self.Tabla_Therm1.setColumn(5, eq["tb"])
-                self.Tabla_Therm1.setColumn(6, eq["db"])
-                self.Tabla_Therm1.setColumn(7, eq["cb"])
-            if "nbden" in eq:
-                self.Tabla_Therm1.setColumn(8, eq["nbden"])
-                self.Tabla_Therm1.setColumn(9, eq["tbden"])
-                self.Tabla_Therm1.setColumn(10, eq["dbden"])
-            self.Tabla_Therm1.resizeColumnsToContents()
-            gridLayout.addWidget(self.Tabla_Therm1, 3, 1, 1, 3)
+                Tabla_Therm1.setColumn(2, eq["no"])
+                Tabla_Therm1.setColumn(3, eq["to"])
+            if "no_num" in eq:
+                Tabla_Therm1.setColumn(4, eq["no_num"])
+                Tabla_Therm1.setColumn(5, eq["to_num"])
+                Tabla_Therm1.setColumn(6, eq["no_num"])
+                Tabla_Therm1.setColumn(7, eq["to_num"])
+            if "nr" in eq:
+                Tabla_Therm1.setColumn(8, eq["nr"])
+                Tabla_Therm1.setColumn(9, eq["tr"])
+                Tabla_Therm1.setColumn(10, eq["dr"])
+            if "gr" in eq:
+                Tabla_Therm1.setColumn(11, eq["gr"])
+                Tabla_Therm1.setColumn(12, eq["cr"])
+            Tabla_Therm1.resizeColumnsToContents()
+            gridLayout.addWidget(Tabla_Therm1, 4, 1, 1, 3)
+
+            if "special" in eq:
+                # Hardcoded method
+                gridLayout.addWidget(QtWidgets.QLabel(
+                    QtWidgets.QApplication.translate(
+                    "pychemqt", "Special hardcoded term")), 5, 1, 1, 3)
+                code_SpecialK = SimplePythonEditor()
+                code = inspect.getsource(
+                    element.__getattribute__(element, eq["special"]))
+                code_SpecialK.setText(code)
+                gridLayout.addWidget(code_SpecialK, 6, 1, 1, 3)
 
         elif eq["eq"] == 2:
-            self.Tabla_Therm2 = Tabla(
-                2, horizontalHeader=["E", "G"], stretch=False, readOnly=True)
-            self.Tabla_Therm2.setColumn(0, eq["E"])
-            self.Tabla_Therm2.setColumn(1, eq["G"])
-            self.Tabla_Therm2.resizeColumnsToContents()
-            gridLayout.addWidget(self.Tabla_Therm2, 3, 1, 1, 3)
+            Tabla_Therm2 = Tabla(
+                3, horizontalHeader=["G", "F", "E"], stretch=False,
+                readOnly=True)
+            Tabla_Therm2.setColumn(0, eq["no"])
+            Tabla_Therm2.setColumn(1, eq["F"])
+            Tabla_Therm2.setColumn(2, eq["E"])
+            Tabla_Therm2.resizeColumnsToContents()
+            gridLayout.addWidget(Tabla_Therm2, 3, 1, 1, 3)
 
         elif eq["eq"] == 3:
-            self.Tabla_Therm3 = Tabla(
-                3, horizontalHeader=["b", "F", "E"],
-                stretch=False, readOnly=True)
-            self.Tabla_Therm3.setColumn(0, eq["b"])
-            self.Tabla_Therm3.setColumn(1, eq["F"])
-            self.Tabla_Therm3.setColumn(2, eq["E"])
-            self.Tabla_Therm3.resizeColumnsToContents()
-            gridLayout.addWidget(self.Tabla_Therm3, 3, 1, 1, 3)
+            Tabla_Therm3 = Tabla(
+                2, horizontalHeader=["G", "E"], stretch=False, readOnly=True)
+            Tabla_Therm3.setColumn(0, eq["G"])
+            Tabla_Therm3.setColumn(1, eq["E"])
+            Tabla_Therm3.resizeColumnsToContents()
+            gridLayout.addWidget(Tabla_Therm3, 3, 1, 1, 3)
 
-            parameter = QtWidgets.QWidget()
-            gridLayout.addWidget(parameter, 4, 1, 1, 3)
-            lyt = QtWidgets.QGridLayout(parameter)
-            lyt.addWidget(QtWidgets.QLabel("ε/k"), 1, 1)
-            self.ek = Entrada_con_unidades(
-                float, value=eq["ek"], readOnly=True)
-            lyt.addWidget(self.ek, 1, 2)
-            lyt.addWidget(QtWidgets.QLabel("σ"), 2, 1)
-            self.sigma = Entrada_con_unidades(
-                float, value=eq["sigma"], readOnly=True)
-            lyt.addWidget(self.sigma, 2, 2)
-            lyt.addWidget(QtWidgets.QLabel("Nchapman"), 3, 1)
-            self.Nchapman = Entrada_con_unidades(
-                float, value=eq["Nchapman"], readOnly=True)
-            lyt.addWidget(self.Nchapman, 3, 2)
-            lyt.addWidget(QtWidgets.QLabel("tchapman"), 4, 1)
-            self.tchapman = Entrada_con_unidades(
-                float, value=eq["tchapman"], readOnly=True)
-            lyt.addWidget(self.tchapman, 4, 2)
-            lyt.addWidget(QtWidgets.QLabel("rhoc"), 1, 4)
-            self.rhoc = Entrada_con_unidades(
-                float, value=eq["rhoc"], readOnly=True)
-            lyt.addWidget(self.rhoc, 1, 5)
-            lyt.addWidget(QtWidgets.QLabel("ff"), 2, 4)
-            self.ff = Entrada_con_unidades(
-                float, value=eq["ff"], readOnly=True)
-            lyt.addWidget(self.ff, 2, 5)
-            lyt.addWidget(QtWidgets.QLabel("rm"), 3, 4)
-            self.rm = Entrada_con_unidades(
-                float, value=eq["rm"], readOnly=True)
-            lyt.addWidget(self.rm, 3, 5)
+            gridLayout.addWidget(QtWidgets.QLabel("ε/k"), 4, 1)
+            ek = Entrada_con_unidades(float, value=eq["ek"], readOnly=True)
+            gridLayout.addWidget(ek, 4, 2)
 
         if "critical" in eq and eq["critical"]:
             gridLayout.addItem(QtWidgets.QSpacerItem(
@@ -1325,53 +1356,83 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
                 QtWidgets.QSizePolicy.Fixed), 5, 3)
             gridLayout.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
-                    "pychemqt", "Critical enhancement")), 6, 1, 1, 2)
-            if eq["critical"] == 3:
-                gridLayout.addWidget(QtWidgets.QLabel("gnu"), 7, 1)
-                self.gnu = Entrada_con_unidades(
+                    "pychemqt", "Critical enhancement")), 7, 1, 1, 3)
+
+            if eq["critical"] == 1:
+                gridLayout.addWidget(QtWidgets.QLabel("ek"), 8, 1)
+                ek = Entrada_con_unidades(float, value=eq["ek"], readOnly=True)
+                gridLayout.addWidget(ek, 8, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("f"), 9, 1)
+                f = Entrada_con_unidades(float, value=eq["f"], readOnly=True)
+                gridLayout.addWidget(f, 9, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("gm"), 10, 1)
+                gm = Entrada_con_unidades(float, value=eq["gm"], readOnly=True)
+                gridLayout.addWidget(gm, 10, 2)
+
+            elif eq["critical"] == 2:
+                v = eq["X"]
+                gridLayout.addWidget(QtWidgets.QLabel("X₁"), 8, 1)
+                X1 = Entrada_con_unidades(float, value=v[0], readOnly=True)
+                gridLayout.addWidget(X1, 8, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("X₂"), 9, 1)
+                X2 = Entrada_con_unidades(float, value=v[1], readOnly=True)
+                gridLayout.addWidget(X2, 9, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("X₃"), 10, 1)
+                X3 = Entrada_con_unidades(float, value=v[2], readOnly=True)
+                gridLayout.addWidget(X3, 10, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("Xㄙ"), 11, 1)
+                X4 = Entrada_con_unidades(float, value=v[3], readOnly=True)
+                gridLayout.addWidget(X4, 11, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("Z"), 12, 1)
+                Z = Entrada_con_unidades(float, value=eq["Z"], readOnly=True)
+                gridLayout.addWidget(Z, 12, 2)
+
+            elif eq["critical"] == 3:
+                gridLayout.addWidget(QtWidgets.QLabel("gnu"), 8, 1)
+                gnu = Entrada_con_unidades(
                     float, value=eq["gnu"], readOnly=True)
-                gridLayout.addWidget(self.gnu, 7, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("γ"), 8, 1)
-                self.gamma = Entrada_con_unidades(
+                gridLayout.addWidget(gnu, 8, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("γ"), 9, 1)
+                gamma = Entrada_con_unidades(
                     float, value=eq["gamma"], readOnly=True)
-                gridLayout.addWidget(self.gamma, 8, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("Ro"), 9, 1)
-                self.R0 = Entrada_con_unidades(
+                gridLayout.addWidget(gamma, 9, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("Ro"), 10, 1)
+                R0 = Entrada_con_unidades(
                     float, value=eq["R0"], readOnly=True)
-                gridLayout.addWidget(self.R0, 9, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("ξo"), 10, 1)
-                self.Xio = Entrada_con_unidades(
+                gridLayout.addWidget(R0, 10, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("ξo"), 11, 1)
+                Xio = Entrada_con_unidades(
                     float, value=eq["Xio"], readOnly=True)
-                gridLayout.addWidget(self.Xio, 10, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("Γo"), 11, 1)
-                self.gam0 = Entrada_con_unidades(
+                gridLayout.addWidget(Xio, 11, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("Γo"), 12, 1)
+                gam0 = Entrada_con_unidades(
                     float, value=eq["gam0"], readOnly=True)
-                gridLayout.addWidget(self.gam0, 11, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("qd"), 12, 1)
-                self.qd = Entrada_con_unidades(
+                gridLayout.addWidget(gam0, 12, 2)
+                gridLayout.addWidget(QtWidgets.QLabel("qd"), 13, 1)
+                qd = Entrada_con_unidades(
                     float, value=eq["qd"], readOnly=True)
-                gridLayout.addWidget(self.qd, 12, 2)
+                gridLayout.addWidget(qd, 13, 2)
+
             elif eq["critical"] == 4:
-                gridLayout.addWidget(QtWidgets.QLabel("γ"), 7, 1)
-                self.gamma = Entrada_con_unidades(
-                    float, value=eq["gamma"], readOnly=True)
-                gridLayout.addWidget(self.gamma, 7, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("v"), 8, 1)
-                self.v = Entrada_con_unidades(
-                    float, value=eq["expo"], readOnly=True)
-                gridLayout.addWidget(self.v, 8, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("α"), 9, 1)
-                self.alfa = Entrada_con_unidades(
-                    float, value=eq["alfa"], readOnly=True)
-                gridLayout.addWidget(self.alfa, 9, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("β"), 10, 1)
-                self.beta = Entrada_con_unidades(
-                    float, value=eq["beta"], readOnly=True)
-                gridLayout.addWidget(self.beta, 10, 2)
-                gridLayout.addWidget(QtWidgets.QLabel("Γo"), 11, 1)
-                self.Xio = Entrada_con_unidades(
-                    float, value=eq["Xio"], readOnly=True)
-                gridLayout.addWidget(self.Xio, 11, 2)
+                Tabla_Thermk4 = Tabla(
+                    5, horizontalHeader=["nc", "αc", "tc", "βc", "dc"],
+                    stretch=False, readOnly=True)
+                Tabla_Thermk4.setColumn(0, eq["nc"])
+                Tabla_Thermk4.setColumn(1, eq["alfac"])
+                Tabla_Thermk4.setColumn(2, eq["tc"])
+                Tabla_Thermk4.setColumn(3, eq["betac"])
+                Tabla_Thermk4.setColumn(4, eq["dc"])
+                Tabla_Thermk4.resizeColumnsToContents()
+                gridLayout.addWidget(Tabla_Thermk4, 8, 1, 1, 3)
+
+            elif isinstance(eq["critical"], str):
+                # Hardcoded method
+                code_ThermK = SimplePythonEditor()
+                code = inspect.getsource(
+                    element.__getattribute__(element, eq["critical"]))
+                code_ThermK.setText(code)
+                gridLayout.addWidget(code_ThermK, 8, 1, 1, 3)
+
             gridLayout.addItem(QtWidgets.QSpacerItem(
                 10, 10, QtWidgets.QSizePolicy.Expanding,
                 QtWidgets.QSizePolicy.Expanding), 15, 3)
@@ -1381,9 +1442,12 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    SteamTables = Ui_ChooseFluid()
+    # SteamTables = Ui_ChooseFluid()
     # SteamTables = Dialog_InfoFluid(mEoS.He)
-    # SteamTables = transportDialog(mEoS.__all__[2])
+
+    # for i, cmp in enumerate(mEoS.__all__):
+        # print(i, cmp.__module__)
+    SteamTables = transportDialog(mEoS.__all__[16])
 
     SteamTables.show()
     sys.exit(app.exec_())

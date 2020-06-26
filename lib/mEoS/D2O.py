@@ -188,7 +188,8 @@ class D2O(MEoS):
                            "Levelt Sengers, J.M.H.",
                   "title": "Thermophysical Properties of Fluid D2O",
                   "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
-                  "doi": "10.1063/1.555714"}}
+                  "doi": "10.1063/1.555714"},
+              "__code__": (_D2O_Viscosity, )}
 
     def _visco0(self, rho, T, fase):
         mu = _D2O_Viscosity(rho, T)
@@ -204,7 +205,8 @@ class D2O(MEoS):
                            "Levelt Sengers, J.M.H.",
                   "title": "Thermophysical Properties of Fluid D2O",
                   "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
-                  "doi": "10.1063/1.555714"}}
+                  "doi": "10.1063/1.555714"},
+              "__code__": (_D2O_ThCond, )}
 
     def _thermo0(self, rho, T, fase):
         k = _D2O_ThCond(rho, T)
