@@ -1428,9 +1428,10 @@ class QLabelMath(QtWidgets.QLabel):
         self.setAlignment(QtCore.Qt.AlignCenter)
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.setFrameStyle(QtWidgets.QFrame.Plain)
-        pixmap = mathTex2QPixmap(tex, fs)
-        self.setPixmap(pixmap)
         self.fs = fs
+        if tex:
+            pixmap = mathTex2QPixmap(tex, fs)
+            self.setPixmap(pixmap)
 
     def setTex(self, tex):
         pixmap = mathTex2QPixmap(tex, self.fs)

@@ -33,7 +33,7 @@ optional_modules = (
         "pychemqt", "coolprop thermal option disabled")),
     ("refprop", QtWidgets.QApplication.translate(
         "pychemqt", "refprop thermal option disabled")),
-    ("pybel", QtWidgets.QApplication.translate(
+    ("openbabel", QtWidgets.QApplication.translate(
         "pychemqt", "graphic formula disabled")),
     ("ezodf", QtWidgets.QApplication.translate(
         "pychemqt", "openoffice/libreoffice interaction disabled")),
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     import sys
     os.environ["pychemqt"] = "/home/jjgomera/pychemqt/"
     os.environ["freesteam"] = "False"
-    os.environ["pybel"] = "False"
+    os.environ["openbabel"] = "False"
     os.environ["CoolProp"] = "False"
     os.environ["refprop"] = "False"
     os.environ["ezodf"] = "False"
