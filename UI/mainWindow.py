@@ -1251,6 +1251,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             QtWidgets.QApplication.translate("pychemqt", "Clear"),
             self.clearRecentFiles)
 
+        # Disable clear option if menu is empty
+        if not recentFiles:
+            self.menuRecentFiles.actions()[-1].setEnabled(False)
+
 # File Manipulation
     def clearRecentFiles(self):
         self.recentFiles = []
