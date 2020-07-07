@@ -367,9 +367,12 @@ class plugin(object):
         fluidos: List with fluid instances
         title: Text title for window table"""
         tabla = createTabla(self.config, title, fluidos, self.parent())
+        tabla.Point = getClassFluid(self.config)
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
         wdg = self.parent().centralwidget.currentWidget().subWindowList()[-1]
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
+        self.parent().dirty[self.parent().idTab] = True
+        self.parent().saveControl()
         tabla.show()
 
     def addTableSpecified(self):
@@ -384,6 +387,8 @@ class plugin(object):
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
         wdg = self.parent().centralwidget.currentWidget().subWindowList()[-1]
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
+        self.parent().dirty[self.parent().idTab] = True
+        self.parent().saveControl()
         tabla.show()
 
     def plot2D(self):
@@ -516,6 +521,8 @@ class plugin(object):
         grafico.plot.ax.grid(grid)
 
         self.parent().centralwidget.currentWidget().addSubWindow(grafico)
+        self.parent().dirty[self.parent().idTab] = True
+        self.parent().saveControl()
         grafico.show()
         self.parent().statusbar.clearMessage()
 
@@ -626,7 +633,7 @@ class plugin(object):
                                   len(values), self.parent().progressBar)
 
             data["x"][value] = {}
-            for x in ThermoAdvanced.propertiesKey():
+            for key in ThermoAdvanced.propertiesKey():
                 dat_propiedad = []
                 for fluido in fluidos:
                     if fluido is not None and fluido.status:
@@ -636,7 +643,7 @@ class plugin(object):
                         dat_propiedad.append(p)
                     else:
                         dat_propiedad.append(None)
-                data["x"][value][x] = dat_propiedad
+                data["x"][value][key] = dat_propiedad
 
         # Get limit equation
         if method == "MEOS":
@@ -646,9 +653,9 @@ class plugin(object):
 
             Tt = eq.get("Tt", fluid.Tt)
             if Tmin > Tt:
-                Lt = fluid(T=Tmin, x=0)
+                Lt = fluid._new(T=Tmin, x=0)
             else:
-                Lt = fluid(T=Tt, x=0)
+                Lt = fluid._new(T=Tt, x=0)
             Pmin = Lt.P
 
             Pmax = eq["Pmax"]*1000

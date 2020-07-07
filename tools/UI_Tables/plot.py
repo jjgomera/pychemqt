@@ -1120,7 +1120,9 @@ class EditPlot(QtWidgets.QWidget):
             self.lista.setCurrentRow(index-1)
         self.lista.takeItem(index)
         self.fig.draw()
-        self.mainwindow.statusbar.clearMessage()
+        self.parent.statusbar.clearMessage()
+        self.parent.dirty[self.parent.idTab] = True
+        self.parent.saveControl()
 
 
 class AddLine(QtWidgets.QDialog):
@@ -1325,6 +1327,8 @@ class EditAxis(QtWidgets.QDialog):
             self.fig.ax.set_zlim(ymin, ymax)
         else:
             f[key](value)
+        self.parent().dirty[self.parent().idTab] = True
+        self.parent().saveControl()
         self.fig.draw()
 
 

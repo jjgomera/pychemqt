@@ -92,7 +92,7 @@ def calcPoint(fluid, config, **kwargs):
         kwargs.update(option)
         Tmin = fluid.eq[option["eq"]]["Tmin"]
         Tmax = fluid.eq[option["eq"]]["Tmax"]
-        Pmin = fluid(T=fluid.eq[option["eq"]]["Tmin"], x=0).P
+        Pmin = fluid._new(T=fluid.eq[option["eq"]]["Tmin"], x=1).P
         Pmax = fluid.eq[option["eq"]]["Pmax"]*1000
     elif method == "COOLPROP":
         Tmin = fluid.eq["Tmin"]
@@ -169,8 +169,6 @@ def _getData(fluid, keys, phase=True, unit=None, table=True):
         if not key:
             continue
         p = fluid.__getattribute__(key)
-
-        print(i, key, p)
 
         if isinstance(p, list):
             p = p[0]

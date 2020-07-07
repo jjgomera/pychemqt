@@ -42,7 +42,7 @@ from lib.utilities import representacion, exportTable
 from UI.widgets import (Entrada_con_unidades, createAction, Status, Tabla,
                         NumericFactor)
 
-from .plot import PlotMEoS, Plot3D
+from .plot import PlotMEoS
 from .library import get_propiedades, _getData, getClassFluid
 
 
@@ -81,6 +81,7 @@ def createTabla(config, title, fluidos=None, parent=None):
     kw["stretch"] = False
     kw["units"] = units
     kw["parent"] = parent
+    kw["keys"] = keys
 
     if fluidos:
         # Generate a readOnly table filled of data
@@ -110,7 +111,6 @@ def createTabla(config, title, fluidos=None, parent=None):
             for i in range(len(keys)-1, -1, -1):
                 if keys[i] in ThermoAdvanced.propertiesPhase():
                     keys[i:i+1] = [keys[i], "", ""]
-        kw["keys"] = keys
 
         tabla = TablaMEoS(len(propiedades), filas=1, **kw)
 
@@ -593,23 +593,24 @@ class TablaMEoS(Tabla):
         all.append(unidades.Dimensionless)
         data["unit"] = [all.index(unit) for unit in self.units]
 
-        # Save keys if necessary
+        # Save method calculation options
+        if isinstance(self.Point, meos.MEoS):
+            data["method"] = "meos"
+            data["fluid"] = mEoS.__all__.index(self.Point.__class__)
+            data["external_dependences"] = ""
+        elif isinstance(self.Point, coolProp.CoolProp):
+            data["method"] = "coolprop"
+            data["fluid"] = self.Point.kwargs["ids"][0]
+            data["external_dependences"] = "CoolProp"
+        else:
+            data["method"] = "refprop"
+            data["fluid"] = self.Point.kwargs["ids"][0]
+            data["external_dependences"] = "refprop"
+
+        # Save keys
+        data["keys"] = self.keys
         data["readOnly"] = self.readOnly
         if not self.readOnly:
-            if isinstance(self.Point, meos.MEoS):
-                data["method"] = "meos"
-                data["fluid"] = mEoS.__all__.index(self.Point.__class__)
-                data["external_dependences"] = ""
-            elif isinstance(self.Point, coolProp.CoolProp):
-                data["method"] = "coolprop"
-                data["fluid"] = self.Point.kwargs["ids"][0]
-                data["external_dependences"] = "CoolProp"
-            else:
-                data["method"] = "refprop"
-                data["fluid"] = self.Point.kwargs["ids"][0]
-                data["external_dependences"] = "refprop"
-
-            data["keys"] = self.keys
             data["columnReadOnly"] = self.columnReadOnly
 
         # Save order unit
@@ -638,25 +639,25 @@ class TablaMEoS(Tabla):
         kwargs["parent"] = parent
         kwargs["units"] = units
         kwargs["orderUnit"] = data["orderUnit"]
+        kwargs["keys"] = data["keys"]
 
         if data["readOnly"]:
             kwargs["readOnly"] = True
         else:
             kwargs["filas"] = len(data["data"])+1
-            kwargs["keys"] = data["keys"]
             kwargs["columnReadOnly"] = data["columnReadOnly"]
 
         tabla = TablaMEoS(data["column"], **kwargs)
         tabla.setWindowTitle(data["title"])
         tabla.setData(data["data"])
-        if not data["readOnly"]:
-            if data["method"] == "meos":
-                fluid = mEoS.__all__[data["fluid"]]()
-            elif data["method"] == "coolprop":
-                fluid = coolProp.CoolProp(ids=[data["fluid"]])
-            elif data["method"] == "refprop":
-                fluid = refProp.RefProp(ids=[data["fluid"]])
-            tabla.Point = fluid
+
+        if data["method"] == "meos":
+            fluid = mEoS.__all__[data["fluid"]]()
+        elif data["method"] == "coolprop":
+            fluid = coolProp.CoolProp(ids=[data["fluid"]])
+        elif data["method"] == "refprop":
+            fluid = refProp.RefProp(ids=[data["fluid"]])
+        tabla.Point = fluid
 
         return tabla
 
@@ -732,11 +733,11 @@ class Ui_Saturation(QtWidgets.QDialog):
         self.Incremento = Entrada_con_unidades(float)
         layout.addWidget(self.Incremento, 6, 2)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(
+        buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 10, 1, 1, 4)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        layout.addWidget(buttonBox, 10, 1, 1, 4)
 
         if config:
             self.fluido = getClassFluid(config)
@@ -907,11 +908,11 @@ class Ui_Isoproperty(QtWidgets.QDialog):
         self.Incremento = Entrada_con_unidades(float)
         layout.addWidget(self.Incremento, 7, 2)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(
+        buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 10, 1, 1, 2)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        layout.addWidget(buttonBox, 10, 1, 1, 2)
 
         self.actualizarUI(0)
 
@@ -937,7 +938,12 @@ class Ui_Isoproperty(QtWidgets.QDialog):
             indice += 1
         self.Inicial = Entrada_con_unidades(self.unidades[indice])
         self.Final = Entrada_con_unidades(self.unidades[indice])
-        self.Incremento = Entrada_con_unidades(self.unidades[indice])
+        if self.unidades[indice] == unidades.Temperature:
+            self.Incremento = Entrada_con_unidades(unidades.DeltaT)
+        elif self.unidades[indice] == unidades.Pressure:
+            self.Incremento = Entrada_con_unidades(unidades.DeltaP)
+        else:
+            self.Incremento = Entrada_con_unidades(self.unidades[indice])
         self.layout().addWidget(self.Inicial, 5, 2)
         self.layout().addWidget(self.Final, 6, 2)
         self.layout().addWidget(self.Incremento, 7, 2)
@@ -1047,18 +1053,3 @@ class AddPoint(QtWidgets.QDialog):
         for input in self.Inputs:
             input.clear()
             input.setResaltado(False)
-
-
-if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-
-    conf = config.getMainWindowConfig()
-
-    # SteamTables = AddPoint(conf)
-    # SteamTables=AddLine(None)
-    # SteamTables = Dialog(conf)
-    SteamTables = Plot3D()
-
-    SteamTables.show()
-    sys.exit(app.exec_())
