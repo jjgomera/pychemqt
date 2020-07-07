@@ -1399,48 +1399,48 @@ class AxisWidget(QtWidgets.QGroupBox):
         lyt.addWidget(self.max, 4, 2)
 
 
-def calcIsoline(f, config, var, fix, vvar, vfix, ini, step, end, total, bar):
+def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
     """Procedure to calculate isoline. In isotherm and isobar add to calculate
     point the saturated states in two-phases region"""
     fluidos = []
-    # fase = None
+    fase = None
     rhoo = 0
     To = 0
     for Ti in vvar:
         kwargs = {var: Ti, fix: vfix, "rho0": rhoo, "T0": To}
         print(kwargs)
-        fluido = calcPoint(f, config, **kwargs)
+        fluido = calcPoint(f, conf, **kwargs)
+
         if fluido and fluido.status and (fluido.rho != rhoo or fluido.T != To):
+            fluidos.append(fluido)
+
+
+            # Save values of last point as initial guess for next calculation
             if var not in ("T", "P") or fix not in ("T", "P"):
                 rhoo = fluido.rho
                 To = fluido.T
 
-            fluidos.append(fluido)
-            # FIXME: Fix added point order
-            # if var in ("T", "P") and fix in ("T", "P"):
-                # if fase is None:
-                    # fase = fluido.x
-                # if fase != fluido.x and fase <= 0:
-                    # if fluido.P < f.Pc and fluido.T < f.Tc:
-                        # fluido_x0 = calcPoint(f, config, **{fix: vfix, "x": 0.})
-                        # fluidos.insert(-1, fluido_x0)
-                # elif fase != fluido.x and fase >= 1:
-                    # if fluido.P < f.Pc and fluido.T < f.Tc:
-                        # fluido_x1 = calcPoint(f, config, **{fix: vfix, "x": 1.})
-                        # fluidos.insert(-1, fluido_x1)
-                # if fase != fluido.x and fluido.x >= 1:
-                    # if fluido.P < f.Pc and fluido.T < f.Tc:
-                        # fluido_x1 = calcPoint(f, config, **{fix: vfix, "x": 1.})
-                        # fluidos.insert(-1, fluido_x1)
-# #                        rhoo = fluido_x1.rho
-# #                        To = fluido_x1.T
-                # elif fase != fluido.x and fluido.x <= 0:
-                    # if fluido.P < f.Pc and fluido.T < f.Tc:
-                        # fluido_x0 = calcPoint(f, config, **{fix: vfix, "x": 0.})
-                        # fluidos.insert(-1, fluido_x0)
-# #                        rhoo = fluido_x0.rho
-# #                        To = fluido_x0.T
-                # fase = fluido.x
+            if var in ("T", "P") and fix in ("T", "P"):
+                if fase is None:
+                    fase = fluido.x
+
+                if fase == fluido.x:
+                    continue
+
+                print("Calculating two phase additional point")
+                if fluido.P < f.Pc and fluido.T < f.Tc:
+                    N_points = get_points(config.Preferences)
+                    if fase != fluido.x and fase <= 0:
+                        xi = linspace(0, 1, N_points)
+                    elif fase != fluido.x and fase >= 1:
+                        xi = linspace(1, 0, N_points)
+
+                    for x in xi:
+                        print({fix: vfix, "x": x})
+                        fluido_x = calcPoint(f, conf, **{fix: vfix, "x": x})
+                        fluidos.insert(-1, fluido_x)
+
+                fase = fluido.x
 
         bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(vvar))
         QtWidgets.QApplication.processEvents()
@@ -1524,13 +1524,12 @@ def plotIsoline(data, axis, title, unidad, grafico, transform, **format):
 
         i = int(len(xi)*pos/100)
         if i >= len(xi):
-            i = len(yi)-1
-        print(xi)
+            i = len(yi)-2
 
         if pos > 50:
-            j = i-10
+            j = i-1
         else:
-            j = i+10
+            j = i+1
         if xscale == "log":
             f_x = (log(xi[i])-log(xi[j]))/(log(xmax)-log(xmin))
         else:
