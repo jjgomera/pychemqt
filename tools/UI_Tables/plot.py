@@ -148,10 +148,10 @@ class PlotMEoS(QtWidgets.QWidget):
 
     def edit(self):
         dialog = EditPlot(self, self.parent)
-        dialog.show()
+        dialog.exec_()
 
     def editAxis(self):
-        dialog = EditAxis(self.plot)
+        dialog = EditAxis(self.plot, self.parent)
         dialog.exec_()
 
     def table(self, obj):
@@ -658,16 +658,17 @@ class Plot3D(QtWidgets.QDialog):
             self.ejeZ.setCurrentIndex(current+1)
 
 
-class EditPlot(QtWidgets.QWidget):
+class EditPlot(QtWidgets.QDialog):
     """Dialog to edit plot. This dialog let user change plot p"""
-    def __init__(self, plotMEoS, mainwindow, parent=None):
+    def __init__(self, plotMEoS, parent=None):
         super(EditPlot, self).__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Edit Plot"))
         layout = QtWidgets.QGridLayout(self)
         self.plotMEoS = plotMEoS
         self.fig = plotMEoS.plot
-        self.mainwindow = mainwindow
+        self.parent = parent
+        self.semaforo = QtCore.QSemaphore(1)
 
         self.lista = QtWidgets.QListWidget()
         layout.addWidget(self.lista, 0, 1, 1, 3)
@@ -827,6 +828,7 @@ class EditPlot(QtWidgets.QWidget):
             self.lista.addItem(linea._label)
 
         self.lista.currentRowChanged.connect(self.update)
+        self.lista.setCurrentRow(0)
         self.label.textChanged.connect(partial(self.changeValue, "label"))
         self.Grosor.valueChanged.connect(partial(self.changeValue, "lw"))
         self.Linea.valueChanged.connect(partial(self.changeValue, "ls"))
@@ -863,93 +865,99 @@ class EditPlot(QtWidgets.QWidget):
             partial(self.changeValue, "textRot"))
         self.annotationVA.currentIndexChanged.connect(
             partial(self.changeValue, "textVA"))
-        self.lista.setCurrentRow(0)
 
     def _updateLabel(self, label, value):
         label.setValue(value)
 
     def update(self, i):
         """Fill format widget with value of selected line"""
-        linea = self.fig.ax.lines[i+2]
-        self.label.setText(linea.get_label())
-        self.Grosor.setValue(linea.get_lw())
-        self.Linea.setCurrentValue(linea.get_ls())
-        self.ColorButton.setColor(linea.get_color())
-        self.Marca.setCurrentValue(linea.get_marker())
-        self.Marca.currentIndexChanged.emit(self.Marca.currentIndex())
-        self.markerSize.setValue(linea.get_ms())
-        self.markerfacecolor.setColor(linea.get_mfc())
-        self.markerEdgeSize.setValue(linea.get_mew())
-        self.markeredgecolor.setColor(linea.get_mec())
-        self.visible.setChecked(linea.get_visible())
-        self.antialiases.setChecked(linea.get_antialiased())
+        if self.semaforo.available() > 0:
+            self.semaforo.acquire(1)
+            linea = self.fig.ax.lines[i+2]
+            self.label.setText(linea.get_label())
+            self.Grosor.setValue(linea.get_lw())
+            self.Linea.setCurrentValue(linea.get_ls())
+            self.ColorButton.setColor(linea.get_color())
+            self.Marca.setCurrentValue(linea.get_marker())
+            self.markerSize.setValue(linea.get_ms())
+            self.markerfacecolor.setColor(linea.get_mfc())
+            self.markerEdgeSize.setValue(linea.get_mew())
+            self.markeredgecolor.setColor(linea.get_mec())
+            self.visible.setChecked(linea.get_visible())
+            self.antialiases.setChecked(linea.get_antialiased())
 
-        try:
-            self.annotationVisible.setChecked(linea.text.get_visible())
-            self.annotationLabel.setText(linea.text.get_text())
-            self.annotationPos.setValue(linea.text.pos)
-            self.annotationRot.setValue(linea.text.get_rotation())
-            va = ["center", "top", "bottom", "baseline", "center_baseline"]
-            self.annotationVA.setCurrentIndex(va.index(linea.text.get_va()))
-        except AttributeError:
-            self.annotationVisible.setChecked(False)
+            try:
+                self.annotationVisible.setChecked(linea.text.get_visible())
+                self.annotationLabel.setText(linea.text.get_text())
+                self.annotationPos.setValue(linea.text.pos)
+                self.annotationRot.setValue(linea.text.get_rotation())
+                va = ["center", "top", "bottom", "baseline", "center_baseline"]
+                self.annotationVA.setCurrentIndex(va.index(linea.text.get_va()))
+            except AttributeError:
+                self.annotationVisible.setChecked(False)
+            self.semaforo.release(1)
 
     def changeValue(self, key, value):
         """Update plot data"""
-        linea = self.fig.ax.lines[self.lista.currentRow()+2]
-        func = {"label": linea.set_label,
-                "lw": linea.set_lw,
-                "ls": linea.set_ls,
-                "marker": linea.set_marker,
-                "color": linea.set_color,
-                "ms": linea.set_ms,
-                "mfc": linea.set_mfc,
-                "mew": linea.set_mew,
-                "mec": linea.set_mec,
-                "visible": linea.set_visible,
-                "antialiases": linea.set_antialiased,
-                "textVisible": linea.text.set_visible,
-                "textLabel": linea.text.set_text,
-                "textcolor": linea.text.set_color,
-                "textfont": linea.text.set_fontproperties,
-                "textPos": linea.text.set_position,
-                "textRot": linea.text.set_rotation,
-                "textVA": linea.text.set_va}
+        if self.semaforo.available() > 0:
+            self.semaforo.acquire(1)
+            linea = self.fig.ax.lines[self.lista.currentRow()+2]
+            func = {"label": linea.set_label,
+                    "lw": linea.set_lw,
+                    "ls": linea.set_ls,
+                    "marker": linea.set_marker,
+                    "color": linea.set_color,
+                    "ms": linea.set_ms,
+                    "mfc": linea.set_mfc,
+                    "mew": linea.set_mew,
+                    "mec": linea.set_mec,
+                    "visible": linea.set_visible,
+                    "antialiases": linea.set_antialiased,
+                    "textVisible": linea.text.set_visible,
+                    "textLabel": linea.text.set_text,
+                    "textcolor": linea.text.set_color,
+                    "textfont": linea.text.set_fontproperties,
+                    "textPos": linea.text.set_position,
+                    "textRot": linea.text.set_rotation,
+                    "textVA": linea.text.set_va}
 
-        if key == "textPos":
-            linea.text.pos = value
-            xi = linea.get_xdata()
-            yi = linea.get_ydata()
-            i = int(len(xi)*value/100)
-            if i >= len(xi):
-                i = len(yi)-1
-            value = xi[i], yi[i]
-        elif key == "textVA":
-            va = ["center", "top", "bottom", "baseline", "center_baseline"]
-            value = va[value]
-        elif key == "textfont":
-            value = convertFont(value)
-        elif key in ("ls", "marker", "color", "mfc", "mec"):
-            value = str(value)
-        func[key](value)
-        if key == "label":
-            self.lista.currentItem().setText(value)
-        else:
-            self.fig.draw()
+            if key == "textPos":
+                linea.text.pos = value
+                xi = linea.get_xdata()
+                yi = linea.get_ydata()
+                i = int(len(xi)*value/100)
+                if i >= len(xi):
+                    i = len(yi)-1
+                value = xi[i], yi[i]
+            elif key == "textVA":
+                va = ["center", "top", "bottom", "baseline", "center_baseline"]
+                value = va[value]
+            elif key == "textfont":
+                value = convertFont(value)
+            elif key in ("ls", "marker", "color", "mfc", "mec"):
+                value = str(value)
+            func[key](value)
+            if key == "label":
+                self.lista.currentItem().setText(value)
+            else:
+                self.fig.draw()
+                self.parent.dirty[self.parent.idTab] = True
+                self.parent.saveControl()
+            self.semaforo.release(1)
 
     def add(self):
         """Add a isoline to plot"""
         dialog = AddLine()
         if dialog.exec_():
             points = get_points(config.Preferences)
-            self.mainwindow.progressBar.setVisible(True)
-            index = self.mainwindow.currentConfig.getint("MEoS", "fluid")
+            self.parent.progressBar.setVisible(True)
+            index = self.parent.currentConfig.getint("MEoS", "fluid")
             # fluid = getClassFluid(self.config)
             fluid = mEoS.__all__[index]
             prop = dialog.tipo.currentIndex()
             value = dialog.input[prop].value
 
-            eq = fluid.eq[self.mainwindow.currentConfig.getint("MEoS", "eq")]
+            eq = fluid.eq[self.parent.currentConfig.getint("MEoS", "eq")]
             T = list(concatenate([
                 linspace(eq["Tmin"], 0.9*fluid.Tc, points),
                 linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points),
@@ -973,79 +981,79 @@ class EditPlot(QtWidgets.QWidget):
 
             if prop == 0:
                 # Calcualte isotherm line
-                self.mainwindow.statusbar.showMessage(
+                self.parent.statusbar.showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isotherm line..."))
                 fluidos = calcIsoline(
-                    fluid, self.mainwindow.currentConfig, "P", "T", P, value,
-                    0, 0, 100, 1, self.mainwindow.progressBar)
+                    fluid, self.parent.currentConfig, "P", "T", P, value,
+                    0, 0, 100, 1, self.parent.progressBar)
                 var = "T"
                 name = "Isotherm"
                 unit = unidades.Temperature
             elif prop == 1:
                 # Calculate isobar line
-                self.mainwindow.statusbar.showMessage(
+                self.parent.statusbar.showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isobar line..."))
                 fluidos = calcIsoline(
-                    fluid, self.mainwindow.currentConfig, "T", "P", T, value,
-                    0, 0, 100, 1, self.mainwindow.progressBar)
+                    fluid, self.parent.currentConfig, "T", "P", T, value,
+                    0, 0, 100, 1, self.parent.progressBar)
                 var = "P"
                 name = "Isobar"
                 unit = unidades.Pressure
             elif prop == 2:
                 # Calculate isoenthalpic line
-                self.mainwindow.statusbar.showMessage(
+                self.parent.statusbar.showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isoenthalpic line..."))
                 fluidos = calcIsoline(
-                    fluid, self.mainwindow.currentConfig, "P", "h", P, value,
-                    0, 0, 100, 1, self.mainwindow.progressBar)
+                    fluid, self.parent.currentConfig, "P", "h", P, value,
+                    0, 0, 100, 1, self.parent.progressBar)
                 var = "h"
                 name = "Isoenthalpic"
                 unit = unidades.Enthalpy
             elif prop == 3:
                 # Calculate isoentropic line
-                self.mainwindow.statusbar.showMessage(
+                self.parent.statusbar.showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isoentropic line..."))
                 fluidos = calcIsoline(
-                    fluid, self.mainwindow.currentConfig, "T", "s", T, value,
-                    0, 0, 100, 1, self.mainwindow.progressBar)
+                    fluid, self.parent.currentConfig, "T", "s", T, value,
+                    0, 0, 100, 1, self.parent.progressBar)
                 var = "s"
                 name = "Isoentropic"
                 unit = unidades.SpecificHeat
             elif prop == 4:
                 # Calculate isochor line
-                self.mainwindow.statusbar.showMessage(
+                self.parent.statusbar.showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isochor line..."))
                 fluidos = calcIsoline(
-                    fluid, self.mainwindow.currentConfig, "T", "v", T, value,
-                    0, 0, 100, 1, self.mainwindow.progressBar)
+                    fluid, self.parent.currentConfig, "T", "v", T, value,
+                    0, 0, 100, 1, self.parent.progressBar)
                 var = "v"
                 name = "Isochor"
                 unit = unidades.SpecificVolume
             elif prop == 5:
                 # Calculate isodensity line
-                self.mainwindow.statusbar.showMessage(
+                self.parent.statusbar.showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isodensity line..."))
                 fluidos = calcIsoline(
-                    fluid, self.mainwindow.currentConfig, "T", "rho", T, value,
-                    0, 0, 100, 1, self.mainwindow.progressBar)
+                    fluid, self.parent.currentConfig, "T", "rho", T, value,
+                    0, 0, 100, 1, self.parent.progressBar)
                 var = "rho"
                 name = "Isochor"
                 unit = unidades.Density
             elif prop == 6:
                 # Calculate isoquality line
-                self.mainwindow.statusbar.showMessage(
+                self.parent.statusbar.showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isoquality line..."))
                 T = T[:3*points-2]
                 fluidos = calcIsoline(
-                    fluid, self.mainwindow.currentConfig, "T", "x", T, value,
-                    0, 0, 100, 1, self.mainwindow.progressBar)
+                    fluid, self.parent.currentConfig, "T", "x", T, value,
+                    0, 0, 100, 1, self.parent.progressBar)
                 var = "x"
                 name = "Isoquality"
                 unit = unidades.Dimensionless
@@ -1074,7 +1082,9 @@ class EditPlot(QtWidgets.QWidget):
             plotIsoline(line, ax, var, unit, self.plotMEoS, transform, **style)
 
             self.plotMEoS.plot.draw()
-            self.mainwindow.progressBar.setVisible(False)
+            self.parent.progressBar.setVisible(False)
+            self.parent.dirty[self.parent.idTab] = True
+            self.parent.saveControl()
             self.lista.addItem(self.fig.ax.lines[-1].get_label())
             self.lista.setCurrentRow(self.lista.count()-1)
 
@@ -1087,7 +1097,7 @@ class EditPlot(QtWidgets.QWidget):
 
     def remove(self):
         """Remove a line from plot"""
-        self.mainwindow.statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent.statusbar.showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Deleting line..."))
         QtWidgets.QApplication.processEvents()
 
