@@ -377,19 +377,19 @@ class TablaMEoS(Tabla):
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Sublimation Line"):
                 for x in ThermoAdvanced.propertiesKey():
-                    data["sublimation"].insert(
+                    data["sublimation"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Saturation Line") or \
                     title == QtWidgets.QApplication.translate(
                         "pychemqt", "Liquid Saturation Line"):
                 for x in ThermoAdvanced.propertiesKey():
-                    data["saturation_0"].insert(
+                    data["saturation_0"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
             elif title == QtWidgets.QApplication.translate(
                     "pychemqt", "Vapor Saturation Line"):
                 for x in ThermoAdvanced.propertiesKey():
-                    data["saturation_1"].insert(
+                    data["saturation_1"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
             else:
                 units = {"P": unidades.Pressure,
@@ -503,7 +503,7 @@ class TablaMEoS(Tabla):
     def setRow(self, row, data):
         """Add data to a row"""
         self.blockSignals(True)
-        self.data.insert(row, data)
+        self.data = insert(self.data, row, data)
         for column, data in enumerate(data):
             if isinstance(data, str):
                 txt = data

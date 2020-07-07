@@ -177,6 +177,7 @@ class PlotMEoS(QtWidgets.QWidget):
         from .table import TablaMEoS
         tabla = TablaMEoS(self.dim, horizontalHeader=HHeader, units=units,
                           stretch=False, readOnly=True, parent=self.parent)
+        tabla.Point = mEoS.__all__[self.config["fluid"]]
         tabla.setData(transpose(data))
         tabla.verticalHeader().setContextMenuPolicy(
             QtCore.Qt.CustomContextMenu)
@@ -1369,7 +1370,7 @@ def convertFont(qfont):
         style = "oblique"
     else:
         style = None
-    print(family, style, qfont.stretch(), weight, qfont.pointSize())
+    # print(family, style, qfont.stretch(), weight, qfont.pointSize())
     font = FontProperties(family, style, None, qfont.stretch(),
                           weight, qfont.pointSize())
 
@@ -1403,6 +1404,8 @@ def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
     """Procedure to calculate isoline. In isotherm and isobar add to calculate
     point the saturated states in two-phases region"""
     fluidos = []
+    fail = 0
+    N_points = get_points(config.Preferences)
     fase = None
     rhoo = 0
     To = 0
@@ -1410,6 +1413,11 @@ def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
         kwargs = {var: Ti, fix: vfix, "rho0": rhoo, "T0": To}
         print(kwargs)
         fluido = calcPoint(f, conf, **kwargs)
+
+        avance = ini + end*step/total + \
+                end/total*(len(fluidos)+fail)/(len(vvar)+N_points)
+        bar.setValue(avance)
+        QtWidgets.QApplication.processEvents()
 
         if fluido and fluido.status and (fluido.rho != rhoo or fluido.T != To):
             fluidos.append(fluido)
@@ -1429,7 +1437,6 @@ def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
 
                 print("Calculating two phase additional point")
                 if fluido.P < f.Pc and fluido.T < f.Tc:
-                    N_points = get_points(config.Preferences)
                     if fase != fluido.x and fase <= 0:
                         xi = linspace(0, 1, N_points)
                     elif fase != fluido.x and fase >= 1:
@@ -1439,11 +1446,14 @@ def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
                         print({fix: vfix, "x": x})
                         fluido_x = calcPoint(f, conf, **{fix: vfix, "x": x})
                         fluidos.insert(-1, fluido_x)
+                        avance = ini + end*step/total + end/total * \
+                            (len(fluidos)+fail)/(len(vvar)+N_points)
+                        bar.setValue(avance)
 
                 fase = fluido.x
+        else:
+            fail += 1
 
-        bar.setValue(ini+end*step/total+end/total*len(fluidos)/len(vvar))
-        QtWidgets.QApplication.processEvents()
     return fluidos
 
 
