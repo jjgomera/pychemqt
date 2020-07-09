@@ -58,6 +58,9 @@ from .library import calcPoint
 
 class PlotMEoS(QtWidgets.QWidget):
     """Plot widget to show meos plot data, add context menu options"""
+
+    icon = os.path.join(config.IMAGE_PATH, "button", "plot.png")
+
     def __init__(self, dim, toolbar=False, filename="", parent=None):
         """constructor
         Input:
@@ -66,6 +69,7 @@ class PlotMEoS(QtWidgets.QWidget):
             filename: filename for data
         """
         super(PlotMEoS, self).__init__(parent)
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
         self.parent = parent
         self.dim = dim
         self.filename = filename
