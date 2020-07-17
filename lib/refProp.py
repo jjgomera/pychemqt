@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 # Library to multiparameter equation of state calculation using refprop
 # https://github.com/BenThelen/python-refprop
-# refprop dll must be installed from NIST package, license requered
+# refprop dll must be installed from NIST package, license required
 # optional method to meos tools calculations
 ###############################################################################
 
@@ -30,7 +30,7 @@ import sys
 
 try:
     import refprop
-except:
+except ImportError:
     pass
 
 from lib import unidades, mEoS
@@ -191,7 +191,7 @@ class RefProp(ThermoRefProp):
 
               "htype": "NBS",
               "hmix": "NBS",
-              "hcomp": ""
+              "hcomp": "",
               # setktv don't implemented
               }
 
@@ -204,13 +204,15 @@ class RefProp(ThermoRefProp):
          "ref": "",
          "doi": ""}]
 
-    def _new(self, **kw):
-        """Create a new instance"""
-        return self.__class__(ids=self.kwargs["ids"], **kw)
-
     @property
     def calculable(self):
-        """Check in the class is fully defined"""
+        """Check in the class is fully defined. The correct definition require
+        two parts:
+        * Thermodynamics definition: whatever pair properties between T, P,
+            h, s, v, rho, x
+        * Compound definition: Ids for compound identification, and in
+            multicomponent defintion any class of mixture definition
+        """
         # Check mix state
         self._multicomponent = False
         if len(self.kwargs["ids"]) > 1:
@@ -223,7 +225,7 @@ class RefProp(ThermoRefProp):
             if id not in __all__ and id not in noIds:
                 REFPROP_available = False
                 if not REFPROP_available:
-                    raise(ValueError)
+                    raise ValueError
 
         # Mix definition
         self._mix = 0
@@ -267,19 +269,25 @@ class RefProp(ThermoRefProp):
 
     def args(self):
         x = self._x()
-        var1 = self.kwargs[self._thermo[0]]
-        var2 = self.kwargs[self._thermo[1]]
+        # Convert to float because unit subclass raise InputError
+        var1 = float(self.kwargs[self._thermo[0]])
+        var2 = float(self.kwargs[self._thermo[1]])
 
         # unit conversion to refprop accepted units
-        # P in kPa, U,H in kJ/kg, S in kJ/kgK
+        # P in kPa, U,H in kJ/kmol, S in kJ/kmolK
         if self._thermo[0] == "P":
             var1 /= 1000.
-        if self._thermo[0] in ("E", "H", "S"):
-            var1 /= 1000. * self.M
+        elif self._thermo[0] in ("E", "H", "S"):
+            var1 /= 1000. / self.M
+        elif self._thermo[0] == "D":
+            var1 /= self.M
+
         if self._thermo[1] == "P":
             var2 /= 1000.
-        if self._thermo[1] in ("E", "H", "S"):
-            var2 /= 1000. * self.M
+        elif self._thermo[1] in ("E", "H", "S"):
+            var2 /= 1000. / self.M
+        elif self._thermo[1] == "D":
+            var2 /= self.M
 
         return self._thermo, var1, var2, x
 
@@ -307,7 +315,62 @@ class RefProp(ThermoRefProp):
             x = [1]
         return x
 
+    def _fixed(self):
+        """Calculate fixed properties with the chemical compound ids specified,
+        valid only for one component"""
+
+        x = self._x()
+        fluido = self._name()
+
+        refprop.setup("def", fluido)
+
+        info = refprop.info()
+        self.M = unidades.Dimensionless(info["wmm"])
+        self.Tt = unidades.Temperature(info["ttrp"])
+        self.Tb = unidades.Temperature(info["tnbpt"])
+        self.Tc = unidades.Temperature(info["tcrit"])
+
+        self.R = unidades.SpecificHeat(info["Rgas"]/self.M)
+        self.f_accent = unidades.Dimensionless(info["acf"])
+        self.momentoDipolar = unidades.DipoleMoment(info["dip"], "Debye")
+        self.rhoc = unidades.Density(info["Dcrit"]*self.M)
+        self.zc = unidades.Dimensionless(info["zcrit"])
+        self.Pc = unidades.Pressure(self.R*self.Tc*self.rhoc*self.zc, "kPa")
+
+        name = refprop.name()
+        self.name = name["hname"]
+        self.CAS = name["hcas"]
+
+    def cleanOldValues(self, **kwargs):
+        """Convert alternative input parameters"""
+        # Alternative rho input
+        if "rhom" in kwargs:
+            kwargs["rho"] = kwargs["rhom"]*self.M
+            del kwargs["rhom"]
+        elif kwargs.get("v", 0):
+            kwargs["rho"] = 1./kwargs["v"]
+            del kwargs["v"]
+        elif kwargs.get("vm", 0):
+            kwargs["rho"] = self.M/kwargs["vm"]
+            del kwargs["vm"]
+
+        if kwargs.get("s", 0):
+            kwargs["S"] = kwargs["s"]
+            del kwargs["s"]
+
+        if kwargs.get("h", 0):
+            kwargs["H"] = kwargs["h"]
+            del kwargs["h"]
+        self.kwargs.update(kwargs)
+
     def calculo(self):
+        try:
+            self._calculo()
+        except refprop.RefpropdllError as e:
+            self.status = 4
+            self.msg = e
+
+    def _calculo(self):
         # TODO: Add configuration section to Preferences
         # preos = Preferences.getboolean("refProp", "preos")
         # aga = Preferences.getboolean("refProp", "aga")
@@ -404,24 +467,35 @@ class RefProp(ThermoRefProp):
         self.Gas = ThermoRefProp()
         if self.x == 0:
             # liquid phase
-            self.fill(self.Liquido, flash["t"], flash["Dliq"], flash["xliq"])
-            self.fill(self, flash["t"], flash["Dliq"], flash["xliq"])
+            self.fill(self.Liquido, flash["t"], flash["D"], flash["x"])
+            self.fill(self, flash["t"], flash["D"], flash["x"])
             self.fillNone(self.Gas)
         elif self.x == 1:
             # vapor phase
-            self.fill(self.Gas, flash["t"], flash["Dvap"], flash["xvap"])
-            self.fill(self, flash["t"], flash["Dvap"], flash["xvap"])
+            self.fill(self.Gas, flash["t"], flash["D"], flash["x"])
+            self.fill(self, flash["t"], flash["D"], flash["x"])
             self.fillNone(self.Liquido)
         else:
             # Two phase
+            self.fillNone(self)
             self.fill(self.Liquido, flash["t"], flash["Dliq"], flash["xliq"])
             self.fill(self.Gas, flash["t"], flash["Dvap"], flash["xvap"])
+
+            self.v = unidades.SpecificVolume(x*self.Gas.v+(1-x)*self.Liquido.v)
+            self.rho = unidades.Density(1./self.v)
 
             self.u = unidades.Enthalpy(flash["e"]/self.M, "Jg")
             self.h = unidades.Enthalpy(flash["h"]/self.M, "Jg")
             self.s = unidades.SpecificHeat(flash["s"]/self.M, "JgK")
             self.a = unidades.Enthalpy(self.u-self.T*self.s)
             self.g = unidades.Enthalpy(self.h-self.T*self.s)
+
+            self.rhoM = unidades.MolarDensity(self.rho/self.M)
+            self.hM = unidades.MolarEnthalpy(self.h*self.M)
+            self.sM = unidades.MolarSpecificHeat(self.s*self.M)
+            self.uM = unidades.MolarEnthalpy(self.u*self.M)
+            self.aM = unidades.MolarEnthalpy(self.a*self.M)
+            self.gM = unidades.MolarEnthalpy(self.g*self.M)
 
         if self.x < 1 and self.T <= self.Tc:
             surten = refprop.surten(flash["t"], flash["Dliq"], flash["Dvap"],
@@ -440,6 +514,7 @@ class RefProp(ThermoRefProp):
             self.Hvap = unidades.Enthalpy(None)
             self.Svap = unidades.SpecificHeat(None)
             self.K = [unidades.Dimensionless(1)]*flash["nc"]
+        self.invT = unidades.InvTemperature(-1/self.T)
 
         # NOT supported on Windows
         if sys.platform != "win32":
@@ -461,13 +536,16 @@ class RefProp(ThermoRefProp):
         self.csat = []
         self.dpdt_sat = []
         self.cv2p = []
-        for i in range(1, flash["nc"]+1):
-            dat = refprop.dptsatk(i, flash["t"], kph=2)
-            self.csat.append(unidades.SpecificHeat(dat["csat"]/self.M, "JgK"))
-            self.dpdt_sat.append(
-                unidades.PressureTemperature(dat["dpdt"], "kPaK"))
-            cv2 = refprop.cv2pk(i, flash["t"], flash["D"])
-            self.cv2p.append(unidades.SpecificHeat(cv2["cv2p"]/self.M, "JgK"))
+        if self.Tt <= flash["t"] <= self.Tc:
+            for i in range(1, flash["nc"]+1):
+                dat = refprop.dptsatk(i, flash["t"], kph=2)
+                cs = unidades.SpecificHeat(dat["csat"]/self.M, "JgK")
+                self.csat.append(cs)
+                self.dpdt_sat.append(
+                    unidades.PressureTemperature(dat["dpdt"], "kPaK"))
+                cv2 = refprop.cv2pk(i, flash["t"], flash["D"])
+                cv = unidades.SpecificHeat(cv2["cv2p"]/self.M, "JgK")
+                self.cv2p.append(cv)
 
     def _cp0(self, flash):
         "Set ideal properties to state"""
@@ -633,22 +711,43 @@ class RefProp(ThermoRefProp):
         xg = refprop.xmass(x)["xkg"]
         fase.fraccion_masica = [unidades.Dimensionless(xi) for xi in xg]
 
-        transport = refprop.trnprp(T, rho, x)
-        fase.mu = unidades.Viscosity(transport["eta"], "muPas")
-        fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
-        fase.k = unidades.ThermalConductivity(transport["tcx"])
-        fase.alfa = unidades.Diffusivity(fase.k/fase.rho/fase.cp)
-        fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
+        try:
+            transport = refprop.trnprp(T, rho, x)
+            fase.mu = unidades.Viscosity(transport["eta"], "muPas")
+            fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
+            fase.k = unidades.ThermalConductivity(transport["tcx"])
+            fase.alfa = unidades.Diffusivity(fase.k/fase.rho/fase.cp)
+            fase.Prandt = unidades.Dimensionless(fase.mu*fase.cp/fase.k)
+        except refprop.RefpropdllError:
+            fase.mu = unidades.Viscosity(None)
+            fase.nu = unidades.Diffusivity(None)
+            fase.k = unidades.ThermalConductivity(None)
+            fase.alfa = unidades.Diffusivity(None)
+            fase.Prandt = unidades.Dimensionless(None)
 
         dielec = refprop.dielec(T, rho, x)
         fase.epsilon = unidades.Dimensionless(dielec["de"])
 
 
 if __name__ == '__main__':
-    from PyQt5 import QtWidgets
-    app = QtWidgets.QApplication(sys.argv)
+    # fluido = RefProp(ids=[140], T=300, P=1e6,)
+    # fluido2 = RefProp(ids=[140], T=300, P=1e6, preos=True)
+    # print(fluido.rho, fluido2.rho)
+    # from lib.mEoS import Acetone
+    # fluido = Acetone(T=300, P=1e6)
+    # from pprint import pprint
+    # pprint(fluido._Helmholtz(fluido.Tc/fluido.T, fluido.rho/fluido.rhoc))
+    # pprint(fluido._PengRobinson(fluido.rho, fluido.T))
+    # fluido2 = Acetone(T=300, P=1e6, eq="PR")
+    # print(fluido.rho, fluido2.rho)
 
-    fluido = RefProp(ids=[62], T=300, P=1e6)
+    # fluido = RefProp(ids=[47], T=100, P=6e4, htype="EOS", hcomp="BWR")
+    # print(fluido.rho, fluido.cpM.JmolK)
+
+    
+
+    # See fortran/Manual.txt and fortran/Prop_sub.for file for explanation of refprop functionality
+
     # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g"
           # % (fluido.rho, fluido.u.kJkg, fluido.h.kJkg, fluido.s.kJkgK,
              # fluido.cv.kJkgK, fluido.cp.kJkgK, fluido.cp0.kJkgK,
@@ -750,3 +849,24 @@ if __name__ == '__main__':
             # except ZeroDivisionError:
                 # if r.__getattribute__(key) == m.__getattribute__(key):
                     # pass
+
+    # st = RefProp(ids=[62], T=300, P=1e5)
+    # st2 = st._new(T=300, P=2e5)
+    # print(st.rho, st2.rho)
+    # print(st.P, st2.P)
+
+
+    # st = RefProp(ids=[62], T=286.04443, x=0.5)
+    # from pprint import pprint
+    # pprint(st.__dict__)
+    # print(st.rhoM)
+
+    T = 463
+    P = 1e5
+
+    st = RefProp(ids=[62], T=T, P=P)
+    # st = RefProp(ids=[62], T=T, x=0.5)
+    print(st.T, st.P.bar, st.v, st.u)
+    st = RefProp(ids=[62], u=st.u, v=st.v)
+    print(st.status, st.msg)
+    print(st.T, st.P.bar, st.v, st.u)
