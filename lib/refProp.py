@@ -363,14 +363,19 @@ class RefProp(ThermoRefProp):
             del kwargs["h"]
         self.kwargs.update(kwargs)
 
+    def cleanOldKwargs(self):
+        for var in ["T", "P", "Q", "D", "H", "S", "E"]:
+            if var not in self._thermo:
+                self.kwargs[var] = RefProp.kwargs[var]
+
     def calculo(self):
         try:
             self._calculo()
         except refprop.RefpropdllError as e:
-            self.status = 4
-            self.msg = e
+            self.status = 5
+            self.msg = str(e)
 
-    def _calculo(self):
+    def _initialization(self):
         # TODO: Add configuration section to Preferences
         # preos = Preferences.getboolean("refProp", "preos")
         # aga = Preferences.getboolean("refProp", "aga")
@@ -395,6 +400,9 @@ class RefProp(ThermoRefProp):
         kwref = {k: self.kwargs[k] for k in (
             'hrf', 'ixflag', 'x0', 'h0', 's0', 't0', 'p0')}
         refprop.setref(**kwref)
+
+    def _calculo(self):
+        self._initialization()
 
         m = refprop.wmol(x)["wmix"]
         self.M = unidades.Dimensionless(m)
@@ -728,6 +736,46 @@ class RefProp(ThermoRefProp):
         dielec = refprop.dielec(T, rho, x)
         fase.epsilon = unidades.Dimensionless(dielec["de"])
 
+    def _Melting_Pressure(self, T, x):
+        r"""Calculate the melting pressure.
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+        x : list
+            Molar fraction composition, [-]
+
+        Returns
+        -------
+        P : float
+            Melting pressure, [Pa]
+        """
+        self._initialization()
+
+        P = refprop.meltt(T, x)
+        return unidades.Pressure(P["p"], "kPa")
+
+    def _Sublimation_Pressure(self, T, x):
+        r"""Calculate the sublimation pressure.
+
+        Parameters
+        ----------
+        T : float
+            Temperature, [K]
+        x : list
+            Molar fraction composition, [-]
+
+        Returns
+        -------
+        P : float
+            Sublimation pressure, [Pa]
+        """
+        self._initialization()
+
+        P = refprop.sublt(T, x)
+        return unidades.Pressure(P["p"], "kPa")
+
 
 if __name__ == '__main__':
     # fluido = RefProp(ids=[140], T=300, P=1e6,)
@@ -748,57 +796,7 @@ if __name__ == '__main__':
 
     # See fortran/Manual.txt and fortran/Prop_sub.for file for explanation of refprop functionality
 
-    # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g"
-          # % (fluido.rho, fluido.u.kJkg, fluido.h.kJkg, fluido.s.kJkgK,
-             # fluido.cv.kJkgK, fluido.cp.kJkgK, fluido.cp0.kJkgK,
-             # fluido.cp_cv, fluido.w, fluido.Z, fluido.a, fluido.g))
-    # fluido = RefProp(ids=[62], T=300, P=1e6, htype="EOS", hcomp="FEK")
-    # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g %0.12g"
-          # % (fluido.rho, fluido.u.kJkg, fluido.h.kJkg, fluido.s.kJkgK,
-             # fluido.cv.kJkgK, fluido.cp.kJkgK, fluido.cp0.kJkgK,
-             # fluido.cp_cv, fluido.w, fluido.Z, fluido.a, fluido.g))
-    # 996.960022694 112.478998007 113.482047254 0.392813902092 4.12721730499 4.17810360562 1.86484159263 1.01232944545 0.00724456495227 -5.36517262056 -4.3621233736
-
-    # print("%0.12g %0.12g %0.12g %0.12g %0.12g"
-    #       % (fluido.virialb, fluido.virialc, fluido.dbdt, fluido.virialba, fluido.virialca))
-    # -0.0666822898709 -0.0130427067934 0.00115953207464 -0.120787648647 0.012705502088
-
-    # print("%0.12g %0.12g"
-    #       % (fluido.kappa.MPa, fluido.alfav))
-    # 0.000449474822287 0.000275696573736
-    # print("%0.12g %0.12g"
-    #       % (fluido.IntP.MPa, fluido.hInput))
-    # 183.012469708 15154.7171914
-    # print("%0.12g %0.12g" % (fluido.Kt.MPa, fluido.Ks.MPa))
-    # 2224.81872268 2252.24950376
-    # print("%0.12g" % (fluido.fpv))
-    # 21.6356265292
-    # print("%0.12g %0.12g %0.12g"
-          # % (fluido.chempot[0], fluido.fi[0], fluido.f[0].MPa))
-    # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g"
-          # % (fluido.rho0, fluido.h0.kJkg, fluido.s0.kJkgK, fluido.g0.kJkg, fluido.a0.kJkg, fluido.P_Pideal.MPa))
-    # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g"
-          # % (fluido.dhdT_rho.kJkgK, fluido.dhdT_P.kJkgK, fluido.dhdrho_T.kJkgkgm3, fluido.dhdrho_P.kJkgkgm3, fluido.dhdP_T.kJkgMPa, fluido.dhdP_rho.kJkgMPa))
-    # print("%0.12g %0.12g" % (fluido.Gruneisen, fluido.Z_rho))
-
-    # fluido = RefProp(ids=[62], T=300, x=.5)
-    # print("%0.12g %0.12g" % (fluido.csat[0].kJkgK, fluido.dpdt_sat[0].MPaK))
-
-#    fluido=RefProp(fluido=[u'hydrogen', u'nitrogen', u'oxygen', u'water'], fraccionMolar=[0.03, 0.95, 0.01, 0.01], T=300, P=1e5)
-#    print(fluido.rho, fluido.cp.kJkgK, fluido.cv.kJkgK)
-
-    # from lib.corriente import Corriente
-    # kw = {"MEoS": True, "refprop": True, "ids": [5, 6, 7, 8, 10]}
-    # entrada = Corriente(T=300, x=0.7, caudalMasico=0.01,
-                        # fraccionMolar=[.3, 0.25, 0.05, 0.15, 0.25], **kw)
-
-    # fluido = RefProp(ids=[5, 6, 7, 8, 10], fraccionMolar=[0.3, 0.25, 0.15, 0.05, 0.25], T=300, x=0.5)
-    # import pprint
-    # pprint.pprint(fluido.__dict__)
-    # print("%0.12g %0.12g %0.12g %0.12g %0.12g %0.12g" % (fluido.vE, fluido.uE.kJkg, fluido.hE.kJkg, fluido.sE.kJkgK, fluido.aE.kJkg, fluido.gE.kJkg))
-    # print(fluido.M, fluido.Tc, fluido.Pc.MPa, fluido.rhoc)
-
-#     # Code for advanced thermal test
+    # Code for advanced thermal test
     # from lib.mEoS.H2O import H2O
     # from lib.coolProp import CoolProp
     # from lib.iapws97 import IAPWS97
@@ -850,23 +848,11 @@ if __name__ == '__main__':
                 # if r.__getattribute__(key) == m.__getattribute__(key):
                     # pass
 
-    # st = RefProp(ids=[62], T=300, P=1e5)
-    # st2 = st._new(T=300, P=2e5)
-    # print(st.rho, st2.rho)
-    # print(st.P, st2.P)
 
-
-    # st = RefProp(ids=[62], T=286.04443, x=0.5)
-    # from pprint import pprint
-    # pprint(st.__dict__)
-    # print(st.rhoM)
-
-    T = 463
-    P = 1e5
-
-    st = RefProp(ids=[62], T=T, P=P)
-    # st = RefProp(ids=[62], T=T, x=0.5)
-    print(st.T, st.P.bar, st.v, st.u)
-    st = RefProp(ids=[62], u=st.u, v=st.v)
-    print(st.status, st.msg)
-    print(st.T, st.P.bar, st.v, st.u)
+    st = RefProp(ids=[62])
+    p = st._Sublimation_Pressure(263.16, [1])
+    print(p)
+    from lib.mEoS import H2O
+    st2 = H2O(T=300)
+    p = st2._Sublimation_Pressure(263.16)
+    print(p)
