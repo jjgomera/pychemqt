@@ -52,8 +52,7 @@ from lib.utilities import formatLine
 from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
                         MarkerCombo, ColorSelector, InputFont)
 
-# from .table import TablaMEoS
-from .library import calcPoint
+from .library import calcPoint, getLimit, getClassFluid, getMethod
 
 
 class PlotMEoS(QtWidgets.QWidget):
@@ -178,10 +177,17 @@ class PlotMEoS(QtWidgets.QWidget):
         else:
             data = obj.get_data(orig=True)
 
-        from .table import TablaMEoS
+        # Don't import at top level to avoid recursion import
+        from .table import TablaMEoS  # noqa
+
         tabla = TablaMEoS(self.dim, horizontalHeader=HHeader, units=units,
                           stretch=False, readOnly=True, parent=self.parent)
-        tabla.Point = mEoS.__all__[self.config["fluid"]]
+
+        method = getMethod()
+        projectConfig = self.parent.currentConfig
+        index = projectConfig.getint("MEoS", "fluid")
+        tabla.Point = getClassFluid(method, index)
+
         tabla.setData(transpose(data))
         tabla.verticalHeader().setContextMenuPolicy(
             QtCore.Qt.CustomContextMenu)
@@ -217,9 +223,9 @@ class PlotMEoS(QtWidgets.QWidget):
     def click(self, event):
         """Update input and graph annotate when mouse click over chart"""
         # Accept only left click
-        print(event, self.x, self.y)
         if event.button != 1:
             return
+
         units = {"x": unidades.Dimensionless,
                  "T": unidades.Temperature,
                  "P": unidades.Pressure,
@@ -232,15 +238,16 @@ class PlotMEoS(QtWidgets.QWidget):
             x = units[self.x](event.xdata, "conf")
             y = units[self.y](event.ydata, "conf")
 
-            fluid = mEoS.__all__[self.config["fluid"]]
+            method = self.config["method"]
+            index = self.config["fluid"]
+            fluid = getClassFluid(method, index)
             kwargs = {self.x: x, self.y: y}
-            print(fluid, self.config, kwargs)
             fluido = calcPoint(fluid, self.config, **kwargs)
+            Tmin, Tmax, Pmin, Pmax = getLimit(fluid, self.config)
+
             if fluido and fluido.status and \
-                    fluido._constants["Tmin"] <= fluido.T and \
-                    fluido.T <= fluido._constants["Tmax"] and \
-                    0 < fluido.P.kPa and \
-                    fluido.P.kPa <= fluido._constants["Pmax"]:
+                    Tmin <= fluido.T <= Tmax and \
+                    0 < fluido.P.kPa <= Pmax:
                 self.plot.lx.set_ydata(event.ydata)
                 self.plot.ly.set_xdata(event.xdata)
                 self.plot.lx.set_visible(True)
@@ -344,17 +351,25 @@ class PlotMEoS(QtWidgets.QWidget):
         data["margintop"] = self.plot.fig.subplotpars.top
 
         # Config
+        data["method"] = self.config["method"]
         data["fluid"] = self.config["fluid"]
         data["eq"] = self.config["eq"]
         data["visco"] = self.config["visco"]
         data["thermal"] = self.config["thermal"]
 
+        if self.config["method"] == "meos":
+            data["external_dependences"] = ""
+        elif self.config["method"] == "coolprop":
+            data["external_dependences"] = "CoolProp"
+        else:
+            data["external_dependences"] = "refprop"
+
         # data
         lines = {}
         for line in self.plot.ax.lines[2:]:
             dat = {}
-            dat["x"] = list(line.get_xdata())
-            dat["y"] = list(line.get_ydata())
+            dat["x"] = line.get_xdata().tolist()
+            dat["y"] = line.get_ydata().tolist()
             dat["label"] = line.get_label()
 
             # line style
@@ -512,6 +527,7 @@ class PlotMEoS(QtWidgets.QWidget):
 
         # Load config
         conf = {}
+        conf["method"] = data["method"]
         conf["fluid"] = data["fluid"]
         conf["eq"] = data["eq"]
         conf["visco"] = data["visco"]
@@ -954,32 +970,34 @@ class EditPlot(QtWidgets.QDialog):
         """Add a isoline to plot"""
         dialog = AddLine()
         if dialog.exec_():
+            method = getMethod()
+            projectConfig = self.parent.currentConfig
             points = get_points(config.Preferences)
             self.parent.progressBar.setVisible(True)
-            index = self.parent.currentConfig.getint("MEoS", "fluid")
-            # fluid = getClassFluid(self.config)
-            fluid = mEoS.__all__[index]
+            index = projectConfig.getint("MEoS", "fluid")
+            fluid = getClassFluid(method, index)
             prop = dialog.tipo.currentIndex()
             value = dialog.input[prop].value
 
-            eq = fluid.eq[self.parent.currentConfig.getint("MEoS", "eq")]
-            T = list(concatenate([
-                linspace(eq["Tmin"], 0.9*fluid.Tc, points),
+
+            Tmin, Tmax, Pmin, Pmax = getLimit(fluid, projectConfig)
+            Pmax = Pmax*1000
+
+            T = concatenate([
+                linspace(Tmin, 0.9*fluid.Tc, points),
                 linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points),
                 linspace(0.99*fluid.Tc, fluid.Tc, points),
                 linspace(fluid.Tc, 1.01*fluid.Tc, points),
                 linspace(1.01*fluid.Tc, 1.1*fluid.Tc, points),
-                linspace(1.1*fluid.Tc, eq["Tmax"], points)]))
+                linspace(1.1*fluid.Tc, Tmax, points)]).tolist()
 
-            Pmin = fluid(T=eq["Tmin"], x=0).P
-            Pmax = eq["Pmax"]*1000
-            P = list(concatenate([
+            P = concatenate([
                 logspace(log10(Pmin), log10(0.9*fluid.Pc), points),
                 linspace(0.9*fluid.Pc, 0.99*fluid.Pc, points),
                 linspace(0.99*fluid.Pc, fluid.Pc, points),
                 linspace(fluid.Pc, 1.01*fluid.Pc, points),
                 linspace(1.01*fluid.Pc, 1.1*fluid.Pc, points),
-                logspace(log10(1.1*fluid.Pc), log10(Pmax), points)]))
+                logspace(log10(1.1*fluid.Pc), log10(Pmax), points)]).tolist()
             for i in range(5, 0, -1):
                 del T[points*i]
                 del P[points*i]

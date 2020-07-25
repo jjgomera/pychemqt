@@ -45,7 +45,8 @@ from .chooseFluid import Ui_ChooseFluid
 from .reference import Ui_ReferenceState, Ui_Properties
 from .plot import PlotMEoS, Plot2D, Plot3D, calcIsoline, get_points, plot2D3D
 from .table import Ui_Saturation, Ui_Isoproperty, createTabla
-from .library import getClassFluid, getMethod, calcPoint, N_PROP, KEYS, UNITS
+from .library import N_PROP, KEYS, UNITS
+from .library import getClassFluid, getMethod, calcPoint, saveProperties
 
 
 class plugin(object):
@@ -230,7 +231,9 @@ class plugin(object):
 
     def showSaturation(self):
         """Show dialog to define input for a two-phase saturation table"""
-        dlg = Ui_Saturation(self.config)
+        method = getMethod()
+        index = self.config.getint("MEoS", "fluid")
+        dlg = Ui_Saturation(method, index)
         if dlg.exec_():
             # Get values
             start = dlg.Inicial.value
@@ -240,8 +243,7 @@ class plugin(object):
             value = arange(start, end, incr)
             if (end-start) % incr == 0:
                 value = append(value, end)
-            fluid = getClassFluid(self.config)
-            method = getMethod()
+            fluid = getClassFluid(method, index)
 
             fluidos = []
             if dlg.VL.isChecked():
@@ -334,13 +336,14 @@ class plugin(object):
                 value2 = append(value2, end)
             v1conf = dlg.unidades[i](value1).str
 
-            fluid = getClassFluid(self.config)
             method = getMethod()
+            index = self.config.getint("MEoS", "fluid")
+            fluid = getClassFluid(method, index)
 
             kwarg = {}
             # Define option parameter for transport method, only available
             # for internal meos method
-            if method == "MEOS":
+            if method == "meos":
                 for key in ("eq", "visco", "thermal"):
                     kwarg[key] = self.config.getint("MEoS", key)
 
@@ -359,7 +362,7 @@ class plugin(object):
             title = QtWidgets.QApplication.translate(
                 "pychemqt", "%s: %s =%s %s changing %s (%s)" % (
                     fluid.name, X, v1conf, unitX, meos.propiedades[j],
-                    method))
+                    method.upper()))
             self.addTable(fluidos, title)
 
     def addTable(self, fluidos, title):
@@ -367,7 +370,9 @@ class plugin(object):
         fluidos: List with fluid instances
         title: Text title for window table"""
         tabla = createTabla(self.config, title, fluidos, self.parent())
-        tabla.Point = getClassFluid(self.config)
+        method = getMethod()
+        fluid = self.config.getint("MEoS", "fluid")
+        tabla.Point = getClassFluid(method, fluid)
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
         wdg = self.parent().centralwidget.currentWidget().subWindowList()[-1]
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
@@ -377,11 +382,13 @@ class plugin(object):
 
     def addTableSpecified(self):
         """Add blank table to mainwindow to calculata point data"""
-        fluid = getClassFluid(self.config)
+        method = getMethod()
+        index = self.config.getint("MEoS", "fluid")
+        fluid = getClassFluid(method, index)
         name = fluid.name
         method = getMethod()
         title = "%s: %s (%s)" % (name, QtWidgets.QApplication.translate(
-            "pychemqt", "Specified state points"), method)
+            "pychemqt", "Specified state points"), method.upper())
         tabla = createTabla(self.config, title, None, self.parent())
         tabla.Point = fluid
         self.parent().centralwidget.currentWidget().addSubWindow(tabla)
@@ -439,7 +446,9 @@ class plugin(object):
         xscale: scale for axis x
         yscale: scale for axis y
         z: property for axis z, optional to 3D plot"""
-        fluid = getClassFluid(self.config)
+        method = getMethod()
+        index = self.config.getint("MEoS", "fluid")
+        fluid = getClassFluid(method, index)
         method = getMethod()
         filename = "%s-%s.pkl" % (method, fluid.name)
 
@@ -534,7 +543,7 @@ class plugin(object):
         method = getMethod()
 
         # Melting and sublimation line only supported in internal meos method
-        if method == "MEOS":
+        if method == "meos":
             # Calculate melting line
             if fluid._melting:
                 self.parent().statusbar.showMessage(
@@ -659,13 +668,22 @@ class plugin(object):
             Pmin = Lt.P
 
             Pmax = eq["Pmax"]*1000
-        elif method == "COOLPROP":
+        elif method == "coolprop":
             Tmin = fluid.eq["Tmin"]
             Tmax = fluid.eq["Tmax"]
             Pmin = fluid.eq["Pmin"]
             Pmax = fluid.eq["Pmax"]
-        elif method == "REFPROP":
-            pass
+        elif method == "refprop":
+            import refprop
+            refprop.setup("def", fluid.name)
+            limit = refprop.limitx([1], t=-1)
+            Tmin = limit["tmin"]
+            try:
+                Pmin = fluid(T=fluid.Tt, x=1).P
+            except:
+                Pmin = 100
+            Tmax = limit["tmax"]
+            Pmax = limit["pmax"]*1000
 
         T = list(concatenate(
             [linspace(Tmin, 0.9*fluid.Tc, points),
@@ -923,9 +941,6 @@ if __name__ == "__main__":
 
     conf = config.getMainWindowConfig()
 
-    # SteamTables = AddPoint(conf)
-    # SteamTables=AddLine(None)
-    # SteamTables = Dialog(conf)
     SteamTables = Plot3D()
 
     SteamTables.show()

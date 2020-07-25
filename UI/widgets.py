@@ -292,7 +292,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
                     float(txt), "conf", magnitud=self.UIconfig)
             else:
                 self.value = self.unidad(txt)
-            if self.value != oldvalue:
+            if self.value != oldvalue or self.value == 0:
                 self.valueChanged.emit(self.value)
                 self.setToolTip()
 

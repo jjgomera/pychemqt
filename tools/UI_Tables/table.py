@@ -42,8 +42,8 @@ from lib.utilities import representacion, exportTable
 from UI.widgets import (Entrada_con_unidades, createAction, Status, Tabla,
                         NumericFactor)
 
-from .plot import PlotMEoS
-from .library import get_propiedades, _getData, getClassFluid
+from tools.UI_Tables.plot import PlotMEoS
+from tools.UI_Tables.library import get_propiedades, _getData, getClassFluid
 
 
 # Table data
@@ -503,7 +503,7 @@ class TablaMEoS(Tabla):
     def setRow(self, row, data):
         """Add data to a row"""
         self.blockSignals(True)
-        self.data = insert(self.data, row, data)
+        insert(self.data, row, data)
         for column, data in enumerate(data):
             if isinstance(data, str):
                 txt = data
@@ -620,7 +620,7 @@ class TablaMEoS(Tabla):
         data["format"] = self.format
 
         # Save data if exist
-        data["data"] = self.data
+        data["data"] = list(self.data)
 
     @classmethod
     def readFromJSON(cls, data, parent):
@@ -651,12 +651,7 @@ class TablaMEoS(Tabla):
         tabla.setWindowTitle(data["title"])
         tabla.setData(data["data"])
 
-        if data["method"] == "meos":
-            fluid = mEoS.__all__[data["fluid"]]()
-        elif data["method"] == "coolprop":
-            fluid = coolProp.CoolProp(ids=[data["fluid"]])
-        elif data["method"] == "refprop":
-            fluid = refProp.RefProp(ids=[data["fluid"]])
+        fluid = getClassFluid(data["method"], data["fluid"])
         tabla.Point = fluid
 
         return tabla
@@ -664,8 +659,15 @@ class TablaMEoS(Tabla):
 
 class Ui_Saturation(QtWidgets.QDialog):
     """Dialog to define input for a two-phase saturation table calculation"""
-    def __init__(self, config=None, parent=None):
-        """config: instance with project config to set initial values"""
+    def __init__(self, method=None, fluid=None, parent=None):
+        """
+        Parameters
+        ----------
+        method: str
+            name of method of calculation, meos, coolprop or refprop
+        fluid: int
+            Index of fluid in list
+        """
         super(Ui_Saturation, self).__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Saturation Table"))
@@ -739,14 +741,15 @@ class Ui_Saturation(QtWidgets.QDialog):
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 10, 1, 1, 4)
 
-        if config:
-            self.fluido = getClassFluid(config)
+        if method:
+            self.fluido = getClassFluid(method, fluid)
             if isinstance(self.fluido, meos.MEoS) and (
                 self.fluido._Melting_Pressure != meos.MEoS._Melting_Pressure or
                     self.fluido._melting):
                 self.SL.setEnabled(True)
             else:
                 self.SL.setEnabled(False)
+
             if isinstance(self.fluido, meos.MEoS) and (
                 self.fluido._sublimation or
                 self.fluido._Sublimation_Pressure !=
@@ -1038,7 +1041,8 @@ class AddPoint(QtWidgets.QDialog):
         Config.read(config.conf_dir + "pychemqtrc")
         for key, input in zip(self.keys, self.Inputs):
             input.setValue(fluid.__getattribute__(key))
-            if fluid.kwargs[key]:
+            if key in fluid.kwargs and \
+                    fluid.kwargs[key] != fluid.__class__.kwargs[key]:
                 input.setResaltado(True)
             else:
                 input.setResaltado(False)
@@ -1053,3 +1057,20 @@ class AddPoint(QtWidgets.QDialog):
         for input in self.Inputs:
             input.clear()
             input.setResaltado(False)
+
+
+if __name__ == "__main__":
+    import sys
+    from lib.refProp import RefProp
+    from lib.mEoS import H2O
+
+    app = QtWidgets.QApplication(sys.argv)
+    conf = config.getMainWindowConfig()
+
+    fluid = RefProp(ids=[62])
+    # fluid = H2O()
+
+    SteamTables = AddPoint(fluid)
+
+    SteamTables.show()
+    sys.exit(app.exec_())

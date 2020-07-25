@@ -39,49 +39,50 @@ KEYS = ThermoAdvanced.propertiesKey()
 UNITS = ThermoAdvanced.propertiesUnit()
 
 
-def getMethod():
+def getMethod(pref=None):
     """Return the thermo method name to use"""
-    pref = ConfigParser()
-    pref.read(config.conf_dir + "pychemqtrc")
+    if pref is None:
+        pref = ConfigParser()
+        pref.read(config.conf_dir + "pychemqtrc")
 
-    if pref.getboolean("MEOS", 'coolprop') and \
-            pref.getboolean("MEOS", 'refprop'):
-        txt = "REFPROP"
-    elif pref.getboolean("MEOS", 'coolprop'):
-        txt = "COOLPROP"
+        if pref.getboolean("MEOS", 'coolprop') and \
+                pref.getboolean("MEOS", 'refprop'):
+            txt = "refprop"
+        elif pref.getboolean("MEOS", 'coolprop'):
+            txt = "coolprop"
+        else:
+            txt = "meos"
     else:
-        txt = "MEOS"
+        txt = pref["method"]
     return txt
 
 
-def getClassFluid(conf):
+def getClassFluid(method, fluid):
     """Return the thermo class to calculate
     Really return the base instance to add kwargs to calculate"""
-    method = getMethod()
 
-    if method == "REFPROP":
+    if method == "refprop":
         # RefProp case, the base instance with the ids kwargs to define the
         # defined compount
-        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
+        id = mEoS.__all__[fluid].id
         fluid = refProp.RefProp(ids=[id])
+        fluid._fixed()
 
-    elif method == "COOLPROP":
+    elif method == "coolprop":
         # CoolProp case, the base instance with the ids kwargs to define the
         # defined compount
-        id = mEoS.__all__[conf.getint("MEoS", "fluid")].id
+        id = mEoS.__all__[fluid].id
         fluid = coolProp.CoolProp(ids=[id])
 
     else:
         # MEOS case, the instance of specified mEoS subclass
-        fluid = mEoS.__all__[conf.getint("MEoS", "fluid")]()
+        fluid = mEoS.__all__[fluid]()
 
     return fluid
 
-
-def calcPoint(fluid, config, **kwargs):
-    """Procedure to calculate point state and check state in P-T range of eq"""
+def getLimit(fluid, config):
     method = getMethod()
-    if method == "MEOS":
+    if method == "meos":
         if isinstance(config, dict):
             option = config
         else:
@@ -92,15 +93,33 @@ def calcPoint(fluid, config, **kwargs):
         kwargs.update(option)
         Tmin = fluid.eq[option["eq"]]["Tmin"]
         Tmax = fluid.eq[option["eq"]]["Tmax"]
-        Pmin = fluid._new(T=fluid.eq[option["eq"]]["Tmin"], x=1).P
+        Pmin = fluid(T=fluid.eq[option["eq"]]["Tmin"], x=1).P
         Pmax = fluid.eq[option["eq"]]["Pmax"]*1000
-    elif method == "COOLPROP":
+    elif method == "coolprop":
         Tmin = fluid.eq["Tmin"]
         Tmax = fluid.eq["Tmax"]
         Pmin = fluid.eq["Pmin"]
         Pmax = fluid.eq["Pmax"]
-    elif method == "REFPROP":
-        pass
+    elif method == "refprop":
+        import refprop
+        refprop.setup("def", fluid.name)
+        limit = refprop.limitx([1], t=-1)
+        # Using the tiple point temperature the Tmin value returned here can be
+        # lower if define en thermal or viscosity procedures
+        Tmin = fluid.Tt
+        try:
+            Pmin = fluid(T=fluid.Tt, x=1).P
+        except:
+            Pmin = 100
+        Tmax = limit["tmax"]
+        Pmax = limit["pmax"]*1000
+
+    return Tmin, Tmax, Pmin, Pmax
+
+def calcPoint(fluid, config, **kwargs):
+    """Procedure to calculate point state and check state in P-T range of eq"""
+    method = getMethod()
+    Tmin, Tmax, Pmin, Pmax = getLimit(fluid, config)
 
     if "T" in kwargs:
         if kwargs["T"] < Tmin or kwargs["T"] > Tmax:
@@ -108,20 +127,21 @@ def calcPoint(fluid, config, **kwargs):
     if "P" in kwargs:
         if kwargs["P"] < Pmin-1 or kwargs["P"] > Pmax+1:
             return None
+
     fluido = fluid._new(**kwargs)
 
     if fluido.status not in [1, 3]:
         return None
 
     # Discard any point below the melting line, in solid state
-    if method == "MEOS":
+    if method == "meos":
         if fluido._melting and fluido._melting["Tmin"] <= fluido.T \
                 <= fluido._melting["Tmax"]:
             Pmel = fluido._Melting_Pressure(fluido.T)
             Pmax = min(Pmax, Pmel)
 
     # Discard any point out of limit of equation
-    if fluido.P < Pmin-1 or fluido.P > Pmax+1 or fluido.T < Tmin\
+    if fluido.P < Pmin-1 or fluido.P > Pmax+1 or fluido.T < Tmin \
             or fluido.T > Tmax:
         return None
 
