@@ -466,19 +466,30 @@ class plugin(object):
         grafico.y = y
         grafico.z = z
 
-        unitx = UNITS[KEYS.index(x)].magnitudes()[0][0]
-        unity = UNITS[KEYS.index(y)].magnitudes()[0][0]
-        i = self.config.getint("Units", unitx)
-        j = self.config.getint("Units", unity)
-        xtxt = "%s, %s" % (x, UNITS[KEYS.index(x)].__text__[i])
-        ytxt = "%s, %s" % (y, UNITS[KEYS.index(y)].__text__[j])
+        if UNITS[KEYS.index(x)] != unidades.Dimensionless:
+            unitx = UNITS[KEYS.index(x)].magnitudes()[0][0]
+            i = self.config.getint("Units", unitx)
+            xtxt = "%s, %s" % (x, UNITS[KEYS.index(x)].__text__[i])
+        else:
+            xtxt = "%s" % x
         grafico.plot.ax.set_xlabel(xtxt)
+
+        if UNITS[KEYS.index(y)] != unidades.Dimensionless:
+            unity = UNITS[KEYS.index(y)].magnitudes()[0][0]
+            j = self.config.getint("Units", unity)
+            ytxt = "%s, %s" % (y, UNITS[KEYS.index(y)].__text__[j])
+        else:
+            ytxt = "%s" % y
         grafico.plot.ax.set_ylabel(ytxt)
+
         if z:
             grafico.z = z
-            unitz = UNITS[KEYS.index(z)].magnitudes()[0][0]
-            k = self.config.getint("Units", unitz)
-            ztxt = "%s, %s" % (z, UNITS[KEYS.index(z)].__text__[k])
+            if UNITS[KEYS.index(z)] != unidades.Dimensionless:
+                unitz = UNITS[KEYS.index(z)].magnitudes()[0][0]
+                k = self.config.getint("Units", unitz)
+                ztxt = "%s, %s" % (z, UNITS[KEYS.index(z)].__text__[k])
+            else:
+                ztxt = "%s" % y
             grafico.plot.ax.set_zlabel(ztxt)
 
         self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(

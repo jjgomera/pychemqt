@@ -1698,7 +1698,13 @@ def _getunitTransform(eje):
     else:
         unit = meos.units[meos.keys.index(eje)]
         factor = unit(1.).config()
-        return lambda val: val*factor if val is not None else nan
+        def f(val):
+            if val is not None and type(val) != str:
+                return val*factor
+            else:
+                return nan
+        return f
+        # return lambda val: val*factor if val is not None else nan
 
 
 if __name__ == "__main__":
