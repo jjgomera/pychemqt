@@ -125,8 +125,9 @@ class PlotMEoS(QtWidgets.QWidget):
         menuTable.setIcon(
             QtGui.QIcon(os.environ["pychemqt"]+"/images/button/table"))
         for linea in self.plot.ax.lines:
-            action = createAction(linea.get_label(),
-                                  slot=partial(self.table, linea), parent=self)
+            action = createAction(
+                linea.get_label(),
+                slot=partial(self.table, linea), parent=self)
             menuTable.addAction(action)
 
         menu = QtWidgets.QMenu()
@@ -188,14 +189,18 @@ class PlotMEoS(QtWidgets.QWidget):
         index = projectConfig.getint("MEoS", "fluid")
         tabla.Point = getClassFluid(method, index)
 
-        tabla.setData(transpose(data))
+        tabla.setData(list(map(list, transpose(data))))
         tabla.verticalHeader().setContextMenuPolicy(
             QtCore.Qt.CustomContextMenu)
 
+        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
         title = QtWidgets.QApplication.translate("pychemqt", "Table from") + \
             " " + obj.get_label()
         tabla.setWindowTitle(title)
-        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
+        wdg = self.parent.centralwidget.currentWidget().subWindowList()[-1]
+        wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
+        self.parent.dirty[self.parent.idTab] = True
+        self.parent.saveControl()
         tabla.show()
 
     def _getData(self):

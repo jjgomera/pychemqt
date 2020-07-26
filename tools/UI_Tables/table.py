@@ -105,6 +105,7 @@ def createTabla(config, title, fluidos=None, parent=None):
                 columnInput.append(True)
                 columnInput.append(True)
         kw["columnReadOnly"] = columnInput
+        kw["dinamica"] = True
 
         # Discard the keys from single phase state as input values
         if config.getboolean("MEoS", "phase"):
@@ -138,6 +139,8 @@ class TablaMEoS(Tabla):
         if "keys" in kwargs:
             self.keys = kwargs["keys"]
             del kwargs["keys"]
+        else:
+            self.keys = []
         self.units = kwargs["units"]
         del kwargs["units"]
         if "orderUnit" in kwargs:
@@ -175,6 +178,8 @@ class TablaMEoS(Tabla):
 
     def _getPlot(self):
         """Return plot if it's loaded"""
+        # FIXME: This procedure detect the first PlotMeos window, correct or
+        # incorrect
         if not self.Plot:
             windows = self.parent.centralwidget.currentWidget().subWindowList()
             for window in windows:
@@ -423,6 +428,9 @@ class TablaMEoS(Tabla):
 
     def selectPoint(self):
         """Show selected point in table in asociated plot if exist"""
+        if self.dinamica:
+            return
+
         plot = self._getPlot()
         if plot:
             # Remove old selected point if exist
@@ -503,7 +511,7 @@ class TablaMEoS(Tabla):
     def setRow(self, row, data):
         """Add data to a row"""
         self.blockSignals(True)
-        insert(self.data, row, data)
+        self.data.insert(row, data)
         for column, data in enumerate(data):
             if isinstance(data, str):
                 txt = data
@@ -600,16 +608,17 @@ class TablaMEoS(Tabla):
             data["external_dependences"] = ""
         elif isinstance(self.Point, coolProp.CoolProp):
             data["method"] = "coolprop"
-            data["fluid"] = self.Point.kwargs["ids"][0]
+            data["fluid"] = mEoS.id_mEoS.index(self.Point.kwargs["ids"][0])
             data["external_dependences"] = "CoolProp"
         else:
             data["method"] = "refprop"
-            data["fluid"] = self.Point.kwargs["ids"][0]
+            data["fluid"] = mEoS.id_mEoS.index(self.Point.kwargs["ids"][0])
             data["external_dependences"] = "refprop"
 
         # Save keys
         data["keys"] = self.keys
         data["readOnly"] = self.readOnly
+        data["dinamica"] = self.dinamica
         if not self.readOnly:
             data["columnReadOnly"] = self.columnReadOnly
 
@@ -619,7 +628,7 @@ class TablaMEoS(Tabla):
         # Save format
         data["format"] = self.format
 
-        # Save data if exist
+        # Save data
         data["data"] = list(self.data)
 
     @classmethod
@@ -640,6 +649,7 @@ class TablaMEoS(Tabla):
         kwargs["units"] = units
         kwargs["orderUnit"] = data["orderUnit"]
         kwargs["keys"] = data["keys"]
+        kwargs["dinamica"] = data["dinamica"]
 
         if data["readOnly"]:
             kwargs["readOnly"] = True
