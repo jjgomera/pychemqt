@@ -571,18 +571,7 @@ class plugin(object):
                     self.parent().progressBar.setValue(5*len(fluidos)/len(T))
                     QtWidgets.QApplication.processEvents()
                 if fluidos:
-                    data["melting"] = {}
-                    for x in ThermoAdvanced.propertiesKey():
-                        dat_propiedad = []
-                        for fluido in fluidos:
-                            num = fluido.__getattribute__(x)
-                            if num is not None:
-                                if x in ["fi", "f"]:
-                                    num = num[0]
-                                dat_propiedad.append(num._data)
-                            else:
-                                dat_propiedad.append(None)
-                        data["melting"][x] = dat_propiedad
+                    data["melting"] = saveProperties(fluidos)
 
             # Calculate sublimation line
             if fluid._sublimation:
@@ -600,18 +589,7 @@ class plugin(object):
                     self.parent().progressBar.setValue(5+5*len(fluidos)/len(T))
                     QtWidgets.QApplication.processEvents()
                 if fluidos:
-                    data["sublimation"] = {}
-                    for x in ThermoAdvanced.propertiesKey():
-                        dat_propiedad = []
-                        for fluido in fluidos:
-                            num = fluido.__getattribute__(x)
-                            if num is not None:
-                                if x in ["fi", "f"]:
-                                    num = num[0]
-                                dat_propiedad.append(num._data)
-                            else:
-                                dat_propiedad.append(None)
-                        data["sublimation"][x] = dat_propiedad
+                    data["sublimation"] = saveProperties(fluidos)
 
         # Define the saturation temperature
         T = list(concatenate([linspace(fluid.Tt, 0.9*fluid.Tc, points),
@@ -626,21 +604,16 @@ class plugin(object):
         for fase in [0, 1]:
             fluidos = []
             for Ti in T:
-                fluidos.append(fluid._new(T=Ti, x=fase))
+                print("x = %i" % fase, Ti)
+                try:
+                    fluidos.append(fluid._new(T=Ti, x=fase))
+                except:
+                    pass
                 self.parent().progressBar.setValue(
                     10+5*fase+5*len(fluidos)/len(T))
                 QtWidgets.QApplication.processEvents()
 
-            data["saturation_%i" % fase] = {}
-            for key in ThermoAdvanced.propertiesKey():
-                dat_propiedad = []
-                for fluido in fluidos:
-                    if fluido.status:
-                        p = fluido.__getattribute__(key)
-                        if key in ["fi", "f"]:
-                            p = p[0]
-                        dat_propiedad.append(p)
-                data["saturation_%i" % fase][key] = dat_propiedad
+            data["saturation_%i" % fase] = saveProperties(fluidos)
 
         # Calculate isoquality lines
         data["x"] = {}
@@ -652,21 +625,10 @@ class plugin(object):
                                   "T", "x", T, value, 20, i, 20,
                                   len(values), self.parent().progressBar)
 
-            data["x"][value] = {}
-            for key in ThermoAdvanced.propertiesKey():
-                dat_propiedad = []
-                for fluido in fluidos:
-                    if fluido is not None and fluido.status:
-                        p = fluido.__getattribute__(key)
-                        if key in ["fi", "f"]:
-                            p = p[0]
-                        dat_propiedad.append(p)
-                    else:
-                        dat_propiedad.append(None)
-                data["x"][value][key] = dat_propiedad
+            data["x"][value] = saveProperties(fluidos)
 
         # Get limit equation
-        if method == "MEOS":
+        if method == "meos":
             eq = fluid.eq[self.parent().currentConfig.getint("MEoS", "eq")]
             Tmin = eq["Tmin"]
             Tmax = eq["Tmax"]
@@ -723,18 +685,8 @@ class plugin(object):
             fluidos = calcIsoline(fluid, self.config,
                                   "P", "T", P, value, 40, i, 10,
                                   len(values), self.parent().progressBar)
-            data["T"][value] = {}
-            for key in ThermoAdvanced.propertiesKey():
-                dat_propiedad = []
-                for fluido in fluidos:
-                    if fluido is not None and fluido.status:
-                        p = fluido.__getattribute__(key)
-                        if key in ["fi", "f"]:
-                            p = p[0]
-                        dat_propiedad.append(p)
-                    else:
-                        dat_propiedad.append(None)
-                data["T"][value][key] = dat_propiedad
+
+            data["T"][value] = saveProperties(fluidos)
 
         # Calculate isobar lines
         data["P"] = {}
@@ -745,18 +697,7 @@ class plugin(object):
             fluidos = calcIsoline(fluid, self.config,
                                   "T", "P", T, value, 50, i, 10,
                                   len(values), self.parent().progressBar)
-            data["P"][value] = {}
-            for key in ThermoAdvanced.propertiesKey():
-                dat_propiedad = []
-                for fluido in fluidos:
-                    if fluido is not None and fluido.status:
-                        p = fluido.__getattribute__(key)
-                        if key in ["fi", "f"]:
-                            p = p[0]
-                        dat_propiedad.append(p)
-                    else:
-                        dat_propiedad.append(None)
-                data["P"][value][key] = dat_propiedad
+            data["P"][value] = saveProperties(fluidos)
 
         # Calculate isochor lines
         data["v"] = {}
@@ -767,18 +708,7 @@ class plugin(object):
             fluidos = calcIsoline(fluid, self.config,
                                   "T", "v", T, value, 60, i, 10,
                                   len(values), self.parent().progressBar)
-            data["v"][value] = {}
-            for key in ThermoAdvanced.propertiesKey():
-                dat_propiedad = []
-                for fluido in fluidos:
-                    if fluido is not None and fluido.status:
-                        p = fluido.__getattribute__(key)
-                        if key in ["fi", "f"]:
-                            p = p[0]
-                        dat_propiedad.append(p)
-                    else:
-                        dat_propiedad.append(None)
-                data["v"][value][key] = dat_propiedad
+            data["v"][value] = saveProperties(fluidos)
 
         # Calculate isoenthalpic lines
         data["h"] = {}
@@ -789,18 +719,7 @@ class plugin(object):
             fluidos = calcIsoline(fluid, self.config,
                                   "P", "h", P, value, 70, i, 10,
                                   len(values), self.parent().progressBar)
-            data["h"][value] = {}
-            for key in ThermoAdvanced.propertiesKey():
-                dat_propiedad = []
-                for fluido in fluidos:
-                    if fluido is not None and fluido.status:
-                        p = fluido.__getattribute__(key)
-                        if key in ["fi", "f"]:
-                            p = p[0]
-                        dat_propiedad.append(p)
-                    else:
-                        dat_propiedad.append(None)
-                data["h"][value][key] = dat_propiedad
+            data["h"][value] = saveProperties(fluidos)
 
         # Calculate isoentropic lines
         data["s"] = {}
@@ -811,18 +730,7 @@ class plugin(object):
             fluidos = calcIsoline(fluid, self.config,
                                   "P", "s", P, value, 80, i, 20,
                                   len(values), self.parent().progressBar)
-            data["s"][value] = {}
-            for key in ThermoAdvanced.propertiesKey():
-                dat_propiedad = []
-                for fluido in fluidos:
-                    if fluido is not None and fluido.status:
-                        p = fluido.__getattribute__(key)
-                        if key in ["fi", "f"]:
-                            p = p[0]
-                        dat_propiedad.append(p)
-                    else:
-                        dat_propiedad.append(None)
-                data["s"][value][key] = dat_propiedad
+            data["s"][value] = saveProperties(fluidos)
 
         return data
 

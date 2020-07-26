@@ -231,3 +231,17 @@ def _getData(fluid, keys, phase=True, unit=None, table=True):
                 txt = p
             fila.append(txt)
     return fila
+
+def saveProperties(fluids):
+    """Save all available properties of a list of fluids"""
+    dat = {}
+    for key in ThermoAdvanced.propertiesKey():
+        prop = []
+        for fluid in fluids:
+            if fluid is not None and fluid.status in [1, 3]:
+                p = fluid.__getattribute__(key)
+                if key in ["fi", "f"]:
+                    p = p[0]
+                prop.append(p)
+        dat[key] = prop
+    return dat
