@@ -450,7 +450,7 @@ class plugin(object):
         index = self.config.getint("MEoS", "fluid")
         fluid = getClassFluid(method, index)
         method = getMethod()
-        filename = "%s-%s.pkl" % (method, fluid.name)
+        filename = "%s-%s.json" % (method, fluid.name)
 
         if z:
             title = QtWidgets.QApplication.translate(

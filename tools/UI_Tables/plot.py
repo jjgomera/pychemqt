@@ -38,9 +38,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from functools import partial
 import gzip
+import json
 from math import log10, atan, pi
 import os
-import pickle
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from numpy import concatenate, linspace, logspace, transpose, log, nan
@@ -53,6 +53,9 @@ from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
                         MarkerCombo, ColorSelector, InputFont)
 
 from .library import calcPoint, getLimit, getClassFluid, getMethod
+
+
+# FIXME: Plot3D save/load support
 
 
 class PlotMEoS(QtWidgets.QWidget):
@@ -211,19 +214,19 @@ class PlotMEoS(QtWidgets.QWidget):
         if os.path.isfile(filenameSoft):
             print(filenameSoft)
             with open(filenameSoft, "rb") as archivo:
-                data = pickle.load(archivo, fix_imports=False, errors="strict")
+                data = json.load(archivo)
             return data
         elif os.path.isfile(filenameHard):
             print(filenameHard)
             with gzip.GzipFile(filenameHard, 'rb') as archivo:
-                data = pickle.load(archivo, encoding="latin1")
+                data = json.load(archivo)
             self._saveData(data)
             return data
 
     def _saveData(self, data):
         """Save changes in data to file"""
-        with open(config.conf_dir+self.filename, 'wb') as file:
-            pickle.dump(data, file)
+        with open(config.conf_dir+self.filename, 'w') as file:
+            json.dump(data, file)
 
     def click(self, event):
         """Update input and graph annotate when mouse click over chart"""
