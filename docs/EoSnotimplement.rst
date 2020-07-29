@@ -439,13 +439,13 @@ dependence.
     P = \frac{RT}{V+t-b}-\frac{a_c\alpha}{\left(V+t\right)^2}\\
     a_c = \frac{27}{64}\frac{R^2T_c^2}{P_c}\\
     b = \frac{1}{8}\frac{RT_c}{P_c}\\
-    t = t_o + \left(t_c-t_o\right)\exp{\beta |1-T_r|}\\
+    t = t_o + \left(t_c-t_o\right)\exp{\beta \left(1-T_r\right)}\\
     t_o = \frac{RT_c}{P_c}
-    \left(0.03479+0.09370\omega-0.16606\omega^2+0.12499\omega^3\right)\\
+    \left(0.03901+0.0.04451\omega-0.02274\omega^2\right)\\
     t_c = \frac{RT_c}{P_c}\left(\frac{3}{8}-Z_c\right)\\
-    Z_c = 0.2890 - 0.0701\omega - 0.0207 \omega^2\\
+    Z_c = 0.2890 - 0.0701\omega - 0.0207\omega^2\\
     \beta = -7.35356-24.5176\omega+9.19829\omega^2\\
-    \alpha = \left(1+m\left(1-\sqrt{T_r}\right)right)^2\\
+    \alpha = \left(1+m\left(1-\sqrt{T_r}\right)\right)^2\\
     m = 0.48553 + 1.62400\omega - 0.21884\omega^2\\
     \end{array}
 
@@ -497,5 +497,107 @@ Schmidt, G., Wenzel, H. A Modified van der Waals Type Equation of State. Chem.
 Eng. Sci. 35(7) (1980) 1503-1512, http://doi.org/10.1016/0009-2509(80)80044-3.
 
 
+Lee-Erbar-Edmister (1973)
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Modified version of Grayson-Streed-Chao-Seader equation with a modified
+non-cubic equation for the gas phase, this EoS use interaction parameters for
+mixtures.
+
+.. math::
+    P = \frac{RT}{V-b} - \frac{a}{V\left(V-b\right)} +
+    \frac{bc}{V\left(V-b\right)\left(V+b\right)} {}\\
+
+with all three parameters as functions of reduced temperature, critical
+temperature, critical pressure and acentric factor:
+
+.. math::
+    \begin{array}[t]{l}
+    a_i = \frac{R^2T_{ci}^2}{P_{ci}} \left[\left(0.246105+0.02869\omega_i
+    \right) - \left(0.037472+0.149687\omega_i\right)T_{ri} \\
+    {} + \frac{\left(0.16406+0.023727\omega_i\right)}{T_{ri}} +
+    \frac{\left(0.04937+0.132433\omega_i\right)}{T_{ri}^2}\right]\\
+    b_i = \frac{RT_{ci}}{P_{ci}} \left(0.086313+0.002\omega_i\right)\\
+    c_i = \frac{R^2T_{ci}^2}{P_{ci}} \left[\frac{\left(0.451169+0.00948\omega_i
+    \right)}{\sqrt{T_{ri}}}
+    \frac{\left(0.387082+0.078842\omega_i\right)}{T_{ri}^2}\right]\\
+    \end{array}
+
+and a different correlation for liquid fugacity coefficient
+
+.. math::
+    \begin{align*}
+    \ln \nu_i = A_1 + \frac{A_2}{T_r} + A_3\ln T_r + A_4T_r + A_5T_r^2 +
+    A_6T_r^7\\
+    {} + \left(A_7 + \frac{A_8}{T_r} + A_9\ln T_r + A_{10}T_r^2 +
+    A_{11}T_r^7\right)P_r\\
+    {} + A_{12}T_r^3P_r^2 + \left[\left(1-T_r\right)\left(A_{13}+\frac{A_{14}}
+    {T_r} + A_{15}T_r\right)\\
+    {} + A_{16}\frac{P_r}{T_r} + A_{17}T_rP_r^2\right]\omega - \ln P_r\\
+    \end{align*}
+
+17 coeeficient, with many set of values for different compounds.
+
+The activity coefficient for liquid phase use a modified Scatchard-Hildebrand
+versión with as many as 4 interaction parameters.
+
+.. math::
+    \begin{array}[t]{l}
+    \ln{\gamma_i} = \frac{V_i^L}{RT}\left(\sum_j B_{ij}\Phi_j - \frac{1}{2}
+    \sum_j \sum_m B_{jm}\Phi_j\Phi_m\right)\\
+    B_{ij} = \left(\delta_i-\delta_j\right)^2 + 2l_{ij}\delta_i\delta_j\\
+    \end{array}
+
+Its little improved performance does not justify the increased complexity of the
+correlation.
+
+Lee, B-I, Erbar, J.H., Edmister, W.C. Prediction of Thermodynamnic Properties
+for Low Temperature Hydrocarbon Process Calculations. AIChE J. 19(2) (1973)
+349-356, http://doi.org/10.1002/aic.690190221.
+
+
+Robinson-Chao (1971)
+^^^^^^^^^^^^^^^^^^^^
+
+Modified version of Grayson-Streed-Chao-Seader equation using a Redlich-Kwong
+cubic equation modified by Chueh-Prausnitz
+
+.. math::
+    \begin{array}[t]{l}
+    P = \frac{RT}{V-b} - \frac{a}{T^{0.5} V\left(V+b\right)}\\
+    a_i = \frac{\Omega_a R^2 T_{ci}^{2.5}}{P_{ci}}\\
+    b_i = \frac{\Omega_b R T_{ci}}{P_{ci}}\\
+    a = \sum_i \sum_j y_i y_j a_{ij}\\
+    b = \sum_i y_i b_i\\
+    a_{ii} = \frac{\Omega_{ai} R^2 T_{ci}^{2.5}}{P_{ci}}\\
+    a_{ij} = \frac{\left(\Omega_{ai}+\omega_{aj}\right) R^2 T_{cij}^{2.5}}
+    {P_{cij}}\\
+    P_{cij} = \frac{z_{cij}RT_{cij}}{v_{cij}}\\
+    v_{cij}^{1/3} = \frac{1}{2}\left(v_{ci}^{1/3}+v_{cj}^{1/3}\right)\\
+    z_{cij} = 0.291 - 0.08 \left(\frac{\omega_i+\omega_j}{2}\right)\\
+    T_{cij} = \sqrt{T_{ci}T_{cj}}\left(1-k_{ij}\right)\\
+    \end{array}
+
+Forthemore using different mixing rules for a parameter, the Ω parameters are
+compound specific.
+
+The liquid fugacity has modified expresion
+
+.. math::
+    \begin{align*}
+    \log \nu = \log nu^o + \omega \log nu^1\\
+    \log \nu^o = B_o + B_1P_r + B_2P_r^2-\log P_r\\
+    \log \nu^1 = \log \nu_{0.6}^1 + \left(P_r-0.6\right)
+    \frac{\partial\log\nu^1}{\partial P_r}
+    \end{align*}
+
+B₀, B₁ and B₂ are function of Tr, with different dependences at different
+values of Tr.
+
+Robinson, R.L, Chao, K.-C. A Correlation of Vaporization Equilibrium Ratios
+for Gas Processing Systems. Ind. Eng. Chem. Process Des. Develop. 10(2) (1971)
+221-229, http://doi.org/10.1021/i260038a015.
+Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at Hith Pressures. Vapor-
+Phase Fugacity Coefficients in Nonpolar and Quantum-Gas Mixtures. Ind. Eng.
+Chem. Fundam. 6(4) (1967) 492-498, http://doi.org/10.1021/i160024a003.
 
