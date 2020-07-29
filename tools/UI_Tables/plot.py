@@ -121,6 +121,10 @@ class PlotMEoS(QtWidgets.QWidget):
         else:
             self.editMarginAction.setEnabled(False)
 
+    def closeEvent(self, event):
+        self.parent.dirty[self.parent.idTab] = True
+        self.parent.saveControl()
+
     def contextMenuEvent(self, event):
         """Create context menu"""
         menuTable = QtWidgets.QMenu(

@@ -373,8 +373,7 @@ class plugin(object):
         method = getMethod()
         fluid = self.config.getint("MEoS", "fluid")
         tabla.Point = getClassFluid(method, fluid)
-        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
-        wdg = self.parent().centralwidget.currentWidget().subWindowList()[-1]
+        wdg = self.parent().centralwidget.currentWidget().addSubWindow(tabla)
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
         self.parent().dirty[self.parent().idTab] = True
         self.parent().saveControl()
@@ -391,8 +390,7 @@ class plugin(object):
             "pychemqt", "Specified state points"), method.upper())
         tabla = createTabla(self.config, title, None, self.parent())
         tabla.Point = fluid
-        self.parent().centralwidget.currentWidget().addSubWindow(tabla)
-        wdg = self.parent().centralwidget.currentWidget().subWindowList()[-1]
+        wdg = self.parent().centralwidget.currentWidget().addSubWindow(tabla)
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
         self.parent().dirty[self.parent().idTab] = True
         self.parent().saveControl()

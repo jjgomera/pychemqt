@@ -374,6 +374,9 @@ class RefProp(ThermoRefProp):
         except refprop.RefpropdllError as e:
             self.status = 5
             self.msg = str(e)
+        except refprop.RefpropdllWarning as e:
+            self.status = 5
+            self.msg = str(e)
 
     def _initialization(self):
         # TODO: Add configuration section to Preferences
@@ -384,7 +387,6 @@ class RefProp(ThermoRefProp):
         aga = self.kwargs["aga"]
         gerg = self.kwargs["gerg"]
 
-        x = self._x()
         fluido = self._name()
 
         kwmod = [self.kwargs[k] for k in ('htype', 'hmix', 'hcomp')]
@@ -404,6 +406,7 @@ class RefProp(ThermoRefProp):
     def _calculo(self):
         self._initialization()
 
+        x = self._x()
         m = refprop.wmol(x)["wmix"]
         self.M = unidades.Dimensionless(m)
         crit = refprop.critp(x)
@@ -473,12 +476,12 @@ class RefProp(ThermoRefProp):
 
         self.Liquido = ThermoRefProp()
         self.Gas = ThermoRefProp()
-        if self.x == 0:
+        if self.x == 0.:
             # liquid phase
             self.fill(self.Liquido, flash["t"], flash["D"], flash["x"])
             self.fill(self, flash["t"], flash["D"], flash["x"])
             self.fillNone(self.Gas)
-        elif self.x == 1:
+        elif self.x == 1.:
             # vapor phase
             self.fill(self.Gas, flash["t"], flash["D"], flash["x"])
             self.fill(self, flash["t"], flash["D"], flash["x"])
@@ -849,8 +852,8 @@ if __name__ == '__main__':
                     # pass
 
 
-    st = RefProp(ids=[62])
-    p = st._Sublimation_Pressure(263.16, [1])
+    st = RefProp(ids=[140])
+    p = st._Sublimation_Pressure(178, [1])
     print(p)
     from lib.mEoS import H2O
     st2 = H2O(T=300)

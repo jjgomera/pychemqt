@@ -1230,7 +1230,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuVentana.addAction(
             QtGui.QIcon(IMAGE_PATH + "button/fileClose.png"),
             QtWidgets.QApplication.translate("pychemqt", "&Close window"),
-            self.currentMdi.closeActiveSubWindow)
+            self.windowClose)
+
+    def windowClose(self):
+        self.currentMdi.closeActiveSubWindow()
+        self.dirty[self.idTab] = True
+        self.saveControl()
 
     def windowSelect(self, index):
         """Show the selected subwindow"""

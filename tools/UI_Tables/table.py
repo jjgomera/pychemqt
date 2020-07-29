@@ -176,6 +176,10 @@ class TablaMEoS(Tabla):
         if not self.readOnly:
             self.cellChanged.connect(self.calculatePoint)
 
+    def closeEvent(self, event):
+        self.parent.dirty[self.parent.idTab] = True
+        self.parent.saveControl()
+
     def _getPlot(self):
         """Return plot if it's loaded"""
         # FIXME: This procedure detect the first PlotMeos window, correct or
