@@ -306,7 +306,7 @@ class TablaMEoS(Tabla):
                     txt = title.split(" = ")[1]
                     unit = units[var]
                     value = float(txt.split(" ")[0])
-                    stdValue = unit(value, "conf")
+                    stdValue = str(unit(value, "conf"))
                     for x in ThermoAdvanced.propertiesKey():
                         del data[var][stdValue][x][row]
             plot._saveData(data)
@@ -407,7 +407,7 @@ class TablaMEoS(Tabla):
                 txt = title.split(" = ")[1]
                 unit = units[var]
                 value = float(txt.split(" ")[0])
-                stdValue = unit(value, "conf")
+                stdValue = str(unit(value, "conf"))
 
                 for x in ThermoAdvanced.propertiesKey():
                     data[var][stdValue][x].insert(

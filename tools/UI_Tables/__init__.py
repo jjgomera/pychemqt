@@ -450,7 +450,7 @@ class plugin(object):
         index = self.config.getint("MEoS", "fluid")
         fluid = getClassFluid(method, index)
         method = getMethod()
-        filename = "%s-%s.json" % (method, fluid.name)
+        filename = "%s-%s.json" % (method, fluid.name.lower())
 
         if z:
             title = QtWidgets.QApplication.translate(
@@ -746,7 +746,10 @@ class plugin(object):
             start = Preferences.getfloat("MEOS", name+"Start")
             end = Preferences.getfloat("MEOS", name+"End")
             step = Preferences.getfloat("MEOS", name+"Step")
-            t = list(arange(start, end+step, step))
+            if start <= end and step:
+                t = list(arange(start, end+step, step))
+            else:
+                t = []
 
         if fluid is not None and Preferences.getboolean("MEOS", name+"Critic"):
             if name == "Isotherm":

@@ -90,10 +90,9 @@ def getLimit(fluid, config):
             option["eq"] = config.getint("MEoS", "eq")
             option["visco"] = config.getint("MEoS", "visco")
             option["thermal"] = config.getint("MEoS", "thermal")
-        kwargs.update(option)
         Tmin = fluid.eq[option["eq"]]["Tmin"]
         Tmax = fluid.eq[option["eq"]]["Tmax"]
-        Pmin = fluid(T=fluid.eq[option["eq"]]["Tmin"], x=1).P
+        Pmin = fluid._new(T=fluid.eq[option["eq"]]["Tmin"], x=1, **option).P
         Pmax = fluid.eq[option["eq"]]["Pmax"]*1000
     elif method == "coolprop":
         Tmin = fluid.eq["Tmin"]

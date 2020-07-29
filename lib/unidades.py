@@ -354,7 +354,7 @@ with support for class unidad operations: txt, config. func."""
             self._data = 0
             self.code = "n/a"
         else:
-            self._data = data
+            self._data = float(data)
             self.code = ""
         logging.debug("%s, %f" % (self.__class__.__name__, self._data))
 
