@@ -18,15 +18,21 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+###############################################################################
+# Plot library with all matplotlib functionality
+###############################################################################
 
-from PyQt5 import QtCore, QtWidgets
 
-from matplotlib import rcParams
-rcParams['backend'] = 'QT5Agg'  #Fija el backend de las ventanas de matplotlib a qt5
-rcParams['font.size'] = '9'
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from PyQt5 import QtWidgets
+
+from matplotlib.backends.backend_qt5agg import (
+    FigureCanvasQTAgg, NavigationToolbar2QT)
 from pylab import Figure
 from mpl_toolkits.mplot3d import Axes3D
+
+from matplotlib import rcParams
+rcParams['backend'] = 'QT5Agg'  # Set matplotlib backend
+rcParams['font.size'] = '9'
 
 
 class mpl(FigureCanvasQTAgg):
@@ -35,28 +41,9 @@ class mpl(FigureCanvasQTAgg):
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
         self.ax = self.fig.add_subplot(111)
-        # self.ax.figure.subplots_adjust(left=0.08, right=0.92, bottom=0.1, top=0.95)
-        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        FigureCanvasQTAgg.updateGeometry(self)
-
-
-    def config(self, xmin=None, xmax=None, ymin=None, ymax=None, scalex="linear", scaley="linear"):
-        self.ax.clear()
-        self.ax.set_autoscale_on(False)
-        self.ax.set_xlabel("Pr", horizontalalignment='right', size='12')
-        self.ax.set_ylabel("Z", size='14')
-        self.ax.grid(True)
-        if xmin!=None and xmax!=None:
-            self.ax.set_xlim(xmin, xmax)
-        else:
-            self.ax.set_autoscalex_on(True)
-        if ymin!=None and ymax!=None:
-            self.ax.set_ylim(ymin, ymax)
-        else:
-            self.ax.set_autoscaley_on(True)
-
-        self.ax.set_xscale(scalex)
-        self.ax.set_yscale(scaley)
+        self.setSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        self.updateGeometry()
 
     def plot(self, *args, **kwargs):
         self.ax.plot(*args, **kwargs)
@@ -75,8 +62,7 @@ class mpl(FigureCanvasQTAgg):
         if fname and ext == fmt:
             if fname.split(".")[-1] != "png":
                 fname += ".png"
-            self.fig.savefig(fname, facecolor='#eeeeee')
-
+            self.fig.savefig(fname, facecolor='#fafafa')
 
 
 class matplotlib(FigureCanvasQTAgg):
@@ -126,28 +112,33 @@ class matplotlib(FigureCanvasQTAgg):
 #        layout.addWidget(self.toolbar)
 #
 
+
 class Plot(QtWidgets.QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, accept=False, cancel=True, parent=None):
         super(Plot, self).__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
 
-        self.plot=matplotlib()
-        gridLayout.addWidget(self.plot,1,1,1,2)
-        self.toolbar=NavigationToolbar2QT(self.plot, self.plot)
-        gridLayout.addWidget(self.toolbar,2,1)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
-        self.buttonBox.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
-        self.buttonBox.rejected.connect(self.reject)
-        gridLayout.addWidget(self.buttonBox,2,2)
+        self.plot = mpl()
+        gridLayout.addWidget(self.plot, 1, 1, 1, 2)
+        self.toolbar = NavigationToolbar2QT(self.plot, self.plot)
+        gridLayout.addWidget(self.toolbar, 2, 1)
+        buttonBox = QtWidgets.QDialogButtonBox()
+        if accept:
+            buttonBox.addButton(QtWidgets.QDialogButtonBox.Ok)
+            buttonBox.accepted.connect(self.accept)
+        if cancel:
+            buttonBox.addButton(QtWidgets.QDialogButtonBox.Cancel)
+            buttonBox.rejected.connect(self.reject)
+        buttonBox.setSizePolicy(
+            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        gridLayout.addWidget(buttonBox, 2, 2)
 
     def addText(self, *args, **kwargs):
         self.plot.ax.text(*args, **kwargs)
 
-
     def addData(self, *args, **kwargs):
         self.plot.ax.plot(*args, **kwargs)
 #        self.plot.draw()
-
 
 
 if __name__ == '__main__':
