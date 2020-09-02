@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS><TS version="2.0" language="es_ES" sourcelanguage="">
-<context encoding="UTF-8">
+<!DOCTYPE TS>
+<TS version="2.1" language="es_ES">
+<context>
     <name>equipment</name>
     <message>
         <location filename="../equipment/UI_tank.py" line="55"/>
@@ -57,7 +58,7 @@
         <source>Entrada</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_grinder.py" line="135"/>
         <source>Índice de trabajo de bond:</source>
         <translation type="unfinished"></translation>
@@ -68,7 +69,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_filter.py" line="54"/>
+        <location filename="../equipment/UI_crystallizer.py" line="54"/>
         <source>Tipo:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -107,12 +108,12 @@
         <source>Costos calculados</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tank.py" line="117"/>
         <source>Coste Adquisición:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tank.py" line="120"/>
         <source>Coste Instalación:</source>
         <translation type="unfinished"></translation>
@@ -128,26 +129,26 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_vacuum.py" line="128"/>
+        <location filename="../equipment/UI_screen.py" line="85"/>
         <source>Gas filtrado</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../equipment/UI_vacuum.py" line="129"/>
+    <message>
+        <location filename="../equipment/UI_screen.py" line="86"/>
         <source>Sólidos recogidos</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_centrifuge.py" line="57"/>
         <source>Proceso inorgánico</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_centrifuge.py" line="58"/>
         <source>Proceso orgánico</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_centrifuge.py" line="72"/>
         <source>Acero al carbón</source>
         <translation type="unfinished"></translation>
@@ -162,7 +163,7 @@
         <source>Monel</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_centrifuge.py" line="75"/>
         <source>Níquel</source>
         <translation type="unfinished"></translation>
@@ -172,12 +173,12 @@
         <source>Caudal calculado:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_crystallizer.py" line="83"/>
         <source>Caudal de diseño:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_crystallizer.py" line="56"/>
         <source>Recirculación externa forzada</source>
         <translation type="unfinished"></translation>
@@ -187,7 +188,7 @@
         <source>Internos de tubo forzado</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_crystallizer.py" line="58"/>
         <source>Discontinuos a vacío</source>
         <translation type="unfinished"></translation>
@@ -217,12 +218,12 @@
         <source>Proceso:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tower.py" line="56"/>
         <source>Destilación</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tower.py" line="57"/>
         <source>Absorción</source>
         <translation type="unfinished"></translation>
@@ -262,7 +263,7 @@
         <source>Torre de pisos</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tower.py" line="88"/>
         <source>De válvula</source>
         <translation type="unfinished"></translation>
@@ -287,7 +288,7 @@
         <source>Diametro:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tower.py" line="111"/>
         <source>Número:</source>
         <translation type="unfinished"></translation>
@@ -377,37 +378,37 @@
         <source>Rendimientos</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_solidWasher.py" line="56"/>
         <source>Tipo de cálculo:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_vacuum.py" line="66"/>
         <source>Calcular caída de presión</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_vacuum.py" line="67"/>
         <source>Calcular tiempo de filtración</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_vacuum.py" line="68"/>
         <source>Calcular número de filtros</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_vacuum.py" line="72"/>
         <source>Nº de filtros:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_vacuum.py" line="76"/>
         <source>Tiempo de filtración:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_solidWasher.py" line="79"/>
         <source>Pérdida de presión:</source>
         <translation type="unfinished"></translation>
@@ -462,7 +463,7 @@
         <source>Superficie:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_vacuum.py" line="142"/>
         <source>Diámetro, µm</source>
         <translation type="unfinished"></translation>
@@ -492,12 +493,12 @@
         <source>Aire</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_solidWasher.py" line="58"/>
         <source>Cálculo, conocido el flujo de vapor, calcular las corrientes de salida</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_solidWasher.py" line="59"/>
         <source>Diseño, calcular el flujo de aire necesario</source>
         <translation type="unfinished"></translation>
@@ -507,12 +508,12 @@
         <source>Humedad relativa en el aire:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_solidWasher.py" line="67"/>
         <source>Humedad residual del sólido:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_solidWasher.py" line="71"/>
         <source>Temperatura del sólido a la salida:</source>
         <translation type="unfinished"></translation>
@@ -537,7 +538,7 @@
         <source>Humedad del aire:</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_solidWasher.py" line="102"/>
         <source>Sólido secado</source>
         <translation type="unfinished"></translation>
@@ -587,7 +588,7 @@
         <source>Cobre</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tank.py" line="71"/>
         <source>Hormigón</source>
         <translation type="unfinished"></translation>
@@ -612,7 +613,7 @@
         <source>Elipsoidal</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../equipment/UI_tank.py" line="89"/>
         <source>Semiesférico</source>
         <translation type="unfinished"></translation>
@@ -651,22 +652,22 @@
 <context>
     <name>pychemqt</name>
     <message>
-        <location filename="../tools/qtelemental.py" line="435"/>
+        <location filename="../tools/UI_Preferences.py" line="540"/>
         <source>General</source>
         <translation>General</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="313"/>
+        <location filename="../tools/UI_confComponents.py" line="48"/>
         <source>Components list</source>
         <translation>Lista de componentes</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="229"/>
+        <location filename="../tools/UI_Tables/table.py" line="855"/>
         <source>Temperature</source>
         <translation>Temperatura</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="306"/>
+        <location filename="../tools/UI_Tables/table.py" line="856"/>
         <source>Pressure</source>
         <translation>Presión</translation>
     </message>
@@ -741,7 +742,7 @@
         <translation>Sólido</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="616"/>
+        <location filename="../tools/UI_Tables/table.py" line="71"/>
         <source>Liquid</source>
         <translation>Líquido</translation>
     </message>
@@ -751,7 +752,7 @@
         <translation>Vapor</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="121"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="70"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
@@ -771,12 +772,12 @@
         <translation>Corrientes</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="97"/>
+        <location filename="../tools/costIndex.py" line="65"/>
         <source>Equipments</source>
         <translation>Equipos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1307"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="211"/>
         <source>Undefined</source>
         <translation>No definida</translation>
     </message>
@@ -831,7 +832,7 @@
         <translation>Alinear a la izquierda</translation>
     </message>
     <message>
-        <location filename="../UI/texteditor.py" line="103"/>
+        <location filename="../tools/UI_Tables/plot.py" line="806"/>
         <source>Center</source>
         <translation>Centrar</translation>
     </message>
@@ -846,97 +847,97 @@
         <translation>Alinear a la derecha</translation>
     </message>
     <message>
-        <location filename="../UI/newComponent.py" line="344"/>
+        <location filename="../UI/flujo.py" line="797"/>
         <source>Delete</source>
         <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="488"/>
+        <location filename="../UI/flujo.py" line="487"/>
         <source>Appearance</source>
         <translation>Apariencia</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="789"/>
+        <location filename="../UI/flujo.py" line="788"/>
         <source>View Properties</source>
         <translation>Ver propiedades</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="466"/>
+        <location filename="../UI/flujo.py" line="465"/>
         <source>Solid Distribution Fit</source>
         <translation>Ajustar distribución de sólidos</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="804"/>
+        <location filename="../UI/flujo.py" line="803"/>
         <source>Show/Hide Id Label</source>
         <translation>Mostrar/Ocultar etiqueta</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="797"/>
+        <location filename="../UI/flujo.py" line="796"/>
         <source>Edit</source>
         <translation>Editar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="815"/>
+        <location filename="../UI/flujo.py" line="814"/>
         <source>Transform</source>
         <translation>Transformar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="816"/>
+        <location filename="../UI/flujo.py" line="815"/>
         <source>Rotate by 90</source>
         <translation>Rotar 90º</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="819"/>
+        <location filename="../UI/flujo.py" line="818"/>
         <source>Rotate by 180</source>
         <translation>Rotar 180º</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="822"/>
+        <location filename="../UI/flujo.py" line="821"/>
         <source>Rotate by 270</source>
         <translation>Rotar 270º</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="826"/>
+        <location filename="../UI/flujo.py" line="825"/>
         <source>Mirror about X</source>
         <translation>Voltear horizontalmente</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="828"/>
+        <location filename="../UI/flujo.py" line="827"/>
         <source>Mirror about Y</source>
         <translation>Horizontal verticalmente</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="954"/>
+        <location filename="../UI/flujo.py" line="952"/>
         <source>Redraw</source>
         <translation>Redibujar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="957"/>
+        <location filename="../UI/flujo.py" line="955"/>
         <source>Select All</source>
         <translation>Seleccionar todo</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="963"/>
+        <location filename="../UI/flujo.py" line="961"/>
         <source>Cut</source>
         <translation>Cortar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="969"/>
+        <location filename="../UI/flujo.py" line="967"/>
         <source>Copy</source>
         <translation>Copiar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="975"/>
+        <location filename="../UI/flujo.py" line="973"/>
         <source>Paste</source>
         <translation>Pegar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="981"/>
+        <location filename="../UI/flujo.py" line="979"/>
         <source>Delete All</source>
         <translation>Borrar todo</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1064"/>
+        <location filename="../UI/flujo.py" line="1062"/>
         <source>Click in desire text position in screen</source>
         <translation>Pinchar en la posición deseada de la pantalla para añadir el texto</translation>
     </message>
@@ -951,7 +952,7 @@
         <translation>Distribución de sólidos</translation>
     </message>
     <message>
-        <location filename="../UI/plots.py" line="133"/>
+        <location filename="../tools/UI_Preferences.py" line="249"/>
         <source>Stream</source>
         <translation>Corriente</translation>
     </message>
@@ -966,7 +967,7 @@
         <translation>Coeficientes de reparto:</translation>
     </message>
     <message>
-        <location filename="../lib/EoS/cubic.py" line="89"/>
+        <location filename="../lib/EoS/cubic.py" line="100"/>
         <source>Original</source>
         <translation>Original</translation>
     </message>
@@ -986,7 +987,7 @@
         <translation>Capacidad calorífica ideal:</translation>
     </message>
     <message>
-        <location filename="../lib/EoS/__init__.py" line="38"/>
+        <location filename="../lib/EoS/__init__.py" line="40"/>
         <source>Ideal</source>
         <translation>Ideal</translation>
     </message>
@@ -1036,17 +1037,17 @@
         <translation>Siguiente</translation>
     </message>
     <message>
-        <location filename="../UI/newComponent.py" line="314"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="274"/>
         <source>Name</source>
         <translation>Nombre</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="855"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="282"/>
         <source>Formula</source>
         <translation>Fórmula</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="894"/>
+        <location filename="../tools/UI_confComponents.py" line="100"/>
         <source>Solids</source>
         <translation>Sólidos</translation>
     </message>
@@ -1086,7 +1087,7 @@
         <translation>Mostrar icono en la bandeja de sistema</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1038"/>
+        <location filename="../tools/UI_Preferences.py" line="317"/>
         <source>Format</source>
         <translation>Formato</translation>
     </message>
@@ -1096,27 +1097,27 @@
         <translation>Factor acéntrico:</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="573"/>
+        <location filename="../tools/UI_Preferences.py" line="571"/>
         <source>Preferences</source>
         <translation>Preferencias</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="544"/>
+        <location filename="../tools/UI_Preferences.py" line="542"/>
         <source>PFD</source>
         <translation>PFD</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="550"/>
+        <location filename="../tools/UI_Preferences.py" line="548"/>
         <source>Numeric format</source>
         <translation>Formato numérico</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="554"/>
+        <location filename="../tools/UI_Preferences.py" line="552"/>
         <source>Applications</source>
         <translation>Aplicaciones</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="236"/>
+        <location filename="../equipment/parents.py" line="232"/>
         <source>Ignore</source>
         <translation>Ignorar</translation>
     </message>
@@ -1126,12 +1127,12 @@
         <translation>Entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="272"/>
+        <location filename="../equipment/parents.py" line="268"/>
         <source>Calculation</source>
         <translation>Cálculo</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="281"/>
+        <location filename="../equipment/parents.py" line="277"/>
         <source>Cost</source>
         <translation>Coste</translation>
     </message>
@@ -1156,32 +1157,32 @@
         <translation>Estándares:</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="1045"/>
+        <location filename="../tools/UI_Tables/reference.py" line="60"/>
         <source>Custom</source>
         <translation>Personalizado</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="59"/>
+        <location filename="../UI/widgets.py" line="63"/>
         <source>Underspecified</source>
         <translation>No especificado</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="59"/>
+        <location filename="../UI/widgets.py" line="63"/>
         <source>Solved</source>
         <translation>Resuelto</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="59"/>
+        <location filename="../UI/widgets.py" line="63"/>
         <source>Ignored</source>
         <translation>Ignorado</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="59"/>
+        <location filename="../UI/widgets.py" line="63"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="59"/>
+        <location filename="../UI/mainWindow.py" line="1406"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
@@ -1236,7 +1237,7 @@
         <translation>&amp;Abrir</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1388"/>
+        <location filename="../UI/mainWindow.py" line="1392"/>
         <source>Open project</source>
         <translation>Abrir proyecto</translation>
     </message>
@@ -1246,7 +1247,7 @@
         <translation>&amp;Guardar</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1363"/>
+        <location filename="../UI/mainWindow.py" line="1367"/>
         <source>Save project</source>
         <translation>Guardar proyecto</translation>
     </message>
@@ -1321,7 +1322,7 @@
         <translation>Definir métodos de cálculo de las propiedades de transporte</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="333"/>
+        <location filename="../tools/UI_confUnits.py" line="220"/>
         <source>Units</source>
         <translation>Unidades</translation>
     </message>
@@ -1346,7 +1347,7 @@
         <translation>Aumentar zoom</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1807"/>
+        <location filename="../UI/mainWindow.py" line="1811"/>
         <source>Zoom</source>
         <translation>Zoom</translation>
     </message>
@@ -1361,7 +1362,7 @@
         <translation>Ventana global</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1021"/>
+        <location filename="../tools/dependences.py" line="64"/>
         <source>Status</source>
         <translation>Estatus</translation>
     </message>
@@ -1441,17 +1442,17 @@
         <translation>Abrir una aplicación de propiedades de aire húmedo</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1787"/>
+        <location filename="../UI/mainWindow.py" line="1791"/>
         <source>Save PFD as image</source>
         <translation>Guardar PFD como imagen</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1690"/>
+        <location filename="../UI/mainWindow.py" line="1694"/>
         <source>About pychemqt</source>
         <translation>Sobre pychemqt</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1703"/>
+        <location filename="../UI/mainWindow.py" line="1707"/>
         <source>About Qt</source>
         <translation>Sobre Qt</translation>
     </message>
@@ -1476,7 +1477,7 @@
         <translation>Equipos</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="864"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="96"/>
         <source>Plot</source>
         <translation>Gráfico</translation>
     </message>
@@ -1731,52 +1732,52 @@
         <translation>&amp;Cerrar ventana</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1268"/>
+        <location filename="../UI/mainWindow.py" line="1272"/>
         <source>Flow Diagram</source>
         <translation>Diagrama de flujo</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1536"/>
+        <location filename="../UI/mainWindow.py" line="1540"/>
         <source>Success</source>
         <translation>Exito</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1539"/>
+        <location filename="../UI/mainWindow.py" line="1543"/>
         <source>Failure</source>
         <translation>Fallo</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1687"/>
+        <location filename="../UI/mainWindow.py" line="1691"/>
         <source>Software for simulate units operations in Chemical Engineering</source>
         <translation>Programa para la simulación de operaciónes unitarias en Ingeniería Química</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1718"/>
+        <location filename="../UI/mainWindow.py" line="1722"/>
         <source>Launched periodic table aplication</source>
         <translation>Tabla periódica lanzada</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1728"/>
+        <location filename="../UI/mainWindow.py" line="1732"/>
         <source>Launched humid air properties aplication</source>
         <translation>Aplicación de propiedades del aire húmedo lanzada</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1738"/>
+        <location filename="../UI/mainWindow.py" line="1742"/>
         <source>Launched unit converter aplication</source>
         <translation>Conversor de unidades lanzado</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1744"/>
+        <location filename="../UI/mainWindow.py" line="1748"/>
         <source>Launched currency converter aplication</source>
         <translation>Conversor de moneda lanzado</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1807"/>
+        <location filename="../UI/mainWindow.py" line="1811"/>
         <source>Zoom factor:</source>
         <translation>Factor de zoom:</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1820"/>
+        <location filename="../UI/mainWindow.py" line="1824"/>
         <source>Overview Window</source>
         <translation>Ventana resumen</translation>
     </message>
@@ -1881,7 +1882,7 @@
         <translation>Correcciones a alta presión</translation>
     </message>
     <message>
-        <location filename="../tools/UI_confTransport.py" line="284"/>
+        <location filename="../tools/UI_confTransport.py" line="295"/>
         <source>Transport Properties Methods</source>
         <translation>Métodos de cálculo de propiedades de Transporte</translation>
     </message>
@@ -1891,17 +1892,17 @@
         <translation>Base de datos de componentes</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="552"/>
+        <location filename="../tools/UI_Preferences.py" line="550"/>
         <source>Pseudocomponents</source>
         <translation>Pseudocomponentes</translation>
     </message>
     <message>
-        <location filename="../UI/prefStandingKatz.py" line="42"/>
+        <location filename="../plots/moody.py" line="379"/>
         <source>Method:</source>
         <translation>Método:</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="243"/>
+        <location filename="../plots/moody.py" line="229"/>
         <source>Reynolds number</source>
         <translation>Número de Reynolds</translation>
     </message>
@@ -2027,12 +2028,12 @@ Verde: Gas, g/l</translation>
         <translation>Índice actual:</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="919"/>
+        <location filename="../tools/UI_Tables/table.py" line="982"/>
         <source>Melting Point</source>
         <translation>Punto de fusión</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="926"/>
+        <location filename="../UI/viewComponents.py" line="950"/>
         <source>Boiling Point</source>
         <translation>Punto de ebullición</translation>
     </message>
@@ -2097,7 +2098,7 @@ Verde: Gas, g/l</translation>
         <translation>Nombre:</translation>
     </message>
     <message>
-        <location filename="../UI/newComponent.py" line="325"/>
+        <location filename="../tools/qtelemental.py" line="387"/>
         <source>Group</source>
         <translation>Grupo</translation>
     </message>
@@ -2287,7 +2288,7 @@ Verde: Gas, g/l</translation>
         <translation>Volumen atómico</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="173"/>
+        <location filename="../plots/moody.py" line="154"/>
         <source>Relative roughness</source>
         <translation>Rugosidad relativa</translation>
     </message>
@@ -2307,12 +2308,12 @@ Verde: Gas, g/l</translation>
         <translation>Flujo vol</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="59"/>
+        <location filename="../UI/newComponent.py" line="403"/>
         <source>Molecular Weight</source>
         <translation>Peso molecular</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="628"/>
+        <location filename="../tools/UI_Tables/table.py" line="857"/>
         <source>Density</source>
         <translation>Densidad</translation>
     </message>
@@ -2322,12 +2323,12 @@ Verde: Gas, g/l</translation>
         <translation>Compresibilidad</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="631"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="421"/>
         <source>Cp</source>
         <translation>Cp</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1051"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="645"/>
         <source>Viscosity</source>
         <translation>Viscosidad</translation>
     </message>
@@ -2342,42 +2343,42 @@ Verde: Gas, g/l</translation>
         <translation>Tensión</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="625"/>
+        <location filename="../tools/UI_Tables/table.py" line="859"/>
         <source>Enthalpy</source>
         <translation>Entalpía</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="274"/>
+        <location filename="../pychemqt.py" line="272"/>
         <source>Checking config files...</source>
         <translation>Comprobando archivos de configuración...</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="310"/>
+        <location filename="../pychemqt.py" line="308"/>
         <source>Checking cost index...</source>
         <translation>Comprobando indice de costos...</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="359"/>
+        <location filename="../pychemqt.py" line="357"/>
         <source>Importing libraries...</source>
         <translation>Importando librerias...</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="368"/>
+        <location filename="../pychemqt.py" line="366"/>
         <source>Loading main window...</source>
         <translation>Cargando interfaz de usuario...</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1351"/>
+        <location filename="../tools/costIndex.py" line="173"/>
         <source>Unsaved changes</source>
         <translation>Cambios sin salvar</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1351"/>
+        <location filename="../tools/costIndex.py" line="173"/>
         <source>Save unsaved changes?</source>
         <translation>¿Guardar cambios?</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1294"/>
+        <location filename="../UI/mainWindow.py" line="1298"/>
         <source>New Project</source>
         <translation>Proyecto Nuevo</translation>
     </message>
@@ -2387,37 +2388,37 @@ Verde: Gas, g/l</translation>
         <translation>archivos de proyecto de pychemqt</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1492"/>
+        <location filename="../UI/mainWindow.py" line="1496"/>
         <source>Closed</source>
         <translation>Cerrado</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1515"/>
+        <location filename="../UI/mainWindow.py" line="1519"/>
         <source>Project configuration</source>
         <translation>Configuración del proyecto</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1602"/>
+        <location filename="../UI/mainWindow.py" line="1606"/>
         <source>pychemqt configuration change</source>
         <translation>Cambio en la configuración de pychemqt</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1750"/>
+        <location filename="../UI/mainWindow.py" line="1754"/>
         <source>Show</source>
         <translation>Mostrar</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1484"/>
+        <location filename="../UI/mainWindow.py" line="1488"/>
         <source>Load</source>
         <translation>Cargar</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="706"/>
+        <location filename="../lib/corriente.py" line="732"/>
         <source>Global stream</source>
         <translation>Corriente completa</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="934"/>
+        <location filename="../lib/corriente.py" line="958"/>
         <source>Vapor Fraction</source>
         <translation>Fracción de vapor</translation>
     </message>
@@ -2427,67 +2428,67 @@ Verde: Gas, g/l</translation>
         <translation>Flujo volumétrico</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="941"/>
+        <location filename="../lib/corriente.py" line="965"/>
         <source>SG, water=1</source>
         <translation>SG, agua=1</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="383"/>
+        <location filename="../UI/prefPetro.py" line="40"/>
         <source>Molecular weight</source>
         <translation>Peso Molecular</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="943"/>
+        <location filename="../lib/corriente.py" line="967"/>
         <source>Molar Composition</source>
         <translation>Composición Molar</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="744"/>
+        <location filename="../lib/corriente.py" line="770"/>
         <source>Vapor Only</source>
         <translation>Fase Vapor</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="817"/>
+        <location filename="../lib/corriente.py" line="843"/>
         <source>Heat Capacity</source>
         <translation>Capacidad calorífica</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="786"/>
+        <location filename="../lib/corriente.py" line="812"/>
         <source>Liquid Only</source>
         <translation>Fase Líquida</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1695"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="673"/>
         <source>Thermal Conductivity</source>
         <translation>Conductividad Térmica</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1113"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="749"/>
         <source>Surface Tension</source>
         <translation>Tensión superficial</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="939"/>
+        <location filename="../lib/corriente.py" line="963"/>
         <source>Critic Temperature</source>
         <translation>Temperatura crítica</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="940"/>
+        <location filename="../lib/corriente.py" line="964"/>
         <source>Critic Pressure</source>
         <translation>Presión crítica</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="944"/>
+        <location filename="../lib/corriente.py" line="968"/>
         <source>Mass Composition</source>
         <translation>Composición Másica</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="945"/>
+        <location filename="../lib/corriente.py" line="969"/>
         <source>Molar Component Flow</source>
         <translation>Flujo molar unitario</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="946"/>
+        <location filename="../lib/corriente.py" line="970"/>
         <source>Mass Component Flow</source>
         <translation>Flujo másico unitario</translation>
     </message>
@@ -2512,12 +2513,12 @@ Verde: Gas, g/l</translation>
         <translation>Perdida de presión</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="515"/>
+        <location filename="../equipment/UI_reactor.py" line="514"/>
         <source>Flow</source>
         <translation>Flujo</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="152"/>
+        <location filename="../equipment/pipe.py" line="151"/>
         <source>undefined input</source>
         <translation>entrada no definida</translation>
     </message>
@@ -2532,27 +2533,27 @@ Verde: Gas, g/l</translation>
         <translation>fracción de separación incompleta</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="279"/>
+        <location filename="../equipment/flux.py" line="277"/>
         <source>pressure output not defined</source>
         <translation>presión a la salida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="290"/>
+        <location filename="../equipment/flux.py" line="288"/>
         <source>some input stream isn&apos;t defined</source>
         <translation>alguna(s) entradas no definidas</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="505"/>
+        <location filename="../equipment/flux.py" line="500"/>
         <source>undefined exit condition</source>
         <translation>condición de salida no definida</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="548"/>
+        <location filename="../tools/UI_Preferences.py" line="546"/>
         <source>Tooltips in units</source>
         <translation>Ayuda en unidades</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="59"/>
+        <location filename="../UI/widgets.py" line="63"/>
         <source>Calculating...</source>
         <translation>Calculando...</translation>
     </message>
@@ -2562,17 +2563,17 @@ Verde: Gas, g/l</translation>
         <translation>Presión a la salida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="261"/>
+        <location filename="../equipment/flux.py" line="259"/>
         <source>Inputs minimum pressure</source>
         <translation>Presión mínima de las entradas</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="262"/>
+        <location filename="../equipment/flux.py" line="260"/>
         <source>Inputs mean pressure</source>
         <translation>Presión media de las entradas</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_mixer.py" line="67"/>
+        <location filename="../equipment/UI_pump.py" line="129"/>
         <source>Output Pressure</source>
         <translation>Presión de salida</translation>
     </message>
@@ -2602,37 +2603,37 @@ Verde: Gas, g/l</translation>
         <translation>Tª punto de burbuja</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="589"/>
+        <location filename="../equipment/compressor.py" line="583"/>
         <source>undefined variables</source>
         <translation>variables no definidas</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="537"/>
+        <location filename="../equipment/compressor.py" line="533"/>
         <source>Specify out pressure and efficiency</source>
         <translation>Especificar presión de salida y eficiencia</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="538"/>
+        <location filename="../equipment/compressor.py" line="534"/>
         <source>Specify pressure ratio and efficiency</source>
         <translation>Especificar razón de compresión y eficiencia</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="539"/>
+        <location filename="../equipment/compressor.py" line="535"/>
         <source>Specify actual power and efficiency</source>
         <translation>Especificar trabajo y eficiencia</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="540"/>
+        <location filename="../equipment/compressor.py" line="536"/>
         <source>Specify out pressure and actual power</source>
         <translation>Especificar presión de salida y trabajo</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="541"/>
+        <location filename="../equipment/compressor.py" line="537"/>
         <source>Specify pressure ratio and actual power</source>
         <translation>Especificar razón de compresión y trabajo</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="542"/>
+        <location filename="../equipment/compressor.py" line="538"/>
         <source>Calculate input flowrate</source>
         <translation>Calcular caudal (sobreescribirá corriente de entrada)</translation>
     </message>
@@ -2642,17 +2643,17 @@ Verde: Gas, g/l</translation>
         <translation>Termodinámica:</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="488"/>
+        <location filename="../equipment/UI_reactor.py" line="487"/>
         <source>Adiabatic</source>
         <translation>Adiabático</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="544"/>
+        <location filename="../equipment/compressor.py" line="540"/>
         <source>Polytropic</source>
         <translation>Politrópico</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="545"/>
+        <location filename="../equipment/compressor.py" line="541"/>
         <source>Isotermic</source>
         <translation>Isotérmico</translation>
     </message>
@@ -2667,12 +2668,12 @@ Verde: Gas, g/l</translation>
         <translation>Razon de compresión</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_fireHeater.py" line="74"/>
+        <location filename="../equipment/UI_scrubber.py" line="140"/>
         <source>Efficiency</source>
         <translation>Rendimiento</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_columnFUG.py" line="142"/>
+        <location filename="../equipment/UI_scrubber.py" line="136"/>
         <source>Results</source>
         <translation>Resultados</translation>
     </message>
@@ -2692,17 +2693,17 @@ Verde: Gas, g/l</translation>
         <translation>Compresor:</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="134"/>
+        <location filename="../equipment/compressor.py" line="133"/>
         <source>Centrifugal compressor</source>
         <translation>Compresor centrífugo</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="135"/>
+        <location filename="../equipment/compressor.py" line="134"/>
         <source>Reciprocating compressor</source>
         <translation>Compresor alternativo</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="136"/>
+        <location filename="../equipment/compressor.py" line="135"/>
         <source>Screw compressor</source>
         <translation>Compresor de tornillo</translation>
     </message>
@@ -2712,12 +2713,12 @@ Verde: Gas, g/l</translation>
         <translation>Transmisión:</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="139"/>
+        <location filename="../equipment/compressor.py" line="138"/>
         <source>Chain drive coupling</source>
         <translation>Por cadena</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="140"/>
+        <location filename="../equipment/compressor.py" line="139"/>
         <source>Variable speed drive coupling</source>
         <translation>De velocidad variable</translation>
     </message>
@@ -2727,17 +2728,17 @@ Verde: Gas, g/l</translation>
         <translation>Motor:</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="167"/>
+        <location filename="../equipment/pump.py" line="166"/>
         <source>Open drip-proof</source>
         <translation>Abierto a prueba de salpicaduras</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="167"/>
+        <location filename="../equipment/pump.py" line="166"/>
         <source>Totally enclosed, fan-cooled</source>
         <translation>Totalmente cerrado, enfriado con ventilador</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="167"/>
+        <location filename="../equipment/pump.py" line="166"/>
         <source>Explosion-proof</source>
         <translation>A prueba de explosiones</translation>
     </message>
@@ -2747,7 +2748,7 @@ Verde: Gas, g/l</translation>
         <translation>RPM:</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_fireHeater.py" line="149"/>
+        <location filename="../equipment/UI_ciclon.py" line="211"/>
         <source>Stimated Costs</source>
         <translation>Costes estimados</translation>
     </message>
@@ -2757,17 +2758,17 @@ Verde: Gas, g/l</translation>
         <translation>Transmisión</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_pump.py" line="226"/>
+        <location filename="../equipment/UI_compressor.py" line="189"/>
         <source>Motor</source>
         <translation>Motor</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_pump.py" line="231"/>
+        <location filename="../equipment/UI_ciclon.py" line="224"/>
         <source>Purchase cost</source>
         <translation>Costo de adquisición</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_pump.py" line="236"/>
+        <location filename="../equipment/UI_ciclon.py" line="229"/>
         <source>Installed cost</source>
         <translation>Costo de instalación</translation>
     </message>
@@ -2777,7 +2778,7 @@ Verde: Gas, g/l</translation>
         <translation>Potencia</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="698"/>
+        <location filename="../lib/corriente.py" line="724"/>
         <source>Input properties</source>
         <translation>Propiedades especificadas</translation>
     </message>
@@ -2787,42 +2788,42 @@ Verde: Gas, g/l</translation>
         <translation>RPM</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_columnFUG.py" line="218"/>
+        <location filename="../equipment/widget.py" line="273"/>
         <source>Material</source>
         <translation>Material</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Monel (Ni-Cu)</source>
         <translation>Monel (NI-Cu)</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>ISO B</source>
         <translation>ISO-B</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>ISO C</source>
         <translation>ISO-C</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="208"/>
+        <location filename="../equipment/pump.py" line="205"/>
         <source>undefined pump curve</source>
         <translation>Curva característica no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="222"/>
+        <location filename="../equipment/pump.py" line="218"/>
         <source>undefined out pressure condition</source>
         <translation>Condiciones de salida de presión no definidas</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="218"/>
+        <location filename="../equipment/pump.py" line="214"/>
         <source>undefined efficiency</source>
         <translation>Rendimiento no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_columnFUG.py" line="233"/>
+        <location filename="../equipment/UI_compressor.py" line="96"/>
         <source>Stages</source>
         <translation>Etapas</translation>
     </message>
@@ -2837,7 +2838,7 @@ Verde: Gas, g/l</translation>
         <translation>Informe generado </translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1006"/>
+        <location filename="../lib/unidades.py" line="1093"/>
         <source>Pressure increase</source>
         <translation>Incremento de presión</translation>
     </message>
@@ -2877,112 +2878,112 @@ Verde: Gas, g/l</translation>
         <translation>Caudal</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="525"/>
+        <location filename="../equipment/UI_reactor.py" line="524"/>
         <source>Design</source>
         <translation>Diseño</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="140"/>
+        <location filename="../equipment/pump.py" line="139"/>
         <source>Centrifugal</source>
         <translation>Centrifuga</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="140"/>
+        <location filename="../equipment/pump.py" line="139"/>
         <source>Reciprocating</source>
         <translation>Alternativa</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="140"/>
+        <location filename="../equipment/pump.py" line="139"/>
         <source>Gear pump</source>
         <translation>De engranajes</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="140"/>
+        <location filename="../equipment/pump.py" line="139"/>
         <source>Vertical mixed flow</source>
         <translation>Flujo vertical mezclado</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="140"/>
+        <location filename="../equipment/pump.py" line="139"/>
         <source>Vertical axial flow</source>
         <translation>Flujo vertical axial</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="146"/>
+        <location filename="../equipment/pump.py" line="145"/>
         <source>One stage, 3550 rpm, VSC</source>
         <translation>Una etapa, 3550 rpm, VSC</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="146"/>
+        <location filename="../equipment/pump.py" line="145"/>
         <source>One stage, 1750 rpm, VSC</source>
         <translation>Una etapa, 1750 rpm, VSC</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="146"/>
+        <location filename="../equipment/pump.py" line="145"/>
         <source>One stage, 3550 rpm, HSC</source>
         <translation>Una etapa, 3550 rpm, HSC</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="146"/>
+        <location filename="../equipment/pump.py" line="145"/>
         <source>One stage, 1750 rpm, HSC</source>
         <translation>Una etapa, 1750 rpm, HSC</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="146"/>
+        <location filename="../equipment/pump.py" line="145"/>
         <source>Two stage, 3550 rpm, HSC</source>
         <translation>Dos etapas, 3550 rpm, HSC</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="146"/>
+        <location filename="../equipment/pump.py" line="145"/>
         <source>Multistage, 3550 rpm, HSC</source>
         <translation>Multietapas, 3550 rpm, HSC</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Cast iron</source>
         <translation>Hierro fundido</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Case steel</source>
         <translation>Acero moldeado</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>304 or 316 fittings</source>
         <translation>Accesorios 304 o 316</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Stainless steel 304 or 316</source>
         <translation>Acero inoxidable 304 o 316</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Case Gould&apos;s alloy no. 20</source>
         <translation>Aleación Gould nº 20</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Nickel</source>
         <translation>Níquel</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="386"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Titanium</source>
         <translation>Titanio</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Hastelloy C (Ni-Fe-Mo)</source>
         <translation>Aleación Ni-Fe-Mo (Hastelloy C)</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Ductile iron</source>
         <translation>Hierro dúctil</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="153"/>
+        <location filename="../equipment/pump.py" line="152"/>
         <source>Bronze</source>
         <translation>Bronce</translation>
     </message>
@@ -2992,7 +2993,7 @@ Verde: Gas, g/l</translation>
         <translation>RPM del motor</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_columnFUG.py" line="289"/>
+        <location filename="../equipment/UI_pump.py" line="217"/>
         <source>Stimated costs</source>
         <translation>Costes estimados</translation>
     </message>
@@ -3047,38 +3048,38 @@ Verde: Gas, g/l</translation>
         <translation>Tipo de motor</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="501"/>
+        <location filename="../equipment/gas_solid.py" line="497"/>
         <source>undefined cyclone dimension</source>
         <translation>Dimensiones del ciclón no definidas</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="528"/>
+        <location filename="../equipment/gas_solid.py" line="522"/>
         <source>undefined cyclone number</source>
         <translation>número de ciclones no definidos</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="532"/>
+        <location filename="../equipment/gas_solid.py" line="526"/>
         <source>undefined cyclone diameter</source>
         <translation>diametro del ciclón no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="517"/>
+        <location filename="../equipment/gas_solid.py" line="512"/>
         <source>undefined loss pressure specification</source>
         <translation>especificación de perdida de presión no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="113"/>
+        <location filename="../equipment/UI_pipe.py" line="179"/>
         <source>Class</source>
         <translation>Clase</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="460"/>
+        <location filename="../equipment/UI_pipe.py" line="180"/>
         <source>Roughness</source>
         <translation>Rugosidad</translation>
     </message>
     <message>
         <location filename="../equipment/UI_pipe.py" line="198"/>
-        <source>N&#xc2;&#xba;</source>
+        <source>NÂº</source>
         <translation>Nª</translation>
     </message>
     <message>
@@ -3087,7 +3088,7 @@ Verde: Gas, g/l</translation>
         <translation>D int</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="452"/>
+        <location filename="../lib/unidades.py" line="539"/>
         <source>Thickness</source>
         <translation>Espesor</translation>
     </message>
@@ -3097,7 +3098,7 @@ Verde: Gas, g/l</translation>
         <translation>D ext</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_flash.py" line="129"/>
+        <location filename="../equipment/UI_pipe.py" line="202"/>
         <source>Weight</source>
         <translation>Peso</translation>
     </message>
@@ -3117,12 +3118,12 @@ Verde: Gas, g/l</translation>
         <translation>Seleccionar</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="476"/>
+        <location filename="../equipment/UI_pipe.py" line="449"/>
         <source>Type</source>
         <translation>Tipo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="57"/>
+        <location filename="../equipment/UI_pipe.py" line="451"/>
         <source>Description</source>
         <translation>Descripción</translation>
     </message>
@@ -3162,12 +3163,12 @@ Verde: Gas, g/l</translation>
         <translation>Expansión</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="402"/>
+        <location filename="../equipment/UI_pipe.py" line="651"/>
         <source>Input diameter</source>
         <translation>Diámetro a la entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="414"/>
+        <location filename="../equipment/UI_pipe.py" line="652"/>
         <source>Output diameter</source>
         <translation>Diámetro a la salida</translation>
     </message>
@@ -3202,7 +3203,7 @@ Verde: Gas, g/l</translation>
         <translation>Radio de salida</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="453"/>
+        <location filename="../lib/unidades.py" line="540"/>
         <source>Pipe Diameter</source>
         <translation>Diámetro de la tubería</translation>
     </message>
@@ -3237,12 +3238,12 @@ Verde: Gas, g/l</translation>
         <translation>Codo segmentado</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="423"/>
+        <location filename="../equipment/UI_pipe.py" line="890"/>
         <source>Catalog</source>
         <translation>Catálogo</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="474"/>
+        <location filename="../equipment/UI_pipe.py" line="898"/>
         <source>Fittings</source>
         <translation>Accesorios</translation>
     </message>
@@ -3252,37 +3253,37 @@ Verde: Gas, g/l</translation>
         <translation>Método</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="125"/>
+        <location filename="../equipment/pipe.py" line="124"/>
         <source>Single Phase flow</source>
         <translation>Flujo unifásico</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="125"/>
+        <location filename="../equipment/pipe.py" line="124"/>
         <source>Water (Hazen-Williams)</source>
         <translation>Flujo de agua (Eq. Hazen-Williams)</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="125"/>
+        <location filename="../equipment/pipe.py" line="124"/>
         <source>Steam (Fritzsche)</source>
         <translation>Flujo de vapor (Ec. de Frtizsche)</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="125"/>
+        <location filename="../equipment/pipe.py" line="124"/>
         <source>Isotermic gas flow</source>
         <translation>Flujo de gas isotérmico</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="125"/>
+        <location filename="../equipment/pipe.py" line="124"/>
         <source>Two Phase flow (Baker method)</source>
         <translation>Flujo bifásico (método de Baker)</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="125"/>
+        <location filename="../equipment/pipe.py" line="124"/>
         <source>Two Phase flow (Beggs and Brill method)</source>
         <translation>Flujo bifásico (método Beggs and Bril)</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="449"/>
+        <location filename="../lib/unidades.py" line="536"/>
         <source>Length</source>
         <translation>Longitud</translation>
     </message>
@@ -3302,17 +3303,17 @@ Verde: Gas, g/l</translation>
         <translation>Modo térmico</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="133"/>
+        <location filename="../equipment/pipe.py" line="132"/>
         <source>Heat flux</source>
         <translation>Flujo de calor</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="497"/>
+        <location filename="../equipment/UI_reactor.py" line="496"/>
         <source>Heat transfer</source>
         <translation>Transferencia de calor</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="491"/>
+        <location filename="../equipment/UI_reactor.py" line="490"/>
         <source>Isothermal</source>
         <translation>Isotérmico</translation>
     </message>
@@ -3332,32 +3333,32 @@ Verde: Gas, g/l</translation>
         <translation>Coeficiente de transferencia de calor</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1460"/>
+        <location filename="../lib/unidades.py" line="1547"/>
         <source>Heat Flux</source>
         <translation>Flujo de calor</translation>
     </message>
     <message>
         <location filename="../equipment/UI_pipe.py" line="982"/>
-        <source>&#xce;&#x94;P total</source>
+        <source>ÎP total</source>
         <translation>ΔP total</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="484"/>
-        <source>&#xce;&#x94;P friction</source>
+        <location filename="../equipment/UI_pipe.py" line="988"/>
+        <source>ÎP friction</source>
         <translation>ΔP frcción</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="486"/>
-        <source>&#xce;&#x94;P fittings</source>
+        <location filename="../equipment/UI_pipe.py" line="994"/>
+        <source>ÎP fittings</source>
         <translation>ΔP accesorios</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="488"/>
-        <source>&#xce;&#x94;P elevation</source>
+        <location filename="../equipment/UI_pipe.py" line="1000"/>
+        <source>ÎP elevation</source>
         <translation>ΔP elevación</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="589"/>
+        <location filename="../lib/unidades.py" line="676"/>
         <source>Speed</source>
         <translation>Velocidad</translation>
     </message>
@@ -3367,7 +3368,7 @@ Verde: Gas, g/l</translation>
         <translation>Reynolds</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_fireHeater.py" line="50"/>
+        <location filename="../equipment/UI_pipe.py" line="1030"/>
         <source>Output Temperature</source>
         <translation>Temperatura salida</translation>
     </message>
@@ -3422,42 +3423,42 @@ Verde: Gas, g/l</translation>
         <translation>Separador Flash</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="156"/>
+        <location filename="../equipment/pipe.py" line="155"/>
         <source>undefined pipe length</source>
         <translation>longitud de la tubería no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="161"/>
+        <location filename="../equipment/pipe.py" line="160"/>
         <source>undefined material</source>
         <translation>material no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="166"/>
+        <location filename="../equipment/pipe.py" line="165"/>
         <source>undefined heat flux</source>
         <translation>Flujo de calor no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="172"/>
+        <location filename="../equipment/pipe.py" line="171"/>
         <source>undefined heat transfer conditions</source>
         <translation>condiciones de transferencia de calor no definidas</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="178"/>
+        <location filename="../equipment/pipe.py" line="177"/>
         <source>undefined C William Factor</source>
         <translation>Factor C de William no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="490"/>
-        <source>&#xce;&#x94;P acceleration</source>
+        <location filename="../equipment/UI_pipe.py" line="1006"/>
+        <source>ÎP acceleration</source>
         <translation>ΔP aceleración</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="109"/>
+        <location filename="../equipment/distillation.py" line="108"/>
         <source>Use P and T from input stream</source>
         <translation>Usar P y T de la corriente de entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_flash.py" line="64"/>
+        <location filename="../equipment/UI_shellTube.py" line="365"/>
         <source>Orientation</source>
         <translation>Orientación</translation>
     </message>
@@ -3477,37 +3478,37 @@ Verde: Gas, g/l</translation>
         <translation>Acero al carbón</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="379"/>
+        <location filename="../equipment/distillation.py" line="377"/>
         <source>Stainless steel 304</source>
         <translation>Acero inoxidable 304</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="380"/>
+        <location filename="../equipment/distillation.py" line="378"/>
         <source>Stainless steel 316</source>
         <translation>Acero inoxidable 316</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="381"/>
+        <location filename="../equipment/distillation.py" line="379"/>
         <source>Carpenter 20CB-3</source>
         <translation>Carpenter 20CB-3</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="382"/>
+        <location filename="../equipment/heatExchanger.py" line="1602"/>
         <source>Nickel 200</source>
         <translation>Niquel 200</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="383"/>
+        <location filename="../equipment/heatExchanger.py" line="1603"/>
         <source>Monel 400</source>
         <translation>Monel 400</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="384"/>
+        <location filename="../equipment/heatExchanger.py" line="1604"/>
         <source>Inconel 600</source>
         <translation>Inconel 600</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="385"/>
+        <location filename="../equipment/heatExchanger.py" line="1605"/>
         <source>Incoloy 825</source>
         <translation>Incoloy 825</translation>
     </message>
@@ -3517,22 +3518,22 @@ Verde: Gas, g/l</translation>
         <translation>Tipo de cabeza</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="123"/>
+        <location filename="../equipment/distillation.py" line="122"/>
         <source>Ellipsoidal</source>
         <translation>Elipsoidal</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="124"/>
+        <location filename="../equipment/distillation.py" line="123"/>
         <source>Hemispherical</source>
         <translation>Semiesférica</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="125"/>
+        <location filename="../equipment/distillation.py" line="124"/>
         <source>Bumped</source>
         <translation>Abombado</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="126"/>
+        <location filename="../equipment/distillation.py" line="125"/>
         <source>Flat</source>
         <translation>Plano</translation>
     </message>
@@ -3547,7 +3548,7 @@ Verde: Gas, g/l</translation>
         <translation>Longitud reborde recto</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="513"/>
+        <location filename="../tools/UI_Tables/table.py" line="858"/>
         <source>Volume</source>
         <translation>Volumen</translation>
     </message>
@@ -3562,37 +3563,37 @@ Verde: Gas, g/l</translation>
         <translation>Constes de instalación</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="871"/>
+        <location filename="../lib/reaction.py" line="69"/>
         <source>Gas</source>
         <translation>Vapor</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="666"/>
+        <location filename="../equipment/distillation.py" line="664"/>
         <source>undefined reflux ratio condition</source>
         <translation>razón de reflujo no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="672"/>
+        <location filename="../equipment/distillation.py" line="670"/>
         <source>undefined light key component recuperation in top product</source>
         <translation>fracción recuperdada en el destilado del componente ligero no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="678"/>
+        <location filename="../equipment/distillation.py" line="676"/>
         <source>undefined heavy key component recuperation in bottom product</source>
         <translation>fracción del componente pesado recuperada en el residuo no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="684"/>
+        <location filename="../equipment/distillation.py" line="682"/>
         <source>undefined light key component</source>
         <translation>componente clave libero no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="689"/>
+        <location filename="../equipment/distillation.py" line="687"/>
         <source>undefined heavy key component</source>
         <translation>componente clave pesado no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="695"/>
+        <location filename="../equipment/distillation.py" line="693"/>
         <source>key component bad specified</source>
         <translation>componentes clave mal definidos</translation>
     </message>
@@ -3607,12 +3608,12 @@ Verde: Gas, g/l</translation>
         <translation>Condensador</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="640"/>
+        <location filename="../equipment/distillation.py" line="638"/>
         <source>Total</source>
         <translation>Total</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="641"/>
+        <location filename="../equipment/distillation.py" line="639"/>
         <source>Partial</source>
         <translation>Parcial</translation>
     </message>
@@ -3672,12 +3673,12 @@ Verde: Gas, g/l</translation>
         <translation>Piso de alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="372"/>
+        <location filename="../equipment/distillation.py" line="370"/>
         <source>Destillation</source>
         <translation>Destilación</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="373"/>
+        <location filename="../equipment/distillation.py" line="371"/>
         <source>Absortion</source>
         <translation>Absorción</translation>
     </message>
@@ -3697,27 +3698,27 @@ Verde: Gas, g/l</translation>
         <translation>Columna de relleno</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="378"/>
+        <location filename="../equipment/heatExchanger.py" line="284"/>
         <source>Carbon steel</source>
         <translation>Acero al carbón</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="388"/>
+        <location filename="../equipment/distillation.py" line="386"/>
         <source>Valve tray</source>
         <translation>De válvula</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="389"/>
+        <location filename="../equipment/distillation.py" line="387"/>
         <source>Grid tray</source>
         <translation>De rejilla</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="390"/>
+        <location filename="../equipment/distillation.py" line="388"/>
         <source>Bubble cap tray</source>
         <translation>De burbujeo</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="391"/>
+        <location filename="../equipment/distillation.py" line="389"/>
         <source>Sieve tray</source>
         <translation>De tamiz</translation>
     </message>
@@ -3782,52 +3783,52 @@ Verde: Gas, g/l</translation>
         <translation>Cámara de sedimentación por gravedad</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="234"/>
+        <location filename="../equipment/gas_solid.py" line="233"/>
         <source>undefined width</source>
         <translation>Anchura no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="243"/>
+        <location filename="../equipment/gas_solid.py" line="241"/>
         <source>height undefined, using default</source>
         <translation>altura no definida, usando valor por defecto</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="974"/>
+        <location filename="../equipment/gas_solid.py" line="968"/>
         <source>undefined values</source>
         <translation>valores no definidos</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="980"/>
+        <location filename="../equipment/gas_solid.py" line="974"/>
         <source>All filters cleaned</source>
         <translation>Todos los filtros en operación de limpieza</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="315"/>
+        <location filename="../equipment/gas_solid.py" line="986"/>
         <source>using default efficiency</source>
         <translation>usando rendimientos por defecto</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1204"/>
+        <location filename="../equipment/gas_solid.py" line="1197"/>
         <source>Electrostatic precipitator</source>
         <translation>Precipitador electrostático</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1233"/>
+        <location filename="../equipment/gas_solid.py" line="1226"/>
         <source>undefined area</source>
         <translation>área no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1244"/>
+        <location filename="../equipment/gas_solid.py" line="1237"/>
         <source>using default charging field</source>
         <translation>usando potencial de carga por defecto</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1249"/>
+        <location filename="../equipment/gas_solid.py" line="1242"/>
         <source>using default collecting field</source>
         <translation>usando potencia de descarga por defecto</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1254"/>
+        <location filename="../equipment/gas_solid.py" line="1247"/>
         <source>using default dielectric constant</source>
         <translation>usando constante dieléctrica por defecto</translation>
     </message>
@@ -3837,22 +3838,22 @@ Verde: Gas, g/l</translation>
         <translation>Rendimientos</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="528"/>
+        <location filename="../equipment/UI_scrubber.py" line="62"/>
         <source>Mode</source>
         <translation>Modo</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="951"/>
+        <location filename="../equipment/gas_solid.py" line="945"/>
         <source>Calculate Pressure drop</source>
         <translation>Calcular caida de presión</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="952"/>
+        <location filename="../equipment/gas_solid.py" line="946"/>
         <source>Calculate time of filtration</source>
         <translation>Calcular tiempo de filtración</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="953"/>
+        <location filename="../equipment/gas_solid.py" line="947"/>
         <source>Calculate number of cells</source>
         <translation>Calcular número de celdas</translation>
     </message>
@@ -3862,12 +3863,12 @@ Verde: Gas, g/l</translation>
         <translation>Sin celdas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="552"/>
+        <location filename="../lib/unidades.py" line="639"/>
         <source>Time</source>
         <translation>Tiempo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="470"/>
+        <location filename="../equipment/UI_reactor.py" line="469"/>
         <source>Pressure drop</source>
         <translation>Pérdida de presión</translation>
     </message>
@@ -3907,27 +3908,27 @@ Verde: Gas, g/l</translation>
         <translation>Velocidad del gas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="471"/>
+        <location filename="../lib/unidades.py" line="558"/>
         <source>Area</source>
         <translation>Área</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_gravityChamber.py" line="142"/>
+        <location filename="../equipment/UI_ciclon.py" line="236"/>
         <source>Filtered gas</source>
         <translation>Gas filtrado</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_gravityChamber.py" line="144"/>
+        <location filename="../equipment/UI_ciclon.py" line="238"/>
         <source>Collected solids</source>
         <translation>Sólidos recogidos</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="81"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="80"/>
         <source>Rating: Calculate efficiency</source>
         <translation>Evaluación: Calcular rendimiento</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1221"/>
+        <location filename="../equipment/gas_solid.py" line="1214"/>
         <source>Design: Calculate dimensions to fit a requerid efficiency</source>
         <translation>Diseño: Calcular dimensiones para cumplir el rendimiento requerido</translation>
     </message>
@@ -3937,17 +3938,17 @@ Verde: Gas, g/l</translation>
         <translation>Rendimiento permisible</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="545"/>
+        <location filename="../lib/thermo.py" line="543"/>
         <source>Dielectric constant</source>
         <translation>Constante dieléctrica</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1329"/>
+        <location filename="../equipment/gas_solid.py" line="1321"/>
         <source>Charging field</source>
         <translation>Potencia de carga</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1331"/>
+        <location filename="../equipment/gas_solid.py" line="1323"/>
         <source>Collecting field</source>
         <translation>Potencia de descarga</translation>
     </message>
@@ -3972,12 +3973,12 @@ Verde: Gas, g/l</translation>
         <translation>Mezcla vertical</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4183"/>
+        <location filename="../tools/UI_Tables/plot.py" line="740"/>
         <source>Width</source>
         <translation>Anchura</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_gravityChamber.py" line="89"/>
+        <location filename="../equipment/UI_ciclon.py" line="106"/>
         <source>Allowable speed</source>
         <translation>Velocidad permisible</translation>
     </message>
@@ -3988,11 +3989,11 @@ Verde: Gas, g/l</translation>
     </message>
     <message>
         <location filename="../equipment/UI_scrubber.py" line="78"/>
-        <source>&#xce;&#x94;P method</source>
+        <source>ÎP method</source>
         <translation>ΔP método</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="463"/>
+        <location filename="../equipment/gas_solid.py" line="460"/>
         <source>Standart</source>
         <translation>Estándar</translation>
     </message>
@@ -4002,18 +4003,18 @@ Verde: Gas, g/l</translation>
         <translation>Modelo de diseño</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="468"/>
-        <source>High &#xce;&#xb7;</source>
+        <location filename="../equipment/gas_solid.py" line="465"/>
+        <source>High Î·</source>
         <translation>Alto η</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="471"/>
-        <source>Low &#xce;&#xb7;</source>
+        <location filename="../equipment/gas_solid.py" line="468"/>
+        <source>Low Î·</source>
         <translation>Bajo η</translation>
     </message>
     <message>
         <location filename="../equipment/UI_ciclon.py" line="99"/>
-        <source>Allowable &#xce;&#x94;P</source>
+        <source>Allowable ÎP</source>
         <translation>ΔP permisible</translation>
     </message>
     <message>
@@ -4037,17 +4038,17 @@ Verde: Gas, g/l</translation>
         <translation>Geometría</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="475"/>
+        <location filename="../equipment/gas_solid.py" line="472"/>
         <source>Heavy duty</source>
         <translation>Uso industrial</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="476"/>
+        <location filename="../equipment/gas_solid.py" line="473"/>
         <source>Standard dury</source>
         <translation>Uso normal</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="477"/>
+        <location filename="../equipment/gas_solid.py" line="474"/>
         <source>Multicyclone</source>
         <translation>Multiciclón</translation>
     </message>
@@ -4072,12 +4073,12 @@ Verde: Gas, g/l</translation>
         <translation>Combustible</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="277"/>
+        <location filename="../equipment/heatExchanger.py" line="275"/>
         <source>Box Type</source>
         <translation>Tipo Caja</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="477"/>
+        <location filename="../equipment/heatExchanger.py" line="474"/>
         <source>Cylindrical type</source>
         <translation>Tipo cilíndrico</translation>
     </message>
@@ -4087,17 +4088,17 @@ Verde: Gas, g/l</translation>
         <translation>Calentador de tipo caja</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="280"/>
+        <location filename="../equipment/heatExchanger.py" line="278"/>
         <source>Process heater</source>
         <translation>Calentador de proceso</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="281"/>
+        <location filename="../equipment/heatExchanger.py" line="279"/>
         <source>Pyrolysis</source>
         <translation>Pirólisis</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="282"/>
+        <location filename="../equipment/heatExchanger.py" line="280"/>
         <source>Reforme without catalysis</source>
         <translation>Reformador sin catálisis</translation>
     </message>
@@ -4107,22 +4108,22 @@ Verde: Gas, g/l</translation>
         <translation>Calentador de tipo cilíndrico</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="284"/>
+        <location filename="../equipment/heatExchanger.py" line="282"/>
         <source>Cylindrical</source>
         <translation>Cilíndrico</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="285"/>
+        <location filename="../equipment/heatExchanger.py" line="283"/>
         <source>Dowtherm</source>
         <translation>Dowtherm</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="287"/>
+        <location filename="../equipment/heatExchanger.py" line="285"/>
         <source>Cr-Mo steel</source>
         <translation>Acero Cr-Mo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="288"/>
+        <location filename="../equipment/heatExchanger.py" line="286"/>
         <source>Stainless steel</source>
         <translation>Acero inoxidable</translation>
     </message>
@@ -4132,22 +4133,22 @@ Verde: Gas, g/l</translation>
         <translation>Presión de diseño</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="249"/>
+        <location filename="../equipment/heatExchanger.py" line="247"/>
         <source>Fired Heater</source>
         <translation>Calentador por fuego directo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="304"/>
+        <location filename="../equipment/heatExchanger.py" line="302"/>
         <source>undefined output temperature condition</source>
         <translation>condición de temperatura de salida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="309"/>
+        <location filename="../equipment/heatExchanger.py" line="307"/>
         <source>bad output temperature condition</source>
         <translation>condición de temperatura de salida mal definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="320"/>
+        <location filename="../equipment/heatExchanger.py" line="318"/>
         <source>using default fuel calorific value</source>
         <translation>usando valor por defecto de la capacidad calorífica del combustible</translation>
     </message>
@@ -4247,17 +4248,17 @@ Verde: Gas, g/l</translation>
         <translation>Fijo</translation>
     </message>
     <message>
-        <location filename="../UI/inputTable.py" line="53"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="678"/>
         <source>Equation</source>
         <translation>Ecuación</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2627"/>
+        <location filename="../tools/UI_Tables/table.py" line="117"/>
         <source>Table</source>
         <translation>Tabla</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="331"/>
+        <location filename="../equipment/UI_reactor.py" line="330"/>
         <source>From Gibbs free energy minimization</source>
         <translation>De la minimización de la energía libre de Gibbs</translation>
     </message>
@@ -4272,7 +4273,7 @@ Verde: Gas, g/l</translation>
         <translation>archivo d reacción</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="813"/>
+        <location filename="../UI/widgets.py" line="814"/>
         <source>All files</source>
         <translation>Todos los archivos</translation>
     </message>
@@ -4282,82 +4283,82 @@ Verde: Gas, g/l</translation>
         <translation>Guardar reacción a archivo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="462"/>
+        <location filename="../equipment/UI_reactor.py" line="461"/>
         <source>Reactions</source>
         <translation>Reacciones</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="478"/>
+        <location filename="../equipment/UI_reactor.py" line="477"/>
         <source>CSTR, continuous stirred-tank</source>
         <translation>CSTR, continuo mezcla perfecta</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="479"/>
+        <location filename="../equipment/UI_reactor.py" line="478"/>
         <source>PFR, plug flow</source>
         <translation>PFR, flujo pistón</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="486"/>
+        <location filename="../equipment/UI_reactor.py" line="485"/>
         <source>Thermal mode</source>
         <translation>Modo térmico</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="494"/>
+        <location filename="../equipment/UI_reactor.py" line="493"/>
         <source>Heat duty</source>
         <translation>Calor</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="500"/>
+        <location filename="../equipment/UI_reactor.py" line="499"/>
         <source>PFR temperature profile</source>
         <translation>Perfil de temperatura en PFR</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="517"/>
+        <location filename="../equipment/UI_reactor.py" line="516"/>
         <source>Countercurrent</source>
         <translation>Contracorriente</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="518"/>
+        <location filename="../equipment/UI_reactor.py" line="517"/>
         <source>Cocurrent</source>
         <translation>Cocorriente</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="520"/>
+        <location filename="../equipment/UI_reactor.py" line="519"/>
         <source>Add Profile</source>
         <translation>Añadir perfil</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="530"/>
-        <source>Rating: calculate conversi&#xc3;&#xb3;n</source>
+        <location filename="../equipment/UI_reactor.py" line="529"/>
+        <source>Rating: calculate conversiÃ³n</source>
         <translation>Evaluación:calcular conversion</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="531"/>
+        <location filename="../equipment/UI_reactor.py" line="530"/>
         <source>Design, calculate volumen</source>
         <translation>Diseño, calcular volumen</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="563"/>
+        <location filename="../equipment/UI_reactor.py" line="562"/>
         <source>Reactor Volume</source>
         <translation>Volumen reactor</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="538"/>
+        <location filename="../equipment/UI_reactor.py" line="537"/>
         <source>Key Component</source>
         <translation>Componente clave</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="560"/>
+        <location filename="../equipment/UI_reactor.py" line="559"/>
         <source>Conversion</source>
         <translation>Conversion</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="553"/>
+        <location filename="../equipment/UI_reactor.py" line="552"/>
         <source>T output</source>
         <translation>T salida</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_reactor.py" line="586"/>
+        <location filename="../equipment/UI_reactor.py" line="585"/>
         <source>Temperature profile</source>
         <translation>Perfil temperatura</translation>
     </message>
@@ -4367,37 +4368,37 @@ Verde: Gas, g/l</translation>
         <translation>Gradual</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="399"/>
+        <location filename="../lib/unidades.py" line="486"/>
         <source>Angle</source>
         <translation>Ángulo</translation>
     </message>
     <message>
-        <location filename="../UI/UI_corriente.py" line="500"/>
+        <location filename="../tools/UI_psychrometry.py" line="61"/>
         <source>Absolute humidity</source>
         <translation>Humedad absoluta</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="560"/>
+        <location filename="../tools/UI_Preferences.py" line="558"/>
         <source>Psychrometric chart</source>
         <translation>Gráfico psicrométrico</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="483"/>
+        <location filename="../equipment/flux.py" line="479"/>
         <source>Close</source>
         <translation>Cerrar</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="157"/>
+        <location filename="../tools/UI_psychrometry.py" line="150"/>
         <source>Altitude</source>
         <translation>Altitud</translation>
     </message>
     <message>
-        <location filename="../lib/psycrometry.py" line="383"/>
+        <location filename="../lib/psycrometry.py" line="596"/>
         <source>T dry bulb, T dew point</source>
         <translation>T bulbo seco, T punto rocío</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="171"/>
+        <location filename="../tools/UI_psychrometry.py" line="164"/>
         <source>Select point</source>
         <translation>Seleccionar punto</translation>
     </message>
@@ -4417,7 +4418,7 @@ Verde: Gas, g/l</translation>
         <translation>Fracción agua</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1061"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="109"/>
         <source>Info</source>
         <translation>Information</translation>
     </message>
@@ -4447,137 +4448,137 @@ Verde: Gas, g/l</translation>
         <translation>Número de Platt</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="852"/>
+        <location filename="../UI/viewComponents.py" line="879"/>
         <source>&amp;General</source>
         <translation>&amp;General</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="949"/>
+        <location filename="../UI/viewComponents.py" line="973"/>
         <source>&amp;Cp</source>
         <translation>&amp;Cp</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1062"/>
+        <location filename="../UI/viewComponents.py" line="1082"/>
         <source>P&amp;v &amp;&amp; Hv</source>
         <translation>P&amp;v y Hv</translation>
     </message>
     <message>
-        <location filename="../tools/UI_confUnits.py" line="44"/>
+        <location filename="../tools/UI_Preferences.py" line="127"/>
         <source>Systems of measurement</source>
         <translation>Sistemas de unidades</translation>
     </message>
     <message>
-        <location filename="../tools/UI_confUnits.py" line="50"/>
+        <location filename="../tools/UI_Preferences.py" line="132"/>
         <source>SI</source>
         <translation>SI</translation>
     </message>
     <message>
-        <location filename="../tools/UI_confUnits.py" line="54"/>
+        <location filename="../tools/UI_Preferences.py" line="136"/>
         <source>Alt SI</source>
         <translation>Alt SI</translation>
     </message>
     <message>
-        <location filename="../tools/UI_confUnits.py" line="58"/>
+        <location filename="../tools/UI_Preferences.py" line="140"/>
         <source>English</source>
         <translation>Inglés</translation>
     </message>
     <message>
-        <location filename="../tools/UI_confUnits.py" line="66"/>
+        <location filename="../tools/UI_Preferences.py" line="148"/>
         <source>CGS</source>
         <translation>CGS</translation>
     </message>
     <message>
-        <location filename="../tools/UI_confUnits.py" line="62"/>
+        <location filename="../tools/UI_Preferences.py" line="144"/>
         <source>Metric</source>
         <translation>Métrico</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="572"/>
+        <location filename="../lib/unidades.py" line="659"/>
         <source>Frequency</source>
         <translation>Frecuencia</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="537"/>
+        <location filename="../lib/unidades.py" line="624"/>
         <source>Liquid Volume</source>
         <translation>Volumen líquido</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="538"/>
+        <location filename="../lib/unidades.py" line="625"/>
         <source>Gas Volume</source>
         <translation>Volumen Vapor</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1414"/>
+        <location filename="../lib/unidades.py" line="1501"/>
         <source>Liquid Flow</source>
         <translation>Flujo líquido</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1415"/>
+        <location filename="../lib/unidades.py" line="1502"/>
         <source>Gas Flow</source>
         <translation>Flujo Vapor</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1796"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="783"/>
         <source>Liquid Density</source>
         <translation>Densidad Líquido</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="813"/>
+        <location filename="../lib/unidades.py" line="900"/>
         <source>Gas Density</source>
         <translation>Densidad Vapor</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="691"/>
+        <location filename="../lib/unidades.py" line="778"/>
         <source>Specific Volume</source>
         <translation>Volumen específico</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="826"/>
+        <location filename="../lib/unidades.py" line="913"/>
         <source>Molar Density</source>
         <translation>Densidad Molar</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="762"/>
+        <location filename="../lib/unidades.py" line="849"/>
         <source>Molar Volume</source>
         <translation>Volumen Molar</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1110"/>
+        <location filename="../lib/unidades.py" line="1197"/>
         <source>Energy</source>
         <translation>Energía</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1111"/>
+        <location filename="../lib/unidades.py" line="1198"/>
         <source>Work</source>
         <translation>Trabajo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1168"/>
+        <location filename="../lib/unidades.py" line="1255"/>
         <source>Molar Enthalpy</source>
         <translation>Entalpía Molar</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1227"/>
+        <location filename="../lib/unidades.py" line="1314"/>
         <source>Specific Heat</source>
         <translation>Calor Específico</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1527"/>
+        <location filename="../lib/unidades.py" line="1614"/>
         <source>Heat Transfer Coefficient</source>
         <translation>Coeficiente Transferencia Calor</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3449"/>
+        <location filename="../tools/UI_Tables/table.py" line="860"/>
         <source>Entropy</source>
         <translation>Entropía</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1504"/>
+        <location filename="../lib/unidades.py" line="1591"/>
         <source>UA</source>
         <translation>UA</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="845"/>
+        <location filename="../lib/unidades.py" line="932"/>
         <source>Force</source>
         <translation>Fuerza</translation>
     </message>
@@ -4587,42 +4588,42 @@ Verde: Gas, g/l</translation>
         <translation>Parámetro Solubilidad</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1167"/>
+        <location filename="../UI/viewComponents.py" line="1469"/>
         <source>Dipole Moment</source>
         <translation>Momento Dipolar</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1636"/>
+        <location filename="../lib/unidades.py" line="1723"/>
         <source>Electric Potencial</source>
         <translation>Potencial Eléctrico</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1938"/>
+        <location filename="../lib/unidades.py" line="2025"/>
         <source>Currency</source>
         <translation>Moneda</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="383"/>
+        <location filename="../lib/unidades.py" line="470"/>
         <source>Temperature increase</source>
         <translation>Variación de Temperatura</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1695"/>
+        <location filename="../lib/unidades.py" line="1782"/>
         <source>Gas-Oil ratio</source>
         <translation>Relación Gas-Aceite</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="621"/>
+        <location filename="../lib/unidades.py" line="708"/>
         <source>Acceleration</source>
         <translation>Aceleración</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="677"/>
+        <location filename="../lib/unidades.py" line="764"/>
         <source>Mol</source>
         <translation>Moles</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1445"/>
+        <location filename="../lib/unidades.py" line="1532"/>
         <source>Diffusivity</source>
         <translation>Difusividad</translation>
     </message>
@@ -4657,22 +4658,22 @@ Verde: Gas, g/l</translation>
         <translation>Elegir valores adecuados para los componentes y condiciones del proyecto</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1670"/>
+        <location filename="../lib/unidades.py" line="1757"/>
         <source>Cake Resistance</source>
         <translation>Resistencia Torta</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1683"/>
+        <location filename="../lib/unidades.py" line="1770"/>
         <source>Packing Pressure drop</source>
         <translation>Caida Pression Empaquetado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="450"/>
+        <location filename="../lib/unidades.py" line="537"/>
         <source>Particle Diameter</source>
         <translation>Diámetro de partícula</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1308"/>
+        <location filename="../lib/unidades.py" line="1395"/>
         <source>Energy Flow</source>
         <translation>Flujo energético</translation>
     </message>
@@ -4687,192 +4688,192 @@ Verde: Gas, g/l</translation>
         <translation>Buscar</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="446"/>
+        <location filename="../UI/viewComponents.py" line="473"/>
         <source>Fit parameters from experimental data</source>
         <translation>Ajsutar parámetros de datos experimentales</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="455"/>
+        <location filename="../UI/viewComponents.py" line="482"/>
         <source>Plot equation vs temperature</source>
         <translation>Representar ecuación frente a temperatura</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="790"/>
+        <location filename="../UI/viewComponents.py" line="817"/>
         <source>Define New Component</source>
         <translation>Define nuevo componente</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="805"/>
+        <location filename="../UI/viewComponents.py" line="832"/>
         <source>Component Properties</source>
         <translation>Propiedades de Componentes</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="860"/>
+        <location filename="../UI/viewComponents.py" line="887"/>
         <source>CAS Number</source>
         <translation>Número CAS</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="865"/>
+        <location filename="../UI/viewComponents.py" line="892"/>
         <source>Alternative Name</source>
         <translation>Nombre alternativo</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="879"/>
+        <location filename="../UI/viewComponents.py" line="906"/>
         <source>Expanded Formula</source>
         <translation>Fórmula expandida</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1250"/>
+        <location filename="../UI/viewComponents.py" line="1552"/>
         <source>UNIFAC Groups</source>
         <translation>Grupos UNIFAC</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="126"/>
+        <location filename="../UI/prefPetro.py" line="58"/>
         <source>Acentric factor</source>
         <translation>Factor acéntrico</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="954"/>
+        <location filename="../UI/viewComponents.py" line="978"/>
         <source>Cp ideal gas</source>
         <translation>Cp gas ideal</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="994"/>
+        <location filename="../UI/viewComponents.py" line="1014"/>
         <source>Cp ideal gas DIPPR</source>
         <translation>Cp gas idal DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="999"/>
+        <location filename="../UI/viewComponents.py" line="1019"/>
         <source>Cp liquid DIPPR</source>
         <translation>Cp líquido DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1004"/>
+        <location filename="../UI/viewComponents.py" line="1024"/>
         <source>Cp solid DIPPR</source>
         <translation>Cp sólido DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1015"/>
+        <location filename="../UI/viewComponents.py" line="1035"/>
         <source>&amp;Density</source>
         <translation>&amp;Densidad</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1020"/>
+        <location filename="../UI/viewComponents.py" line="1040"/>
         <source>Solid Density DIPPR</source>
         <translation>Densidad Sólido DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1025"/>
+        <location filename="../UI/viewComponents.py" line="1045"/>
         <source>Liquid Density DIPPR</source>
         <translation>Densidad Líquido DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1036"/>
+        <location filename="../UI/viewComponents.py" line="1056"/>
         <source>&amp;Viscosity</source>
         <translation>&amp;Viscosidad</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1041"/>
+        <location filename="../UI/viewComponents.py" line="1061"/>
         <source>Liquid Viscosity DIPPR</source>
         <translation>Viscosidad Líquido DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1046"/>
+        <location filename="../UI/viewComponents.py" line="1066"/>
         <source>Gas Viscosity DIPPR</source>
         <translation>Viscosidad Gas DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1067"/>
+        <location filename="../UI/viewComponents.py" line="1087"/>
         <source>Heat of vaporization DIPPR</source>
         <translation>Capor de vaporización DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1072"/>
+        <location filename="../UI/viewComponents.py" line="1092"/>
         <source>Vapor Pressure DIPPR</source>
         <translation>Presión de vapor DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1077"/>
+        <location filename="../UI/viewComponents.py" line="1097"/>
         <source>Antoine Vapor Pressure</source>
         <translation>Presión de vapor Antoine</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1093"/>
+        <location filename="../UI/viewComponents.py" line="1113"/>
         <source>&amp;Tension &amp;&amp; Conductivity</source>
         <translation>&amp;Tensión y Conductividad</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1098"/>
+        <location filename="../UI/viewComponents.py" line="1118"/>
         <source>Liquid Thermal Conductivity DIPPR</source>
         <translation>Conductividad térmica Líquido DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1103"/>
+        <location filename="../UI/viewComponents.py" line="1123"/>
         <source>Gas Thermal Conductivity DIPPR</source>
         <translation>Conductividad térmica Gas DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1108"/>
+        <location filename="../UI/viewComponents.py" line="1128"/>
         <source>Surface Tension DIPPR</source>
         <translation>Tensión superficial DIPPR</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1130"/>
+        <location filename="../UI/viewComponents.py" line="1150"/>
         <source>Henry Costant</source>
         <translation>Constante de Henry</translation>
     </message>
     <message>
         <location filename="../UI/viewComponents.py" line="1136"/>
         <source>MSRK Coefficients</source>
-        <translation>Coeficientes MSRK</translation>
+        <translation type="obsolete">Coeficientes MSRK</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1157"/>
+        <location filename="../UI/viewComponents.py" line="1459"/>
         <source>&amp;Others</source>
         <translation>&amp;Otras</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1172"/>
+        <location filename="../UI/viewComponents.py" line="1474"/>
         <source>Molecular Diameter</source>
         <translation>Diámetro molecular</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1177"/>
+        <location filename="../UI/viewComponents.py" line="1479"/>
         <source>Net calorific value</source>
         <translation>Calor de combustión neto</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1182"/>
+        <location filename="../UI/viewComponents.py" line="1484"/>
         <source>Gross calorific value</source>
         <translation>Calor de combustión bruto</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1187"/>
+        <location filename="../UI/viewComponents.py" line="1489"/>
         <source>Liquid Volume Costant</source>
         <translation>Contante de volumen de líquido</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="397"/>
+        <location filename="../UI/viewComponents.py" line="1494"/>
         <source>API Gravity</source>
         <translation>Gravedad API</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1197"/>
+        <location filename="../UI/viewComponents.py" line="1499"/>
         <source>Modified acentric factor</source>
         <translation>Factor acéntrico modificado</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1205"/>
+        <location filename="../UI/viewComponents.py" line="1507"/>
         <source>UNIQUAC area</source>
         <translation>UNIQUAC área</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1210"/>
+        <location filename="../UI/viewComponents.py" line="1512"/>
         <source>UNIQUAC volume</source>
         <translation>UNIQUAC volumen</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1221"/>
+        <location filename="../UI/viewComponents.py" line="1523"/>
         <source>Stiehl polar factor</source>
         <translation>Factor polar de Stiehl</translation>
     </message>
@@ -4882,22 +4883,22 @@ Verde: Gas, g/l</translation>
         <translation>Constante de Rackett</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1231"/>
+        <location filename="../UI/viewComponents.py" line="1533"/>
         <source>Polar parameter</source>
         <translation>Parámetro polar</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1240"/>
+        <location filename="../UI/viewComponents.py" line="1542"/>
         <source>Watson factor</source>
         <translation>Factor de watson</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1256"/>
+        <location filename="../UI/viewComponents.py" line="1558"/>
         <source>Contribution</source>
         <translation>Contribución</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="763"/>
+        <location filename="../UI/viewComponents.py" line="790"/>
         <source>Fit unsuccessfully</source>
         <translation>Ajuste no encontrado</translation>
     </message>
@@ -4912,7 +4913,7 @@ Verde: Gas, g/l</translation>
         <translation>Definir índice de costos</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="353"/>
+        <location filename="../pychemqt.py" line="351"/>
         <source>Checking custom database...</source>
         <translation>Revisando base de datos del usuario...</translation>
     </message>
@@ -4932,32 +4933,32 @@ Verde: Gas, g/l</translation>
         <translation>Borrar elemento</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="802"/>
+        <location filename="../UI/viewComponents.py" line="829"/>
         <source>Custom Component Properties</source>
         <translation>Propiedades de componente personalizado</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="808"/>
+        <location filename="../UI/viewComponents.py" line="835"/>
         <source>Go to first element</source>
         <translation>Ir al primer elemento</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="815"/>
+        <location filename="../UI/viewComponents.py" line="842"/>
         <source>Go to previous element</source>
         <translation>Ir al elemento anterior</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="824"/>
+        <location filename="../UI/viewComponents.py" line="851"/>
         <source>Go to next element</source>
         <translation>Ir al elemento siguiente</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="831"/>
+        <location filename="../UI/viewComponents.py" line="858"/>
         <source>Go to last element</source>
         <translation>Ir al último elemento</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="872"/>
+        <location filename="../UI/viewComponents.py" line="899"/>
         <source>Smile Code</source>
         <translation>Codigo Smile</translation>
     </message>
@@ -4972,7 +4973,7 @@ Verde: Gas, g/l</translation>
         <translation>Base de datos de componentes</translation>
     </message>
     <message>
-        <location filename="../lib/petro.py" line="3792"/>
+        <location filename="../lib/petro.py" line="3506"/>
         <source>Insufficient input</source>
         <translation>Variables insuficientes</translation>
     </message>
@@ -4987,12 +4988,12 @@ Verde: Gas, g/l</translation>
         <translation>Aire</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="375"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="369"/>
         <source>Rating, calculate output conditions</source>
         <translation>Cálculo, calcular condiciones de salida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="375"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="369"/>
         <source>Design, calculate air flow necessary</source>
         <translation>Diseño, calcula flujo de aire necesario</translation>
     </message>
@@ -5047,32 +5048,32 @@ Verde: Gas, g/l</translation>
         <translation>Mostrar detalles</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1333"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="299"/>
         <source>Tc</source>
         <translation>Tc</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1337"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="303"/>
         <source>Pc</source>
         <translation>Pc</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="357"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="352"/>
         <source>Solid dryer</source>
         <translation>Secador de sólidos</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="383"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="377"/>
         <source>undefined solid stream input</source>
         <translation>corriente de entrada de sólidos no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="386"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="380"/>
         <source>undefined air stream input</source>
         <translation>corriente de entrada de aire no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="389"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="383"/>
         <source>using default air output relative humid 100%</source>
         <translation>usando humedad relativa del aire por defecto, 100%</translation>
     </message>
@@ -5082,47 +5083,47 @@ Verde: Gas, g/l</translation>
         <translation>Tubos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="418"/>
+        <location filename="../tools/UI_Preferences.py" line="416"/>
         <source>Shell</source>
         <translation>Carcasa</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1601"/>
+        <location filename="../equipment/heatExchanger.py" line="1594"/>
         <source>Fixed Head</source>
         <translation>Cabezal fijo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1603"/>
+        <location filename="../equipment/heatExchanger.py" line="1596"/>
         <source>U-Tube</source>
         <translation>Tubo en U</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1606"/>
+        <location filename="../equipment/heatExchanger.py" line="1599"/>
         <source>Stainless Steel 316</source>
         <translation>Acero Inoxidable 316</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1607"/>
+        <location filename="../equipment/heatExchanger.py" line="1600"/>
         <source>Stainless Steel 304</source>
         <translation>Acero Inoxidable 304</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1608"/>
+        <location filename="../equipment/heatExchanger.py" line="1601"/>
         <source>Stainless Steel 347</source>
         <translation>Acero Inoxidable 347</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1614"/>
+        <location filename="../equipment/heatExchanger.py" line="1607"/>
         <source>Hastelloy</source>
         <translation>Hastelloy</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="512"/>
+        <location filename="../equipment/pipe.py" line="510"/>
         <source>Purchase Cost</source>
         <translation>Coste Adquisición</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="514"/>
+        <location filename="../equipment/pipe.py" line="512"/>
         <source>Installed Cost</source>
         <translation>Coste Instalación</translation>
     </message>
@@ -5132,7 +5133,7 @@ Verde: Gas, g/l</translation>
         <translation>Temperatura salida</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="504"/>
+        <location filename="../equipment/pipe.py" line="502"/>
         <source>Heat Transfer</source>
         <translation>Transferencia Calor</translation>
     </message>
@@ -5147,102 +5148,102 @@ Verde: Gas, g/l</translation>
         <translation>Cambiador de calor</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="124"/>
+        <location filename="../equipment/heatExchanger.py" line="123"/>
         <source>undefined output temperature specification</source>
         <translation>especificación de la temperatura de salida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1489"/>
+        <location filename="../equipment/heatExchanger.py" line="1483"/>
         <source>Shell and Tube Heat Exchanger</source>
         <translation>Cambiador de calor de carcasa y tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="437"/>
+        <location filename="../equipment/pipe.py" line="435"/>
         <source>Calculate properties</source>
         <translation>Propiedades calculadas</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="172"/>
+        <location filename="../equipment/flux.py" line="171"/>
         <source>Feed Molar Flow</source>
         <translation>Flujo molar alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="174"/>
+        <location filename="../equipment/flux.py" line="173"/>
         <source>Feed Mass Flow</source>
         <translation>Flujo másico alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="176"/>
+        <location filename="../equipment/flux.py" line="175"/>
         <source>Feed Volumetric Flow</source>
         <translation>Flujo volumétrico alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="178"/>
+        <location filename="../equipment/flux.py" line="177"/>
         <source>Feed Temperature</source>
         <translation>Temperatura alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="180"/>
+        <location filename="../equipment/flux.py" line="179"/>
         <source>Feed Pressure</source>
         <translation>Presión alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="182"/>
+        <location filename="../equipment/flux.py" line="181"/>
         <source>Number of Product Streams</source>
         <translation>Número de corrientes de salida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="184"/>
+        <location filename="../equipment/flux.py" line="183"/>
         <source>Split Fractions</source>
         <translation>Fracciones de separación</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="186"/>
+        <location filename="../equipment/flux.py" line="185"/>
         <source>Pressure Loss</source>
         <translation>Pérdida de presión</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="194"/>
+        <location filename="../equipment/parents.py" line="190"/>
         <source>Object Type</source>
         <translation>Tipo de objeto</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="413"/>
+        <location filename="../equipment/flux.py" line="410"/>
         <source>Output Mass Flow</source>
         <translation>Flujo másico de a la salida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="395"/>
+        <location filename="../equipment/flux.py" line="392"/>
         <source>Output Molar Composition</source>
         <translation>Composición molar salida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="594"/>
+        <location filename="../equipment/flux.py" line="587"/>
         <source>Output vapor fraction</source>
         <translation>Fracción de vapor salida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="411"/>
+        <location filename="../equipment/flux.py" line="408"/>
         <source>Output Molar Flow</source>
         <translation>Flujo molar a la salida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="415"/>
+        <location filename="../equipment/flux.py" line="412"/>
         <source>Output Volumetric Flow</source>
         <translation>Flujo volumétrico salida</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="481"/>
+        <location filename="../equipment/flux.py" line="477"/>
         <source>Totally open</source>
         <translation>Totalmente abierta</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="482"/>
+        <location filename="../equipment/flux.py" line="478"/>
         <source>Partially open</source>
         <translation>Parcialmente abierta</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="596"/>
+        <location filename="../equipment/flux.py" line="589"/>
         <source>Working Condition</source>
         <translation>Condicion de funcionamiento</translation>
     </message>
@@ -5287,32 +5288,32 @@ Verde: Gas, g/l</translation>
         <translation>Cabezal delantero</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1563"/>
+        <location filename="../equipment/heatExchanger.py" line="1556"/>
         <source>Channel &amp; Removable Cover</source>
         <translation>Canal y cubierta retirables</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="181"/>
+        <location filename="../equipment/UI_hairpin.py" line="62"/>
         <source>Tube length</source>
         <translation>Longitud del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="186"/>
+        <location filename="../equipment/UI_hairpin.py" line="75"/>
         <source>Tube external diameter</source>
         <translation>Diemtro externo del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="191"/>
+        <location filename="../equipment/UI_hairpin.py" line="80"/>
         <source>Tube thickness</source>
         <translation>Espesor del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="196"/>
+        <location filename="../equipment/UI_hairpin.py" line="85"/>
         <source>Tube roughness</source>
         <translation>Rugosidad</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="206"/>
+        <location filename="../equipment/UI_hairpin.py" line="110"/>
         <source>Pipe Database</source>
         <translation>Base de datos de tuberías</translation>
     </message>
@@ -5322,22 +5323,22 @@ Verde: Gas, g/l</translation>
         <translation>Modelo de tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1589"/>
+        <location filename="../equipment/heatExchanger.py" line="1582"/>
         <source>Triangular</source>
         <translation>Triangular</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1590"/>
+        <location filename="../equipment/heatExchanger.py" line="1583"/>
         <source>Diamond</source>
         <translation>Diamante</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1591"/>
+        <location filename="../equipment/heatExchanger.py" line="1584"/>
         <source>Rotated Triangular</source>
         <translation>Triangular rotada</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1592"/>
+        <location filename="../equipment/heatExchanger.py" line="1585"/>
         <source>Square</source>
         <translation>Cuadrada</translation>
     </message>
@@ -5347,7 +5348,7 @@ Verde: Gas, g/l</translation>
         <translation>Aletas</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="229"/>
+        <location filename="../equipment/UI_hairpin.py" line="120"/>
         <source>Finned Pipe Database</source>
         <translation>Base de datos de tuberias con aletas</translation>
     </message>
@@ -5397,12 +5398,12 @@ Verde: Gas, g/l</translation>
         <translation>Modo de cálculo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="439"/>
+        <location filename="../equipment/gas_solid.py" line="456"/>
         <source>Rating</source>
         <translation>Evaluación</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="546"/>
+        <location filename="../tools/UI_Preferences.py" line="544"/>
         <source>Tooltips in PFD</source>
         <translation>Información emergente en PFD</translation>
     </message>
@@ -5412,27 +5413,27 @@ Verde: Gas, g/l</translation>
         <translation>Id equipo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1625"/>
+        <location filename="../equipment/heatExchanger.py" line="1618"/>
         <source>undefined tubeside input</source>
         <translation>Corriente en la parte del tubo no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1629"/>
+        <location filename="../equipment/heatExchanger.py" line="1622"/>
         <source>undefined shellside input</source>
         <translation>corriente en la parte de la carcasa no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="675"/>
+        <location filename="../equipment/heatExchanger.py" line="671"/>
         <source>Carbon steel/carbon steel</source>
         <translation>Acero al carbón/Acero al carbón</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="676"/>
+        <location filename="../equipment/heatExchanger.py" line="672"/>
         <source>Carbon steel/304 stainless</source>
         <translation>Acero al carboón/Acero inoxidable 304</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="677"/>
+        <location filename="../equipment/heatExchanger.py" line="673"/>
         <source>Carbon steel/316 stainless</source>
         <translation>Acero al carboón/Acero inoxidable 316</translation>
     </message>
@@ -5442,82 +5443,82 @@ Verde: Gas, g/l</translation>
         <translation>fórmula extendida desabilitada</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="453"/>
+        <location filename="../equipment/compressor.py" line="691"/>
         <source>Input Temperature</source>
         <translation>Temperatura de entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="478"/>
+        <location filename="../equipment/pipe.py" line="476"/>
         <source>Input Pressure</source>
         <translation>Presión de entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="446"/>
+        <location filename="../equipment/pipe.py" line="444"/>
         <source>Preliminary Cost Estimation</source>
         <translation>Estimación de costos</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="506"/>
+        <location filename="../equipment/pipe.py" line="504"/>
         <source>Base index</source>
         <translation>Índice base</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="508"/>
+        <location filename="../equipment/pipe.py" line="506"/>
         <source>Current index</source>
         <translation>Índice actual</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="510"/>
+        <location filename="../equipment/pipe.py" line="508"/>
         <source>Install factor</source>
         <translation>Factor de instalación</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="497"/>
+        <location filename="../equipment/pump.py" line="493"/>
         <source>Motor Cost</source>
         <translation>Coste del motor</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="711"/>
+        <location filename="../equipment/compressor.py" line="705"/>
         <source>Thermodinamic mode</source>
         <translation>Modo termodinámico</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="412"/>
+        <location filename="../equipment/compressor.py" line="409"/>
         <source>Compressor Type</source>
         <translation>Tipo de compresor</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="414"/>
+        <location filename="../equipment/compressor.py" line="411"/>
         <source>Transmission Type</source>
         <translation>Tipo de transmisión</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="491"/>
+        <location filename="../equipment/pump.py" line="487"/>
         <source>Motor Type</source>
         <translation>Tipo de motor</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="420"/>
+        <location filename="../equipment/compressor.py" line="417"/>
         <source>Cost compressor</source>
         <translation>Coste del compresor</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="422"/>
+        <location filename="../equipment/compressor.py" line="419"/>
         <source>Cost Transmission</source>
         <translation>Coste de la transmisión</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="424"/>
+        <location filename="../equipment/compressor.py" line="421"/>
         <source>Cost motor</source>
         <translation>Coste del motor</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="390"/>
+        <location filename="../equipment/flux.py" line="387"/>
         <source>Input stream</source>
         <translation>Corriente de entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/flux.py" line="162"/>
+        <location filename="../equipment/flux.py" line="161"/>
         <source>Output stream</source>
         <translation>Corriente de salida</translation>
     </message>
@@ -5527,457 +5528,457 @@ Verde: Gas, g/l</translation>
         <translation>Usa IAPWS97 para el agua</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2217"/>
+        <location filename="../lib/unidades.py" line="2304"/>
         <source>Dimensionless</source>
         <translation>Adimensional</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1727"/>
+        <location filename="../lib/unidades.py" line="1814"/>
         <source>Pressure inverse</source>
         <translation>Presión inversa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1801"/>
+        <location filename="../lib/unidades.py" line="1888"/>
         <source>Enthalpy per pressure</source>
         <translation>Entalpía por presión</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1832"/>
+        <location filename="../lib/unidades.py" line="1919"/>
         <source>Temperature per pressure</source>
         <translation>Temperatura por presión</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1848"/>
+        <location filename="../lib/unidades.py" line="1935"/>
         <source>Pressure per Temperature</source>
         <translation>Presión por Temperatura</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1024"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="72"/>
         <source>Use MEoS equation</source>
         <translation>Usa ecuación MEoS</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1032"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="80"/>
         <source>Use generalizated expression</source>
         <translation>Usa expresión generalizada</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1036"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="84"/>
         <source>Use Peng-Robinson cubic equation</source>
         <translation>Usa ecuación cúbica de Peng-Robinson</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1047"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="95"/>
         <source>Thermal</source>
         <translation>Conductividad térmica</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1067"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="115"/>
         <source>More...</source>
         <translation>Más...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2122"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1157"/>
         <source>Polinomial</source>
         <translation>Polinomial</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1499"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="465"/>
         <source>Exponential</source>
         <translation>Exponencial</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1516"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="480"/>
         <source>Gaussian</source>
         <translation>Gausianos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1532"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="495"/>
         <source>Non analytic</source>
         <translation>No analíticos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1575"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="523"/>
         <source>MBWR</source>
         <translation>MBWR</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1312"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="278"/>
         <source>R name</source>
         <translation>Codigo R</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1320"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="286"/>
         <source>CAS number</source>
         <translation>Número CAS</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1328"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="294"/>
         <source>M</source>
         <translation>M</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1349"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="315"/>
         <source>T triple</source>
         <translation>Tª triple</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1353"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="319"/>
         <source>T boiling</source>
         <translation>Tª ebullición</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1357"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="323"/>
         <source>Dipole moment</source>
         <translation>Momento dipolar</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1362"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="328"/>
         <source>F acentric</source>
         <translation>Factor acéntrico</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1724"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="702"/>
         <source>Dielectric</source>
         <translation>Diléctrica</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1990"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1052"/>
         <source>Not Implemented</source>
         <translation>No implementado</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1835"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="833"/>
         <source>Vapor Density</source>
         <translation>Densidad del vapor</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1871"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="882"/>
         <source>Vapor Pressure</source>
         <translation>Presión de vapor</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1910"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="932"/>
         <source>Melting Pressure</source>
         <translation>Línea de fusión</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1951"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="999"/>
         <source>Sublimation Pressure</source>
         <translation>Línea de sublimación</translation>
     </message>
     <message>
         <location filename="../tools/UI_Tables.py" line="1999"/>
         <source>Peng-Robinson</source>
-        <translation>Peng-Robinson</translation>
+        <translation type="obsolete">Peng-Robinson</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1223"/>
+        <location filename="../tools/UI_Tables/reference.py" line="45"/>
         <source>Select reference state</source>
         <translation>Seleccionar estado de referencia</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1229"/>
+        <location filename="../tools/UI_Tables/reference.py" line="51"/>
         <source>NBP,  h,s=0 saturated liquid at Tb</source>
         <translation>NBP,  h,s=0 líquido saturado a Teb</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2429"/>
+        <location filename="../tools/UI_Tables/reference.py" line="141"/>
         <source>Select Properties</source>
         <translation>Seleccionar propiedades</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2469"/>
+        <location filename="../tools/UI_Tables/reference.py" line="180"/>
         <source>Show bulk, liquid and vapor properties</source>
         <translation>Mostrar propiedades globales, del líquido y del gas</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3259"/>
+        <location filename="../tools/UI_Tables/table.py" line="670"/>
         <source>Saturation Table</source>
         <translation>Tabla de saturacion</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3263"/>
+        <location filename="../tools/UI_Tables/table.py" line="674"/>
         <source>Interphase</source>
         <translation>Interfase</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3267"/>
+        <location filename="../tools/UI_Tables/table.py" line="678"/>
         <source>Vapor-Liquid (boiling line)</source>
         <translation>Líquido-Vapor (línea de ebullición)</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3270"/>
+        <location filename="../tools/UI_Tables/table.py" line="681"/>
         <source>Solid-Liquid (melting line</source>
         <translation>Sólido-Líquido (linea de fusión)</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3273"/>
+        <location filename="../tools/UI_Tables/table.py" line="684"/>
         <source>Solid-Vapor (Sublimation line)</source>
         <translation>Sólido-Vapor (Línea de sublimación)</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3289"/>
+        <location filename="../tools/UI_Tables/table.py" line="700"/>
         <source>Quality at fixed temperature</source>
         <translation>Fracción de vapor fijando la temperatura</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3294"/>
+        <location filename="../tools/UI_Tables/table.py" line="705"/>
         <source>Quality at fixed pressure</source>
         <translation>Fracción de vapor fijando la presión</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3484"/>
+        <location filename="../tools/UI_Tables/table.py" line="895"/>
         <source>Initial</source>
         <translation>Inicial</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3489"/>
+        <location filename="../tools/UI_Tables/table.py" line="900"/>
         <source>Final</source>
         <translation>Final</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3494"/>
+        <location filename="../tools/UI_Tables/table.py" line="905"/>
         <source>Increment</source>
         <translation>Incremento</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3403"/>
+        <location filename="../tools/UI_Tables/table.py" line="814"/>
         <source>Initial quality</source>
         <translation>Fracción de vapor inicial</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3405"/>
+        <location filename="../tools/UI_Tables/table.py" line="816"/>
         <source>Final quality</source>
         <translation>Fracción de vapor final</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3412"/>
+        <location filename="../tools/UI_Tables/table.py" line="823"/>
         <source>Initial temperature</source>
         <translation>Temperatura inicial</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3414"/>
+        <location filename="../tools/UI_Tables/table.py" line="825"/>
         <source>Final temperature</source>
         <translation>Temperatura final</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3421"/>
+        <location filename="../tools/UI_Tables/table.py" line="832"/>
         <source>Initial pressure</source>
         <translation>Presión inicial</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3423"/>
+        <location filename="../tools/UI_Tables/table.py" line="834"/>
         <source>Final pressure</source>
         <translation>Presión final</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3458"/>
+        <location filename="../tools/UI_Tables/table.py" line="869"/>
         <source>Specify Isoproperty Table</source>
         <translation>Especificar tabla de isopropiedades</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3462"/>
+        <location filename="../tools/UI_Tables/table.py" line="873"/>
         <source>Hold constant</source>
         <translation>Mantener constante</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3469"/>
+        <location filename="../tools/UI_Tables/table.py" line="880"/>
         <source>Vary</source>
         <translation>Variar</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3450"/>
+        <location filename="../tools/UI_Tables/table.py" line="861"/>
         <source>Internal Energy</source>
         <translation>Energía interna</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="210"/>
+        <location filename="../lib/thermo.py" line="209"/>
         <source>Fugacity</source>
         <translation>Fugacidad</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="204"/>
+        <location filename="../lib/thermo.py" line="203"/>
         <source>Speed sound</source>
         <translation>Velocidad sonido</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="810"/>
+        <location filename="../lib/corriente.py" line="836"/>
         <source>Compresibility</source>
         <translation>Compresibilidad</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3512"/>
+        <location filename="../tools/UI_Tables/table.py" line="923"/>
         <source>Quality</source>
         <translation>Fracción de vapor</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="514"/>
+        <location filename="../lib/thermo.py" line="512"/>
         <source>2nd virial coefficient</source>
         <translation>2º coeficiente del virial</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="516"/>
+        <location filename="../lib/thermo.py" line="514"/>
         <source>3er virial coefficient</source>
         <translation>3er coeficiente del virial</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1446"/>
+        <location filename="../lib/unidades.py" line="1533"/>
         <source>Kinematic viscosity</source>
         <translation>Viscosidad cinemática</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="243"/>
+        <location filename="../lib/thermo.py" line="242"/>
         <source>Surface tension</source>
         <translation>Tensión superficial</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="241"/>
+        <location filename="../lib/thermo.py" line="240"/>
         <source>Thermal diffusivity</source>
         <translation>Difusicidad térmica</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="212"/>
+        <location filename="../lib/thermo.py" line="211"/>
         <source>Isoentropic exponent</source>
         <translation>Expenente isoentrópico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="220"/>
+        <location filename="../lib/thermo.py" line="219"/>
         <source>Relative pressure coefficient</source>
         <translation>Coeficiente de presión relativa</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="218"/>
+        <location filename="../lib/thermo.py" line="217"/>
         <source>Adiabatic compresibility</source>
         <translation>Compresibilidad adiabática</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="538"/>
+        <location filename="../lib/thermo.py" line="536"/>
         <source>Internal pressure</source>
         <translation>Presión interna</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="907"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="827"/>
         <source>MEoS properties</source>
         <translation>Aplicación MEoS</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="152"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="64"/>
         <source>Fluid</source>
         <translation>Fluido</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="156"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="68"/>
         <source>Reference State</source>
         <translation>Estado de referencia</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="165"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="77"/>
         <source>Calculate</source>
         <translation>Calcular</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="167"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="79"/>
         <source>Saturation</source>
         <translation>Saturación</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="171"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="83"/>
         <source>Isoproperty</source>
         <translation>Isopropiedad</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="176"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="88"/>
         <source>Specified point</source>
         <translation>Punto especificado</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="186"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="98"/>
         <source>T-s diagram</source>
         <translation>Diagrama T-s</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="405"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="317"/>
         <source>Launch MEoS Isoproperty calculation...</source>
         <translation>Lanzar cálculo de isopropiedades usando MEoS...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4885"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1602"/>
         <source>Melting Line</source>
         <translation>Línea de fusión</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4896"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1613"/>
         <source>Sublimation Line</source>
         <translation>Línea de sublimación</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="468"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="381"/>
         <source>Specified state points</source>
         <translation>Especificar puntos de estado</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1041"/>
+        <location filename="../UI/widgets.py" line="1042"/>
         <source>Fixed decimal point</source>
         <translation>Punto decimal fijo</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1045"/>
+        <location filename="../UI/widgets.py" line="1046"/>
         <source>Total digits</source>
         <translation>Dígitos totales</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1051"/>
+        <location filename="../UI/widgets.py" line="1052"/>
         <source>Decimal digits</source>
         <translation>Dígitos decimales</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1056"/>
+        <location filename="../UI/widgets.py" line="1057"/>
         <source>Significant figures</source>
         <translation>Datos significativos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1069"/>
+        <location filename="../UI/widgets.py" line="1070"/>
         <source>Figures</source>
         <translation>Datos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1065"/>
+        <location filename="../UI/widgets.py" line="1066"/>
         <source>Exponential preferred</source>
         <translation>Exponencial preferida</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1087"/>
+        <location filename="../UI/widgets.py" line="1088"/>
         <source>Show sign in positive values</source>
         <translation>Mostras signo en valores positivos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1077"/>
+        <location filename="../UI/widgets.py" line="1078"/>
         <source>Exponential for big/small values</source>
         <translation>Exponencia para valores muy grantes/pequeños</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1081"/>
+        <location filename="../UI/widgets.py" line="1082"/>
         <source>Tolerance</source>
         <translation>Tolerancia</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1177"/>
+        <location filename="../tools/UI_Preferences.py" line="318"/>
         <source>Sample</source>
         <translation>Muestra</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="391"/>
+        <location filename="../pychemqt.py" line="389"/>
         <source>Loading project files...</source>
         <translation>Cargando datos del proyecto...</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="832"/>
+        <location filename="../lib/corriente.py" line="858"/>
         <source>No Fluid Stream</source>
         <translation>Sin corriente fluida</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="848"/>
+        <location filename="../lib/corriente.py" line="874"/>
         <source>Particle Size Distribution</source>
         <translation>Distribución del tamaño de partículas</translation>
     </message>
@@ -6022,232 +6023,232 @@ Verde: Gas, g/l</translation>
         <translation>en el punto de fusión</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="294"/>
+        <location filename="../equipment/distillation.py" line="292"/>
         <source>Vapor Output Molar Composition</source>
         <translation>Composición molar del vapor</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="289"/>
+        <location filename="../equipment/distillation.py" line="287"/>
         <source>Vapor Output Mass Flow</source>
         <translation>Caudal másico del vapor</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="307"/>
+        <location filename="../equipment/distillation.py" line="305"/>
         <source>Liquid Output Molar Composition</source>
         <translation>Composición molar del líquido</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="302"/>
+        <location filename="../equipment/distillation.py" line="300"/>
         <source>Liquid Output Mass Flow</source>
         <translation>Caudal másico del líquido</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="287"/>
+        <location filename="../equipment/distillation.py" line="285"/>
         <source>Vapor Output Molar Flow</source>
         <translation>Caudal molar del vapor</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="291"/>
+        <location filename="../equipment/distillation.py" line="289"/>
         <source>Vapor Output Volumetric Flow</source>
         <translation>Caudal volumétrico del vapor</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="297"/>
+        <location filename="../equipment/distillation.py" line="295"/>
         <source>Vapor Output Mass Composition</source>
         <translation>Composición másica del vapor</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="300"/>
+        <location filename="../equipment/distillation.py" line="298"/>
         <source>Liquid Output Molar Flow</source>
         <translation>Caudal molar del líquido</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="304"/>
+        <location filename="../equipment/distillation.py" line="302"/>
         <source>Liquid Output Volumetric Flow</source>
         <translation>Caudal volumétrico del líquido</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="310"/>
+        <location filename="../equipment/distillation.py" line="308"/>
         <source>Liquid Output Mass Composition</source>
         <translation>Composición másico del líquido</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="870"/>
+        <location filename="../equipment/distillation.py" line="867"/>
         <source>Feed Calculate method</source>
         <translation>Método de cálculo del piso de la alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="871"/>
+        <location filename="../equipment/distillation.py" line="868"/>
         <source>Condenser type</source>
         <translation>Tipo de condensador</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="872"/>
+        <location filename="../equipment/distillation.py" line="869"/>
         <source>Light Key Component</source>
         <translation>Componente clave ligero</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="873"/>
+        <location filename="../equipment/distillation.py" line="870"/>
         <source>Heavy Key Component</source>
         <translation>Componente clave pesado</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="874"/>
+        <location filename="../equipment/distillation.py" line="871"/>
         <source>Minimum Reflux Ratio</source>
         <translation>Razón de reflujo mínima</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="875"/>
+        <location filename="../equipment/distillation.py" line="872"/>
         <source>Reflux Ratio</source>
         <translation>Razón de reflujo</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="876"/>
+        <location filename="../equipment/distillation.py" line="873"/>
         <source>Stage Number</source>
         <translation>Número de pisos</translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="877"/>
+        <location filename="../equipment/distillation.py" line="874"/>
         <source>Feed Stage</source>
         <translation>Piso de la alimentación</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="471"/>
+        <location filename="../equipment/pump.py" line="467"/>
         <source>Brake horsepower</source>
         <translation>Potencia al freno</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="495"/>
+        <location filename="../equipment/pump.py" line="491"/>
         <source>Pump Cost</source>
         <translation>Coste de la bomba</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="485"/>
+        <location filename="../equipment/pump.py" line="481"/>
         <source>Pump Type</source>
         <translation>Tipo de bomba</translation>
     </message>
     <message>
-        <location filename="../equipment/pump.py" line="487"/>
+        <location filename="../equipment/pump.py" line="483"/>
         <source>Centrifuge Type</source>
         <translation>Tipo de centrífuga</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="456"/>
+        <location filename="../equipment/pipe.py" line="454"/>
         <source>Nominal Diameter</source>
         <translation>Diámetro nominal</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="462"/>
+        <location filename="../equipment/pipe.py" line="460"/>
         <source>Internal Diamter</source>
         <translation>Diámetro interno</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="464"/>
+        <location filename="../equipment/pipe.py" line="462"/>
         <source>External Diamter</source>
         <translation>Diametro externo</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="468"/>
+        <location filename="../equipment/pipe.py" line="466"/>
         <source>Transversal section</source>
         <translation>Sección transversal</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="470"/>
+        <location filename="../equipment/pipe.py" line="468"/>
         <source>External Area</source>
         <translation>Area externa</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="492"/>
+        <location filename="../equipment/pipe.py" line="490"/>
         <source>Thermal Condition</source>
         <translation>Condición térmica</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="494"/>
+        <location filename="../equipment/pipe.py" line="492"/>
         <source>Fluid Speed</source>
         <translation>Velocidad del fluido</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="500"/>
+        <location filename="../equipment/pipe.py" line="498"/>
         <source>Factor Friction</source>
         <translation>Factor de fricción</translation>
     </message>
     <message>
-        <location filename="../equipment/pipe.py" line="472"/>
+        <location filename="../equipment/pipe.py" line="470"/>
         <source>K total</source>
         <translation>K total</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="317"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="312"/>
         <source>Pressure Loss Model</source>
         <translation>Modelo de perdida de presión</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="802"/>
+        <location filename="../equipment/gas_solid.py" line="796"/>
         <source>Ciclon Model</source>
         <translation>Modelo de ciclón</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="804"/>
+        <location filename="../equipment/gas_solid.py" line="798"/>
         <source>Critic Particle Diameter</source>
         <translation>Diámetro de partícula crítico</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="806"/>
+        <location filename="../equipment/gas_solid.py" line="800"/>
         <source>Gas Internal Cycles</source>
         <translation>Ciclos internos del gas</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="808"/>
+        <location filename="../equipment/gas_solid.py" line="802"/>
         <source>Gas Speed</source>
         <translation>Velocidad del gas</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="811"/>
+        <location filename="../equipment/gas_solid.py" line="805"/>
         <source>Cyclone number</source>
         <translation>Número de ciclones</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="779"/>
+        <location filename="../equipment/gas_solid.py" line="773"/>
         <source>Cyclone Dimensions</source>
         <translation>Dimensiones del ciclón</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="813"/>
+        <location filename="../equipment/gas_solid.py" line="807"/>
         <source>Ciclon Diameter</source>
         <translation>Diametro del ciclón</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="815"/>
+        <location filename="../equipment/gas_solid.py" line="809"/>
         <source>Inlet Height</source>
         <translation>Altura de la entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="817"/>
+        <location filename="../equipment/gas_solid.py" line="811"/>
         <source>Inlet Width</source>
         <translation>Anchura de la entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="818"/>
+        <location filename="../equipment/gas_solid.py" line="812"/>
         <source>Solid Output Diameter</source>
         <translation>Diametro del orificio de salida de sólidos</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="820"/>
+        <location filename="../equipment/gas_solid.py" line="814"/>
         <source>Cylinder Cyclone Section Length</source>
         <translation>Longitud de la sección del cilindro del ciclón</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="822"/>
+        <location filename="../equipment/gas_solid.py" line="816"/>
         <source>Conical Cyclone Section Length</source>
         <translation>Longitud de la sección cónica del ciclón</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="824"/>
+        <location filename="../equipment/gas_solid.py" line="818"/>
         <source>Clean Gas Output Diameter</source>
         <translation>Diametro del orificio de salida del gas</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="826"/>
+        <location filename="../equipment/gas_solid.py" line="820"/>
         <source>Clean Gas Inlet Orifice Length</source>
         <translation>Longitude del orificio de salida del gas limpio</translation>
     </message>
@@ -6282,22 +6283,22 @@ Verde: Gas, g/l</translation>
         <translation>Diámetro medio de solidos filtrados</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1119"/>
+        <location filename="../equipment/gas_solid.py" line="1112"/>
         <source>Filter Number</source>
         <translation>Número de filtros</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1121"/>
+        <location filename="../equipment/gas_solid.py" line="1114"/>
         <source>Operation Time</source>
         <translation>Tiempo de oeración</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="435"/>
+        <location filename="../equipment/gas_solid.py" line="1309"/>
         <source>stimated</source>
         <translation>estimado</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="1136"/>
+        <location filename="../equipment/gas_solid.py" line="1129"/>
         <source>Surface</source>
         <translation>Superficie</translation>
     </message>
@@ -6312,512 +6313,512 @@ Verde: Gas, g/l</translation>
         <translation>Métodos de cálculo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="999"/>
+        <location filename="../lib/unidades.py" line="1086"/>
         <source>Wrong input code</source>
         <translation>Código de unidad erróneo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="407"/>
+        <location filename="../lib/unidades.py" line="494"/>
         <source>Radian</source>
         <translation>Radian</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="408"/>
+        <location filename="../lib/unidades.py" line="495"/>
         <source>Degree</source>
         <translation>Grado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="409"/>
+        <location filename="../lib/unidades.py" line="496"/>
         <source>Arcminute</source>
         <translation>Arco minuto</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="410"/>
+        <location filename="../lib/unidades.py" line="497"/>
         <source>Arcsecond</source>
         <translation>Arco segundo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="411"/>
+        <location filename="../lib/unidades.py" line="498"/>
         <source>Gradian</source>
         <translation>Gradian</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="436"/>
+        <location filename="../lib/unidades.py" line="523"/>
         <source>meter</source>
         <translation>metro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="437"/>
+        <location filename="../lib/unidades.py" line="524"/>
         <source>centimeter</source>
         <translation>centímetro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="438"/>
+        <location filename="../lib/unidades.py" line="525"/>
         <source>milimeter</source>
         <translation>milímetro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="439"/>
+        <location filename="../lib/unidades.py" line="526"/>
         <source>micra</source>
         <translation>micra</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="440"/>
+        <location filename="../lib/unidades.py" line="527"/>
         <source>kilometer</source>
         <translation>kilómetro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="441"/>
+        <location filename="../lib/unidades.py" line="528"/>
         <source>inch</source>
         <translation>pulgada</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="442"/>
+        <location filename="../lib/unidades.py" line="529"/>
         <source>foot</source>
         <translation>pie</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="443"/>
+        <location filename="../lib/unidades.py" line="530"/>
         <source>yard</source>
         <translation>yarda</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="444"/>
+        <location filename="../lib/unidades.py" line="531"/>
         <source>mile</source>
         <translation>milla</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="445"/>
+        <location filename="../lib/unidades.py" line="532"/>
         <source>nautical mile</source>
         <translation>milla náutica</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="526"/>
+        <location filename="../lib/unidades.py" line="613"/>
         <source>liter</source>
         <translation>litro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="528"/>
+        <location filename="../lib/unidades.py" line="615"/>
         <source>US liquid gallon</source>
         <translation>galón EEUU</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="529"/>
+        <location filename="../lib/unidades.py" line="616"/>
         <source>Imperial gallon</source>
         <translation>galón imperial</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="530"/>
+        <location filename="../lib/unidades.py" line="617"/>
         <source>US fluid barrel</source>
         <translation>Barril EEUU</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="531"/>
+        <location filename="../lib/unidades.py" line="618"/>
         <source>UK fluid barrel</source>
         <translation>Barril imperial</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="532"/>
+        <location filename="../lib/unidades.py" line="619"/>
         <source>Oil barrel</source>
         <translation>Barril de petróleo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="533"/>
+        <location filename="../lib/unidades.py" line="620"/>
         <source>US customary fluid ounce</source>
         <translation>onza EEUU</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="534"/>
+        <location filename="../lib/unidades.py" line="621"/>
         <source>Imperial fluid ounce</source>
         <translation>onza imperial</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="560"/>
+        <location filename="../lib/unidades.py" line="647"/>
         <source>second</source>
         <translation>segundo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="561"/>
+        <location filename="../lib/unidades.py" line="648"/>
         <source>minute</source>
         <translation>minuto</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="562"/>
+        <location filename="../lib/unidades.py" line="649"/>
         <source>hour</source>
         <translation>hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="563"/>
+        <location filename="../lib/unidades.py" line="650"/>
         <source>day</source>
         <translation>día</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="564"/>
+        <location filename="../lib/unidades.py" line="651"/>
         <source>year</source>
         <translation>año</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="613"/>
+        <location filename="../lib/unidades.py" line="700"/>
         <source>Knot</source>
         <translation>nudo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="660"/>
+        <location filename="../lib/unidades.py" line="747"/>
         <source>kilogram</source>
         <translation>kilogramo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="661"/>
+        <location filename="../lib/unidades.py" line="748"/>
         <source>gram</source>
         <translation>gramo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="662"/>
+        <location filename="../lib/unidades.py" line="749"/>
         <source>miligram</source>
         <translation>miligramo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="663"/>
+        <location filename="../lib/unidades.py" line="750"/>
         <source>ton</source>
         <translation>tonelada</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="664"/>
+        <location filename="../lib/unidades.py" line="751"/>
         <source>pound</source>
         <translation>libra</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="665"/>
+        <location filename="../lib/unidades.py" line="752"/>
         <source>grain</source>
         <translation>grano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="666"/>
+        <location filename="../lib/unidades.py" line="753"/>
         <source>ounce</source>
         <translation>onza</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1710"/>
+        <location filename="../lib/unidades.py" line="1797"/>
         <source>Temperature inverse</source>
         <translation>Temperatura inversa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1942"/>
+        <location filename="../lib/unidades.py" line="2029"/>
         <source>United States dollar</source>
         <translation>Dolar estadounidense</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1943"/>
+        <location filename="../lib/unidades.py" line="2030"/>
         <source>Euro</source>
         <translation>Euro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1944"/>
+        <location filename="../lib/unidades.py" line="2031"/>
         <source>Pound sterling</source>
         <translation>Libra esterlina</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1945"/>
+        <location filename="../lib/unidades.py" line="2032"/>
         <source>Japanese yen</source>
         <translation>Yen japonés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1946"/>
+        <location filename="../lib/unidades.py" line="2033"/>
         <source>Chinese yuan</source>
         <translation>Yuan chino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1947"/>
+        <location filename="../lib/unidades.py" line="2034"/>
         <source>Russian rouble</source>
         <translation>Rublo ruso</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1948"/>
+        <location filename="../lib/unidades.py" line="2035"/>
         <source>Australian dollar</source>
         <translation>Dólar australiano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1949"/>
+        <location filename="../lib/unidades.py" line="2036"/>
         <source>Brazilian real</source>
         <translation>Real brasileño</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1950"/>
+        <location filename="../lib/unidades.py" line="2037"/>
         <source>Canadian dollar</source>
         <translation>Dólar canadiense</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1951"/>
+        <location filename="../lib/unidades.py" line="2038"/>
         <source>Swiss franc</source>
         <translation>Franco suizo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1955"/>
+        <location filename="../lib/unidades.py" line="2042"/>
         <source>Danish krone</source>
         <translation>Corona danesa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2046"/>
+        <location filename="../lib/unidades.py" line="2133"/>
         <source>Hong Kong dollar</source>
         <translation>Dólar honkonés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2047"/>
+        <location filename="../lib/unidades.py" line="2134"/>
         <source>Indian rupee</source>
         <translation>Rupia indú</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2058"/>
+        <location filename="../lib/unidades.py" line="2145"/>
         <source>South Korean won</source>
         <translation>Won surcoreano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2059"/>
+        <location filename="../lib/unidades.py" line="2146"/>
         <source>Sri Lankan rupee</source>
         <translation>Rupia de Sri Lanka</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2051"/>
+        <location filename="../lib/unidades.py" line="2138"/>
         <source>Malaysian ringgit</source>
         <translation>Ringgit malayo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2115"/>
+        <location filename="../lib/unidades.py" line="2202"/>
         <source>New Zealand dollar</source>
         <translation>Dólar neozelandés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2057"/>
+        <location filename="../lib/unidades.py" line="2144"/>
         <source>Singapore dollar</source>
         <translation>Dólar de Singapur</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2055"/>
+        <location filename="../lib/unidades.py" line="2142"/>
         <source>New Taiwan dollar</source>
         <translation>Dólar taiwanés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2099"/>
+        <location filename="../lib/unidades.py" line="2186"/>
         <source>South African rand</source>
         <translation>Rand sudafricano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2060"/>
+        <location filename="../lib/unidades.py" line="2147"/>
         <source>Thai baht</source>
         <translation>Baht tailandés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1958"/>
+        <location filename="../lib/unidades.py" line="2045"/>
         <source>Swedish krona</source>
         <translation>Corona sueca</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1957"/>
+        <location filename="../lib/unidades.py" line="2044"/>
         <source>Norwegian krone</source>
         <translation>Corona noruega</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1986"/>
+        <location filename="../lib/unidades.py" line="2073"/>
         <source>Mexican peso</source>
         <translation>Peso mejicano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1961"/>
+        <location filename="../lib/unidades.py" line="2048"/>
         <source>Czech koruna</source>
         <translation>Corona checa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1962"/>
+        <location filename="../lib/unidades.py" line="2049"/>
         <source>Hungarian forint</source>
         <translation>Florin húngaro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1963"/>
-        <source>Polish z&#xc5;&#x82;oty</source>
+        <location filename="../lib/unidades.py" line="2050"/>
+        <source>Polish zÅoty</source>
         <translation>Zloty polaca</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1964"/>
+        <location filename="../lib/unidades.py" line="2051"/>
         <source>Romanian new leu</source>
         <translation>Nuevo leu rumano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1956"/>
-        <source>Icelandic kr&#xc3;&#xb3;na</source>
+        <location filename="../lib/unidades.py" line="2043"/>
+        <source>Icelandic krÃ³na</source>
         <translation>Korona islandesa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1967"/>
+        <location filename="../lib/unidades.py" line="2054"/>
         <source>Croatian kuna</source>
         <translation>Kuna croata</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1973"/>
+        <location filename="../lib/unidades.py" line="2060"/>
         <source>Turkish lira</source>
         <translation>Lira turca</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2056"/>
+        <location filename="../lib/unidades.py" line="2143"/>
         <source>Philippine peso</source>
         <translation>Peso filipino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1980"/>
+        <location filename="../lib/unidades.py" line="2067"/>
         <source>Colombian peso</source>
         <translation>Peso colombiano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1977"/>
+        <location filename="../lib/unidades.py" line="2064"/>
         <source>Argentine peso</source>
         <translation>Peso argentino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1979"/>
+        <location filename="../lib/unidades.py" line="2066"/>
         <source>Chilean peso</source>
         <translation>Peso chileno</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2103"/>
+        <location filename="../lib/unidades.py" line="2190"/>
         <source>Tunisian dinar</source>
         <translation>Dínar tunecino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2088"/>
+        <location filename="../lib/unidades.py" line="2175"/>
         <source>Moroccan dirham</source>
         <translation>Dirham marroquí</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2006"/>
+        <location filename="../lib/unidades.py" line="2093"/>
         <source>Jamaican dollar</source>
         <translation>Dólar jamaicano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1985"/>
+        <location filename="../lib/unidades.py" line="2072"/>
         <source>Honduran lempira</source>
         <translation>Lempira hondureña</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1988"/>
+        <location filename="../lib/unidades.py" line="2075"/>
         <source>Panamanian balboa</source>
         <translation>Balboa panameño</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1990"/>
+        <location filename="../lib/unidades.py" line="2077"/>
         <source>Peruvian nuevo sol</source>
         <translation>Nueo sol peruano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2025"/>
+        <location filename="../lib/unidades.py" line="2112"/>
         <source>Pakistani rupee</source>
         <translation>Rupia pakistani</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2002"/>
+        <location filename="../lib/unidades.py" line="2089"/>
         <source>East Caribbean dollar</source>
         <translation>Dólar del este del caribe</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2029"/>
+        <location filename="../lib/unidades.py" line="2116"/>
         <source>United Arab Emirates dirham</source>
         <translation>Dirham de los Emiratos Árabes Unidos</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2007"/>
+        <location filename="../lib/unidades.py" line="2094"/>
         <source>Netherlands Antillean guilder</source>
         <translation>Guilder de las Antillas Holandesas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2010"/>
+        <location filename="../lib/unidades.py" line="2097"/>
         <source>Trinidad and Tobago dollar</source>
         <translation>Dólar de Trinidad y Tobago</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2123"/>
+        <location filename="../lib/unidades.py" line="2210"/>
         <source>CFP franc</source>
         <translation>Franco CFP</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1984"/>
+        <location filename="../lib/unidades.py" line="2071"/>
         <source>Guatemalan quetzal</source>
         <translation>Quetzal guatemalteco</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2061"/>
+        <location filename="../lib/unidades.py" line="2148"/>
         <source>Vietnamese dong</source>
         <translation>Dong vietnamita</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1996"/>
+        <location filename="../lib/unidades.py" line="2083"/>
         <source>Bahamian dollar</source>
         <translation>Dólar bahameño</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1970"/>
+        <location filename="../lib/unidades.py" line="2057"/>
         <source>Serbian dinar</source>
         <translation>Dinar serbio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2077"/>
+        <location filename="../lib/unidades.py" line="2164"/>
         <source>Ghanaian cedi</source>
         <translation>Cedi ganés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2048"/>
+        <location filename="../lib/unidades.py" line="2135"/>
         <source>Indonesian rupiah</source>
         <translation>Rupia indonesa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2114"/>
+        <location filename="../lib/unidades.py" line="2201"/>
         <source>Fiji dollar</source>
         <translation>Dólar de Fiji</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2018"/>
+        <location filename="../lib/unidades.py" line="2105"/>
         <source>Israeli new shekel</source>
         <translation>Shekel israeli</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1090"/>
+        <location filename="../UI/widgets.py" line="1091"/>
         <source>Show thousand separator</source>
         <translation>Mostrar separador de miles</translation>
     </message>
     <message>
-        <location filename="../UI/prefMEOS.py" line="91"/>
+        <location filename="../tools/UI_Tables/plot.py" line="707"/>
         <source>Line Style</source>
         <translation>Estilo de línea</translation>
     </message>
     <message>
-        <location filename="../UI/prefMEOS.py" line="99"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1392"/>
         <source>Label</source>
         <translation>Etiqueta</translation>
     </message>
     <message>
-        <location filename="../UI/prefMEOS.py" line="189"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1150"/>
         <source>Isotherm</source>
         <translation>Isoterma</translation>
     </message>
     <message>
-        <location filename="../UI/prefMEOS.py" line="191"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1152"/>
         <source>Isobar</source>
         <translation>Isobara</translation>
     </message>
     <message>
-        <location filename="../UI/prefMEOS.py" line="193"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1154"/>
         <source>Isoenthalpic</source>
         <translation>Isoentálpica</translation>
     </message>
     <message>
-        <location filename="../UI/prefMEOS.py" line="195"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1156"/>
         <source>Isoentropic</source>
         <translation>Isoentrópica</translation>
     </message>
     <message>
-        <location filename="../UI/prefPsychrometric.py" line="52"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1158"/>
         <source>Isochor</source>
         <translation>Isocora</translation>
     </message>
     <message>
-        <location filename="../UI/prefMEOS.py" line="199"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1162"/>
         <source>Isoquality</source>
         <translation>Isocalidad</translation>
     </message>
@@ -6827,12 +6828,12 @@ Verde: Gas, g/l</translation>
         <translation>Usar librería freesteam (faster)</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="558"/>
+        <location filename="../tools/UI_Preferences.py" line="556"/>
         <source>mEoS</source>
         <translation>mEoS</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="226"/>
+        <location filename="../lib/thermo.py" line="225"/>
         <source>Joule-Thomson coefficient</source>
         <translation>Coeficiente Joule-Thomson</translation>
     </message>
@@ -6842,247 +6843,247 @@ Verde: Gas, g/l</translation>
         <translation>Índice de refracción</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="245"/>
+        <location filename="../lib/thermo.py" line="244"/>
         <source>Prandtl number</source>
         <translation>Número de Prandt</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4870"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1587"/>
         <source>Liquid Saturation Line</source>
         <translation>Línea de saturación del líquido</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4872"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1589"/>
         <source>Vapor Saturation Line</source>
         <translation>Línea de saturación del vapor</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4130"/>
+        <location filename="../tools/UI_Tables/plot.py" line="687"/>
         <source>Edit Plot</source>
         <translation>Editar gráfico</translation>
     </message>
     <message>
-        <location filename="../UI/prefPFD.py" line="160"/>
+        <location filename="../tools/UI_Tables/plot.py" line="705"/>
         <source>Line Width</source>
         <translation>Anchura de línea</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4185"/>
+        <location filename="../tools/UI_Tables/plot.py" line="742"/>
         <source>Color</source>
         <translation>Color</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4165"/>
+        <location filename="../tools/UI_Tables/plot.py" line="722"/>
         <source>Marker</source>
         <translation>Marca</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4167"/>
+        <location filename="../tools/UI_Tables/plot.py" line="724"/>
         <source>Marker Size</source>
         <translation>Tamaño de marca</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4169"/>
+        <location filename="../tools/UI_Tables/plot.py" line="726"/>
         <source>Marker Color</source>
         <translation>Color de marca</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4181"/>
+        <location filename="../tools/UI_Tables/plot.py" line="738"/>
         <source>Marker edge</source>
         <translation>Borde de marca</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4195"/>
+        <location filename="../tools/UI_Tables/plot.py" line="826"/>
         <source>Visible</source>
         <translation>Visible</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4198"/>
+        <location filename="../tools/UI_Tables/plot.py" line="829"/>
         <source>Antialiases</source>
         <translation>Antialiases</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4486"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1167"/>
         <source>Add Line to Plot</source>
         <translation>Añadir línea a gráfico</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4492"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1173"/>
         <source>Value</source>
         <translation>Valor</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4521"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1202"/>
         <source>Edit Axis</source>
         <translation>Editar eje</translation>
     </message>
     <message>
-        <location filename="../tools/doi.py" line="41"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1208"/>
         <source>Title</source>
         <translation>Título</translation>
     </message>
     <message>
-        <location filename="../UI/prefElemental.py" line="59"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1396"/>
         <source>Logarithmic scale</source>
         <translation>Escala logarítmica</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4696"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1399"/>
         <source>from</source>
         <translation>de</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4700"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1403"/>
         <source>to</source>
         <translation>a</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4548"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1229"/>
         <source>Show Grid</source>
         <translation>Mostrar rejilla</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3988"/>
+        <location filename="../tools/UI_Tables/plot.py" line="545"/>
         <source>Setup 2D Plot</source>
         <translation>Configurar gráfico 2D</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4054"/>
+        <location filename="../tools/UI_Tables/plot.py" line="611"/>
         <source>Axis X</source>
         <translation>Eje X</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4060"/>
+        <location filename="../tools/UI_Tables/plot.py" line="617"/>
         <source>Axis Y</source>
         <translation>Eje Y</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4050"/>
+        <location filename="../tools/UI_Tables/plot.py" line="607"/>
         <source>Setup 3D Plot</source>
         <translation>Configurar gráfico 3D</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4686"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1389"/>
         <source>Axis</source>
         <translation>Eje</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3672"/>
+        <location filename="../tools/UI_Tables/plot.py" line="88"/>
         <source>Edit &amp;Axis</source>
         <translation>Editar &amp;Eje</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3676"/>
+        <location filename="../tools/UI_Tables/plot.py" line="92"/>
         <source>Edit &amp;Plot</source>
         <translation>Editar &amp;Gráfico</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3681"/>
+        <location filename="../tools/UI_Tables/plot.py" line="97"/>
         <source>Edit &amp;Margins</source>
         <translation>Editar &amp;Márgenes</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3684"/>
+        <location filename="../tools/UI_Tables/plot.py" line="100"/>
         <source>&amp;Save Plot</source>
         <translation>&amp;Guardar gráfico</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3688"/>
+        <location filename="../tools/UI_Tables/plot.py" line="104"/>
         <source>Toggle &amp;Toolbar</source>
         <translation>Alternal &amp;Barra de herramientas</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3691"/>
+        <location filename="../tools/UI_Tables/plot.py" line="107"/>
         <source>Toggle &amp;Grid</source>
         <translation>Alternar &amp;Rejilla</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3704"/>
+        <location filename="../tools/UI_Tables/plot.py" line="120"/>
         <source>Tabulated data</source>
         <translation>Datos tabulados</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3767"/>
+        <location filename="../tools/UI_Tables/plot.py" line="184"/>
         <source>Table from</source>
         <translation>Tabla de</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3117"/>
+        <location filename="../tools/UI_Tables/table.py" line="528"/>
         <source>&amp;Copy</source>
         <translation>&amp;Copiar</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3123"/>
+        <location filename="../tools/UI_Tables/table.py" line="534"/>
         <source>E&amp;xport to csv</source>
         <translation>E&amp;xportar a csv</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="219"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="131"/>
         <source>3D Plot</source>
         <translation>Gráfico 3D</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="337"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="249"/>
         <source>Liquid-Gas Line</source>
         <translation>Línea Gas-Líquido</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="186"/>
+        <location filename="../lib/thermo.py" line="185"/>
         <source>Gibbs Free Energy</source>
         <translation>Energía libre de Gibbs</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="182"/>
+        <location filename="../lib/thermo.py" line="181"/>
         <source>Helmholtz Free Energy</source>
         <translation>Energía libre de Helmholtz</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="607"/>
+        <location filename="../equipment/heatExchanger.py" line="604"/>
         <source>Hairpin Heat Exchanger</source>
         <translation>Cambiador de calor de tubos concentricos</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="692"/>
+        <location filename="../equipment/heatExchanger.py" line="687"/>
         <source>undefined internal stream input</source>
         <translation>corriente interna no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="697"/>
+        <location filename="../equipment/heatExchanger.py" line="692"/>
         <source>undefined external stream input</source>
         <translation>corriente externa no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="703"/>
+        <location filename="../equipment/heatExchanger.py" line="698"/>
         <source>undefined pipe external diameter</source>
         <translation>diámetro externo de la tubería no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="722"/>
+        <location filename="../equipment/heatExchanger.py" line="717"/>
         <source>undefined pipe material thermal conductivity</source>
         <translation>conductividad térmica del material de la tubería no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="461"/>
+        <location filename="../equipment/heatExchanger.py" line="458"/>
         <source>Maximum heat</source>
         <translation>Flujo de calor máximo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="463"/>
+        <location filename="../equipment/heatExchanger.py" line="460"/>
         <source>Thermal Efficiency</source>
         <translation>Eficiencia térmica</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="467"/>
+        <location filename="../equipment/heatExchanger.py" line="464"/>
         <source>Required Fuel</source>
         <translation>Combustible requerido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="475"/>
+        <location filename="../equipment/heatExchanger.py" line="472"/>
         <source>FireHeater type</source>
         <translation>Tipo de calentador</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="479"/>
+        <location filename="../equipment/heatExchanger.py" line="476"/>
         <source>Box type</source>
         <translation>Tipo caja</translation>
     </message>
@@ -7102,37 +7103,37 @@ Verde: Gas, g/l</translation>
         <translation>Dialogo para mostrar el artículo de referencia</translation>
     </message>
     <message>
-        <location filename="../UI/prefPsychrometric.py" line="82"/>
+        <location filename="../tools/UI_confThermo.py" line="88"/>
         <source>Use external library coolProp (faster)</source>
         <translation>Usa la librería externa coolProp (más rápida)</translation>
     </message>
     <message>
-        <location filename="../UI/prefPsychrometric.py" line="86"/>
+        <location filename="../tools/UI_confThermo.py" line="92"/>
         <source>Use external library refprop (fastest)</source>
         <translation>Usa la librería externa refprop (la más rápida)</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="129"/>
+        <location filename="../lib/coolProp.py" line="515"/>
         <source>Supercritical fluid</source>
         <translation>Fluido supercrítico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="132"/>
+        <location filename="../lib/thermo.py" line="131"/>
         <source>Compressible liquid</source>
         <translation>Líquido compresible</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="136"/>
+        <location filename="../lib/thermo.py" line="135"/>
         <source>Saturated vapor</source>
         <translation>Vapor saturado</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="140"/>
+        <location filename="../lib/coolProp.py" line="530"/>
         <source>Two phases</source>
         <translation>Dos phases</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="138"/>
+        <location filename="../lib/thermo.py" line="137"/>
         <source>Saturated liquid</source>
         <translation>Líquido saturado</translation>
     </message>
@@ -7152,47 +7153,47 @@ Verde: Gas, g/l</translation>
         <translation>Cocorriente</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="672"/>
+        <location filename="../equipment/heatExchanger.py" line="668"/>
         <source>Vertical, (in down)</source>
         <translation>Vertical (interno hacia abajo)</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="673"/>
+        <location filename="../equipment/heatExchanger.py" line="669"/>
         <source>Vertical, (in up)</source>
         <translation>Vertical (Interno hacia arriba)</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="716"/>
+        <location filename="../equipment/heatExchanger.py" line="711"/>
         <source>undefined pipe diameters</source>
         <translation>diametros de la tuberia no definidos</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="737"/>
+        <location filename="../equipment/heatExchanger.py" line="731"/>
         <source>fin not specified, using bare tube</source>
         <translation>aletas no especificadas, usando tubos lisos</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="758"/>
+        <location filename="../equipment/heatExchanger.py" line="752"/>
         <source>undefined output condition</source>
         <translation>condición de salida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="777"/>
+        <location filename="../equipment/heatExchanger.py" line="771"/>
         <source>Pipe thickness discard</source>
         <translation>descartado el espesor de la tubería</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1163"/>
+        <location filename="../equipment/heatExchanger.py" line="1157"/>
         <source>Pipe Internal Diameter</source>
         <translation>Diámetro interno de la tubería</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1165"/>
+        <location filename="../equipment/heatExchanger.py" line="1159"/>
         <source>Pipe External Diameter</source>
         <translation>Diámetro externo de la tubería</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1167"/>
+        <location filename="../equipment/heatExchanger.py" line="1161"/>
         <source>Annulli External Diameter</source>
         <translation>Diámetro externo del anillo</translation>
     </message>
@@ -7202,77 +7203,77 @@ Verde: Gas, g/l</translation>
         <translation>Tubo con aletas</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="728"/>
+        <location filename="../equipment/heatExchanger.py" line="723"/>
         <source>Bare Tube</source>
         <translation>Tubo liso</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1202"/>
+        <location filename="../equipment/heatExchanger.py" line="1196"/>
         <source>Tube Mechanism</source>
         <translation>Mecanismo tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1204"/>
+        <location filename="../equipment/heatExchanger.py" line="1198"/>
         <source>Tube Fluid Speed</source>
         <translation>Velocidad del fluido en el tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1206"/>
+        <location filename="../equipment/heatExchanger.py" line="1200"/>
         <source>Tube Reynolds</source>
         <translation>Reynolds en el tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1208"/>
+        <location filename="../equipment/heatExchanger.py" line="1202"/>
         <source>Tube In Temperature</source>
         <translation>Temperatura de entrada al tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1210"/>
+        <location filename="../equipment/heatExchanger.py" line="1204"/>
         <source>Tube In Quality</source>
         <translation>Fracción de vapor de entrada al tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1212"/>
+        <location filename="../equipment/heatExchanger.py" line="1206"/>
         <source>Tube Out Temperature</source>
         <translation>Temperatura de salida del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1214"/>
+        <location filename="../equipment/heatExchanger.py" line="1208"/>
         <source>Tube Out Quality</source>
         <translation>Fracción de vapor a la salida del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1220"/>
+        <location filename="../equipment/heatExchanger.py" line="1214"/>
         <source>Annulli Mechanism</source>
         <translation>Mecanismo en el anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1222"/>
+        <location filename="../equipment/heatExchanger.py" line="1216"/>
         <source>Annulli Fluid Speed</source>
         <translation>Velocidad del fluido en el anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1224"/>
+        <location filename="../equipment/heatExchanger.py" line="1218"/>
         <source>Annulli Reynolds</source>
         <translation>Reynolds en el anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1226"/>
+        <location filename="../equipment/heatExchanger.py" line="1220"/>
         <source>Annulli In Temperature</source>
         <translation>Temperatura de entrada al anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1228"/>
+        <location filename="../equipment/heatExchanger.py" line="1222"/>
         <source>Annulli In Quality</source>
         <translation>Fracción de vapor a la entrada del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1230"/>
+        <location filename="../equipment/heatExchanger.py" line="1224"/>
         <source>Annulli Out Temperature</source>
         <translation>Temperatura de salida del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1232"/>
+        <location filename="../equipment/heatExchanger.py" line="1226"/>
         <source>Annulli Out Quality</source>
         <translation>Fracción de vapor de salida del anillo</translation>
     </message>
@@ -7282,12 +7283,12 @@ Verde: Gas, g/l</translation>
         <translation>U</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1240"/>
+        <location filename="../equipment/heatExchanger.py" line="1234"/>
         <source>Clean Factor</source>
         <translation>Factor de limpieza</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1242"/>
+        <location filename="../equipment/heatExchanger.py" line="1236"/>
         <source>Over Surface</source>
         <translation>Sobresuperficie</translation>
     </message>
@@ -7432,107 +7433,107 @@ Verde: Gas, g/l</translation>
         <translation>Constante de volumen de líquido</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="228"/>
+        <location filename="../pychemqt.py" line="226"/>
         <source>Starting pychemqt</source>
         <translation>Iniciando pychemqt</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="321"/>
+        <location filename="../pychemqt.py" line="319"/>
         <source>Checking currency data</source>
         <translation>Revisando datos de conversión de moneda</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="349"/>
+        <location filename="../pychemqt.py" line="347"/>
         <source>Internet connection error, using archived currency rates</source>
         <translation>Error de conexión a internet, usando unas tasas de cambio antiguas</translation>
     </message>
     <message>
-        <location filename="../pychemqt.py" line="375"/>
+        <location filename="../pychemqt.py" line="373"/>
         <source>Loading project files</source>
         <translation>Cargando archivos de proyecto</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="380"/>
+        <location filename="../tools/UI_Preferences.py" line="378"/>
         <source>External Calculator</source>
         <translation>Calculadora externa</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="381"/>
+        <location filename="../tools/UI_Preferences.py" line="379"/>
         <source>Select External Calculator Application</source>
         <translation>Seleccionar aplicación de calculadora externa</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="385"/>
+        <location filename="../tools/UI_Preferences.py" line="383"/>
         <source>Text viewer</source>
         <translation>Visor de textos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="386"/>
+        <location filename="../tools/UI_Preferences.py" line="384"/>
         <source>Select External Text Viewer Application</source>
         <translation>Selecciona un visor de archivos de texto externo</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="394"/>
+        <location filename="../tools/UI_Preferences.py" line="392"/>
         <source>Select External shell</source>
         <translation>Selecciona una consola</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="470"/>
+        <location filename="../tools/UI_Preferences.py" line="468"/>
         <source>Foreground color:</source>
         <translation>Color de primer plano:</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="403"/>
+        <location filename="../tools/UI_Preferences.py" line="401"/>
         <source>Background color:</source>
         <translation>Color de fondo:</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="408"/>
+        <location filename="../tools/UI_Preferences.py" line="406"/>
         <source>Use ipython if its available</source>
         <translation>Usa ipython si está disponible</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="411"/>
+        <location filename="../tools/UI_Preferences.py" line="409"/>
         <source>Show maximized</source>
         <translation>Mostrar maximizado</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="421"/>
+        <location filename="../tools/UI_Preferences.py" line="419"/>
         <source>Only Available on linux</source>
         <translation>Únicamente disponible en :POSIX</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="562"/>
+        <location filename="../tools/UI_Preferences.py" line="560"/>
         <source>Moody chart</source>
         <translation>Gráfico de Moody</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="196"/>
+        <location filename="../tools/UI_psychrometry.py" line="189"/>
         <source>Relative humidity:</source>
         <translation>Humedad relativa:</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="314"/>
+        <location filename="../plots/moody.py" line="93"/>
         <source>Save as PNG</source>
         <translation>Guardar como PNG</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="405"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="471"/>
         <source>Loading cached data...</source>
         <translation>Cargando datos guardados...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="565"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="478"/>
         <source>Calculating data, be patient...</source>
         <translation>Calculando datos, se paciente...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="418"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="492"/>
         <source>Plotting...</source>
         <translation>Graficando...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="492"/>
+        <location filename="../tools/UI_psychrometry.py" line="487"/>
         <source>Using</source>
         <translation>Usando</translation>
     </message>
@@ -7577,237 +7578,237 @@ Verde: Gas, g/l</translation>
         <translation>Abundancia</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="190"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="102"/>
         <source>T-rho diagram</source>
         <translation>Diagrama T-rho</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="194"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="106"/>
         <source>P-h diagram</source>
         <translation>Diagrama P-h</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="198"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="110"/>
         <source>P-v diagram</source>
         <translation>Diagrama P-v</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="202"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="114"/>
         <source>P-T diagram</source>
         <translation>Diagrama P-T</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="206"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="118"/>
         <source>h-s diagram</source>
         <translation>Diagrama h-s</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="210"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="122"/>
         <source>v-u diagram</source>
         <translation>Diagrama v-u</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="214"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="126"/>
         <source>Other Plots</source>
         <translation>Otros gráficos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="621"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="534"/>
         <source>Calculating melting line...</source>
         <translation>Calculando línea de fusión...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="650"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="563"/>
         <source>Calculating sublimation line...</source>
         <translation>Calculando línea de sublimación...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="685"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="598"/>
         <source>Calculating Liquid-Vapour saturation line...</source>
         <translation>Calculando línea de saturación liquido-vapor...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="708"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="621"/>
         <source>Calculating isoquality lines...</source>
         <translation>Calculando isocalidad...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="764"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="684"/>
         <source>Calculating isotherm lines...</source>
         <translation>Calculando isotermas...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="786"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="706"/>
         <source>Calculating isobar lines...</source>
         <translation>Calculando isobaras...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="808"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="728"/>
         <source>Calculating isochor lines...</source>
         <translation>Calculando isocoras...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="830"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="750"/>
         <source>Calculating isoenthalpic lines...</source>
         <translation>Calculando isoentálpicas...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="852"/>
+        <location filename="../tools/UI_Tables/__init__.py" line="772"/>
         <source>Calculating isoentropic lines...</source>
         <translation>Calculando isoentrópicas...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1003"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="51"/>
         <source>Choose fluid</source>
         <translation>Elige fluido</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1226"/>
+        <location filename="../tools/UI_Tables/reference.py" line="48"/>
         <source>OTO,  h,s=0 at 298K and 1 atm</source>
         <translation>OTO,  h,s=0 a 298K y 1 atm</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1232"/>
+        <location filename="../tools/UI_Tables/reference.py" line="54"/>
         <source>IIR,  h=200,s=1 saturated liquid at 273K</source>
         <translation>IIR,  h=200,s=1 líquido saturado a 273K</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1235"/>
+        <location filename="../tools/UI_Tables/reference.py" line="57"/>
         <source>ASHRAE,  h,s=0 saturated liquid at 243K</source>
         <translation>ASHRAE,  h,s=0 líquido saturado a 243K</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="82"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="81"/>
         <source>Design: Calculate diameter</source>
         <translation>Diseño: Calcular diámetro</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="132"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="127"/>
         <source>undefined gas stream</source>
         <translation>Corriente gaseosa no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="137"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="132"/>
         <source>undefined liquid stream</source>
         <translation>Corriente líquida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="142"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="137"/>
         <source>undefined diameter</source>
         <translation>Diámetro no defnido</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="153"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="148"/>
         <source>undefined venturi constant</source>
         <translation>Constante de venturi no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="157"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="152"/>
         <source>undefined calvert coefficient</source>
         <translation>Coeficiente de Calvert no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="319"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="314"/>
         <source>Throat Diameter</source>
         <translation>Diametro del estrechamiento</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="321"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="316"/>
         <source>Throat Length</source>
         <translation>Longitud del estrechamiento</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="323"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="318"/>
         <source>Johnstone method scrubber constant</source>
         <translation>Constante del scrubber del método de Johnstone</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="326"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="321"/>
         <source>Calvert method scrubber constant</source>
         <translation>Constante del scrubber del método de Calvert</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="329"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="324"/>
         <source>Drops Diameter</source>
         <translation>Diámetro de gotas</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="834"/>
+        <location filename="../equipment/gas_solid.py" line="828"/>
         <source>Cost Mode</source>
         <translation>Método de costos</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="725"/>
+        <location filename="../lib/unidades.py" line="812"/>
         <source>Third virial coefficient</source>
         <translation>Tercer coeficiente del virial</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1228"/>
+        <location filename="../lib/unidades.py" line="1315"/>
         <source>Specific Entropy</source>
         <translation>Entropía específica</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1244"/>
+        <location filename="../lib/unidades.py" line="1331"/>
         <source>Molar Specific Heat</source>
         <translation>Calor específico molar</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1819"/>
+        <location filename="../lib/unidades.py" line="1906"/>
         <source>Enthalpy per density</source>
         <translation>Entalpía por densidad</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1864"/>
+        <location filename="../lib/unidades.py" line="1951"/>
         <source>Pressure per density</source>
         <translation>Presión por densidad</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1883"/>
+        <location filename="../lib/unidades.py" line="1970"/>
         <source>Density per pressure</source>
         <translation>Densidad por presión</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1903"/>
+        <location filename="../lib/unidades.py" line="1990"/>
         <source>Density per temperature</source>
         <translation>Densidad por temperatura</translation>
     </message>
     <message>
-        <location filename="../lib/meos.py" line="705"/>
+        <location filename="../lib/meos.py" line="2347"/>
         <source>Ideal condition at zero pressure</source>
         <translation>Condiciones ideales a presión cero</translation>
     </message>
     <message>
-        <location filename="../lib/meos.py" line="714"/>
+        <location filename="../lib/meos.py" line="2355"/>
         <source>input out of range</source>
         <translation>Entrada fuera de rango</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="344"/>
+        <location filename="../lib/thermo.py" line="343"/>
         <source>Subcooled</source>
         <translation>Subenfriado</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="346"/>
+        <location filename="../lib/thermo.py" line="345"/>
         <source>Superheated</source>
         <translation>Supercalentado</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="348"/>
+        <location filename="../lib/thermo.py" line="347"/>
         <source>Critic point</source>
         <translation>Punto crítico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="350"/>
+        <location filename="../lib/thermo.py" line="349"/>
         <source>Supercritical</source>
         <translation>Supercrítico</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="913"/>
+        <location filename="../lib/corriente.py" line="938"/>
         <source>Advanced MEoS properties</source>
         <translation>Propiedades MEoS avanzadas</translation>
     </message>
     <message>
-        <location filename="../lib/corriente.py" line="916"/>
+        <location filename="../lib/corriente.py" line="941"/>
         <source>Advanced thermo properties</source>
         <translation>Propiedades thermodinámicas avanzadas</translation>
     </message>
@@ -7847,12 +7848,12 @@ Verde: Gas, g/l</translation>
         <translation>Proyecto cargado con éxito</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="477"/>
+        <location filename="../UI/flujo.py" line="476"/>
         <source>Copy from another project</source>
         <translation>Copiar de otro proyecto</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="802"/>
+        <location filename="../UI/flujo.py" line="801"/>
         <source>Export to spreadsheet</source>
         <translation>Exporta a hoja de cálculo</translation>
     </message>
@@ -7867,17 +7868,17 @@ Verde: Gas, g/l</translation>
         <translation>Abrir terminal de sistema</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="798"/>
+        <location filename="../UI/widgets.py" line="799"/>
         <source>Browse</source>
         <translation>Navegar</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="810"/>
+        <location filename="../UI/widgets.py" line="811"/>
         <source>Executable files</source>
         <translation>Archivos ejecuables</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="818"/>
+        <location filename="../UI/widgets.py" line="819"/>
         <source>Select path of file</source>
         <translation>Seleccionar ruta del archivo</translation>
     </message>
@@ -7907,48 +7908,48 @@ Verde: Gas, g/l</translation>
         <translation>Fracción de aire</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="132"/>
+        <location filename="../equipment/compressor.py" line="131"/>
         <source>Isothermic</source>
         <translation>Isotérmico</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1183"/>
+        <location filename="../equipment/heatExchanger.py" line="1177"/>
         <source>Fin height</source>
         <translation>Altura de aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1185"/>
+        <location filename="../equipment/heatExchanger.py" line="1179"/>
         <source>Thickness at bottom of fin</source>
         <translation>Espesor en la base de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1187"/>
+        <location filename="../equipment/heatExchanger.py" line="1181"/>
         <source>Thickness at top of fin</source>
         <translation>Espesor en la punta de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1189"/>
+        <location filename="../equipment/heatExchanger.py" line="1183"/>
         <source>External diameter at bottom of fin</source>
         <translation>Diametro externo en la base de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1192"/>
+        <location filename="../equipment/heatExchanger.py" line="1186"/>
         <source>Fin thermal conductivity</source>
         <translation>Conductividad térmica de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1194"/>
+        <location filename="../equipment/heatExchanger.py" line="1188"/>
         <source>Fin count per meter</source>
         <translation>Número de aletas por metro</translation>
     </message>
     <message>
         <location filename="../lib/corriente.py" line="126"/>
         <source>Unknown variables</source>
-        <translation>Variable desdconocidas</translation>
+        <translation>Variable desconocidas</translation>
     </message>
     <message>
-        <location filename="../lib/meos.py" line="402"/>
-        <source>Solution don&#xc2;&#xb4;t converge</source>
+        <location filename="../lib/meos.py" line="1298"/>
+        <source>Solution donÂ´t converge</source>
         <translation>Solución no converge</translation>
     </message>
     <message>
@@ -7997,12 +7998,12 @@ Verde: Gas, g/l</translation>
         <translation>Versión de iapws demasiado vieja, debe actualizarlo.</translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="138"/>
+        <location filename="../equipment/compressor.py" line="137"/>
         <source>Belt drive coupling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/compressor.py" line="404"/>
+        <location filename="../equipment/compressor.py" line="401"/>
         <source>Especific capacities ratio</source>
         <translation>Relación de capacidades caloríficas</translation>
     </message>
@@ -8017,24 +8018,24 @@ Verde: Gas, g/l</translation>
         <translation>Eficiencia global</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid.py" line="809"/>
+        <location filename="../equipment/gas_solid.py" line="803"/>
         <source>Gas Volumetric Flow</source>
         <translation>Flujo volumétrico del gas</translation>
     </message>
     <message>
         <location filename="../UI/mainWindow.py" line="773"/>
         <source>Scrubber</source>
-        <translation type="unfinished"></translation>
+        <translation>Scrubber</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="331"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="326"/>
         <source>Throat Cross Area</source>
-        <translation type="unfinished"></translation>
+        <translation>Superficie estrechamiento</translation>
     </message>
     <message>
-        <location filename="../equipment/gas_solid_liquid.py" line="333"/>
+        <location filename="../equipment/gas_solid_liquid.py" line="328"/>
         <source>Throat Speed</source>
-        <translation type="unfinished"></translation>
+        <translation>Velocidad en el estrechamiento</translation>
     </message>
     <message>
         <location filename="../equipment/spreadsheet.py" line="58"/>
@@ -8042,17 +8043,17 @@ Verde: Gas, g/l</translation>
         <translation>Hoja de cálculo</translation>
     </message>
     <message>
-        <location filename="../equipment/spreadsheet.py" line="76"/>
+        <location filename="../equipment/spreadsheet.py" line="74"/>
         <source>undefined spreadsheet filename</source>
         <translation>archivo de hoja de cálculo no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/spreadsheet.py" line="81"/>
+        <location filename="../equipment/spreadsheet.py" line="79"/>
         <source>undefined spreadsheet data map</source>
         <translation>Mapeo de datos de la hoja de cálculo no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/spreadsheet.py" line="192"/>
+        <location filename="../equipment/spreadsheet.py" line="190"/>
         <source>Data map</source>
         <translation>Mapeo de datos</translation>
     </message>
@@ -8062,172 +8063,172 @@ Verde: Gas, g/l</translation>
         <translation>Ruta de la hoja de cálculo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="465"/>
+        <location filename="../equipment/heatExchanger.py" line="462"/>
         <source>Fuel Heating Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Poder calorífico del refrigerante</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1177"/>
+        <location filename="../equipment/heatExchanger.py" line="1171"/>
         <source>Internal Fouling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1179"/>
+        <location filename="../equipment/heatExchanger.py" line="1173"/>
         <source>External Fouling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1198"/>
+        <location filename="../equipment/heatExchanger.py" line="1192"/>
         <source>Arrangement Flow</source>
-        <translation type="unfinished"></translation>
+        <translation>Distribución de flujo</translation>
     </message>
     <message>
         <location filename="../equipment/UI_hairpin.py" line="163"/>
         <source>Layout</source>
-        <translation type="unfinished"></translation>
+        <translation>Disposición</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../equipment/heatExchanger.py" line="1216"/>
+    <message>
+        <location filename="../equipment/heatExchanger.py" line="1210"/>
         <source>ΔP Tube</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1218"/>
+        <location filename="../equipment/heatExchanger.py" line="1212"/>
         <source>Tube heat transfer</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../equipment/heatExchanger.py" line="1234"/>
+    <message>
+        <location filename="../equipment/heatExchanger.py" line="1228"/>
         <source>ΔP Annulli</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1236"/>
+        <location filename="../equipment/heatExchanger.py" line="1230"/>
         <source>Annulli heat transfer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1564"/>
+        <location filename="../equipment/heatExchanger.py" line="1557"/>
         <source>Bonnet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1565"/>
+        <location filename="../equipment/heatExchanger.py" line="1558"/>
         <source>Removable Bundle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1566"/>
+        <location filename="../equipment/heatExchanger.py" line="1559"/>
         <source>Special High Pressure Closure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1567"/>
+        <location filename="../equipment/heatExchanger.py" line="1560"/>
         <source>Channel with Tubesheet &amp; Removable Cover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1569"/>
+        <location filename="../equipment/heatExchanger.py" line="1562"/>
         <source>One Pass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1570"/>
+        <location filename="../equipment/heatExchanger.py" line="1563"/>
         <source>Two Pass</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1571"/>
+        <location filename="../equipment/heatExchanger.py" line="1564"/>
         <source>Split Flow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1572"/>
+        <location filename="../equipment/heatExchanger.py" line="1565"/>
         <source>Double Split Flow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1573"/>
+        <location filename="../equipment/heatExchanger.py" line="1566"/>
         <source>Divided Flow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1602"/>
+        <location filename="../equipment/heatExchanger.py" line="1595"/>
         <source>Kettle Reboiler</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1575"/>
+        <location filename="../equipment/heatExchanger.py" line="1568"/>
         <source>Cross Flow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1577"/>
+        <location filename="../equipment/heatExchanger.py" line="1570"/>
         <source>Fixed Tubesheet (A head)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1578"/>
+        <location filename="../equipment/heatExchanger.py" line="1571"/>
         <source>Fixed Tubesheet (B head)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1579"/>
+        <location filename="../equipment/heatExchanger.py" line="1572"/>
         <source>Fixed Tubesheet (N head)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1580"/>
+        <location filename="../equipment/heatExchanger.py" line="1573"/>
         <source>Outside Packed Flt Head</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1581"/>
+        <location filename="../equipment/heatExchanger.py" line="1574"/>
         <source>Flt Head with Backing Dev</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1582"/>
+        <location filename="../equipment/heatExchanger.py" line="1575"/>
         <source>Pull Throught Flt Heat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1583"/>
+        <location filename="../equipment/heatExchanger.py" line="1576"/>
         <source>U-Tube Bundle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1584"/>
+        <location filename="../equipment/heatExchanger.py" line="1577"/>
         <source>Exit Sealed Flt Tubesheet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1594"/>
+        <location filename="../equipment/heatExchanger.py" line="1587"/>
         <source>Single segmental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1595"/>
+        <location filename="../equipment/heatExchanger.py" line="1588"/>
         <source>Double segmental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1596"/>
+        <location filename="../equipment/heatExchanger.py" line="1589"/>
         <source>Triple segmental</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1597"/>
+        <location filename="../equipment/heatExchanger.py" line="1590"/>
         <source>No tubes in window</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1598"/>
+        <location filename="../equipment/heatExchanger.py" line="1591"/>
         <source>Disk &amp; donut</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1599"/>
+        <location filename="../equipment/heatExchanger.py" line="1592"/>
         <source>Rod</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8247,67 +8248,67 @@ Verde: Gas, g/l</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="363"/>
+        <location filename="../equipment/distillation.py" line="361"/>
         <source>Distillation Tower</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="455"/>
+        <location filename="../equipment/distillation.py" line="453"/>
         <source>x-y Diagram for</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="456"/>
+        <location filename="../equipment/distillation.py" line="454"/>
         <source>Liquid Mole Fraction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="457"/>
+        <location filename="../equipment/distillation.py" line="455"/>
         <source>Vapor Mole Fraction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="606"/>
+        <location filename="../equipment/distillation.py" line="604"/>
         <source>Column (Shortcut method)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="862"/>
+        <location filename="../equipment/distillation.py" line="859"/>
         <source>Top Output Temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="863"/>
+        <location filename="../equipment/distillation.py" line="860"/>
         <source>Top Output Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="864"/>
+        <location filename="../equipment/distillation.py" line="861"/>
         <source>Top Output Mass Flow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="865"/>
+        <location filename="../equipment/distillation.py" line="862"/>
         <source>Top Output Molar Composition</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="866"/>
+        <location filename="../equipment/distillation.py" line="863"/>
         <source>Bottom Output Temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="867"/>
+        <location filename="../equipment/distillation.py" line="864"/>
         <source>Bottom Output Pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="868"/>
+        <location filename="../equipment/distillation.py" line="865"/>
         <source>Bottom Output Mass Flow</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/distillation.py" line="869"/>
+        <location filename="../equipment/distillation.py" line="866"/>
         <source>Bottom Output Molar Composition</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8411,8 +8412,8 @@ Verde: Gas, g/l</translation>
         <source>Nozzles</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../equipment/pipe.py" line="482"/>
+    <message>
+        <location filename="../equipment/pipe.py" line="480"/>
         <source>ΔP Total</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8442,17 +8443,17 @@ Verde: Gas, g/l</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="322"/>
+        <location filename="../tools/UI_Tables/table.py" line="563"/>
         <source>Libreoffice spreadsheet files</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3155"/>
+        <location filename="../tools/UI_Tables/table.py" line="566"/>
         <source>Microsoft Excel 97/2000/XP/2003 XML</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="327"/>
+        <location filename="../tools/UI_Tables/table.py" line="570"/>
         <source>Microsoft Excel 2007/2010 XML</source>
         <translation></translation>
     </message>
@@ -8482,337 +8483,337 @@ Verde: Gas, g/l</translation>
         <translation>McCabe-Thiele</translation>
     </message>
     <message>
-        <location filename="../lib/coolProp.py" line="522"/>
+        <location filename="../lib/coolProp.py" line="518"/>
         <source>Supercritical liquid</source>
         <translation>Líquido supercrítico</translation>
     </message>
     <message>
-        <location filename="../lib/coolProp.py" line="525"/>
+        <location filename="../lib/coolProp.py" line="521"/>
         <source>Supercritical gas</source>
         <translation>Gas supercrítico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="134"/>
+        <location filename="../lib/coolProp.py" line="533"/>
         <source>Critical point</source>
         <translation>Punto crítico</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2583"/>
+        <location filename="../tools/UI_Tables/table.py" line="73"/>
         <source>Vapour</source>
         <translation>Vapor</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="143"/>
+        <location filename="../lib/thermo.py" line="142"/>
         <source>Unknown</source>
         <translation>Desconocido</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="156"/>
+        <location filename="../lib/thermo.py" line="155"/>
         <source>Reduced temperature</source>
         <translation>Temperatura reducida</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="160"/>
+        <location filename="../lib/thermo.py" line="159"/>
         <source>Reduced Pressure</source>
         <translation>Presión reducida</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="176"/>
+        <location filename="../lib/thermo.py" line="175"/>
         <source>Molar Entropy</source>
         <translation>Entropía molar</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="180"/>
+        <location filename="../lib/thermo.py" line="179"/>
         <source>Molar Internal Energy</source>
         <translation>Energía interna molar</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="184"/>
+        <location filename="../lib/thermo.py" line="183"/>
         <source>Molar Helmholtz Free Energy</source>
         <translation>Energía libre de Helmholtz molar</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="188"/>
+        <location filename="../lib/thermo.py" line="187"/>
         <source>Molar Gibbs Free Energy</source>
         <translation>Energía libre de Gibbs molar</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="190"/>
+        <location filename="../lib/thermo.py" line="189"/>
         <source>Specific isochoric heat capacity</source>
         <translation>Capacidad calorífica isocórica</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="193"/>
+        <location filename="../lib/thermo.py" line="192"/>
         <source>Molar Specific isochoric heat capacity</source>
         <translation>Capacidad calorífica isocórica molar</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="196"/>
+        <location filename="../lib/thermo.py" line="195"/>
         <source>Specific isobaric heat capacity</source>
         <translation>Capacidad calorífica isobárica</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="199"/>
+        <location filename="../lib/thermo.py" line="198"/>
         <source>Molar Specific isobaric heat capacity</source>
         <translation>Capacidad calorífica isobárica molar</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="202"/>
+        <location filename="../lib/thermo.py" line="201"/>
         <source>Heat capacities ratio</source>
         <translation>Relación de capacidades caloríficas</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="208"/>
+        <location filename="../lib/thermo.py" line="207"/>
         <source>Fugacity coefficient</source>
         <translation>Coeficiente de fugacidad</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="214"/>
+        <location filename="../lib/thermo.py" line="213"/>
         <source>Volume Expansivity</source>
         <translation>Expansividad volumétrica</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="216"/>
+        <location filename="../lib/thermo.py" line="215"/>
         <source>Isothermal compresibility</source>
         <translation>Compresibilidad isotérmica</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="223"/>
+        <location filename="../lib/thermo.py" line="222"/>
         <source>Isothermal stress coefficient</source>
         <translation>Coeficiente de esfuerzo isotérmico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="228"/>
+        <location filename="../lib/thermo.py" line="227"/>
         <source>Isothermal throttling coefficient</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="231"/>
+        <location filename="../lib/thermo.py" line="230"/>
         <source>Vaporization heat</source>
         <translation>Calor de vaporización</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="233"/>
+        <location filename="../lib/thermo.py" line="232"/>
         <source>Vaporization entropy</source>
         <translation>Entropía de vaporización</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="247"/>
+        <location filename="../lib/thermo.py" line="246"/>
         <source>Ideal gas Specific volume</source>
         <translation>Volumen específico del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="249"/>
+        <location filename="../lib/thermo.py" line="248"/>
         <source>Ideal gas Density</source>
         <translation>Densidad del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="251"/>
+        <location filename="../lib/thermo.py" line="250"/>
         <source>Ideal gas Specific enthalpy</source>
         <translation>Entalpía del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="253"/>
+        <location filename="../lib/thermo.py" line="252"/>
         <source>Ideal gas Specific internal energy</source>
         <translation>Energía interna del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="256"/>
+        <location filename="../lib/thermo.py" line="255"/>
         <source>Ideal gas Specific entropy</source>
         <translation>Entropía del gás ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="258"/>
+        <location filename="../lib/thermo.py" line="257"/>
         <source>Ideal gas Specific Helmholtz free energy</source>
         <translation>Energía libre de Helmholtz del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="261"/>
+        <location filename="../lib/thermo.py" line="260"/>
         <source>Ideal gas Specific Gibbs free energy</source>
         <translation>Energía libre de Gibbs del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="264"/>
+        <location filename="../lib/thermo.py" line="263"/>
         <source>Ideal gas Specific isobaric heat capacity</source>
         <translation>Capacidad calorífica isobárica del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="267"/>
+        <location filename="../lib/thermo.py" line="266"/>
         <source>Ideal gas Specific isochoric heat capacity</source>
         <translation>Capacidad calorífica isocórica del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="270"/>
+        <location filename="../lib/thermo.py" line="269"/>
         <source>Ideal gas heat capacities ratio</source>
         <translation>Relación de capacidades caloríficas del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="273"/>
+        <location filename="../lib/thermo.py" line="272"/>
         <source>Ideal gas Isoentropic exponent</source>
         <translation>Exponente isoentrópico del gas ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="509"/>
+        <location filename="../lib/thermo.py" line="507"/>
         <source>Isentropic temperature-pressure</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="512"/>
+        <location filename="../lib/thermo.py" line="510"/>
         <source>Gruneisen parameter</source>
         <translation>Parámetro Gruneisen</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="527"/>
+        <location filename="../lib/thermo.py" line="525"/>
         <source>Isothermal expansion coefficient</source>
         <translation>Coeficiente de expansión isotérmica</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="530"/>
+        <location filename="../lib/thermo.py" line="528"/>
         <source>Isentropic expansion coefficient</source>
         <translation>Coeficiente de expansión isoentrópica</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="533"/>
+        <location filename="../lib/thermo.py" line="531"/>
         <source>Adiabatic bulk modulus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="535"/>
+        <location filename="../lib/thermo.py" line="533"/>
         <source>Isothermal bulk modulus</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="540"/>
+        <location filename="../lib/thermo.py" line="538"/>
         <source>Negative reciprocal temperature</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="543"/>
+        <location filename="../lib/thermo.py" line="541"/>
         <source>Specific heat input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="625"/>
+        <location filename="../lib/thermo.py" line="623"/>
         <source>Ideal Pressure</source>
         <translation>Presión ideal</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="627"/>
+        <location filename="../lib/thermo.py" line="625"/>
         <source>Residual Pressure</source>
         <translation>Presión residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="629"/>
+        <location filename="../lib/thermo.py" line="627"/>
         <source>K value</source>
         <translation>Coeficientes de reparto</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="631"/>
+        <location filename="../lib/thermo.py" line="629"/>
         <source>Heat Capacity along the saturation line</source>
         <translation>Capacidad calorífica a lo largo de la línea de saturación</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="635"/>
+        <location filename="../lib/thermo.py" line="633"/>
         <source>Cv two phases</source>
         <translation>Cv dos phases</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="637"/>
+        <location filename="../lib/thermo.py" line="635"/>
         <source>Excess volume</source>
         <translation>Volumen de exceso</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="639"/>
+        <location filename="../lib/thermo.py" line="637"/>
         <source>Excess internal energy</source>
         <translation>Energía interna de exceso</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="641"/>
+        <location filename="../lib/thermo.py" line="639"/>
         <source>Excess enthalpy</source>
         <translation>Entalpía de exceso</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="643"/>
+        <location filename="../lib/thermo.py" line="641"/>
         <source>Excess entropy</source>
         <translation>Entropía de exceso</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="645"/>
+        <location filename="../lib/thermo.py" line="643"/>
         <source>Excess Helmholtz energy</source>
         <translation>Energía de Helmholtz de exceso</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="647"/>
+        <location filename="../lib/thermo.py" line="645"/>
         <source>Excess Gibbs energy</source>
         <translation>Energía de Gibbs de exceso</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="649"/>
+        <location filename="../lib/thermo.py" line="647"/>
         <source>Residual pressure</source>
         <translation>Presión residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="651"/>
+        <location filename="../lib/thermo.py" line="649"/>
         <source>Residual internal energy</source>
         <translation>Energía interna residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="653"/>
+        <location filename="../lib/thermo.py" line="651"/>
         <source>Residual enthalpy</source>
         <translation>Entalpía residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="655"/>
+        <location filename="../lib/thermo.py" line="653"/>
         <source>Residual entropy</source>
         <translation>Entropía residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="657"/>
+        <location filename="../lib/thermo.py" line="655"/>
         <source>Residual Helmholtz energy</source>
         <translation>Energía de Helmholtz residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="659"/>
+        <location filename="../lib/thermo.py" line="657"/>
         <source>Residual Gibbs energy</source>
         <translation>Energía de Gibbs residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="661"/>
+        <location filename="../lib/thermo.py" line="659"/>
         <source>Residual isobaric heat capacity</source>
         <translation>Capacidad calorífica isobárica residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="664"/>
+        <location filename="../lib/thermo.py" line="662"/>
         <source>Residual isochoric heat capacity</source>
         <translation>Capacidad calorífica isocórica residual</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="667"/>
+        <location filename="../lib/thermo.py" line="665"/>
         <source>Supercompressibility factor</source>
         <translation>Factor de supercompresibilidad</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="669"/>
+        <location filename="../lib/thermo.py" line="667"/>
         <source>Chemical potential</source>
         <translation>Potencial químico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="671"/>
+        <location filename="../lib/thermo.py" line="669"/>
         <source>Fourth virial coefficient</source>
         <translation>Cuarto coeficiente del virial</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="673"/>
+        <location filename="../lib/thermo.py" line="671"/>
         <source>Second acoustic virial coefficient</source>
         <translation>Segundo coeficiente del virial acústico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="676"/>
+        <location filename="../lib/thermo.py" line="674"/>
         <source>Third acoustic virial coefficient</source>
         <translation>Tercero coeficiente del virial acústico</translation>
     </message>
     <message>
-        <location filename="../lib/thermo.py" line="683"/>
+        <location filename="../lib/thermo.py" line="681"/>
         <source>Critical flow factor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8822,887 +8823,887 @@ Verde: Gas, g/l</translation>
         <translation>no definido</translation>
     </message>
     <message>
-        <location filename="../lib/psycrometry.py" line="380"/>
+        <location filename="../lib/psycrometry.py" line="593"/>
         <source>T dry bulb, Humidity Ratio</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/psycrometry.py" line="381"/>
+        <location filename="../lib/psycrometry.py" line="594"/>
         <source>T dry bulb, Relative humidity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/psycrometry.py" line="382"/>
+        <location filename="../lib/psycrometry.py" line="595"/>
         <source>T dry bulb, T wet bulb</source>
         <translation>Tª bulbo seco, Tª bulbo húmedo</translation>
     </message>
     <message>
-        <location filename="../lib/psycrometry.py" line="384"/>
+        <location filename="../lib/psycrometry.py" line="597"/>
         <source>T dew point, Relative humidity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/psycrometry.py" line="385"/>
+        <location filename="../lib/psycrometry.py" line="598"/>
         <source>T wet bulb, Relative humidity</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/psycrometry.py" line="419"/>
+        <location filename="../lib/psycrometry.py" line="632"/>
         <source>Calculate psychrometric point</source>
         <translation>Calcula punto psicrométrico</translation>
     </message>
     <message>
-        <location filename="../lib/reaction.py" line="117"/>
+        <location filename="../lib/reaction.py" line="116"/>
         <source>undefined components</source>
         <translation>componentes no definidos</translation>
     </message>
     <message>
-        <location filename="../lib/reaction.py" line="121"/>
+        <location filename="../lib/reaction.py" line="120"/>
         <source>undefined stequiometric</source>
         <translation>estequiometría no definida</translation>
     </message>
     <message>
-        <location filename="../lib/reaction.py" line="126"/>
+        <location filename="../lib/reaction.py" line="125"/>
         <source>undefined conversion</source>
         <translation>conversión no definida</translation>
     </message>
     <message>
-        <location filename="../lib/reaction.py" line="130"/>
+        <location filename="../lib/reaction.py" line="129"/>
         <source>undefined equilibrium constants</source>
         <translation>constantes de equilibrio no definidas</translation>
     </message>
     <message>
-        <location filename="../lib/utilities.py" line="225"/>
+        <location filename="../lib/utilities.py" line="224"/>
         <source>Unsopported format</source>
         <translation>formato no soportado</translation>
     </message>
     <message>
-        <location filename="../lib/meos.py" line="215"/>
+        <location filename="../lib/meos.py" line="1036"/>
         <source>Unknown Variables</source>
         <translation>Variables desconocidas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="446"/>
+        <location filename="../lib/unidades.py" line="533"/>
         <source>picometer</source>
         <translation>picometro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="485"/>
+        <location filename="../lib/unidades.py" line="572"/>
         <source>square meter</source>
         <translation>metro cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="486"/>
+        <location filename="../lib/unidades.py" line="573"/>
         <source>square centimeter</source>
         <translation>centímetro cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="487"/>
+        <location filename="../lib/unidades.py" line="574"/>
         <source>square milimeter</source>
         <translation>milímetro cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="488"/>
+        <location filename="../lib/unidades.py" line="575"/>
         <source>square kilometer</source>
         <translation>kilómetro cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="489"/>
+        <location filename="../lib/unidades.py" line="576"/>
         <source>square inch</source>
         <translation>pulgada cuadrada</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="490"/>
+        <location filename="../lib/unidades.py" line="577"/>
         <source>square foot</source>
         <translation>pie cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="491"/>
+        <location filename="../lib/unidades.py" line="578"/>
         <source>square yard</source>
         <translation>yarda cuadrada</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="492"/>
+        <location filename="../lib/unidades.py" line="579"/>
         <source>hectarea</source>
         <translation>hectarea</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="493"/>
+        <location filename="../lib/unidades.py" line="580"/>
         <source>acre</source>
         <translation>acre</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="667"/>
+        <location filename="../lib/unidades.py" line="754"/>
         <source>slug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="668"/>
+        <location filename="../lib/unidades.py" line="755"/>
         <source>long ton (UK)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="669"/>
+        <location filename="../lib/unidades.py" line="756"/>
         <source>short ton (US)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="861"/>
+        <location filename="../lib/unidades.py" line="948"/>
         <source>Kilogram force</source>
         <translation>Kilogramo fuerza</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="862"/>
+        <location filename="../lib/unidades.py" line="949"/>
         <source>Gram force</source>
         <translation>Gramo fuerza</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="863"/>
+        <location filename="../lib/unidades.py" line="950"/>
         <source>Pound force</source>
         <translation>Libra fuerza</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="864"/>
+        <location filename="../lib/unidades.py" line="951"/>
         <source>Ounze force</source>
         <translation>Onza fuerza</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1764"/>
+        <location filename="../lib/unidades.py" line="1851"/>
         <source>Bar gauge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1766"/>
+        <location filename="../lib/unidades.py" line="1853"/>
         <source>Pound per square inch</source>
         <translation>Libra por pulgada cuadrada</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1767"/>
+        <location filename="../lib/unidades.py" line="1854"/>
         <source>Pound per square inch gauge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1769"/>
+        <location filename="../lib/unidades.py" line="1856"/>
         <source>Atmosphere</source>
         <translation>Atmósfera</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="1770"/>
+    <message>
+        <location filename="../lib/unidades.py" line="1857"/>
         <source>Atmosphere technical, kg/cm²</source>
         <translation>Atmósfera técnica, kg/cm²</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="1772"/>
+    <message>
+        <location filename="../lib/unidades.py" line="1859"/>
         <source>Atmosphere technical gauge, kg/cm²g</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1774"/>
+        <location filename="../lib/unidades.py" line="1861"/>
         <source>Milimeter of water column</source>
         <translation>Milímetro de columna de agua</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1776"/>
+        <location filename="../lib/unidades.py" line="1863"/>
         <source>Centimeter of water column</source>
         <translation>Centímetro de columna de agua</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1778"/>
+        <location filename="../lib/unidades.py" line="1865"/>
         <source>Meter of water column</source>
         <translation>Metro de columna de agua</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1779"/>
+        <location filename="../lib/unidades.py" line="1866"/>
         <source>Inch of water column</source>
         <translation>Pulgada de columna de agua</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1780"/>
+        <location filename="../lib/unidades.py" line="1867"/>
         <source>Foot of water column</source>
         <translation>Pie de columna de agua</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1781"/>
+        <location filename="../lib/unidades.py" line="1868"/>
         <source>Milimeter of mercury column</source>
         <translation>Milímetro de columna de mercurio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1783"/>
+        <location filename="../lib/unidades.py" line="1870"/>
         <source>Centimeter of mercury column</source>
         <translation>Centímetro de columna de mercurio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1785"/>
+        <location filename="../lib/unidades.py" line="1872"/>
         <source>Inch of mercury column</source>
         <translation>Pulgada de columna de mercurio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1787"/>
+        <location filename="../lib/unidades.py" line="1874"/>
         <source>Foot of mercury column</source>
         <translation>Pie de columna de mercurio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1789"/>
+        <location filename="../lib/unidades.py" line="1876"/>
         <source>Pound per square centimeter</source>
         <translation>Libra por centímetro cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1791"/>
+        <location filename="../lib/unidades.py" line="1878"/>
         <source>Pound per square foot</source>
         <translation>Libra por pie cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1792"/>
+        <location filename="../lib/unidades.py" line="1879"/>
         <source>Dyn per square centimeter</source>
         <translation>Dina por centímetro cuadrado</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1113"/>
+        <location filename="../lib/unidades.py" line="1200"/>
         <source>Joule</source>
         <translation>Julio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1114"/>
+        <location filename="../lib/unidades.py" line="1201"/>
         <source>Kilojoule</source>
         <translation>Kilojulio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1115"/>
+        <location filename="../lib/unidades.py" line="1202"/>
         <source>Megajoule</source>
         <translation>Megajulio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1116"/>
+        <location filename="../lib/unidades.py" line="1203"/>
         <source>Calorie</source>
         <translation>Caloría</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1117"/>
+        <location filename="../lib/unidades.py" line="1204"/>
         <source>Kilocalorie</source>
         <translation>Kilocaloría</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1118"/>
+        <location filename="../lib/unidades.py" line="1205"/>
         <source>Calorie international</source>
         <translation>Caloría internacional</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1119"/>
+        <location filename="../lib/unidades.py" line="1206"/>
         <source>Erg</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1120"/>
+        <location filename="../lib/unidades.py" line="1207"/>
         <source>Btu</source>
         <translation>Btu</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1121"/>
+        <location filename="../lib/unidades.py" line="1208"/>
         <source>KiloBtu</source>
         <translation>KiloBtu</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1122"/>
+        <location filename="../lib/unidades.py" line="1209"/>
         <source>MegaBtu</source>
         <translation>MegaBtu</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1123"/>
+        <location filename="../lib/unidades.py" line="1210"/>
         <source>Watt-hour</source>
         <translation>Vatio-hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1124"/>
+        <location filename="../lib/unidades.py" line="1211"/>
         <source>Kilowatt-hour</source>
         <translation>Kilovatio-hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1125"/>
+        <location filename="../lib/unidades.py" line="1212"/>
         <source>Megawatt-hour</source>
         <translation>Megavatio-hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1126"/>
+        <location filename="../lib/unidades.py" line="1213"/>
         <source>Horsepower-hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1128"/>
+        <location filename="../lib/unidades.py" line="1215"/>
         <source>Ton TNT equivalent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1129"/>
+        <location filename="../lib/unidades.py" line="1216"/>
         <source>Metric horsepower-hour</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1130"/>
+        <location filename="../lib/unidades.py" line="1217"/>
         <source>Gigaelectronvolt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1131"/>
+        <location filename="../lib/unidades.py" line="1218"/>
         <source>Barrel petrol</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1132"/>
+        <location filename="../lib/unidades.py" line="1219"/>
         <source>Tonne of oil equivalent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1133"/>
+        <location filename="../lib/unidades.py" line="1220"/>
         <source>Tonne of coal equivalent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1291"/>
+        <location filename="../lib/unidades.py" line="1378"/>
         <source>Watt</source>
         <translation>Vatio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1292"/>
+        <location filename="../lib/unidades.py" line="1379"/>
         <source>Kilowatt</source>
         <translation>Kilovatio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1293"/>
+        <location filename="../lib/unidades.py" line="1380"/>
         <source>Megawatt</source>
         <translation>Megavatio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1294"/>
+        <location filename="../lib/unidades.py" line="1381"/>
         <source>Horsepower</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1295"/>
+        <location filename="../lib/unidades.py" line="1382"/>
         <source>Metric horsepower</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1296"/>
+        <location filename="../lib/unidades.py" line="1383"/>
         <source>Calorie per second</source>
         <translation>Caloría por segundo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1297"/>
+        <location filename="../lib/unidades.py" line="1384"/>
         <source>Kilocalorie per hour</source>
         <translation>Kilocaloría por hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1298"/>
+        <location filename="../lib/unidades.py" line="1385"/>
         <source>Joule per hour</source>
         <translation>Julio por hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1299"/>
+        <location filename="../lib/unidades.py" line="1386"/>
         <source>Kilojoule per hour</source>
         <translation>Kilojulio por hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1300"/>
+        <location filename="../lib/unidades.py" line="1387"/>
         <source>Megajoule per hour</source>
         <translation>Megajulio por hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1301"/>
+        <location filename="../lib/unidades.py" line="1388"/>
         <source>Erg per second</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1302"/>
+        <location filename="../lib/unidades.py" line="1389"/>
         <source>Btu per second</source>
         <translation>Btu por segundo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1303"/>
+        <location filename="../lib/unidades.py" line="1390"/>
         <source>Btu per minute</source>
         <translation>Btu por minuto</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1304"/>
+        <location filename="../lib/unidades.py" line="1391"/>
         <source>Btu per hour</source>
         <translation>Btu por hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1305"/>
+        <location filename="../lib/unidades.py" line="1392"/>
         <source>MegaBtu per hour</source>
         <translation>MegaBtu por hora</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1553"/>
+        <location filename="../lib/unidades.py" line="1640"/>
         <source>Fouling Factor</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1610"/>
+        <location filename="../lib/unidades.py" line="1697"/>
         <source>Pascal per second</source>
         <translation>Pascal por segundo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1611"/>
+        <location filename="../lib/unidades.py" line="1698"/>
         <source>Milipascal per second</source>
         <translation>Milipascal por segundo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1612"/>
+        <location filename="../lib/unidades.py" line="1699"/>
         <source>Micropascal per second</source>
         <translation>Micropascal por segundo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1661"/>
+        <location filename="../lib/unidades.py" line="1748"/>
         <source>Coulomb per meter</source>
         <translation>Culombio por metro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1959"/>
+        <location filename="../lib/unidades.py" line="2046"/>
         <source>Albanian lek</source>
         <translation>Lek albanés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1965"/>
+        <location filename="../lib/unidades.py" line="2052"/>
         <source>Bosnia and Herzebgovina convertible mark</source>
         <translation>Marco convertible de Bosnia Herzegovina</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1969"/>
+        <location filename="../lib/unidades.py" line="2056"/>
         <source>Moldovan leu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1971"/>
+        <location filename="../lib/unidades.py" line="2058"/>
         <source>Belarusian ruble</source>
         <translation>Rublo bieloruso</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1972"/>
+        <location filename="../lib/unidades.py" line="2059"/>
         <source>Ukrainian hryvnia</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1981"/>
+        <location filename="../lib/unidades.py" line="2068"/>
         <source>Costa Rican colon</source>
         <translation>Colon costaricense</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1982"/>
+        <location filename="../lib/unidades.py" line="2069"/>
         <source>Cuban peso</source>
         <translation>Peso cubano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1983"/>
+        <location filename="../lib/unidades.py" line="2070"/>
         <source>Dominican peso</source>
         <translation>Peso dominicano</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="1987"/>
+    <message>
+        <location filename="../lib/unidades.py" line="2074"/>
         <source>Nicaraguan córdoba</source>
         <translation>Córdoba nicaraguense</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="1989"/>
+    <message>
+        <location filename="../lib/unidades.py" line="2076"/>
         <source>Paraguayan guaraní</source>
         <translation>Guaraní paraguayo</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="1991"/>
+    <message>
+        <location filename="../lib/unidades.py" line="2078"/>
         <source>Salvadoran colón</source>
         <translation>Colón salvadoreño</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1992"/>
+        <location filename="../lib/unidades.py" line="2079"/>
         <source>Uruguayan peso</source>
         <translation>Peso uruguayo</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="1993"/>
+    <message>
+        <location filename="../lib/unidades.py" line="2080"/>
         <source>Venezuelan bolívar</source>
         <translation>Bolivar venezolano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1995"/>
+        <location filename="../lib/unidades.py" line="2082"/>
         <source>Aruban florin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1997"/>
+        <location filename="../lib/unidades.py" line="2084"/>
         <source>Barbados dollar</source>
         <translation>Dólar de Barbados</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1998"/>
+        <location filename="../lib/unidades.py" line="2085"/>
         <source>Belize dollar</source>
         <translation>Dólar de belize</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1999"/>
+        <location filename="../lib/unidades.py" line="2086"/>
         <source>Bermudean dollar</source>
         <translation>Dólar de Bermudas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2005"/>
+        <location filename="../lib/unidades.py" line="2092"/>
         <source>Haitian gourde</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2009"/>
+        <location filename="../lib/unidades.py" line="2096"/>
         <source>Surinamese dollar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2015"/>
+        <location filename="../lib/unidades.py" line="2102"/>
         <source>Afghan afghani</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2016"/>
+        <location filename="../lib/unidades.py" line="2103"/>
         <source>Bahraini dinar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2017"/>
+        <location filename="../lib/unidades.py" line="2104"/>
         <source>Brunei dollar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2019"/>
+        <location filename="../lib/unidades.py" line="2106"/>
         <source>Iraqi dinar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2020"/>
+        <location filename="../lib/unidades.py" line="2107"/>
         <source>Iranian rial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2021"/>
+        <location filename="../lib/unidades.py" line="2108"/>
         <source>Jordanian dinar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2022"/>
+        <location filename="../lib/unidades.py" line="2109"/>
         <source>Kuwaiti dinar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2023"/>
+        <location filename="../lib/unidades.py" line="2110"/>
         <source>Lebanese pound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2024"/>
+        <location filename="../lib/unidades.py" line="2111"/>
         <source>Omani rial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2026"/>
+        <location filename="../lib/unidades.py" line="2113"/>
         <source>Qatari riyal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2027"/>
+        <location filename="../lib/unidades.py" line="2114"/>
         <source>Saudi riyal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2028"/>
+        <location filename="../lib/unidades.py" line="2115"/>
         <source>Syrian pound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2031"/>
+        <location filename="../lib/unidades.py" line="2118"/>
         <source>Yemeni rial</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2033"/>
+        <location filename="../lib/unidades.py" line="2120"/>
         <source>Armenian dram</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2034"/>
+        <location filename="../lib/unidades.py" line="2121"/>
         <source>Azerbaijan manat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2035"/>
+        <location filename="../lib/unidades.py" line="2122"/>
         <source>Georgian lari</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2036"/>
+        <location filename="../lib/unidades.py" line="2123"/>
         <source>Kazakhstani tenge</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2037"/>
+        <location filename="../lib/unidades.py" line="2124"/>
         <source>Kyrgyzstani som</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2038"/>
+        <location filename="../lib/unidades.py" line="2125"/>
         <source>Tajikistani somoni</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2039"/>
+        <location filename="../lib/unidades.py" line="2126"/>
         <source>Turkmenistan manat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2040"/>
+        <location filename="../lib/unidades.py" line="2127"/>
         <source>Uzbekistan som</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2042"/>
+        <location filename="../lib/unidades.py" line="2129"/>
         <source>Bangladeshi taka</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2043"/>
+        <location filename="../lib/unidades.py" line="2130"/>
         <source>Bhutanese ngultrum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2044"/>
+        <location filename="../lib/unidades.py" line="2131"/>
         <source>Cambodian riel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2045"/>
+        <location filename="../lib/unidades.py" line="2132"/>
         <source>North Korean won</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2049"/>
+        <location filename="../lib/unidades.py" line="2136"/>
         <source>Lao kip</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2050"/>
+        <location filename="../lib/unidades.py" line="2137"/>
         <source>Macanese pataca</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="2052"/>
+    <message>
+        <location filename="../lib/unidades.py" line="2139"/>
         <source>Mongolian tögrög</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2053"/>
+        <location filename="../lib/unidades.py" line="2140"/>
         <source>Myanmar kyat</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2065"/>
+        <location filename="../lib/unidades.py" line="2152"/>
         <source>Algerian dinar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2066"/>
+        <location filename="../lib/unidades.py" line="2153"/>
         <source>Angolan kwanza</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2067"/>
+        <location filename="../lib/unidades.py" line="2154"/>
         <source>Botswana pula</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2068"/>
+        <location filename="../lib/unidades.py" line="2155"/>
         <source>Burundian franc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2069"/>
+        <location filename="../lib/unidades.py" line="2156"/>
         <source>Cape Verde escudo</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2070"/>
+        <location filename="../lib/unidades.py" line="2157"/>
         <source>Comoro franc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2071"/>
+        <location filename="../lib/unidades.py" line="2158"/>
         <source>Congolese franc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2072"/>
+        <location filename="../lib/unidades.py" line="2159"/>
         <source>Djiboutian franc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2073"/>
+        <location filename="../lib/unidades.py" line="2160"/>
         <source>Egyptian pound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2074"/>
+        <location filename="../lib/unidades.py" line="2161"/>
         <source>Eritrean nakfa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2076"/>
+        <location filename="../lib/unidades.py" line="2163"/>
         <source>Ghambian dalasi</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2078"/>
+        <location filename="../lib/unidades.py" line="2165"/>
         <source>Guinean franc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2079"/>
+        <location filename="../lib/unidades.py" line="2166"/>
         <source>Kenyan shilling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2080"/>
+        <location filename="../lib/unidades.py" line="2167"/>
         <source>Lesotho loti</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2081"/>
+        <location filename="../lib/unidades.py" line="2168"/>
         <source>Liberian dollar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2082"/>
+        <location filename="../lib/unidades.py" line="2169"/>
         <source>Libyan dinar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2083"/>
+        <location filename="../lib/unidades.py" line="2170"/>
         <source>Mauritanian ouguiya</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2084"/>
+        <location filename="../lib/unidades.py" line="2171"/>
         <source>Mauritian rupee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2085"/>
+        <location filename="../lib/unidades.py" line="2172"/>
         <source>Malagasy ariary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2087"/>
+        <location filename="../lib/unidades.py" line="2174"/>
         <source>Maldivian rufiyaa</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2089"/>
+        <location filename="../lib/unidades.py" line="2176"/>
         <source>Mozambican metical</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2090"/>
+        <location filename="../lib/unidades.py" line="2177"/>
         <source>Namibian dollar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2091"/>
+        <location filename="../lib/unidades.py" line="2178"/>
         <source>Nigerian naira</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2092"/>
+        <location filename="../lib/unidades.py" line="2179"/>
         <source>Rwandan franc</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../lib/unidades.py" line="2093"/>
+    <message>
+        <location filename="../lib/unidades.py" line="2180"/>
         <source>São Tomé and Príncipe dobra</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2095"/>
+        <location filename="../lib/unidades.py" line="2182"/>
         <source>Seychelles rupee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2096"/>
+        <location filename="../lib/unidades.py" line="2183"/>
         <source>Sierra Leonean leone</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2098"/>
+        <location filename="../lib/unidades.py" line="2185"/>
         <source>Somali shilling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2100"/>
+        <location filename="../lib/unidades.py" line="2187"/>
         <source>Sudanese pound</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2102"/>
+        <location filename="../lib/unidades.py" line="2189"/>
         <source>Tanzanian shilling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2104"/>
+        <location filename="../lib/unidades.py" line="2191"/>
         <source>Ugandan shilling</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2105"/>
+        <location filename="../lib/unidades.py" line="2192"/>
         <source>Zambian kwacha</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2106"/>
+        <location filename="../lib/unidades.py" line="2193"/>
         <source>Zimbabwean dollar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2107"/>
+        <location filename="../lib/unidades.py" line="2194"/>
         <source>Central AFrican CFA franc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2109"/>
+        <location filename="../lib/unidades.py" line="2196"/>
         <source>West African CFA franc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2116"/>
+        <location filename="../lib/unidades.py" line="2203"/>
         <source>Papua New Guinean kina</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2118"/>
+        <location filename="../lib/unidades.py" line="2205"/>
         <source>Salomon Islands dollar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2120"/>
+        <location filename="../lib/unidades.py" line="2207"/>
         <source>Samoan tala</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2121"/>
+        <location filename="../lib/unidades.py" line="2208"/>
         <source>Tongan pa&apos;anga</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2122"/>
+        <location filename="../lib/unidades.py" line="2209"/>
         <source>Vanuatu vatu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2172"/>
+        <location filename="../lib/unidades.py" line="2259"/>
         <source>Supported units</source>
         <translation>Unidades soportadas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2185"/>
+        <location filename="../lib/unidades.py" line="2272"/>
         <source>default</source>
         <translation>por defecto</translation>
     </message>
@@ -9892,7 +9893,7 @@ Verde: Gas, g/l</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/crude.py" line="1222"/>
+        <location filename="../lib/crude.py" line="1115"/>
         <source>Undefined petrol</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9902,37 +9903,37 @@ Verde: Gas, g/l</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/newComponent.py" line="4320"/>
+        <location filename="../lib/newComponent.py" line="4195"/>
         <source>undefined boiling point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/newComponent.py" line="2049"/>
+        <location filename="../lib/newComponent.py" line="1998"/>
         <source>Bad definition, check input group and contribution</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/newComponent.py" line="2768"/>
+        <location filename="../lib/newComponent.py" line="2696"/>
         <source>undefined molecular weight</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/newComponent.py" line="2772"/>
+        <location filename="../lib/newComponent.py" line="2700"/>
         <source>undefined atoms number of molecule</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/petro.py" line="1561"/>
+        <location filename="../lib/petro.py" line="1437"/>
         <source>Undefined input pair</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/petro.py" line="635"/>
+        <location filename="../lib/petro.py" line="599"/>
         <source>Molecular weight input out of bounds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/petro.py" line="638"/>
+        <location filename="../lib/petro.py" line="602"/>
         <source>Boiling temperature input out of bounds</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9947,64 +9948,64 @@ Verde: Gas, g/l</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="955"/>
+        <location filename="../plots/moody.py" line="97"/>
         <source>Configure</source>
         <translation>Configurar</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="100"/>
+        <location filename="../plots/moody.py" line="101"/>
         <source>Calculate point</source>
         <translation>Calcular punto</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="166"/>
+        <location filename="../plots/moody.py" line="147"/>
         <source>Moody Diagram</source>
         <translation>Diagrama de Moody</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="247"/>
+        <location filename="../plots/moody.py" line="233"/>
         <source>Fanning Friction factor</source>
         <translation>Factor de fricción de Fanning</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="251"/>
+        <location filename="../plots/moody.py" line="237"/>
         <source>Darcy Friction factor</source>
         <translation>Factor de fricción de Darcy</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="328"/>
+        <location filename="../plots/moody.py" line="314"/>
         <source>Laminar flux</source>
         <translation>Flujo laminar</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="336"/>
+        <location filename="../plots/moody.py" line="322"/>
         <source>Critic
 zone</source>
         <translation>Zona
 Crítica</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="344"/>
+        <location filename="../plots/moody.py" line="330"/>
         <source>Transition Zone</source>
         <translation>Zona de transición</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="352"/>
+        <location filename="../plots/moody.py" line="338"/>
         <source>Turbulent flux fully developed</source>
         <translation>Flujo turbulento completamente desarrollado</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="361"/>
+        <location filename="../plots/moody.py" line="347"/>
         <source>Smooth tubes</source>
         <translation>Tubos lisos</translation>
     </message>
     <message>
-        <location filename="../plots/moody.py" line="389"/>
+        <location filename="../plots/moody.py" line="375"/>
         <source>Calculate friction factor</source>
         <translation>Calcular factor de fricción</translation>
     </message>
     <message>
-        <location filename="../UI/prefMoody.py" line="50"/>
+        <location filename="../plots/moody.py" line="391"/>
         <source>Calculate fanning friction factor</source>
         <translation>Calcular factor de fricción de Fanning</translation>
     </message>
@@ -10108,7 +10109,7 @@ Crítica</translation>
         <source>Heat Transfer Temperature Effectiveness</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../plots/heatTransfer.py" line="288"/>
         <source>ΔT Correction Factor</source>
         <translation type="unfinished"></translation>
@@ -10118,7 +10119,7 @@ Crítica</translation>
         <source>$Delta T_{ml}$ Correction Factor</source>
         <translation type="unfinished"></translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../plots/heatTransfer.py" line="343"/>
         <source>ψ</source>
         <translation type="unfinished"></translation>
@@ -10144,252 +10145,247 @@ Crítica</translation>
         <translation>Correlaciones de la mezcla de fluidos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1055"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="103"/>
         <source>Filter</source>
         <translation>Filtrar</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1171"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="219"/>
         <source>Noble gases</source>
         <translation>Gases nobles</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1172"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="220"/>
         <source>Gases</source>
         <translation>Gases</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1173"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="221"/>
         <source>Alkanes</source>
         <translation>Alcanos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1174"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="222"/>
         <source>Naphthenes</source>
         <translation>Naphtenos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1176"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="224"/>
         <source>Alkenes</source>
         <translation>Alquenos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1177"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="225"/>
         <source>Heteroatom</source>
         <translation>Heteroátomos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1179"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="227"/>
         <source>CFCs</source>
         <translation>CFCs</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1180"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="228"/>
         <source>Siloxanes</source>
         <translation>Siloxanos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1181"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="229"/>
         <source>Pseudo Compounds</source>
         <translation>Pseudocomponentes</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1188"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="236"/>
         <source>Filter fluids families to show</source>
         <translation>Filtar compuestos a mostrar por familias químicas</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1191"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="239"/>
         <source>Show All</source>
         <translation>Mostrar todos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1378"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="344"/>
         <source>Others</source>
         <translation>Otros</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1432"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="399"/>
         <source>Phi0</source>
         <translation>Phi0</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="1555"/>
-        <source>Hard Sphere</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../tools/UI_Tables.py" line="2019"/>
         <source>No Peneloux correction</source>
-        <translation>Sin corrección de Peneloux</translation>
+        <translation type="obsolete">Sin corrección de Peneloux</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2081"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1113"/>
         <source>Collision</source>
         <translation>Colision</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2094"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1126"/>
         <source>Virial</source>
         <translation>Virial</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2106"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1140"/>
         <source>Close-packed density</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2139"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1175"/>
         <source>Numerator</source>
         <translation>Numerador</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2156"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1194"/>
         <source>Denominator</source>
         <translation>Denominador</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2356"/>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1357"/>
         <source>Critical enhancement</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2476"/>
+        <location filename="../tools/UI_Tables/reference.py" line="187"/>
         <source>Mark all</source>
         <translation>Todos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2533"/>
+        <location filename="../tools/UI_Tables/reference.py" line="243"/>
         <source>No Mark</source>
         <translation>Ninguno</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2823"/>
+        <location filename="../tools/UI_Tables/table.py" line="234"/>
         <source>Delete Point</source>
         <translation>Borrar punto</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2830"/>
+        <location filename="../tools/UI_Tables/table.py" line="241"/>
         <source>Insert Point</source>
         <translation>Insertar punto</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2844"/>
+        <location filename="../tools/UI_Tables/table.py" line="255"/>
         <source>Deleting point...</source>
         <translation>Borrando punto...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4866"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1583"/>
         <source>Saturation Line</source>
         <translation>Línea de saturación</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="2914"/>
+        <location filename="../tools/UI_Tables/table.py" line="325"/>
         <source>Table from </source>
         <translation>Tabla de </translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3032"/>
+        <location filename="../tools/UI_Tables/table.py" line="443"/>
         <source>Selected Point</source>
         <translation>Puntos seleccionados</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3163"/>
+        <location filename="../tools/UI_Tables/table.py" line="574"/>
         <source>Export table to file</source>
         <translation>Exportar tabla a archivo</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3149"/>
+        <location filename="../tools/UI_Tables/table.py" line="560"/>
         <source>CSV files</source>
         <translation>Archivos CSV</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3277"/>
+        <location filename="../tools/UI_Tables/table.py" line="688"/>
         <source>Change</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3546"/>
+        <location filename="../tools/UI_Tables/table.py" line="962"/>
         <source>Add Point to line</source>
         <translation>Añadir puntos a línea</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3571"/>
+        <location filename="../tools/UI_Tables/table.py" line="987"/>
         <source>To</source>
         <translation>To</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3576"/>
+        <location filename="../tools/UI_Tables/table.py" line="992"/>
         <source>rhoo</source>
         <translation>rhoo</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="3582"/>
+        <location filename="../tools/UI_Tables/table.py" line="998"/>
         <source>Add below selected point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4064"/>
+        <location filename="../tools/UI_Tables/plot.py" line="621"/>
         <source>Axis Z</source>
         <translation>Eje Z</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4317"/>
+        <location filename="../tools/UI_Tables/plot.py" line="998"/>
         <source>Adding isotherm line...</source>
         <translation>Añadiendo línea isoterma...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4328"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1009"/>
         <source>Adding isobar line...</source>
         <translation>Añadiendo línea isobara...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4339"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1020"/>
         <source>Adding isoenthalpic line...</source>
         <translation>Añadiendo línea isoentálpica...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4350"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1031"/>
         <source>Adding isoentropic line...</source>
         <translation>Añadiendo línea isoentrópica...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4361"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1042"/>
         <source>Adding isochor line...</source>
         <translation>Añadiendo línea isocora...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4372"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1053"/>
         <source>Adding isodensity line...</source>
         <translation>Añadiendo línea de igual densidad...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4383"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1064"/>
         <source>Adding isoquality line...</source>
         <translation>Añadiendo línea de igual fracción de vapor...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4431"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1112"/>
         <source>Deleting line...</source>
         <translation>Borrando línea...</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Tables.py" line="4479"/>
+        <location filename="../tools/UI_Tables/plot.py" line="1160"/>
         <source>Isodensity</source>
         <translation>Isodensidad</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="191"/>
+        <location filename="../tools/UI_psychrometry.py" line="184"/>
         <source>Humidity Ratio:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="333"/>
+        <location filename="../tools/UI_psychrometry.py" line="326"/>
         <source>Started psychrometric chart tool</source>
         <translation>Iniciada herramienta de gráfico psichrométrico</translation>
     </message>
     <message>
-        <location filename="../tools/UI_psychrometry.py" line="410"/>
+        <location filename="../tools/UI_psychrometry.py" line="405"/>
         <source>Calculating data...</source>
         <translation>Calculando datos...</translation>
     </message>
@@ -10424,52 +10420,52 @@ Crítica</translation>
         <translation>Inicidada herramienta de conversión de unidades</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="466"/>
+        <location filename="../tools/UI_Preferences.py" line="464"/>
         <source>Bond color:</source>
         <translation>Color de enlaces:</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="474"/>
+        <location filename="../tools/UI_Preferences.py" line="472"/>
         <source>Heteroatom in color</source>
         <translation>Heteroátomos en color</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="481"/>
+        <location filename="../tools/UI_Preferences.py" line="479"/>
         <source>Atom details</source>
         <translation>Detalles de átomos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="485"/>
+        <location filename="../tools/UI_Preferences.py" line="483"/>
         <source>Show all atoms</source>
         <translation>Mostrar todos los átomos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="488"/>
+        <location filename="../tools/UI_Preferences.py" line="486"/>
         <source>Show only terminal atoms</source>
         <translation>Mostrar solo los átomos terminales</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="492"/>
+        <location filename="../tools/UI_Preferences.py" line="490"/>
         <source>Do not show atoms</source>
         <translation>No mostrar átomos</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="498"/>
+        <location filename="../tools/UI_Preferences.py" line="496"/>
         <source>Thicker bond lines</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="556"/>
+        <location filename="../tools/UI_Preferences.py" line="554"/>
         <source>Elemental table</source>
         <translation>Tabla periódica</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="564"/>
+        <location filename="../tools/UI_Preferences.py" line="562"/>
         <source>Standing-Katz chart</source>
         <translation>Gráfico Standing-Katz</translation>
     </message>
     <message>
-        <location filename="../tools/UI_Preferences.py" line="566"/>
+        <location filename="../tools/UI_Preferences.py" line="564"/>
         <source>Openbabel</source>
         <translation>Openbabel</translation>
     </message>
@@ -10498,7 +10494,7 @@ Crítica</translation>
         <source>Qtelemental configuration</source>
         <translation>Configuración de la tabla periódica</translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../UI/mainWindow.py" line="65"/>
         <source>Welcome to pychemqt,
 a software for simulating Chemical Engineering units operations,
@@ -10542,22 +10538,22 @@ You can start by creating a new project or opening an existing project.</source>
         <translation>Contribución de grupo</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1300"/>
+        <location filename="../UI/mainWindow.py" line="1304"/>
         <source>New project created</source>
         <translation>Nuevo proyecto creado</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1353"/>
+        <location filename="../UI/mainWindow.py" line="1357"/>
         <source>Saved as</source>
         <translation>Guardar como</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1432"/>
+        <location filename="../UI/mainWindow.py" line="1436"/>
         <source>Failed to load</source>
         <translation>Error al cargar</translation>
     </message>
     <message>
-        <location filename="../UI/mainWindow.py" line="1435"/>
+        <location filename="../UI/mainWindow.py" line="1439"/>
         <source>This project require</source>
         <translation>Este projecto requiere</translation>
     </message>
@@ -10667,12 +10663,12 @@ You can start by creating a new project or opening an existing project.</source>
         <translation>Posición</translation>
     </message>
     <message>
-        <location filename="../UI/prefPsychrometric.py" line="94"/>
+        <location filename="../UI/prefMEOS.py" line="226"/>
         <source>Saturation Line Style</source>
         <translation>Estilo línea de saturación</translation>
     </message>
     <message>
-        <location filename="../UI/prefPsychrometric.py" line="102"/>
+        <location filename="../UI/prefMEOS.py" line="230"/>
         <source>Isolines</source>
         <translation>Isoníneas</translation>
     </message>
@@ -10717,72 +10713,72 @@ You can start by creating a new project or opening an existing project.</source>
         <translation>Configuración de ecuaciones de estado multiparámetro</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="726"/>
+        <location filename="../UI/viewComponents.py" line="753"/>
         <source>Tc and Pc necessary for wagner correlation</source>
         <translation>Tc y Pc necessarios para correlación de wagner</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="737"/>
+        <location filename="../UI/viewComponents.py" line="764"/>
         <source>Tc necessary for tension correlation</source>
         <translation>Tc necesario para cálculo de la tensión superficial</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1082"/>
+        <location filename="../UI/viewComponents.py" line="1102"/>
         <source>Wagner Vapor Pressure</source>
         <translation>Presión de vapor de Wagner</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1125"/>
+        <location filename="../UI/viewComponents.py" line="1145"/>
         <source>&amp;EoS</source>
         <translation>&amp;EoS</translation>
     </message>
     <message>
-        <location filename="../UI/viewComponents.py" line="1216"/>
+        <location filename="../UI/viewComponents.py" line="1518"/>
         <source>Wilson volume</source>
         <translation>Volumen de Wilson</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="869"/>
+        <location filename="../UI/widgets.py" line="870"/>
         <source>Line width</source>
         <translation>Anchura de línea</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="873"/>
+        <location filename="../UI/widgets.py" line="874"/>
         <source>Line style</source>
         <translation>Estilo de línea</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="877"/>
+        <location filename="../UI/widgets.py" line="878"/>
         <source>Line color</source>
         <translation>Color de línea</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="881"/>
+        <location filename="../UI/widgets.py" line="882"/>
         <source>Line marker</source>
         <translation>Marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="897"/>
+        <location filename="../UI/widgets.py" line="898"/>
         <source>Marker size</source>
         <translation>Tamaño de marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="901"/>
+        <location filename="../UI/widgets.py" line="902"/>
         <source>Marker face color</source>
         <translation>Color fondo marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="910"/>
+        <location filename="../UI/widgets.py" line="911"/>
         <source>Marker edge width</source>
         <translation>Anchura de borde de marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="914"/>
+        <location filename="../UI/widgets.py" line="915"/>
         <source>Marker edge color</source>
         <translation>Color borde de marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1160"/>
+        <location filename="../UI/widgets.py" line="1161"/>
         <source>Convert units</source>
         <translation>Convertir unidades</translation>
     </message>
@@ -10792,12 +10788,12 @@ You can start by creating a new project or opening an existing project.</source>
         <translation>Estilo de las lineas de rugosidad relativa</translation>
     </message>
     <message>
-        <location filename="../UI/prefStandingKatz.py" line="67"/>
+        <location filename="../UI/prefMoody.py" line="61"/>
         <source>Crux style line</source>
         <translation>Estilo de línea de la cruz</translation>
     </message>
     <message>
-        <location filename="../UI/prefPetro.py" line="148"/>
+        <location filename="../UI/prefMoody.py" line="92"/>
         <source>Moody diagram configuration</source>
         <translation>Configuración del diagrama de Moody</translation>
     </message>
@@ -10952,7 +10948,7 @@ You can start by creating a new project or opening an existing project.</source>
         <translation>Configuración del gráfico psicrométrico</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="65"/>
+        <location filename="../UI/prefPetro.py" line="69"/>
         <source>Boiling Temperature</source>
         <translation>Temperatura de ebullición</translation>
     </message>
@@ -10981,18 +10977,18 @@ You can start by creating a new project or opening an existing project.</source>
         <source>Enthalpy of vaporization</source>
         <translation>Entalpía de vaporización</translation>
     </message>
-    <message encoding="UTF-8">
-        <location filename="../UI/petro.py" line="71"/>
+    <message>
+        <location filename="../UI/newComponent.py" line="176"/>
         <source>Specific gravity at 60ºF</source>
         <translation>Gravedad específica a 60ºF</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="77"/>
+        <location filename="../UI/newComponent.py" line="182"/>
         <source>API Specific gravity</source>
         <translation>Gravedad específica API</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="404"/>
+        <location filename="../UI/newComponent.py" line="188"/>
         <source>Watson characterization factor</source>
         <translation>Factor de caracterization de Watson</translation>
     </message>
@@ -11011,7 +11007,7 @@ You can start by creating a new project or opening an existing project.</source>
         <source>Experimental Boiling Temperature</source>
         <translation>Temperatura de ebullción experimental</translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../UI/newComponent.py" line="410"/>
         <source>Experimental Specific Gravity at 60ºF</source>
         <translation>Gravedad especifica experimental a 60ºF</translation>
@@ -11032,12 +11028,12 @@ You can start by creating a new project or opening an existing project.</source>
         <translation>Volumen crítico</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="390"/>
+        <location filename="../UI/prefPetro.py" line="75"/>
         <source>Specific Gravity</source>
         <translation>Gravedad específica</translation>
     </message>
     <message>
-        <location filename="../UI/petro.py" line="89"/>
+        <location filename="../UI/prefPetro.py" line="81"/>
         <source>Refractive Index</source>
         <translation>Índice de refracción</translation>
     </message>
@@ -11066,12 +11062,12 @@ You can start by creating a new project or opening an existing project.</source>
         <source>Huang parameter</source>
         <translation>Parámetro de Huang</translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../UI/petro.py" line="415"/>
         <source>Kinematic viscosity at 100ºF</source>
         <translation>Viscosidad cinemática a 100ºF</translation>
     </message>
-    <message encoding="UTF-8">
+    <message>
         <location filename="../UI/petro.py" line="422"/>
         <source>Kinematic viscosity at 210ºF</source>
         <translation>Viscosidad cinemática a 210ºF</translation>
@@ -11221,49 +11217,104 @@ These are the options you must expecific next:&lt;br&gt;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1960"/>
+        <location filename="../lib/unidades.py" line="2047"/>
         <source>Bulgarian lev</source>
         <translation>Lev búlgaro</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1968"/>
+        <location filename="../lib/unidades.py" line="2055"/>
         <source>Macedonian denar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="1978"/>
+        <location filename="../lib/unidades.py" line="2065"/>
         <source>Bolivian boliviano</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2000"/>
+        <location filename="../lib/unidades.py" line="2087"/>
         <source>Cayman Islands dollar</source>
         <translation>Dolar de las Islas Caimán</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2004"/>
+        <location filename="../lib/unidades.py" line="2091"/>
         <source>Guyanese dollar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2054"/>
+        <location filename="../lib/unidades.py" line="2141"/>
         <source>Nepalese rupee</source>
         <translation>Rupia nepalí</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2075"/>
+        <location filename="../lib/unidades.py" line="2162"/>
         <source>Ethiopian birr</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2086"/>
+        <location filename="../lib/unidades.py" line="2173"/>
         <source>Malawian kwacha</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2101"/>
+        <location filename="../lib/unidades.py" line="2188"/>
         <source>Swazi lilangeni</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_confTransport.py" line="186"/>
+        <source>Use liquid density from EoS if available</source>
+        <translation>Usar densidad del líquido de la EoS si está disponible</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1226"/>
+        <source>ECS formulation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/chooseFluid.py" line="1322"/>
+        <source>Special hardcoded term</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="752"/>
+        <source>Annotation</source>
+        <translation>Anotación</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="770"/>
+        <source>Location</source>
+        <translation>Posición</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="786"/>
+        <source>Rotation</source>
+        <translation>Rotación</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="802"/>
+        <source>Aligment</source>
+        <translation>Alineamiento</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="807"/>
+        <source>Top</source>
+        <translation>Arriba</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="808"/>
+        <source>Bottom</source>
+        <translation>Abajo</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="809"/>
+        <source>Baseline</source>
+        <translation>Línea base</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/plot.py" line="810"/>
+        <source>Center baseline</source>
+        <translation>Línea base central</translation>
     </message>
 </context>
 </TS>
