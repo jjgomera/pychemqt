@@ -34,19 +34,25 @@ from xml.dom import minidom
 from PyQt5 import QtCore, QtGui, QtSvg, QtWidgets
 
 from lib import unidades
+from lib.EoS import K, H
 from lib.project import Project
 from lib.thread import WaitforClick
 from lib.config import Preferences
 from lib.corriente import Corriente
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
-from UI.widgets import createAction, Table_Graphics, PathConfig
+from UI.widgets import createAction, Table_Graphics, PathConfig, ClickableLabel
 from UI.prefPFD import ConfLineDialog, Dialog
 from equipment import *
 from equipment.parents import equipment
+from tools import UI_confResolution, UI_confThermo
 
-# Value for mouse wheel zoom
-factor = 5
+
+# Configuration parameters
+factor = 5     # Value for keyboard navigation
+
+brushColor = "#aaaaaa"
+brushPattern = QtCore.Qt.Dense7Pattern
 
 
 class SelectStreamProject(QtWidgets.QDialog):
@@ -866,37 +872,75 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
 
 
 class GraphicsView(QtWidgets.QGraphicsView):
+    """Class for PFD representation"""
     mouseMove = QtCore.pyqtSignal(QtCore.QPointF)
-
+    zoomChanged = QtCore.pyqtSignal(int)
     #    mouseClick = QtCore.pyqtSignal("QtCore.QPointF")
+
     def __init__(self, PFD=True, parent=None):
+        """
+        Parameters
+        ----------
+        PFD : boolean
+            Set if this GraphicsView is the PFD of project, in that case the
+            windows can't be closed
+        """
         super(GraphicsView, self).__init__(parent)
+        self.PFD = PFD
         self.setDragMode(QtWidgets.QGraphicsView.RubberBandDrag)
-        self.setRenderHint(QtGui.QPainter.Antialiasing)
-        self.setRenderHint(QtGui.QPainter.TextAntialiasing)
-        self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor("#aaaaaa"), QtCore.Qt.Dense7Pattern))
+        self.setRenderHints(QtGui.QPainter.Antialiasing |
+                            QtGui.QPainter.TextAntialiasing)
+        self.setBackgroundBrush(
+            QtGui.QBrush(QtGui.QColor(brushColor), brushPattern))
         self.setMouseTracking(True)
         # self.setAcceptDrops(True)
-        self.PFD = PFD
 
-    #    def wheelEvent(self, event):
-    #        print event.delta()
-    #
-    #        factor = 1.41 ** (-event.delta() / 240.0)
-    #        self.zoom(factor)
+        # Widget to show in the statusbar of mainwindow
+        self.statusWidget = QtWidgets.QWidget(self)
+        lyt = QtWidgets.QHBoxLayout(self.statusWidget)
+
+        self.statusPosition = QtWidgets.QLabel()
+        self.statusResolution = ClickableLabel()
+        self.statusThermo = ClickableLabel()
+        lyt.addWidget(self.statusPosition)
+        lyt.addWidget(self.statusResolution)
+        lyt.addWidget(self.statusThermo)
+
+        self.statusResolution.clicked.connect(
+            partial(parent.dialogConfig, UI_confResolution))
+        self.statusThermo.clicked.connect(
+            partial(parent.dialogConfig, UI_confThermo))
+        self.mouseMove.connect(self.updatePosition)
 
     def mouseMoveEvent(self, event):
+        """Reimplement to print the mouse position on statusbar"""
         QtWidgets.QGraphicsView.mouseMoveEvent(self, event)
-        self.mouseMove.emit(event.globalPos())
+        self.mouseMove.emit(self.mapToScene(event.pos()))
 
     def mousePressEvent(self, event):
+        """Reimplement to use in a overview window the mouse click position as
+        the center position in the real PFD window"""
         QtWidgets.QGraphicsView.mousePressEvent(self, event)
         if not self.PFD:
             self.scene().views()[0].centerOn(self.mapToScene(event.pos()))
 
     def closeEvent(self, event):
+        """Reinplement to avoid close window if it's the PFD window"""
         if self.PFD:
             event.ignore()
+
+    def wheelEvent(self, event):
+        """Change zoom of window, only work with PFD window, not in overview"""
+        if self.PFD:
+            factor = 1.41 ** (-event.angleDelta().y() / 240.0)
+            self.scale(factor, factor)
+            self.zoomChanged.emit(self.transform().m11()*100)
+
+    def zoom(self, value):
+        """Apply zoom value to a pfd view"""
+        factor = value / 100.0
+        self.resetTransform()
+        self.scale(factor, factor)
 
     # def dragEnterEvent(self, event):
         # if event.mimeData().hasFormat("application/x-equipment"):
@@ -925,10 +969,42 @@ class GraphicsView(QtWidgets.QGraphicsView):
         # else:
             # event.ignore()
 
-    def zoom(self, value):
-        factor = value / 100.0
-        self.resetMatrix()
-        self.scale(factor, factor)
+    def updatePosition(self, point):
+        self.statusPosition.setText("(%i, %i)" % (point.x(), point.y()))
+
+    def changeStatusThermo(self, config):
+        print("alsl", config)
+        print(config.sections())
+        if config.has_section("Thermo") and \
+                config.has_section("Components"):
+            components = config.get("Components", "components")
+            if config.getboolean("Thermo", "iapws") and \
+                    config.getboolean("Thermo", "freesteam") and \
+                    len(components) == 1 and components[0] == 62:
+                txt = "Freesteam"
+            elif config.getboolean("Thermo", "iapws") and \
+                    len(components) == 1 and components[0] == 62:
+                txt = "IAPWS97"
+            elif config.getboolean("Thermo", "meos") and \
+                    config.getboolean("Thermo", "refprop"):
+                txt = "Refprop"
+            elif config.getboolean("Thermo", "meos") and \
+                    config.getboolean("Thermo", "coolprop"):
+                txt = "CoolProp"
+            elif config.getboolean("Thermo", "meos"):
+                txt = "MEoS"
+            else:
+                txt = "K: %s  H: %s" % (
+                    K[config.getint("Thermo", "K")].__status__,
+                    H[config.getint("Thermo", "H")].__status__)
+
+            self.statusThermo.setText(txt)
+
+        if config.has_section("PFD"):
+            x = config.getint("PFD", "x")
+            y = config.getint("PFD", "y")
+            self.statusResolution.setText("%i, %i" % (x, y))
+        print(self.statusThermo.text(), self.statusResolution.text())
 
 
 class GraphicsScene(QtWidgets.QGraphicsScene):
