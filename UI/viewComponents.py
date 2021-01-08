@@ -908,7 +908,7 @@ class View_Component(QtWidgets.QDialog):
         lytGeneral.addWidget(labelFormula2, 5, 1)
         self.formula2 = QtWidgets.QLabel()
         lytGeneral.addWidget(self.formula2, 5, 2, 6, 1)
-        if os.environ["openbabel"] != "True":
+        if os.environ["pybel"] != "True":
             labelFormula2.setVisible(False)
             self.formula2.setVisible(False)
 
@@ -1720,7 +1720,7 @@ class View_Component(QtWidgets.QDialog):
         self.CAS.setText(self.cmp.CASNumber)
         self.formula1.setText(self.cmp.formula)
 
-        if self.cmp.smile and os.environ["openbabel"] == "True":
+        if self.cmp.smile and os.environ["pybel"] == "True":
             self.smile.setText(self.cmp.smile)
             pix = QtGui.QIcon(self.cmp.imageFile.name).pixmap(100, 100)
             self.formula2.setPixmap(pix)

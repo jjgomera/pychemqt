@@ -5156,8 +5156,8 @@ class Componente(object):
         self.smile = cmp[149]
 
         # Molecule graphic plot from smile code
-        if self.smile and os.environ["openbabel"] == "True":
-            from openbabel.pybel import readstring
+        if self.smile and os.environ["pybel"] == "True":
+            from pybel import readstring
             mol = readstring("smi", self.smile)
             self.imageFile = tempfile.NamedTemporaryFile("w", suffix=".svg")
 
