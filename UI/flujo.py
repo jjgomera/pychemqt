@@ -55,7 +55,142 @@ brushColor = "#aaaaaa"
 brushPattern = QtCore.Qt.Dense7Pattern
 
 
+class GraphicsView(QtWidgets.QGraphicsView):
+    """Class for PFD representation"""
+    mouseMove = QtCore.pyqtSignal(QtCore.QPointF)
+    zoomChanged = QtCore.pyqtSignal(int)
+
+    def __init__(self, PFD=True, parent=None):
+        """
+        Parameters
+        ----------
+        PFD : boolean
+            Set if this GraphicsView is the PFD of project, in that case the
+            windows can't be closed
+        """
+        super(GraphicsView, self).__init__(parent)
+        self.PFD = PFD
+        self.setDragMode(QtWidgets.QGraphicsView.RubberBandDrag)
+        self.setRenderHints(QtGui.QPainter.Antialiasing |
+                            QtGui.QPainter.TextAntialiasing)
+        self.setBackgroundBrush(
+            QtGui.QBrush(QtGui.QColor(brushColor), brushPattern))
+        self.setMouseTracking(True)
+        # self.setAcceptDrops(True)
+
+        # Widgets to show in the statusbar of mainwindow
+        self.statusWidget = []
+        self.statusPosition = ClickableLabel()
+        self.statusPosition.setFrameShape(QtWidgets.QFrame.WinPanel)
+        self.statusPosition.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusWidget.append(self.statusPosition)
+        self.statusThermo = ClickableLabel()
+        self.statusThermo.setFrameShape(QtWidgets.QFrame.WinPanel)
+        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusWidget.append(self.statusThermo)
+
+        self.statusPosition.clicked.connect(
+            partial(parent.dialogConfig, UI_confResolution))
+        self.statusThermo.clicked.connect(
+            partial(parent.dialogConfig, UI_confThermo))
+        self.mouseMove.connect(self.updatePosition)
+        self.leaveEvent()
+
+    def mouseMoveEvent(self, event):
+        """Reimplement to print the mouse position on statusbar"""
+        QtWidgets.QGraphicsView.mouseMoveEvent(self, event)
+        self.mouseMove.emit(self.mapToScene(event.pos()))
+
+    def mousePressEvent(self, event):
+        """Reimplement to use in a overview window the mouse click position as
+        the center position in the real PFD window"""
+        QtWidgets.QGraphicsView.mousePressEvent(self, event)
+        if not self.PFD:
+            self.scene().views()[0].centerOn(self.mapToScene(event.pos()))
+
+    def closeEvent(self, event):
+        """Reimplement to avoid close window if it's the PFD window"""
+        if self.PFD:
+            event.ignore()
+
+    def wheelEvent(self, event):
+        """Change zoom of window, only work with PFD window, not in overview"""
+        if self.PFD:
+            factor = 1.41 ** (-event.angleDelta().y() / 240.0)
+            self.scale(factor, factor)
+            self.zoomChanged.emit(self.transform().m11()*100)
+
+    def leaveEvent(self, event=None):
+        """Reimplement to set value of status position to the total size"""
+        x = Preferences.getint("PFD", "x")
+        y = Preferences.getint("PFD", "y")
+        self.statusPosition.setText("%i, %i" % (x, y))
+
+    def zoom(self, value):
+        """Apply zoom value to a pfd view"""
+        factor = value / 100.0
+        self.resetTransform()
+        self.scale(factor, factor)
+
+    # def dragEnterEvent(self, event):
+        # if event.mimeData().hasFormat("application/x-equipment"):
+            # event.accept()
+        # else:
+            # event.ignore()
+
+    # def dragMoveEvent(self, event):
+        # if event.mimeData().hasFormat("application/x-equipment"):
+            # event.setDropAction(QtCore.Qt.CopyAction)
+            # event.accept()
+        # else:
+            # event.ignore()
+
+    # def dropEvent(self, event):
+        # if event.mimeData().hasFormat("application/x-equipment"):
+            # data = event.mimeData().data("application/x-equipment")
+            # stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
+            # icon = QtGui.QIcon()
+            # stream >> icon
+            # event.setDropAction(QtCore.Qt.CopyAction)
+            # print(event.pos())
+            # event.accept()
+            # self.updateGeometry()
+            # self.update()
+        # else:
+            # event.ignore()
+
+    def updatePosition(self, point):
+        self.statusPosition.setText("%i, %i" % (point.x(), point.y()))
+
+    def changeStatusThermo(self, config):
+        if config.has_section("Thermo") and \
+                config.has_section("Components"):
+            components = config.get("Components", "components")
+            if config.getboolean("Thermo", "iapws") and \
+                    config.getboolean("Thermo", "freesteam") and \
+                    len(components) == 1 and components[0] == 62:
+                txt = "Freesteam"
+            elif config.getboolean("Thermo", "iapws") and \
+                    len(components) == 1 and components[0] == 62:
+                txt = "IAPWS97"
+            elif config.getboolean("Thermo", "meos") and \
+                    config.getboolean("Thermo", "refprop"):
+                txt = "Refprop"
+            elif config.getboolean("Thermo", "meos") and \
+                    config.getboolean("Thermo", "coolprop"):
+                txt = "CoolProp"
+            elif config.getboolean("Thermo", "meos"):
+                txt = "MEoS"
+            else:
+                txt = "K: %s  H: %s" % (
+                    K[config.getint("Thermo", "K")].__status__,
+                    H[config.getint("Thermo", "H")].__status__)
+
+            self.statusThermo.setText(txt)
+
+
 class SelectStreamProject(QtWidgets.QDialog):
+    """Dialog to select a stream for any external project"""
     project = None
 
     def __init__(self, parent=None):
@@ -63,7 +198,7 @@ class SelectStreamProject(QtWidgets.QDialog):
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Select stream from file"))
 
-        layout = QtWidgets.QGridLayout(self)
+        layout = QtWidgets.QVBoxLayout(self)
         label = QtWidgets.QApplication.translate("pychemqt", "Project path")
         msg = QtWidgets.QApplication.translate(
             "pychemqt", "Select pychemqt project file")
@@ -73,24 +208,32 @@ class SelectStreamProject(QtWidgets.QDialog):
         patron = ";;".join(patrones)
         self.filename = PathConfig(label + ":", msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeproject)
-        layout.addWidget(self.filename, 1, 1, 1, 3)
+        layout.addWidget(self.filename)
 
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Streams")), 2, 1)
+        lyt1 = QtWidgets.QHBoxLayout()
+        lyt1.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Streams")))
         self.stream = QtWidgets.QComboBox()
-        layout.addWidget(self.stream, 2, 2)
+        lyt1.addWidget(self.stream)
+        lyt1.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed))
+        layout.addLayout(lyt1)
+
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 3)
+            QtWidgets.QSizePolicy.Expanding))
 
+        lyt2 = QtWidgets.QHBoxLayout()
         self.status = QtWidgets.QLabel()
-        layout.addWidget(self.status, 10, 1)
+        lyt2.addWidget(self.status)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 10, 2, 1, 2)
+        lyt2.addWidget(self.buttonBox)
+        layout.addLayout(lyt2)
 
     def changeproject(self, path):
         st = QtWidgets.QApplication.translate("pychemqt", "Loading project...")
@@ -869,142 +1012,6 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
             self.output[i].direction = new_angle
             salida.Ang_entrada = new_angle
             salida.redraw()
-
-
-class GraphicsView(QtWidgets.QGraphicsView):
-    """Class for PFD representation"""
-    mouseMove = QtCore.pyqtSignal(QtCore.QPointF)
-    zoomChanged = QtCore.pyqtSignal(int)
-    #    mouseClick = QtCore.pyqtSignal("QtCore.QPointF")
-
-    def __init__(self, PFD=True, parent=None):
-        """
-        Parameters
-        ----------
-        PFD : boolean
-            Set if this GraphicsView is the PFD of project, in that case the
-            windows can't be closed
-        """
-        super(GraphicsView, self).__init__(parent)
-        self.PFD = PFD
-        self.setDragMode(QtWidgets.QGraphicsView.RubberBandDrag)
-        self.setRenderHints(QtGui.QPainter.Antialiasing |
-                            QtGui.QPainter.TextAntialiasing)
-        self.setBackgroundBrush(
-            QtGui.QBrush(QtGui.QColor(brushColor), brushPattern))
-        self.setMouseTracking(True)
-        # self.setAcceptDrops(True)
-
-        # Widget to show in the statusbar of mainwindow
-        self.statusWidget = QtWidgets.QWidget(self)
-        lyt = QtWidgets.QHBoxLayout(self.statusWidget)
-
-        self.statusPosition = QtWidgets.QLabel()
-        self.statusResolution = ClickableLabel()
-        self.statusThermo = ClickableLabel()
-        lyt.addWidget(self.statusPosition)
-        lyt.addWidget(self.statusResolution)
-        lyt.addWidget(self.statusThermo)
-
-        self.statusResolution.clicked.connect(
-            partial(parent.dialogConfig, UI_confResolution))
-        self.statusThermo.clicked.connect(
-            partial(parent.dialogConfig, UI_confThermo))
-        self.mouseMove.connect(self.updatePosition)
-
-    def mouseMoveEvent(self, event):
-        """Reimplement to print the mouse position on statusbar"""
-        QtWidgets.QGraphicsView.mouseMoveEvent(self, event)
-        self.mouseMove.emit(self.mapToScene(event.pos()))
-
-    def mousePressEvent(self, event):
-        """Reimplement to use in a overview window the mouse click position as
-        the center position in the real PFD window"""
-        QtWidgets.QGraphicsView.mousePressEvent(self, event)
-        if not self.PFD:
-            self.scene().views()[0].centerOn(self.mapToScene(event.pos()))
-
-    def closeEvent(self, event):
-        """Reinplement to avoid close window if it's the PFD window"""
-        if self.PFD:
-            event.ignore()
-
-    def wheelEvent(self, event):
-        """Change zoom of window, only work with PFD window, not in overview"""
-        if self.PFD:
-            factor = 1.41 ** (-event.angleDelta().y() / 240.0)
-            self.scale(factor, factor)
-            self.zoomChanged.emit(self.transform().m11()*100)
-
-    def zoom(self, value):
-        """Apply zoom value to a pfd view"""
-        factor = value / 100.0
-        self.resetTransform()
-        self.scale(factor, factor)
-
-    # def dragEnterEvent(self, event):
-        # if event.mimeData().hasFormat("application/x-equipment"):
-            # event.accept()
-        # else:
-            # event.ignore()
-
-    # def dragMoveEvent(self, event):
-        # if event.mimeData().hasFormat("application/x-equipment"):
-            # event.setDropAction(QtCore.Qt.CopyAction)
-            # event.accept()
-        # else:
-            # event.ignore()
-
-    # def dropEvent(self, event):
-        # if event.mimeData().hasFormat("application/x-equipment"):
-            # data = event.mimeData().data("application/x-equipment")
-            # stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
-            # icon = QtGui.QIcon()
-            # stream >> icon
-            # event.setDropAction(QtCore.Qt.CopyAction)
-            # print(event.pos())
-            # event.accept()
-            # self.updateGeometry()
-            # self.update()
-        # else:
-            # event.ignore()
-
-    def updatePosition(self, point):
-        self.statusPosition.setText("(%i, %i)" % (point.x(), point.y()))
-
-    def changeStatusThermo(self, config):
-        print("alsl", config)
-        print(config.sections())
-        if config.has_section("Thermo") and \
-                config.has_section("Components"):
-            components = config.get("Components", "components")
-            if config.getboolean("Thermo", "iapws") and \
-                    config.getboolean("Thermo", "freesteam") and \
-                    len(components) == 1 and components[0] == 62:
-                txt = "Freesteam"
-            elif config.getboolean("Thermo", "iapws") and \
-                    len(components) == 1 and components[0] == 62:
-                txt = "IAPWS97"
-            elif config.getboolean("Thermo", "meos") and \
-                    config.getboolean("Thermo", "refprop"):
-                txt = "Refprop"
-            elif config.getboolean("Thermo", "meos") and \
-                    config.getboolean("Thermo", "coolprop"):
-                txt = "CoolProp"
-            elif config.getboolean("Thermo", "meos"):
-                txt = "MEoS"
-            else:
-                txt = "K: %s  H: %s" % (
-                    K[config.getint("Thermo", "K")].__status__,
-                    H[config.getint("Thermo", "H")].__status__)
-
-            self.statusThermo.setText(txt)
-
-        if config.has_section("PFD"):
-            x = config.getint("PFD", "x")
-            y = config.getint("PFD", "y")
-            self.statusResolution.setText("%i, %i" % (x, y))
-        print(self.statusThermo.text(), self.statusResolution.text())
 
 
 class GraphicsScene(QtWidgets.QGraphicsScene):

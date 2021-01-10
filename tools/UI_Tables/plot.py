@@ -46,13 +46,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from numpy import concatenate, linspace, logspace, transpose, log, nan
 from matplotlib.font_manager import FontProperties
 
-from lib import meos, mEoS, unidades, plot, config
+from lib import meos, unidades, plot, config
 from lib.thermo import ThermoAdvanced
 from lib.utilities import formatLine
 from UI.widgets import (Entrada_con_unidades, createAction, LineStyleCombo,
-                        MarkerCombo, ColorSelector, InputFont)
+                        MarkerCombo, ColorSelector, InputFont, ClickableLabel)
 
 from .library import calcPoint, getLimit, getClassFluid, getMethod
+from .chooseFluid import Dialog_InfoFluid
 
 
 # FIXME: Plot3D save/load support
@@ -62,6 +63,7 @@ class PlotMEoS(QtWidgets.QWidget):
     """Plot widget to show meos plot data, add context menu options"""
 
     icon = os.path.join(config.IMAGE_PATH, "button", "plot.png")
+    mouseMove = QtCore.pyqtSignal(QtCore.QPointF)
 
     def __init__(self, dim, toolbar=False, filename="", parent=None):
         """constructor
@@ -72,6 +74,7 @@ class PlotMEoS(QtWidgets.QWidget):
         """
         super(PlotMEoS, self).__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
+        self.setMouseTracking(True)
         self.parent = parent
         self.dim = dim
         self.filename = filename
@@ -116,10 +119,37 @@ class PlotMEoS(QtWidgets.QWidget):
         grid = config.Preferences.getboolean("MEOS", "grid")
         self.gridToggleAction.setChecked(grid)
 
+        # Widgets to show in the statusbar of mainwindow
+        self.statusWidget = []
+        self.statusPosition = QtWidgets.QLabel()
+        self.statusPosition.setFrameShape(QtWidgets.QFrame.WinPanel)
+        self.statusPosition.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusWidget.append(self.statusPosition)
+        # self.statusThermo = QtWidgets.QLabel()
+        self.statusThermo = ClickableLabel()
+        self.statusThermo.setFrameShape(QtWidgets.QFrame.WinPanel)
+        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusWidget.append(self.statusThermo)
+        self.statusThermo.clicked.connect(self.showFluid)
+
         if dim == 2:
             self.plot.fig.canvas.mpl_connect('button_press_event', self.click)
+            self.plot.fig.canvas.mpl_connect(
+                'motion_notify_event', self.updatePosition)
         else:
             self.editMarginAction.setEnabled(False)
+
+    def showFluid(self):
+        method = self.config["method"]
+        index = self.config["fluid"]
+        fluid = getClassFluid(method, index)
+        dlg = Dialog_InfoFluid(fluid.__class__)
+        dlg.exec_()
+
+    def mouseMoveEvent(self, event):
+        # print(event.globalPos())
+        QtWidgets.QWidget.mouseMoveEvent(self, event)
+        self.mouseMove.emit(event.globalPos())
 
     def closeEvent(self, event):
         self.parent.dirty[self.parent.idTab] = True
@@ -200,11 +230,11 @@ class PlotMEoS(QtWidgets.QWidget):
         tabla.verticalHeader().setContextMenuPolicy(
             QtCore.Qt.CustomContextMenu)
 
-        self.parent.centralwidget.currentWidget().addSubWindow(tabla)
+        self.parent.centralWidget().currentWidget().addSubWindow(tabla)
         title = QtWidgets.QApplication.translate("pychemqt", "Table from") + \
             " " + obj.get_label()
         tabla.setWindowTitle(title)
-        wdg = self.parent.centralwidget.currentWidget().subWindowList()[-1]
+        wdg = self.parent.centralWidget().currentWidget().subWindowList()[-1]
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
         self.parent.dirty[self.parent.idTab] = True
         self.parent.saveControl()
@@ -285,6 +315,19 @@ class PlotMEoS(QtWidgets.QWidget):
             anotation = self.notes.pop()
             anotation.remove()
         self.plot.draw()
+
+    def updatePosition(self, point):
+        try:
+            x = point.xdata
+            y = point.ydata
+        except AttributeError:
+            x = None
+
+        if x is None:
+            self.statusPosition.setText("-, -")
+        else:
+            txt = "%s=%4g, %s=%4g" % (self.x, x, self.y, y)
+            self.statusPosition.setText(txt)
 
     def writeToJSON(self, data):
         """Write instance parameter to file"""
@@ -545,8 +588,14 @@ class PlotMEoS(QtWidgets.QWidget):
         conf["visco"] = data["visco"]
         conf["thermal"] = data["thermal"]
         grafico.config = conf
+        grafico.changeStatusThermo(conf)
 
         return grafico
+
+    def changeStatusThermo(self, config):
+        fluid = getClassFluid(config["method"], config["fluid"])
+        txt = "%s (%s)" % (fluid.name, config["method"])
+        self.statusThermo.setText(txt)
 
 
 class Plot2D(QtWidgets.QDialog):
@@ -906,26 +955,26 @@ class EditPlot(QtWidgets.QDialog):
         """Fill format widget with value of selected line"""
         if self.semaforo.available() > 0:
             self.semaforo.acquire(1)
-            linea = self.fig.ax.lines[i+2]
-            self.label.setText(linea.get_label())
-            self.Grosor.setValue(linea.get_lw())
-            self.Linea.setCurrentValue(linea.get_ls())
-            self.ColorButton.setColor(linea.get_color())
-            self.Marca.setCurrentValue(linea.get_marker())
-            self.markerSize.setValue(linea.get_ms())
-            self.markerfacecolor.setColor(linea.get_mfc())
-            self.markerEdgeSize.setValue(linea.get_mew())
-            self.markeredgecolor.setColor(linea.get_mec())
-            self.visible.setChecked(linea.get_visible())
-            self.antialiases.setChecked(linea.get_antialiased())
+            line = self.fig.ax.lines[i+2]
+            self.label.setText(line.get_label())
+            self.Grosor.setValue(line.get_lw())
+            self.Linea.setCurrentValue(line.get_ls())
+            self.ColorButton.setColor(line.get_color())
+            self.Marca.setCurrentValue(line.get_marker())
+            self.markerSize.setValue(line.get_ms())
+            self.markerfacecolor.setColor(line.get_mfc())
+            self.markerEdgeSize.setValue(line.get_mew())
+            self.markeredgecolor.setColor(line.get_mec())
+            self.visible.setChecked(line.get_visible())
+            self.antialiases.setChecked(line.get_antialiased())
 
             try:
-                self.annotationVisible.setChecked(linea.text.get_visible())
-                self.annotationLabel.setText(linea.text.get_text())
-                self.annotationPos.setValue(linea.text.pos)
-                self.annotationRot.setValue(linea.text.get_rotation())
+                self.annotationVisible.setChecked(line.text.get_visible())
+                self.annotationLabel.setText(line.text.get_text())
+                self.annotationPos.setValue(line.text.pos)
+                self.annotationRot.setValue(line.text.get_rotation())
                 va = ["center", "top", "bottom", "baseline", "center_baseline"]
-                self.annotationVA.setCurrentIndex(va.index(linea.text.get_va()))
+                self.annotationVA.setCurrentIndex(va.index(line.text.get_va()))
             except AttributeError:
                 self.annotationVisible.setChecked(False)
             self.semaforo.release(1)
@@ -991,7 +1040,6 @@ class EditPlot(QtWidgets.QDialog):
             prop = dialog.tipo.currentIndex()
             value = dialog.input[prop].value
 
-
             Tmin, Tmax, Pmin, Pmax = getLimit(fluid, projectConfig)
             Pmax = Pmax*1000
 
@@ -1016,7 +1064,7 @@ class EditPlot(QtWidgets.QDialog):
 
             if prop == 0:
                 # Calcualte isotherm line
-                self.parent.statusbar.showMessage(
+                self.parent.statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isotherm line..."))
                 fluidos = calcIsoline(
@@ -1027,7 +1075,7 @@ class EditPlot(QtWidgets.QDialog):
                 unit = unidades.Temperature
             elif prop == 1:
                 # Calculate isobar line
-                self.parent.statusbar.showMessage(
+                self.parent.statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isobar line..."))
                 fluidos = calcIsoline(
@@ -1038,7 +1086,7 @@ class EditPlot(QtWidgets.QDialog):
                 unit = unidades.Pressure
             elif prop == 2:
                 # Calculate isoenthalpic line
-                self.parent.statusbar.showMessage(
+                self.parent.statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isoenthalpic line..."))
                 fluidos = calcIsoline(
@@ -1049,7 +1097,7 @@ class EditPlot(QtWidgets.QDialog):
                 unit = unidades.Enthalpy
             elif prop == 3:
                 # Calculate isoentropic line
-                self.parent.statusbar.showMessage(
+                self.parent.statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isoentropic line..."))
                 fluidos = calcIsoline(
@@ -1060,7 +1108,7 @@ class EditPlot(QtWidgets.QDialog):
                 unit = unidades.SpecificHeat
             elif prop == 4:
                 # Calculate isochor line
-                self.parent.statusbar.showMessage(
+                self.parent.statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isochor line..."))
                 fluidos = calcIsoline(
@@ -1071,7 +1119,7 @@ class EditPlot(QtWidgets.QDialog):
                 unit = unidades.SpecificVolume
             elif prop == 5:
                 # Calculate isodensity line
-                self.parent.statusbar.showMessage(
+                self.parent.statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isodensity line..."))
                 fluidos = calcIsoline(
@@ -1082,7 +1130,7 @@ class EditPlot(QtWidgets.QDialog):
                 unit = unidades.Density
             elif prop == 6:
                 # Calculate isoquality line
-                self.parent.statusbar.showMessage(
+                self.parent.statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Adding isoquality line..."))
                 T = T[:3*points-2]
@@ -1132,7 +1180,7 @@ class EditPlot(QtWidgets.QDialog):
 
     def remove(self):
         """Remove a line from plot"""
-        self.parent.statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent.statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Deleting line..."))
         QtWidgets.QApplication.processEvents()
 
@@ -1165,7 +1213,7 @@ class EditPlot(QtWidgets.QDialog):
             self.lista.setCurrentRow(index-1)
         self.lista.takeItem(index)
         self.fig.draw()
-        self.parent.statusbar.clearMessage()
+        self.parent.statusBar().clearMessage()
         self.parent.dirty[self.parent.idTab] = True
         self.parent.saveControl()
 
@@ -1449,13 +1497,12 @@ def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
         fluido = calcPoint(f, conf, **kwargs)
 
         avance = ini + end*step/total + \
-                end/total*(len(fluidos)+fail)/(len(vvar)+N_points)
+            end/total*(len(fluidos)+fail)/(len(vvar)+N_points)
         bar.setValue(avance)
         QtWidgets.QApplication.processEvents()
 
         if fluido and fluido.status and (fluido.rho != rhoo or fluido.T != To):
             fluidos.append(fluido)
-
 
             # Save values of last point as initial guess for next calculation
             if var not in ("T", "P") or fix not in ("T", "P"):
@@ -1553,50 +1600,50 @@ def plotIsoline(data, axis, title, unidad, grafico, transform, **format):
             line, = grafico.plot.ax.plot(xi, yi, label=label, **format)
 
         # Add annotate for isolines
-        # if annotate and not z:
-        if variable and unit:
-            txt = label
-        elif variable:
-            txt = "%s =%s" % (title, unidad(key).config())
-        elif unit:
-            txt = unidad(key).str
-        else:
-            txt = unidad(key).config()
+        if not z:
+            if variable and unit:
+                txt = label
+            elif variable:
+                txt = "%s =%s" % (title, unidad(key).config())
+            elif unit:
+                txt = unidad(key).str
+            else:
+                txt = unidad(key).config()
 
-        xmin, xmax = grafico.plot.ax.get_xlim()
-        ymin, ymax = grafico.plot.ax.get_ylim()
+            xmin, xmax = grafico.plot.ax.get_xlim()
+            ymin, ymax = grafico.plot.ax.get_ylim()
 
-        i = int(len(xi)*pos/100)
-        if i >= len(xi):
-            i = len(yi)-2
+            i = int(len(xi)*pos/100)
+            if i >= len(xi):
+                i = len(yi)-2
 
-        if pos > 50:
-            j = i-1
-        else:
-            j = i+1
-        if xscale == "log":
-            f_x = (log(xi[i])-log(xi[j]))/(log(xmax)-log(xmin))
-        else:
-            f_x = (xi[i]-xi[j])/(xmax-xmin)
-        if yscale == "log":
-            f_y = (log(yi[i])-log(yi[j]))/(log(ymax)-log(ymin))
-        else:
-            f_y = (yi[i]-yi[j])/(ymax-ymin)
+            if pos > 50:
+                j = i-1
+            else:
+                j = i+1
+            if xscale == "log":
+                f_x = (log(xi[i])-log(xi[j]))/(log(xmax)-log(xmin))
+            else:
+                f_x = (xi[i]-xi[j])/(xmax-xmin)
+            if yscale == "log":
+                f_y = (log(yi[i])-log(yi[j]))/(log(ymax)-log(ymin))
+            else:
+                f_y = (yi[i]-yi[j])/(ymax-ymin)
 
-        rot = atan(f_y/f_x)*360/2/pi
+            rot = atan(f_y/f_x)*360/2/pi
 
-        kw = {}
-        kw["ha"] = "center"
-        kw["va"] = "center_baseline"
-        kw["rotation_mode"] = "anchor"
-        kw["rotation"] = rot
-        kw["size"] = "small"
-        text = grafico.plot.ax.text(xi[i], yi[i], txt, **kw)
+            kw = {}
+            kw["ha"] = "center"
+            kw["va"] = "center_baseline"
+            kw["rotation_mode"] = "anchor"
+            kw["rotation"] = rot
+            kw["size"] = "small"
+            text = grafico.plot.ax.text(xi[i], yi[i], txt, **kw)
 
-        line.text = text
-        line.text.pos = pos
-        if not annotate:
-            text.set_visible(False)
+            line.text = text
+            line.text.pos = pos
+            if not annotate:
+                text.set_visible(False)
 
 
 def plot2D3D(grafico, data, Preferences, x, y, z=None):
@@ -1710,11 +1757,13 @@ def _getunitTransform(eje):
     else:
         unit = meos.units[meos.keys.index(eje)]
         factor = unit(1.).config()
+
         def f(val):
             if val is not None and type(val) != str:
                 return val*factor
             else:
                 return nan
+
         return f
         # return lambda val: val*factor if val is not None else nan
 

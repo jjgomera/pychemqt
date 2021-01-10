@@ -40,10 +40,11 @@ from lib import meos, mEoS, coolProp, refProp, unidades, config
 from lib.thermo import ThermoAdvanced
 from lib.utilities import representacion, exportTable
 from UI.widgets import (Entrada_con_unidades, createAction, Status, Tabla,
-                        NumericFactor)
+                        NumericFactor, ClickableLabel)
 
-from tools.UI_Tables.plot import PlotMEoS
-from tools.UI_Tables.library import get_propiedades, _getData, getClassFluid
+from .plot import PlotMEoS
+from .library import get_propiedades, _getData, getClassFluid, getMethod
+from .chooseFluid import Dialog_InfoFluid
 
 
 # Table data
@@ -118,6 +119,12 @@ def createTabla(config, title, fluidos=None, parent=None):
     prefix = QtWidgets.QApplication.translate("pychemqt", "Table")
     tabla.setWindowTitle(prefix+": "+title)
     tabla.resizeColumnsToContents()
+
+    conf = {}
+    conf["method"] = getMethod()
+    conf["fluid"] = config.getint("MEoS", "fluid")
+    tabla.changeStatusThermo(conf)
+
     return tabla
 
 
@@ -176,6 +183,23 @@ class TablaMEoS(Tabla):
         if not self.readOnly:
             self.cellChanged.connect(self.calculatePoint)
 
+        # Widgets to show in the statusbar of mainwindow
+        self.statusWidget = []
+        self.statusThermo = ClickableLabel()
+        self.statusThermo.setFrameShape(QtWidgets.QFrame.WinPanel)
+        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusThermo.clicked.connect(self.showFluid)
+        self.statusWidget.append(self.statusThermo)
+
+    def showFluid(self):
+        dlg = Dialog_InfoFluid(self.Point.__class__)
+        dlg.exec_()
+
+    def changeStatusThermo(self, config):
+        fluid = getClassFluid(config["method"], config["fluid"])
+        txt = "%s (%s)" % (fluid.name, config["method"])
+        self.statusThermo.setText(txt)
+
     def closeEvent(self, event):
         self.parent.dirty[self.parent.idTab] = True
         self.parent.saveControl()
@@ -185,8 +209,8 @@ class TablaMEoS(Tabla):
         # FIXME: This procedure detect the first PlotMeos window, correct or
         # incorrect
         if not self.Plot:
-            windows = self.parent.centralwidget.currentWidget().subWindowList()
-            for window in windows:
+            wdws = self.parent.centralWidget().currentWidget().subWindowList()
+            for window in wdws:
                 widget = window.widget()
                 if isinstance(widget, PlotMEoS):
                     self.Plot = widget
@@ -261,7 +285,7 @@ class TablaMEoS(Tabla):
 
     def delete(self, rows):
         """Delete rows from table and for saved data"""
-        self.parent.statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent.statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Deleting point..."))
         QtWidgets.QApplication.processEvents()
 
@@ -327,7 +351,7 @@ class TablaMEoS(Tabla):
                     line.set_ydata(ydata)
                     plot.plot.draw()
                     break
-        self.parent.statusbar.clearMessage()
+        self.parent.statusBar().clearMessage()
 
     def add(self, row):
         """Add point to a table and to saved file"""
@@ -667,6 +691,7 @@ class TablaMEoS(Tabla):
 
         fluid = getClassFluid(data["method"], data["fluid"])
         tabla.Point = fluid
+        tabla.changeStatusThermo(data)
 
         return tabla
 

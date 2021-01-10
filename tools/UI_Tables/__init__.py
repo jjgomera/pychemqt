@@ -254,31 +254,35 @@ class plugin(object):
                     # Changing temperature
                     for val in value:
                         vconfig = unidades.Temperature(val).str
-                        self.parent().statusbar.showMessage(
+                        self.parent().statusBar().showMessage(
                             "%s: %s =%s, %s" % (fluid.name, "T", vconfig, txt))
+                        QtWidgets.QApplication.processEvents()
                         fluidos.append(fluid._new(T=val, x=0.5))
                 elif dlg.VariarPresion.isChecked():
                     # Changing pressure
                     for val in value:
                         vconfig = unidades.Temperature(val).str
-                        self.parent().statusbar.showMessage(
+                        self.parent().statusBar().showMessage(
                             "%s: %s =%s, %s" % (fluid.name, "P", vconfig, txt))
+                        QtWidgets.QApplication.processEvents()
                         fluidos.append(fluid._new(P=val, x=0.5))
                 elif dlg.VariarXconT.isChecked():
                     # Changing quality with fixed Temperature
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
-                        self.parent().statusbar.showMessage(
+                        self.parent().statusBar().showMessage(
                             "%s: T =%s  x = %s, %s" % (
                                 fluid.name, fconfig, val, txt))
+                        QtWidgets.QApplication.processEvents()
                         fluidos.append(fluid._new(T=fix, x=val))
                 elif dlg.VariarXconP.isChecked():
                     # Changing quality with fixed pressure
                     fconfig = unidades.Temperature(fix).str
                     for val in value:
-                        self.parent().statusbar.showMessage(
+                        self.parent().statusBar().showMessage(
                             "%s: P =%s  x = %s, %s" % (
                                 fluid.name, fconfig, val, txt))
+                        QtWidgets.QApplication.processEvents()
                         fluidos.append(fluid._new(P=fix, x=val))
 
             else:
@@ -297,20 +301,22 @@ class plugin(object):
                     for val in value:
                         p = func(val)
                         fluidos.append(fluid._new(T=val, P=p))
-                        self.parent().statusbar.showMessage(
+                        self.parent().statusBar().showMessage(
                             "%s: %s=%0.2f, %s" % (fluid.name, "T", val, txt))
+                        QtWidgets.QApplication.processEvents()
                 else:
                     for p in value:
                         T = fsolve(lambda T: p-func(T), fluid.Tt)
                         fluidos.append(fluid._new(T=T, P=p))
-                        self.parent().statusbar.showMessage(
+                        self.parent().statusBar().showMessage(
                             "%s: %s=%0.2f, %s" % (fluid.name, "P", p, txt))
+                        QtWidgets.QApplication.processEvents()
 
             title = QtWidgets.QApplication.translate(
                 "pychemqt", "Table %s: %s changing %s (%s)" % (
                     fluid.name, txt, "T", method))
             self.addTable(fluidos, title)
-            self.parent().statusbar.clearMessage()
+            self.parent().statusBar().clearMessage()
 
     def showIsoproperty(self):
         """Show dialog to define input for isoproperty table calculations"""
@@ -355,8 +361,9 @@ class plugin(object):
                     v2conf = v2
                 else:
                     v2conf = dlg.unidades[j](v2).str
-                self.parent().statusbar.showMessage(
+                self.parent().statusBar().showMessage(
                     "%s: %s =%s, %s =%s" % (fluid.name, X, v1conf, Y, v2conf))
+                QtWidgets.QApplication.processEvents()
                 fluidos.append(fluid._new(**kwarg))
             unitX = dlg.unidades[i].text()
             title = QtWidgets.QApplication.translate(
@@ -373,7 +380,7 @@ class plugin(object):
         method = getMethod()
         fluid = self.config.getint("MEoS", "fluid")
         tabla.Point = getClassFluid(method, fluid)
-        wdg = self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        wdg = self.parent().centralWidget().currentWidget().addSubWindow(tabla)
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
         self.parent().dirty[self.parent().idTab] = True
         self.parent().saveControl()
@@ -390,7 +397,7 @@ class plugin(object):
             "pychemqt", "Specified state points"), method.upper())
         tabla = createTabla(self.config, title, None, self.parent())
         tabla.Point = fluid
-        wdg = self.parent().centralwidget.currentWidget().addSubWindow(tabla)
+        wdg = self.parent().centralWidget().currentWidget().addSubWindow(tabla)
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
         self.parent().dirty[self.parent().idTab] = True
         self.parent().saveControl()
@@ -487,17 +494,17 @@ class plugin(object):
                 k = self.config.getint("Units", unitz)
                 ztxt = "%s, %s" % (z, UNITS[KEYS.index(z)].__text__[k])
             else:
-                ztxt = "%s" % y
+                ztxt = "%s" % z
             grafico.plot.ax.set_zlabel(ztxt)
 
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Loading cached data..."))
         QtWidgets.QApplication.processEvents()
         data = grafico._getData()
         if not data:
             self.parent().progressBar.setValue(0)
             self.parent().progressBar.setVisible(True)
-            self.parent().statusbar.showMessage(
+            self.parent().statusBar().showMessage(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Calculating data, be patient..."))
             QtWidgets.QApplication.processEvents()
@@ -511,10 +518,11 @@ class plugin(object):
             data["config"] = conf
             grafico._saveData(data)
             self.parent().progressBar.setVisible(False)
-        self.parent().statusbar.showMessage(
+        self.parent().statusBar().showMessage(
             QtWidgets.QApplication.translate("pychemqt", "Plotting..."))
         QtWidgets.QApplication.processEvents()
         grafico.config = data["config"]
+        grafico.changeStatusThermo(data["config"])
 
         if z:
             plot2D3D(grafico, data, config.Preferences, x, y, z)
@@ -538,11 +546,12 @@ class plugin(object):
         grafico.plot.ax._gridOn = grid
         grafico.plot.ax.grid(grid)
 
-        self.parent().centralwidget.currentWidget().addSubWindow(grafico)
+        self.parent().centralWidget().currentWidget().addSubWindow(grafico)
         self.parent().dirty[self.parent().idTab] = True
         self.parent().saveControl()
         grafico.show()
-        self.parent().statusbar.clearMessage()
+        self.parent().statusBar().clearMessage()
+        grafico.mouseMove.connect(grafico.updatePosition)
 
     def calculatePlot(self, fluid):
         """Calculate data for plot
@@ -555,7 +564,7 @@ class plugin(object):
         if method == "meos":
             # Calculate melting line
             if fluid._melting:
-                self.parent().statusbar.showMessage(
+                self.parent().statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Calculating melting line..."))
                 T = linspace(fluid._melting["Tmin"], fluid._melting["Tmax"],
@@ -573,7 +582,7 @@ class plugin(object):
 
             # Calculate sublimation line
             if fluid._sublimation:
-                self.parent().statusbar.showMessage(
+                self.parent().statusBar().showMessage(
                     QtWidgets.QApplication.translate(
                         "pychemqt", "Calculating sublimation line..."))
                 T = linspace(fluid._sublimation["Tmin"],
@@ -597,7 +606,7 @@ class plugin(object):
             del T[points*i]
 
         # Calculate saturation
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating Liquid-Vapour saturation line..."))
         for fase in [0, 1]:
             fluidos = []
@@ -615,7 +624,7 @@ class plugin(object):
 
         # Calculate isoquality lines
         data["x"] = {}
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoquality lines..."))
         values = self.LineList("Isoquality", config.Preferences)
         for i, value in enumerate(values):
@@ -676,7 +685,7 @@ class plugin(object):
 
         # Calculate isotherm lines
         data["T"] = {}
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isotherm lines..."))
         values = self.LineList("Isotherm", config.Preferences, fluid)
         for i, value in enumerate(values):
@@ -688,7 +697,7 @@ class plugin(object):
 
         # Calculate isobar lines
         data["P"] = {}
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isobar lines..."))
         values = self.LineList("Isobar", config.Preferences, fluid)
         for i, value in enumerate(values):
@@ -699,7 +708,7 @@ class plugin(object):
 
         # Calculate isochor lines
         data["v"] = {}
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isochor lines..."))
         values = self.LineList("Isochor", config.Preferences, fluid)
         for i, value in enumerate(values):
@@ -710,7 +719,7 @@ class plugin(object):
 
         # Calculate isoenthalpic lines
         data["h"] = {}
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoenthalpic lines..."))
         vals = self.LineList("Isoenthalpic", config.Preferences, fluid)
         for i, value in enumerate(vals):
@@ -721,7 +730,7 @@ class plugin(object):
 
         # Calculate isoentropic lines
         data["s"] = {}
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoentropic lines..."))
         values = self.LineList("Isoentropic", config.Preferences, fluid)
         for i, value in enumerate(values):
