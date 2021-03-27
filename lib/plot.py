@@ -71,25 +71,25 @@ class matplotlib(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(10, 10), dpi=100)
         self.dim = dim
         FigureCanvasQTAgg.__init__(self, self.fig)
-        self.setParent(parent)
-        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        FigureCanvasQTAgg.setSizePolicy(
+            self, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
+        self.setParent(parent)
 
-        if dim==2:
+        if dim == 2:
             self.ax = self.fig.add_subplot(111)
-            self.ax.figure.subplots_adjust(left=0.08, right=0.98, bottom=0.08, top=0.92)
+            self.ax.figure.subplots_adjust(
+                left=0.08, right=0.98, bottom=0.08, top=0.92)
 
         else:
             self.ax = Axes3D(self.fig)
             self.ax.mouse_init(rotate_btn=1, zoom_btn=2)
 
-        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
-        FigureCanvasQTAgg.updateGeometry(self)
-
     def plot_3D(self, labels, xdata, ydata, zdata, config=None):
         """Método que dibuja la matriz de datos"""
         self.ax.clear()
-        self.data={"x": xdata[0], "y": ydata[:,0], "z": zdata}
+        self.data = {"x": xdata[0], "y": ydata[:, 0], "z": zdata}
 
         if config and config.getboolean("MEOS", "surface"):
             self.ax.plot_surface(xdata, ydata, zdata, rstride=1, cstride=1)
@@ -101,16 +101,16 @@ class matplotlib(FigureCanvasQTAgg):
         self.ax.set_zlabel(labels[2])
         self.ax.mouse_init(rotate_btn=1, zoom_btn=2)
 
-#class PlotWidget(QtGui.QWidget):
+
+# class PlotWidget(QtGui.QWidget):
 #    def __init__(self, dim, parent=None):
 #        super(PlotWidget, self).__init__(parent)
 #        layout=QtGui.QVBoxLayout(self)
 #        self.plot=matplotlib(dim)
 #        layout.addWidget(self.plot)
-#
+
 #        self.toolbar=NavigationToolbar2QT(self, self)
 #        layout.addWidget(self.toolbar)
-#
 
 
 class Plot(QtWidgets.QDialog):
@@ -143,11 +143,11 @@ class Plot(QtWidgets.QDialog):
 
 if __name__ == '__main__':
     import sys
-    t=[0.3, 0.45, 1., 1.5, 3.5, 7.5, 11.0, 24.0]
-    k=[0.5, 0.6, 0.75, 0.8, 0.9, 0.95, 0.97, 0.99]
+    t = [0.3, 0.45, 1., 1.5, 3.5, 7.5, 11.0, 24.0]
+    k = [0.5, 0.6, 0.75, 0.8, 0.9, 0.95, 0.97, 0.99]
 
     app = QtWidgets.QApplication(sys.argv)
-    grafico=Plot()
+    grafico = Plot()
     grafico.data(t, k, 'ro')
     grafico.show()
     sys.exit(app.exec_())
