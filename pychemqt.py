@@ -69,15 +69,11 @@ app.setOrganizationName("pychemqt")
 app.setOrganizationDomain("pychemqt")
 app.setApplicationName("pychemqt")
 
-
 # Qt style definition
 if args.style is not None:
     style = QtWidgets.QStyleFactory.create(args.style)
     if style:
         app.setStyle(style)
-    else:
-        print("Undefined style option, the available options are: %s" %
-              QtWidgets.QStyleFactory.keys())
 
 # Add style options
 app.setStyleSheet(
