@@ -59,6 +59,7 @@ docs/_build/
 .eric5project/
 .eric6project/
 *.e4p
+*.epj
 
 # documentation   
 doc

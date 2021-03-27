@@ -304,12 +304,12 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking cost index..."))
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
-        orig = os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")
-        with open(orig) as cost_index:
-            lista = cost_index.readlines()[-1].split(" ")
-            with open(conf_dir + "CostIndex.dat", "w") as archivo:
-                for data in lista:
-                    archivo.write(data.replace(os.linesep, "") + os.linesep)
+    orig = os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")
+    with open(orig) as cost_index:
+        lista = cost_index.readlines()[-1].split(" ")
+        with open(conf_dir + "CostIndex.dat", "w") as archivo:
+            for data in lista:
+                archivo.write(data.replace(os.linesep, "") + os.linesep)
 
 # Checking currency rates
 splash.showMessage(QtWidgets.QApplication.translate(
@@ -338,6 +338,7 @@ if currency:
     except (urllib.error.URLError, urllib.error.HTTPError) as e:
         # Internet error, get hardcoded exchanges from pychemqt distribution
         # Possible outdated file, try to update each some commits
+        logging.error(e)
         origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
         shutil.copy(origen, conf_dir + "moneda.dat")
         print(QtWidgets.QApplication.translate("pychemqt",
@@ -352,11 +353,11 @@ if not os.path.isfile(conf_dir + "databank.db"):
 # Import internal libraries
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Importing libraries..."))
-from lib import *  # noqa
-from UI import *  # noqa
+import lib  # noqa
+import UI  # noqa
 from equipment import UI_equipments, equipments  # noqa
-from tools import *  # noqa
-from plots import *  # noqa
+import tools  # noqa
+import plots  # noqa
 
 # Load main program UI
 splash.showMessage(QtWidgets.QApplication.translate(
@@ -371,10 +372,10 @@ splash.showMessage(msg + "...")
 logging.info(msg)
 
 if change:
-    config.Preferences = Preferences
+    lib.config.Preferences = Preferences
 
 filename = []
-if config.Preferences.getboolean("General", "Load_Last_Project"):
+if lib.config.Preferences.getboolean("General", "Load_Last_Project"):
     filename = pychemqt.lastFile
     if filename is None:
         filename = []
