@@ -21,8 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from csv import reader
 import os
 
-from scipy.constants import R
-
 from lib.EoS.cubic import Cubic
 
 
@@ -85,8 +83,10 @@ class PRMathiasCopeman(Cubic):
     >>> o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
     >>> ar = Componente(98)
     >>> ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
-    >>> mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1, fraccionMolar=[0.5, 0.3, 0.2])
-    >>> eq = PRMathiasCopeman(800, 34933409.8798343, mix)
+    >>> zi = [0.5, 0.3, 0.2]
+    >>> cmpList = [ch4, o2, ar]
+    >>> mix = Mezcla(5, customCmp=cmpList, caudalMolar=1, fraccionMolar=zi)
+    >>> eq = PRMathiasCopeman(800, 34933409.8798343, mix, R=8.3144598)
     >>> fir = eq._phir(800, 5000, eq.yi)
     >>> delta = 5000
     >>> tau = 1/800
@@ -167,8 +167,8 @@ class PRMathiasCopeman(Cubic):
                 c2 = -1.3127*cmp.f_acent**2 + 0.3015*cmp.f_acent - 0.1213
                 c3 = 0.7661*cmp.f_acent + 0.3041
 
-            ao.append(0.45724*R**2*cmp.Tc**2/cmp.Pc)
-            bi.append(0.0778*R*cmp.Tc/cmp.Pc)
+            ao.append(0.45724*self.R**2*cmp.Tc**2/cmp.Pc)
+            bi.append(0.0778*self.R*cmp.Tc/cmp.Pc)
 
             term = 1-(T/cmp.Tc)**0.5
 
@@ -337,12 +337,12 @@ if __name__ == "__main__":
     # # eq = PRMathiasCopeman(800, 36937532, mix)
     # eq = PRMathiasCopeman(800, 34925714.27837578, mix)
 
-    
-# Methane, O2, Ar
-# Tc = (190.564, 154.581, 150.687)
-# Pc = (4599200, 5042800, 4863000)
-# f_acent = (0.01100, 0.02200, -0.00200)
-# x = (0.50000, 0.30000, 0.20000)
+
+    # Methane, O2, Ar
+    # Tc = (190.564, 154.581, 150.687)
+    # Pc = (4599200, 5042800, 4863000)
+    # f_acent = (0.01100, 0.02200, -0.00200)
+    # x = (0.50000, 0.30000, 0.20000)
     from lib.mezcla import Mezcla
     from lib.compuestos import Componente
 
@@ -357,21 +357,22 @@ if __name__ == "__main__":
 
     mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
                  fraccionMolar=[0.5, 0.3, 0.2])
-    print(2222)
-    eq = PRMathiasCopeman(800, 34933409.8798343, mix)
-    print(eq._phir(800, 5000, eq.yi))
+    eq = PRMathiasCopeman(800, 34933409.8798343, mix, R=8.3144598)
+    phir = eq._phir(800, 5000, eq.yi)
+    print(phir["fir"])
+    print(0.034118184296355)
 
-    from lib.mezcla import Mezcla
-    from lib.compuestos import Componente
-    ch4 = Componente(2)
-    ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
-    o2 = Componente(47)
-    o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
-    ar = Componente(98)
-    ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
-    mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
-                 fraccionMolar=[0.5, 0.3, 0.2])
-    eq = PRMathiasCopeman(800, 34933409.8798343, mix)
-  
-    eq = PRMathiasCopeman(800, 34933409.8798343, mix)
-    print(eq._phir(800, 5000, eq.yi))
+    # from lib.mezcla import Mezcla
+    # from lib.compuestos import Componente
+    # ch4 = Componente(2)
+    # ch4.Tc, ch4.Pc, ch4.f_acent = 190.564, 4599200, 0.011
+    # o2 = Componente(47)
+    # o2.Tc, o2.Pc, o2.f_acent = 154.581, 5042800, 0.022
+    # ar = Componente(98)
+    # ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
+    # mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
+                 # fraccionMolar=[0.5, 0.3, 0.2])
+    # eq = PRMathiasCopeman(800, 34933409.8798343, mix)
+
+    # eq = PRMathiasCopeman(800, 34933409.8798343, mix)
+    # print(eq._phir(800, 5000, eq.yi))

@@ -145,6 +145,7 @@ def CubicHelmholtz(tau, delta, **kw):
     dattt = kw["dattt"]
     Delta1 = kw["Delta1"]
     Delta2 = kw["Delta2"]
+    R = kw["R"]
 
     # This parameters are necessary only for multicomponent mixtures to
     # calculate fugacity coefficient
@@ -255,6 +256,11 @@ class Cubic(EoS):
     def __init__(self, T, P, mezcla, **kwargs):
         EoS.__init__(self, T, P, mezcla, **kwargs)
 
+        if "R" in kwargs:
+            self.R = kwargs["R"]
+        else:
+            self.R = R
+
         self._cubicDefinition(T)
 
         if self.mezcla.Tc < T:
@@ -272,15 +278,17 @@ class Cubic(EoS):
             # print("K = ", self.Ki)
 
         if self.Zl:
-            self.Vl = unidades.MolarVolume(self.Zl*R*T/P, "m3mol")   # l/mol
-            self.rhoL = unidades.MolarDensity(self.P/self.Zl/R/self.T, "molm3")
+            self.Vl = unidades.MolarVolume(self.Zl*self.R*T/P, "m3mol")
+            rhoL = self.P/self.Zl/self.R/self.T
+            self.rhoL = unidades.MolarDensity(rhoL, "molm3")
         else:
             self.Vl = None
             self.rhoL = None
 
         if self.Zg:
-            self.Vg = unidades.MolarVolume(self.Zg*R*T/P, "m3mol")  # l/mol
-            self.rhoG = unidades.MolarDensity(self.P/self.Zg/R/self.T, "molm3")
+            self.Vg = unidades.MolarVolume(self.Zg*self.R*T/P, "m3mol")
+            rhoG = self.P/self.Zg/self.R/self.T
+            self.rhoG = unidades.MolarDensity(rhoG, "molm3")
         else:
             self.Vg = None
             self.rhoG = None
@@ -348,13 +356,13 @@ class Cubic(EoS):
 
         self._cubicDefinition(T)
         tita, b, delta, epsilon = self._GEOS(xi)
-        B = b*P/R/T
-        A = tita*P/(R*T)**2
+        B = b*P/self.R/T
+        A = tita*P/(self.R*T)**2
 
-        D = delta*P/R/T
-        E = epsilon*(P/R/T)**2
+        D = delta*P/self.R/T
+        E = epsilon*(P/self.R/T)**2
 
-        # Eq 4-6.3 in [1]_http://rain-alarm.com/
+        # Eq 4-6.3 in [1]_
         # η by default set to b to reduce terms, if any equations need that
         # term redefine this procedure
         coeff = (1, D-B-1, A+E-D*(B+1), -E*(B+1)-A*B)
@@ -370,7 +378,7 @@ class Cubic(EoS):
         return Z
 
     def _fug(self, xi, yi, T, P):
-        """Fugacities oc component in mixture calculation
+        """Fugacities of component in mixture calculation
 
         Parameters
         ----------
@@ -391,19 +399,19 @@ class Cubic(EoS):
             List with vapour phase component fugacities
         """
         self._cubicDefinition(T)
-        Bi = [bi*P/R/T for bi in self.bi]
-        Ai = [ai*P/(R*T)**2 for ai in self.ai]
+        Bi = [bi*P/self.R/T for bi in self.bi]
+        Ai = [ai*P/(self.R*T)**2 for ai in self.ai]
 
         al, bl, deltal, epsilonl = self._GEOS(xi)
-        Bl = bl*P/R/T
-        Al = al*P/(R*T)**2
+        Bl = bl*P/self.R/T
+        Al = al*P/(self.R*T)**2
         Zl = self._Z(xi, T, P)[0]
         tital = self._fugacity(Zl, xi, Al, Bl, Ai, Bi)
 
         Zv = self._Z(yi, T, P)[-1]
         av, bv, deltav, epsilonv = self._GEOS(yi)
-        Bv = bv*P/R/T
-        Av = av*P/(R*T)**2
+        Bv = bv*P/self.R/T
+        Av = av*P/(self.R*T)**2
         titav = self._fugacity(Zv, yi, Av, Bv, Ai, Bi)
         return tital, titav
 
@@ -488,6 +496,7 @@ class Cubic(EoS):
         kw["bi"] = self.bi
         kw["b"] = b
         kw["a"] = a
+        kw["R"] = self.R
 
         fir = CubicHelmholtz(tau, delta, **kw)
         # print(self._excess(tau, delta, fir))

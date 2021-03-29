@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from math import exp
 
-from scipy.constants import R
-
 from lib.EoS.cubic import Cubic
 
 
@@ -96,7 +94,7 @@ class SRK(Cubic):
     >>> ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
     >>> mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
     ...              fraccionMolar=[0.5, 0.3, 0.2])
-    >>> eq = SRK(800, 36451227.52066596, mix)
+    >>> eq = SRK(800, 36451227.52066596, mix, R=8.3144598)
     >>> fir = eq._phir(800, 5000, eq.yi)
     >>> delta = 5000
     >>> tau = 1/800
@@ -175,8 +173,8 @@ class SRK(Cubic):
         self.mi = mi
 
     def _lib(self, cmp):
-        ao = 0.42747*R**2*cmp.Tc**2/cmp.Pc                              # Eq 5
-        b = 0.08664*R*cmp.Tc/cmp.Pc                                     # Eq 6
+        ao = 0.42747*self.R**2*cmp.Tc**2/cmp.Pc                          # Eq 5
+        b = 0.08664*self.R*cmp.Tc/cmp.Pc                                 # Eq 6
         return ao, b
 
     def _GEOS(self, xi):
@@ -394,4 +392,4 @@ if __name__ == "__main__":
 
     # eq = SRK(500, P, mezcla)
     # print(eq._Dew_T(P))
- 
+

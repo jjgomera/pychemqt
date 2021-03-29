@@ -20,8 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from math import exp
 
-from scipy.constants import R
-
 from lib.EoS.cubic import Cubic
 
 
@@ -121,8 +119,8 @@ class PR(Cubic):
         self.bi = bi
 
     def _lib(self, cmp):
-        a0 = self.OmegaA*R**2*cmp.Tc**2/cmp.Pc                      # Eq 9
-        b = self.OmegaB*R*cmp.Tc/cmp.Pc                             # Eq 10
+        a0 = self.OmegaA*self.R**2*cmp.Tc**2/cmp.Pc                     # Eq 9
+        b = self.OmegaB*self.R*cmp.Tc/cmp.Pc                            # Eq 10
         return a0, b
 
     def _alfa(self, cmp, T):
@@ -302,7 +300,7 @@ class PR(Cubic):
         Tr, rhor = self._Tr()
         print(Tr, rhor)
 
-        V = Z*R*self.T/self.P*1e6  # l/mol
+        V = Z*self.R*self.T/self.P*1e6  # l/mol
         rho = 1/V
         tau = Tr/self.T
         delta = rho/rhor
@@ -322,7 +320,7 @@ class PR(Cubic):
         for fx in firxi:
             nfirni.append(delta*fird + fx - dfxm)
         nfirni = [fir + ndfni for ndfni in nfirni]
-        fi = [x*rho*R*self.T*exp(nfni) for x, nfni in zip(zi, nfirni)]
+        fi = [x*rho*self.R*self.T*exp(nfni) for x, nfni in zip(zi, nfirni)]
         # print("fug_helm: ", fi)
         return fi
 

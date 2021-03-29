@@ -51,7 +51,7 @@ class PR78(PR):
     >>> ar.Tc, ar.Pc, ar.f_acent = 150.687, 4863000, -0.002
     >>> mix = Mezcla(5, customCmp=[ch4, o2, ar], caudalMolar=1,
     ...              fraccionMolar=[0.5, 0.3, 0.2])
-    >>> eq = PR(800, 36451227.52066596, mix)
+    >>> eq = PR78(800, 36451227.52066596, mix, R=8.3144598)
     >>> fir = eq._phir(800, 5000, eq.yi)
     >>> delta = 5000
     >>> tau = 1/800
