@@ -27,7 +27,8 @@ import os
 from matplotlib import image
 from PyQt5 import QtGui, QtWidgets
 
-from scipy import arange, arctan, logspace, pi
+from scipy import arctan, pi
+from numpy import arange, logspace
 
 from lib.plot import mpl
 from lib.heatTransfer import (efectividad, TemperatureEffectiveness,
@@ -396,6 +397,6 @@ chartHE = (Efectividad, TemperatureEfectividad, F, Phi)
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    dialogo = Fi()
+    dialogo = F()
     dialogo.show()
     sys.exit(app.exec_())

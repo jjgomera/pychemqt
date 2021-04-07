@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from scipy import log10
+from numpy.lib.scimath import log10
 from scipy.constants import pi, Avogadro
 
 from lib import unidades

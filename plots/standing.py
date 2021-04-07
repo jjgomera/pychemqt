@@ -28,7 +28,7 @@ import os
 import re
 
 from PyQt5 import QtWidgets
-from scipy import arange
+from numpy import arange
 
 from lib.config import conf_dir
 from lib.crude import Z_list

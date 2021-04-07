@@ -30,8 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 import random
+from math import exp
 
-from scipy import exp
 from PyQt5.QtWidgets import QApplication
 
 

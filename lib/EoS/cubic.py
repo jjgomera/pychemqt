@@ -53,9 +53,9 @@ not suitable for nonpolar substances with large molecular weight.
 """
 
 
-from scipy import log, exp
-from scipy.constants import R
+from math import log, exp
 
+from scipy.constants import R
 from PyQt5.QtWidgets import QApplication
 
 from lib import unidades

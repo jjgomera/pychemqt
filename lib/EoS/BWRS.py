@@ -23,7 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Library to add EoS common functionality
 ###############################################################################
 
-from scipy import exp, log, sqrt
+from numpy import exp
+from numpy.lib.scimath import log
+from scipy import sqrt
 from scipy import r_
 from scipy.optimize import fsolve
 

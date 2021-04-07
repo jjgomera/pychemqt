@@ -17,7 +17,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
-from scipy import zeros, log, exp
+
+from numpy import exp
+from numpy.lib.scimath import log
+from scipy import zeros
 from scipy.constants import R
 from scipy.misc import derivative
 

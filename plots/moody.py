@@ -28,7 +28,8 @@ import json
 import os
 
 from PyQt5 import QtGui, QtWidgets
-from scipy import logspace, log10
+from numpy import logspace
+from numpy.lib.scimath import log10
 from matplotlib.patches import ConnectionPatch
 from matplotlib import image
 

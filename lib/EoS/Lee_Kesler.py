@@ -18,16 +18,20 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Virial equation of state implementation
 ###############################################################################
 
-from scipy import zeros, log, exp
+
+from numpy import exp
+from numpy.lib.scimath import log
+from scipy import zeros
 from scipy.constants import R
 
+from lib import unidades
 from lib.eos import EoS
 from lib.physics import R_atml
+
 
 class Lee_Kesler(EoS):
     """Ecuación de estado de Lee-Kesler"""

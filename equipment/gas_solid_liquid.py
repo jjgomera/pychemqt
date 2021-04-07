@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+from math import pi, exp, sqrt, log
 import os
 
 from PyQt5.QtWidgets import QApplication
-from scipy import pi, exp, sqrt, log
 
 from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless,
                           Length, Power)

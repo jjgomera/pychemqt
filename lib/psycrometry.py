@@ -69,10 +69,11 @@ from iapws._iapws import _Henry
 from iapws.humidAir import _virial
 from iapws.iapws97 import _PSat_T, _Region1, prop0
 
-from numpy import roots
+from numpy import exp, roots
+from numpy.lib.scimath import log
 from PyQt5.QtWidgets import QApplication
 from scipy.optimize import fsolve
-from scipy import log, exp, arange, concatenate, linspace
+from scipy import arange, concatenate, linspace
 
 try:
     from CoolProp.HumidAirProp import HAProps, HAProps_Aux
@@ -1498,8 +1499,8 @@ else:
 
 
 if __name__ == '__main__':
-    # aire = PsyIdeal(tdb=40+273.15, w=0.001)
-    # print(aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws)
+    aire = PsyIdeal(tdb=40+273.15, w=0.001)
+    print(aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws)
 
     # aire = PsyCoolprop(tdb=40+273.15, w=0.001)
     # print(aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws)
@@ -1540,6 +1541,6 @@ if __name__ == '__main__':
     # pyplot.show()
 
     # print(aire.tdb.C, aire.twb.C, aire.tdp.C, aire.w, aire.v, aire.mu, aire.h.kJkg, aire.Pv.Pa, aire.ws)
-    aire = PsyVirial(tdb=-15+273.15, HR=100, P=101325)
+    # aire = PsyVirial(tdb=-15+273.15, HR=100, P=101325)
     # air = IAPWS95(T=200+273.15, P=1.01325)
     # print(air.v, 1/air.rhoM)

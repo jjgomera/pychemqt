@@ -23,8 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from math import factorial
-from scipy import exp, log, pi, log10, tanh
+from math import exp, factorial
+
+from numpy.lib.scimath import log, log10
+from scipy import pi, tanh
 
 
 # Pipe Laminar flow

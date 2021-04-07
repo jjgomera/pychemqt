@@ -25,10 +25,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+from math import log, exp
 import os
 
 from PyQt5.QtWidgets import QApplication
-from scipy import log, exp
 from scipy.constants import R
 from scipy.optimize import fsolve
 

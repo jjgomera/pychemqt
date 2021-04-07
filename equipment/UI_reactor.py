@@ -24,12 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import pickle
 from functools import partial
+from math import exp, log
 import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from scipy.optimize import leastsq
-from scipy import array, exp, log
+from scipy import array
 
 from lib import unidades, reaction, plot
 from lib.thread import Evaluate

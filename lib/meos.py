@@ -158,9 +158,10 @@ from itertools import product
 import json
 import logging
 import os
+from math import exp, log
 
 from PyQt5.QtWidgets import QApplication
-from scipy import exp, log, sinh, cosh, tanh, arctan
+from scipy import sinh, cosh, tanh, arctan
 from scipy.constants import Boltzmann, pi, Avogadro, R, u
 from scipy.optimize import fsolve
 

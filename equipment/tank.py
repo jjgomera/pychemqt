@@ -21,7 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###Modulo que define los equipos de almacenamiento
 
-from scipy import log, exp, pi
+from math import log, exp, pi
+
 from PyQt5.QtWidgets import  QApplication
 
 from lib.unidades import Density, Length, Currency, Volume

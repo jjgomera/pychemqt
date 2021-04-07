@@ -23,10 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+from math import log, exp
 import os
 
 from PyQt5.QtWidgets import QApplication
-from scipy import log, exp, optimize, polyval, roots, r_
+from scipy import optimize, polyval, roots, r_
 from scipy.constants import g
 
 from lib.unidades import (Pressure, Length, Power, VolFlow, Currency,

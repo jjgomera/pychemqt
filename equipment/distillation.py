@@ -26,9 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+from math import log, exp
 import os
 
-from scipy import log, exp, pi, log10, linspace
+from numpy.lib.scimath import log10
+from scipy import pi, linspace
 from scipy.optimize import fsolve
 from PyQt5.QtWidgets import QApplication
 

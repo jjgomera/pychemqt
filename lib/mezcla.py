@@ -72,10 +72,10 @@ Mixture mass definition:
 """
 
 
-from math import pi
+from math import exp, pi
 
+from numpy.lib.scimath import log10, log
 from numpy.linalg import solve
-from scipy import log, log10, exp
 from scipy.constants import R
 
 from lib.compuestos import (Componente, RhoL_Costald, RhoL_AaltoKeskinen,
@@ -3613,7 +3613,7 @@ class Mezcla(config.Entity):
     @refDoc(__doi__, [2], tab=8)
     def _Ho(self, T):
         r"""Ideal gas enthalpy, referenced in API procedure 7B4.1, pag 645
-        
+
         .. math::
             H_m^o = \sum_i x_wH_i^o
 

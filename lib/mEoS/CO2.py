@@ -18,9 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from math import exp
 from unittest import TestCase
 
-from scipy import exp, arccosh
+from scipy import arccosh
 
 from lib import unidades
 from lib.meos import MEoS

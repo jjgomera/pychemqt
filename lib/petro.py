@@ -91,13 +91,14 @@ PNA decomposition procedures:
 
 
 from configparser import ConfigParser
+from math import exp, sqrt, log
 
 from PyQt5.QtWidgets import QApplication
-from scipy import exp, sqrt, log10, log
+from numpy import array
+from numpy.lib.scimath import log10
+from numpy.linalg import solve
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, leastsq, newton
-from numpy.linalg import solve
-from numpy import array
 
 from lib import unidades
 from lib.physics import R_atml, R_Btu

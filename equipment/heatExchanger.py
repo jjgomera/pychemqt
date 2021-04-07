@@ -27,10 +27,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+from math import sqrt, exp, log
 import os
 
 from PyQt5.QtWidgets import QApplication
-from scipy import sqrt, exp, log, pi, arccos, sin, cos, tanh
+from scipy import pi, arccos, sin, cos, tanh
 from scipy.constants import g
 from scipy.optimize import fsolve
 

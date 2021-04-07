@@ -24,10 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+from math import pi, exp, log, sin
 import warnings
 
 from PyQt5.QtWidgets import QApplication
-from scipy import pi, exp, log10, log, sin
+from numpy.lib.scimath import log10
 from scipy.optimize import fsolve
 
 from lib.physics import R_atml

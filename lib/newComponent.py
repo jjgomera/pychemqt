@@ -41,9 +41,9 @@ Other methods:
 
 
 from itertools import permutations
+from math import exp, log
 import time
 
-from scipy import exp, log
 from scipy.constants import R
 from PyQt5.QtWidgets import QApplication
 
@@ -558,7 +558,7 @@ class Joback(GroupContribution):
     """
     Group contribution for definition of unknown component using the Joback
     procedure (1987)
-    
+
     The resulting instance has all the necessary properties to use in PFD as a
     predefined compound.
 
