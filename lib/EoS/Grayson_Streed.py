@@ -238,7 +238,7 @@ if __name__ == "__main__":
     # Example 7.2, pag 153
     # Method pag 107
     # mezcla = Mezcla(2, ids=[1, 2, 40, 41],
-                    # caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
+    #                 caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144])
     # P = unidades.Pressure(485, "psi")
     # T = unidades.Temperature(100, "F")
     # eq = Grayson_Streed(T, P, mezcla, flory=0)

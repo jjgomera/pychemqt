@@ -91,12 +91,12 @@ PNA decomposition procedures:
 
 
 from configparser import ConfigParser
-from math import exp, sqrt, log
 
 from PyQt5.QtWidgets import QApplication
 from numpy import array
-from numpy.lib.scimath import log10
+from numpy.lib.scimath import log, log10
 from numpy.linalg import solve
+from scipy import exp, sqrt
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, leastsq, newton
 
@@ -4724,6 +4724,6 @@ if __name__ == '__main__':
     # petroleo=Petroleo(API=22.5, M=339.7)
     # print(petroleo.API, petroleo.M)
 
-    v = [10, 30, 50, 70, 90]
+    v = [0.10, 0.30, 0.50, 0.70, 0.90]
     D1160 = [i+273.15 for i in [150, 205, 250, 290, 350]]
     petroleo = Petroleo(P_dist=10, curveType="D1160", X_curve=v, T_curve=D1160)
