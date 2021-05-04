@@ -72,9 +72,10 @@ class EoS(object):
         this procedure to do the flash iteration, it return fugacity
         coefficient for both phases"""
         # If this method if executed the child class don't define it
-        # So print something to let user to know that
-        print("ERROR: Liquid-Vapor fugacities unimplemented")
-        return
+        # So raise NotImplementedError to let user to know that
+        msg = "Derived class %s don't define Liquid-Vapor fugacities" % (
+            self.__class__.__name__)
+        raise NotImplementedError(msg)
 
     def _Flash(self):
         """Calculation K values for liquid-vapour phase equilibrium
@@ -115,7 +116,6 @@ class EoS(object):
                 qo = q
                 solucion = fsolve(RR, q, full_output=True)
                 if solucion[2] != 1:
-                    print(solucion)
                     break
                 else:
                     q = solucion[0][0]
@@ -126,15 +126,6 @@ class EoS(object):
                         yi.append(zi*ki/(1+q*(ki-1)))
 
                     tital, titav = self._fug(xi, yi, self.T, self.P)
-
-                    # print("tital", tital)
-                    # print("titav", titav)
-
-                    # print("tital2", self._fugl2(Zl, xi, Al, Bl))
-                    # print("titav2", self._fugl2(Zv, yi, Av, Bv))
-
-                    # tital2 = self._fugl2(Zl, xi)
-                    # titav2 = self._fugl2(Zg, yi)
 
                     fiv = [z*t*self.P for z, t in zip(yi, titav)]
                     fil = [z*t*self.P for z, t in zip(xi, tital)]
