@@ -227,54 +227,35 @@ class BWRS(EoS):
         self.di = di
         self.alfai = alfai
         self.gammai = gammai
-
-        # Debug
-        kw = self._mix(mezcla.fraccion)
-
-        Ao = kw["Ao"]
-        Bo = kw["Bo"]
-        Co = kw["Co"]
-        Do = kw["Do"]
-        Eo = kw["Eo"]
-        a = kw["a"]
-        b = kw["b"]
-        c = kw["c"]
-        d = kw["d"]
-        alfa = kw["alfa"]
-        gamma = kw["gamma"]
-
-        def f(rho):
-            return self.P.kPa - rho*k.R*T - \
-                (Bo*k.R*T-Ao-Co/T**2+Do/T**3-Eo/T**4)*rho**2 - \
-                (b*k.R*T - a - d/T)*rho**3 - alfa*(a+d/T)*rho**6 - \
-                c/T**2*rho**3 * (1+gamma*rho**2)*exp(-gamma*rho**2)
+        self.ei = ei
+        self.fi = fi
+        self.gi = gi
+        self.hi = hi
 
         self.x, self.Zl, self.Zg, self.xi, self.yi, self.Ki = self._Flash()
-        # print("q = ", self.x)
-        # print("x = ", self.xi)
-        # print("y = ", self.yi)
-        # print("K = ", self.Ki)
 
         if self.Zl:
             self.Vl = unidades.MolarVolume(self.Zl*k.R*T/P, "m3mol")   # l/mol
-            self.rhoL = unidades.MolarDensity(self.P/self.Zl/k.R/self.T, "molm3")
+            self.rhoL = unidades.MolarDensity(1/self.Vl)
+
+            kwl = self._mix(self.xi)
+            self.HexcL = self._Hexc(self.Zg, T, **kwl)
         else:
             self.Vl = None
             self.rhoL = None
+            self.HexcL = None
 
         if self.Zg:
             self.Vg = unidades.MolarVolume(self.Zg*k.R*T/P, "m3mol")  # l/mol
-            self.rhoG = unidades.MolarDensity(self.P/self.Zg/k.R/self.T, "molm3")
+            self.rhoG = unidades.MolarDensity(1/self.Vg)
+
+            kwg = self._mix(self.yi)
+            self.HexcG = self._Hexc(self.Zg, T, **kwg)
         else:
             self.Vg = None
             self.rhoG = None
+            self.HexcG = None
 
-        # Hexc = (Bo*k.R*T - 2*Ao - 4*Co/T**2 + 5*Do/T**3 - 6*Eo/T**4)*rhom + \
-            # 0.5*(2*b*k.R*T - 3*a - 4*d/T)*rhom**2 + \
-            # alfa/5*(6*a + 7*d/T)*rhom**5 + \
-            # c/gamma/T**2 * (3-(3 + gamma/2*rhom**2 - gamma**2*rhom**4) *
-                            # exp(-gamma*rhom**2))
-        # self.H_exc = Hexc
         # print("H_exc = ", self.H_exc)
         # print("Z = ", self.Z)
         # print('ρm = ', rhom)
@@ -520,22 +501,59 @@ class BWRS(EoS):
 
             rhs = k.R*self.T*log(rho*k.R*self.T) + \
                 rho*(Bo+self.Boi[i])*k.R*self.T + 2*rho*suma + \
-                rho**2/2*(3*(b**2*self.bi[i])**(1/3)*k.R*self.T -
-                          3*(a**2*self.ai[i])**(1/3) -
-                          3*(d**2*self.di[i])**(1/3)/self.T) + \
-                alfa*rho**5/5*(3*(a**2*self.ai[i])**(1/3) +
-                               3*(d**2*self.di[i])**(1/3)/self.T) + \
-                3*rho**5/5*(a+d/self.T) * \
+                3*rho**2/2*((b**2*self.bi[i])**(1/3)*k.R*self.T -
+                            (a**2*self.ai[i])**(1/3) -
+                            (d**2*self.di[i])**(1/3)/self.T -
+                            (e**2*self.ei[i])**(1/3)/self.T**4 -
+                            (f**2*self.fi[i])**(1/3)/self.T**23) + \
+                3*alfa*rho**5/5*((a**2*self.ai[i])**(1/3) +
+                                 (d**2*self.di[i])**(1/3)/self.T +
+                                 (e**2*self.ei[i])**(1/3)/self.T**4 +
+                                 (f**2*self.fi[i])**(1/3)/self.T**23) + \
+                3*rho**5/5*(a+d/self.T+e/self.T**4+f/self.T**23) * \
                     (alfa**2*self.alfai[i])**(1/3) + \
-                3*(c**2*self.ci[i])**(1/3)*rho**2/self.T**2*(
-                    (1-exp(-gamma*rho**2))/gamma/rho**2 -
-                    exp(-gamma*rho**2)/2) - \
-                (2*c*(self.gammai[i]/gamma)**0.5 /
-                 gamma/self.T**2)*(
+                rho**2*(3*(c**2*self.ci[i])**(1/3)/self.T**2 +
+                        (self.gi[i]+2*g)/self.T**8 +
+                        (self.hi[i]+2*h)/self.T**17)*(
+                            (1/gamma/rho**2-(1/gamma/rho**2+0.5) *
+                             exp(-gamma*rho**2))) -\
+                (2*(c/self.T**2+g/self.T**8+h/self.T**17)*self.gammai[i]**0.5 /
+                 gamma**1.5)*(
                     (1-exp(-gamma*rho**2)) *
                     (1+gamma*rho**2+gamma**2*rho**4/2))
             tita.append(exp(rhs/k.R/self.T)*xi)
         return tita
+
+    def _Hexc(self, Z, T, **kw):
+        rho = self.P.kPa/Z/k.R/self.T
+
+        Ao = kw["Ao"]
+        Bo = kw["Bo"]
+        Co = kw["Co"]
+        Do = kw["Do"]
+        Eo = kw["Eo"]
+        a = kw["a"]
+        b = kw["b"]
+        c = kw["c"]
+        d = kw["d"]
+        alfa = kw["alfa"]
+        gamma = kw["gamma"]
+        e = kw["e"]
+        f = kw["f"]
+        g = kw["g"]
+        h = kw["h"]
+
+        Hexc = (Bo*k.R*T - 2*Ao - 4*Co/T**2 + 5*Do/T**3 - 6*Eo/T**4)*rho + \
+            (b*k.R*T - 1.5*a - 2*d/T - 7*e/2/T**4 - 13*f/T**23)*rho**2 + \
+            alfa*(6/5*a + 7*d/5/T + 2*e/T**4 + 29*f/5/T**23)*rho**5 + \
+            c/gamma/T**2*(
+                3-(3+gamma/2*rho**2-gamma**2*rho**4)*exp(-gamma*rho**2)) + \
+            g/gamma/T**8*(
+                9-(9+7/2*gamma*rho**2-gamma**2*rho**4)*exp(-gamma*rho**2)) + \
+            h/gamma/T**17*(
+                18-(18*gamma*rho**2+gamma**2*rho**4)*exp(-gamma*rho**2))
+
+        return Hexc
 
 
 _all = [BWRS]
