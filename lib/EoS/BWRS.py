@@ -73,10 +73,12 @@ class BWRS(EoS):
     r"""Benedict-Webb-Rubin equation of state modified by Starling [1]_
 
     .. math::
+        \begin{align*}
         p = \rho RT + \left(B_0RT-A_0-\frac{C_0}{T^2}+\frac{D_0}{T^3}-
-        \frac{C_0}{T^2}\right)\rho^2 +  \left(bRT-a-\frac{d}{T}\right)\rho^3 +
-        \alpha a\left(a+\frac{d}{T}\right)\rho^6 + \frac{c\rho^3}{T^2}
+        \frac{C_0}{T^2}\right)\rho^2 +  \left(bRT-a-\frac{d}{T}\right)\rho^3 \\
+        {} + \alpha a\left(a+\frac{d}{T}\right)\rho^6 + \frac{c\rho^3}{T^2}
         \left(1+\gamma \rho^2\right) \exp\left(-\gamma\rho^2\right)
+        \end{align*}
 
     This equation use 11 compound specified parameters, available for 15 common
     subsgtances, but there are generalized correlation of these parameters as
@@ -121,6 +123,31 @@ class BWRS(EoS):
         \end{array}
 
     This model is very accurate for VLE for light normal hydrocarbons.
+
+    The model include too the low reduced temperatures extensión from [2]_ with
+    four aditional compound specific parameters
+
+    .. math::
+        \begin{align*}
+        p = \rho RT + \left(B_0RT-A_0-\frac{C_0}{T^2}+\frac{D_0}{T^3}-
+        \frac{C_0}{T^2}\right)\rho^2 +
+        \left(bRT-a-\frac{d}{T}-\frac{e}{T^4}-\frac{f}{T^{23}}\right)\rho^3 \\
+        {} + \alpha \left(a+\frac{d}{T}+\frac{e}{T^4}+\frac{f}{T^{23}}\right)
+        \rho^6 + \left(\frac{c}{T^2}+\frac{g}{T^8}+\frac{h}{T^{17}}\right)
+        \rho^3 \left(1+\gamma \rho^2\right) \exp\left(-\gamma\rho^2\right)
+        \end{align*}
+
+    with generalized correlation of this new parameters and with this mixing
+    rules
+
+    .. math::
+        \begin{array}[t]{l}
+        e = \left(\sum_i x_i e_i^{1/3}\right)^3\\
+        f = \left(\sum_i x_i f_i^{1/3}\right)^3\\
+        g = \sum_i x_i g_i\\
+        h = \sum_i x_i h_i\\
+        \end{array}
+
     """
     __title__ = "Benedict-Webb-Rubin-Starling (1973)"
     __status__ = "BWRS"
@@ -135,14 +162,24 @@ class BWRS(EoS):
         "autor": "Han, M.S., Starling, K.E.",
         "title": "Thermo Data Refined for LPG. Part 14. Mixtures",
         "ref": "Hydrocarbon Processing 51(5) (1972) 129",
-        "doi": ""})
+        "doi": ""},
+      {
+        "autor": "Nishiumi, H., Saito, S.",
+        "title": "An Improved Generalized BWR Equation of State Applicable to "
+                 "Low Reduced Temperatures",
+        "ref": "J. Chem. Eng. Japan 8(5) (1975) 356-360",
+        "doi": "10.1252/jcej.8.356"})
 
-    def __init__(self, T, P, mezcla):
-        EoS.__init__(self, T, P, mezcla)
+    def __init__(self, T, P, mezcla, **kwargs):
+        """
+        For use the extended version use the "extended" parameters with
+        value True
+        """
+        if "extended" not in kwargs:
+            kwargs["extended"] = False
+        EoS.__init__(self, T, P, mezcla, **kwargs)
 
         self.kij = Kij(mezcla.ids, "BWRS")
-        # self.kij = [[0, 0.022], [0.022, 0]]
-        # print(self.kij)
 
         # Apply generalized correlation for calculate compound parameters
         Aoi = []
@@ -156,6 +193,10 @@ class BWRS(EoS):
         di = []
         alfai = []
         gammai = []
+        ei = []
+        fi = []
+        gi = []
+        hi = []
         for cmp in self.componente:
             kw = self._lib(cmp)
 
@@ -170,6 +211,10 @@ class BWRS(EoS):
             di.append(kw["d"])
             alfai.append(kw["alpha"])
             gammai.append(kw["gamma"])
+            ei.append(kw["e"])
+            fi.append(kw["f"])
+            gi.append(kw["g"])
+            hi.append(kw["h"])
 
         self.Aoi = Aoi
         self.Boi = Boi
@@ -238,6 +283,11 @@ class BWRS(EoS):
     def _lib(self, cmp):
         """Library for compound specified calculation from generalized equation
         of Starling"""
+
+        # Using molar base
+        rhoc = 1/cmp.Vc/cmp.M
+        w = cmp.f_acent
+
         if cmp.id in dat:
             # Using the compound specifie parameters given in Starling, [1]_
             Bo, Ao, Co, gamma, b, a, alpha, c, Do, d, Eo = dat[cmp.id]
@@ -270,21 +320,35 @@ class BWRS(EoS):
             B = [None, 0.115449, -0.920731, 1.70871, -0.270896, 0.349261,
                  0.754130, -0.044448, 1.32245, 0.179433, 0.463492, -0.022143]
 
-            # Using molar base
-            rhoc = 1/cmp.Vc/cmp.M
-
-            Bo = (A[1]+B[1]*cmp.f_acent)/rhoc
-            Ao = (A[2]+B[2]*cmp.f_acent)*k.R*cmp.Tc/rhoc
-            Co = (A[3]+B[3]*cmp.f_acent)*k.R*cmp.Tc**3/rhoc
-            gamma = (A[4]+B[4]*cmp.f_acent)/rhoc**2
-            b = (A[5]+B[5]*cmp.f_acent)/rhoc**2
-            a = (A[6]+B[6]*cmp.f_acent)*k.R*cmp.Tc/rhoc**2
-            alpha = (A[7]+B[7]*cmp.f_acent)/rhoc**3
-            c = (A[8]+B[8]*cmp.f_acent)*k.R*cmp.Tc**3/rhoc**2
-            Do = (A[9]+B[9]*cmp.f_acent)*k.R*cmp.Tc**4/rhoc
-            d = (A[10]+B[10]*cmp.f_acent)*k.R*cmp.Tc**2/rhoc**2
-            Eo = (A[11]+B[11]*cmp.f_acent*exp(-3.8*cmp.f_acent)) * \
+            Bo = (A[1]+B[1]*w)/rhoc
+            Ao = (A[2]+B[2]*w)*k.R*cmp.Tc/rhoc
+            Co = (A[3]+B[3]*w)*k.R*cmp.Tc**3/rhoc
+            gamma = (A[4]+B[4]*w)/rhoc**2
+            b = (A[5]+B[5]*w)/rhoc**2
+            a = (A[6]+B[6]*w)*k.R*cmp.Tc/rhoc**2
+            alpha = (A[7]+B[7]*w)/rhoc**3
+            c = (A[8]+B[8]*w)*k.R*cmp.Tc**3/rhoc**2
+            Do = (A[9]+B[9]*w)*k.R*cmp.Tc**4/rhoc
+            d = (A[10]+B[10]*w)*k.R*cmp.Tc**2/rhoc**2
+            Eo = (A[11]+B[11]*w*exp(-3.8*cmp.f_acent)) * \
                 k.R*cmp.Tc**5/rhoc
+
+        if self.kwargs["extended"]:
+            e = (4.65593e-3 - 3.07393e-2*w +
+                 5.58125e-2*w**2 - 3.40721e-3*exp(-7.72753*w-45.3152*w**2)) * \
+                k.R*cmp.Tc**5/rhoc**2
+            f = (0.697e-13 + 8.08e-13*w - 16e-13*w**2 -
+                 0.363078e-13*exp(30.9009*w-283.68*w**2)) * \
+                k.R*cmp.Tc**24/rhoc**2
+            g = (2.2e-5-1.065e-4*w + 1.09e-5*exp(-26.024*w)) * \
+                k.R*cmp.Tc**9/rhoc**2
+            h = (-2.4e-11 + 11.8e-11*w - 2.05e-11*exp(-21.52*w)) * \
+                k.R*cmp.Tc**18/rhoc**2
+        else:
+            e = 0
+            f = 0
+            g = 0
+            h = 0
 
         kw = {}
         kw["Bo"] = Bo
@@ -298,12 +362,17 @@ class BWRS(EoS):
         kw["Do"] = Do
         kw["d"] = d
         kw["Eo"] = Eo
+        kw["e"] = e
+        kw["f"] = f
+        kw["g"] = g
+        kw["h"] = h
 
         return kw
 
     def _mix(self, zi):
         """Mixing rules"""
         Ao = Co = Do = Eo = Bo = a = b = c = d = alfa = gamma = 0
+        e = f = g = h = 0
 
         # Parameters without interaction parameter
         for i, x in enumerate(zi):
@@ -314,12 +383,18 @@ class BWRS(EoS):
             d += x*self.di[i]**(1/3)
             alfa += x*self.alfai[i]**(1/3)
             gamma += x*self.gammai[i]**0.5
+            e += x*self.ei[i]**(1/3)
+            f += x*self.fi[i]**(1/3)
+            g += x*self.gi[i]
+            h += x*self.hi[i]
         a = a**3
         b = b**3
         c = c**3
         d = d**3
         alfa = alfa**3
         gamma = gamma**2
+        e = e**3
+        f = f**3
 
         # Parameters with interaction parameter
         for i, (xi, kiji) in enumerate(zip(zi, self.kij)):
@@ -340,6 +415,10 @@ class BWRS(EoS):
         kw["d"] = d
         kw["alfa"] = alfa
         kw["gamma"] = gamma
+        kw["e"] = e
+        kw["f"] = f
+        kw["g"] = g
+        kw["h"] = h
         return kw
 
     def _Z(self, zi=None, T=None, P=None, rho0=None, **kw):
@@ -367,14 +446,20 @@ class BWRS(EoS):
         d = kw["d"]
         alfa = kw["alfa"]
         gamma = kw["gamma"]
+        e = kw["e"]
+        f = kw["f"]
+        g = kw["g"]
+        h = kw["h"]
 
-        def f(rho):
+        def func(rho):
             return self.P.kPa - k.R*T*rho - \
                 (Bo*k.R*T-Ao-Co/T**2+Do/T**3-Eo/T**4)*rho**2 - \
-                (b*k.R*T - a - d/T)*rho**3 - alfa*(a+d/T)*rho**6 - \
-                c/T**2*rho**3 * (1+gamma*rho**2)*exp(-gamma*rho**2)
+                (b*k.R*T - a - d/T - e/T**4 - f/T**23)*rho**3 - \
+                alfa*(a + d/T + e/T**4 + f/T**23)*rho**6 - \
+                (c/T**2 + g/T**8 + h/T**17)*rho**3 * \
+                (1+gamma*rho**2)*exp(-gamma*rho**2)
 
-        rho = fsolve(f, rho0)
+        rho = fsolve(func, rho0)
         Z = self.P.kPa/rho/k.R/T
         return Z
 
@@ -418,6 +503,10 @@ class BWRS(EoS):
         d = kw["d"]
         alfa = kw["alfa"]
         gamma = kw["gamma"]
+        e = kw["e"]
+        f = kw["f"]
+        g = kw["g"]
+        h = kw["h"]
 
         tita = []
         for i, (xi, kiji) in enumerate(zip(x, self.kij)):
@@ -512,11 +601,12 @@ if __name__ == "__main__":
     # eq = BWRS(340, 101325, mezcla)
 
     mezcla = Mezcla(3, ids=[4, 2], caudalMasico=1, fraccionMolar=[0.766, 0.234])
-    eq = BWRS(200, 101325, mezcla)
+    eq = BWRS(200, 101325, mezcla, extended=False)
     print("q = ", eq.x)
     print("x = ", eq.xi)
     print("y = ", eq.yi)
     print("K = ", eq.Ki)
+    print("Hexc: ", eq.HexcG, eq.HexcL)
 
     # mezcla = Mezcla(3, ids=[10], caudalMasico=1, fraccionMolar=[1])
     # eq = BWRS(340, 1.7e5, mezcla)
