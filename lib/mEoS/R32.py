@@ -250,7 +250,15 @@ class R32(MEoS):
     eq = tillner, outcalt, shortSpan, astina, vasserman, sun
     _PR = [0.18086, -25.5000]
 
-    _surface = {"sigma": [0.07147], "exp": [1.246]}
+    _surface = {
+        "__doi__": {
+            "autor": "Tanaka, K., Higashi, Y.",
+            "title": "Surface Tensions of trans-1,3,3,3-Tetrafluoropropene "
+                     "and trans-1,3,3,3-Tetrafluoropropene + Difluoromethane "
+                     "Mixture",
+            "ref": "J. Chem. Eng. Japan 46(6) (2013) 371-375",
+            "doi": "10.1252/jcej.13we021"},
+        "sigma": [0.07216], "exp": [1.252]}
 
     _vapor_Pressure = {
         "eq": 3,

@@ -310,7 +310,13 @@ class C3(MEoS):
     eq = lemmon, younglove, buecker, GERG, miyamoto, shortSpan, sun
     _PR = [-0.2124, -14.8203]
 
-    _surface = {"sigma": [0.05334, -0.01748], "exp": [1.235, 4.404]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [0.0527], "exp": [1.23]}
 
     _dielectric = {
         "eq": 2,

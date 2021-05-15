@@ -299,7 +299,13 @@ class nC4(MEoS):
     eq = buecker, younglove, GERG, miyamoto, shortSpan, polt, sun
     _PR = [-0.1332, -15.8278]
 
-    _surface = {"sigma": [0.05138], "exp": [1.209]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [-1.1505, 0.43142, 0.78089], "exp": [1.851, 2.1232, 1.6868]}
     _dielectric = {
         "eq": 1,
         "a": [20.611, 0.020], "b": [66.64, 24.44], "c": [-7461.2, -1983.6],

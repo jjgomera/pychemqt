@@ -245,8 +245,14 @@ class nC5(MEoS):
     eq = shortSpan, GERG, polt, starling, sun, ratanapisit
     _PR = [-0.0752, -17.5]
 
-    _surface = {"sigma": [0.08015, 0.004384, -0.03437],
-                "exp": [1.408, 1.031, 1.818]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [-0.20756, 0.40732, -0.14796],
+        "exp": [1.0995, 1.1576, 1.2289]}
     _dielectric = {
         "eq": 1,
         "a": [25.39, 0.025], "b": [78.39, 54.15], "c": [-12480, -4800.0],

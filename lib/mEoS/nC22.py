@@ -82,6 +82,13 @@ class nC22(MEoS):
 
     eq = romeo,
 
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [0.0522], "exp": [1.25]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-12.3834, 2.8818, -11.6292, -2.7357, -7.3103, 1188.9117],

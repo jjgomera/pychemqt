@@ -214,7 +214,13 @@ class nC6(MEoS):
     eq = shortSpan, GERG, polt, starling, sun
     _PR = [-0.0051, -19.3689]
 
-    _surface = {"sigma": [0.210952, -0.158485], "exp": [1.0962, 1.05893]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [-0.1031, 0.1542], "exp": [1.512, 1.393]}
     _dielectric = {
         "eq": 1,
         "a": [30.18, 0.030], "b": [222.31, 232.62], "c": [-36872, -25733],

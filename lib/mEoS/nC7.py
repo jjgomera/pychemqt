@@ -218,7 +218,13 @@ class nC7(MEoS):
     eq = shortSpan, GERG, polt, starling,  # ratanapisit
     _PR = [0.0074, -19.6376]
 
-    _surface = {"sigma": [0.07765, -0.02599], "exp": [1.319, 1.6]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [-0.022144, 0.074781], "exp": [1.0324, 1.1636]}
     _dielectric = {
         "eq": 1,
         "a": [34.96, 0.035], "b": [162.24, 308.90], "c": [-37446, -39684],

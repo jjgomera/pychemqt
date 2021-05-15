@@ -276,8 +276,13 @@ class CH4(MEoS):
     eq = setzmann, younglove, GERG, friend, shortSpan, sun
     _PR = [-0.5997, -12.094]
 
-    _surface = {"sigma": [0.03825, -0.006024, -0.0007065],
-                "exp": [1.191, 5.422, 0.6161]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [0.09313, -0.05714], "exp": [1.367, 1.517]}
     _dielectric = {
         "eq": 1,
         "a": [6.5443, 0.0133], "b": [8.4578, 3.7196], "c": [-352.97, -100.65],

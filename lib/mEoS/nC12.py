@@ -74,8 +74,13 @@ class nC12(MEoS):
     eq = lemmon,
     _PR = [0.1099, -26.8035]
 
-    _surface = {"sigma": [0.0154, 0.0480],
-                "exp": [4.18, 1.17]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [0.04733, 0.01131], "exp": [1.192, 2.977]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.94217e1, -0.41890e1, 0.54999e1, -0.67789e1, -0.17161e1],

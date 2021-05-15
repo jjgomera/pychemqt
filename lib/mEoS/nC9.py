@@ -110,7 +110,13 @@ class nC9(MEoS):
     eq = lemmon, GERG
     _PR = [0.0755, -22.2752]
 
-    _surface = {"sigma": [0.053388], "exp": [1.262]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [0.05351], "exp": [1.252]}
     _dielectric = {
         "eq": 1,
         "a": [44.53, 0.045], "b": [286.27, 529.31], "c": [-83471, -90493],

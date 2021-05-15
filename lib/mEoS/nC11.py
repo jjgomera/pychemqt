@@ -81,6 +81,13 @@ class nC11(MEoS):
     eq = aleksandrov,
     _PR = [0.1099, -26.8035]
 
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [0.0556], "exp": [1.32]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-9.3961, 4.4531, -5.2658, -4.7352],

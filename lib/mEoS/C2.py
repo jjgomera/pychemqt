@@ -286,7 +286,13 @@ class C2(MEoS):
     eq = buecker, younglove, GERG, friend, shortSpan, sun
     _PR = [-0.2955, -14.9384]
 
-    _surface = {"sigma": [0.07602, -0.02912], "exp": [1.32, 1.676]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
+                    "title": "Recommended Correlations for the Surface "
+                             "Tension of n-Alkanes",
+                    "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
+                    "doi": "10.1063/5.0048675"},
+        "sigma": [-0.01484, 0.0619], "exp": [1.869, 1.285]}
     _dielectric = {
         "eq": 1,
         "a": [11.1552, 0.0112], "b": [36.759, 23.639], "c": [-808.03, -378.84],
