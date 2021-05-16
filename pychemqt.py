@@ -160,7 +160,7 @@ except ImportError as err:
     print(msg)
     raise err
 else:
-    if iapws.__version__ < "1.5":
+    if iapws.__version__ < "1.5.3":
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
             "Your version of iapws is too old, you must update it.")

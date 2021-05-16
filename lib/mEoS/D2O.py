@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from copy import copy
 from unittest import TestCase
 
 from iapws._iapws import _D2O_Viscosity, _D2O_ThCond, _D2O_Tension
@@ -192,7 +193,21 @@ class D2O(MEoS):
               "__code__": (_D2O_Viscosity, )}
 
     def _visco0(self, rho, T, fase):
-        mu = _D2O_Viscosity(rho, T)
+        ref = D2O()
+        ref._ref(False)
+        estado = ref._eq(rho, 1.5*self.Tc)
+        delta = estado["delta"]
+        fird = estado["fird"]
+        firdd = estado["firdd"]
+        dpdrho = self.R*estado["T"]*(1+2*delta*fird+delta**2*firdd)
+        drho = 1/dpdrho*1e6
+
+        # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
+        if fase:
+            fase = copy(fase)
+            fase.drhodP_T *= 1e6
+
+        mu = _D2O_Viscosity(rho, T, fase=fase, drho=drho)
         return unidades.Viscosity(mu)
 
     _viscosity = visco0,
@@ -206,7 +221,7 @@ class D2O(MEoS):
                   "title": "Thermophysical Properties of Fluid D2O",
                   "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
                   "doi": "10.1063/1.555714"},
-              "__code__": (_D2O_ThCond, )}
+               "__code__": (_D2O_ThCond, )}
 
     def _thermo0(self, rho, T, fase):
         k = _D2O_ThCond(rho, T)
@@ -352,57 +367,28 @@ class Test(TestCase):
         self.assertEqual(round(P, 7), 83.7888413)
 
     def test_D2O_Viscosity(self):
-        # Selected values from TAble A4, saturation state in IAPWS R4-84
-        st = D2O(T=283.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 6), 0.001028)
-        self.assertEqual(round(st.Liquido.mu.muPas, 0), 1678)
-        self.assertEqual(round(st.Gas.mu.muPas, 2), 9.76)
+        """Table 3, pag 8"""
+        self.assertEqual(round(_D2O_Viscosity(0, 298.15)*1e6, 6), 10.035938)
+        self.assertEqual(round(_D2O_Viscosity(1105, 298.15)*1e6, 4), 1092.6424)
+        self.assertEqual(round(_D2O_Viscosity(1130, 298.15)*1e6, 4), 1088.3626)
+        self.assertEqual(round(_D2O_Viscosity(1064, 373.15)*1e6, 5), 326.63791)
+        self.assertEqual(round(_D2O_Viscosity(1, 775)*1e6, 6), 29.639474)
+        self.assertEqual(round(_D2O_Viscosity(100, 775)*1e6, 6), 31.930085)
+        self.assertEqual(round(_D2O_Viscosity(400, 775)*1e6, 6), 53.324172)
 
-        st = D2O(T=373.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 5), 0.09634)
-        self.assertEqual(round(st.Liquido.mu.muPas, 1), 328.7)
-        self.assertEqual(round(st.Gas.mu.muPas, 2), 12.62)
-
-        st = D2O(T=473.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 3), 1.547)
-        self.assertEqual(round(st.Liquido.mu.muPas, 1), 151.9)
-        self.assertEqual(round(st.Gas.mu.muPas, 2), 15.99)
-
-        st = D2O(T=573.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 3), 8.694)
-        self.assertEqual(round(st.Liquido.mu.muPas, 1), 93.6)
-        self.assertEqual(round(st.Gas.mu.muPas, 2), 19.68)
-
-        st = D2O(T=623.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 2), 16.82)
-        self.assertEqual(round(st.Liquido.mu.muPas, 1), 69.0)
-        self.assertEqual(round(st.Gas.mu.muPas, 1), 23.7)
-
-        st = D2O(T=643.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 2), 21.47)
-        self.assertEqual(round(st.Liquido.mu.muPas, 1), 46.0)
-        self.assertEqual(round(st.Gas.mu.muPas, 1), 32.7)
-
-        # Selected values from Table A5, pag 10
-        mur = 55.2651e-6
-        Tr = 643.847
-        rhor = 358
-        self.assertEqual(round(
-            _D2O_Viscosity(3.09*rhor, 0.431*Tr)/mur, 10), 36.9123166244)
-        self.assertEqual(round(
-            _D2O_Viscosity(3.18*rhor, 0.5*Tr)/mur, 10), 12.4679405772)
-        self.assertEqual(round(
-            _D2O_Viscosity(0.0295*rhor, 0.75*Tr)/mur, 10), 0.2951479769)
-        self.assertEqual(round(
-            _D2O_Viscosity(0.163*rhor, 0.9*Tr)/mur, 10), 0.3619649145)
-        self.assertEqual(round(
-            _D2O_Viscosity(0.7*rhor, Tr)/mur, 10), 0.5528693914)
-        self.assertEqual(round(
-            _D2O_Viscosity(0.98*rhor, 1.1*Tr)/mur, 10), 0.7816387903)
-        self.assertEqual(round(
-            _D2O_Viscosity(0.8*rhor, 1.2*Tr)/mur, 10), 0.7651099154)
-        self.assertEqual(round(
-            _D2O_Viscosity(1.61*rhor, 1.2*Tr)/mur, 10), 1.2711900131)
+        # Table 4, pag 8
+        fluid = D2O(rho=145, T=644.101)
+        self.assertEqual(round(fluid.mu*1e6, 6), 26.640959)
+        fluid = D2O(rho=245, T=644.101)
+        self.assertEqual(round(fluid.mu*1e6, 6), 32.119967)
+        fluid = D2O(rho=295, T=644.101)
+        self.assertEqual(round(fluid.mu*1e6, 6), 36.828275)
+        fluid = D2O(rho=345, T=644.101)
+        self.assertEqual(round(fluid.mu*1e6, 6), 43.225016)
+        fluid = D2O(rho=395, T=644.101)
+        self.assertEqual(round(fluid.mu*1e6, 6), 47.193530)
+        fluid = D2O(rho=445, T=644.101)
+        self.assertEqual(round(fluid.mu*1e6, 6), 50.241640)
 
     def test_D2O_ThCond(self):
         # Selected values from TAble B3, saturation state in IAPWS R4-84
