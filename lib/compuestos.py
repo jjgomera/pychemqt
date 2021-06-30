@@ -120,6 +120,7 @@ Others method:
     * :func:`Vc_Riedel`
     * :func:`Henry`
     * :func:`atomic_decomposition`
+    * :func:`refrigerantCode`
 '''
 
 
@@ -401,7 +402,7 @@ __doi__ = {
                   "of the Surface Tension of Pure Compounds Inferred from an "
                   "Analysis of Experimental Data",
          "ref": "Fluid Phase Equilibria 172(2) (2000) 169-182",
-         "doi": "10.1016/S0378-3812(00)00384-8"},
+         "doi": "10.1016/s0378-3812(00)00384-8"},
     45:
         {"autor": "Przedziecki, J.W., Sridhar, T.",
          "title": "Prediction of Liquid Viscosities",
@@ -500,18 +501,23 @@ __doi__ = {
          "title": "A Computer Program for the Prediction of Viscosity and "
                   "Thermal Condcutivity in Hydrocarbon Mixtures",
          "ref": "NBS Technical Note 1039 (1981)",
+         "doi": ""},
+    62:
+        {"autor": "ASHRAE",
+         "title": "Designation and Safety Classification of Refrigerants",
+         "ref": "Standard 34-2010",
          "doi": ""}
 }
 
 
 def atomic_decomposition(cmp):
     """Procedure to decompose a molecular string representation in its atomic
-    composition
+    composition. Support both expanded and short formula
 
     Parameters
     ------------
     cmp : string
-        Compound test representation
+        Compound formula
 
     Returns
     -------
@@ -541,6 +547,45 @@ def atomic_decomposition(cmp):
             c = int(c)
         kw[element] += c
     return kw
+
+
+@refDoc(__doi__, [62])
+def refrigerantCode(cmp):
+    """ASHRAE refrigerant code, calculate only the numbers, the letter with
+    isomers definitions and the inorganic R6x definition are unsupported
+    because there aré very compound specific
+
+    Parameters
+    ------------
+    cmp : string
+        Compound expanded formula
+
+    Returns
+    -------
+    code : string
+        ASHRAE refrigerant code
+
+    Examples
+    --------
+    >>> refrigerantCode("CF3CF=CH2")
+    'R1234'
+
+    """
+    dcomp = atomic_decomposition(cmp)
+    double = cmp.count("=")
+    cyclo = cmp.count("cyclo")
+
+    code = "R"
+    if cyclo > 0:
+        code += "C"
+    if double > 0:
+        code += str(double)
+
+    code += str(dcomp["C"]-1)
+    code += str(dcomp.get("H", 0)+1)
+    code += str(dcomp["F"])
+
+    return code
 
 
 def DIPPR(prop, T, args, Tc=None, M=None):
@@ -738,7 +783,11 @@ def RhoL_Costald(T, Tc, w, Vc):
     f = 0.386914
     g = -0.0427258
     h = -0.0480645
-    Tr = T/Tc
+
+    if T > Tc:
+        Tr = 1
+    else:
+        Tr = T/Tc
 
     # Eq 17
     Vr0 = 1 + a*(1-Tr)**(1/3) + b*(1-Tr)**(2/3) + c*(1-Tr) + d*(1-Tr)**(4/3)
