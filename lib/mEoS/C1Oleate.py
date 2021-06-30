@@ -40,7 +40,7 @@ class C1Oleate(MEoS):
     Tb = unidades.Temperature(627.18)
     f_acent = 0.91
     momentoDipolar = unidades.DipoleMoment(1.63, "Debye")
-    # id = 919
+    id = 919
 
     f = 8.314472
     CP1 = {"an": [90.2385/f], "pow": [0.146118],

@@ -105,7 +105,7 @@ class Grayson_Streed(EoS):
     __doi__ = (
       {
         "autor": "Chao, K.C., Seader, J.D.",
-        "title": "A General Correlatio of Vapor-Liquid Equilibria in "
+        "title": "A General Correlation of Vapor-Liquid Equilibria in "
                  "Hydrocarbon Mixtures",
         "ref": "AIChE J. 7(4) (1961) 598-605",
         "doi": "10.1002/aic.690070414"},
@@ -248,21 +248,21 @@ if __name__ == "__main__":
     # eq = Grayson_Streed(293.15, 5e6, mix, flory=0)
 
     # Example 4.2, pag 89
-    # mezcla = Mezcla(1, ids=[4, 40], caudalUnitarioMasico=[26.92, 73.08])
-    # P = unidades.Pressure(410.3, "psi")
-    # T = unidades.Temperature(400, "F")
-    # eq = Grayson_Streed(T, P, mezcla)
+    mezcla = Mezcla(1, ids=[4, 40], caudalUnitarioMasico=[26.92, 73.08])
+    P = unidades.Pressure(410.3, "psi")
+    T = unidades.Temperature(400, "F")
+    eq = Grayson_Streed(T, P, mezcla)
+    print(eq.__dict__)
 
     # Example 6.7, Wallas, pag 342, dew point calculation
-    mezcla = Mezcla(2, ids=[23, 5], caudalUnitarioMolar=[0.607, 0.393])
-    P = unidades.Pressure(20, "atm")
-    eq = Grayson_Streed(400, P, mezcla, flory=0)
-    print(eq._Dew_T(P))
-    eq = Grayson_Streed(300, P, mezcla, flory=0)
-    print(eq._Dew_T(P))
+    # mezcla = Mezcla(2, ids=[23, 5], caudalUnitarioMolar=[0.607, 0.393])
+    # P = unidades.Pressure(20, "atm")
+    # eq = Grayson_Streed(400, P, mezcla, flory=0)
+    # print(eq._Dew_T(P))
+    # eq = Grayson_Streed(300, P, mezcla, flory=0)
+    # print(eq._Dew_T(P))
+    # print(eq._Bubble_T(P))
 
     # mix = Mezcla(2, ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22],
-                 # caudalUnitarioMolar=[1]*10)
+    #              caudalUnitarioMolar=[1]*10)
     # eq = Grayson_Streed(293.15, 8.769e6, mix, flory=0)
-
-    print(eq._Bubble_T(P))

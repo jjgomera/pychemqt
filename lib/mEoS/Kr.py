@@ -40,7 +40,7 @@ class Kr(MEoS):
     Tb = unidades.Temperature(119.73)
     f_acent = -0.000894
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    # id = 971
+    id = 971
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],

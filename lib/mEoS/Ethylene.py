@@ -248,6 +248,13 @@ class Ethylene(MEoS):
         "gamma2": [1]*8}
 
     eq = smukala, mccarty, jahangiri, shortSpan, sun
+
+    # Unimplemented mBWR equation
+    # Bender, E.
+    # Equations of state for Ethylene and propylene
+    # Cryogenics (1975) 667-673
+    # 10.1016/0011-2275(75)90100-9
+
     _PR = [-0.2301, -15.7070]
 
     _surface = {"sigma": [0.0477], "exp": [1.17]}

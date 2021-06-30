@@ -186,6 +186,13 @@ class Propylene(MEoS):
         "gamma2": [1]*14}
 
     eq = lemmon, overhoff, angus
+
+    # Unimplemented mBWR equation
+    # Bender, E.
+    # Equations of state for Ethylene and propylene
+    # Cryogenics (1975) 667-673
+    # 10.1016/0011-2275(75)90100-9
+
     _PR = [-0.1815, -16.3103]
 
     _surface = {"sigma": [0.05268], "exp": [1.186]}

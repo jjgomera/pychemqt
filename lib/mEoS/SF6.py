@@ -40,7 +40,7 @@ class SF6(MEoS):
     Tb = unidades.Temperature(204.9)
     f_acent = 0.21
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    # id = 953
+    id = 953
 
     _Tr = unidades.Temperature(304.013497)
     _rhor = unidades.Density(747.815849)

@@ -40,7 +40,7 @@ class Xe(MEoS):
     Tb = unidades.Temperature(165.05)
     f_acent = 0.00363
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
-    # id = 994
+    id = 994
 
     Fi1 = {"ao_log": [1, 1.5],
            "pow": [0, 1],
