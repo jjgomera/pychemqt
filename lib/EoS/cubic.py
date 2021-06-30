@@ -203,8 +203,16 @@ def CubicHelmholtz(tau, delta, **kw):
     prop["firdtt"] = firdtt
     prop["firttt"] = firttt
 
-    prop["B"] = 0
-    prop["C"] = 0
+    # Virial coefficient
+    phi1d0 = b*rhoc
+    phi2d0 = rhoc
+    fird0 = phi1d0 - tau*a/R/Tc*phi2d0
+    phi1dd0 = b**2*rhoc**2
+    PI12d0 = b*rhoc * (Delta1 + Delta2)
+    phi2dd0 = -rhoc*PI12d0
+    firdd0 = phi1dd0 - tau*a/R/Tc*phi2dd0
+    prop["B"] = fird0
+    prop["C"] = firdd0
     prop["D"] = 0
 
     if bi:
@@ -577,16 +585,3 @@ class Cubic(EoS):
         # # Ch.2, Eq 13
         # fi = dAni - log(Z)
         # return fi
-
-    # def _fug(self, Z, xi):
-        # Ai=[]
-        # for i in range(len(self.componente)):
-            # suma=0
-            # for j in range(len(self.componente)):
-                # suma+=self.zi[j]*self.ai[j]**0.5*(1-self.kij[i][j])
-            # Ai.append(1/self.tita*2*self.ai[i]**0.5*suma)
-        # tita=[]
-        # for i in range(len(self.componente)):
-            # tita.append(exp(self.bi[i]/self.b*(Z-1)-log(Z-self.B)-self.Tita/self.B/sqrt(self.u**2-4*self.w)*(Ai[i]-self.bi[i]/self.b)*log((Z+self.B/2*(self.u+sqrt(self.u**2-4*self.w)))/(Z+self.B/2*(self.u-sqrt(self.u**2-4*self.w))))).real)
-        # print("fug:", tita)
-        # return tita

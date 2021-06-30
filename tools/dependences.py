@@ -91,6 +91,9 @@ if __name__ == "__main__":
     os.environ["ezodf"] = "False"
     os.environ["openpyxl"] = "False"
     os.environ["xlwt"] = "False"
+    os.environ["icu"] = "False"
+    os.environ["reportlab"] = "False"
+    os.environ["PyQt5.Qsci"] = "True"
     app = QtWidgets.QApplication(sys.argv)
     dialog = ShowDependences()
     dialog.show()
