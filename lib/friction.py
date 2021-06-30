@@ -366,7 +366,7 @@ def f_moody(Re, eD):
     Notes
     -----
     Range of validity:
-    
+
         * 4e3 <= Re <= 1e8
         * 0<= eD < 0.01.
     """
@@ -1398,7 +1398,7 @@ def Ft(D):
 
 if __name__ == "__main__":
     for f in f_list:
-        line = f.__doc__.split("\n")[1]
+        line = f.__doc__.split("\n")[0]
         year = line.split(" ")[-1]
         name = line.split(" ")[-3]
         doc = name + " " + year
