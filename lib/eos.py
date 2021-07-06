@@ -52,6 +52,7 @@ __doi__ = {
 # SRK: alpha option
 # PR: alpha option
 # PRMathiasCopeman: alpha option
+# BWRS: extended option
 
 
 @refDoc(__doi__, [1])

@@ -25,8 +25,6 @@ from scipy import constants as k
 
 from lib import unidades
 from lib.eos import EoS
-from lib.EoS.Cubic import SRK
-from lib.physics import R_atml
 from lib.bip import Kij
 from lib.mezcla import RhoL_CostaldMix
 
@@ -239,7 +237,7 @@ class BWRS(EoS):
             self.rhoL = unidades.MolarDensity(1/self.Vl)
 
             kwl = self._mix(self.xi)
-            self.HexcL = self._Hexc(self.Zg, T, **kwl)
+            self.HexcL = self._Hexc(self.Zl, T, **kwl)
         else:
             self.Vl = None
             self.rhoL = None
@@ -255,11 +253,6 @@ class BWRS(EoS):
             self.Vg = None
             self.rhoG = None
             self.HexcG = None
-
-        # print("H_exc = ", self.H_exc)
-        # print("Z = ", self.Z)
-        # print('ρm = ', rhom)
-        # print('ρ = ', rhom*mezcla.M)
 
     def _lib(self, cmp):
         """Library for compound specified calculation from generalized equation
@@ -377,6 +370,15 @@ class BWRS(EoS):
         e = e**3
         f = f**3
 
+        # For the extended version there is a correlation for binary
+        # interaction parameters, but the correlation need the chemical nature
+        # of compound
+        # Nishiumi, H., Saito, S.
+        # Correlation of the Binary Interaction Parameter of the Modified
+        # Generalized BWR Equation of State
+        # J. Chem. Eng. Japan 10(3) (1977) 176-180",
+        # doi: 10.1252/jcej.10.176
+
         # Parameters with interaction parameter
         for i, (xi, kiji) in enumerate(zip(zi, self.kij)):
             for j, (xj, kij) in enumerate(zip(zi, kiji)):
@@ -440,7 +442,9 @@ class BWRS(EoS):
                 (c/T**2 + g/T**8 + h/T**17)*rho**3 * \
                 (1+gamma*rho**2)*exp(-gamma*rho**2)
 
-        rho = fsolve(func, rho0)
+        rinput = fsolve(func, rho0, full_output=True)
+        rho = rinput[0]
+        # print(rinput)
         Z = self.P.kPa/rho/k.R/T
         return Z
 
@@ -463,11 +467,11 @@ class BWRS(EoS):
         """
         kw = self._mix(xi)
 
-        Tci = mezcla._arraylize("Tc")
-        Vci = mezcla._arraylize("Vc")
-        wi = mezcla._arraylize("f_acent")
-        Mi = mezcla._arraylize("M")
-        rho0 = RhoL_CostaldMix(T, mezcla.fraccion, Tci, wi, Vci, Mi)
+        Tci = self.mezcla._arraylize("Tc")
+        Vci = self.mezcla._arraylize("Vc")
+        wi = self.mezcla._arraylize("f_acent")
+        Mi = self.mezcla._arraylize("M")
+        rho0 = RhoL_CostaldMix(T, xi, Tci, wi, Vci, Mi)
         Zl = self._Z(xi, rho0=rho0, **kw)
         tital = self._fugacity(Zl, xi, **kw)
         Zv = self._Z(yi, rho0=0, **kw)
@@ -618,15 +622,20 @@ if __name__ == "__main__":
     # mezcla = Mezcla(1, ids=[10, 38, 22, 61], caudalUnitarioMasico=[0.3, 0.5, 0.05, 0.15])
     # eq = BWRS(340, 101325, mezcla)
 
-    mezcla = Mezcla(3, ids=[4, 2], caudalMasico=1, fraccionMolar=[0.766, 0.234])
-    eq = BWRS(200, 101325, mezcla, extended=False)
-    print("q = ", eq.x)
-    print("x = ", eq.xi)
-    print("y = ", eq.yi)
-    print("K = ", eq.Ki)
-    print("Hexc: ", eq.HexcG, eq.HexcL)
+    # mezcla = Mezcla(3, ids=[4, 2], caudalMasico=1, fraccionMolar=[0.766, 0.234])
+    # eq = BWRS(200, 101325, mezcla, extended=False)
+    # print("q = ", eq.x)
+    # print("x = ", eq.xi)
+    # print("y = ", eq.yi)
+    # print("K = ", eq.Ki)
+    # print("Hexc: ", eq.HexcG, eq.HexcL)
 
     # mezcla = Mezcla(3, ids=[10], caudalMasico=1, fraccionMolar=[1])
     # eq = BWRS(340, 1.7e5, mezcla)
     # mezcla = Mezcla(3, ids=[10], caudalMasico=1, fraccionMolar=[1])
     # eq = BWRS(400, 1.7e5, mezcla)
+
+    mezcla = Mezcla(3, ids=[2, 3, 14], caudalMasico=1,
+                   fraccionMolar=[0.698, 0.297, 0.005])
+    eq = BWRS(230, 2.5e6, mezcla, extended=False)
+    print(eq.rhoL.str)
