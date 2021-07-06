@@ -638,4 +638,5 @@ if __name__ == "__main__":
     mezcla = Mezcla(3, ids=[2, 3, 14], caudalMasico=1,
                    fraccionMolar=[0.698, 0.297, 0.005])
     eq = BWRS(230, 2.5e6, mezcla, extended=False)
-    print(eq.rhoL.str)
+    print(eq.rhoL)
+    print(eq.rhoG)

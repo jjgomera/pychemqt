@@ -23,6 +23,7 @@ from PyQt5.QtWidgets import QApplication
 from lib.EoS import cubic
 from lib.EoS.cubic import alfa
 from . import BWRS
+from . import BWRSoave
 from . import Cubic
 from . import Grayson_Streed
 from . import Lee_Kesler
@@ -39,7 +40,7 @@ H_status = [h.__status__ for h in H]
 mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
 cp_ideal = (QApplication.translate("pychemqt", "Ideal"), "DIPPR")
 
-__all__ = [BWRS, Cubic, Grayson_Streed, Lee_Kesler, virial]
+__all__ = [BWRS, BWRSoave, Cubic, Grayson_Streed, Lee_Kesler, virial]
 
 # Add references
 # each submodule must define its custom __doi__
