@@ -251,6 +251,36 @@ class Cyclohexane(MEoS):
 
     _viscosity = visco0,
 
+    thermo0 = {"__name__": "Koutian (2017)",
+               "__doi__": {
+                  "autor": "Koutian, A., Assael, M.J., Huber, M.L., "
+                           "Perkins, R.A.",
+                  "title": "Reference Correlation of the Thermal Conductivity "
+                           "of Cyclohexane from the Triple Point to 640 K "
+                           "and up to 175 MPa",
+                  "ref": "J. Phys. Chem. Ref. Data 46(1) (2017) 013102",
+                  "doi": "10.1063/1.4974325"},
+
+               "eq": 1,
+
+               "Toref": 553.6, "koref": 1e-3,
+               "no_num": [6.52149, -39.8399, 65.3275, -202.857, 78.7909],
+               "to_num": [0, 1, 2, 3, 4],
+               "no_den": [-2.3043, 1.83274, -2.66787, 1],
+               "to_den": [0, 1, 2, 3],
+
+               "Tref_res": 553.6, "rhoref_res": 271.33, "kref_res": 1e-3,
+               "nr": [18.9732, -62.7889, 100.748, -47.7988, 7.32262, 2.14942,
+                      31.5482, -62.9082, 32.2047, -4.87801],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 2.3e-10, "gam0": 0.058, "qd": 6.68e-10, "Tcref": 830.4}
+
+    _thermal = thermo0,
+
 
 class Test(TestCase):
 
@@ -363,6 +393,39 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 3), 15.093)
         st = Cyclohexane(T=700, rhom=7.4765)
         self.assertEqual(round(st.mu.muPas, 3), 176.749)
+
+    def test_Koutian(self):
+        # Table 5, pag 8
+        self.assertEqual(round(Cyclohexane(T=300, rho=0).k.mWmK, 1), 11.0)
+        self.assertEqual(round(Cyclohexane(T=400, rho=0).k.mWmK, 1), 21.6)
+        self.assertEqual(round(Cyclohexane(T=500, rho=0).k.mWmK, 1), 35.0)
+        self.assertEqual(round(Cyclohexane(T=600, rho=0).k.mWmK, 1), 50.2)
+        self.assertEqual(round(Cyclohexane(T=700, rho=0).k.mWmK, 1), 66.4)
+
+        self.assertEqual(round(Cyclohexane(T=300, P=1e5).k.mWmK, 1), 117.6)
+        self.assertEqual(round(Cyclohexane(T=400, P=1e5).k.mWmK, 1), 21.8)
+        self.assertEqual(round(Cyclohexane(T=500, P=1e5).k.mWmK, 1), 35.2)
+        self.assertEqual(round(Cyclohexane(T=600, P=1e5).k.mWmK, 1), 50.4)
+        self.assertEqual(round(Cyclohexane(T=700, P=1e5).k.mWmK, 1), 66.5)
+
+        self.assertEqual(round(Cyclohexane(T=400, P=5e7).k.mWmK, 1), 116.0)
+        self.assertEqual(round(Cyclohexane(T=500, P=5e7).k.mWmK, 1), 110.0)
+        self.assertEqual(round(Cyclohexane(T=600, P=5e7).k.mWmK, 1), 108.8)
+        self.assertEqual(round(Cyclohexane(T=700, P=5e7).k.mWmK, 1), 110.6)
+
+        self.assertEqual(round(Cyclohexane(T=400, P=1e8).k.mWmK, 1), 130.2)
+        self.assertEqual(round(Cyclohexane(T=500, P=1e8).k.mWmK, 1), 124.4)
+        self.assertEqual(round(Cyclohexane(T=600, P=1e8).k.mWmK, 1), 124.9)
+        self.assertEqual(round(Cyclohexane(T=700, P=1e8).k.mWmK, 1), 128.1)
+
+        self.assertEqual(round(Cyclohexane(T=400, P=1.5e8).k.mWmK, 1), 143.2)
+        self.assertEqual(round(Cyclohexane(T=500, P=1.5e8).k.mWmK, 1), 136.6)
+        self.assertEqual(round(Cyclohexane(T=600, P=1.5e8).k.mWmK, 1), 137.3)
+        self.assertEqual(round(Cyclohexane(T=700, P=1.5e8).k.mWmK, 1), 141.2)
+
+        # Critical enhancement point, section 3.4, pag 7
+        self.assertEqual(round(
+            Cyclohexane(T=554, rho=350).k.mWmK, 2), 79.66)
 
     def test_Wisotzki(self):
         # Table 6, pag 19
