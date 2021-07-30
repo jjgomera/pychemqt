@@ -135,6 +135,33 @@ class R245fa(MEoS):
         "n": [-0.99583, -2.6109, -4.4141, -18.573, -55.961],
         "t": [0.24, 0.61, 1, 2.7, 5.95]}
 
+    visco0 = {"__name__": "Perkins (2016)",
+              "__doi__": {
+                  "autor": "Perkins, R.A., Huber, M.L., Assael, M.J.",
+                  "title": "Measurements of the Thermal Conductivity of "
+                           "1,1,1,3,3-Pentafluoropropane (R245fa) and "
+                           "Correlations for the Viscosity and Thermal "
+                           "Condutivity Surfaces",
+                  "ref": "J. Chem. Eng. Data 61(9) (2016) 3286-3294",
+                  "doi": "10.1021/acs.jced.6b00350"},
+
+              "eq": 1, "omega": 1,
+
+              "n_chapman": 0.021357,
+              "ek": 258.15,
+              "sigma": 0.588,
+              "collision": [0.250746, -0.6031, 0.271008],
+
+              "Tref_virial": 258.15,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "nr": [0.83502935, 10.245205, 0.00023356206],
+              "tr": [-0.5, 0.5, 2.5],
+              "dr": [17/3, 8/3, 38/3]}
+
     trnECS = {"__name__": "Huber (2003)",
 
               "__doi__": {
@@ -161,8 +188,35 @@ class R245fa(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    thermo0 = {"__name__": "Perkins (2016)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Huber, M.L., Assael, M.J.",
+                   "title": "Measurements of the Thermal Conductivity of "
+                            "1,1,1,3,3-Pentafluoropropane (R245fa) and "
+                            "Correlations for the Viscosity and Thermal "
+                            "Condutivity Surfaces",
+                   "ref": "J. Chem. Eng. Data 61(9) (2016) 3286-3294",
+                   "doi": "10.1021/acs.jced.6b00350"},
+
+               "eq": 1,
+
+               "Toref": 427.01, "koref": 1,
+               "no": [-0.0143644, 0.03872622],
+               "to": [0, 1],
+
+               "Tref_res": 427.01, "rhoref_res": 3.875*M, "kref_res": 1,
+               "nr": [-0.0120505, 0.00937193, 0.0652392, -0.0397844,
+                      -0.0501653, 0.0355883, 0.0176338, -0.0141777,
+                      -0.00219652, 0.00230154],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 2.04e-10, "gam0": 0.06, "qd": 6.26e-10, "Tcref": 640.515}
+
+    _viscosity = visco0, trnECS,
+    _thermal = thermo0, trnECS
 
 
 class Test(TestCase):
@@ -240,3 +294,16 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 172.283)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 1891.958)
         self.assertEqual(round(st.w, 3), 78.673)
+
+    def test_Perkins(self):
+        # Thermal Conductivity, Table 4, pag 5
+        self.assertEqual(round(R245fa(T=250, rho=0).k.mWmK, 4), 8.3085)
+        self.assertEqual(round(R245fa(T=250, rho=1500).k.mWmK, 2), 111.40)
+        self.assertEqual(round(R245fa(T=430, rho=0).k.mWmK, 2), 24.63)
+        self.assertEqual(round(R245fa(T=430, rho=530).k.mWmK, 2), 66.74)
+
+        # Viscosity, Table 8, pag 8
+        self.assertEqual(round(R245fa(T=250, rho=0).mu.muPas, 4), 8.6291)
+        self.assertEqual(round(R245fa(T=250, rho=1500).mu.muPas, 3), 1085.562)
+        self.assertEqual(round(R245fa(T=430, rho=0).mu.muPas, 3), 14.630)
+        self.assertEqual(round(R245fa(T=430, rho=530).mu.muPas, 3), 30.632)
