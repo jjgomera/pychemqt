@@ -111,7 +111,14 @@ class R12(MEoS):
     eq = marx, shortSpan
     _PR = [-0.1824, -16.2971]
 
-    _surface = {"sigma": [-0.000124, 0.05662], "exp": [0.4318, 1.263]}
+    _surface = {
+        "__doi__": {
+            "autor": "Okada, M., Watanabe, K.",
+            "title": "Correlations for surface tension of several fluorocarbon"
+                     " refrigerants",
+            "ref": "Trans. Japan Soc. Mech. Eng. B 52(473) (1986) 135-143",
+            "doi": "10.1299/kikaib.52.135"},
+        "sigma": [-0.000124, 0.05662], "exp": [0.4318, 1.263]}
 
     _melting = {
             "eq": 2,

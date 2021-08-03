@@ -109,7 +109,14 @@ class R113(MEoS):
     eq = marx, shortSpan
     _PR = [-0.1805, -16.2738]
 
-    _surface = {"sigma": [0.0556], "exp": [1.24]}
+    _surface = {
+        "__doi__": {
+            "autor": "Okada, M., Watanabe, K.",
+            "title": "Correlations for surface tension of several fluorocarbon"
+                     " refrigerants",
+            "ref": "Trans. Japan Soc. Mech. Eng. B 52(473) (1986) 135-143",
+            "doi": "10.1299/kikaib.52.135"},
+        "sigma": [0.05566], "exp": [1.24]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.73838e1, 0.32594e1, -0.27761e1, -0.37758e1, -0.19921],

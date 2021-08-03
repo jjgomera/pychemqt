@@ -79,7 +79,14 @@ class R142b(MEoS):
     eq = lemmon,
     _PR = [-0.0378, -18.7463]
 
-    _surface = {"sigma": [0.05685], "exp": [1.237]}
+    _surface = {
+        "__doi__": {
+            "autor": "Okada, M., Watanabe, K.",
+            "title": "Correlations for surface tension of several fluorocarbon"
+                     " refrigerants",
+            "ref": "Trans. Japan Soc. Mech. Eng. B 52(473) (1986) 135-143",
+            "doi": "10.1299/kikaib.52.135"},
+        "sigma": [0.05639], "exp": [1.24]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.73074e1, 0.23186e1, -0.23278e1, -0.32761e1, 0.42103],
