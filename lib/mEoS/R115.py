@@ -110,14 +110,7 @@ class R115(MEoS):
     eq = lemmon, platzer
     _PR = [-0.1373, -19.0]
 
-    _surface = {
-        "__doi__": {
-            "autor": "Okada, M., Watanabe, K.",
-            "title": "Correlations for surface tension of several fluorocarbon"
-                     " refrigerants",
-            "ref": "Trans. Japan Soc. Mech. Eng. B 52(473) (1986) 135-143",
-            "doi": "10.1299/kikaib.52.135"},
-        "sigma": [0.04771], "exp": [1.246]}
+    _surface = {"sigma": [0.04771], "exp": [1.246]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.77016e1, 0.43462e1, -0.40020e1, -0.65510e1, 0.39278e1],

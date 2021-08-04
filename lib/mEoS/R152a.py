@@ -267,14 +267,7 @@ class R152a(MEoS):
     eq = MBWR, outcalt, kim, tillner, shortSpan, astina
     _PR = [0.1115, -23.1484]
 
-    _surface = {
-        "__doi__": {
-            "autor": "Okada, M., Watanabe, K.",
-            "title": "Correlations for surface tension of several fluorocarbon"
-                     " refrigerants",
-            "ref": "Trans. Japan Soc. Mech. Eng. B 52(473) (1986) 135-143",
-            "doi": "10.1299/kikaib.52.135"},
-        "sigma": [0.05808], "exp": [1.2115]}
+    _surface = {"sigma": [0.05808], "exp": [1.2115]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.74821e1, 0.21105e1, -0.20761e1, -0.35539e1, 0.58004],

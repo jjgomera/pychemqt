@@ -112,14 +112,7 @@ class R13(MEoS):
     eq = magee, platzer
     _PR = [-0.2395, -15.5913]
 
-    _surface = {
-        "__doi__": {
-            "autor": "Okada, M., Watanabe, K.",
-            "title": "Correlations for surface tension of several fluorocarbon"
-                     " refrigerants",
-            "ref": "Trans. Japan Soc. Mech. Eng. B 52(473) (1986) 135-143",
-            "doi": "10.1299/kikaib.52.135"},
-        "sigma": [0.05060], "exp": [1.28]}
+    _surface = {"sigma": [0.05045], "exp": [1.269]}
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.69311e1, 0.18281e1, -0.21901e1, -0.38177e1, 0.20803e1],
