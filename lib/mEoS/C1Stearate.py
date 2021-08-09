@@ -82,6 +82,15 @@ class C1Stearate(MEoS):
 
     eq = huber,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.02313, 0.04567], "exp": [3.242, 1.163]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.14597e2, 0.13836e2, -0.14484e2, -0.51856e1, -0.27076e1],

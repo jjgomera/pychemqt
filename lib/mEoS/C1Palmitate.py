@@ -83,6 +83,15 @@ class C1Palmitate(MEoS):
 
     eq = huber,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.025025, 0.044435], "exp": [3.039, 1.1653]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.13378e2, 0.12258e2, -0.12205e2, -0.58118e1, -0.25451e1],

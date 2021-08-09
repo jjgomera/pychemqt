@@ -122,6 +122,15 @@ class EthyOxide(MEoS):
 
     eq = thol, thol2
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.07542], "exp": [1.151]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.74136e1, 0.19870e1, -0.66330e1, 0.71500e1, -0.47200e1],

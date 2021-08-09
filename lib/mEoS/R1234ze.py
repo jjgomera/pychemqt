@@ -161,13 +161,12 @@ class R1234ze(MEoS):
 
     _surface = {
         "__doi__": {
-            "autor": "Tanaka, K., Higashi, Y.",
-            "title": "Surface Tensions of trans-1,3,3,3-Tetrafluoropropene "
-                     "and trans-1,3,3,3-Tetrafluoropropene + Difluoromethane "
-                     "Mixture",
-            "ref": "J. Chem. Eng. Japan 46(6) (2013) 371-375",
-            "doi": "10.1252/jcej.13we021"},
-        "sigma": [0.05681], "exp": [1.23]}
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.06158, -0.8247], "exp": [1.281, 6.505]}
 
     _vapor_Pressure = {
         "eq": 3,

@@ -177,6 +177,15 @@ class R143a(MEoS):
     eq = lemmon, outcalt, li, shortSpan
     _PR = [0.0889, -22.5000]
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.0537], "exp": [1.25]}
+
     _surface = {"sigma": [0.05416], "exp": [1.255]}
     _vapor_Pressure = {
         "eq": 3,

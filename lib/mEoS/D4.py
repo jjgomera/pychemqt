@@ -123,6 +123,15 @@ class D4(MEoS):
 
     eq = thol, colonna
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.04246], "exp": [1.207]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.87935e1, 0.27204e1, -0.48174e1, -0.69086e1],

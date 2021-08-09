@@ -81,6 +81,15 @@ class DMC(MEoS):
 
     eq = zhou,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.0825], "exp": [1.39]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-8.3197, 3.4260, -3.5905, -3.3194],

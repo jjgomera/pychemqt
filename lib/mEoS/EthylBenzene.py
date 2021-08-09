@@ -87,6 +87,17 @@ class EthylBenzene(MEoS):
     eq = zhou,
     _PR = [0.0092, -19.9297]
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        # Using the second fit with 3 discarted experimental data
+        # "sigma": [0.06395], "exp": [1.224]}
+        "sigma": [0.0638], "exp": [1.22]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.8411, 2.5921, -3.502, -2.7613],

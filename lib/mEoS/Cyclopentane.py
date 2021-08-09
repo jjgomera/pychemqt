@@ -85,6 +85,15 @@ class Cyclopentane(MEoS):
     eq = gedanitz,
     _PR = [-0.1387, -16.9135]
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.07348], "exp": [1.388]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.1905, 1.8637, -1.6442, -2.72],

@@ -87,6 +87,15 @@ class pXylene(MEoS):
     eq = zhou,
     _PR = [0.0380, -20.8346]
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.0619], "exp": [1.21]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.7221, 1.5789, -13.035, 18.453, -11.345],

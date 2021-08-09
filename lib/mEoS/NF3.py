@@ -80,6 +80,15 @@ class NF3(MEoS):
 
     eq = younglove,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.063203], "exp": [1.2565]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.66672e1, 0.33864e1, -0.28222e1, -0.50602e1, 0.32481e1],

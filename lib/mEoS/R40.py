@@ -78,6 +78,15 @@ class R40(MEoS):
 
     eq = thol,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.071315], "exp": [1.2177]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-6.5074, 0.7520, -9.4148, 19.654, -20.190],

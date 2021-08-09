@@ -85,6 +85,15 @@ class C1Linoleate(MEoS):
 
     eq = huber,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.072487], "exp": [1.9014]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.10946e2, 0.48849e1, -0.46773e1, -0.80201e1, -0.89572e1],

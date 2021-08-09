@@ -78,6 +78,15 @@ class HCl(MEoS):
 
     eq = thol,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.05994], "exp": [1.0953]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.01065138, -6.15979914, 1.55860976, -8.42734117],

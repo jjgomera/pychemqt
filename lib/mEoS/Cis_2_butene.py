@@ -77,6 +77,15 @@ class Cis_2_butene(MEoS):
     eq = lemmon,
     _PR = [-0.1193, -17.2151]
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.05903], "exp": [1.246]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.70022e1, 0.13695e1, -0.30509e1, 0.10012, -0.15577e1],

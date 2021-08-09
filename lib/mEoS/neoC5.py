@@ -112,6 +112,15 @@ class neoC5(MEoS):
 
     eq = lemmon, polt
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.04465], "exp": [1.21]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.70262e1, 0.20090e1, -0.19932e1, -0.28503e1, -0.53760],

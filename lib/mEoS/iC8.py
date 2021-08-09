@@ -80,7 +80,15 @@ class iC8(MEoS):
 
     eq = blackham,
 
-    _surface = {"sigma": [0.0476182, 5.992036e-17], "exp": [1.1914, 2.1914]}
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.04794], "exp": [1.209]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.7985, 8.1280, -7.3106, -3.9392, -1.6732],

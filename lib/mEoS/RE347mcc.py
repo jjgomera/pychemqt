@@ -79,6 +79,15 @@ class RE347mcc(MEoS):
 
     eq = zhou,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.05031], "exp": [1.232]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-8.0456, 2.6285, -2.7498, -5.4277, -4.3693],

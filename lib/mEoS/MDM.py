@@ -75,6 +75,15 @@ class MDM(MEoS):
 
     eq = colonna,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.04992], "exp": [1.465]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.85589e1, 0.20278e1, -0.28501e1, -0.64397e1, -0.85460e1],

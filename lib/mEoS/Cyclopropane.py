@@ -79,6 +79,15 @@ class Cyclopropane(MEoS):
 
     eq = polt,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.06812], "exp": [1.314]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.73438e1, 0.17584e2, -0.34265e2, 0.20155e2, -0.77259e1],

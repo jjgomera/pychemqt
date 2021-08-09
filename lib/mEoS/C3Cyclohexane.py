@@ -74,6 +74,15 @@ class C3Cyclohexane(MEoS):
 
     eq = lemmon,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "Several Fluids Included in the REFPROP Program",
+            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
+            "doi": "10.1063/1.4878755"},
+        "sigma": [0.055], "exp": [1.17]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.76296e1, 0.16538e1, -0.28518e1, -0.28205e1, -0.28144e1],
