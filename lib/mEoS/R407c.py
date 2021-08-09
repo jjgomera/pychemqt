@@ -87,6 +87,14 @@ class R407c(MEoSBlend):
 
     eq = lemmon,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Okada, M., Shibata, T., Sato. Y., Higashi, Y.",
+            "title": "Surface Tension of HFC Refrigerant Mixtures",
+            "ref": "Int. J. Thermophysics 20(1) (1999) 119-127",
+            "doi": "10.1023/a:1021482231102"},
+        "sigma": [0.05877], "exp": [1.229]}
+
     _surface = {"sigma": [0.064017], "exp": [1.2557]}
 
     _liquid_Density = {
