@@ -84,6 +84,15 @@ class R1233zd(MEoS):
 
     eq = mondejar,
 
+    _surface = {
+        "__doi__": {
+            "autor": "Kondou, C., Nagata, R., Nii, N., Koyama, S., Higashi, Y",
+            "title": "Surface Tension of low GWP refrigerants R1243zf, R1234ze"
+                     "(Z) and R1233zd(E)",
+            "ref": "Int. J. Refrigeration 53 (2015) 80-89",
+            "doi": "10.1016/j.ijrefrig.2015.01.005"},
+        "sigma": [0.06195], "exp": [1.277]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.6021, 2.3265, -1.9771, -4.8451, -4.8762],
