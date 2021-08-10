@@ -80,6 +80,11 @@ class Xe(MEoS):
     eq = lemmon,
     _PR = [-0.5639, -12.9972]
 
+    # Other equation with unorthodox formulations not implemented
+    # S̆ifner, O., Klomfar, J. Thermodynamic Properties of Xenon from the Triple
+    # Point to 800 K with Pressures up to 350 MPa. J. Phys. Chem. Ref. Data
+    # 23(1) (1994) 63-152, http:/dx.doi.org/10.1063/1.555956.
+
     _surface = {"sigma": [-0.11538, 0.16598], "exp": [1.0512, 1.098]}
     _dielectric = {
         "eq": 1,

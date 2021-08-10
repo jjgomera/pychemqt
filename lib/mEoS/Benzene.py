@@ -149,6 +149,11 @@ class Benzene(MEoS):
 
     eq = thol, polt, sun
 
+    # Other equation with unorthodox formulations not implemented
+    # Goodwin, R.D. Benzene Thermophysical Properties from 279 to 900 K at
+    # Pressures to 1000 Bar. J. Phys. Chem. Ref. Data 17(4) (1988) 1541-1636,
+    # http:/dx.doi.org/10.1063/1.555813
+
     _surface = {"sigma": [0.07298, -0.0007802, -0.0001756],
                 "exp": [1.232, 0.8635, 0.3065]}
 
