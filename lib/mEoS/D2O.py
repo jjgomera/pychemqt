@@ -214,7 +214,7 @@ class D2O(MEoS):
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
-               "__name__": "IAPWS (1994)",
+               "__name__": "IAPWS (2021)",
                "__doi__": {
                   "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
                            "Levelt Sengers, J.M.H.",
@@ -222,9 +222,26 @@ class D2O(MEoS):
                   "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
                   "doi": "10.1063/1.555714"},
                "__code__": (_D2O_ThCond, )}
+    # TODO: Upgrade ref when publish papel in jpr
 
     def _thermo0(self, rho, T, fase):
-        k = _D2O_ThCond(rho, T)
+        ref = D2O()
+        ref._ref(False)
+        estado = ref._eq(rho, 1.5*self.Tc)
+        delta = estado["delta"]
+        fird = estado["fird"]
+        firdd = estado["firdd"]
+        dpdrho = self.R*estado["T"]*(1+2*delta*fird+delta**2*firdd)
+        drho = 1/dpdrho*1e6
+
+        # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
+        # convert cp to [J/kmol·K]
+        if fase:
+            fase = copy(fase)
+            fase.drhodP_T *= 1e6
+            fase.cp /= 1e3
+
+        k = _D2O_ThCond(rho, T, fase=fase, drho=drho)
         return unidades.ThermalConductivity(k)
 
     _thermal = thermo0,
@@ -391,51 +408,29 @@ class Test(TestCase):
         self.assertEqual(round(fluid.mu*1e6, 6), 50.241640)
 
     def test_D2O_ThCond(self):
-        # Selected values from TAble B3, saturation state in IAPWS R4-84
-        st = D2O(T=283.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 6), 0.001028)
-        self.assertEqual(round(st.Liquido.k.mWmK, 1), 574.6)
-        self.assertEqual(round(st.Gas.k.mWmK, 2), 16.99)
+        # Table 3, pag 8
+        self.assertEqual(round(_D2O_ThCond(0, 298.15)*1e3, 4), 17.7498)
+        self.assertEqual(round(_D2O_ThCond(1104.5, 298.15)*1e3, 3), 599.557)
+        self.assertEqual(round(_D2O_ThCond(1200, 298.15)*1e3, 3), 690.421)
+        self.assertEqual(round(_D2O_ThCond(0, 825)*1e3, 4), 76.4492)
 
-        st = D2O(T=373.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 5), 0.09634)
-        self.assertEqual(round(st.Liquido.k.mWmK, 1), 636.0)
-        self.assertEqual(round(st.Gas.k.mWmK, 2), 24.82)
-
-        st = D2O(T=473.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 3), 1.547)
-        self.assertEqual(round(st.Liquido.k.mWmK, 1), 592.0)
-        self.assertEqual(round(st.Gas.k.mWmK, 1), 39.00)
-
-        st = D2O(T=573.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 3), 8.694)
-        self.assertEqual(round(st.Liquido.k.mWmK, 1), 473.2)
-        self.assertEqual(round(st.Gas.k.mWmK, 1), 75.2)
-
-        st = D2O(T=623.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 2), 16.82)
-        self.assertEqual(round(st.Liquido.k.mWmK, 0), 391)
-        self.assertEqual(round(st.Gas.k.mWmK, 0), 143)
-
-        st = D2O(T=643.15, x=0.5, eq="hill")
-        self.assertEqual(round(st.P.MPa, 2), 21.47)
-        self.assertEqual(round(st.Liquido.k.mWmK, 0), 548)
-        self.assertEqual(round(st.Gas.k.mWmK, 0), 467)
-
-        # Selected values from Table B4, pag 17
-        lr = 0.742128e-3
-        Tr = 643.847
-        rhor = 358
-        self.assertEqual(
-                round(_D2O_ThCond(3.09*rhor, 0.431*Tr)/lr, 9), 762.915707396)
-        self.assertEqual(
-                round(_D2O_ThCond(2.95*rhor, 0.6*Tr)/lr, 9), 861.240794445)
-        self.assertEqual(
-                round(_D2O_ThCond(1.55*rhor, Tr)/lr, 9), 502.846952426)
-        self.assertEqual(
-                round(_D2O_ThCond(1.61*rhor, 1.2*Tr)/lr, 9), 471.747729424)
-        self.assertEqual(
-                round(_D2O_ThCond(1.37*rhor, 1.27*Tr)/lr, 9), 409.359675394)
+        # Table 4, pag 8
+        fluid = D2O(rho=1, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 4), 52.4527)
+        fluid = D2O(rho=106, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 3), 103.342)
+        fluid = D2O(rho=256, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 3), 394.612)
+        fluid = D2O(rho=306, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 3), 801.382)
+        fluid = D2O(rho=356, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 3), 1278.423)
+        fluid = D2O(rho=406, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 3), 670.833)
+        fluid = D2O(rho=456, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 3), 423.603)
+        fluid = D2O(rho=750, T=644.1)
+        self.assertEqual(round(fluid.k*1e3, 3), 454.846)
 
     def test_D2O_Tension(self):
         # Selected values from table 1 in IAPWS R5-85"""
