@@ -65,6 +65,9 @@ from lib.mEoS.nC11 import nC11
 from lib.mEoS.nC12 import nC12
 from lib.mEoS.nC16 import nC16
 from lib.mEoS.nC22 import nC22
+from lib.mEoS.C3_pentane import C3_pentane
+from lib.mEoS.C22_butane import C22_butane
+from lib.mEoS.C23_butane import C23_butane
 
 # Naphthenes
 from lib.mEoS.Cyclopropane import Cyclopropane
@@ -172,7 +175,8 @@ Nobles = [He, Ne, Ar, Kr, Xe]
 Gases = [H2, D2, pD2, oD2, pH2, oH2, N2, O2, F2, H2O, D2O, CO2, CO, N2O, SO2,
          COS, NH3, H2S]
 Alkanes = [CH4, C2, C3, nC4, iC4, nC5, neoC5, iC5, nC6, iC6, nC7, nC8, iC8,
-           nC9, nC10, nC11, nC12, nC16, nC22]
+           nC9, nC10, nC11, nC12, nC16, nC22, C3_pentane, C22_butane,
+           C23_butane]
 Naphthenes = [Cyclopropane, Cyclopentane, Cyclohexane, C1Cyclohexane,
               C3Cyclohexane]
 Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
