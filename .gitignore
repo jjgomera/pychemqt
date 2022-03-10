@@ -61,6 +61,9 @@ docs/_build/
 *.e4p
 *.epj
 
+# vimspector files
+.vimspector*
+
 # documentation   
 doc
 
