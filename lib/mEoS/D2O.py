@@ -183,13 +183,14 @@ class D2O(MEoS):
 
     visco0 = {"eq": 0,
               "method": "_visco0",
-              "__name__": "IAPWS (2007)",
+              "__name__": "IAPWS (2021)",
               "__doi__": {
-                  "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
-                           "Levelt Sengers, J.M.H.",
-                  "title": "Thermophysical Properties of Fluid D2O",
-                  "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
-                  "doi": "10.1063/1.555714"},
+                  "autor": "Assael, M.J., Monogenidou, S.A., Huber, M.L., "
+                           "Perkins, R.A., Sengers, J.V.",
+                  "title": "New International Formulation for the Viscosity "
+                           "of Heavy Water",
+                  "ref": "J. Phys. Chem. Ref. Data 50(3) (2021) 033102",
+                  "doi": "10.1063/5.0048711"},
               "__code__": (_D2O_Viscosity, )}
 
     def _visco0(self, rho, T, fase):
@@ -218,11 +219,11 @@ class D2O(MEoS):
                "__doi__": {
                   "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
                            "Levelt Sengers, J.M.H.",
-                  "title": "Thermophysical Properties of Fluid D2O",
-                  "ref": "J. Phys. Chem. Ref. Data 13(2) (1984) 601-609",
-                  "doi": "10.1063/1.555714"},
+                  "title": "New International Formulation for the Thermal "
+                           "Conductivity of Heavy Water",
+                  "ref": "J. Phys. Chem. Ref. Data 51(1) (2022) 013102",
+                  "doi": "10.1063/5.0084222"},
                "__code__": (_D2O_ThCond, )}
-    # TODO: Upgrade ref when publish papel in jpr
 
     def _thermo0(self, rho, T, fase):
         ref = D2O()
@@ -384,7 +385,7 @@ class Test(TestCase):
         self.assertEqual(round(P, 7), 83.7888413)
 
     def test_D2O_Viscosity(self):
-        """Table 3, pag 8"""
+        # Table 4, pag 11
         self.assertEqual(round(_D2O_Viscosity(0, 298.15)*1e6, 6), 10.035938)
         self.assertEqual(round(_D2O_Viscosity(1105, 298.15)*1e6, 4), 1092.6424)
         self.assertEqual(round(_D2O_Viscosity(1130, 298.15)*1e6, 4), 1088.3626)
@@ -393,7 +394,7 @@ class Test(TestCase):
         self.assertEqual(round(_D2O_Viscosity(100, 775)*1e6, 6), 31.930085)
         self.assertEqual(round(_D2O_Viscosity(400, 775)*1e6, 6), 53.324172)
 
-        # Table 4, pag 8
+        # Table 5, pag 12
         fluid = D2O(rho=145, T=644.101)
         self.assertEqual(round(fluid.mu*1e6, 6), 26.640959)
         fluid = D2O(rho=245, T=644.101)
@@ -408,13 +409,13 @@ class Test(TestCase):
         self.assertEqual(round(fluid.mu*1e6, 6), 50.241640)
 
     def test_D2O_ThCond(self):
-        # Table 3, pag 8
+        # Table 6, pag 10
         self.assertEqual(round(_D2O_ThCond(0, 298.15)*1e3, 4), 17.7498)
         self.assertEqual(round(_D2O_ThCond(1104.5, 298.15)*1e3, 3), 599.557)
         self.assertEqual(round(_D2O_ThCond(1200, 298.15)*1e3, 3), 690.421)
         self.assertEqual(round(_D2O_ThCond(0, 825)*1e3, 4), 76.4492)
 
-        # Table 4, pag 8
+        # Table 7, pag 10
         fluid = D2O(rho=1, T=644.1)
         self.assertEqual(round(fluid.k*1e3, 4), 52.4527)
         fluid = D2O(rho=106, T=644.1)
