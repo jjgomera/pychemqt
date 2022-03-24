@@ -1,0 +1,6 @@
+copyright: Batch editing of intro information in modules
+plotMEoS.py: Script to generate the image for mEoS compound
+translate_elemental.py: Console tool for easy chemical elements translation configuration
+translation.py: Script to update translation .pro file with new files added to project
+unidades.py: Script to generate magnitudes list added to firstrun file
+
