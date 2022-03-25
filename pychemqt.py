@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=ungrouped-imports,unused-import,wrong-import-order
+# pylint: disable=wrong-import-position, too-few-public-methods
 
 """Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2022, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -120,14 +122,14 @@ else:
 
 # numpy
 try:
-    import numpy
+    import numpy as np
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
         "pychemqt", "numpy could not be found, you must install it.")
     print(msg)
     raise err
 else:
-    mayor, minor, corr = map(int, numpy.version.version.split("."))
+    mayor, minor, corr = map(int, np.version.version.split("."))
     if mayor < 1 or minor < 8:
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
@@ -153,7 +155,7 @@ else:
 # iapws
 # Externalized version of iapws, to avoid duple maintenance
 try:
-    import iapws  # noqa
+    import iapws
 except ImportError as err:
     msg = QtWidgets.QApplication.translate(
         "pychemqt", "iapws could not be found, you must install it.")
@@ -171,8 +173,8 @@ else:
 # project yet useless
 # python-graph
 # try:
-    # from pygraph.classes.graph import graph  # noqa
-    # from pygraph.algorithms.cycles import find_cycle  # noqa
+    # from pygraph.classes.graph import graph
+    # from pygraph.algorithms.cycles import find_cycle
 # except ImportError as err:
     # msg = QtWidgets.QApplication.translate(
     #     "pychemqt", "Python-graph don't found, you need install it")
@@ -213,27 +215,28 @@ if not os.path.isdir(conf_dir):
 
 try:
     open(conf_dir + "pychemqt.log", 'x')
-except FileExistsError:  # noqa
+except FileExistsError:
     pass
 
 fmt = "[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s"
-logging.basicConfig(filename=conf_dir+"pychemqt.log", filemode="w",
+logging.basicConfig(filename=conf_dir + "pychemqt.log", filemode="w",
                     level=loglevel, datefmt="%d-%b-%Y %H:%M:%S", format=fmt)
 logging.info(
     QtWidgets.QApplication.translate("pychemqt", "Starting pychemqt"))
 
 
 # Derive numpy error log to pychemqt log
-class NumpyErrorLog(object):
+class NumpyErrorLog():
     """Numpy error message catch and send to pychemqt log
     Use debug level for this messages"""
     @staticmethod
-    def write(msg):
-        logging.debug(msg)
+    def write(message):
+        """Write error message to log file"""
+        logging.debug(message)
 
-from numpy import seterr, seterrcall  # noqa
-seterrcall(NumpyErrorLog)
-seterr(all='log')
+
+np.seterrcall(NumpyErrorLog)
+np.seterr(all='log')
 
 
 class SplashScreen(QtWidgets.QSplashScreen):
@@ -244,16 +247,17 @@ class SplashScreen(QtWidgets.QSplashScreen):
             QtGui.QPixmap(os.environ["pychemqt"] + "/images/splash.jpg"))
         QtWidgets.QApplication.flush()
 
-    def showMessage(self, msg):
+    def showMessage(self, message):
         """Procedure to update message in splash"""
-        align = QtCore.Qt.Alignment(QtCore.Qt.AlignBottom |
-                                    QtCore.Qt.AlignRight |
-                                    QtCore.Qt.AlignAbsolute)
+        align = QtCore.Qt.Alignment(QtCore.Qt.AlignBottom
+                                    | QtCore.Qt.AlignRight
+                                    | QtCore.Qt.AlignAbsolute)
         color = QtGui.QColor(QtCore.Qt.white)
-        QtWidgets.QSplashScreen.showMessage(self, msg, align, color)
+        QtWidgets.QSplashScreen.showMessage(self, message, align, color)
         QtWidgets.QApplication.processEvents()
 
     def clearMessage(self):
+        """Clear message of splash screen"""
         QtWidgets.QSplashScreen.clearMessage(self)
         QtWidgets.QApplication.processEvents()
 
@@ -288,9 +292,9 @@ else:
                 value = default_Preferences.get(section, option)
                 Preferences.set(section, option, value)
                 change = True
-                logging.warning("Using default configuration option for " +
-                                "%s:%s" % (section, option) +
-                                ", run preferences dialog for configure")
+                logging.warning("Using default configuration option for "
+                                "%s:%s, run preferences dialog for configure",
+                                section, option)
     if change:
         Preferences.write(open(conf_dir + "pychemqtrc", "w"))
 
@@ -319,7 +323,7 @@ if not os.path.isfile(conf_dir + "moneda.dat"):
     # Exchange rates file don't available
     currency = True
 else:
-    filename = conf_dir+"moneda.dat"
+    filename = conf_dir + "moneda.dat"
     try:
         archivo = open(filename, "r")
         rates = json.load(archivo)
@@ -335,10 +339,10 @@ if currency:
     # Try to retrieve exchange rates from yahoo
     try:
         firstrun.getrates(conf_dir + "moneda.dat")
-    except (urllib.error.URLError, urllib.error.HTTPError) as e:
+    except (urllib.error.URLError, urllib.error.HTTPError) as err:
         # Internet error, get hardcoded exchanges from pychemqt distribution
         # Possible outdated file, try to update each some commits
-        logging.error(e)
+        logging.error(err)
         origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
         shutil.copy(origen, conf_dir + "moneda.dat")
         print(QtWidgets.QApplication.translate("pychemqt",
@@ -355,7 +359,7 @@ splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Importing libraries..."))
 import lib  # noqa
 import UI  # noqa
-from equipment import UI_equipments, equipments  # noqa
+import equipment  # noqa
 import tools  # noqa
 import plots  # noqa
 
@@ -367,9 +371,9 @@ pychemqt = UI_pychemqt()
 
 # Load project files, opened in last pychemqt session and/or specified in
 # command line
-msg = QtWidgets.QApplication.translate("pychemqt", "Loading project files")
-splash.showMessage(msg + "...")
-logging.info(msg)
+txt = QtWidgets.QApplication.translate("pychemqt", "Loading project files")
+splash.showMessage(txt + "...")
+logging.info(txt)
 
 if change:
     lib.config.Preferences = Preferences
@@ -383,17 +387,17 @@ for file in args.projectFile:
     filename.append(file)
 for fname in filename:
     if fname and QtCore.QFile.exists(fname):
-        msg = QtWidgets.QApplication.translate("pychemqt",
-                                               "Loading project files...")
-        splash.showMessage(msg + "\n" + fname)
-        logging.info(msg + ": " + fname)
+        splash.showMessage(txt + "\n" + fname)
+        logging.info(txt + ": " + fname)
         pychemqt.fileOpen(fname)
 
 
-# Manage error message to avoid print to console
-def exceptfunction(error, msg, traceback):
-    sys.__excepthook__(error, msg, traceback)
-sys.excepthook = exceptfunction  # noqa
+def exceptfunction(error, message, traceback):
+    """Manage error message to avoid print to console"""
+    sys.__excepthook__(error, message, traceback)
+
+
+sys.excepthook = exceptfunction
 
 # Finish splash and start qt main loop
 pychemqt.show()
