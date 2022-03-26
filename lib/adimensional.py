@@ -178,7 +178,7 @@ def Bo(rhol, rhog, sigma, L):
     Bo : float
         Bond number, [-]
     """
-    return (g*(rhol-rhog)*L**2/sigma)
+    return g*(rhol-rhog)*L**2/sigma
 
 
 @refDoc(__doi__, [2])
