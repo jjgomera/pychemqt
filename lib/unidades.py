@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=missing-class-docstring
+
+# The unidad sublasses are autodocumented
 
 '''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2022, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -232,10 +235,11 @@ class unidad(float):
         elif not unit:
             unit = self.__units__[0]
         self._data = self._getBaseValue(data, unit, magnitud)
+
         for key in self.__class__.rates:
             self.__setattr__(key, self._data / self.__class__.rates[key])
 
-        logging.debug("%s, %f" % (self.__class__.__name__, self._data))
+        logging.debug("%s, %f", self.__class__.__name__, self._data)
 
     def __new__(cls, data, unit="", magnitud=""):
         """Constructor to let multiple parameter input in float"""
@@ -692,11 +696,11 @@ class Speed(unidad):
              "mph": k.mile/k.hour,
              "kt": k.nautical_mile/k.hour}
     __text__ = ['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min', 'm/min',
-                'km/min', 'km/h',  'km/day', 'mph', 'nudo']
-    __units__ = ['ms', 'cms', 'mms', 'kms', 'fts', 'ftmin',  'mmin', 'kmmin',
+                'km/min', 'km/h', 'km/day', 'mph', 'nudo']
+    __units__ = ['ms', 'cms', 'mms', 'kms', 'fts', 'ftmin', 'mmin', 'kmmin',
                  'kmh', 'kmday', 'mph', 'kt']
     __tooltip__ = ['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min', 'm/min',
-                   'km/min', 'km/h',  'km/day', 'mph',
+                   'km/min', 'km/h', 'km/day', 'mph',
                    QApplication.translate("pychemqt", "Knot")]
     __units_set__ = {"altsi": "ms", "si": "ms", "metric": "ms", "cgs": "cms",
                      "english": "fts"}
@@ -801,7 +805,7 @@ class SpecificVolume(unidad):
                 'in³/onza', 'gallon UK/onza', 'gallon US/onza']
     __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb', 'inch3lb',
                  'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS',
-                 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
+                 'ft3slug', 'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
     __test__ = [{"input": {"value": 50, "unit": "lkg"},
@@ -835,7 +839,7 @@ class SpecificVolume_square(unidad):
                 'in⁶/onza²', 'gallon UK²/onza²', 'gallon US²/onza²']
     __units__ = ['m3kg', 'ccg', 'mlg', 'm3g', 'cckg', 'ft3lb', 'inch3lb',
                  'galUKlb', 'galUSlb', 'bbllb', 'ft3tonUK', 'ft3tonUS',
-                 'ft3slug',  'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
+                 'ft3slug', 'ft3oz', 'in3oz', 'galUKoz', 'galUSoz']
     __units_set__ = {"altsi": "m3kg", "si": "m3kg", "metric": "m3kg",
                      "cgs": "ccg", "english": "ft3lb"}
     __test__ = [{"input": {"value": 50, "unit": "lkg"},
@@ -1493,7 +1497,7 @@ class VolFlow(unidad):
                 'galon UK/min', 'galon US/min', 'galon UK/s', 'galon US/s',
                 'barril/s', 'barril/min', 'barril/h', 'barril/day']
     __units__ = ['m3s', 'm3min', 'm3h', 'ls', 'lmin', 'lh', 'ccs', 'ccmin',
-                 'cch', 'ft3s', 'ft3min', 'kft3min',  'ft3h', 'mft3day',
+                 'cch', 'ft3s', 'ft3min', 'kft3min', 'ft3h', 'mft3day',
                  'galUKh', 'galUSh', 'galUKmin', 'galUSmin', 'galUKs',
                  'galUSs', 'bbls', 'bblmin', 'bblh', 'bblday']
     _magnitudes = [
@@ -1940,7 +1944,7 @@ class PressureTemperature(unidad):
              "atmK": 101325.,
              "psiF": k.psi/k.Rankine}
     __text__ = ['Pa/K', 'kPa/K', 'bar/K', 'MPa/K', "atm/K", "psi/F"]
-    __units__ = ['PaK', 'kPaK', 'barK', 'MPaK',  "atmK", "psiF"]
+    __units__ = ['PaK', 'kPaK', 'barK', 'MPaK', "atmK", "psiF"]
     __units_set__ = {"altsi": "kPaK", "si": "PaK", "metric": "PaK",
                      "cgs": "PaK", "english": "psiF"}
     __test__ = [{"input": {"value": 1000, "unit": "PaK"},
@@ -1958,7 +1962,7 @@ class PressureDensity(unidad):
              "psilbft3": k.psi/k.pound*k.foot**3}
     __text__ = ['Pa/kgm³', 'kPa/kgm³', 'bar/kgm³', 'MPa/kgm³', "atm/kgm³",
                 "Pa/gcm³", "psi/lbft³"]
-    __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3',  "atmkgm3",
+    __units__ = ['Pakgm3', 'kPakgm3', 'barkgm3', 'MPakgm3', "atmkgm3",
                  "Pagcc", "psilbft3"]
     __units_set__ = {"altsi": "kPakgm3", "si": "Pakgm3", "metric": "Pakgm3",
                      "cgs": "Pagcc", "english": "psilbft3"}
@@ -2225,11 +2229,11 @@ class Currency(unidad):
     def str(self):
         if self.code:
             return self.code
-        else:
-            conf = self.func(self.magnitud)
-            num = self.format(conf, self.magnitud)
-            txt = self.text(self.magnitud)
-            return " "+txt+num
+
+        conf = self.func(self.magnitud)
+        num = self.format(conf, self.magnitud)
+        txt = self.text(self.magnitud)
+        return " "+txt+num
 
 
 if os.environ["icu"] == "True":
@@ -2242,14 +2246,14 @@ if os.environ["icu"] == "True":
     sortfunc = collator.getSortKey
     title_sorted = sorted(names, key=sortfunc)
     _all = [0]*len(names)
-    for unit in subclasses:
-        i = title_sorted.index(unit.__title__)
-        _all[i] = unit
+    for _unit in subclasses:
+        i = title_sorted.index(_unit.__title__)
+        _all[i] = _unit
 else:
     _all = sorted(unidad.__subclasses__(), key=lambda item: item.__title__)
 
 
-# Documenting unidad subclasses
+# Auto documenting unidad subclasses
 for _clas in _all:
     if _clas.__doc__:
         continue
@@ -2313,7 +2317,7 @@ for unit in _all:
         unit_set[unit.__name__] = unit.__units_set__
 
 units_set = {}
-for set in ("altsi", "si", "metric", "cgs", "english"):
-    units_set[set] = []
+for _set in ("altsi", "si", "metric", "cgs", "english"):
+    units_set[_set] = []
     for magnitud, titulo, unit in _magnitudes[:-1]:
-        units_set[set].append(unit.__units__.index(unit_set[magnitud][set]))
+        units_set[_set].append(unit.__units__.index(unit_set[magnitud][_set]))
