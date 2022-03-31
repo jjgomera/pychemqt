@@ -74,7 +74,7 @@ def getComponents(solidos=False, config=None, name=True):
     Procedure to get index of component in current project
 
     Parameters
-    ------------
+    ----------
     solidos : bool
         Return too solids components
     config : ConfigParser

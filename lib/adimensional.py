@@ -76,7 +76,7 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
     * L, density of both phases (rho_p, rho) and dynamic viscosity `mu`
 
     Parameters
-    ------------
+    ----------
     L : float
         Characteristic length [m]
     rho_p : float

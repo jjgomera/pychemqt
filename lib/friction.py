@@ -67,8 +67,9 @@ TODO
 from math import exp, log, log10, sqrt, sin, pi
 
 from scipy.optimize import fsolve
+from scipy.constants import g
 
-from lib.unidades import Dimensionless
+from lib.unidades import Angle, Dimensionless
 from lib.utilities import refDoc
 
 
@@ -256,7 +257,7 @@ def f_colebrook(Re, eD):
         \frac{2.51}{Re\sqrt{f}}\right)
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -289,7 +290,7 @@ def f_chen1979(Re, eD):
         ^{1.1098}}{2.8257}+\left(\frac{7.149}{Re}\right)^{0.8981}\right)\right)
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -323,7 +324,7 @@ def f_chen(Re, eD):
         \left(\frac{6.7}{Re}\right)^{0.9}\right)\right)
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -352,7 +353,7 @@ def f_moody(Re, eD):
         \frac{10^6}{Re}\right)^{1/3}\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -389,7 +390,7 @@ def f_churchill(Re, eD):
         B = \left( \frac{37530}{Re}\right)^{16}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -424,7 +425,7 @@ def f_wood(Re, eD):
         A_1 = 1.62\left(\epsilon/D\right)^{0.134}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -458,7 +459,7 @@ def f_haaland(Re, eD):
         \right)^{1.11} + \frac{6.9}{Re}\right]\right)^{-2}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -498,7 +499,7 @@ def f_serghides(Re, eD):
         C=-2\log_{10}\left[\frac{\epsilon/D}{3.7}+\frac{2.51B}{Re}\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -525,7 +526,7 @@ def f_round(Re, eD):
         \epsilon/D+6.5}\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -557,7 +558,7 @@ def f_swamee(Re, eD):
         + (\frac{\epsilon}{3.7D})\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -588,7 +589,7 @@ def f_jain(Re, eD):
         \left(\frac{29.843}{Re}\right)^{0.9}\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -648,7 +649,7 @@ def f_zigrang(Re, eD):
         A = \frac{\epsilon}{3.7D} + \frac{13}{Re}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -680,7 +681,7 @@ def f_altshul(Re, eD):
         f = 0.11\left( \frac{68}{Re} + \frac{\epsilon}{D}\right)^{0.25}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -707,7 +708,7 @@ def f_tsal(Re, eD):
     if A < 0.018 then f = 0.0028 + 0.85 A
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -740,7 +741,7 @@ def f_eck(Re, eD):
         + \frac{15}{Re}\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -765,7 +766,7 @@ def f_shacham(Re, eD):
         + \frac{14.5}{Re}\right)\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -795,7 +796,7 @@ def f_manadilli(Re, eD):
         \frac{95}{Re^{0.983}} - \frac{96.82}{Re}\right]
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -828,7 +829,7 @@ def f_romeo(Re, eD):
         \left(\frac{5.3326}{208.815+Re}\right)^{0.9345}\right)\right]\right\}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -863,7 +864,7 @@ def f_goudar2007(Re, eD):
         S = 0.1240\times\frac{\epsilon}{D}\times Re + \ln(0.4587Re)
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -891,7 +892,7 @@ def f_goudar(Re, eD):
     r"""Calculates friction factor `f` with Goudar-Sonnad correlation (2008)
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -931,7 +932,7 @@ def f_buzzelli(Re, eD):
         B = \frac{\epsilon}{3.7D}Re+2.51\times B_1
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -954,7 +955,7 @@ def f_Vatankhah(Re, eD):
     r"""Calculates friction factor `f` with Vatankhah-Kouchakzadeh corr (2008)
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -980,7 +981,7 @@ def f_avci(Re, eD):
         \right)\right]\right\}^{2.4}}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -1005,7 +1006,7 @@ def f_papaevangelou(Re, eD):
         (\frac{\epsilon}{3.615D} + \frac{7.366}{Re^{0.9142}}\right)\right]^2}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -1039,7 +1040,7 @@ def f_brkic(Re, eD, alternate=False):
         \beta = \ln \frac{Re}{1.816\ln\left(\frac{1.1Re}{\ln(1+1.1Re)}\right)}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -1073,7 +1074,7 @@ def f_fang(Re, eD):
         + \frac{56.291}{Re^{1.0712}}\right]\right\}^{-2}
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     eD : float
@@ -1284,7 +1285,7 @@ def eD(Re, f):
     """Calculates relative roughness
 
     Parameters
-    ------------
+    ----------
     Re : float
         Reynolds number, [-]
     f : float

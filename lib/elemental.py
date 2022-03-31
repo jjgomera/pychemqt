@@ -165,7 +165,7 @@ class Elemental(object):
     def __init__(self, id):
         """
         Parameters
-        ------------
+        ----------
         id : int
             atomic number of element, [-]
         """

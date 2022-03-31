@@ -386,7 +386,7 @@ def _unit(key, val, unit=None):
     """Set appropiate unit for value
 
     Parameters
-    ------------
+    ----------
     key : string
         Property name
     val : float
@@ -427,7 +427,7 @@ def prop_Ahmed(Nc):
     the only known property
 
     Parameters
-    ------------
+    ----------
     Nc : float
         Carbon atom number [-]
 
@@ -477,7 +477,7 @@ def prop_Riazi_Daubert_1980(Tb, SG):
     paramters
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     SG: float
@@ -526,7 +526,7 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
     """Calculate petroleum fractions properties known two properties
 
     Parameters
-    ------------
+    ----------
     tita1 : string
         Name of first known property
     tita2 : string
@@ -722,7 +722,7 @@ def prop_Cavett(Tb, API):
     correlation. Use API as a alternate input parameter to specific gravity
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     API : float
@@ -773,7 +773,7 @@ def prop_Lee_Kesler(Tb, SG):
     correlation. Use API as a alternate input parameter to specific gravity
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     SG: float
@@ -833,7 +833,7 @@ def prop_Sim_Daubert(Tb, SG):
     computerized version of Winn (1957) graphical correlations
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     SG: float
@@ -878,7 +878,7 @@ def prop_Watansiri_Owens_Starling(Tb, SG, M):
     as input parameters
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     SG: float
@@ -941,7 +941,7 @@ def prop_Rowe(M):
     correlations (1978) using only the molecular weight as input parameter
 
     Parameters
-    ------------
+    ----------
     M: float
         Molecular weight, [-]
 
@@ -989,7 +989,7 @@ def prop_Standing(M, SG):
     molecular weight and specific gravity as input parameter
 
     Parameters
-    ------------
+    ----------
     M: float
         Molecular weight, [-]
     SG: float
@@ -1028,7 +1028,7 @@ def prop_Willman_Teja(Tb):
     correlations using only the boiling temperature as input parameter
 
     Parameters
-    ------------
+    ----------
     Tb: float
         Boiling temperature, [K]
 
@@ -1077,7 +1077,7 @@ def prop_Magoulas_Tassios(M, SG):
     correlations using molecular weight and specific gravity as input parameter
 
     Parameters
-    ------------
+    ----------
     M: float
         Molecular weight, [-]
     SG: float
@@ -1120,7 +1120,7 @@ def prop_Tsonopoulos(SG, Tb):
     correlations using molecular weight and specific gravity as input parameter
 
     Parameters
-    ------------
+    ----------
     SG: float
         Specific gravity, [-]
     Tb: float
@@ -1155,7 +1155,7 @@ def prop_Twu(Tb, SG):
     paramters
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     SG: float
@@ -1233,7 +1233,7 @@ def prop_Sancet(M):
     correlations using only the molecular weight as input parameter
 
     Parameters
-    ------------
+    ----------
     M: float
         Molecular weight, [-]
 
@@ -1272,7 +1272,7 @@ def prop_Silva_Rodriguez(M):
     (1992) correlations
 
     Parameters
-    ------------
+    ----------
     M: float
         Molecular weight, [-]
 
@@ -1308,7 +1308,7 @@ def Tb_Soreide(M, SG):
     (1989) correlations
 
     Parameters
-    ------------
+    ----------
     M: float
         Molecular weight, [-]
     SG: float
@@ -1330,7 +1330,7 @@ def vc_Hall_Yarborough(M, SG):
     (1971) correlation
 
     Parameters
-    ------------
+    ----------
     M: float
         Molecular weight, [-]
     SG: float
@@ -1351,7 +1351,7 @@ def M_Goossens(Tb, d20):
     (1971) correlation
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     d20 : float
@@ -1378,7 +1378,7 @@ def w_Korsten(Tb, Tc, Pc):
     correlation
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     Tc : float
@@ -1403,7 +1403,7 @@ def prop_Riazi(SG, tita, val):
     This correlation is recommendated for heavy weight fractions C20-C50.
 
     Parameters
-    ------------
+    ----------
     SG: float
         Specific gravity, [-]
     tita : string
@@ -1492,7 +1492,7 @@ def prop_Riazi_Alsahhaf(Tb, M, d20):
     input paramters.
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Normal boiling temperature, [K]
     M : float
@@ -1545,7 +1545,7 @@ def prop_Riazi_Alsahhaf_PNA(M, cmp):
     and aromatics constituents of fraction.
 
     Parameters
-    ------------
+    ----------
     M : float
         Molecular weight, [-]
     cmp : string
@@ -1626,7 +1626,7 @@ def Zc_Hougen(w):
     correlation (1959)
 
     Parameters
-    ------------
+    ----------
     w : float
         Acentric factor, [-]
 
@@ -1646,7 +1646,7 @@ def Zc_Reid(w):
     Prausnith and Sherwood (1977) correlation
 
     Parameters
-    ------------
+    ----------
     w : float
         Acentric factor, [-]
 
@@ -1666,7 +1666,7 @@ def Zc_Salerno(w):
     correlation (1985)
 
     Parameters
-    ------------
+    ----------
     w : float
         Acentric factor, [-]
 
@@ -1686,7 +1686,7 @@ def Zc_Nath(w):
     correlation (1985)
 
     Parameters
-    ------------
+    ----------
     w : float
         Acentric factor, [-]
 
@@ -1706,7 +1706,7 @@ def Zc_Lee_Kesler(w):
     correlation (1975)
 
     Parameters
-    ------------
+    ----------
     w : float
         Acentric factor, [-]
 
@@ -1727,7 +1727,7 @@ def D86_TBP_Riazi(Ti, Xi=None, reverse=False):
     Riazi correlation
 
     Parameters
-    ------------
+    ----------
     Ti : list
         Distillation data with the D86 distillation temperature
     Xi : list
@@ -1798,7 +1798,7 @@ def D86_TBP_Daubert(Ti, Xi=None, T50=None, reverse=False):
     Daubert correlation, API procedure 3A1.1
 
     Parameters
-    ------------
+    ----------
     Ti : list
         Distillation data with the T0, T10, T30, T50, T70, T90, T95
     Xi : list
@@ -1898,7 +1898,7 @@ def SD_D86_Riazi(Ti, Xi=None, F=None):
     """Interconversion between SD and D86
 
     Parameters
-    ------------
+    ----------
     Ti : list
         Distillation data with the D86 distillation temperature
     Xi : list
@@ -1962,7 +1962,7 @@ def SD_D86_Daubert(Ti, Xi=None, SD50=None):
     atmospheric pressure using the Daubert correlation, API procedure 3A3.2
 
     Parameters
-    ------------
+    ----------
     Ti : list
         Distillation data with the T0, T10, T30, T50, T70, T90, T95
     Xi : list
@@ -2046,7 +2046,7 @@ def D86_EFV(Ti, Xi=None, SG=None, reverse=False):
     """Interconversion between D86 and EFV
 
     Parameters
-    ------------
+    ----------
     Ti : list
         Distillation data with the D86 distillation temperature
     Xi : list
@@ -2116,7 +2116,7 @@ def SD_TBP(Ti, Xi=None, SD50=None):
     atmospheric pressure using the Daubert correlation, API procedure 3A3.1
 
     Parameters
-    ------------
+    ----------
     Ti : list
         Distillation data with the T0, T10, T30, T50, T70, T90, T95
     Xi : list
@@ -2199,7 +2199,7 @@ def D1160_TBP_10mmHg(Ti, Xi=None, reverse=False):
     """Interconversion between ASTM D1160 and TBP distillation curve at 10 mmHg
 
     Parameters
-    ------------
+    ----------
     Ti : list
         Distillation data with the T0, T10, T30, T50, T70, T90, T95
     Xi : list
@@ -2247,7 +2247,7 @@ def Tb_Pressure(T, P, Kw=None, reverse=False):
     normal boiling point, API Procedure 5A1.19
 
     Parameters
-    ------------
+    ----------
     T : float
         Temperature, [K]
     P : float
@@ -2307,7 +2307,7 @@ def curve_Predicted(x, T):
     """Fill the missing point of a distillation curve
 
     Parameters
-    ------------
+    ----------
     x : list
         Array with mole/volume/weight fraction, [-]
     T : list
@@ -2359,7 +2359,7 @@ def PourPoint(SG, Tb, v100=None):
     poured.
 
     Parameters
-    ------------
+    ----------
     SG : float
         Specific gravity, [-]
     Tb : float
@@ -2373,7 +2373,7 @@ def PourPoint(SG, Tb, v100=None):
         Pour point, [ºR]
 
     Notes
-    ------
+    -----
     Raise :class:`NotImplementedError` if input isn't in limit:
 
         * 0.8 ≤ SG ≤ 1
@@ -2415,7 +2415,7 @@ def AnilinePoint(SG, Tb):
     is completely miscible with an equal volume of distilled aniline.
 
     Parameters
-    ------------
+    ----------
     SG : float
         Specific gravity, [-]
     Tb : float
@@ -2427,7 +2427,7 @@ def AnilinePoint(SG, Tb):
         Aniline point, [ªR]
 
     Notes
-    ------
+    -----
     Raise :class:`NotImplementedError` if input isn't in limit:
 
         * 0.7 ≤ SG ≤ 1
@@ -2462,7 +2462,7 @@ def SmokePoint(SG, Tb):
     produced in a lamp at standard conditions without causing smoking.
 
     Parameters
-    ------------
+    ----------
     SG : float
         Specific gravity, [-]
     Tb : float
@@ -2474,7 +2474,7 @@ def SmokePoint(SG, Tb):
         Cloud point, [mm]
 
     Notes
-    ------
+    -----
     Raise :class:`NotImplementedError` if input isn't in limit:
 
         * 0.7 ≤ SG ≤ 0.86
@@ -2509,7 +2509,7 @@ def FreezingPoint(SG, Tb):
     cooling disappear as the temperature is raised.
 
     Parameters
-    ------------
+    ----------
     SG : float
         Specific gravity, [-]
     Tb : float
@@ -2521,7 +2521,7 @@ def FreezingPoint(SG, Tb):
         Cloud point, [ºR]
 
     Notes
-    ------
+    -----
     Raise :class:`NotImplementedError` if input isn't in limit:
 
         * 0.74 ≤ SG ≤ 0.9
@@ -2556,7 +2556,7 @@ def CloudPoint(SG, Tb):
     cloudy.
 
     Parameters
-    ------------
+    ----------
     SG : float
         Specific gravity, [-]
     Tb : float
@@ -2568,7 +2568,7 @@ def CloudPoint(SG, Tb):
         Cloud point, [ºR]
 
     Notes
-    ------
+    -----
     Raise :class:`NotImplementedError` if input isn't in limit:
 
         * 0.77 ≤ SG ≤ 0.93
@@ -2602,7 +2602,7 @@ def CetaneIndex(API, Tb):
     sample of the petroleum fraction.
 
     Parameters
-    ------------
+    ----------
     API : float
         API gravity, [-]
     Tb : float
@@ -2614,7 +2614,7 @@ def CetaneIndex(API, Tb):
         Cetane Index, [-]
 
     Notes
-    ------
+    -----
     Raise :class:`NotImplementedError` if input isn't in limit:
 
         * 27 ≤ API ≤ 47
@@ -2648,7 +2648,7 @@ def PNA_Riazi(M, SG, n, d20=None, VGC=None, CH=None):
     technical databook, pag. 225
 
     Parameters
-    ------------
+    ----------
     M : float
         Molecular weight, [g/mol]
     SG : float
@@ -2718,7 +2718,7 @@ def PNA_Peng_Robinson(Nc, M, WABP):
     contained in petroleum fractions using the Peng-Robinson procedure
 
     Parameters
-    ------------
+    ----------
     Nc : index
         Carbon number, [-]
     M : float
@@ -2786,7 +2786,7 @@ def PNA_Bergman(Tb, SG, Kw):
     contained in petroleum fractions using the Bergman procedure
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Boiling temperature, [K]
     SG : float
@@ -2847,7 +2847,7 @@ def PNA_van_Nes(M, n, d20, S):
     contained in petroleum fractions using the Van Nes procedure
 
     Parameters
-    ------------
+    ----------
     M : float
         Molecular weight, [g/mol]
     n : float
@@ -2894,7 +2894,7 @@ def viscoAPI(Tb=None, Kw=None, v100=None, v210=None, T=None, T1=None, T2=None):
     11A4.2 and 11A4.4
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Boiling temperature, [K]
     Kw : float
@@ -3022,7 +3022,7 @@ def SUS(T, v):
     pag 1027
 
     Parameters
-    ------------
+    ----------
     T : float
         Temperature, [K]
     v : float
@@ -3065,7 +3065,7 @@ def SFS(T, v):
     pag 1031
 
     Parameters
-    ------------
+    ----------
     T : float
         Temperature, [K]
     v : float
@@ -3101,7 +3101,7 @@ def MuL_Singh(T, v100):
     pag 1031
 
     Parameters
-    ------------
+    ----------
     T : float
         Temperature, [K]
     v100 : float
@@ -3134,7 +3134,7 @@ def H_Riazi(S, CH):
     """Calculate hydrogen content of petroleum fractions
 
     Parameters
-    ------------
+    ----------
     S : float
         Sulfur content, [%]
     CH : float
@@ -3160,7 +3160,7 @@ def H_Goossens(M, n, d20):
     of Goossens
 
     Parameters
-    ------------
+    ----------
     M : float
         Molecular weight, [-]
     n : float
@@ -3189,7 +3189,7 @@ def H_ASTM(Tb, SG, xa):
     """Calculate hydrogen content of petroleum fractions
 
     Parameters
-    ------------
+    ----------
     Tb : float
         Mean average boiling point, [ºR]
     SG : float
@@ -3214,7 +3214,7 @@ def H_Jenkins_Walsh(SG, anilineP):
     of Jenkins-Walsh
 
     Parameters
-    ------------
+    ----------
     SG : float
         Specific gravity, [-]
     anilineP : float
@@ -3234,7 +3234,7 @@ def S_Riazi(M, SG, Ri, m):
     """Calculate sulfur content of petroleum fractions
 
     Parameters
-    ------------
+    ----------
     M : float
         Molecular weight, [-]
     SG : float
@@ -3274,7 +3274,7 @@ def CombustionHeat(API, water=0, ash=0, S=0):
     fractions, referenced in API procedure 14A1.3, pag 1236
 
     Parameters
-    ------------
+    ----------
     API : float
         API Specific gravity, [-]
     water : float
@@ -3324,7 +3324,7 @@ class Petroleo(newComponente):
     """Class to define a heavy oil fraction with a unknown composition
 
     Parameters
-    ------------
+    ----------
     M : float
         Molecular weight, [-]
     Tb : float

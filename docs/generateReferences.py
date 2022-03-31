@@ -78,8 +78,12 @@ for library in all:
             print("----------", file=file)
             for id, rf in module.__doi__.items():
                 id = str(id)
-                print(".. [%s] %s; %s. %s" % (
-                    id, rf["autor"], rf["title"], rf["ref"]), file=file)
+                if library == "iapws97" and id != "1":
+                    print(" * [%s] %s; %s. %s" % (
+                        id, rf["autor"], rf["title"], rf["ref"]), file=file)
+                else:
+                    print(".. [%s] %s; %s. %s" % (
+                        id, rf["autor"], rf["title"], rf["ref"]), file=file)
                 if rf not in total:
                     total.append(rf)
 
@@ -92,8 +96,15 @@ with open("docs/references.rst", "w") as file:
     for lnk in sorted(total, key=lambda lnk: str.upper(lnk["autor"])):
         if lnk["autor"] or lnk["title"] or lnk["ref"]:
             id += 1
-            ref = ".. [%i] %s; %s, %s" % (
-                id, lnk["autor"], lnk["title"], lnk["ref"])
+            ref = "%i. " % id
+            if lnk["autor"]:
+                ref += "%s; " % lnk["autor"]
+            if lnk["title"]:
+                ref += "%s. " % lnk["title"]
+            if lnk["ref"]:
+                ref += "%s" % lnk["ref"]
+
             if lnk["doi"]:
                 ref += ", http://dx.doi.org/%s" % lnk["doi"]
+
             print(ref, file=file)

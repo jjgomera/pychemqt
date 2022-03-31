@@ -515,7 +515,7 @@ def atomic_decomposition(cmp):
     composition. Support both expanded and short formula
 
     Parameters
-    ------------
+    ----------
     cmp : string
         Compound formula
 
@@ -556,7 +556,7 @@ def refrigerantCode(cmp):
     because there aré very compound specific
 
     Parameters
-    ------------
+    ----------
     cmp : string
         Compound expanded formula
 
@@ -4641,7 +4641,7 @@ def prop_Edmister(**kwargs):
     from the Edmister (1958) correlations
 
     Parameters
-    ------------
+    ----------
     Tc : float
         Critic temperature, [ºR]
     Pc : float

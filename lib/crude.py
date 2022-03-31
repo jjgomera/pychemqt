@@ -188,7 +188,7 @@ def Z_Papay(Tr, Pr):
     (1985)
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -214,7 +214,7 @@ def Z_Hall_Yarborough(Tr, Pr):
     Yarborough (1973)
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -253,7 +253,7 @@ def Z_Dranchuk_Abu_Kassem(Tr, Pr):
     Abu-Kassem (1975)
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -301,7 +301,7 @@ def Z_Dranchuk_Purvis_Robinson(Tr, Pr):
     Purvis-Robinson (1974)
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -350,7 +350,7 @@ def Z_Brill_Beggs(Tr, Pr):
     Beggs (1974)
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -387,7 +387,7 @@ def Z_Gopal(Tr, Pr):
     (1974)
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -449,7 +449,7 @@ def Z_ShellOil(Tr, Pr):
     correlation (2004)
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -476,7 +476,7 @@ def Z_Sarem(Tr, Pr):
     """Calculate gas compressibility factor using the Sarem (1969) correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -527,7 +527,7 @@ def Z_Leung(Tr, Pr):
     """Calculate gas compressibility factor using the Leung (1964) correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -571,7 +571,7 @@ def Z_Burnett(Tr, Pr):
     correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -610,7 +610,7 @@ def Z_Sanjari_Lay(Tr, Pr):
     correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -652,7 +652,7 @@ def Z_Heidaryan_Salarabadi(Tr, Pr):
     Moghadasi (2010) correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -693,7 +693,7 @@ def Z_Heidaryan_Moghadasi(Tr, Pr):
     Rahimi (2010) correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -740,7 +740,7 @@ def Z_Azizi(Tr, Pr):
     (2010) correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -801,7 +801,7 @@ def Z_Shokir(Tr, Pr):
     (2012) correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -829,7 +829,7 @@ def Z_Bahadori(Tr, Pr):
     (2007) correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -872,7 +872,7 @@ def Z_Londono_DAK(Tr, Pr, pure=False):
     This method implement the Dranckuk-Abu-Kassem optimized version from paper
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -926,7 +926,7 @@ def Z_Londono_NS(Tr, Pr, pure=False):
     This method implement the Nishiumi-Saito optimized version from paper
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -1001,7 +1001,7 @@ def Z_Hall_Iglesias(Tr, Pr):
     reduced values of temperature.
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -1037,7 +1037,7 @@ def Z_Elsharkawy(Tr, Pr):
     correlation
 
     Parameters
-    ------------
+    ----------
     Tr : float
         Reduced temperature [-]
     Pr : float
@@ -1080,7 +1080,7 @@ class Crudo(Petroleo):
     Clase que define una fracción de petroleo a partir de la base de datos
 
     Parameters
-    ------------
+    ----------
     index : index
         index of crude in crude databank
     Cplus : index

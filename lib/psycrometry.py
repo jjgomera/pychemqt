@@ -130,7 +130,7 @@ def _Pbar(Z):
     pag 1.1 Eq 3
 
     Parameters
-    ------------
+    ----------
     Z : float
         Altitude, [m]
 
@@ -158,7 +158,7 @@ def _height(P):
     Inverted _Pbar function
 
     Parameters
-    ------------
+    ----------
     P : float
         Standard barometric pressure, [Pa]
 
@@ -186,7 +186,7 @@ def _Tbar(Z):
     pag 1.1 Eq 4
 
     Parameters
-    ------------
+    ----------
     Z : float
         Altitude, [m]
 
@@ -215,7 +215,7 @@ def _Psat(T):
     pag 1.2, Eq 5-6
 
     Parameters
-    ------------
+    ----------
     T : float
         Temperature, [K]
 
@@ -248,7 +248,7 @@ def _Tsat(Pv):
     from pag 1.2, Eq 5-6 to calculate Tdb
 
     Parameters
-    ------------
+    ----------
     P : float
         Saturation pressure, [Pa]
 
@@ -295,7 +295,7 @@ def _Ws(P, Tdb):
     as explain in [1]_, pag 1.8, Eq 22
 
     Parameters
-    ------------
+    ----------
     P : float
         Pressure, [Pa]
     Tdb: float
@@ -318,7 +318,7 @@ def _h(Tdb, W):
     in [1]_, pag 1.8, Eq 22
 
     Parameters
-    ------------
+    ----------
     Tdb: float
        Dry bulb temperature, [K]
     W : float
@@ -342,7 +342,7 @@ def _v(P, Tdb, W):
     explain in [1]_, pag 1.8, Eq 28
 
     Parameters
-    ------------
+    ----------
     P : float
         Pressure, [Pa]
     Tdb: float
@@ -368,7 +368,7 @@ def _W_twb(tdb, twb, P):
     in [1]_, pag 1.9, Eq 35-37
 
     Parameters
-    ------------
+    ----------
     Tdb: float
         Dry bulb temperature, [K]
     Twb: float
@@ -401,7 +401,7 @@ def _tdp(Pw):
     explain in [1]_, pag 1.9, Eq 39-40
 
     Parameters
-    ------------
+    ----------
     P : float
         Water vapor partial pressure, [Pa]
 
@@ -436,7 +436,7 @@ def _twb(tdb, W, P):
     explain in [1]_, pag 1.9, inveted Eq 35-37
 
     Parameters
-    ------------
+    ----------
     Tdb: float
         Dry bulb temperature, [K]
     W : float
@@ -475,7 +475,7 @@ def _Tdb(twb, w, P):
     explain in [1]_, pag 1.9, inveted Eq 35-37
 
     Parameters
-    ------------
+    ----------
     Twb: float
         Wet bulb temperature, [K]
     W : float
@@ -502,7 +502,7 @@ def _Tdb_V(v, P):
     isochor line in plots
 
     Parameters
-    ------------
+    ----------
     v : float
        Specific volume, [m³/kgda]
     P : float
@@ -529,7 +529,7 @@ def _W_V(Tdb, P, v):
     isochor line in plots
 
     Parameters
-    ------------
+    ----------
     Tdb: float
        Dry bulb temperature, [K]
     P : float
