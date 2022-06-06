@@ -113,7 +113,7 @@ except ImportError as err:
     print(msg)
     raise err
 else:
-    mayor, minor, corr = map(int, scipy.version.version.split("."))
+    mayor, minor = map(int, scipy.version.version.split(".")[:2])
     if mayor == 0 and minor < 14:
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
@@ -129,7 +129,7 @@ except ImportError as err:
     print(msg)
     raise err
 else:
-    mayor, minor, corr = map(int, np.version.version.split("."))
+    mayor, minor = map(int, np.version.version.split(".")[:2])
     if mayor < 1 or minor < 8:
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
@@ -145,7 +145,7 @@ except ImportError as err:
     print(msg)
     raise err
 else:
-    mayor, minor, corr = map(int, matplotlib.__version__.split("."))
+    mayor, minor = map(int, matplotlib.__version__.split(".")[:2])
     if mayor < 1 or (mayor == 1 and minor < 4):
         msg = QtWidgets.QApplication.translate(
             "pychemqt",
@@ -196,7 +196,7 @@ for module, use in optional_modules:
         if module == "CoolProp":
             import CoolProp.CoolProp as CP
             version = CP.get_global_param_string("version")
-            mayor, minor, rev = map(int, version.split("."))
+            mayor, minor = map(int, version.split(".")[:2])
             if mayor < 6:
                 print("Find CoolProp %s but CoolProp 6 required" % version)
                 os.environ[module] = ""
