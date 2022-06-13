@@ -156,6 +156,21 @@ class R123(MEoS):
     eq = younglove, tillner, shortSpan
     _PR = [-0.0632, -18.6191]
 
+    # Other equation
+    # Piao, C-c, Sato, H., Watanabe, K.
+    # An Equation of State for a New working Fluid HCFC-123
+    # Fluid Phase Equilibria, 80 (1992) 87-98
+    # doi: 10.1016/0378-3812(92)87057-t
+
+    # Don´t implemented because use a nonstandard formulation with a extended
+    # virial equation, furthermore its precision is fairly low as explain in
+    # Penoncello, S.G., Jacobsen, R.T., Reuck, K.M., Elhassan, A.E., Williams,
+    # R.C., Lemmon, E.W.
+    # The Selection of International Standards for the Thermodynamic Properties
+    # of HFC-134a and HCFC-123
+    # Int. J. Thermophysics 16(3) (1995) 781-790
+    # doi: 10.1007/bf01438863
+
     _surface = {"sigma": [0.056151], "exp": [1.2367]}
     _vapor_Pressure = {
         "eq": 3,

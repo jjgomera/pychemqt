@@ -257,6 +257,17 @@ class R134a(MEoS):
         "gamma2": [1]*19}
 
     eq = tillner, MBWR, shortSpan, astina, sun, huber
+
+    # Other equation
+    # Piao, C-c, Sato, H., Watanabe, K.
+    # An Equation of State for a New Working Fluid HFC-134a
+    # Transactions of the Japan Society of Mechanical Engineers Series B
+    # 57(544) (1991) 192-199
+    # doi: 10.1299/kikaib.57.4182
+
+    # Don´t implemented because use a nonstandard formulation with a extended
+    # virial equation
+
     _PR = [0.0336, -21.3339]
 
     _surface = {"sigma": [0.05801], "exp": [1.241]}
