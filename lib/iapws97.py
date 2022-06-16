@@ -127,6 +127,7 @@ class IAPWS97(ThermoWater):
     Examples
     --------
     Region 1, Table A3
+
     >>> st = IAPWS97(T=300, P=3e6)
     >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
     '0.00100215168 115.331273 112.324818'
@@ -144,6 +145,7 @@ class IAPWS97(ThermoWater):
     '2.58041912 4.65580682 1240.71337'
 
     Region 2, Table A6
+
     >>> st = IAPWS97(T=300, P=3.5e3)
     >>> "%0.9g %0.9g %0.9g" % (st.v, st.h.kJkg, st.u.kJkg)
     '39.4913866 2549.91145 2411.6916'
@@ -161,6 +163,7 @@ class IAPWS97(ThermoWater):
     '5.17540298 10.3505092 480.386523'
 
     Region 3, Table A10
+
     >>> from iapws.iapws97 import _Region3
     >>> st = _Region3(500, 650)
     >>> "%0.9g %0.9g %0.9g" % (st["P"], st["h"], st["h"]-st["P"]*1000*st["v"])
@@ -179,6 +182,7 @@ class IAPWS97(ThermoWater):
     '4.46971906 6.34165359 760.696041'
 
     Region 4, Table A12
+
     >>> st1 = IAPWS97(T=300, x=0.5)
     >>> st2 = IAPWS97(T=500, x=0.5)
     >>> st3 = IAPWS97(T=600, x=0.5)
@@ -186,6 +190,7 @@ class IAPWS97(ThermoWater):
     '0.00353658941 2.63889776 12.3443146'
 
     Region 4, Table A29
+
     >>> st1 = IAPWS97(P=1e5, x=0.5)
     >>> st2 = IAPWS97(P=1e6, x=0.5)
     >>> st3 = IAPWS97(P=1e7, x=0.5)
