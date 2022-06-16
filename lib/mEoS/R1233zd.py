@@ -32,18 +32,63 @@ class R1233zd(MEoS):
     synonym = "R1233zd"
     _refPropName = "R1233ZD"
     _coolPropName = "R1233zd(E)"
-    rhoc = unidades.Density(480.219392)
-    Tc = unidades.Temperature(439.6)
-    Pc = unidades.Pressure(3623.7, "kPa")
-    M = 130.4944  # g/mol
-    Tt = unidades.Temperature(195.15)
-    Tb = unidades.Temperature(291.47)
-    f_acent = 0.305
+    rhoc = unidades.Density(483.3579248)
+    Tc = unidades.Temperature(438.86)
+    Pc = unidades.Pressure(3582.8, "kPa")
+    M = 130.4962  # g/mol
+    Tt = unidades.Temperature(165.75)
+    Tb = unidades.Temperature(291.28)
+    f_acent = 0.304
     momentoDipolar = unidades.DipoleMoment(1.44, "Debye")
+
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-17.291229931888, 10.404947446884],
+           "ao_exp": [13.7, 7.0974],
+           "titao": [761/Tc, 2870/Tc]}
 
     CP1 = {"ao": 4.0,
            "ao_exp": [11.765, 8.6848],
            "exp": [630, 2230]}
+
+    akasaka = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1233zd(E) of Akasaka"
+                    "(2022).",
+        "__doi__": {"autor": "Akasaka, R., Lemmon, E.W.",
+                    "title": "An International Standard Formulation for "
+                             "trans-1-Chloro-3,3,3-trifluroprop-1-ene "
+                             "[R1233zd(E)] Covering Temperatures from the"
+                             "Triple-Pont Temperature to 450K and Pressures"
+                             "up to 100 MPa",
+                    "ref": "J. Phys. Chem. Ref. Data 51(2) (2022) 023101",
+                    "doi": "10.1063/5.0083026"},
+
+        "R": 8.314462618,
+        "cp": Fi1,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 450.0, "Pmax": 100000.0, "rhomax": 11.85,
+
+        "nr1": [0.04394257, 1.062919, -1.2879140374971, -0.8088618920845,
+                0.2372427],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1.0, 0.182, 0.865, 1.0924, 0.49],
+
+        "nr2": [-1.9403, -2.831967, 0.373421, -1.515798, -0.02755627],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [1.958, 2.05, 0.658, 2.051, 0.862],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [4.24023, -0.03152671, -1.366494, 2.647143, -2.325463,
+                -0.2541521, 0.1330834, -0.1569217],
+        "d3": [1, 2, 3, 1, 1, 1, 1, 1],
+        "t3": [1.852, 1.92, 1.936, 1.515, 2.668, 1.755, 0.526, 2.98],
+        "alfa3": [1.532, 0.635, 1.4056, 1.451, 1.395, 2.259, 24.3, 23.6],
+        "beta3": [0.2912, 0.6245, 0.669, 0.5798, 0.4643, 2.449, 1061.4, 917.8],
+        "gamma3": [1.7171, 0.63, 0.7852, 2.251, 1.821, 2.074, 1.0797, 1.084],
+        "epsilon3": [0.8834, 1.386, 0.5196, 1.133, .9788, 1.166, .9244, .9372]}
 
     mondejar = {
         "__type__": "Helmholtz",
@@ -62,6 +107,7 @@ class R1233zd(MEoS):
         "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 100000.0, "rhomax": 11.41,
+        "M": 130.4944, "Tc": 439.6, "rhoc": 3.68, "Pc": 3623.7,
 
         "nr1": [0.0478487, 1.60644, -2.27161, -0.530687, 0.169641],
         "d1": [4, 1, 1, 2, 3],
@@ -79,10 +125,9 @@ class R1233zd(MEoS):
         "alfa3": [0.748, 1.473, 1.39, 0.86, 1.8],
         "beta3": [1.29, 1.61, 0.8, 1.34, 0.49],
         "gamma3": [0.89, 1.13, 0.7, 0.91, 1.2],
-        "epsilon3": [0.508, 0.366, 0.38, 0.773, 1.17],
-        "nr4": []}
+        "epsilon3": [0.508, 0.366, 0.38, 0.773, 1.17]}
 
-    eq = mondejar,
+    eq = akasaka, mondejar
 
     _surface = {
         "__doi__": {
@@ -95,16 +140,16 @@ class R1233zd(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-7.6021, 2.3265, -1.9771, -4.8451, -4.8762],
-        "t": [1.0, 1.5, 2.0, 4.3, 14.0]}
+        "n": [-7.4798, 1.5791, -1.7959, -3.6716],
+        "t": [1, 1.5, 2.39, 4.53]}
     _liquid_Density = {
         "eq": 1,
-        "n": [2.13083, 0.583568, 0.247871, 0.472173],
-        "t": [0.355, 0.9, 3.5, 8.0]}
+        "n": [0.61448, 2.6345, -1.316, 0.86885, 0.34071],
+        "t": [0.22, 0.55, 0.94, 1.4, 6.8]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-3.0152, -6.5621, -19.427, -62.650, -181.64],
-        "t": [0.397, 1.2, 3.1, 6.6, 15.0]}
+        "n": [-0.80785, -3.2355, -2.7567, -10.863, -33.456, -69.31],
+        "t": [0.24, 0.59, 1, 2.2, 4.7, 9]}
 
     thermo0 = {"__name__": "Perkins (2017)",
                "__doi__": {
@@ -137,27 +182,65 @@ class R1233zd(MEoS):
 
 class Test(TestCase):
 
+    def test_Akasaka(self):
+        # Table 9, pag 16
+        st = R1233zd(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 5), 0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 93.7166)
+        self.assertEqual(round(st.cpM.JmolK, 3), 102.031)
+        self.assertEqual(round(st.w, 3), 144.257)
+
+        st = R1233zd(T=300, rhom=10)
+        self.assertEqual(round(st.P.MPa, 5), 18.20558)
+        self.assertEqual(round(st.cvM.JmolK, 3), 107.988)
+        self.assertEqual(round(st.cpM.JmolK, 3), 150.070)
+        self.assertEqual(round(st.w, 3), 797.711)
+
+        st = R1233zd(T=300, rhom=0.05)
+        self.assertEqual(round(st.P.MPa, 7), 0.1192035)
+        self.assertEqual(round(st.cvM.JmolK, 4), 94.9935)
+        self.assertEqual(round(st.cpM.JmolK, 3), 105.252)
+        self.assertEqual(round(st.w, 3), 138.949)
+
+        st = R1233zd(T=400, rhom=8)
+        self.assertEqual(round(st.P.MPa, 5), 10.79073)
+        self.assertEqual(round(st.cvM.JmolK, 3), 122.693)
+        self.assertEqual(round(st.cpM.JmolK, 3), 176.124)
+        self.assertEqual(round(st.w, 3), 441.123)
+
+        st = R1233zd(T=400, rhom=0.8)
+        self.assertEqual(round(st.P.MPa, 6), 1.791900)
+        self.assertEqual(round(st.cvM.JmolK, 3), 121.820)
+        self.assertEqual(round(st.cpM.JmolK, 3), 171.027)
+        self.assertEqual(round(st.w, 3), 116.943)
+
+        st = R1233zd(T=439, rhom=3.8)
+        self.assertEqual(round(st.P.MPa, 6), 3.591512)
+        self.assertEqual(round(st.cvM.JmolK, 3), 151.871)
+        self.assertEqual(round(st.cpM.JmolK, 1), 56925.2)
+        self.assertEqual(round(st.w, 4), 77.5936)
+
     def test_Perkins(self):
         # Table 2, pag E
         # Include basic testing for Mondejar mEoS
         # The paper use a undocumented ecs viscosity correlation, so critical
         # enhancement differ
-        st = R1233zd(T=300, rho=0)
+        st = R1233zd(T=300, rho=0, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 0)
         self.assertEqual(round(st.k.WmK, 6), 0.010659)
 
-        st = R1233zd(T=300, rho=5.4411)
+        st = R1233zd(T=300, rho=5.4411, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 0.10)
         self.assertEqual(round(st.k.WmK, 6), 0.010766)
 
-        st = R1233zd(T=300, rho=1308.8)
+        st = R1233zd(T=300, rho=1308.8, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 20.02)
-        self.assertEqual(round(st.k.WmK, 6), 0.091409)
+        self.assertEqual(round(st.k.WmK, 6), 0.091408)
 
-        st = R1233zd(T=445, rho=0)
+        st = R1233zd(T=445, rho=0, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 0)
         self.assertEqual(round(st.k.WmK, 6), 0.021758)
 
-        st = R1233zd(T=445, rho=168.52)
+        st = R1233zd(T=445, rho=168.52, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 3.00)
-        self.assertEqual(round(st.k.WmK, 6), 0.026044)
+        self.assertEqual(round(st.k.WmK, 6), 0.026030)
