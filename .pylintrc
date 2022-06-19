@@ -1,6 +1,6 @@
 [MASTER]
 
-extension-pkg-whitelist = PyQt5 
+extension-pkg-whitelist = PyQt5, CoolProp
 
 disable = invalid-name, 
 
