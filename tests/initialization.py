@@ -76,12 +76,12 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
 
 # Checking costindex
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
-        orig = os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")
-        with open(orig) as cost_index:
-            lista = cost_index.readlines()[-1].split(" ")
-            with open(conf_dir + "CostIndex.dat", "w") as archivo:
-                for data in lista:
-                    archivo.write(data.replace(os.linesep, "") + os.linesep)
+    orig = os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")
+    with open(orig) as cost_index:
+        lista = cost_index.readlines()[-1].split(" ")
+        with open(conf_dir + "CostIndex.dat", "w") as archivo:
+            for data in lista:
+                archivo.write(data.replace(os.linesep, "") + os.linesep)
 
 # Checking currency rates
 origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
