@@ -19,7 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 import os
-import sys
 from doctest import DocTestSuite
 from unittest import TestLoader, TestSuite
 
@@ -33,7 +32,7 @@ for mname in lib.__all__[2:]:
 
 # Add lib.mEoS submodule test
 loader = TestLoader()
-path = os.path.dirname(os.path.realpath(sys.argv[0]))
+path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 tests = loader.discover(os.path.join(path, "lib", "mEoS"), pattern="*.py")
 TestMEOS = TestSuite(tests)
 TestLib.addTest(TestMEOS)

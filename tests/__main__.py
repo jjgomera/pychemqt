@@ -22,6 +22,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 import os
+import warnings
+from unittest import TestSuite, TextTestRunner
+
+import numpy as np
+
+from test_lib import TestLib
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('.')
@@ -38,17 +44,12 @@ os.environ["PyQt5.Qsci"] = "False"
 
 
 # Don't print the numpy RuntimeWarning
-from numpy import seterr
-seterr("ignore")
+np.seterr("ignore")
 
-import warnings
 warnings.simplefilter("ignore")
-
-from unittest import TextTestRunner, TestSuite
-from test_lib import TestLib
 
 suite = TestSuite()
 suite.addTest(TestLib)
 
-runner = TextTestRunner(failfast=True)
+runner = TextTestRunner(failfast=False)
 results = runner.run(suite)
