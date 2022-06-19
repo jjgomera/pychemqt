@@ -25,6 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # optional method to meos tools calculations
 ###############################################################################
 
+# TODO: Implement the official python wrapper compatible too with REFPROP v.10
+# https://github.com/usnistgov/REFPROP-wrappers/tree/master/wrappers/python
+
+# This library implement an old unnofficial library wrapper compatible
+# with Refprop v.9
+
 
 import sys
 

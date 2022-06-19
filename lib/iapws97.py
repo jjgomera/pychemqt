@@ -311,7 +311,6 @@ class IAPWS97(ThermoWater):
         self.cpM0 = unidades.MolarSpecificHeat(None)
         self.cvM0 = unidades.MolarSpecificHeat(None)
 
-
     def fill(self, fase, st):
         """Fill phase properties"""
         fase._bool = True
