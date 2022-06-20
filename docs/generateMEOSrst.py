@@ -108,6 +108,13 @@ for mod in lib.mEoS.__all__:
         txt += os.linesep + os.linesep
         txt += ".. image:: images/%s.png" % mod.__name__
         txt += os.linesep + os.linesep
+        txt += "The diagram is generated with "
+        txt += ":download:`this module <../.script/plotMEoS.py>` "
+        txt += "running with the compound name as parameter or edited in file"
+        txt += os.linesep + os.linesep
+        txt += ".. code-block:: bash" + os.linesep + os.linesep
+        txt += "    python3 plotMEoS.py %s" % mod.__name__
+        txt += os.linesep + os.linesep
 
     with open("docs/lib.mEoS.%s.rst" % mod.__name__, "w") as file:
         file.write(txt)
