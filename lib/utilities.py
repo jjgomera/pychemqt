@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=import-outside-toplevel
 
 '''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2022, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -36,7 +37,7 @@ from PyQt5.QtWidgets import QApplication
 
 
 def format2txt(formato):
-    """Function to convert dict format config in a string equivalent"""
+    """Function to convert dict format configuration in a string equivalent"""
     if formato["signo"]:
         txt = "+"
     else:
@@ -52,23 +53,44 @@ def format2txt(formato):
     return txt
 
 
-def representacion(float, format=0, total=0, decimales=4, exp=False, tol=5,
+def representacion(number, format=0, total=0, decimales=4, eng=False, tol=5,
                    signo=False, thousand=False):
     """Function for string representation of float values
-    float: number to transform
-    format: mode
+
+    Parameters
+    ----------
+    number : float
+        number to transform
+    format : mode
         0   -   fixed point
         1   -   Significant figures
         2   -   Engineering format
-    total: total number of digits
-    decimales: decimal number
-    exp: boolean to use engineering repr for big or small number
-    tol: exponent limit tu use engineering repr over float normal repr
-    signo: show sign
-    thousand: use thousan separator point
+    total : integer
+        total number of digits
+    decimales : integer
+        decimal number
+    eng : boolean
+        Use engineering repr for big or small number
+    tol : integer
+        Exponent limit to use engineering repr over float normal repr
+    signo : boolean
+        Show sign, use to force positive sign
+    thousand : boolean
+        Use thousand separator point
+
+    Returns
+    -------
+    repr : str
+        String representation
+
+    Examples
+    --------
+    >>> import math
+    >>> representacion(math.pi, signo=True)
+    '+3.1416'
     """
-    if type(float) is str:
-        return float
+    if isinstance(number, str):
+        return number
 
     if signo:
         start = "{:+"
@@ -80,10 +102,11 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=5,
     else:
         coma = "."
 
-    if exp and (-10**tol > float or (-10**-tol < float < 10**(-tol+1) and
-                                     float != 0) or float > 10**tol):
+    if eng and (-10**tol > number
+                or (-10**-tol < number < 10**(-tol+1) and number != 0)
+                or number > 10**tol):
         format = 2
-    if float == 0:
+    if number == 0:
         decimales = 1
 
     if format == 1:
@@ -93,18 +116,27 @@ def representacion(float, format=0, total=0, decimales=4, exp=False, tol=5,
     else:
         string = start+"{:d}{}{:d}f".format(total, coma, decimales)+"}"
 
-    return string.format(float)
+    return string.format(number)
 
 
 def colors(number, mix="", scale=False):
     """Function to generate colors
-    Input:
-        number: number of required colors
-        mix: string name color for mix
-    Output:
-        Array with color hex repr
+
+    Parameters
+    ----------
+    number: integer
+        Number of required colors
+    mix : str
+        Name color for mix
+    scale : boolean
+        Define  output in a scale red-blue
+
+    Returns
+    -------
+    rgb : list
+        List with color hexadecimal code
     """
-    colors = []
+    rgb = []
     for i in range(number):
         if scale:
             red = 255*(i/number)
@@ -122,18 +154,21 @@ def colors(number, mix="", scale=False):
             blue_mix = int(mix[5:], base=16)
             blue = (blue + blue_mix) / 2
 
-        colors.append(('#%02X%02X%02X' % (red, green, blue)))
-    return colors
+        rgb.append(('#%02X%02X%02X' % (red, green, blue)))
+    return rgb
 
 
 def exportTable(matrix, fname, ext, title=None):
-    """Save data to a file
-    Inputs
-        matrix: array with data to save
-        fname: name of file to save
-        ext: name of format to save
-            csv | ods | xls | xlsx
-        title: column title array, optional
+    """Save data to a spreadsheet file
+
+    Parameters
+    ----------
+    matrix : list
+        array with data to save
+    ext : str
+        name of format to save, with supported csv | ods | xls | xlsx
+    title : list, optional
+        list with column title
     """
     sheetTitle = QApplication.translate("pychemqt", "Table")
     if fname.split(".")[-1] != ext:
@@ -227,10 +262,23 @@ def exportTable(matrix, fname, ext, title=None):
 
 def spreadsheetColumn(index):
     """Procedure to convert index column in AAA spreadsheet column namestyle
-    Input:
-        index: index of column start with 0
-    Return:
+
+    Parameters
+    ----------
+    index : integer
+        index of column start with 0
+
+    Returns
+    -------
+    key : str
         column letter code, ej: A, C
+
+    Examples
+    --------
+    >>> spreadsheetColumn(5)
+    'F'
+    >>> spreadsheetColumn(75)
+    'BX'
     """
     index += 1
     letters = ""
@@ -243,23 +291,34 @@ def spreadsheetColumn(index):
 
 def formatLine(config, section, name):
     """Return a matplotlib line formatting kw
-        config: Configparser instance
-        section: Section name in Configparser
-        name: Line name prefix
+
+    Parameters
+    ----------
+    config : configparser.Configparser instance
+        configuration
+    section : str
+        Section name in Configparser
+    name : str
+        Line name prefix
+
+    Returns
+    -------
+    kw : dict
+        matplotlib kwargs formatting dictionary
     """
-    format = {}
-    format["ls"] = config.get(section, name+"lineStyle")
-    format["lw"] = config.getfloat(section, name+"lineWidth")
-    format["color"] = config.get(section, name+"Color")
-    format["alpha"] = config.getfloat(section, name+"alpha")/255
+    kw = {}
+    kw["ls"] = config.get(section, name+"lineStyle")
+    kw["lw"] = config.getfloat(section, name+"lineWidth")
+    kw["color"] = config.get(section, name+"Color")
+    kw["alpha"] = config.getfloat(section, name+"alpha")/255
 
-    format["marker"] = config.get(section, name+"marker")
-    format["ms"] = config.getfloat(section, name+"markersize")
-    format["mfc"] = config.get(section, name+"markerfacecolor")
-    format["mew"] = config.getfloat(section, name+"markeredgewidth")
-    format["mec"] = config.get(section, name+"markeredgecolor")
+    kw["marker"] = config.get(section, name+"marker")
+    kw["ms"] = config.getfloat(section, name+"markersize")
+    kw["mfc"] = config.get(section, name+"markerfacecolor")
+    kw["mew"] = config.getfloat(section, name+"markeredgewidth")
+    kw["mec"] = config.get(section, name+"markeredgecolor")
 
-    return format
+    return kw
 
 
 def SimpleEq(Tc, T, coef):
