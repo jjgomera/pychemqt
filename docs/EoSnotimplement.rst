@@ -1,6 +1,10 @@
 
 Other equations don't implemented
 
+Cubic
+-----
+
+There are many cubic EoS don't implemented
 
 Clausius (1881)
 ^^^^^^^^^^^^^^^
@@ -315,7 +319,7 @@ Martin, J.J. Cubic Equations of State-Which?. Ind. Eng. Chem. Fundam. 18(2)
 
 
 Rogalski (1990)
----------------
+^^^^^^^^^^^^^^^
 
 Modified version of the volume-corrected Peng-Robinson equation state
 
@@ -601,3 +605,14 @@ Chueh, P.L., Prausnitz, J.M. Vapor-Liquid Equilibria at Hith Pressures. Vapor-
 Phase Fugacity Coefficients in Nonpolar and Quantum-Gas Mixtures. Ind. Eng.
 Chem. Fundam. 6(4) (1967) 492-498, http://doi.org/10.1021/i160024a003.
 
+Others
+^^^^^^
+
+.. include:: EoSOther.rst
+
+
+Virial
+------
+
+.. include:: EoSVirial.rst
+    
