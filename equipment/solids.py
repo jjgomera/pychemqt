@@ -48,6 +48,14 @@ class Grinder(equipment):
     title = "Molino"
     help = ""
 
+    # TODO: Added temporary, complete upgrade
+    indiceCostos = 7
+    kwargs = {
+        "f_install": 2.8,
+        "Base_index": 0.0,
+        "Current_index": 0.0}
+
+
     def coste(self, *args, **kwargs):
         """
         tipo:
