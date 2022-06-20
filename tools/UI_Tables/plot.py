@@ -125,7 +125,6 @@ class PlotMEoS(QtWidgets.QWidget):
         self.statusPosition.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.statusPosition.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.statusWidget.append(self.statusPosition)
-        # self.statusThermo = QtWidgets.QLabel()
         self.statusThermo = ClickableLabel()
         self.statusThermo.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.statusThermo.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -938,7 +937,7 @@ class EditPlot(QtWidgets.QDialog):
         self.annotationLabel.textChanged.connect(
             partial(self.changeValue, "textLabel"))
         self.annotationLabel.colorChanged.connect(
-                partial(self.changeValue, "textcolor"))
+            partial(self.changeValue, "textcolor"))
         self.annotationLabel.fontChanged.connect(
             partial(self.changeValue, "textfont"))
         self.annotationPos.valueChanged.connect(

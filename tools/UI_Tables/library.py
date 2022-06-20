@@ -231,6 +231,7 @@ def _getData(fluid, keys, phase=True, unit=None, table=True):
             fila.append(txt)
     return fila
 
+
 def saveProperties(fluids):
     """Save all available properties of a list of fluids"""
     dat = {}
