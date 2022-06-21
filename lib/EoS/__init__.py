@@ -58,3 +58,42 @@ for obj in __all__:
 # Add cubic library
 __doi__["lib.EoS.cubic"] = cubic.__doi__
 
+
+# Equations classification
+
+# Virial-type
+# Anderko 1990
+
+# Virial
+# BWR
+# BWR-Starling-Han
+# BWR-Nishiumi
+
+# Cubic-empirical EoS vdW derivatives
+# vdW
+# RK
+# SRK
+# PR
+# PTV
+
+# Non-cubic EoS vdW derivatives
+# Carnahan-Starling
+# BACK
+# Heiling-Franck
+# Dieters
+# Soave-quartic
+
+# Wei-Sadus 2000
+# Molecular-based EoS, for chain-molecules
+# PHCT
+# SPHCT
+# PACT
+# TPT
+# PHSC
+
+# MOlecular-based EoS, for associating fluids
+# APACT
+# SAFT
+# SSAFT
+# CPA
+# AEOS
