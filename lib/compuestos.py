@@ -1539,7 +1539,7 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     m = 8.6761e-6
     f = 48.8756
     G = 0.7185
-    I = 3.4031e-5
+    i = 3.4031e-5
     c = (5.5526, -2.7659)
     om = (7.9019e-2, -2.8431e-2)
 
@@ -1556,7 +1556,7 @@ def RhoL_Nasrifar(T, P, Tc, Pc, w, M, Ps, rhos):
     # R value change to mass base in unit m³Pa/kgK
     v_inf = OM*R*1000/M*Tc/Pc                                          # Eq 18
 
-    phi = (J+L*(Pr-Prs)+m*(Pr-Prs)**3)/(F+G*(Pr-Prs)+I*(Pr-Prs)**3)    # Eq 16
+    phi = (J+L*(Pr-Prs)+m*(Pr-Prs)**3)/(F+G*(Pr-Prs)+i*(Pr-Prs)**3)    # Eq 16
 
     # Eq 9
     v = C*tanh(phi)*(v_inf-vs)+vs
@@ -2236,9 +2236,9 @@ def MuL_Lucas(T, P, Tc, Pc, w, Ps, mus):
     f1 = 0.9990614 - 4.6739e-4/(1.052278*Tr**-0.03876963 - 1.05134195)  # Eq 4
     # Eq 5
     f2 = -0.20863153 + 0.32569953/(1.00383978 - Tr**2.57327058)**0.29063299
-    Fs = w * (-0.079206 + 2.161577*Tr - 13.403985*Tr**2 + 44.170595*Tr**3 -
-              84.829114*Tr**4 + 96.120856*Tr**5 - 59.812675*Tr**6 +
-              15.671878*Tr**7)                                          # Eq 6
+    Fs = w * (-0.079206 + 2.161577*Tr - 13.403985*Tr**2 + 44.170595*Tr**3
+              - 84.829114*Tr**4 + 96.120856*Tr**5 - 59.812675*Tr**6
+              + 15.671878*Tr**7)                                        # Eq 6
     Fpr = 1 + f2*(dPr/2.11824066)**f1                                   # Eq 3
     Fp = Fpr/(1+Fs*dPr)                                                 # Eq 2
 
@@ -2814,8 +2814,8 @@ def MuG_Lucas(T, P, Tc, Pc, Zc, M, D):
     else:
         Fqo = 1
 
-    Z1 = Fpo*Fqo*(0.807*Tr**0.618 - 0.357*exp(-0.449*Tr) +
-                  0.34*exp(-4.058*Tr) + 0.018)
+    Z1 = Fpo*Fqo*(0.807*Tr**0.618 - 0.357*exp(-0.449*Tr)
+                  + 0.34*exp(-4.058*Tr) + 0.018)
 
     if Pr < 0.6:
         # Low pressure correlation
@@ -3280,8 +3280,8 @@ def ThL_Gharagheizi(T, Pc, Tb, M, w):
     Pc_bar = Pc*1e-5
     B = 16.0407*M+2*Tb-27.9074                                          # Eq 6
     A = 3.8588*M**8*(1.0045*B + 6.5152*M - 8.9756)                      # Eq 5
-    k = 1e-4*(10*w + 2*Pc_bar - 2*T + 4 + 1.908*(Tb+1.009*B**2/M**2) +
-              3.9287*M**4/B**4 + A/B**8)                                # Eq 4
+    k = 1e-4*(10*w + 2*Pc_bar - 2*T + 4 + 1.908*(Tb+1.009*B**2/M**2)
+              + 3.9287*M**4/B**4 + A/B**8)                              # Eq 4
     return unidades.ThermalConductivity(k)
 
 
@@ -3510,10 +3510,10 @@ def ThL_KanitkarThodos(T, P, Tc, Pc, Vc, M, rho):
     Pr = P/Pc
     rhor = rho*Vc
 
-    l = Tc_R**(1/6)*M**0.5/Pc_atm**(2/3)
-    b = 0.4 + 0.986/exp(0.58*l)                                         # Eq 8
+    li = Tc_R**(1/6)*M**0.5/Pc_atm**(2/3)
+    b = 0.4 + 0.986/exp(0.58*li)                                        # Eq 8
     alfa = 7.137e-3/b**3.322                                            # Eq 7
-    k = (-1.884e-6*Pr**2+1.442e-3*Pr+alfa*exp(b*rhor))/l                # Eq 6
+    k = (-1.884e-6*Pr**2+1.442e-3*Pr+alfa*exp(b*rhor))/li               # Eq 6
     return unidades.ThermalConductivity(k, "BtuhftF")
 
 
@@ -3712,11 +3712,11 @@ def ThG_MisicThodos(T, Tc, Pc, M, Cp):
     Tr = T/Tc
     cp = unidades.MolarSpecificHeat(Cp*M).calmolK
 
-    l = Tc**(1/6)*M**0.5/Pc_atm**(2/3)
+    li = Tc**(1/6)*M**0.5/Pc_atm**(2/3)
     if Tr < 1:
-        k = 0.445e-5*Tr*cp/l                                            # Eq 6
+        k = 0.445e-5*Tr*cp/li                                           # Eq 6
     else:
-        k = 1e-6*(14.52*Tr-5.14)**(2/3)*cp/l                            # Eq 7
+        k = 1e-6*(14.52*Tr-5.14)**(2/3)*cp/li                           # Eq 7
     return unidades.ThermalConductivity(k, "calscmK")
 
 
@@ -4608,6 +4608,7 @@ def CpL_Poling(T, Tc, w, Cpgo):
         w*(4.2775 + 6.3*(1-Tr)**(1/3)/Tr + 0.4355/(1-Tr))
     return Cpgo + R*Cpr
 
+
 # Acentric factor
 @refDoc(__doi__, [4])
 def facent_LeeKesler(Tb, Tc, Pc):
@@ -5061,8 +5062,7 @@ class Componente(object):
     """
 
     _bool = False
-    kwargs = {
-              "RhoL": None,
+    kwargs = {"RhoL": None,
               "RhoLP": None,
               "MuL": None,
               "MuLP": None,
@@ -5241,7 +5241,7 @@ class Componente(object):
         atoms = sum([val for val in decmp.values()])
         self.C = decmp.get("C", 0)
         self.H = decmp.get("H", 0)
-        self.O = decmp.get("O", 0)
+        self.O = decmp.get("O", 0)  # noqa
         self.N = decmp.get("N", 0)
         self.S = decmp.get("S", 0)
 
@@ -5806,7 +5806,7 @@ class Componente(object):
                 return MuL_Parametric(T, self._parametricMu)
             elif self.Tc and self.Pc and self.f_acent and self.M:
                 return MuL_LetsouStiel(
-                        T, self.M, self.Tc, self.Pc, self.f_acent)
+                    T, self.M, self.Tc, self.Pc, self.f_acent)
 
         # Add correction factor for high pressure
         if P < 0.6*self.Pc:
