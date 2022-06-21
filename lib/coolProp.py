@@ -26,7 +26,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 import os
-from math import exp, log
 
 from PyQt5.QtWidgets import QApplication
 
@@ -106,7 +105,7 @@ class CoolProp(ThermoAdvanced):
         elif self._definition and not self._multicomponent and "ids" in kwargs:
             if os.environ["CoolProp"] == "True":
                 fluido = self._name()
-                estado = CP.AbstractState("HEOS", fluido)
+                estado = CP.AbstractState(b"HEOS", fluido.encode())
                 self.Tc = unidades.Temperature(estado.T_critical())
                 self.Pc = unidades.Pressure(estado.p_critical())
                 self.rhoc = unidades.Density(estado.rhomass_critical())
@@ -118,9 +117,9 @@ class CoolProp(ThermoAdvanced):
                         estado.acentric_factor())
 
                 self.name = fluido
-                self.CAS = estado.fluid_param_string("CAS")
-                self.synonim = estado.fluid_param_string("aliases")
-                self.formula = estado.fluid_param_string("formula")
+                self.CAS = estado.fluid_param_string(b"CAS")
+                self.synonim = estado.fluid_param_string(b"aliases")
+                self.formula = estado.fluid_param_string(b"formula")
 
             self.eq = self._limit(fluido, estado)
 
@@ -128,7 +127,7 @@ class CoolProp(ThermoAdvanced):
         eq = {}
         eq["Tmin"] = estado.Tmin()
         eq["Tmax"] = estado.Tmax()
-        eq["Pmin"] = CP.CoolProp.PropsSI("pmin", name)
+        eq["Pmin"] = CP.CoolProp.PropsSI(b"pmin", name.encode())
         eq["Pmax"] = estado.pmax()
         return eq
 
@@ -196,10 +195,6 @@ class CoolProp(ThermoAdvanced):
 
         args = [var1, var2]
         return args
-
-    def _new(self, **kw):
-        """Create a new instance"""
-        return self.__class__(ids=self.kwargs["ids"], **kw)
 
     def _name(self):
         lst = []
@@ -411,9 +406,12 @@ class CoolProp(ThermoAdvanced):
                     estado.fugacity_coefficient(i)))
                 fase.f.append(unidades.Pressure(estado.fugacity(i)))
         else:
-            fase.fi = [unidades.Dimensionless(
-                exp(estado.alphar()+estado.delta()*estado.dalphar_dDelta() -
-                    log(1+estado.delta()*estado.dalphar_dDelta())))]
+            fase.fi = [unidades.Dimensionless(1)]
+            # print(estado.alphar(), estado.delta(), estado.dalphar_dDelta(),
+                    # (1+estado.delta()*estado.dalphar_dDelta()))
+            # fase.fi = [unidades.Dimensionless(
+                # exp(estado.alphar()+estado.delta()*estado.dalphar_dDelta() -
+                    # log(1+estado.delta()*estado.dalphar_dDelta())))]
             fase.f = [unidades.Pressure(self.P*f) for f in fase.fi]
 
         fase.cv = unidades.SpecificHeat(estado.cvmass())
@@ -533,7 +531,7 @@ class CoolProp(ThermoAdvanced):
         return msg, x
 
 
-# if __name__ == '__main__':
-    # fluido = CoolProp(ids=[107], T=300, P=1e5)
-    # print(fluido.status, fluido.msg)
-    # print(fluido.rho, fluido.msg)
+if __name__ == '__main__':
+    fluido = CoolProp(ids=[107], T=300, P=1e5)
+    print(fluido.status, fluido.msg)
+    print(fluido.rho, fluido.msg)

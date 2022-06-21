@@ -67,9 +67,8 @@ TODO
 from math import exp, log, log10, sqrt, sin, pi
 
 from scipy.optimize import fsolve
-from scipy.constants import g
 
-from lib.unidades import Angle, Dimensionless
+from lib.unidades import Dimensionless
 from lib.utilities import refDoc
 
 
@@ -237,12 +236,12 @@ __doi__ = {
          "ref": "CRC Press, 2017",
          "doi": ""},
 
-    30:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
-        }
+    # 30:
+        # {"autor": "",
+         # "title": "",
+         # "ref": "",
+         # "doi": ""},
+}
 
 
 # Friction factor for pipes
