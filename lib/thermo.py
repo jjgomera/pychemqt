@@ -56,15 +56,28 @@ class Thermo(object):
 
     def _new(self, **kw):
         """Create a new instance"""
+        # In refprop and coolprop classes the compound definition is fixed
+        # so add to new instance initialization kwargs
+        if "ids" in self.kwargs:
+            kw["ids"] = self.kwargs["ids"]
         return self.__class__(**kw)
 
     def __call__(self, **kwargs):
-        self.kwargs.update(kwargs)
+        self.cleanOldValues(**kwargs)
 
         if self.calculable:
             self.status = 1
-            self.calculo()
             self.msg = "Solved"
+            self.calculo()
+            self.cleanOldKwargs()
+
+    def cleanOldValues(self, **kwargs):
+        """Convert alternative input parameters"""
+        pass
+
+    def cleanOldKwargs(self, **kwargs):
+        """Convert alternative input parameters"""
+        pass
 
     def calculable(self):
         pass
@@ -344,9 +357,12 @@ class Thermo(object):
             txt = QApplication.translate("pychemqt", "Superheated")
         elif self.Tr == 1 and self.Pr == 1:
             txt = QApplication.translate("pychemqt", "Critic point")
-        else:
+        elif self.Tr > 1 and self.Pr > 1:
             txt = QApplication.translate("pychemqt", "Supercritical")
-        for key in self.propertiesPhase():
+        else:
+            txt = QApplication.translate("pychemqt", "Undefined")
+
+        for key in self.__class__.propertiesPhase():
             fase.__setattr__(key, txt)
 
     def writeStatetoJSON(self, state, fase):
@@ -417,7 +433,10 @@ class Thermo(object):
             self.Z = unidades.Dimensionless(fluid["Z"])
             self.alfav = unidades.InvTemperature(fluid["alfav"])
             self.kappa = unidades.InvPressure(fluid["kappa"])
-            self.kappas = unidades.InvPressure(fluid["kappas"])
+            try:
+                self.kappas = unidades.InvPressure(fluid["kappas"])
+            except KeyError:
+                self.kappas = unidades.InvPressure(0)
 
             self.mu = unidades.Viscosity(fluid["mu"])
             self.k = unidades.ThermalConductivity(fluid["k"])
@@ -431,8 +450,13 @@ class Thermo(object):
 
             self.alfap = unidades.Dimensionless(fluid["alfap"])
             self.betap = unidades.Dimensionless(fluid["betap"])
-            self.fi = [unidades.Dimensionless(f) for f in fluid["fi"]]
-            self.f = [unidades.Pressure(f) for f in fluid["f"]]
+            try:
+                self.fi = [unidades.Dimensionless(f) for f in fluid["fi"]]
+                self.f = [unidades.Pressure(f) for f in fluid["f"]]
+            except TypeError:
+                self.fi = [unidades.Dimensionless(fluid["fi"])]
+                self.f = [unidades.Pressure(fluid["f"])]
+
 
             self.Q = unidades.VolFlow(fluid["volFlow"])
             self.caudalmasico = unidades.MassFlow(fluid["massFlow"])
@@ -539,7 +563,7 @@ class ThermoAdvanced(Thermo):
     def propertiesGlobal(cls):
         """List properties only availables for global stream, not defined by
         phase"""
-        prop = Thermo.propertiesGlobal()
+        prop = Thermo.propertiesGlobal()[:]
         prop.append("invT")
         return prop
 
@@ -573,8 +597,12 @@ class ThermoAdvanced(Thermo):
         if fluid:
             self.betas = unidades.TemperaturePressure(fluid["betas"])
             self.Gruneisen = unidades.Dimensionless(fluid["Gruneisen"])
-            self.virialB = unidades.SpecificVolume(fluid["virialB"])
-            self.virialC = unidades.SpecificVolume_square(fluid["virialC"])
+            try:
+                self.virialB = unidades.SpecificVolume(fluid["virialB"])
+                self.virialC = unidades.SpecificVolume_square(fluid["virialC"])
+            except KeyError:
+                self.virialB = unidades.SpecificVolume(0)
+                self.virialC = unidades.SpecificVolume_square(0)
             self.dpdT_rho = unidades.PressureTemperature(fluid["dpdT_rho"])
             self.dpdrho_T = unidades.PressureDensity(fluid["dpdrho_T"])
             self.drhodT_P = unidades.DensityTemperature(fluid["drhodT_P"])
@@ -589,7 +617,10 @@ class ThermoAdvanced(Thermo):
             self.Ks = unidades.Pressure(fluid["Ks"])
             self.Kt = unidades.Pressure(fluid["Kt"])
             self.IntP = unidades.Pressure(fluid["IntP"])
-            self.invT = unidades.InvTemperature(fluid["invT"])
+            try:
+                self.invT = unidades.InvTemperature(fluid["invT"])
+            except KeyError:
+                self.invT = unidades.InvTemperature(0)
             self.hInput = unidades.Enthalpy(fluid["hInput"])
             self.epsilon = unidades.Dimensionless(fluid["epsilon"])
 
