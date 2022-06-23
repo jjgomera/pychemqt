@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 
-from math import exp, log, tanh
+from math import exp, log, log10, tanh
 
 from lib.utilities import refDoc
 
@@ -32,6 +32,11 @@ __doi__ = {
                   "Sphere: An Evolutionary Approach",
          "ref": "Powder Technology 257 (2014) 11-19",
          "doi": "10.1016/j.powtec.2014.02.045"},
+    2:
+        {"autor": "Clift, R., Grace, J.R., Weber, M.E.",
+         "title": "Bubbles, Drops, and Particles",
+         "ref": "Academic Press, 1978.",
+         "doi": ""},
 
     # 30:
         # {"autor": "",
@@ -105,4 +110,80 @@ def Barati(Re, extended=False):
             + 0.1357*exp(-((Re/1620)**2 + 10370)/Re) \
             - 8.5e-3*(2*log(tanh(tanh(Re)))/log(10) - 2825.7162)/Re + 2.4795
     return Cd
+
+
+def Clift(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [2]_.
+
+    This method use different correlation for several ranges of Re, as describe
+    in Table 5.2, pag 112
+
+    .. math::
+        C_d = \left\{ \begin{array}{ll}
+        \frac{24}{Re} + \frac{3}{16} & \mbox{if Re < 0.01}\\
+        \frac{24}{Re}(1 + 0.1315Re^{0.82 - 0.05w}) & \mbox{if 0.01 < Re < 20}\\
+        \frac{24}{Re}(1 + 0.1935Re^{0.6305}) & \mbox{if 20 < Re < 260}\\
+        10^{[1.6435 - 1.1242w + 0.1558w^2} & \mbox{if 260 < Re < 1500}\\
+        10^{[-2.4571 + 2.5558w - 0.9295w^2 + 0.1049w^3} &
+        \mbox{if 1500 < Re < 1.2x10^4}\\
+        10^{[-1.9181 + 0.6370w - 0.0636w^2} &
+        \mbox{if 1.2x10^4 < Re < 4.4x10^4}\\
+        10^{[-4.3390 + 1.5809w - 0.1546w^2} &
+        \mbox{if 4.4x10^4 < Re < 3.38x10^5}\\
+        29.78 - 5.3w & \mbox{if 3.38x10^5 < Re < 4x10^5}\\
+        0.1w - 0.49 & \mbox{if 4x10^5 < Re < 10^6}\\
+        0.19w - \frac{8x10^4}{Re} & \mbox{if 10^6 < Re}\end{array}\right.
+
+    where :math:`w = \log_{10}{Re}`
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.0f" % Clift(0.002))
+    12000
+    >>> print("%0.2f" % Clift(1000))
+    0.47
+
+    Notes
+    -----
+    This method define the total range of drag coefficiente, including above
+    1e6.
+    '''
+    w = log10(Re)
+
+    if Re < 0.01:
+        Cd = 3/16 + 24/Re
+    elif Re < 20:
+        Cd = 24/Re*(1 + 0.1315*Re**(0.82 - 0.05*w))
+    elif Re < 260:
+        Cd = 24/Re*(1 + 0.1935*Re**(0.6305))
+    elif Re < 1500:
+        Cd = 10**(1.6435 - 1.1242*w + 0.1558*w**2)
+    elif Re < 1.2e4:
+        Cd = 10**(-2.4571 + 2.5558*w - 0.9295*w**2 + 0.1049*w**3)
+    elif Re < 4.4e4:
+        Cd = 10**(-1.9181 + 0.6370*w - 0.0636*w**2)
+    elif Re < 3.38e5:
+        Cd = 10**(-4.3390 + 1.5809*w - 0.1546*w**2)
+    elif Re < 4e5:
+        Cd = 29.78 - 5.3*w
+    elif Re < 1e6:
+        Cd = 0.1*w - 0.49
+    else:
+        Cd = 0.19 - 8e4/Re
+    return Cd
+
 
