@@ -49,6 +49,11 @@ __doi__ = {
                   "Asymptotically the Wide Trend",
          "ref": "Powder Technology 186(3) (2008) 218-223",
          "doi": "10.1016/j.powtec.2007.12.006"},
+    5:
+        {"autor": "Morrison, F.A.",
+         "title": "An Introduction to Fluid Mechanics.",
+         "ref": "Cambridge University Press, 2013.",
+         "doi": ""},
 
     # 30:
         # {"autor": "",
@@ -300,5 +305,42 @@ def Almedeij(Re):
     Cd = (1/((f1 + f2)**-1 + f3**-1) + f4)**0.1
     return Cd
 
+
+def Morrison(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [5]_.
+
+    .. math::
+        C_d = \frac{24}{Re}+\frac{2.6 Re/5}{1+\left(\frac{Re}{5}\right)^{1.52}}
+        + \frac{0.411 \left(\frac{Re}{263.000}\right)^{-7.94}}
+        {1 + \left(\frac{Re}{263000}\right)^{-8}}
+        + \frac{0.25 \left(\frac{Re}{10^6}\right)}
+        {1+\left(\frac{Re}{10^6}\right)}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.0f" % Morrison(0.002))
+    12000
+    >>> print("%0.2f" % Morrison(1000))
+    0.48
+    '''
+    Cd = 24/Re + 2.6*Re/5/(1 + (Re/5)**1.52) \
+        + 0.411*(Re/263000)**-7.94/(1 + (Re/263000)**-8) \
+        + 0.25*Re/1e6/(1+Re/1e6)
+        # + Re**0.8/461000
+    return Cd
 
 
