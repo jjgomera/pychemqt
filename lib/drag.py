@@ -37,6 +37,12 @@ __doi__ = {
          "title": "Bubbles, Drops, and Particles",
          "ref": "Academic Press, 1978.",
          "doi": ""},
+    3:
+        {"autor": "Ceylan, K., Altunbaş, A., Kelbaliyev, G.",
+         "title": "A New Model for Estimation of Drag Force in the Flow of "
+                  "Newtonian Fluids around Rigid or Deformable Particles",
+         "ref": "Powder Technology 119 (2001) 250-56",
+         "doi": "10.1016/S0032-5910(01)00261-3"},
 
     # 30:
         # {"autor": "",
@@ -112,6 +118,7 @@ def Barati(Re, extended=False):
     return Cd
 
 
+@refDoc(__doi__, [2])
 def Clift(Re):
     r'''Calculates drag coefficient of a smooth sphere using the method in
     [2]_.
@@ -121,19 +128,19 @@ def Clift(Re):
 
     .. math::
         C_d = \left\{ \begin{array}{ll}
-        \frac{24}{Re} + \frac{3}{16} & \mbox{if Re < 0.01}\\
-        \frac{24}{Re}(1 + 0.1315Re^{0.82 - 0.05w}) & \mbox{if 0.01 < Re < 20}\\
-        \frac{24}{Re}(1 + 0.1935Re^{0.6305}) & \mbox{if 20 < Re < 260}\\
-        10^{[1.6435 - 1.1242w + 0.1558w^2} & \mbox{if 260 < Re < 1500}\\
+        \frac{24}{Re} + \frac{3}{16} & \mbox{if $Re < 0.01$}\\
+        \frac{24}{Re}(1 + 0.1315Re^{0.82 - 0.05w}) & \mbox{if $0.01 < Re < 20$}\\
+        \frac{24}{Re}(1 + 0.1935Re^{0.6305}) & \mbox{if $20 < Re < 260$}\\
+        10^{[1.6435 - 1.1242w + 0.1558w^2} & \mbox{if $260 < Re < 1500$}\\
         10^{[-2.4571 + 2.5558w - 0.9295w^2 + 0.1049w^3} &
-        \mbox{if 1500 < Re < 1.2x10^4}\\
+        \mbox{if $1500 < Re < 1.2x10^4$}\\
         10^{[-1.9181 + 0.6370w - 0.0636w^2} &
-        \mbox{if 1.2x10^4 < Re < 4.4x10^4}\\
+        \mbox{if $1.2x10^4 < Re < 4.4x10^4$}\\
         10^{[-4.3390 + 1.5809w - 0.1546w^2} &
-        \mbox{if 4.4x10^4 < Re < 3.38x10^5}\\
-        29.78 - 5.3w & \mbox{if 3.38x10^5 < Re < 4x10^5}\\
-        0.1w - 0.49 & \mbox{if 4x10^5 < Re < 10^6}\\
-        0.19w - \frac{8x10^4}{Re} & \mbox{if 10^6 < Re}\end{array}\right.
+        \mbox{if $4.4x10^4 < Re < 3.38x10^5$}\\
+        29.78 - 5.3w & \mbox{if $3.38x10^5 < Re < 4x10^5$}\\
+        0.1w - 0.49 & \mbox{if $4x10^5 < Re < 10^6$}\\
+        0.19w - \frac{8x10^4}{Re} & \mbox{if $10^6 < Re$}\end{array}\right.
 
     where :math:`w = \log_{10}{Re}`
 
@@ -186,4 +193,55 @@ def Clift(Re):
         Cd = 0.19 - 8e4/Re
     return Cd
 
+
+@refDoc(__doi__, [3])
+def Ceylan(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [3]_.
+
+    .. math::
+        \begin{align*}
+        C_d = 1 - 0.5e^{0.182} + 10.11Re^{-2/3}e^{0.952Re^{-1/4}}
+        - 0.03859Re^{-4/3}e^{1.30Re^{-1/2}} \\
+        {} + 0.037\times10^{-4}Re e^{-0.125\times10^{-4}Re}
+        -0.116\times10^{-10}Re^2 e^{-0.444\times10^{-5}Re}
+        \end{align*}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Examples
+    --------
+    Selected values from Table 2, pag 253
+
+    # >>> print("%0.0f" % Ceylan(0.1))
+    # 238
+    # >>> print("%0.2f" % Ceylan(0.5))
+    # 49.50
+    # >>> print("%0.2f" % Ceylan(1e3))
+    # 0.46
+
+    >>> print("%0.2f" % Ceylan(1e6))
+    0.26
+
+    This correlation dont return the expected vaues in paper, possible a typo
+    in paper
+    '''
+
+    # Eq 15
+    K1 = 1 - 0.5*exp(0.182) + 10.11*Re**(-2/3)*exp(0.952*Re**-0.25) \
+        - 0.03859*Re**(-4/3)*exp(1.3*Re**(-0.5))
+    K2 = 0.037e-4*Re*exp(-0.125e-4*Re) - 0.116e-10*Re**2*exp(-0.444e-5*Re)
+
+    # Eq 14
+    Cd = K1 + K2
+
+    return Cd
 
