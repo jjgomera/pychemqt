@@ -43,6 +43,12 @@ __doi__ = {
                   "Newtonian Fluids around Rigid or Deformable Particles",
          "ref": "Powder Technology 119 (2001) 250-56",
          "doi": "10.1016/S0032-5910(01)00261-3"},
+    4:
+        {"autor": "Almedeij, J.",
+         "title": "Drag Coefficient of Flow around a Sphere: Matching "
+                  "Asymptotically the Wide Trend",
+         "ref": "Powder Technology 186(3) (2008) 218-223",
+         "doi": "10.1016/j.powtec.2007.12.006"},
 
     # 30:
         # {"autor": "",
@@ -82,7 +88,7 @@ def Barati(Re, extended=False):
     Parameters
     ----------
     Re : float
-        Reynolds number of the sphere, [-]
+        Reynolds number, [-]
     extended : bool
         Use the extended version on all Re range of equation
 
@@ -244,4 +250,55 @@ def Ceylan(Re):
     Cd = K1 + K2
 
     return Cd
+
+
+def Almedeij(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [4]_.
+
+    .. math::
+        \begin{align*}
+        C_d = \left(\frac{1}{(\phi_1 + \phi_2)^{-1} + (\phi_3)^{-1}} + \phi_4
+        \right)^{0.1} \\
+        {} \phi_1 = \left(\frac{24}{Re}\right)^{10} +
+        \left(\frac{21}{Re^{0.67}}\right)^{10} +
+        \left(\frac{4}{Re^{0.33}}\right)^{10} + 0.4^{10} \\
+        {} \phi_2 = \frac{1}{\left[(0.148 Re^{0.11})^{-10} +
+        (0.5)^{-10}\right]} \\
+        {} \phi_3 = \left(\frac{1.57x10^8} {Re^{1.625}}\right)^{10} \\
+        {} \phi_4 = \frac{1}{(6x10^{-17}Re^{2.63})^{-10} + (0.2)^{-10}}
+        \end{align*}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Range is Re <= 1E6.
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.0f" % Almedeij(0.002))
+    12000
+    >>> print("%0.2f" % Almedeij(1000))
+    0.44
+    '''
+    f1 = (24/Re)**10 + (21/Re**0.67)**10 + (4/Re**0.33)**10 + 0.4**10
+    f2 = 1/((0.148*Re**0.11)**-10 + 0.5**-10)
+    f3 = (1.57e8*Re**-1.625)**10
+    f4 = 1/((6e-17*Re**2.63)**-10 + 0.2**-10)
+    Cd = (1/((f1 + f2)**-1 + f3**-1) + f4)**0.1
+    return Cd
+
+
 
