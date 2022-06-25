@@ -1,19 +1,3 @@
-lib.EoS.virial module
-=====================
-
-Virial equation of state implementation
-
-:func:`lib.EoS.virial.Virial`: The main class with all integrated functionality.
-
-Second virial coefficient correlations:
-    * :func:`lib.EoS.virial.B_Tsonopoulos`
-    * :func:`lib.EoS.virial.B_IglesiasSilva`
-    * :func:`lib.EoS.virial.B_Meng`
-
-Third virial coefficient correlations:
-    * :func:`lib.EoS.virial.C_Orbey_Vera`
-    * :func:`lib.EoS.virial.C_Liu_Xiang`
-    * :func:`lib.EoS.virial.C_Meng`
 
 Example code of usage, plot the correlations for R32 and compare with some
 sources of experimental values
@@ -124,11 +108,3 @@ sources of experimental values
 
 .. image:: images/Cvirial.png
     :alt: Third virial coefficient for R32
-
-
-.. automodule:: lib.EoS.virial
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-.. include:: lib.EoS.virial_ref.rst

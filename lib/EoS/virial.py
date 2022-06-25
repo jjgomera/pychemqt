@@ -15,7 +15,27 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+Virial equation of state implementation
+
+:func:`lib.EoS.virial.Virial`: The main class with all integrated functionality.
+
+Second virial coefficient correlations:
+    * :func:`lib.EoS.virial.B_Tsonopoulos`
+    * :func:`lib.EoS.virial.B_IglesiasSilva`
+    * :func:`lib.EoS.virial.B_Meng`
+
+Third virial coefficient correlations:
+    * :func:`lib.EoS.virial.C_Orbey_Vera`
+    * :func:`lib.EoS.virial.C_Liu_Xiang`
+    * :func:`lib.EoS.virial.C_Meng`
+
+.. include:: virial.rst
+
+'''
 
 
 from numpy import exp

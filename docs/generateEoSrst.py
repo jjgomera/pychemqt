@@ -107,40 +107,33 @@ for mod in lib.EoS.__all__:
         continue
 
     library = mod.__name__
-    if library == "lib.EoS.virial":
-        # Create only the references file
-        with open("docs/%s_ref.rst" % library, "w") as file:
-            print("", file=file)
-            print("References", file=file)
-            print("----------", file=file)
+    with open("docs/%s.rst" % library, "w") as file:
+        print("%s module" % library, file=file)
+        print("="*(len(library)+7), file=file)
+        print("", file=file)
+        print(".. automodule:: %s" % library, file=file)
+        print("    :members:", file=file)
+        print("    :undoc-members:", file=file)
+        print("    :private-members:", file=file)
+        print("    :show-inheritance:", file=file)
+        print("    :member-order: bysource", file=file)
 
-            for id, rf in mod.__doi__.items():
-                id = str(id)
-                print(".. [%s] %s; %s. %s" % (
-                    id, rf["autor"], rf["title"], rf["ref"]), file=file)
+        print("", file=file)
+        print("References", file=file)
+        print("----------", file=file)
 
-    else:
-        with open("docs/%s.rst" % library, "w") as file:
-            print("%s module" % library, file=file)
-            print("="*(len(library)+7), file=file)
-            print("", file=file)
-            print(".. automodule:: %s" % library, file=file)
-            print("    :members:", file=file)
-            print("    :undoc-members:", file=file)
-            print("    :private-members:", file=file)
-            print("    :show-inheritance:", file=file)
-            print("    :member-order: bysource", file=file)
+        count = 1
+        # For modules with the doi at module level
+        try:
+            doi = mod.__doi__.values()
+        except AttributeError:
+            doi = mod._all[0].__doi__
 
-            print("", file=file)
-            print("References", file=file)
-            print("----------", file=file)
-
-            count = 1
-            for lnk in mod._all[0].__doi__:
-                ref = ".. [%i] %s; %s, %s" % (
-                    count, lnk["autor"], lnk["title"], lnk["ref"])
-                if lnk["doi"]:
-                    ref += ", http://dx.doi.org/%s" % lnk["doi"]
-                count += 1
-                print(ref, file=file)
+        for lnk in doi:
+            ref = ".. [%i] %s; %s, %s" % (
+                count, lnk["autor"], lnk["title"], lnk["ref"])
+            if lnk["doi"]:
+                ref += ", http://dx.doi.org/%s" % lnk["doi"]
+            count += 1
+            print(ref, file=file)
 
