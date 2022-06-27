@@ -74,9 +74,11 @@ __doi__ = {
          "title": "The Resistance to Motion of a Solid Sphere in a Fluid.",
          "ref": "Chem. Eng. Comm. 62 (1987) 135-150",
          "doi": "10.1080/00986448708912056"},
-
-
-
+    9:
+        {"autor": "Flemmer, R.L.C., Banks, C.L.",
+         "title": "On the Drag Coefficient of a Sphere",
+         "ref": "Powder Technology 48(3) (1986) 217-221.",
+         "doi": "10.1016/0032-5910(86)80044-4"},
     # 30:
         # {"autor": "",
          # "title": "",
@@ -116,7 +118,7 @@ def Barati(Re, extended=False):
     ----------
     Re : float
         Reynolds number of the sphere, [-]
-    extended : bool
+    extended : boolean
         Use the extended version on all Re range of equation
 
     Returns
@@ -477,6 +479,8 @@ def Khan(Re, improved=True):
     ----------
     Re : float
         Reynolds number of the sphere, [-]
+    improved : boolean
+        Use the improved version from Brown-Lawler
 
     Returns
     -------
@@ -507,4 +511,60 @@ def Khan(Re, improved=True):
     return Cd
 
 
-_all = Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan
+def Flemmer(Re, improved=True):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [9]_ including the improve in [7]_.
+
+    Original correlation:
+
+    .. math::
+        C_d = \frac{24}{Re}10^E
+
+        E = 0.261Re^{0.369}-0.105^{0.431} - \frac{0.124}{1+(\log Re)^2}
+
+    Brown-Lawler improved version:
+
+    .. math::
+
+        E = 0.383Re^{0.356}-0.207Re^{0.396} - \frac{0.143}{1+(\log Re)^2}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+    improved : boolean
+        Use the improved version from Brown-Lawler
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 3e5
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.2f" % Flemmer(0.1))
+    247.90
+    >>> print("%0.2f" % Flemmer(1000))
+    0.45
+    >>> print("%0.2f" % Flemmer(5e4))
+    0.48
+    '''
+    if Re <= 0 or Re > 3e5:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 3e5")
+
+    if improved:
+        E = 0.383*Re**0.356 - 0.207*Re**0.396 - 0.143/(1 + (log10(Re))**2)
+    else:
+        E = 0.261*Re**0.369 - 0.105*Re**0.431 - 0.124/(1 + (log10(Re))**2)
+
+    return 24/Re*10**E
+
+
+_all = Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer
