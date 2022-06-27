@@ -16,6 +16,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+
+.. include:: drag.rst
 '''
 
 
@@ -42,7 +46,7 @@ __doi__ = {
          "title": "A New Model for Estimation of Drag Force in the Flow of "
                   "Newtonian Fluids around Rigid or Deformable Particles",
          "ref": "Powder Technology 119 (2001) 250-56",
-         "doi": "10.1016/S0032-5910(01)00261-3"},
+         "doi": "10.1016/s0032-5910(01)00261-3"},
     4:
         {"autor": "Almedeij, J.",
          "title": "Drag Coefficient of Flow around a Sphere: Matching "
@@ -54,6 +58,24 @@ __doi__ = {
          "title": "An Introduction to Fluid Mechanics.",
          "ref": "Cambridge University Press, 2013.",
          "doi": ""},
+    6:
+        {"autor": "Morsi, S.A., Alexander, A.J.",
+         "title": "An Investigation of Particle Trajectories in Two-Phase "
+                  "Flow Systems",
+         "ref": "J. Fluid Mechanics 55(2) (1972) 193-208",
+         "doi": "10.1017/S0022112072001806"},
+    7:
+        {"autor": "Brown, P.P., Lawler, D.F.",
+         "title": "Sphere Drag and Settling Velocity Revisited",
+         "ref": "J. Env. Eng. 129(3) (2003) 222-231",
+         "doi": "10.1061/(ASCE)0733-9372(2003)129:3(222)"},
+    8:
+        {"autor": "Khan, A.R., Richardson, J.F.",
+         "title": "The Resistance to Motion of a Solid Sphere in a Fluid.",
+         "ref": "Chem. Eng. Comm. 62 (1987) 135-150",
+         "doi": "10.1080/00986448708912056"},
+
+
 
     # 30:
         # {"autor": "",
@@ -93,7 +115,7 @@ def Barati(Re, extended=False):
     Parameters
     ----------
     Re : float
-        Reynolds number, [-]
+        Reynolds number of the sphere, [-]
     extended : bool
         Use the extended version on all Re range of equation
 
@@ -101,6 +123,10 @@ def Barati(Re, extended=False):
     -------
     Cd : float
         Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 1e6
 
     Examples
     --------
@@ -126,6 +152,8 @@ def Barati(Re, extended=False):
             - 2.1344*exp(-((log(Re**2 + 10.7563)/log(10))**2 + 9.9867)/Re) \
             + 0.1357*exp(-((Re/1620)**2 + 10370)/Re) \
             - 8.5e-3*(2*log(tanh(tanh(Re)))/log(10) - 2825.7162)/Re + 2.4795
+    else:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 1e6")
     return Cd
 
 
@@ -158,12 +186,18 @@ def Clift(Re):
     Parameters
     ----------
     Re : float
-        Reynolds number, [-]
+        Reynolds number of the sphere, [-]
 
     Returns
     -------
     Cd : float
         Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 6e6
+    The last equation is based in Achenbach data and this reach 6e6 as maximum
+    Reynolds number
 
     Examples
     --------
@@ -174,11 +208,6 @@ def Clift(Re):
     12000
     >>> print("%0.2f" % Clift(1000))
     0.47
-
-    Notes
-    -----
-    This method define the total range of drag coefficiente, including above
-    1e6.
     '''
     w = log10(Re)
 
@@ -200,8 +229,10 @@ def Clift(Re):
         Cd = 29.78 - 5.3*w
     elif Re < 1e6:
         Cd = 0.1*w - 0.49
-    else:
+    elif Re < 6e6:
         Cd = 0.19 - 8e4/Re
+    else:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 6e6")
     return Cd
 
 
@@ -221,12 +252,16 @@ def Ceylan(Re):
     Parameters
     ----------
     Re : float
-        Reynolds number, [-]
+        Reynolds number of the sphere, [-]
 
     Returns
     -------
     Cd : float
         Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 1e6
 
     Examples
     --------
@@ -242,9 +277,11 @@ def Ceylan(Re):
     >>> print("%0.2f" % Ceylan(1e6))
     0.26
 
-    This correlation dont return the expected vaues in paper, possible a typo
-    in paper
+    This correlation dont return the expected vaues in paper for low Reynolds
+    numbers, possible a typo in paper
     '''
+    if Re <= 0 or Re > 1e6:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 1e6")
 
     # Eq 15
     K1 = 1 - 0.5*exp(0.182) + 10.11*Re**(-2/3)*exp(0.952*Re**-0.25) \
@@ -257,6 +294,7 @@ def Ceylan(Re):
     return Cd
 
 
+@refDoc(__doi__, [4])
 def Almedeij(Re):
     r'''Calculates drag coefficient of a smooth sphere using the method in
     [4]_.
@@ -277,7 +315,7 @@ def Almedeij(Re):
     Parameters
     ----------
     Re : float
-        Reynolds number, [-]
+        Reynolds number of the sphere, [-]
 
     Returns
     -------
@@ -286,7 +324,7 @@ def Almedeij(Re):
 
     Notes
     -----
-    Range is Re <= 1E6.
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 1e6
 
     Examples
     --------
@@ -298,6 +336,9 @@ def Almedeij(Re):
     >>> print("%0.2f" % Almedeij(1000))
     0.44
     '''
+    if Re <= 0 or Re > 1e6:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 1e6")
+
     f1 = (24/Re)**10 + (21/Re**0.67)**10 + (4/Re**0.33)**10 + 0.4**10
     f2 = 1/((0.148*Re**0.11)**-10 + 0.5**-10)
     f3 = (1.57e8*Re**-1.625)**10
@@ -306,6 +347,7 @@ def Almedeij(Re):
     return Cd
 
 
+@refDoc(__doi__, [5])
 def Morrison(Re):
     r'''Calculates drag coefficient of a smooth sphere using the method in
     [5]_.
@@ -320,12 +362,16 @@ def Morrison(Re):
     Parameters
     ----------
     Re : float
-        Reynolds number, [-]
+        Reynolds number of the sphere, [-]
 
     Returns
     -------
     Cd : float
         Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 1e6
 
     Examples
     --------
@@ -337,10 +383,128 @@ def Morrison(Re):
     >>> print("%0.2f" % Morrison(1000))
     0.48
     '''
+    if Re <= 0 or Re > 1e6:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 1e6")
+
     Cd = 24/Re + 2.6*Re/5/(1 + (Re/5)**1.52) \
         + 0.411*(Re/263000)**-7.94/(1 + (Re/263000)**-8) \
         + 0.25*Re/1e6/(1+Re/1e6)
-        # + Re**0.8/461000
     return Cd
 
 
+@refDoc(__doi__, [6])
+def Morsi(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [6]_.
+
+    .. math::
+        C_d = \left\{ \begin{array}{ll}
+        \frac{24}{Re} & \mbox{if $Re<0.1$}\\
+        \frac{22.73}{Re}+\frac{0.0903}{Re^2}+3.69 & \mbox{if $0.1<Re<1$}\\
+        \frac{29.1667}{Re}-\frac{3.8889}{Re^2}+1.222 & \mbox{if $1<Re<10$}\\
+        \frac{46.5}{Re}-\frac{116.67}{Re^2}+0.6167 & \mbox{if $10<Re<100$}\\
+        \frac{98.33}{Re}-\frac{2778}{Re^2}+0.3644 & \mbox{if $100<Re<1000$}\\
+        \frac{148.62}{Re}-\frac{4.75x10^4}{Re^2}+0.3570 &
+        \mbox{if $1000<Re<5000$}\\
+        \frac{-490.546}{Re}+\frac{57.87x10^4}{Re^2}+0.46 &
+        \mbox{if $5000<Re<10000$}\\
+        \frac{-1662.5}{Re}+\frac{5.4167x10^6}{Re^2}+0.5191 &
+        \mbox{if $10000<Re<50000$}\end{array} \right.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 5e5
+
+    Examples
+    --------
+    Selected values from Table 1, pag 195
+
+    >>> print("%0.2f" % Morsi(0.1))
+    240.02
+    >>> print("%0.2f" % Morsi(1000))
+    0.46
+    >>> print("%0.2f" % Morsi(5e4))
+    0.49
+    '''
+    if 0 <= Re < 0.1:
+        Cd = 24/Re
+    elif Re < 1:
+        Cd = 22.73/Re + 0.0903/Re**2 + 3.69
+    elif Re < 10:
+        Cd = 29.1667/Re - 3.8889/Re**2 + 1.222
+    elif Re < 100:
+        Cd = 46.5/Re - 116.67/Re**2 + 0.6167
+    elif Re < 1000:
+        Cd = 98.33/Re - 2778/Re**2 + 0.3644
+    elif Re < 5000:
+        Cd = 148.62/Re - 4.75e4/Re**2 + 0.357
+    elif Re < 10000:
+        Cd = -490.546/Re + 57.87e4/Re**2 + 0.46
+    elif Re <= 50000:
+        Cd = -1662.5/Re + 5.4167e6/Re**2 + 0.5191
+    else:
+        raise NotImplementedError("Input out of range 0 < Re < 5e5")
+    return Cd
+
+
+@refDoc(__doi__, [8, 7])
+def Khan(Re, improved=True):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [8]_ including the improve in [7]_.
+
+    Original correlation:
+
+    .. math::
+        C_d = (2.25Re^{-0.31} + 0.36Re^{0.06})^{3.45}
+
+    Brown-Lawler improved version:
+
+    .. math::
+        C_d = (2.49Re^{-0.328} + 0.34Re^{0.067})^{3.18}
+
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 3e5
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.2f" % Khan(1000))
+    0.49
+    '''
+    if Re <= 0 or Re > 3e5:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 3e5")
+
+    if improved:
+        Cd = (2.49*Re**-0.328 + 0.34*Re**0.067)**3.18
+    else:
+        # Eq 15a
+        Cd = (2.25*Re**-0.31 + 0.36*Re**0.06)**3.45
+
+    return Cd
+
+
+_all = Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan
