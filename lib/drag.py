@@ -79,6 +79,13 @@ __doi__ = {
          "title": "On the Drag Coefficient of a Sphere",
          "ref": "Powder Technology 48(3) (1986) 217-221.",
          "doi": "10.1016/0032-5910(86)80044-4"},
+    10:
+        {"autor": "Haider, A., Levenspiel, O.",
+         "title": "Drag Coefficient and Terminal Velocity of Spherical and "
+                  "Nonspherical Particles",
+         "ref": "Powder Technology 58(1) (1989) 63-70",
+         "doi": "10.1016/0032-5910(89)80008-7"},
+
     # 30:
         # {"autor": "",
          # "title": "",
@@ -511,6 +518,7 @@ def Khan(Re, improved=True):
     return Cd
 
 
+@refDoc(__doi__, [9, 7])
 def Flemmer(Re, improved=True):
     r'''Calculates drag coefficient of a smooth sphere using the method in
     [9]_ including the improve in [7]_.
@@ -567,4 +575,61 @@ def Flemmer(Re, improved=True):
     return 24/Re*10**E
 
 
-_all = Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer
+@refDoc(__doi__, [10, 7])
+def Haider(Re, improved=True):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [10]_ including the improve in [7]_.
+
+    Original correlation:
+
+    .. math::
+        C_d = \frac{24}{Re} \left(1+0.1806Re^{0.6459}\right) +
+        \frac{0.4251}{1+\frac{6880.95}{Re}}
+
+    Brown-Lawler improved version:
+
+    .. math::
+        C_d = \frac{24}{Re} \left(1+0.15Re^{0.681}\right) +
+        \frac{0.407}{1+\frac{8710}{Re}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+    improved : boolean
+        Use the improved version from Brown-Lawler
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 2.6e5
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.2f" % Haider(0.1))
+    247.50
+    >>> print("%0.2f" % Haider(1000))
+    0.46
+    >>> print("%0.2f" % Haider(5e4))
+    0.46
+    '''
+    if Re <= 0 or Re > 2.6e5:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 2.6e5")
+
+    if improved:
+        Cd = 24/Re*(1 + 0.15*Re**0.681) + (0.407/(1 + 8710/Re))
+    else:
+        # Eq 6
+        Cd = 24/Re*(1 + 0.1806*Re**0.6459) + (0.4251/(1 + 6880.95/Re))
+    return Cd
+
+
+
+_all = Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer, Haider
