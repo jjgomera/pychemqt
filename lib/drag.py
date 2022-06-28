@@ -104,6 +104,13 @@ __doi__ = {
          "ref": "J. Hydraul. Eng. 117(5) (1991) 660-667",
          "doi": "10.1061/(ASCE)0733-9429(1991)117:5(660)"},
 
+    14:
+        {"autor": "Cheng, N.-S.",
+         "title": "Comparison of Formulas for Drag Coefficient and Settling "
+                  "Velocity of Spherical Particles",
+         "ref": "Powder Technology 189(3) (2009) 395-398",
+         "doi": "10.1016/j.powtec.2008.07.006"},
+
     # 30:
         # {"autor": "",
          # "title": "",
@@ -750,6 +757,7 @@ def Concha(Re):
     return Cd
 
 
+@refDoc(__doi__, [13])
 def Swamee(Re):
     r'''Calculates drag coefficient of a smooth sphere using the method in
     [13]_.
@@ -794,6 +802,48 @@ def Swamee(Re):
     return Cd
 
 
+@refDoc(__doi__, [14])
+def Cheng(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [14]_.
+
+    .. math::
+        C_d = \frac{24}{Re}\left(1+0.27Re\right)^{0.43} +
+        0.47\left[1-\exp\left(-0.04Re^{0.38}\right)\right]
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 2e5
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.2f" % Cheng(0.1))
+    242.77
+    >>> print("%0.2f" % Cheng(1000))
+    0.47
+    >>> print("%0.2f" % Cheng(5e4))
+    0.46
+    '''
+    if Re <= 0 or Re > 2e5:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 2e5")
+
+    # Eq 1
+    Cd = 24/Re*(1 + 0.27*Re)**0.43 + 0.47*(1 - exp(-0.04*Re**0.38))
+    return Cd
+
 
 _all = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
-        Haider, Turton, Concha, Swamee)
+        Haider, Turton, Concha, Swamee, Cheng)
