@@ -90,6 +90,19 @@ __doi__ = {
          "title": "A Short Note on the Drag Correlation for Spheres",
          "ref": "Powder Technology 47(1) (1986) 83-86",
          "doi": "10.1016/0032-5910(86)80012-2"},
+    12:
+        {"autor": "Concha, F., Barrientos, A.",
+         "title": "Settling Velocities of Particulate Systems, 3. Power Series"
+                  " Expansion for the Drag Coefficient of A Sphere and "
+                  "Prediction of the Settling Velocity",
+         "ref": "Int. J. Miner. Process. 9 (1982) 167-172",
+         "doi": "10.1016/0301-7516(82)90025-4"},
+    13:
+        {"autor": "Swamee, P.K., Ojha, C.S.P.",
+         "title": "Drag Coefficient and Fall Velocity of Nonspherical "
+                  "Particles",
+         "ref": "J. Hydraul. Eng. 117(5) (1991) 660-667",
+         "doi": "10.1061/(ASCE)0733-9429(1991)117:5(660)"},
 
     # 30:
         # {"autor": "",
@@ -692,6 +705,95 @@ def Turton(Re, improved=True):
     return Cd
 
 
+@refDoc(__doi__, [12])
+def Concha(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [12]_.
+
+    .. math::
+        C_d = 0.284153 \left(1+\frac{9.04}{Re^{1/2}}\right)^2
+        \sum_{\alpha} B_{\alpha}Re^{\alpha}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 3e5
+
+    Examples
+    --------
+    Selected point from Table I
+
+    >>> print("%0.0f" % Concha(0.1))
+    239
+    >>> print("%0.2f" % Concha(1000))
+    0.46
+    >>> print("%0.2f" % Concha(3e5))
+    0.20
+    '''
+    if Re <= 0 or Re > 3e5:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 3e5")
+
+    Bi = [9.620833e-1, 2.736461e-5, -3.938611e-10, 2.476861e-15,
+          -7.159345e-21, 7.437237e-27]
+
+    # Eq 13
+    Cd = 0.284153*(1+9.04/Re**0.5)**2 * sum(B*Re**i for i, B in enumerate(Bi))
+    return Cd
+
+
+def Swamee(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [13]_.
+
+    .. math::
+        C_d = 0.5\left\{16\left[\left(\frac{24}{Re}\right)^{1.6} +
+        \left(\frac{130}{Re}\right)^{0.72}\right]^{2.5} +
+        \left[\left(\frac{40000}{Re}\right)^2 + 1\right]^{-0.25}\right\}^{0.25}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 1.5e5
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.2f" % Swamee(0.1))
+    244.05
+    >>> print("%0.2f" % Swamee(1000))
+    0.44
+    >>> print("%0.2f" % Swamee(5e4))
+    0.48
+    '''
+    if Re <= 0 or Re > 1.5e5:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 1.5e5")
+
+    # Eq 17
+    Cd = 0.5*(16*((24/Re)**1.6 + (130/Re)**0.72)**2.5
+              + ((40000/Re)**2 + 1)**-0.25)**0.25
+    return Cd
+
+
 
 _all = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
-        Haider, Turton)
+        Haider, Turton, Concha, Swamee)
