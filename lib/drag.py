@@ -85,6 +85,11 @@ __doi__ = {
                   "Nonspherical Particles",
          "ref": "Powder Technology 58(1) (1989) 63-70",
          "doi": "10.1016/0032-5910(89)80008-7"},
+    11:
+        {"autor": "Turton, R., Levenspiel, O.",
+         "title": "A Short Note on the Drag Correlation for Spheres",
+         "ref": "Powder Technology 47(1) (1986) 83-86",
+         "doi": "10.1016/0032-5910(86)80012-2"},
 
     # 30:
         # {"autor": "",
@@ -631,5 +636,62 @@ def Haider(Re, improved=True):
     return Cd
 
 
+@refDoc(__doi__, [11, 7])
+def Turton(Re, improved=True):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [11]_ including the improve in [7]_.
 
-_all = Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer, Haider
+    Original correlation:
+
+    .. math::
+        C_d = \frac{24}{Re} \left(1+0.173Re^{0.657}\right) +
+        \frac{0.413}{1+\frac{16300}{Re^{1.09}}}
+
+    Brown-Lawler improved version:
+
+    .. math::
+        C_d = \frac{24}{Re} \left(1+0.152Re^{0.677}\right) +
+        \frac{0.417}{1+\frac{5070}{Re^{0.94}}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+    improved : boolean
+        Use the improved version from Brown-Lawler
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range Re ≤ 2e5
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.2f" % Turton(0.1))
+    247.50
+    >>> print("%0.2f" % Turton(1000))
+    0.46
+    >>> print("%0.2f" % Turton(5e4))
+    0.46
+    '''
+    if Re <= 0 or Re > 2e5:
+        raise NotImplementedError("Input out of range 0 < Re ≤ 2e5")
+
+    if improved:
+        Cd = 24/Re*(1 + 0.15*Re**0.681) + (0.407/(1 + 8710/Re))
+    else:
+        # Eq 6
+        Cd = 24/Re*(1 + 0.1806*Re**0.6459) + (0.4251/(1 + 6880.95/Re))
+    return Cd
+
+
+
+_all = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
+        Haider, Turton)
