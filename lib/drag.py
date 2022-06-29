@@ -116,12 +116,12 @@ __doi__ = {
                   "Spherical Particles",
          "ref": "Powder Technology 239 (2013) 12-20",
          "doi": "10.1016/j.powtec.2013.01.052."},
-
-    # 30:
-        # {"autor": "",
-         # "title": "",
-         # "ref": "",
-         # "doi": ""},
+    16:
+        {"autor": "Mikhailov, M.D., Silva Freire, A.P.",
+         "title": "The Drag Coefficient of a Sphere: An Approximation Using "
+                  "Shanks Transform",
+         "ref": "Powder Technology 237 (2013) 432-435",
+         "doi": "10.1016/j.powtec.2012.12.033"},
 }
 
 
@@ -894,5 +894,64 @@ def Terfous(Re):
     return Cd
 
 
+def Mikhailov(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [16]_.
+
+    For 0.1 < Re < 10:
+
+    .. math::
+        C_d = \frac{3808\left[(1617933/2030) + (178861/1063)Re +
+        (1219/1084)Re^2\right]}
+        {681Re\left[(77531/422) + (13529/976)Re - (1/71154)Re^2\right]}
+
+    For 10 < Re < 1.183e5:
+
+    .. math::
+        C_d = \frac{777\left[(669806/875) + (114976/1155)Re +
+        (707/1380)Re^2\right]}
+        {646Re\left[(32869/952) + (924/643)Re - (1/385718)Re^2\right]}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range 0.1 ≤ Re ≤ 118300
+
+    Examples
+    --------
+    Selected points from Table 1, pag 434
+
+    >>> print("%0.2f" % Mikhailov(0.1))
+    245.85
+    >>> print("%0.2f" % Mikhailov(1))
+    27.35
+    >>> print("%0.3f" % Mikhailov(101))
+    1.064
+    >>> print("%0.4f" % Mikhailov(1e3))
+    0.5016
+    >>> print("%0.4f" % Mikhailov(1e5))
+    0.5241
+    '''
+    if 0.1 <= Re < 10:
+        Cd = 3808*((1617933/2030) + (178861/1063)*Re + (1219/1084)*Re**2) / \
+            (681*Re*((77531/422) + (13529/976)*Re - (1/71154)*Re**2))
+    elif Re < 118300:
+        # There are a typo in the last sum sign of equation
+        Cd = 777*((669806/875) + (114976/1155)*Re + (707/1380)*Re**2) / \
+            (646*Re*((32869/952) + (924/643)*Re - (1/385718)*Re**2))
+    else:
+        raise NotImplementedError("Input out of range 0.1 < Re ≤ 1.183e5")
+    return Cd
+
+
 _all = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
-        Haider, Turton, Concha, Swamee, Cheng, Terfous)
+        Haider, Turton, Concha, Swamee, Cheng, Terfous, Mikhailov)
