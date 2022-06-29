@@ -110,6 +110,12 @@ __doi__ = {
                   "Velocity of Spherical Particles",
          "ref": "Powder Technology 189(3) (2009) 395-398",
          "doi": "10.1016/j.powtec.2008.07.006"},
+    15:
+        {"autor": "Terfous, A., Hazzab, A., Ghenaim, A.",
+         "title": "Predicting the Drag Coefficient and Settling Velocity of "
+                  "Spherical Particles",
+         "ref": "Powder Technology 239 (2013) 12-20",
+         "doi": "10.1016/j.powtec.2013.01.052."},
 
     # 30:
         # {"autor": "",
@@ -845,5 +851,48 @@ def Cheng(Re):
     return Cd
 
 
+@refDoc(__doi__, [15])
+def Terfous(Re):
+    r'''Calculates drag coefficient of a smooth sphere using the method in
+    [15]_.
+
+    .. math::
+        C_d = 2.689 + \frac{21.683}{Re} + \frac{0.131}{Re^2}
+        - \frac{10.616}{Re^{0.1}} + \frac{12.216}{Re^{0.2}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+
+    Notes
+    -----
+    Raise :class:`NotImplementedError` if Re isn't in range 0.1 ≤ Re ≤ 5e4
+
+    Examples
+    --------
+    There isn´t testing values but checking a value similar to Barati
+    correlation would be enough
+
+    >>> print("%0.2f" % Terfous(0.1))
+    238.62
+    >>> print("%0.2f" % Terfous(1000))
+    0.46
+    >>> print("%0.2f" % Terfous(5e4))
+    0.49
+    '''
+    if Re < 0.1 or Re > 2e5:
+        raise NotImplementedError("Input out of range 0.1 < Re ≤ 5e4")
+
+    # Eq 4
+    Cd = 2.689 + 21.683/Re + 0.131/Re**2 - 10.616/Re**0.1 + 12.216/Re**0.2
+    return Cd
+
+
 _all = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
-        Haider, Turton, Concha, Swamee, Cheng)
+        Haider, Turton, Concha, Swamee, Cheng, Terfous)
