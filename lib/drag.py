@@ -18,12 +18,35 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+Module for drag coefficient correlations, for now only implemented the sphere
+drag correlation
+
+:func:`dragSphere`: Function to implement the drag coeficient for smooth
+spheres including all available methods:
+
+    * :func:`Barati`
+    * :func:`Clift`
+    * :func:`Ceylan`
+    * :func:`Almedeij`
+    * :func:`Morrison`
+    * :func:`Morsi`
+    * :func:`Khan`
+    * :func:`Flemmer`
+    * :func:`Haider`
+    * :func:`Turton`
+    * :func:`Concha`
+    * :func:`Swamee`
+    * :func:`Cheng`
+    * :func:`Terfous`
+    * :func:`Mikhailov`
 
 .. include:: drag.rst
+
 '''
 
 
 from math import exp, log, log10, tanh
+import sys
 
 from lib.utilities import refDoc
 
@@ -103,7 +126,6 @@ __doi__ = {
                   "Particles",
          "ref": "J. Hydraul. Eng. 117(5) (1991) 660-667",
          "doi": "10.1061/(ASCE)0733-9429(1991)117:5(660)"},
-
     14:
         {"autor": "Cheng, N.-S.",
          "title": "Comparison of Formulas for Drag Coefficient and Settling "
@@ -115,7 +137,7 @@ __doi__ = {
          "title": "Predicting the Drag Coefficient and Settling Velocity of "
                   "Spherical Particles",
          "ref": "Powder Technology 239 (2013) 12-20",
-         "doi": "10.1016/j.powtec.2013.01.052."},
+         "doi": "10.1016/j.powtec.2013.01.052"},
     16:
         {"autor": "Mikhailov, M.D., Silva Freire, A.P.",
          "title": "The Drag Coefficient of a Sphere: An Approximation Using "
@@ -208,7 +230,7 @@ def Clift(Re):
     .. math::
         C_d = \left\{ \begin{array}{ll}
         \frac{24}{Re} + \frac{3}{16} & \mbox{if $Re < 0.01$}\\
-        \frac{24}{Re}(1 + 0.1315Re^{0.82 - 0.05w}) & \mbox{if $0.01 < Re < 20$}\\
+        \frac{24}{Re}(1 + 0.1315Re^{0.82-0.05w}) & \mbox{if $0.01 < Re < 20$}\\
         \frac{24}{Re}(1 + 0.1935Re^{0.6305}) & \mbox{if $20 < Re < 260$}\\
         10^{[1.6435 - 1.1242w + 0.1558w^2} & \mbox{if $260 < Re < 1500$}\\
         10^{[-2.4571 + 2.5558w - 0.9295w^2 + 0.1049w^3} &
@@ -655,9 +677,10 @@ def Haider(Re, improved=True):
         raise NotImplementedError("Input out of range 0 < Re ≤ 2.6e5")
 
     if improved:
+        # Eq 19 in [7]_
         Cd = 24/Re*(1 + 0.15*Re**0.681) + (0.407/(1 + 8710/Re))
     else:
-        # Eq 6
+        # Eq 6 in [10]_
         Cd = 24/Re*(1 + 0.1806*Re**0.6459) + (0.4251/(1 + 6880.95/Re))
     return Cd
 
@@ -701,7 +724,7 @@ def Turton(Re, improved=True):
     correlation would be enough
 
     >>> print("%0.2f" % Turton(0.1))
-    247.50
+    247.67
     >>> print("%0.2f" % Turton(1000))
     0.46
     >>> print("%0.2f" % Turton(5e4))
@@ -711,10 +734,11 @@ def Turton(Re, improved=True):
         raise NotImplementedError("Input out of range 0 < Re ≤ 2e5")
 
     if improved:
-        Cd = 24/Re*(1 + 0.15*Re**0.681) + (0.407/(1 + 8710/Re))
+        # Eq 17 in [7]_
+        Cd = 24/Re*(1 + 0.152*Re**0.677) + (0.417/(1 + 5070/Re**0.94))
     else:
-        # Eq 6
-        Cd = 24/Re*(1 + 0.1806*Re**0.6459) + (0.4251/(1 + 6880.95/Re))
+        # Eq 5 in [11]_
+        Cd = 24/Re*(1 + 0.173*Re**0.657) + (0.413/(1 + 16300/Re**1.09))
     return Cd
 
 
@@ -951,6 +975,31 @@ def Mikhailov(Re):
     else:
         raise NotImplementedError("Input out of range 0.1 < Re ≤ 1.183e5")
     return Cd
+
+
+def dragSphere(Re, method=None):
+    """Function general for the drag coeficient for smooth spheres
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number of the sphere, [-]
+    method : str
+        Name of method to use
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+    """
+    if method is None:
+        method = Clift
+
+    func = getattr(sys.modules[__name__], method)
+    try:
+        return func(Re)
+    except NotImplementedError:
+        return Clift(Re)
 
 
 _all = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
