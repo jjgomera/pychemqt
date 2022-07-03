@@ -31,8 +31,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, plots, viewComponents
 from UI.petro import Definicion_Petro
-import plots as charts
 from UI.widgets import createAction
+import plots as charts
 from lib import config
 from lib.config import conf_dir, setMainWindowConfig, IMAGE_PATH, Preferences
 from lib.project import Project
@@ -111,20 +111,20 @@ class TreeEquipment(QtWidgets.QTreeWidget):
                 item = QtWidgets.QTreeWidgetItem(self.Stream, 1)
                 item.setText(0, str(id))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"] +
-                    os.path.join("images", "equipment", "in.svg"))))
+                    os.environ["pychemqt"]
+                    + os.path.join("images", "equipment", "in.svg"))))
             elif id in outs:
                 item = QtWidgets.QTreeWidgetItem(self.Stream, 2)
                 item.setText(0, str(id))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"] +
-                    os.path.join("images", "equipment", "out.svg"))))
+                    os.environ["pychemqt"]
+                    + os.path.join("images", "equipment", "out.svg"))))
             else:
                 item = QtWidgets.QTreeWidgetItem(self.Stream, 3)
                 item.setText(0, str(id))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"] +
-                    os.path.join("images", "equipment", "stream.png"))))
+                    os.environ["pychemqt"]
+                    + os.path.join("images", "equipment", "stream.png"))))
 
         for equip in items["equip"]:
             item = QtWidgets.QTreeWidgetItem(self.Equipment, 4)
@@ -192,10 +192,10 @@ class FlowLayout(QtWidgets.QLayout):
             size = size.expandedTo(item.minimumSize())
 
         size = QtCore.QSize(
-            size.width() + self.contentsMargins().left() +
-            self.contentsMargins().right(),
-            size.height() + self.contentsMargins().bottom() +
-            self.contentsMargins().top())
+            size.width() + self.contentsMargins().left()
+            + self.contentsMargins().right(),
+            size.height() + self.contentsMargins().bottom()
+            + self.contentsMargins().top())
         return size
 
     def doLayout(self, rect, testOnly):
@@ -1144,8 +1144,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     "pychemqt", "Unsaved changes"),
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Save unsaved changes?"),
-                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-                QtWidgets.QMessageBox.Cancel,
+                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
+                | QtWidgets.QMessageBox.Cancel,
                 QtWidgets.QMessageBox.Yes)
             if dialog == QtWidgets.QMessageBox.Cancel:
                 return False
@@ -1294,12 +1294,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         config.set("PFD", "y", Preferences.get("PFD", "y"))
         self.config.append(config)
         mdiArea = QtWidgets.QMdiArea()
-#        style=StyleCustom()
-#        mdiArea.setStyle(style)
+        # style=StyleCustom()
+        # mdiArea.setStyle(style)
         self.centralWidget().addTab(
             mdiArea,
-            QtWidgets.QApplication.translate("pychemqt", "New Project") +
-            " %i" % UI_pychemqt.idNew)
+            QtWidgets.QApplication.translate("pychemqt", "New Project")
+            + " %i" % UI_pychemqt.idNew)
         self.centralWidget().setCurrentIndex(self.centralWidget().count()-1)
         self.loadPFD(mdiArea)
         self.updateStatus(QtWidgets.QApplication.translate(
@@ -1356,8 +1356,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
             self.dirty[self.idTab] = False
             self.updateStatus(
-                QtWidgets.QApplication.translate("pychemqt", "Saved as") +
-                " %s" % self.filename[indice])
+                QtWidgets.QApplication.translate("pychemqt", "Saved as")
+                + " %s" % self.filename[indice])
             self.dirty[indice] = False
             self.saveControl()
 
@@ -1438,7 +1438,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                         "pychemqt", "Failed to load")
                     msg += " " + fname + os.linesep
                     msg += QtWidgets.QApplication.translate(
-                            "pychemqt", "This project require")
+                        "pychemqt", "This project require")
                     msg += ": %s" % ", ".join(data["external_dependences"])
                     raise ImportError(msg)
 
@@ -1483,7 +1483,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
             self.centralWidget().addTab(
                 mdiArea, os.path.splitext(os.path.basename(str(fname)))[0])
-            self.centralWidget().setCurrentIndex(self.centralWidget().count()-1)
+            self.centralWidget().setCurrentIndex(
+                self.centralWidget().count()-1)
             mdiArea.subWindowActivated.connect(self.changeWindow)
 
             self.currentScene.project = project
@@ -1515,7 +1516,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         # try:
         wdgs = window.widget().statusWidget
         # except AttributeError:
-            # return
+        #     return
 
         for wdg in self.wdg:
             self.statusBar().removeWidget(wdg)
@@ -1577,8 +1578,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             txt = QtWidgets.QApplication.translate("pychemqt", "Failure")
             color = "#ff0000"
         self.status.append(
-            '<b>' + time.strftime("%H:%M:%S", time.localtime()) +
-            '</b> - ' + text + ' [<font color="%s">%s</font>]' % (color, txt))
+            '<b>' + time.strftime("%H:%M:%S", time.localtime()) + '</b> - '
+            + text + ' [<font color="%s">%s</font>]' % (color, txt))
         QtWidgets.QApplication.processEvents()
 
     def changeStatusThermo(self, config):
@@ -1778,10 +1779,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.currentMdi.addSubWindow(grafico.plot)
             grafico.plot.show()
 
-#        indices, nombres, M=getComponents(config=self.config[self.idTab])
-#        dialog=grafico(indices, nombres, x, y)
-#        self.currentMdi.addSubWindow(dialog)
-#        dialog.show()
+        # indices, nombres, M=getComponents(config=self.config[self.idTab])
+        # dialog=grafico(indices, nombres, x, y)
+        # self.currentMdi.addSubWindow(dialog)
+        # dialog.show()
 
     def savePFDImage(self):
         if self.filename[self.idTab]:
