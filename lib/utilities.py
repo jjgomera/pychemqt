@@ -53,7 +53,7 @@ def format2txt(formato):
     return txt
 
 
-def representacion(number, format=0, total=0, decimales=4, eng=False, tol=5,
+def representacion(number, fmt=0, total=0, decimales=4, eng=False, tol=5,
                    signo=False, thousand=False):
     """Function for string representation of float values
 
@@ -61,7 +61,7 @@ def representacion(number, format=0, total=0, decimales=4, eng=False, tol=5,
     ----------
     number : float
         number to transform
-    format : mode
+    fmt : mode
         0   -   fixed point
         1   -   Significant figures
         2   -   Engineering format
@@ -105,13 +105,13 @@ def representacion(number, format=0, total=0, decimales=4, eng=False, tol=5,
     if eng and (-10**tol > number
                 or (-10**-tol < number < 10**(-tol+1) and number != 0)
                 or number > 10**tol):
-        format = 2
+        fmt = 2
     if number == 0:
         decimales = 1
 
-    if format == 1:
+    if fmt == 1:
         string = start+"{}{:d}g".format(coma, decimales)+"}"
-    elif format == 2:
+    elif fmt == 2:
         string = start+"{:d}{}{:d}e".format(total, coma, decimales)+"}"
     else:
         string = start+"{:d}{}{:d}f".format(total, coma, decimales)+"}"

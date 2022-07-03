@@ -135,9 +135,6 @@
     },
     "equipment": {},
     "stream": {},
-    "external_dependences": [
-        "refprop"
-    ],
     "PFD": {
         "x": 0,
         "y": 0,
@@ -195,9 +192,9 @@
                     50,
                     7
                 ],
-                "method": "refprop",
+                "method": "meos",
                 "fluid": 14,
-                "external_dependences": "refprop",
+                "external_dependences": "",
                 "keys": [
                     "T",
                     "P",
@@ -253,77 +250,77 @@
                 ],
                 "format": [
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     },
                     {
-                        "format": 1,
+                        "fmt": 1,
                         "decimales": 6,
                         "signo": false
                     }
@@ -442,12 +439,12 @@
                 "marginbottom": 0.08,
                 "marginright": 0.98,
                 "margintop": 0.92,
-                "method": "refprop",
+                "method": "meos",
                 "fluid": 14,
                 "eq": 0,
                 "visco": 0,
                 "thermal": 0,
-                "external_dependences": "refprop",
+                "external_dependences": "",
                 "lines": {
                     "L\u00ednea de saturaci\u00f3n del l\u00edquido": {
                         "x": [
@@ -32995,12 +32992,12 @@
                 "marginbottom": 0.08,
                 "marginright": 0.98,
                 "margintop": 0.92,
-                "method": "refprop",
+                "method": "meos",
                 "fluid": 14,
                 "eq": 0,
                 "visco": 0,
                 "thermal": 0,
-                "external_dependences": "refprop",
+                "external_dependences": "",
                 "lines": {
                     "L\u00ednea de saturaci\u00f3n del l\u00edquido": {
                         "x": [

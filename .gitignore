@@ -114,6 +114,7 @@ docs/lib.utilities.rst
 docs/lib.EoS.Cubic.*
 docs/lib.EoS.rst
 docs/lib.EoS.BWRS.rst
+docs/lib.EoS.BWRSoave.rst
 docs/lib.EoS.Grayson_Streed.rst
 docs/lib.EoS.Lee_Kesler.rst
 docs/lib.EoS.virial.rst
