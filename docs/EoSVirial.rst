@@ -77,7 +77,7 @@ paper give other correlation with 44 parameters to try to fit a wider range of
 densities, but using same databank
 
 .. math::
-    \begin{align*}
+    \begin{array}
     Z = 1 + \left(B_o+\frac{B_1}{T_R}+\frac{B_2}{T_R}+\frac{B_3}{T_R^3}\right)
     \frac{1}{V_R} \\
     {} + \left[C_o+\frac{C_1}{T_R}+\frac{C_2}{T_R^3}\left(1+\frac{C_4}{V_R^2}

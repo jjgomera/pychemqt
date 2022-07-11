@@ -860,7 +860,7 @@ def B_Orbey(T, Tc, Pc, w, id):
 
 
 @refDoc(__doi__, [9])
-def B_Tarakad(T, Tc, Pc, w, mu=None):
+def B_Tarakad(T, Tc, Pc, id):
     r"""Calculate the 2nd virial coefficient using the Tarakad-Danner
     correlation
 
