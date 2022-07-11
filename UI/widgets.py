@@ -926,7 +926,7 @@ class LineConfig(QtWidgets.QGroupBox):
         self.EdgeColor.setVisible(index)
 
     def setConfig(self, config, section="MEOS"):
-        alfa = config.getfloat(section, self.conf+"alpha")
+        alfa = config.getint(section, self.conf+"alpha")
         self.Color.setColor(config.get(section, self.conf+'Color'), alfa)
         self.Width.setValue(config.getfloat(section, self.conf+'lineWidth'))
         self.Style.setCurrentValue(config.get(section, self.conf+'lineStyle'))

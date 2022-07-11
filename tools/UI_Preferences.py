@@ -352,7 +352,7 @@ class ConfFormat(QtWidgets.QTableWidget):
             txt = "+"
         else:
             txt = ""
-        if formato["format"] == 0:
+        if formato["fmt"] == 0:
             txt += "{total}.{decimales} fixed".format(**formato)
         elif formato["format"] == 1:
             txt += "{decimales} sign".format(**formato)
@@ -503,7 +503,7 @@ class ConfBabel(QtWidgets.QDialog):
 
         if config and config.has_section("Openbabel"):
             self.BondColor.setColor(config.get("Openbabel", 'BondColor'))
-            alpha = config.getfloat("Openbabel", "BackColorAlpha")
+            alpha = config.getint("Openbabel", "BackColorAlpha")
             self.BackgroundColor.setColor(
                 config.get("Openbabel", 'BackColor'), alpha)
             self.checkColor.setChecked(
