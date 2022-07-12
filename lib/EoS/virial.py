@@ -1222,13 +1222,31 @@ class Virial(EoS):
         Z = \frac{PV}{RT} = 1 + \frac{B}{V} + \frac{C}{V^2} + \cdots
 
     The implementation use the form truncated at third term using the virial
-    coefficient from database or try to predicted from reference correlations.
+    coefficient from database or try to predicted from generalized
+    correlations.
+
     This equation is only appropiate for single-phase gas systems.
+
+    Parameters
+    ----------
+    B : int
+        Generalized correlation to calculate second virial coefficient
+        0 - Tsonopoulos (1974)
+        1 - Iglesias-Silva (2001)
+        1 - Meng (2004)
+        3 - Orbey (1988)
+        4 - Tarakar-Danner (1977)
+    C : int
+        Generalized correlation to calculate third virial coefficient
+        0 - Orbey-Vera (1983)
+        1 - Liu-Xiang (2003)
+        2 - Meng (2004)
     """
     __title__ = "Virial"
     __status__ = "Virial"
 
-    METHODS_B = ["Tsonopoulos (1974)", "Iglesias-Silva (2001)", "Meng (2004)"]
+    METHODS_B = ["Tsonopoulos (1974)", "Iglesias-Silva (2001)", "Meng (2004)",
+                 "Orbey (1988)", "Tarakad-Danner (1977)"]
     METHODS_C = ["Orbey-Vera (1983)", "Liu-Xiang (2003)", "Meng (2004)"]
 
     def __init__(self, *args, **kwargs):
@@ -1257,10 +1275,23 @@ class Virial(EoS):
                 else:
                     coef = B_Database[cmp.id]
                 Bi, Bit, Bitt = _B_Database(T, coef)
+
+            elif self.kwargs.get("B", 0) == 1:
+                Bi, Bit, Bitt = B_Meng(
+                    T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.dipole)
+            elif self.kwargs.get("B", 0) == 2:
+                Bi, Bit, Bitt = B_IglesiasSilva(
+                    T, cmp.Tc, cmp.Pc, cmp.Vc*cmp.M, cmp.f_acent, cmp.dipole)
+            elif self.kwargs.get("B", 0) == 3:
+                Bi, Bit, Bitt = B_Orbey(
+                    T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.id)
+            elif self.kwargs.get("B", 0) == 4:
+                Bi, Bit, Bitt = B_Tarakad(
+                    T, cmp.Tc, cmp.Pc, cmp.id)
             else:
-                # Use general correlation
                 Bi, Bit, Bitt = B_Tsonopoulos(
                     T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.dipole)
+
             B.append(Bi)
             Bt.append(Bit)
             Btt.append(Bitt)
@@ -1271,12 +1302,17 @@ class Virial(EoS):
         C = []
         Ct = []
         Ctt = []
-        for comp in self.componente:
-            if self.kwargs.get("C", 0):
-                Ci, Cit, Citt = C_OrbeyVera(T, comp.Tc, comp.Pc, comp.f_acent)
-            else:
+        for cmp in self.componente:
+            if self.kwargs.get("C", 0) == 1:
                 Ci, Cit, Citt = C_LiuXiang(
-                    T, comp.Tc, comp.Pc, comp.f_acent, comp.Zc)
+                    T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.Zc)
+            elif self.kwargs.get("C", 0) == 2:
+                B = B_Meng(T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.dipole.Debye)
+                Ci, Cit, Citt = C_Meng(
+                    T, cmp.Tc, cmp.Pc, cmp.dipole.Debye, B)
+            else:
+                Ci, Cit, Citt = C_OrbeyVera(T, cmp.Tc, cmp.Pc, cmp.f_acent)
+
             C.append(Ci)
             Ct.append(Cit)
             Ctt.append(Citt)
@@ -1286,8 +1322,8 @@ class Virial(EoS):
         """Second virial coefficient calculation"""
         Bi, Bit, Bitt = self._Bi(T)
         B, Bt, Btt = 0, 0, 0
-        for i, xi in enumerate(self.fraccion):
-            for j, xj in enumerate(self.fraccion):
+        for i, xi in enumerate(self.zi):
+            for j, xj in enumerate(self.zi):
                 if i == j:
                     Bij = Bi[i]
                     Bijt = Bit[i]
@@ -1318,8 +1354,8 @@ class Virial(EoS):
         Cij = zeros((len(Ci), len(Ci)))
         Cijt = zeros((len(Ci), len(Ci)))
         Cijtt = zeros((len(Ci), len(Ci)))
-        for i, xi in enumerate(self.fraccion):
-            for j, xj in enumerate(self.fraccion):
+        for i, xi in enumerate(self.zi):
+            for j, xj in enumerate(self.zi):
                 if i == j:
                     Cij[i, j] = Ci[i]
                     Cijt[i, j] = Cit[i]
@@ -1339,9 +1375,9 @@ class Virial(EoS):
                             self.T, Tcij, Pcij, wij, Zcij)[0]
 
         C, Ct, Ctt = 0, 0, 0
-        for i, xi in enumerate(self.fraccion):
-            for j, xj in enumerate(self.fraccion):
-                for k, xk in enumerate(self.fraccion):
+        for i, xi in enumerate(self.zi):
+            for j, xj in enumerate(self.zi):
+                for k, xk in enumerate(self.zi):
                     C += xi*xj*xk*(Cij[i, j]*Cij[j, k]*Cij[j, k])**(1./3)
         return C, Ct, Ctt
 

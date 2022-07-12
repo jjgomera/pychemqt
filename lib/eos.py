@@ -53,6 +53,7 @@ __doi__ = {
 # PR: alpha option
 # PRMathiasCopeman: alpha option
 # BWRS: extended option
+# virial: B, C, method configuration
 
 
 @refDoc(__doi__, [1])
