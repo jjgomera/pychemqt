@@ -25,6 +25,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+__doi__ = {
+    1:
+        {"autor": "Bell, I.H., Wronski, J., Quoilin, S., Lemort, V.",
+         "title": "Pure and Pseudo-pure Fluid Thermophysical Property"
+                  "Evaluation and the Open-Source Thermophysical Property"
+                  "Library CoolProp",
+         "ref": "Ind. Eng. Chem. Res. 53(6) (2014) 2498-2508",
+         "doi": "10.1021/ie4033999"}}
+
+
 import os
 
 from PyQt5.QtWidgets import QApplication
@@ -79,15 +89,6 @@ class CoolProp(ThermoAdvanced):
               "Umass": None,
               "s": None,
               "Smass": None}
-
-    __doi__ = [
-        {"autor": "Bell, Ian H. and Wronski, Jorrit and Quoilin, Sylvain and"
-                  "Lemort, Vincent",
-         "title": "Pure and Pseudo-pure Fluid Thermophysical Property"
-                  "Evaluation and the Open-Source Thermophysical Property"
-                  "Library CoolProp",
-         "ref": "Ind. Eng. Chem. Res., 2014, 53 (6), pp 2498–2508",
-         "doi": "10.1021/ie4033999"}]
 
     def __call__(self, **kwargs):
         self.kwargs.update(kwargs)
