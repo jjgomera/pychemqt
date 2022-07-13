@@ -100,8 +100,7 @@ class D2O(MEoS):
         "epsilon3": [1.8663, 0.2895, 0.5803, 0.2236, 0.6815, 0.9495, 1.1158,
                      0.1607, 0.4144, 0.9683, 0.9488, 0.9487],
         "gamma3": [1.5414, 1.3794, 1.7385, 1.3045, 2.7242, 3.5321, 2.4552,
-                   0.8319, 1.3500, 2.5617, 1.0491, 1.0486]
-        }
+                   0.8319, 1.3500, 2.5617, 1.0491, 1.0486]}
 
     hill = {
         "__type__": "Helmholtz",
@@ -144,6 +143,13 @@ class D2O(MEoS):
         "d2": [1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2],
         "t2": [0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4, 5, 6],
         "gamma2": [1.5394]*14}
+
+    # Unorthodox formulation, the IAPWS 1984
+    # Kestin, J., Sengers, J.V.
+    # New International Formulations for the Thermodynamic Properties of Light
+    # and Heavy Water
+    # J. Phys. Chem. Ref. Data 15(1) (1986) 305-320
+    # doi: 10.1063/1.555772
 
     eq = herrig, hill
 

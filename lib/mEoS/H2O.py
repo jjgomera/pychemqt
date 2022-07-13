@@ -150,7 +150,7 @@ class H2O(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -221,8 +221,7 @@ class H2O(MEoS):
         "nr5": [-0.709318338e-2, 0.1718796342e-1, -0.1482653038e-1,
                 0.4517292884e-2],
         "d5": [1, 2, 3, 4],
-        "t5": [50, 40, 32, 26]
-        }
+        "t5": [50, 40, 32, 26]}
 
     saul2 = {
         "__type__": "Helmholtz",
@@ -233,7 +232,7 @@ class H2O(MEoS):
                              "Range from the Melting Line to 1273 K at"
                              "Pressures up to 25000 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 18(4) (1989) 1537-1564",
-                    "doi":  "10.1063/1.555836"},
+                    "doi": "10.1063/1.555836"},
 
         "R": 8.31434,
         "cp": Fi4,
@@ -292,6 +291,13 @@ class H2O(MEoS):
         "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
+
+    # Unorthodox formulation, the IAPWS 1984
+    # Kestin, J., Sengers, J.V.
+    # New International Formulations for the Thermodynamic Properties of Light
+    # and Heavy Water
+    # J. Phys. Chem. Ref. Data 15(1) (1986) 305-320
+    # doi: 10.1063/1.555772
 
     eq = iapws, GERG, saul, saul2, sun
     _PR = [0.1994, -30.0536]
