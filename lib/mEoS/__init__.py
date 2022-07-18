@@ -169,6 +169,9 @@ from lib.mEoS.R407c import R407c
 from lib.mEoS.R410a import R410a
 from lib.mEoS.R507a import R507a
 
+# Others
+from lib.mEoS.LJ import LJ
+
 
 # Component grouping by chemical class
 Nobles = [He, Ne, Ar, Kr, Xe]
@@ -192,9 +195,10 @@ CFCs = [R13I1, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41, R113, R114,
         Novec649]
 Siloxanes = [D4, D5, D6, MDM, MD2M, MD3M, MD4M, MM]
 PseudoCompounds = [Air, R404a, R407c, R410a, R507a]
+Others = [LJ]
 
 __all__ = Nobles + Gases + Alkanes + Naphthenes + Alkenes + Heteroatom + \
-    CFCs + Siloxanes + PseudoCompounds
+    CFCs + Siloxanes + PseudoCompounds + Others
 
 
 # Id of compound supported for meos library
