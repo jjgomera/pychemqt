@@ -530,7 +530,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
         self.fill(eq)
 
     def fill(self, eq):
-        format = {"format": 1, "total": 5}
+        format = {"fmt": 1, "total": 5}
 
         if "ao_log" in eq["cp"]:
             # Phi_o term
