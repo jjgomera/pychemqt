@@ -259,9 +259,7 @@ class newComponente(object):
         ele.append(self.SG)
         ele.append(self.f_acent)
         ele.append(self.Parametro_solubilidad)
-        ele.append(self.watson)
-
-        ele.append([])
+        ele.append(0)
 
         ele.append(0)
         ele.append(self.Tb)
@@ -269,7 +267,7 @@ class newComponente(object):
         ele.append("")
         ele.append("")
 
-        ele.append([])
+        ele.append("[]")
 
         ele.append(0)
         ele.append(0)

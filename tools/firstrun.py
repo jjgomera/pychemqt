@@ -593,8 +593,6 @@ def createDatabase(name):
                  f_acent    FLOAT,
                  SolubilityParameter   FLOAT,
                  watson      FLOAT,
-                 MSRK_A    FLOAT,
-                 MSRK_B    FLOAT,
                  Stiehl  FLOAT,
                  Tb FLOAT,
                  Tf  FLOAT,

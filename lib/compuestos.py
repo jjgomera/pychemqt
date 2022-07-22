@@ -4858,7 +4858,7 @@ class Componente(object):
 
     Examples
     --------
-    This are several ejemples of usage of this class with several configuration
+    These are several examples of usage of this class with several configuration
     definition, obviously not all correlation return valid values.
 
     Surface tension methods: Example 12.2 from 1_; ethyl mercaptan at 303K
@@ -5184,9 +5184,12 @@ class Componente(object):
         self.SolubilityParameter = unidades.SolubilityParameter(cmp[126])
         self.Kw = cmp[127]
         self.stiel = cmp[128]
-        self.CASNumber = cmp[131]
-        self.alternateFormula = cmp[132]
-        self.UNIFAC = eval(cmp[133])
+        self.CASNumber = str(cmp[131])
+        self.alternateFormula = str(cmp[132])
+        if cmp[133]:
+            self.UNIFAC = eval(cmp[133])
+        else:
+            self.UNIFAC = []
 
         self.Dm = cmp[134]
         self.ek = cmp[135]
@@ -5199,12 +5202,12 @@ class Componente(object):
         self.wilson = unidades.MolarVolume(cmp[141], "ccmol")
         self.NetHeating = unidades.Enthalpy(cmp[142]/self.M)
         self.GrossHeating = unidades.Enthalpy(cmp[143]/self.M)
-        self.Synonyms = cmp[144]
+        self.Synonyms = str(cmp[144])
         self.V_char = cmp[145]
         self.calor_formacion_solido = cmp[146]
         self.energia_formacion_solido = cmp[147]
         self.PolarParameter = cmp[148]
-        self.smile = cmp[149]
+        self.smile = str(cmp[149])
 
         # Molecule graphic plot from smile code
         if self.smile and os.environ["pybel"] == "True":

@@ -50,116 +50,145 @@ else:
 
 def transformElement(elemento):
     vals = []
-    vals.append(str(elemento[0]))
-    vals.append(str(elemento[1]))
-    vals.append(elemento[2])
-    vals.append(elemento[3])
-    vals.append(elemento[4])
-    vals.append(elemento[5])
-    vals.append(elemento[6])
+    vals.append(str(elemento[0]))   # formula
+    vals.append(str(elemento[1]))   # name
+    vals.append(elemento[2])        # M
+    vals.append(elemento[3])        # tc
+    vals.append(elemento[4])        # pc
+    vals.append(elemento[5])        # vc
+    vals.append(elemento[6])        # API
 
-    if elemento[7]:
+    if elemento[7]:                 # Cp_ideal
         vals += elemento[7]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[8]:
+
+    if elemento[8]:                 # Antoine
         vals += elemento[8]
     else:
         vals += [0.0, 0.0, 0.0]
 
-    if elemento[9]:
+    if elemento[9]:                 # Henry
         vals += elemento[9]
     else:
         vals += [0.0, 0.0, 0.0, 0.0]
-    if elemento[10]:
+
+    if elemento[10]:                # Visco
         vals += elemento[10]
     else:
         vals += [0.0, 0.0]
-    if elemento[11]:
+
+    if elemento[11]:                # tension
         vals += elemento[11]
     else:
         vals += [0.0, 0.0]
-    if elemento[12]:
+
+    if elemento[12]:                # rhoS_DIPPR
         vals += elemento[12][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[13]:
+
+    if elemento[13]:                # rhoL_DIPPR
         vals += elemento[13][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[14]:
+
+    if elemento[14]:                # Pv_DIPPR
         vals += elemento[14][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[15]:
+
+    if elemento[15]:                # Hv_DIPPR
         vals += elemento[15][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[16]:
+
+    if elemento[16]:                # Cps_DIPPR
         vals += elemento[16][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[17]:
+
+    if elemento[17]:                # CpL_DIPPR
         vals += elemento[17][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[18]:
+
+    if elemento[18]:                # CpG_DIPPR
         vals += elemento[18][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[19]:
+
+    if elemento[19]:                # muL_DIPPR
         vals += elemento[19][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[20]:
+
+    if elemento[20]:                # muG_DIPPR
         vals += elemento[20][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[21]:
+
+    if elemento[21]:                # ThCondL_DIPPR
         vals += elemento[21][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[22]:
+
+    if elemento[22]:                # ThCondG_DIPPR
         vals += elemento[22][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    if elemento[23]:
+
+    if elemento[23]:                # tension_DIPPR
         vals += elemento[23][0:8]
     else:
         vals += [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-    vals.append(elemento[24])
-    vals.append(elemento[25])
-    vals.append(elemento[26])
-    vals.append(elemento[27])
-    vals.append(elemento[28])
-    vals.append(elemento[29])
-    vals.append(elemento[30])
-    vals.append(elemento[31])
-    vals.append(elemento[32])
-    vals.append(elemento[33])
-    vals.append(str(elemento[34]))
-    vals.append(str(elemento[35]))
-    vals.append(str(elemento[36]))
-    vals.append(elemento[37])
-    vals.append(elemento[38])
-    vals.append(elemento[39])
-    vals.append(elemento[40])
-    vals.append(elemento[41])
-    vals.append(elemento[42])
-    vals.append(elemento[43])
-    vals.append(elemento[44])
-    vals.append(elemento[45])
-    vals.append(elemento[46])
-    vals.append(str(elemento[47]))
-    vals.append(elemento[48])
-    vals.append(elemento[49])
-    vals.append(elemento[50])
-    vals.append(elemento[52])
-    try:
-        vals.append(elemento[58])
-    except:
-        vals.append("")
+    vals.append(elemento[24])       # Dipole
+    vals.append(elemento[25])       # V_liq
+    vals.append(elemento[26])       # Rackett
+    vals.append(elemento[27])       # SG
+    vals.append(elemento[28])       # f_acent
+    vals.append(elemento[29])       # SolubilityParameter
+    vals.append(elemento[30])       # watson
+
+    # if elemento[31]:                # MSRK
+        # vals += elemento[31][0:2]
+    # else:
+        # vals += [0.0, 0.0]
+
+    vals.append(elemento[31])       # Stiehl
+    vals.append(elemento[32])       # Tb
+    vals.append(elemento[33])       # Tf
+    vals.append(str(elemento[34]))  # CAS
+    vals.append(str(elemento[35]))  # alternateFormula
+    vals.append(elemento[36])  # UNIFAC
+    vals.append(elemento[37])       # Dm
+    vals.append(elemento[38])       # Eps_k
+    vals.append(elemento[39])       # UNIQUAC_area
+    vals.append(elemento[40])       # UNIQUAC_volumen
+    vals.append(elemento[41])       # f_acent
+    vals.append(elemento[42])       # Hf
+    vals.append(elemento[43])       # Gf
+    vals.append(elemento[44])       # volumen_wilson
+    vals.append(elemento[45])       # NetHeating
+    vals.append(elemento[46])       # GrossHeating
+    vals.append(str(elemento[47]))  # Synonyms
+    vals.append(elemento[48])       # volumen_caracteristico
+    vals.append(elemento[49])       # calor_formacion_solido
+    vals.append(elemento[50])       # energia_libre_solido
+    vals.append(elemento[51])       # PolarParameter
+    vals.append(str(elemento[52]))  # smile
+
+    if elemento[53]:                # antoine_extended
+        vals += elemento[53][0:4]
+    else:
+        vals += [0.0, 0.0, 0.0, 0.0]
+
+    if elemento[54]:                # wagner
+        vals += elemento[54][0:4]
+    else:
+        vals += [0.0, 0.0, 0.0, 0.0]
+
     return vals
 
 
@@ -171,7 +200,7 @@ def inserElementsFromArray(name, lista):
     curs.execute("SELECT COUNT(*) AS Total FROM compuestos")
     numero = curs.fetchone()[0]
     if name == databank_Custom_name:
-        numero += 1000
+        numero += 10000
     query = "INSERT INTO compuestos VALUES "
     for indice, elemento in enumerate(lista):
         vals = transformElement(elemento)
@@ -257,7 +286,7 @@ def deleteElement(indice):
 def getElement(indice):
     """Get element from database
     indice: index in databank of element"""
-    if indice > 2000:
+    if indice > 10000:
         db_Custom = sqlite3.connect(databank_Custom_name).cursor()
         db_Custom.execute("select * from compuestos where id==%i" % indice)
         componente = db_Custom.fetchone()
@@ -274,7 +303,7 @@ def copyElement(indice):
     vals = elemento[1:]
     conn = sqlite3.connect(databank_Custom_name)
     curs = conn.cursor()
-    curs.execute("INSERT INTO compuestos VALUES" +
-                 str((1001+N_comp_Custom, ) + vals))
+    curs.execute("INSERT INTO compuestos VALUES"
+                 + str((10001+N_comp_Custom, ) + vals))
     conn.commit()
     conn.close()

@@ -468,7 +468,7 @@ class Ui_Contribution(newComponent):
 
         newComponent.loadUI(self)
 
-        for i, nombre in enumerate(self.unknown.coeff["txt"]):
+        for i, nombre in enumerate(self.unknown._coeff["txt"]):
             self.groupContributions.addItem(nombre[0])
 
         if self.unknown.SecondOrder:

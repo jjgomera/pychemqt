@@ -162,7 +162,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         """Common action to do when the component id change, change from user
         to system compound, editable to readOnly compound"""
         self.id = id
-        if id == 0 or id > 1000:
+        if id == 0 or id > 10000:
             self.eqformula.setVisible(False)
             self.setReadOnly(False)
             self.btnFit.setEnabled(True)
@@ -529,7 +529,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         """Common action to do when the component id change, change from user
         to system compound, editable to readOnly compound"""
         self.id = id
-        if id == 0 or id > 1000:
+        if id == 0 or id > 10000:
             self.setReadOnly(False)
             self.btnFit.setEnabled(True)
         else:
@@ -803,9 +803,9 @@ class View_Component(QtWidgets.QDialog):
         index of compound in database
           - 0 is the option for define a new component, all the widget can be
             editable
-          - 1 < 1000: Compound in pychemqt databse, read only element. The user
+          - 1 < 10000: Compound in pychemqt databse, read only element. The user
             can copy the compound and edit it
-          - > 1000:  Compound added by user"""
+          - > 10000:  Compound added by user"""
 
         super(View_Component, self).__init__(parent)
         lyt = QtWidgets.QVBoxLayout(self)
@@ -825,7 +825,7 @@ class View_Component(QtWidgets.QDialog):
 
         else:
             # Add a "titlebar" with navigation options
-            if index > 1000:
+            if index > 10000:
                 self.setWindowTitle(QtWidgets.QApplication.translate(
                     "pychemqt", "Custom Component Properties"))
             else:
@@ -1585,7 +1585,7 @@ class View_Component(QtWidgets.QDialog):
                 index = self.index+1
         elif index == "last":
             if sql.N_comp_Custom:
-                index = 1000+sql.N_comp_Custom
+                index = 10000+sql.N_comp_Custom
             else:
                 index = sql.N_comp
 
@@ -1598,7 +1598,7 @@ class View_Component(QtWidgets.QDialog):
             btnSave.setVisible(True)
             btnApply.setVisible(False)
             btnClose.setVisible(False)
-        elif index < 1000:
+        elif index < 10000:
             btnDiscard.setVisible(False)
             btnSave.setVisible(False)
             btnApply.setVisible(False)
@@ -1609,7 +1609,7 @@ class View_Component(QtWidgets.QDialog):
             btnApply.setVisible(True)
             btnClose.setVisible(False)
 
-        if index == 0 or index > 1000:
+        if index == 0 or index > 10000:
             self.setReadOnly(False)
         else:
             self.setReadOnly(True)
@@ -1619,7 +1619,7 @@ class View_Component(QtWidgets.QDialog):
             self.btnFirst.setDisabled(index == 1)
             self.btnPrev.setDisabled(index == 1)
             if sql.N_comp_Custom:
-                last = 1000+sql.N_comp_Custom
+                last = 10000+sql.N_comp_Custom
             else:
                 last = sql.N_comp
             self.btnNext.setDisabled(index == last)
@@ -1965,7 +1965,7 @@ class View_Component(QtWidgets.QDialog):
             if self.index == 0:
                 func = sql.inserElementsFromArray
                 arg = (sql.databank_Custom_name, [componente])
-            elif self.index > 1000:
+            elif self.index > 10000:
                 func = sql.updateElement
                 arg = (componente, self.index)
             if okToContinue(self, self.dirty, func, arg):
