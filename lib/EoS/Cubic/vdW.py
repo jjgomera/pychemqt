@@ -53,13 +53,11 @@ class vdW(Cubic):
     __title__ = "van der Waals (1890)"
     __status__ = "vdW"
     __doi__ = (
-      {
-        "autor": "van der Waals, J.D.",
-        "title": "Over de Continuiteit van den Gas- En Vloestoftoestand",
-        "ref": "Dissertation, Leiden University, Leiden, Niederlande, 1873",
-        "doi": ""},
-      {
-         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+        {"autor": "van der Waals, J.D.",
+         "title": "Over de Continuiteit van den Gas- En Vloestoftoestand",
+         "ref": "Dissertation, Leiden University, Leiden, Niederlande, 1873",
+         "doi": ""},
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})

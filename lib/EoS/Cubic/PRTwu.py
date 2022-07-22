@@ -58,14 +58,12 @@ class PRTwu(PR):
     __title__ = "PR Twu (1995)"
     __status__ = "PRTwu"
     __doi__ = (
-      {
-        "autor": "Twu, C.H., Coon, J.E., Cunningham, J.R.",
-        "title": "A New Generalized Alpha Function for a Cubic Equation of "
-                 "State Part 1. Peng-Robinson equation",
-        "ref": "Fluid Phase Equilibria 105 (1995) 49-59",
-        "doi": "10.1016/0378-3812(94)02601-v"},
-      {
-         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+        {"autor": "Twu, C.H., Coon, J.E., Cunningham, J.R.",
+         "title": "A New Generalized Alpha Function for a Cubic Equation of "
+                  "State Part 1. Peng-Robinson equation",
+         "ref": "Fluid Phase Equilibria 105 (1995) 49-59",
+         "doi": "10.1016/0378-3812(94)02601-v"},
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})

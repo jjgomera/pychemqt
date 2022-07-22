@@ -123,30 +123,25 @@ class SRK(Cubic):
     __title__ = "Soave-Redlich-Kwong (1972)"
     __status__ = "SRK72"
     __doi__ = (
-      {
-        "autor": "Soave, G.",
-        "title": "Equilibrium Constants from a modified Redlich-Kwong "
-                 "Equation of State",
-        "ref": "Chem. Eng. Sci. 27 (1972) 1197-1203",
-        "doi": "10.1016/0009-2509(72)80096-4"},
-      {
-         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+        {"autor": "Soave, G.",
+         "title": "Equilibrium Constants from a modified Redlich-Kwong "
+                  "Equation of State",
+         "ref": "Chem. Eng. Sci. 27 (1972) 1197-1203",
+         "doi": "10.1016/0009-2509(72)80096-4"},
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
-      {
-         "autor": "Boston, J.F., Mathias, P.M.",
+        {"autor": "Boston, J.F., Mathias, P.M.",
          "title": "Phase Equilibria in a Third-Generation Process Simulator",
          "ref": "Presented at: 'Phase Equilibria and Fluid Properties in the "
                 "Chemical Industries', Berlin, March 17-21, 1980.",
          "doi": ""},
-      {
-         "autor": "Nasrifar, Kh., Bolland, O.",
+        {"autor": "Nasrifar, Kh., Bolland, O.",
          "title": "Square-Well Potential and a New α Function for the Soave-"
                   "Redlich-Kwong Equation of State",
          "ref": "Ind. Eng. Chem. Res. 43(21) (2004) 6901-6909",
-         "doi": "10.1021/ie049545i"},
-      )
+         "doi": "10.1021/ie049545i"})
 
     def _cubicDefinition(self, T):
         """Definition of coefficients for generic cubic equation of state"""
@@ -352,6 +347,7 @@ class SRK(Cubic):
         kw["daxi"] = daxi
 
         return kw
+
 
 if __name__ == "__main__":
     from lib.mezcla import Mezcla

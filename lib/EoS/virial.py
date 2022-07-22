@@ -712,7 +712,7 @@ def B_Meng(T, Tc, Pc, w, D):
 
 
 @refDoc(__doi__, [8])
-def B_Orbey(T, Tc, Pc, w, id):
+def B_Orbey(T, Tc, Pc, w, id=None):
     r"""Calculate the 2nd virial coefficient using the Orbey correlation
 
     .. math::
@@ -758,7 +758,7 @@ def B_Orbey(T, Tc, Pc, w, id):
     Using same value of Tsonopoulos correlation as reference
 
     >>> from lib.mEoS import Ne
-    >>> "%0.4f" % B_Orbey(262, Ne.Tc, Ne.Pc, Ne.f_acent, Ne.id)[0]
+    >>> "%0.4f" % B_Orbey(262, Ne.Tc, Ne.Pc, Ne.f_acent)[0]
     '0.0104'
     """
     Tr = T/Tc
@@ -860,7 +860,7 @@ def B_Orbey(T, Tc, Pc, w, id):
 
 
 @refDoc(__doi__, [9])
-def B_Tarakad(T, Tc, Pc, id):
+def B_Tarakad(T, Tc, Pc, w, mu=None):
     r"""Calculate the 2nd virial coefficient using the Tarakad-Danner
     correlation
 
@@ -904,132 +904,158 @@ def B_Tarakad(T, Tc, Pc, id):
     Using same value of Tsonopoulos correlation as reference
 
     >>> from lib.mEoS import Ne
-    >>> "%0.4f" % B_Tarakad(262, Ne.Tc, Ne.Pc, Ne.id)[0]
-    '0.0117'
+    >>> "%0.4f" % B_Tarakad(262, Ne.Tc, Ne.Pc, id)[0]
+    '0.0113'
     """
     Tr = T/Tc
 
     par = {
-        65: (1.094, 0.439),
-        66: (1.886, 0.133),
-        67: (2.713, 0),
-        40: (3.004, 0),
-        41: (3.443, 0.105),
-        45: (3.821, 0.101),
-        42: (3.789, 0.229),
-        43: (3.897, 0.329),
-        44: (3.796, 0.308),
-        71: (4.187, 0.199),
-        72: (4.130, 0.049),
-        73: (4.285, 0),
-        74: (4.166, 0.066),
-        75: (4.100, 0.179),
-        76: (4.168, 0.152),
-        77: (4.341, 0.127),
-        225: (1.419, 0.867),
-        643: (2.319, 0.250),
-        218: (2.635, 0),
-        247: (2.176, 0.359),
-        245: (2.498, 0.425),
-        243: (2.672, 0),
-        235: (3.380, 0),
-        691: (4.443, 0),
-        321: (5.521, 0),
-        326: (6.022, 0),
-        320: (4.683, 0),
-        236: (3.150, 0),
-        322: (3.345, 0.04),
-        319: (4.658, 0.323),
-        642: (2.880, 0),
-        220: (2.569, 0.119),
-        216: (3.026, 0),
-        215: (2.810, 0),
-        217: (3.304, 0),
-        115: (1.450, 0.436),
-        222: (2.342, 0.050),
-        112: (3.178, 0),
-        100: (3.458, 0),
-        132: (2.281, 0.396),
-        126: (2.995, 0.151),
-        127: (2.851, 0.071),
-        479: (3.357, 0.229),
-        122: (2.122, 0),
-        658: (3.013, 0.195),
-        659: (3.013, 0.041),
-        119: (3.759, 0.061),
-        224: (1.180, 0.348),
-        246: (1.988, 0),
-        116: (1.046, 0.118),
-        133: (2.127, 0.460),
-        486: (2.641, 0.255),
-        162: (3.139, 0.157),
-        318: (3.547, 0.129),
-        337: (3.681, 0.154),
-        280: (2.990, 0.200),
-        129: (1.901, 0.422),
-        117: (1.536, 2.146),
-        134: (2.250, 2.226),
-        146: (2.736, 1.431),
-        62: (0.615, 1.220),
-        145: (2.726, 1.696),
-        159: (3.182, 1.530),
-        161: (3.019, 1.749),
-        160: (3.225, 0.611),
-        450: (3.151, 1.349),
-        174: (3.550, 0.634),
-        140: (2.740, 0.966),
-        153: (3.139, 0.557),
-        304: (3.627, 0.797),
-        305: (3.415, 0.421),
-        165: (3.482, 0.558),
-        329: (3.572, 0.925),
-        131: (2.360, 0.683),
-        141: (2.870, 0.335),
-        157: (3.419, 0.260),
-        142: (2.862, 0.630),
-        155: (3.348, 0.454),
-        166: (3.778, 0.425),
-        156: (3.304, 0.454),
-        309: (3.712, 0.386),
-        136: (2.372, 0.077),
-        269: (2.809, 0.559),
-        290: (3.207, 0.139),
-        # Methyl propyl sulfide: 3.317, 0.11,
-        # Methyl isopropyl sulfide: 3.236, 0,
-        227: (1.611, 0.197),
-        137: (2.341, 0.094),
-        # 2-methyl-2-propanethiol: 3.110, 0,
-        # 1-pentanethiol: 3.791, 0.097,
-        113: (0.650, 2.065),
-        125: (1.821, 3.008),
-        118: (1.662, 0.903),
-        249: (2.264, 0.552),
-        147: (2.736, 0.153),
-        138: (2.309, 0.660),
-        294: (3.161, 0.197),
-        270: (2.789, 0.452),
-        226: (2.306, 1.398),
-        108: (0.530, 0.454),
-        110: (1.191, 0.231),
-        48: (0.558, 0),
-        49: (0.992, 0.152),
-        51: (1.674, 0.512),
-        50: (0.638, 0.301),
-        102: (1.424, 0.074),
-        63: (0.853, 0.917),
-        630: (2.356, 0),
-        629: (3.279, 0),
-        237: (1.423, 0)}
+        : ,
+1.094, 0.439
+1.886, 0.133
+2.713, 0
+
+3.004, 0,
+3.443, 0.105,
+3.821, 0.101,
+3.789, 0.229,
+3.897, 0.329,
+3.796, 0.308,
+4.187, 0.199,
+
+4.130, 0.049,
+4.285, 0,
+4.166, 0.066,
+4.100, 0.179,
+4.168, 0.152,
+4.341, 0.127,
+
+1.419, 0.867,
+2.319, 0.250,
+2.635, 0,
+2.176, 0.359,
+
+2.498, 0.425,
+2.672, 0,
+3.380, 0,
+4.443, 0,
+5.521, 0,
+
+6.022, 0,
+4.683, 0,
+3.150, 0,
+3.345, 0.04,
+4.658, 0.323,
+
+2.880, 0,
+2.569, 0.119
+3.026, 0,
+2.810, 0,
+3.304, 0,
+
+1.450, 0.436,
+2.342, 0.050,
+3.178, 0,
+3.458, 0,
+2.281, 0.396,
+
+2.995, 0.151,
+2.851, 0.071,
+3.357, 0.229,
+2.122, 0,
+3.013, 0.195,
+
+3.013, 0.041,
+3.759, 0.061,
+1.180, 0.348,
+1.988, 0,
+1.046, 0.118,
+
+2.127, 0.460,
+2.641, 0.255,
+3.139, 0.157,
+3.547, 0.129,
+3.681, 0.154,
+
+2.990, 0.200,
+1.901, 0.422,
+
+1.536, 2.146,
+2.250, 2.226,
+2.736, 1.431,
+0.615, 1.220,
+2.726, 1.696,
+
+3.182, 1.530,
+3.019, 1.749,
+3.225, 0.611,
+3.151, 1.349,
+3.550, 0.634,
+
+2.740, 0.966,
+3.139, 0.557,
+3.627, 0.797,
+3.415, 0.421,
+3.482, 0.558,
+3.572, 0.925,
+
+2.360, 0.683,
+2.870, 0.335,
+3.419, 0.260,
+
+2.862, 0.630,
+3.348, 0.454,
+3.778, 0.425,
+3.304, 0.454,
+3.712, 0.386,
+
+2.372, 0.077,
+2.809, 0.559,
+3.207, 0.139,
+3.317, 0.11,
+3.236, 0,
+
+1.611, 0.197,
+2.341, 0.094,
+3.110, 0,
+3.791, 0.097,
+
+0.650, 2.065,
+1.821, 3.008,
+1.662, 0.903,
+2.264, 0.552,
+2.736, 0.153,
+
+2.309, 0.660,
+3.161, 0.197,
+2.789, 0.452,
+2.306, 1.398,
+
+0.530, 0.454
+1.191, 0.231
+0.558, 0
+
+0.992
+1.674
+0.638
+1.424
+0.853
+0.152
+0.512
+0.301
+0.074
+0.917
+        }
 
     if id and id in par:
-        R_, fi = par[id]
+        R, fi = par[id]
     else:
-        R_, fi = 0, 0
+        R, fi = 0, 0
 
     def f(T):
-        Bsimple = .1445 - .33/Tr - .1385/Tr**2 - .0121/Tr**3 - .000607/Tr**8
-        Bshape = (-0.00787 + 0.0812/Tr**2 - 0.0646/Tr**3)*R_*1e-10 - \
-            (0.00347/Tr**2-0.000149/Tr**7)*(R_*1e-10)**2
+        Bsimple = .1445 - 0.33/Tr - .1385/Tr**2 - .0121/Tr**3 - .000607/Tr**8
+        Bshape = (-0.00787 + 0.0812/Tr**2 - 0.0646/Tr**3)*R - \
+            (0.00347/Tr**2-0.000149/Tr**7)*R**2
         Bpolar = -0.028/Tr**7*fi
 
         f = Bsimple + Bshape + Bpolar
@@ -1222,31 +1248,13 @@ class Virial(EoS):
         Z = \frac{PV}{RT} = 1 + \frac{B}{V} + \frac{C}{V^2} + \cdots
 
     The implementation use the form truncated at third term using the virial
-    coefficient from database or try to predicted from generalized
-    correlations.
-
+    coefficient from database or try to predicted from reference correlations.
     This equation is only appropiate for single-phase gas systems.
-
-    Parameters
-    ----------
-    B : int
-        Generalized correlation to calculate second virial coefficient
-        0 - Tsonopoulos (1974)
-        1 - Iglesias-Silva (2001)
-        1 - Meng (2004)
-        3 - Orbey (1988)
-        4 - Tarakar-Danner (1977)
-    C : int
-        Generalized correlation to calculate third virial coefficient
-        0 - Orbey-Vera (1983)
-        1 - Liu-Xiang (2003)
-        2 - Meng (2004)
     """
     __title__ = "Virial"
     __status__ = "Virial"
 
-    METHODS_B = ["Tsonopoulos (1974)", "Iglesias-Silva (2001)", "Meng (2004)",
-                 "Orbey (1988)", "Tarakad-Danner (1977)"]
+    METHODS_B = ["Tsonopoulos (1974)", "Iglesias-Silva (2001)", "Meng (2004)"]
     METHODS_C = ["Orbey-Vera (1983)", "Liu-Xiang (2003)", "Meng (2004)"]
 
     def __init__(self, *args, **kwargs):
@@ -1275,23 +1283,10 @@ class Virial(EoS):
                 else:
                     coef = B_Database[cmp.id]
                 Bi, Bit, Bitt = _B_Database(T, coef)
-
-            elif self.kwargs.get("B", 0) == 1:
-                Bi, Bit, Bitt = B_Meng(
-                    T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.dipole)
-            elif self.kwargs.get("B", 0) == 2:
-                Bi, Bit, Bitt = B_IglesiasSilva(
-                    T, cmp.Tc, cmp.Pc, cmp.Vc*cmp.M, cmp.f_acent, cmp.dipole)
-            elif self.kwargs.get("B", 0) == 3:
-                Bi, Bit, Bitt = B_Orbey(
-                    T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.id)
-            elif self.kwargs.get("B", 0) == 4:
-                Bi, Bit, Bitt = B_Tarakad(
-                    T, cmp.Tc, cmp.Pc, cmp.id)
             else:
+                # Use general correlation
                 Bi, Bit, Bitt = B_Tsonopoulos(
                     T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.dipole)
-
             B.append(Bi)
             Bt.append(Bit)
             Btt.append(Bitt)
@@ -1302,17 +1297,12 @@ class Virial(EoS):
         C = []
         Ct = []
         Ctt = []
-        for cmp in self.componente:
-            if self.kwargs.get("C", 0) == 1:
-                Ci, Cit, Citt = C_LiuXiang(
-                    T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.Zc)
-            elif self.kwargs.get("C", 0) == 2:
-                B = B_Meng(T, cmp.Tc, cmp.Pc, cmp.f_acent, cmp.dipole.Debye)
-                Ci, Cit, Citt = C_Meng(
-                    T, cmp.Tc, cmp.Pc, cmp.dipole.Debye, B)
+        for comp in self.componente:
+            if self.kwargs.get("C", 0):
+                Ci, Cit, Citt = C_OrbeyVera(T, comp.Tc, comp.Pc, comp.f_acent)
             else:
-                Ci, Cit, Citt = C_OrbeyVera(T, cmp.Tc, cmp.Pc, cmp.f_acent)
-
+                Ci, Cit, Citt = C_LiuXiang(
+                    T, comp.Tc, comp.Pc, comp.f_acent, comp.Zc)
             C.append(Ci)
             Ct.append(Cit)
             Ctt.append(Citt)
@@ -1322,8 +1312,8 @@ class Virial(EoS):
         """Second virial coefficient calculation"""
         Bi, Bit, Bitt = self._Bi(T)
         B, Bt, Btt = 0, 0, 0
-        for i, xi in enumerate(self.zi):
-            for j, xj in enumerate(self.zi):
+        for i, xi in enumerate(self.fraccion):
+            for j, xj in enumerate(self.fraccion):
                 if i == j:
                     Bij = Bi[i]
                     Bijt = Bit[i]
@@ -1354,8 +1344,8 @@ class Virial(EoS):
         Cij = zeros((len(Ci), len(Ci)))
         Cijt = zeros((len(Ci), len(Ci)))
         Cijtt = zeros((len(Ci), len(Ci)))
-        for i, xi in enumerate(self.zi):
-            for j, xj in enumerate(self.zi):
+        for i, xi in enumerate(self.fraccion):
+            for j, xj in enumerate(self.fraccion):
                 if i == j:
                     Cij[i, j] = Ci[i]
                     Cijt[i, j] = Cit[i]
@@ -1375,9 +1365,9 @@ class Virial(EoS):
                             self.T, Tcij, Pcij, wij, Zcij)[0]
 
         C, Ct, Ctt = 0, 0, 0
-        for i, xi in enumerate(self.zi):
-            for j, xj in enumerate(self.zi):
-                for k, xk in enumerate(self.zi):
+        for i, xi in enumerate(self.fraccion):
+            for j, xj in enumerate(self.fraccion):
+                for k, xk in enumerate(self.fraccion):
                     C += xi*xj*xk*(Cij[i, j]*Cij[j, k]*Cij[j, k])**(1./3)
         return C, Ct, Ctt
 

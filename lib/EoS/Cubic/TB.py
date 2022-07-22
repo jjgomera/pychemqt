@@ -32,7 +32,7 @@ dat = {
     105: (0.4058, 0.1803),
     # : (0.3593, 0.1441),  # phosphine
     208: (0.4303, 0.1196),
-    # 951 : (0.4714, 0.1407),
+    951: (0.4714, 0.1407),
     104: (0.4257, 0.1694),
     1: (0.1015, 0),
     62: (0.6042, 0.1832),
@@ -156,19 +156,16 @@ class TB(Cubic):
     __title__ = "Trebble-Bishnoi (1987)"
     __status__ = "TB"
     __doi__ = (
-      {
-        "autor": "Trebble, M.A., Bishnoi, P.R.",
-        "title": "Development of a New Four-Parameter Cubic Equation of State",
-        "ref": "Fluid Phase Equilibria 35 (1987) 1-8",
-        "doi": "10.1016/0378-3812(87)80001-8"},
-      {
-        "autor": "Trebble, M.A.",
-        "title": "Calculation of Constants in the Trebble-Bishnoi Equation of "
-                 "State with an Extended Corresponding States Approach",
-        "ref": "Fluid Phase Equilibria 45 (1989) 165-172",
-        "doi": "10.1016/0378-3812(89)80255-9"},
-      {
-         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+        {"autor": "Trebble, M.A., Bishnoi, P.R.",
+         "title": "Development of a New Four-Parameter Cubic Equation of State",
+         "ref": "Fluid Phase Equilibria 35 (1987) 1-8",
+         "doi": "10.1016/0378-3812(87)80001-8"},
+        {"autor": "Trebble, M.A.",
+         "title": "Calculation of Constants in the Trebble-Bishnoi Equation of "
+                  "State with an Extended Corresponding States Approach",
+         "ref": "Fluid Phase Equilibria 45 (1989) 165-172",
+         "doi": "10.1016/0378-3812(89)80255-9"},
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""})

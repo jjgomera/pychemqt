@@ -86,8 +86,8 @@ dat = {
     91: (1.014100, 0.721300),
     92: (1.068200, 0.793100),
     611: (0.829000, 0.344600),
-    # 850: (0.825100, 0.335300),  # 3-methyloctane
-    # 851: (0.836400, 0.327400),  # 4-methyloctane
+    850: (0.825100, 0.335300),  # 3-methyloctane
+    851: (0.836400, 0.327400),  # 4-methyloctane
     # 1451: (0.852000, 0.308800),  # 3-ethylheptane
     # : (0.870200, 0.295500),  # 4-ethylheptane
     612: (0.759600, 0.336800),
@@ -207,6 +207,8 @@ dat = {
     138: (0.702200, 0.269300),
     294: (0.542500, 0.387700),
     270: (0.534200, 0.369800),
+
+    # Used values in ref [5]_, see below
     # 225: (0.644100, 0.172300),
     # 643: (0.769900, 0.185300),
     # 218: (0.671500, 0.149600),
@@ -225,6 +227,7 @@ dat = {
     # 231: (0.611400, 0.277200),
     # 229: (0.742700, 0.199500),
     # 215: (0.701200, 0.205600),
+
     115: (0.620500, 0.150300),
     222: (0.718300, 0.150100),
     112: (0.681600, 0.188300),
@@ -255,7 +258,7 @@ dat = {
     46: (0.446800, 0.109300),
     47: (0.487100, 0.071700),
     105: (0.459700, 0.154300),
-    # 994: (0.4304, 0.0834),   # xenon
+    994: (0.4304, 0.0834),   # xenon
     1: (0.256300, -0.074200),
     62: (0.949900, 0.163300),
     49: (0.580900, 0.272700),
@@ -266,7 +269,7 @@ dat = {
     104: (0.628800, 0.112400),
     63: (0.783800, 0.160400),
     630: (0.707600, 0.429200),
-    # 951: (0.6878, 0.0952),   # nitrogen trifluoride
+    951: (0.6878, 0.0952),   # nitrogen trifluoride
     # : (0.7958, 0.1473),  # boron tribromide
     219: (0.536800, 0.138700),
 
@@ -311,8 +314,7 @@ dat = {
     320: (1.1143, 0.1635),
     340: (1.2063, 0.1657),
     321: (0.8998, 0.3877),
-    326: (0.9354, 0.4432),
-    }
+    326: (0.9354, 0.4432)}
 
 # Procedure to calculate parameters from vapor pressure experimental data
 # Soave, G.
@@ -359,42 +361,40 @@ class MSRK(SRK):
     __title__ = "M-SRK (1979)"
     __status__ = "MSRK"
     __doi__ = (
-      {
-         "autor": "Soave, G.",
+        {"autor": "Soave, G.",
          "title": "Application of a Cubic Equation of State to Vapor-Liquid "
                   "Equilibria of Systems Containing Polar Compounds",
          "ref": "Inst. Chem. Eng. Symp. Ser. 56 (1979) 1.2/1-1.2/16",
          "doi": ""},
-      {
-        "autor": "Soave, G.",
-        "title": "Improvement of the van der Waals Equation of State",
-        "ref": "Chem. Eng. Sci. 39(2) (1984) 357-369",
-        "doi": "10.1016/0009-2509(84)80034-2"},
-      {
-         "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+
+        {"autor": "Soave, G.",
+         "title": "Improvement of the van der Waals Equation of State",
+         "ref": "Chem. Eng. Sci. 39(2) (1984) 357-369",
+         "doi": "10.1016/0009-2509(84)80034-2"},
+
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
-      {
-         "autor": "Sandarusi, J.A., Kidnay, A.J., Yesavage, V.F.",
+
+        {"autor": "Sandarusi, J.A., Kidnay, A.J., Yesavage, V.F.",
          "title": "Compilation of Parameters for a Polar Fluid Soave-Redlich-"
                   "Kwong Equation of State",
          "ref": "Ind. Eng. Chem. Process Des. Dev. 25(4) (1986) 957-963",
          "doi": "10.1021/i200035a020"},
-      {
-         "autor": "Kadhem, Q.M.A, Al-Sahhaf, T.A., Hamam, S.E.M.",
+
+        {"autor": "Kadhem, Q.M.A, Al-Sahhaf, T.A., Hamam, S.E.M.",
          "title": "Parameters of the Modified Soave-Redlich-Kwong Equation of "
                   "State for Some Chlorofluorocarbons, Hydrofluorocarbons and"
                   "Fluorocarbons",
          "ref": "J. Fluorine Chem. 43(1) (1989) 87-104",
          "doi": "10.1016/s0022-1139(00)81638-3"},
-      {
-         "autor": "Valderrama, J.O., De la Puente, H., Ibrahim, A.A.",
+
+        {"autor": "Valderrama, J.O., De la Puente, H., Ibrahim, A.A.",
          "title": "Generalization of a Polar-Fluid Soave-Redlich-Kwong "
                   "Equation of State",
          "ref": "Fluid Phase Equilibria 93 (1994) 377-383",
-         "doi": "10.1016/0378-3812(94)87021-7"},
-      )
+         "doi": "10.1016/0378-3812(94)87021-7"})
 
     def _alfa(self, cmp, T):
         """Special alpha function for this modified version, if the compound

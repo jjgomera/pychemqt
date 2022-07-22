@@ -47,7 +47,7 @@ class PRSV2(PRSV):
         "title": "PRSV2: A Cubic Equation of State for Accurate Vapor—Liquid "
                  "Equilibria calculations",
         "ref": "Can. J. Chem. Eng. 64 (1986) 820–826",
-        "doi":  "10.1002/cjce.5450640516"},
+        "doi": "10.1002/cjce.5450640516"},
 
     def _k(self, cmp, Tr):
         # Eq 11

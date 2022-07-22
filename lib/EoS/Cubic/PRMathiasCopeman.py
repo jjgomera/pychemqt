@@ -114,35 +114,31 @@ class PRMathiasCopeman(Cubic):
     __title__ = "PR-Mathias-Copeman (1983)"
     __status__ = "PR-MC"
     __doi__ = (
-      {
-        "autor": "Mathias, P.M., Copeman, T.W.",
-        "title": "Extension of the Peng-Robinson Equation of State to Complex "
-                 "Mixtures: Evaluation of the Various Forms of the Local "
-                 "Composition Concept",
-        "ref": "Fluid Phase Equilibria 13 (1983) 91-108",
-        "doi": "10.1016/0378-3812(83)80084-3"},
-      {
-        "autor": "Horstmann, S., Jabloniec, A., Krafczyk, J., Fischer, K., "
-                 "Gmehling, J.",
-        "title": "PSRK group contribution equation of state: comprehensive "
-                 "revision and extension IV, including critical constants "
-                 "and α-function parameters for 1000 components",
-        "ref": "Fluid Phase Equilibria 227 (2005) 157-164",
-        "doi": "10.1016/j.fluid.2004.11.002"},
-      {
-        "autor": "Coquelet, C., Chapoy, A., Richon, D.",
-        "title": "Development of a New Alpha Function for the Peng-Robinson "
-                 "Equation of State: Comparative Study of Alpha Function "
-                 "Models for Pure Gases (Natural Gas Components) and "
-                 "Water-Gas Systems",
-        "ref": "Int. J. Thermophys. 25(1) (2004) 133-158",
-        "doi": "10.1023/b_ijot.0000022331.46865.2f"},
-      {
-        "autor": "Bell, I.H., Jäger, A.",
-        "title": "Helmholtz Energy Transformations of Common Cubic Equations "
-                 "of State for Use with Pure Fluids and Mixtures",
-        "ref": "J. Res. of NIST 121 (2016) 236-263",
-        "doi": "10.6028/jres.121.011"})
+        {"autor": "Mathias, P.M., Copeman, T.W.",
+         "title": "Extension of the Peng-Robinson Equation of State to Complex"
+                  " Mixtures: Evaluation of the Various Forms of the Local "
+                  "Composition Concept",
+         "ref": "Fluid Phase Equilibria 13 (1983) 91-108",
+         "doi": "10.1016/0378-3812(83)80084-3"},
+        {"autor": "Horstmann, S., Jabloniec, A., Krafczyk, J., Fischer, K., "
+                  "Gmehling, J.",
+         "title": "PSRK group contribution equation of state: comprehensive "
+                  "revision and extension IV, including critical constants "
+                  "and α-function parameters for 1000 components",
+         "ref": "Fluid Phase Equilibria 227 (2005) 157-164",
+         "doi": "10.1016/j.fluid.2004.11.002"},
+        {"autor": "Coquelet, C., Chapoy, A., Richon, D.",
+         "title": "Development of a New Alpha Function for the Peng-Robinson "
+                  "Equation of State: Comparative Study of Alpha Function "
+                  "Models for Pure Gases (Natural Gas Components) and "
+                  "Water-Gas Systems",
+         "ref": "Int. J. Thermophys. 25(1) (2004) 133-158",
+         "doi": "10.1023/b_ijot.0000022331.46865.2f"},
+        {"autor": "Bell, I.H., Jäger, A.",
+         "title": "Helmholtz Energy Transformations of Common Cubic Equations "
+                  "of State for Use with Pure Fluids and Mixtures",
+         "ref": "J. Res. of NIST 121 (2016) 236-263",
+         "doi": "10.6028/jres.121.011"})
 
     def _cubicDefinition(self, T):
         """Definition of coefficients for generic cubic equation of state"""
@@ -332,17 +328,6 @@ class PRMathiasCopeman(Cubic):
 
 
 if __name__ == "__main__":
-    # from lib.mezcla import Mezcla
-    # mix = Mezcla(tipo=5, caudalMolar=1, ids=[2, 47, 98], fraccionMolar=[0.5, 0.3, 0.2])
-    # # eq = PRMathiasCopeman(800, 36937532, mix)
-    # eq = PRMathiasCopeman(800, 34925714.27837578, mix)
-
-
-    # Methane, O2, Ar
-    # Tc = (190.564, 154.581, 150.687)
-    # Pc = (4599200, 5042800, 4863000)
-    # f_acent = (0.01100, 0.02200, -0.00200)
-    # x = (0.50000, 0.30000, 0.20000)
     from lib.mezcla import Mezcla
     from lib.compuestos import Componente
 

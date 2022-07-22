@@ -63,8 +63,7 @@ dat = {
     49: (0.394117, 6592.03, 29.5902e8, 1.64916, 0.97443, 5632.85, 0.395525,
          27.4668e8, 40.9151e10, 5.99297e4, 1.02898e10),
     50: (0.297508, 10586.3, 21.1496e8, 1.20447, 2.53315, 2.05110, 0.165961,
-         43.6132e8, 4.86518e10, 1.99731e4, 3.93226e10)
-         }
+         43.6132e8, 4.86518e10, 1.99731e4, 3.93226e10)}
 
 
 class BWRS(EoS):
@@ -151,22 +150,19 @@ class BWRS(EoS):
     __status__ = "BWRS"
 
     __doi__ = (
-      {
-        "autor": "Starling, K.E.",
-        "title": "Fluid Thermodynamics Properties of Light Petroleum Systems",
-        "ref": "Gulf Publishing Company, 1973",
-        "doi": ""},
-      {
-        "autor": "Han, M.S., Starling, K.E.",
-        "title": "Thermo Data Refined for LPG. Part 14. Mixtures",
-        "ref": "Hydrocarbon Processing 51(5) (1972) 129",
-        "doi": ""},
-      {
-        "autor": "Nishiumi, H., Saito, S.",
-        "title": "An Improved Generalized BWR Equation of State Applicable to "
-                 "Low Reduced Temperatures",
-        "ref": "J. Chem. Eng. Japan 8(5) (1975) 356-360",
-        "doi": "10.1252/jcej.8.356"})
+        {"autor": "Starling, K.E.",
+         "title": "Fluid Thermodynamics Properties of Light Petroleum Systems",
+         "ref": "Gulf Publishing Company, 1973",
+         "doi": ""},
+        {"autor": "Han, M.S., Starling, K.E.",
+         "title": "Thermo Data Refined for LPG. Part 14. Mixtures",
+         "ref": "Hydrocarbon Processing 51(5) (1972) 129",
+         "doi": ""},
+        {"autor": "Nishiumi, H., Saito, S.",
+         "title": "An Improved Generalized BWR Equation of State Applicable to "
+                  "Low Reduced Temperatures",
+         "ref": "J. Chem. Eng. Japan 8(5) (1975) 356-360",
+         "doi": "10.1252/jcej.8.356"})
 
     def __init__(self, T, P, mezcla, **kwargs):
         """

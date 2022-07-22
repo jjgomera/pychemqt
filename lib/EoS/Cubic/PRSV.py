@@ -54,7 +54,7 @@ dat = {
     21: (0.04048, 2.9805, 0.571),
     90: (0.08291, 4.1441, 0.577),
     38: (0.07023, 0.6146, 0.530),
-    # 888 : (0.01805, 3.0438, 0.606),
+    888: (0.01805, 3.0438, 0.606),
 
     40: (0.07019, 0.7939, 0.523),
     41: (0.03849, 0.5261, 0.510),
@@ -78,7 +78,7 @@ dat = {
     771: (0.00984, 0.8448, 0.550),
     # 1356: (0.02321, 0.8891, 0.619),
     # 1354: (0.04005, 0.7451, 0.535),
-    # 809: (0.02731, 0.9236, 0.561),
+    809: (0.02731, 0.9236, 0.561),
     610: (0.02002, 0.9649, 0.579),
 
     117: (-0.16816, -1.3400, 0.588),
@@ -249,24 +249,21 @@ class PRSV(Cubic):
     __title__ = "PRSV (1986)"
     __status__ = "PRSV"
     __doi__ = (
-     {
-        "autor": "Stryjek, R., Vera, J.H.",
-        "title": "PRSV: An Improved Peng—Robinson Equation of State for Pure "
-                 "Compounds and Mixtures",
-        "ref": "Can. J. Chem. Eng. 64 (1986) 323-333",
-        "doi": "10.1002/cjce.5450640224"},
-     {
-        "autor": "Proust, P., Vera, J.H.",
-        "title": "PRSV: The Stryjek-Vera Modification of the Peng-Robinson"
-                 "Equation of Stte. Parameters for Other Pure Compounds of "
-                 "Industrial Interest",
-        "ref": "Can. J. Chem. Eng. 67 (1989) 170-173",
-        "doi": "10.1002/cjce.5450670125"},
-     {
-        "autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
-        "title": "The Properties of Gases and Liquids 5th Edition",
-        "ref": "McGraw-Hill, New York, 2001",
-        "doi": ""})
+        {"autor": "Stryjek, R., Vera, J.H.",
+         "title": "PRSV: An Improved Peng—Robinson Equation of State for Pure "
+                  "Compounds and Mixtures",
+         "ref": "Can. J. Chem. Eng. 64 (1986) 323-333",
+         "doi": "10.1002/cjce.5450640224"},
+        {"autor": "Proust, P., Vera, J.H.",
+         "title": "PRSV: The Stryjek-Vera Modification of the Peng-Robinson"
+                  "Equation of Stte. Parameters for Other Pure Compounds of "
+                  "Industrial Interest",
+         "ref": "Can. J. Chem. Eng. 67 (1989) 170-173",
+         "doi": "10.1002/cjce.5450670125"},
+        {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
+         "title": "The Properties of Gases and Liquids 5th Edition",
+         "ref": "McGraw-Hill, New York, 2001",
+         "doi": ""})
 
     def _cubicDefinition(self, T):
         """Definition of individual components coefficients"""
