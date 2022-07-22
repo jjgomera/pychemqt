@@ -67,7 +67,7 @@ class newComponent(QtWidgets.QDialog):
         """Save new componente in user database"""
         elemento = self.unknown.export2Component()
         sql.inserElementsFromArray(sql.databank_Custom_name, [elemento])
-        Dialog = View_Component(1001+sql.N_comp_Custom)
+        Dialog = View_Component(10001+sql.N_comp_Custom)
         Dialog.show()
         QtWidgets.QDialog.accept(self)
 

@@ -37,12 +37,15 @@ from configparser import ConfigParser
 import os
 
 from PyQt5 import QtGui, QtWidgets
+from numpy import count_nonzero
 
+from lib import mEoS, gerg, refProp, coolProp, EoS
+from lib.bip import Kij
+from lib.compuestos import Componente
 from lib.config import conf_dir
 from lib.unidades import Temperature, Pressure
 from tools import (UI_confComponents, UI_confTransport, UI_confThermo,
                    UI_confUnits, UI_confResolution)
-from lib import mEoS, gerg, refProp, coolProp
 from UI.widgets import Entrada_con_unidades
 
 
@@ -55,8 +58,6 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
         Components: array with ids numbers component from project"""
     config = ConfigParser()
     config = UI_confThermo.UI_confThermo_widget.default(config)
-
-    # TODO: add EOS configuration
 
     GERG_available = True
     REFPROP_available = True
@@ -75,11 +76,64 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
         config.set("Thermo", "MEoS", "True")
     if os.environ["CoolProp"] == "True" and len(components) == 1 and \
             components[0] in coolProp.__all__:
-            config.set("Thermo", "coolprop", "True")
+        config.set("Thermo", "coolprop", "True")
     if os.environ["refprop"] == "True" and REFPROP_available:
         config.set("Thermo", "refprop", "True")
     if GERG_available:
         config.set("Thermo", "GERG", "True")
+
+    # TODO: add EOS configuration
+    # Decission tree for EoS
+    # Carlson, E.C.
+    # Don't Gamble with Physical Properties for Simulations
+
+    cmps = [Componente(cmp) for cmp in components]
+
+    polar = False
+    for cmp in cmps:
+        if cmp.dipole:
+            polar = True
+            break
+
+    # TODO: Add pseudocompound properties to database to identifier it
+    # For now consider all user defined compound as pseudocomponent
+    real = True
+    for cmp in cmps:
+        if cmp.id > 10000:
+            real = False
+            break
+
+    # TODO: Add electrolytes detection logic
+    electrolyte = False
+
+    if polar:
+        if electrolyte:
+            pass
+        else:
+            # Figure 2
+            pass
+
+    elif real:
+        # Find equation with more bip in database
+        ids = [cmp.id for cmp in cmps]
+        bip_pr = count_nonzero(Kij(ids, EOS="PR"))
+        bip_srk = count_nonzero(Kij(ids, EOS="SRK"))
+        bip_apisrk = count_nonzero(Kij(ids, EOS="APISRK"))
+        bip_bwrs = count_nonzero(Kij(ids, EOS="BWRS"))
+
+        if bip_bwrs > max(bip_apisrk, bip_srk, bip_pr):
+            id = EoS.K.index(EoS.BWRS.BWRS)
+        elif bip_apisrk > max(bip_srk, bip_pr):
+            id = EoS.K.index(EoS.Cubic.SRKAPI)
+        elif bip_srk > bip_pr:
+            id = EoS.K.index(EoS.Cubic.SRK)
+        else:
+            id = EoS.K.index(EoS.Cubic.PR)
+        config.set("Thermo", "k", str(id))
+
+    else:
+        id = EoS.K.index(EoS.Grayson_Stread)
+        config.set("Thermo", "k", str(id))
 
     return config
 
@@ -120,9 +174,9 @@ class Wizard(QtWidgets.QWizard):
         self.config = config
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Configuration wizard..."))
-        self.setOptions(QtWidgets.QWizard.ExtendedWatermarkPixmap |
-                        QtWidgets.QWizard.IndependentPages |
-                        QtWidgets.QWizard.HaveCustomButton1)
+        self.setOptions(QtWidgets.QWizard.ExtendedWatermarkPixmap
+                        | QtWidgets.QWizard.IndependentPages
+                        | QtWidgets.QWizard.HaveCustomButton1)
         self.setWizardStyle(QtWidgets.QWizard.ModernStyle)
 
         botonAuto = QtWidgets.QPushButton(
@@ -260,6 +314,7 @@ simulation, but a good election let you only focus in simulation"))
         config = UI_confUnits.UI_confUnits_widget.default(config)
         config = UI_confResolution.UI_confResolution_widget.default(config)
         return config
+
 
 if __name__ == "__main__":
     import sys
