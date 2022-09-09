@@ -39,7 +39,7 @@ from lib.config import conf_dir
 
 
 font7 = QtGui.QFont()
-font7.setPointSize(7.6)
+font7.setPointSizeF(7.6)
 font11 = QtGui.QFont()
 font11.setPointSize(11)
 font20 = QtGui.QFont()

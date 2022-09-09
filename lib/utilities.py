@@ -139,13 +139,14 @@ def colors(number, mix="", scale=False):
     rgb = []
     for i in range(number):
         if scale:
-            red = 255*(i/number)
+            red = int(255*(i/number))
             green = 0
-            blue = 255*((number-i)/number)
+            blue = int(255*((number-i)/number))
         else:
             red = random.randint(0, 255)
             green = random.randint(0, 255)
             blue = random.randint(0, 255)
+
         if mix:
             red_mix = int(mix[1:3], base=16)
             red = (red + red_mix) / 2
