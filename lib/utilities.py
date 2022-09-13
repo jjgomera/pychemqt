@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###############################################################################
 # Module with utilities:
-#   - format2txt: Function to convert dict format config in a string value
 #   - representacion: Function for string representation of float values
 #   - colors: Function to generate colors
 #   - exportTable; Save data to a file
@@ -34,23 +33,6 @@ import random
 from math import exp
 
 from PyQt5.QtWidgets import QApplication
-
-
-def format2txt(formato):
-    """Function to convert dict format configuration in a string equivalent"""
-    if formato["signo"]:
-        txt = "+"
-    else:
-        txt = ""
-    if formato["format"] == 0:
-        txt += "{total}.{decimales} fixed".format(**formato)
-    elif formato["format"] == 1:
-        txt += "{decimales} sign".format(**formato)
-    elif formato["format"] == 2:
-        txt += "{decimales} exp".format(**formato)
-    if formato.get("exp", False):
-        txt += " ({tol} exp)".format(**formato)
-    return txt
 
 
 def representacion(number, fmt=0, total=0, decimales=4, eng=False, tol=5,
