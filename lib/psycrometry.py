@@ -69,15 +69,16 @@ from iapws._iapws import _Henry
 from iapws.humidAir import _virial
 from iapws.iapws97 import _PSat_T, _Region1, prop0
 
-from numpy import exp, roots
+from numpy import exp, roots, linspace, arange, concatenate
 from numpy.lib.scimath import log
 from PyQt5.QtWidgets import QApplication
 from scipy.optimize import fsolve
-from scipy import arange, concatenate, linspace
 
+# Avoid raise error at import this module if the the optional dependence isn't
+# meet
 try:
     from CoolProp.HumidAirProp import HAProps, HAProps_Aux
-except:
+except ImportError:
     pass
 
 from lib import unidades
@@ -107,13 +108,7 @@ __doi__ = {
          "title": "First-Principles Calculation of the Air-Water Second Virial"
                   " Coefficient",
          "ref": "Int. J. Thermophisics 28(2) (2007) 556-565",
-         "doi": "10.1007/s10765-007-0197-8"},
-    5:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
-
+         "doi": "10.1007/s10765-007-0197-8"}
         }
 
 
@@ -228,8 +223,8 @@ def _Psat(T):
         # Saturation pressure over ice, Eq 5
         C = [-5674.5359, 6.3925247, -0.009677843, 0.00000062215701,
              2.0747825E-09, -9.484024E-13, 4.1635019]
-        pws = exp(C[0]/T + C[1] + C[2]*T + C[3]*T**2 + C[4]*T**3 + C[5]*T**4 +
-                  C[6]*log(T))
+        pws = exp(C[0]/T + C[1] + C[2]*T + C[3]*T**2 + C[4]*T**3 + C[5]*T**4
+                  + C[6]*log(T))
     elif 273.15 <= T <= 473.15:
         # Saturation pressure over liquid water, Eq 6
         C = [-5800.2206, 1.3914993, -0.048640239, 0.000041764768,
@@ -518,7 +513,7 @@ def _Tdb_V(v, P):
     def f(Tdb):
         w = _Ws(P, Tdb)
         return v-0.287042*Tdb*(1+1.607858*w)/P_kpa
-    ts = fsolve(f, 300)
+    ts = fsolve(f, 300)[0]
     return ts
 
 
@@ -876,7 +871,6 @@ class PsyIdeal(PsyState):
             ts = _Tdb_V(v, P)
             T = linspace(ts, v*P/287.055, 50)
             Td = [unidades.Temperature(ti) for ti in T]
-            _W_V
             H = [_W_V(ti, P, v) for ti in T]
             parent.setProgressValue(90+10*cont/len(lines))
             V[v] = (Td, H)

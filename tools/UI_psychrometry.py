@@ -33,7 +33,8 @@ import os
 import json
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from scipy import pi, arctan
+from scipy import pi
+from numpy import arctan
 
 from lib.psycrometry import PsyState, PsychroState, _Pbar, _height
 from lib.config import conf_dir
@@ -510,7 +511,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         return punto
 
     def setProgressValue(self, value):
-        self.progressBar.setValue(value)
+        self.progressBar.setValue(int(value))
         QtWidgets.QApplication.processEvents()
 
 
