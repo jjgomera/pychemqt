@@ -161,7 +161,7 @@ def Preferences():
     # NumericFactor
     config.add_section("NumericFormat")
     for magnitud in magnitudes:
-        kwarg = {'total': 0, 'signo': False, 'decimales': 4, 'format': 0}
+        kwarg = {'total': 0, 'signo': False, 'decimales': 4, 'fmt': 0}
         config.set("NumericFormat", magnitud, str(kwarg))
 
     # Petro
