@@ -1138,13 +1138,13 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             pass
 
     def waitClick(self, numClick, type, object):
+        self.Pos = []
         self.object = object
         self.addType = type
         self.addObj = True
         self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
-        self.parent().statusbar.showMessage(QtWidgets.QApplication.translate("pychemqt",
-                                                                             "Click in desire text position in screen"))
-        self.Pos = []
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+            "pychemqt", "Click in desire text position in screen"))
         self.clickCollector = WaitforClick(numClick, self)
         self.clickCollector.finished.connect(self.click)
         self.clickCollector.start()
@@ -1183,7 +1183,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         self.update()
         self.object.setSelected(True)
 
-        self.parent().statusbar.clearMessage()
+        self.parent().statusBar().clearMessage()
         self.addObj = False
         if self.addType in ("txt", "square", "ellipse"):
             self.objects[self.addType].append(self.object)
