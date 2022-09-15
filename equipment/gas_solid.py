@@ -759,8 +759,8 @@ class Ciclon(Separador_SolidGas):
         archivo = pdf("CICLÓN")
         archivo.ciclon("Ciclon limpieza polvo", self)
         archivo.dibujar()
-        # if we sant to open with a external editor
-        # os.system("xpdf datasheet.pdf")
+        # if we want to open with a external editor
+        os.system("atril datasheet.pdf")
 
     def propTxt(self):
         txt = os.linesep + "#---------------"

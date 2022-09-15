@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from PyQt5 import QtCore, QtWidgets
 
 
-from .gas_solid import Baghouse
+from equipment.gas_solid import Baghouse
 from lib import unidades
 from lib.utilities import representacion
 from UI import UI_corriente
@@ -245,8 +245,8 @@ if __name__ == "__main__":
                                 [109, 0.03],
                                 [127, 0.02]]
 
-    solido=Solid([64], [138718], distribucion)
-    entrada=Corriente(423.15, 3, 11784,  Mezcla([475], [1]), solido)
-    dialogo = UI_equipment(entrada)
+    # solido=Solid([64], [138718], distribucion)
+    # entrada=Corriente(423.15, 3, 11784,  Mezcla([475], [1]), solido)
+    dialogo = UI_equipment()
     dialogo.show()
     sys.exit(app.exec_())

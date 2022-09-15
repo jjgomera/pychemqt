@@ -1115,16 +1115,16 @@ class NumericFactor(QtWidgets.QDialog):
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 20, 1, 1, 3)
 
-        self.checkFixed.setChecked(config["format"] == 0)
-        self.TotalDigits.setNotReadOnly(config["format"] == 0)
-        self.DecimalDigits.setNotReadOnly(config["format"] == 0)
-        self.checkSignificant.setChecked(config["format"] == 1)
-        self.FiguresSignificatives.setNotReadOnly(config["format"] == 1)
-        self.checkExp.setChecked(config["format"] == 2)
-        self.FiguresExponential.setNotReadOnly(config["format"] == 2)
-        if config["format"] == 0:
+        self.checkFixed.setChecked(config["fmt"] == 0)
+        self.TotalDigits.setNotReadOnly(config["fmt"] == 0)
+        self.DecimalDigits.setNotReadOnly(config["fmt"] == 0)
+        self.checkSignificant.setChecked(config["fmt"] == 1)
+        self.FiguresSignificatives.setNotReadOnly(config["fmt"] == 1)
+        self.checkExp.setChecked(config["fmt"] == 2)
+        self.FiguresExponential.setNotReadOnly(config["fmt"] == 2)
+        if config["fmt"] == 0:
             self.DecimalDigits.setValue(config["decimales"])
-        elif config["format"] == 1:
+        elif config["fmt"] == 1:
             self.FiguresSignificatives.setValue(config["decimales"])
         else:
             self.FiguresExponential.setValue(config["decimales"])
@@ -1182,16 +1182,16 @@ class NumericFactor(QtWidgets.QDialog):
     def args(self):
         kwarg = {}
         if self.checkFixed.isChecked():
-            kwarg["format"] = 0
+            kwarg["fmt"] = 0
             kwarg["total"] = self.TotalDigits.value
             kwarg["decimales"] = self.DecimalDigits.value
         elif self.checkSignificant.isChecked():
-            kwarg["format"] = 1
+            kwarg["fmt"] = 1
             kwarg["decimales"] = self.FiguresSignificatives.value
         else:
-            kwarg["format"] = 2
+            kwarg["fmt"] = 2
             kwarg["decimales"] = self.FiguresExponential.value
-        kwarg["exp"] = self.checkExpVariable.isEnabled() and \
+        kwarg["eng"] = self.checkExpVariable.isEnabled() and \
             self.checkExpVariable.isChecked()
         kwarg["tol"] = self.Tolerance.value
         kwarg["signo"] = self.checkSign.isChecked()

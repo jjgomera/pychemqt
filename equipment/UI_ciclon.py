@@ -303,17 +303,33 @@ class UI_equipment(UI_equip):
 if __name__ == "__main__":
     import sys
     from lib.corriente import Corriente, Solid
-    app = QtWidgets.QApplication(sys.argv)
-    diametros = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6,
-                 54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
+    # app = QtWidgets.QApplication(sys.argv)
+    # diametros = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6,
+                 # 54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
+    # fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                  # 0.05, 0.03, 0.02]
+    # solido = Solid(caudalSolido=[0.1], distribucion_diametro=diametros,
+                   # distribucion_fraccion=fracciones)
+    # corriente = Corriente(T=300, P=101325, ids=[475], solids=[638],
+                          # caudalMasico=1., fraccionMolar=[1.], solido=solido)
+
+    # ciclon = Ciclon(entrada=corriente, tipo_calculo=1, velocidadAdmisible=5)
+    # print(ciclon.status)
+    # ciclon.Pdf()
+    dm = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, 54e-6,
+          60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
     fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
                   0.05, 0.03, 0.02]
-    solido = Solid(caudalSolido=[0.1], distribucion_diametro=diametros,
-                   distribucion_fraccion=fracciones)
-    corriente = Corriente(T=300, P=101325, caudalMasico=1., fraccionMolar=[1.],
-                          solido=solido)
+    sol = Solid(caudalSolido=[0.1], distribucion_diametro=dm,
+                distribucion_fraccion=fracciones)
+    kw = {"ids": [475], "solids": [638], "fraccionMolar": [1.], "MEoS": True}
+    entrada = Corriente(T=300, P=1e5, caudalMasico=1, solido=sol, **kw)
+    ciclon = Ciclon(entrada=entrada, tipo_calculo=1, rendimientoAdmisible=0.95,
+                    velocidadAdmisible=5)
+    print("%0.2f %0.2f" % (ciclon.C_instTotal, ciclon.C_adqTotal))
+    # 7597.86 5427.04
 
-    ciclon = Ciclon(entrada=corriente, tipo_calculo=1, velocidadAdmisible=5)
-    Ciclon = UI_equipment(ciclon)
-    Ciclon.show()
-    sys.exit(app.exec_())
+
+    # Ciclon = UI_equipment(ciclon)
+    # Ciclon.show()
+    # sys.exit(app.exec_())

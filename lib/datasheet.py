@@ -26,7 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
+from PyQt5 import QtGui
+
 from lib import config
+from lib.utilities import representacion
+
 
 if os.environ["reportlab"] == "True":
     from reportlab.pdfgen import canvas
@@ -236,17 +240,17 @@ class pdf():
         self.c.drawCentredString(11.5*cm, 647, nombre)
         self.c.drawCentredString(11.5*cm, 629, "General")
         self.c.setFont("Helvetica", 8)
-        self.c.drawString(3.6*cm, 615, "Temperatura:  " + representacion(ciclon.entrada.T.config())+config.Configuracion("Temperature").text())
+        self.c.drawString(3.6*cm, 615, "Temperatura:  " + representacion(ciclon.kwargs["entrada"].T.config()))
         self.c.drawString(3.6*cm, 600, "Fluido:  " + fluido)
         self.c.drawString(3.6*cm, 585, "Sólidos:  " + solidos)
-        self.c.drawString(9.2*cm, 600, "Densidad @ T.P.:  " + representacion(ciclon.entrada.Gas.rho.config("DenGas"))+config.Configuracion("Density", "DenGas").text())
-        self.c.drawString(14.2*cm, 600, "Viscosidad @ T.P.:  " + representacion(ciclon.entrada.Gas.mu.config())+config.Configuracion("Viscosity").text())
-        self.c.drawString(9.2*cm, 585, "Densidad @ T.P.:  " + representacion(ciclon.entrada.solido.rho.config("DenLiq"))+config.Configuracion("Density", "DenLiq").text())
-        self.c.drawString(3.6*cm, 570, "Caudal:  " + representacion(ciclon.entrada.Q.config("QGas"))+config.Configuracion("VolFlow", "QGas").text())
-        self.c.drawString(11.6*cm, 570, "Eficiencia:  " + representacion(ciclon.rendimiento))
-        self.c.drawString(3.6*cm, 555, "Concentración sólidos entrada:  " + representacion(ciclon.entrada.solido.caudal.config())+config.Configuracion("MassFlow").text())
-        self.c.drawString(11.6*cm, 555, "Concentración sólidos salida:  " + representacion(ciclon.SalidaAire.solido.caudal.config())+config.Configuracion("MassFlow").text())
-        self.c.drawString(3.6*cm, 540, "Perdida de presión:  " + representacion(ciclon.DeltaP.config())+config.Configuracion("Pressure").text())
+        self.c.drawString(9.2*cm, 600, "Densidad @ T.P.:  " + representacion(ciclon.kwargs["entrada"].Gas.rho.config("DenGas")))
+        self.c.drawString(14.2*cm, 600, "Viscosidad @ T.P.:  " + representacion(ciclon.kwargs["entrada"].Gas.mu.config()))
+        self.c.drawString(9.2*cm, 585, "Densidad @ T.P.:  " + representacion(ciclon.kwargs["entrada"].solido.rho.config("DenLiq")))
+        self.c.drawString(3.6*cm, 570, "Caudal:  " + representacion(ciclon.kwargs["entrada"].Q.config("QGas")))
+        # self.c.drawString(11.6*cm, 570, "Eficiencia:  " + representacion(ciclon.rendimiento))
+        self.c.drawString(3.6*cm, 555, "Concentración sólidos entrada:  " + representacion(ciclon.kwargs["entrada"].solido.caudal.config()))
+        # self.c.drawString(11.6*cm, 555, "Concentración sólidos salida:  " + representacion(ciclon.salida[0].solido.caudal.config()))
+        # self.c.drawString(3.6*cm, 540, "Perdida de presión:  " + representacion(ciclon.DeltaP.config()))
 
         # dimensiones
         self.c.setLineWidth(1)
@@ -256,20 +260,20 @@ class pdf():
         self.c.setFont("Helvetica", 10)
         self.c.drawCentredString(11.5*cm, 525, "Dimensiones")
         self.c.setFont("Helvetica", 8)
-        self.c.drawString(3.7*cm, 510, "Ciclones necesarios:  " + str(ciclon.num_ciclones))
+        # self.c.drawString(3.7*cm, 510, "Ciclones necesarios:  " + str(ciclon.num_ciclones))
         self.c.line(3.5*cm, 505, 10*cm,505)
         self.c.line(3.5*cm, 490, 10*cm,490)
         self.c.line(10*cm, 520, 10*cm,490)
-        self.c.drawString(3.7*cm, 495, "Caudal Unitario:  " + representacion(ciclon.entrada.Q.config("QGas"))+config.Configuracion("VolFlow", "QGas").text())
-        self.c.drawString(6.8*cm, 465, "Dc:  " + representacion(ciclon.Dc.config())+config.Configuracion("Length").text())
-        self.c.drawString(6.8*cm, 450, "Bc:  " + representacion(ciclon.Bc.config())+config.Configuracion("Length").text())
-        self.c.drawString(6.8*cm, 435, "Hc:  " + representacion(ciclon.Hc.config())+config.Configuracion("Length").text())
-        self.c.drawString(6.8*cm, 420, "Jc:  " + representacion(ciclon.Jc.config())+config.Configuracion("Length").text())
-        self.c.drawString(6.8*cm, 405, "Lc:  " + representacion(ciclon.Lc.config())+config.Configuracion("Length").text())
-        self.c.drawString(6.8*cm, 390, "Zc:  " + representacion(ciclon.Zc.config())+config.Configuracion("Length").text())
-        self.c.drawString(6.8*cm, 375, "De:  " + representacion(ciclon.De.config())+config.Configuracion("Length").text())
-        self.c.drawString(6.8*cm, 360, "Sc:  " + representacion(ciclon.Sc.config())+config.Configuracion("Length").text())
-        self.c.drawImage(QtGui.QPixmap(os.environ["pychemqt"]+"/images/equip/ciclon_datasheet.gif"), 11*cm, 260, width=180,preserveAspectRatio=True)
+        # self.c.drawString(3.7*cm, 495, "Caudal Unitario:  " + representacion(ciclon.kwargs["entrada"].Q.config("QGas")))
+        # self.c.drawString(6.8*cm, 465, "Dc:  " + representacion(ciclon.Dc.config()))
+        # self.c.drawString(6.8*cm, 450, "Bc:  " + representacion(ciclon.Bc.config()))
+        # self.c.drawString(6.8*cm, 435, "Hc:  " + representacion(ciclon.Hc.config()))
+        # self.c.drawString(6.8*cm, 420, "Jc:  " + representacion(ciclon.Jc.config()))
+        # self.c.drawString(6.8*cm, 405, "Lc:  " + representacion(ciclon.Lc.config()))
+        # self.c.drawString(6.8*cm, 390, "Zc:  " + representacion(ciclon.Zc.config()))
+        # self.c.drawString(6.8*cm, 375, "De:  " + representacion(ciclon.De.config()))
+        # self.c.drawString(6.8*cm, 360, "Sc:  " + representacion(ciclon.Sc.config()))
+        self.c.drawImage(os.environ["pychemqt"]+"/images/equip/ciclon_datasheet.gif", 11*cm, 260, width=180,preserveAspectRatio=True)
 
         # Costes
         self.c.setLineWidth(1)
@@ -282,11 +286,11 @@ class pdf():
         self.c.line(3.5*cm, 270, 19.5*cm,270)
         self.c.line(3.5*cm, 255, 19.5*cm,255)
         self.c.line(11.5*cm, 240, 11.5*cm,270)
-        self.c.drawString(3.7*cm, 275, "Modelo: " + str(ciclon.tipoCosto))
-        self.c.drawString(3.7*cm, 260, "Factor Instalación: " + str(ciclon.f_install))
-        self.c.drawString(11.6*cm, 260, "Indice de costes: " + str(ciclon.Current_index))
-        self.c.drawString(3.7*cm, 245, "Coste Adquisición: $" + str(ciclon.C_adqTotal))
-        self.c.drawString(11.6*cm, 245, "Coste Instalación: $" + str(ciclon.C_instTotal))
+        # self.c.drawString(3.7*cm, 275, "Modelo: " + str(ciclon.tipoCosto))
+        # self.c.drawString(3.7*cm, 260, "Factor Instalación: " + str(ciclon.f_install))
+        # self.c.drawString(11.6*cm, 260, "Indice de costes: " + str(ciclon.Current_index))
+        # self.c.drawString(3.7*cm, 245, "Coste Adquisición: $" + str(ciclon.C_adqTotal))
+        # self.c.drawString(11.6*cm, 245, "Coste Instalación: $" + str(ciclon.C_instTotal))
 
         # Notas
         self.c.setLineWidth(1)

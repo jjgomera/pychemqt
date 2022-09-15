@@ -42,9 +42,9 @@ from lib.utilities import representacion, exportTable
 from UI.widgets import (Entrada_con_unidades, createAction, Status, Tabla,
                         NumericFactor, ClickableLabel)
 
-from .plot import PlotMEoS
-from .library import get_propiedades, _getData, getClassFluid, getMethod
 from .chooseFluid import Dialog_InfoFluid
+from .library import getClassFluid, getMethod, get_propiedades, _getData
+from .plot import PlotMEoS
 
 
 # Table data
@@ -167,7 +167,7 @@ class TablaMEoS(Tabla):
             del kwargs["format"]
         else:
             self.format = [
-                {"format": 1, "decimales": 6, "signo": False}]*args[0]
+                {"fmt": 1, "decimales": 6, "signo": False}]*args[0]
 
         super(TablaMEoS, self).__init__(*args, **kwargs)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))

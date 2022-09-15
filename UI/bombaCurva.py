@@ -35,7 +35,7 @@ from numpy import transpose
 from lib.unidades import Length, VolFlow, Power
 from lib import config
 from lib.utilities import representacion
-from .widgets import Entrada_con_unidades, Tabla
+from UI.widgets import Entrada_con_unidades, Tabla
 
 
 class Plot(FigureCanvasQTAgg):
@@ -234,7 +234,8 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         h=[Length(i).__getattribute__(Length.__units__[self.unidadesCarga.currentIndex()]) for i in self.curva[3]]
         P=[Power(i).__getattribute__(Power.__units__[self.unidadesPotencia.currentIndex()]) for i in self.curva[4]]
         n=[Length(i).__getattribute__(Length.__units__[self.unidadesNPSH.currentIndex()]) for i in self.curva[5]]
-        self.Tabla.setData(transpose([q, h, P, n]))
+        print(self.Tabla.rowCount(), self.Tabla.columnCount(), len(q), len(h), len(P), len(n))
+        # self.Tabla.setData(transpose([q, h, P, n]))
         self.Tabla.addRow()
 
     def actualizarPlot(self):

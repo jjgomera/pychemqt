@@ -354,9 +354,9 @@ class ConfFormat(QtWidgets.QTableWidget):
             txt = ""
         if formato["fmt"] == 0:
             txt += "{total}.{decimales} fixed".format(**formato)
-        elif formato["format"] == 1:
+        elif formato["fmt"] == 1:
             txt += "{decimales} sign".format(**formato)
-        elif formato["format"] == 2:
+        elif formato["fmt"] == 2:
             txt += "{decimales} exp".format(**formato)
         if formato.get("exp", False):
             txt += " ({tol} exp)".format(**formato)
