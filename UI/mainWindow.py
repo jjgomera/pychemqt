@@ -1513,10 +1513,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def changeWindow(self, window):
         """Update status info when change subwindow"""
-        # try:
-        wdgs = window.widget().statusWidget
-        # except AttributeError:
-        #     return
+        try:
+            wdgs = window.widget().statusWidget
+        except AttributeError:
+            return
 
         for wdg in self.wdg:
             self.statusBar().removeWidget(wdg)
