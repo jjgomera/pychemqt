@@ -27,7 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from configparser import ConfigParser
+import datetime
 import json
+import logging
+import requests
 import sqlite3
 import sys
 import urllib.request
@@ -432,31 +435,41 @@ def config():
     return config
 
 
-def getrates(archivo):
+def getrates(filename):
     """Procedure to update change rates"""
     rates = {}
-    date = 0
 
-    url = "https://finance.yahoo.com/webservice/v1/symbols/allcurrencies/" \
-        "quote?format=json"
-    fh = urllib.request.urlopen(url)
-    data = json.loads(fh.read().decode("utf-8"))
+    # Get date from old file to avoid bad use of server, only one use a day
+    try:
+        archivo = open(filename, "r")
+        olddate = datetime.date.fromisoformat(json.load(archivo)["date"])
+        date = datetime.date.today()
+        if date <= olddate:
+            logging.info("Currency, using saved data")
+            return
+    except FileNotFoundError:
+        pass
 
-    for change in data["list"]["resources"]:
-        tas = change["resource"]["fields"]
-        if "USD" not in tas["name"]:
-            continue
-        name = tas["name"]
-        if name != "USD":
-            name = name.split("/")[1]
-        rates[name.lower()] = float(tas["price"])
+    print("data")
+    api_key = "c92991dc6b5f33389fcff081bcede004"
+    url = "https://api.currencyscoop.com/v1/latest/?api_key=" + api_key
+    fh = requests.post(url)
+    data = json.loads(fh.text)["response"]["rates"]
+    date = json.loads(fh.text)["response"]["date"][:10]
 
-        # Set the last date number
-        if int(tas["ts"]) > date:
-            date = int(tas["ts"])
+    # api_key = "cc1eW8osv25urLFAf1HUGxZe1MotMDhS"
+    # url = "https://api.apilayer.com/exchangerates_data/latest?base=USD" \
+        # + "&apikey=" + api_key
+    # fh = requests.post(url)
+    # data = json.loads(fh.text)["rates"]
+    # date = json.loads(fh.text)["date"]
+
+    for iso, value in data.items():
+        if value:
+            rates[iso.lower()] = 1/value
 
     rates["date"] = date
-    json.dump(rates, open(archivo, "w"), indent=4)
+    json.dump(rates, open(filename, "w"), indent=4)
 
 
 def createDatabase(name):

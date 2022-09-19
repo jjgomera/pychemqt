@@ -107,7 +107,7 @@ class moneda(UI_conversorUnidades):
         super(moneda, self).__init__(Currency, valor=valor, parent=parent)
 
         self.fecha = QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Date") + ": " + self.value.fecha)
+            "pychemqt", "Date") + ": " + self.value.date)
         self.layout().addWidget(self.fecha, 0, 1)
         self.botonActualizar = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "Update"))
@@ -126,6 +126,7 @@ class moneda(UI_conversorUnidades):
             America = Europe + len(Currency._uAmerica)
             Africa = America + len(Currency._uAfrica)
             Asia = Africa + len(Currency._uAsia)
+            Oceania = Asia + len(Currency._uOceania)
 
             if i < main:
                 color = "#FFFFFF"
@@ -137,8 +138,10 @@ class moneda(UI_conversorUnidades):
                 color = "#888888"
             elif i < Asia:
                 color = "#FFFF00"
-            else:
+            elif i < Oceania:
                 color = "#5555FF"
+            else:
+                color = "#FF8800"
             header.setBackground(QtGui.QBrush(QtGui.QColor(color)))
 
     def getrates(self):
@@ -146,7 +149,7 @@ class moneda(UI_conversorUnidades):
         getrates(filename)
         self.value = self.unidad(self.value)
         self.fecha.setText(QtWidgets.QApplication.translate(
-            "pychemqt", "Date") + ": " + self.value.fecha)
+            "pychemqt", "Date") + ": " + self.value.date)
         if self.value != 0:
             self.update(0, 0)
 

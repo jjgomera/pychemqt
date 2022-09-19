@@ -318,25 +318,9 @@ if not os.path.isfile(conf_dir + "CostIndex.dat"):
 # Checking currency rates
 splash.showMessage(QtWidgets.QApplication.translate(
     "pychemqt", "Checking currency data"))
-currency = False
 if not os.path.isfile(conf_dir + "moneda.dat"):
     # Exchange rates file don't available
-    currency = True
-else:
-    filename = conf_dir + "moneda.dat"
-    try:
-        archivo = open(filename, "r")
-        rates = json.load(archivo)
-    except urllib.error.URLError:
-        # Failed to load json file
-        currency = True
-
-    if not isinstance(rates["date"], int):
-        # Old version exchange rates format, force upgrade
-        currency = True
-
-if currency:
-    # Try to retrieve exchange rates from yahoo
+    # Try to retrieve exchange rates from web service
     try:
         firstrun.getrates(conf_dir + "moneda.dat")
     except (urllib.error.URLError, urllib.error.HTTPError) as err:

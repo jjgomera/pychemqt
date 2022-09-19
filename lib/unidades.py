@@ -101,7 +101,6 @@ from configparser import ConfigParser
 import json
 import logging
 import os
-import time
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5 import QtCore
@@ -237,6 +236,11 @@ class unidad(float):
         self._data = self._getBaseValue(data, unit, magnitud)
 
         for key in self.__class__.rates:
+            # Reject unused currencies
+            if self.__class__.__name__ == "Currency" and \
+                    key not in self.__units__ and key not in self._uUnused:
+                continue
+
             self.__setattr__(key, self._data / self.__class__.rates[key])
 
         logging.debug("%s, %f", self.__class__.__name__, self._data)
@@ -2005,13 +2009,8 @@ class DensityTemperature(unidad):
 
 class Currency(unidad):
     """Class that models a currency rate
-    Supported currency codes from ISO 4217: 'pkr', 'ars', 'xcd', 'myr', 'inr',
-    'hnl', 'jpy', 'czk', 'brl', 'lkr', 'sek', 'sgd', 'ttd', 'isk', 'usd',
-    'aud', 'chf', 'zar', 'xpf', 'cny', 'vef', 'gtq', 'pen', 'hkd', 'hrk',
-    'ang', 'xaf', 'eur', 'huf', 'vnd', 'nok', 'rub', 'pab', 'mxn', 'mad',
-    'mmk', 'pln', 'php', 'jmd', 'rsd', 'cop', 'ils', 'twd', 'ghs', 'clp',
-    'idr', 'krw', 'fjd', 'try', 'tnd', 'dkk', 'bsd', 'aed', 'gbp', 'nzd',
-    'ron', 'thb', 'cad'
+    Supported many currency codes from ISO 4217 using the currencyscoop web
+    service
 
     >>> S=Currency(5, "eur")
     """
@@ -2019,13 +2018,12 @@ class Currency(unidad):
     try:
         archivo = open(filename, "r")
         rates = json.load(archivo)
-    except (FileNotFoundError, TypeError):  # noqa
+    except (FileNotFoundError, TypeError):
         getrates(filename)
         archivo = open(filename, "r")
         rates = json.load(archivo)
     archivo.close
     date = rates.pop("date")
-    fecha = time.strftime("%a, %d %b %Y %H:%M:%S", time.gmtime(time.time()))
     __title__ = QApplication.translate("pychemqt", "Currency")
 
     # Main currencies
@@ -2067,21 +2065,30 @@ class Currency(unidad):
     _uAmerica = [
       ("ars", QApplication.translate("pychemqt", "Argentine peso"), "$"),
       ("bob", QApplication.translate("pychemqt", "Bolivian boliviano"), "Bs"),
+      ("clf", QApplication.translate("pychemqt", "Chilean Unit of Account"),
+         "UF"),
       ("clp", QApplication.translate("pychemqt", "Chilean peso"), "$"),
       ("cop", QApplication.translate("pychemqt", "Colombian peso"), "$"),
       ("crc", QApplication.translate("pychemqt", "Costa Rican colon"), "₡"),
+      ("cuc", QApplication.translate("pychemqt", "Cuban convertible peso"),
+       "CUC$"),
       ("cup", QApplication.translate("pychemqt", "Cuban peso"), "₱"),
       ("dop", QApplication.translate("pychemqt", "Dominican peso"), "RD$"),
       ("gtq", QApplication.translate("pychemqt", "Guatemalan quetzal"), "Q"),
       ("hnl", QApplication.translate("pychemqt", "Honduran lempira"), "L"),
       ("mxn", QApplication.translate("pychemqt", "Mexican peso"), "$"),
+      ("mxv", QApplication.translate("pychemqt", "Mexican UDI"), "$"),
       ("nio", QApplication.translate("pychemqt", "Nicaraguan córdoba"), "C$"),
       ("pab", QApplication.translate("pychemqt", "Panamanian balboa"), "฿"),
       ("pyg", QApplication.translate("pychemqt", "Paraguayan guaraní"), "₲"),
       ("pen", QApplication.translate("pychemqt", "Peruvian nuevo sol"), "S/."),
       ("svc", QApplication.translate("pychemqt", "Salvadoran colón"), "₡"),
       ("uyu", QApplication.translate("pychemqt", "Uruguayan peso"), "$U"),
-      ("vef", QApplication.translate("pychemqt", "Venezuelan bolívar"), "Bs"),
+      # ("vef", QApplication.translate("pychemqt", "Venezuelan bolívar"), "Bs"),
+      ("ved", QApplication.translate("pychemqt", "Venezuelan digital bolívar"),
+          "Bs.D"),
+      ("ves", QApplication.translate(
+          "pychemqt", "Venezuelan sovereign bolívar"), "Bs.S"),
 
       ("awg", QApplication.translate("pychemqt", "Aruban florin"), "Afl."),
       ("bsd", QApplication.translate("pychemqt", "Bahamian dollar"), "B$"),
@@ -2132,6 +2139,7 @@ class Currency(unidad):
 
       ("bdt", QApplication.translate("pychemqt", "Bangladeshi taka"), "৳"),
       ("btn", QApplication.translate("pychemqt", "Bhutanese ngultrum"), "Nu."),
+      ("cnh", QApplication.translate("pychemqt", "Renminbi"), "¥"),
       ("khr", QApplication.translate("pychemqt", "Cambodian riel"), "៛"),
       ("kpw", QApplication.translate("pychemqt", "North Korean won"), "₩"),
       ("hkd", QApplication.translate("pychemqt", "Hong Kong dollar"), "HK$"),
@@ -2171,7 +2179,7 @@ class Currency(unidad):
       ("lsl", QApplication.translate("pychemqt", "Lesotho loti"), "L"),
       ("lrd", QApplication.translate("pychemqt", "Liberian dollar"), "L$"),
       ("lyd", QApplication.translate("pychemqt", "Libyan dinar"), "ل.د"),
-      ("mro", QApplication.translate("pychemqt", "Mauritanian ouguiya"), "UM"),
+      ("mru", QApplication.translate("pychemqt", "Mauritanian ouguiya"), "UM"),
       ("mur", QApplication.translate("pychemqt", "Mauritian rupee"), "₨"),
       ("mga", QApplication.translate("pychemqt", "Malagasy ariary"), "Ar"),
       ("mwk", QApplication.translate("pychemqt", "Malawian kwacha"), "MK"),
@@ -2181,7 +2189,7 @@ class Currency(unidad):
       ("nad", QApplication.translate("pychemqt", "Namibian dollar"), "N$"),
       ("ngn", QApplication.translate("pychemqt", "Nigerian naira"), "₦"),
       ("rwf", QApplication.translate("pychemqt", "Rwandan franc"), "FRw"),
-      ("std", QApplication.translate(
+      ("stn", QApplication.translate(
           "pychemqt", "São Tomé and Príncipe dobra"), "Db"),
       ("scr", QApplication.translate("pychemqt", "Seychelles rupee"), "SR"),
       ("sll", QApplication.translate(
@@ -2210,10 +2218,81 @@ class Currency(unidad):
           "SI$"),
       ("wst", QApplication.translate("pychemqt", "Samoan tala"), "WS$"),
       ("top", QApplication.translate("pychemqt", "Tongan pa'anga"), "T$"),
+      ("tvd", QApplication.translate("pychemqt", "Tuvalu dollar"), "TV$"),
       ("vuv", QApplication.translate("pychemqt", "Vanuatu vatu"), "VT"),
       ("xpf", QApplication.translate("pychemqt", "CFP franc"), "F")]
 
-    _uTotal = _uMain + _uEurope + _uAmerica + _uAfrica + _uAsia + _uOceania
+    # Crypto
+    _uCrypto = [
+        ("ada", "Cardano", "₳"),
+        ("bch", "Bitcoin Cash", ""),
+        ("xbt", "Bitcoin", "₿"),
+        ("ltc", "Litecoin", "Ł"),
+        ("doge", "Dogecoin", "Ð"),
+        ("xrp", "Ripple", ""),
+        ("xlm", "Stellar", ""),
+        ("eth", "Ethereum", "Ξ"),
+        ("dot", "Polkadot", ""),
+        ("uni", "Uniswap", ""),
+        ("link", "Chainlink", "")]
+
+
+    # Unused
+    _uUnused = [
+      "fkp", # Falkland Islands pound, same to sterling pound
+      "ggp", # Guernsey pound, same to sterling pound
+      "gip", # Gibraltar pound, same to sterling pound
+      "imp", # Manx pound, same to sterling pound
+      "jep", # Jersey pound, same to sterling pound
+      "shp", # Saint Helena pound, same to sterling pound
+      "ats", # Old austrian schilling
+      "azm", # Old azerbaijani manat
+      "bef", # Old belgian franc
+      "btc", # Synonims for bitcoin
+      "byr", # Old belarusian ruble
+      "cyp", # Old cypriot pound
+      "dem", # Old german mark
+      "eek", # Old estonian kroon
+      "esp", # Old spanish peseta
+      "fim", # Old finnish markka
+      "frf", # Old french franc
+      "ghc", # Old ghanaian cedi
+      "grd", # Old greek drachma
+      "iep", # Old irish pound
+      "itl", # Old italian lira
+      "ltl", # Old Lithuanian litas
+      "luf", # Old Luxembourg franc
+      "lvl", # Old latvian lats
+      "mgf", # Old malagasy franc
+      "mtl", # Old maltese lira
+      "mzm", # Old mozambican metical
+      "mro", # Old mauritanian ouguiya
+      "nlg", # Old dutch guilder
+      "pte", # Old portuguese escudo
+      "rol", # Old romanian leu
+      "sdd", # Old Sudanese dinar
+      "sit", # Old Slovenian tolar
+      "skk", # Old Czechoslovak koruna
+      "sle", # Old Sierra Leonean leone
+      "spl", # Seborgan Luigino
+      "srg", # Old Surinamese guilder
+      "std", # Old São Tomé and Príncipe dobra
+      "tmm", # Old turkmenistani manat
+      "trl", # Old Turkish lira
+      "val", # Old vatican lira
+      "veb", # Old venezuelan bolivar
+      "vef", # Old venezuelan bolivar fuerte
+      "xag", # Silver (one troy ounce)
+      "xau", # Gold (one troy ounce)
+      "xdr", # Special drawing rights (from FMI)
+      "xpd", # Palladium (one troy ounce)
+      "xpt", # Platinum (one troy ounce)
+      "zmk", # Old Zambian kwacha
+      "zwd" # Old Zimbabwean dollar
+      ]
+
+    _uTotal = _uMain + _uEurope + _uAmerica + _uAfrica + _uAsia + _uOceania \
+        + _uCrypto
     __text__ = []
     __units__ = []
     __tooltip__ = []
