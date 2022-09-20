@@ -147,7 +147,7 @@ class moneda(UI_conversorUnidades):
     def getrates(self):
         filename = conf_dir + "moneda.dat"
         getrates(filename)
-        self.value = self.unidad(self.value)
+        self.value = Currency(self.value)
         self.fecha.setText(QtWidgets.QApplication.translate(
             "pychemqt", "Date") + ": " + self.value.date)
         if self.value != 0:

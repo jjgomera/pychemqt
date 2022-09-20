@@ -28,12 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from configparser import ConfigParser
 import datetime
+import http.client
 import json
 import logging
-import requests
+import os
 import sqlite3
 import sys
-import urllib.request
 
 # It must be defined previously to avoid to early import of libraries
 # See end of lib/unidades.py to know how to get this list, check when new
@@ -65,7 +65,6 @@ equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
 
 def which(program):
     """Function to detect program availability in system and return path"""
-    import os
 
     def is_exe(fpath):
         return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
@@ -110,12 +109,13 @@ if sys.platform == "win32":
     shell = ""
 else:
     shell = which("xterm")
-# TODO: De momento solo soporta xterm
-#    for programa in ["xterm", "gnome-terminal", "kterminal", "lxterminal", "xfce4-terminal", "terminator"]:
-#        ejecutable=which(programa)
-#        if ejecutable:
-#            shell=ejecutable
-#            break
+# TODO: For now only support xterm
+# for program in ["xterm", "gnome-terminal", "kterminal", "lxterminal",
+                # "xfce4-terminal", "terminator"]:
+    # exe = which(program)
+    # if exe:
+        # shell = exe
+        # break
 
 
 def Preferences():
@@ -450,19 +450,17 @@ def getrates(filename):
     except FileNotFoundError:
         pass
 
-    print("data")
-    api_key = "c92991dc6b5f33389fcff081bcede004"
-    url = "https://api.currencyscoop.com/v1/latest/?api_key=" + api_key
-    fh = requests.post(url)
-    data = json.loads(fh.text)["response"]["rates"]
-    date = json.loads(fh.text)["response"]["date"][:10]
+    conn = http.client.HTTPSConnection("api.currencyscoop.com")
+    conn.request("GET", "/v1/latest?api_key=c92991dc6b5f33389fcff081bcede004")
 
-    # api_key = "cc1eW8osv25urLFAf1HUGxZe1MotMDhS"
-    # url = "https://api.apilayer.com/exchangerates_data/latest?base=USD" \
-        # + "&apikey=" + api_key
-    # fh = requests.post(url)
-    # data = json.loads(fh.text)["rates"]
-    # date = json.loads(fh.text)["date"]
+    # Alternate web service
+    # key = "cc1eW8osv25urLFAf1HUGxZe1MotMDhS"
+    # conn = http.client.HTTPSConnection("api.apilayer.com")
+    # conn.request("GET", "/exchangerates_data/latest?base=USD&apikey=" + key)
+
+    res = conn.getresponse().read().decode("utf-8")
+    data = json.loads(res)["response"]["rates"]
+    date = json.loads(res)["response"]["date"][:10]
 
     for iso, value in data.items():
         if value:
