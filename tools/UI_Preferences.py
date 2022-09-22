@@ -43,7 +43,8 @@ from lib.utilities import representacion
 from equipment import equipments
 from tools.firstrun import which
 from UI import prefElemental, prefMEOS, prefPFD, prefPsychrometric, prefPetro
-from UI import prefMoody, prefStandingKatz
+from UI import prefStandingKatz
+from plots import moody
 from UI.delegate import CheckEditor
 from UI.widgets import ColorSelector, NumericFactor, PathConfig
 
@@ -557,7 +558,7 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
         ("button/psychrometric.png", prefPsychrometric.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
-        ("button/moody.png", prefMoody.Widget,
+        ("button/moody.png", moody.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Moody chart")),
         ("button/moody.png", prefStandingKatz.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Standing-Katz chart")),

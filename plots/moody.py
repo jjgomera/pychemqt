@@ -19,7 +19,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 ###############################################################################
-# Moody plot
+# Library with all moody chart functionality
+#
+#   - calculate: Calculate procedure
+#   - Moody: Chart dialog
+#   - CalculateDialog: Dialog to calculate a specified point
+
+#   Configuration
+#   - Widget: Moody chart configuration
+#   - ConfigDialog: Dialog tool for standalone use
 ###############################################################################
 
 
@@ -35,7 +43,7 @@ from lib.config import conf_dir
 from lib.friction import f_list, eD
 from lib.utilities import formatLine, representacion
 from UI.prefMoody import ConfigDialog
-from UI.widgets import Entrada_con_unidades
+from UI.widgets import Entrada_con_unidades, LineConfig
 
 from plots.ui import Chart
 
@@ -46,6 +54,7 @@ Re_fully = logspace(log10(4000), 8, 50)
 
 
 def calculate(config):
+    """Calculate procedure, the data are saved to file to fast load again"""
     fanning = config.getboolean("Moody", "fanning")
     method = config.getint("Moody", "method")
     eD = eval(config.get("Moody", "eD"))
@@ -355,6 +364,81 @@ class CalculateDialog(QtWidgets.QDialog):
             if self.fanning.isChecked():
                 f /= 4
             self.f.setValue(f)
+
+
+class Widget(QtWidgets.QWidget):
+    """Moody chart configuration"""
+    def __init__(self, config=None, parent=None):
+        super(Widget, self).__init__(parent)
+        layout = QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Method:")), 1, 1)
+        self.metodos = QtWidgets.QComboBox()
+        for f in f_list:
+            line = f.__doc__.split("\n")[0]
+            year = line.split(" ")[-1]
+            name = line.split(" ")[-3]
+            doc = name + " " + year
+            self.metodos.addItem(doc)
+        layout.addWidget(self.metodos, 1, 2)
+        self.fanning = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Calculate fanning friction factor"))
+        layout.addWidget(self.fanning, 2, 1, 1, 2)
+
+        layout.addWidget(QtWidgets.QLabel("ε/d:"), 3, 1)
+        self.ed = QtWidgets.QLineEdit()
+        layout.addWidget(self.ed, 3, 2)
+        self.lineconfig = LineConfig(
+            "line", QtWidgets.QApplication.translate(
+                "pychemqt", "Relative roughtness style line"))
+        layout.addWidget(self.lineconfig, 4, 1, 1, 2)
+        self.cruxconfig = LineConfig(
+            "crux", QtWidgets.QApplication.translate(
+                "pychemqt", "Crux style line"))
+        layout.addWidget(self.cruxconfig, 5, 1, 1, 2)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
+
+        if config and config.has_section("Moody"):
+            self.metodos.setCurrentIndex(config.getint("Moody", 'method'))
+            self.fanning.setChecked(config.getboolean("Moody", 'fanning'))
+            self.ed.setText(config.get("Moody", "ed"))
+            self.lineconfig.setConfig(config, "Moody")
+            self.cruxconfig.setConfig(config, "Moody")
+
+    def value(self, config):
+        if not config.has_section("Moody"):
+            config.add_section("Moody")
+        config.set("Moody", "method", str(self.metodos.currentIndex()))
+        config.set("Moody", "fanning", str(self.fanning.isChecked()))
+        config.set("Moody", "ed", self.ed.text())
+        config = self.lineconfig.value(config, "Moody")
+        config = self.cruxconfig.value(config, "Moody")
+        return config
+
+
+class ConfigDialog(QtWidgets.QDialog):
+    """Dialog to configure moody chart"""
+    def __init__(self, config=None, parent=None):
+        super(ConfigDialog, self).__init__(parent)
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Moody diagram configuration"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.widget = Widget(config)
+        layout.addWidget(self.widget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+    def value(self, config):
+        """Function result for wizard"""
+        config = self.widget.value(config)
+        return config
+
 
 
 if __name__ == "__main__":

@@ -19,24 +19,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 ###############################################################################
-# Moody plot
+# Drag sphere chart
 ###############################################################################
 
 
-import json
-import os
-
 from PyQt5 import QtWidgets
 from numpy import logspace
-from numpy.lib.scimath import log10
-from matplotlib.patches import ConnectionPatch
 
-from lib.config import conf_dir
-from lib.friction import f_list, eD
-from lib.utilities import formatLine, representacion
+from lib import drag
+from lib.utilities import formatLine
 from UI.prefMoody import ConfigDialog
 from UI.widgets import Entrada_con_unidades
-from lib import drag
 
 from plots.ui import Chart
 
@@ -97,7 +90,7 @@ class Drag(Chart):
         self.plt.draw()
 
     def plot(self):
-        """Plot the Moody chart using the indicate method """
+        """Plot the drag chart using the indicate method """
         # method = self.Preferences.getint("Moody", "method")
         method = 0
         f = drag._all[method]
