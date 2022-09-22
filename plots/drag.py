@@ -28,10 +28,10 @@ from numpy import logspace
 
 from lib import drag
 from lib.utilities import formatLine
-from UI.prefMoody import ConfigDialog
 from UI.widgets import Entrada_con_unidades
 
 from plots.ui import Chart
+from plots.moody import ConfigDialog
 
 
 class Drag(Chart):
