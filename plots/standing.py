@@ -33,9 +33,10 @@ from numpy import arange
 from lib.config import conf_dir
 from lib.crude import Z_list
 from lib.utilities import formatLine
-from plots.moody import Chart
 from UI.prefStandingKatz import ConfigDialog
 from UI.widgets import Entrada_con_unidades
+
+from plots.ui import Chart
 
 
 def calculate(config, dat=None):
