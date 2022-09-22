@@ -24,14 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from PyQt5.QtWidgets import QApplication
 
-from plots import moody
-from plots import standing
+from plots import drag, moody, standing
 from plots.heatTransfer import chartHE
 
 
 _all = {
     QApplication.translate("pychemqt", "Petro"): (standing.Standing_Katz, ),
-    QApplication.translate("pychemqt", "Fluid Flow"): (moody.Moody, ),
+    QApplication.translate("pychemqt", "Fluid Flow"): (moody.Moody, drag.Drag),
     QApplication.translate("pychemqt", "Heat Exchanger"): chartHE}
 
 __all__ = ["moody", "standing", "chartHE"]
