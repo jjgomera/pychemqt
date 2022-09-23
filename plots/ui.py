@@ -76,6 +76,7 @@ class Chart(QtWidgets.QDialog):
         newax.axis('off')
 
     def configure(self):
+        """Show configure dialog and save changes"""
         dlg = self.configDialog(self.Preferences)
         if dlg.exec_():
             self.Preferences = dlg.value(self.Preferences)
@@ -84,16 +85,12 @@ class Chart(QtWidgets.QDialog):
 
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""
-        pass
 
     def click(self, event):
         """Define functionality when the mouse click in plot"""
-        pass
 
     def plot(self):
         """Plot procedure"""
-        pass
 
     def calculate(self):
         """Define the functionality when click the calculate point button"""
-        pass

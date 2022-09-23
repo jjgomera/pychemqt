@@ -301,6 +301,12 @@ def formatLine(config, section, name):
     kw["mew"] = config.getfloat(section, name+"markeredgewidth")
     kw["mec"] = config.get(section, name+"markeredgecolor")
 
+    # Additional options for grid
+    if config.has_option(section, name+"which"):
+        kw["which"] = config.get(section, name+"which")
+    if config.has_option(section, name+"which"):
+        kw["axis"] = config.get(section, name+"axis")
+
     return kw
 
 

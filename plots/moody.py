@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - CalculateDialog: Dialog to calculate a specified point
 
 #   Configuration
-#   - Widget: Moody chart configuration
+#   - Config: Moody chart configuration
 #   - ConfigDialog: Dialog tool for standalone use
 ###############################################################################
 
@@ -84,10 +84,14 @@ def calculate(config):
         json.dump(dat, file, indent=4)
 
 
-class Widget(QtWidgets.QWidget):
+class Config(QtWidgets.QWidget):
     """Moody chart configuration"""
+
+    WHICH = ["both", "major", "minor"]
+    AXIS = ["both", "x", "y"]
+
     def __init__(self, config=None, parent=None):
-        super(Widget, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Method:")), 1, 1)
@@ -114,6 +118,43 @@ class Widget(QtWidgets.QWidget):
             "crux", QtWidgets.QApplication.translate(
                 "pychemqt", "Crux style line"))
         layout.addWidget(self.cruxconfig, 5, 1, 1, 2)
+        self.gridconfig = LineConfig(
+            "grid", QtWidgets.QApplication.translate(
+                "pychemqt", "Grid style line"))
+        layout.addWidget(self.gridconfig, 6, 1, 1, 2)
+
+        # Disable marker functionality for grid line
+        # Raise a error by duplicate marker kwarg in plot, anyway marker in
+        # grid line are useless
+        self.gridconfig.Marker.setVisible(False)
+
+        self.grid = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Show grid"))
+        self.gridconfig.layout().insertWidget(0, self.grid)
+
+        lyt = QtWidgets.QHBoxLayout()
+        lyt.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Which") + ":"))
+        self.gridWhich = QtWidgets.QComboBox()
+        for name in self.WHICH:
+            self.gridWhich.addItem(name)
+        lyt.addWidget(self.gridWhich)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed))
+        self.gridconfig.layout().insertLayout(1, lyt)
+
+        lyt = QtWidgets.QHBoxLayout()
+        lyt.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Axis") + ":"))
+        self.gridAxis = QtWidgets.QComboBox()
+        for name in self.AXIS:
+            self.gridAxis.addItem(name)
+        lyt.addWidget(self.gridAxis)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed))
+        self.gridconfig.layout().insertLayout(2, lyt)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
@@ -125,8 +166,15 @@ class Widget(QtWidgets.QWidget):
             self.ed.setText(config.get("Moody", "ed"))
             self.lineconfig.setConfig(config, "Moody")
             self.cruxconfig.setConfig(config, "Moody")
+            self.gridconfig.setConfig(config, "Moody")
+            self.grid.setChecked(config.getboolean("Moody", 'grid'))
+            txt = config.get("Moody", 'gridwhich')
+            self.gridWhich.setCurrentIndex(self.WHICH.index(txt))
+            txt = config.get("Moody", 'gridaxis')
+            self.gridAxis.setCurrentIndex(self.AXIS.index(txt))
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("Moody"):
             config.add_section("Moody")
         config.set("Moody", "method", str(self.metodos.currentIndex()))
@@ -134,17 +182,21 @@ class Widget(QtWidgets.QWidget):
         config.set("Moody", "ed", self.ed.text())
         config = self.lineconfig.value(config, "Moody")
         config = self.cruxconfig.value(config, "Moody")
+        config = self.gridconfig.value(config, "Moody")
+        config.set("Moody", "grid", str(self.grid.isChecked()))
+        config.set("Moody", "gridwhich", self.gridWhich.currentText())
+        config.set("Moody", "gridaxis", self.gridAxis.currentText())
         return config
 
 
 class ConfigDialog(QtWidgets.QDialog):
     """Dialog to configure moody chart"""
     def __init__(self, config=None, parent=None):
-        super(ConfigDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
-        self.widget = Widget(config)
+        self.widget = Config(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
@@ -163,6 +215,7 @@ class Moody(Chart):
     title = QtWidgets.QApplication.translate("pychemqt", "Moody Diagram")
     configDialog = ConfigDialog
     locLogo = (0.3, 0.15, 0.1, 0.1)
+    note = None
 
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""
@@ -203,7 +256,8 @@ class Moody(Chart):
 
         self.createCrux(Re, f, ed)
 
-    def _txt(self, Re, f, ed):
+    @staticmethod
+    def _txt(Re, f, ed):
         if ed is None:
             txt = "Re: %0.4g\nf: %0.4g" % (Re, f)
         else:
@@ -238,6 +292,19 @@ class Moody(Chart):
         self.plt.ax.set_autoscale_on(False)
         self.plt.ax.clear()
 
+        grid = self.Preferences.getboolean("Moody", "grid")
+        kw = formatLine(self.Preferences, "Moody", "grid")
+        del kw["marker"]
+        if grid:
+            self.plt.ax.grid(grid, **kw)
+        else:
+            self.plt.ax.grid(grid)
+
+        self.plt.ax.set_xlim(600, 1e8)
+        self.plt.ax.set_ylim(0.008/x, 0.11/x)
+        self.plt.ax.set_xscale("log")
+        self.plt.ax.set_yscale("log")
+
         kw = formatLine(self.Preferences, "Moody", "crux")
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
@@ -254,11 +321,6 @@ class Moody(Chart):
                 "pychemqt", "Darcy Friction factor")
             formula = r"$f_d=\frac{2hDg}{LV^2}$"
         self.plt.ax.set_ylabel(ylabel+",  " + formula, size='10')
-        self.plt.ax.grid(True)
-        self.plt.ax.set_xlim(600, 1e8)
-        self.plt.ax.set_ylim(0.008/x, 0.11/x)
-        self.plt.ax.set_xscale("log")
-        self.plt.ax.set_yscale("log")
 
         xticks = [7e2, 8e2, 9e2, 1e3, 2e3, 3e3, 4e3, 5e3, 6e3, 7e3, 8e3, 9e3,
                   1e4, 2e4, 3e4, 4e4, 5e4, 6e4, 7e4, 8e4, 9e4, 1e5, 2e5, 3e5,
@@ -387,7 +449,7 @@ class Moody(Chart):
 class CalculateDialog(QtWidgets.QDialog):
     """Dialog to calculate a specified point"""
     def __init__(self, parent=None):
-        super(CalculateDialog, self).__init__(parent)
+        super().__init__(parent)
         title = QtWidgets.QApplication.translate(
             "pychemqt", "Calculate friction factor")
         self.setWindowTitle(title)

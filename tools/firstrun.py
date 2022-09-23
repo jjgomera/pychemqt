@@ -327,6 +327,19 @@ def Preferences():
     conf.set("Moody", "crux"+"markeredgewidth", "1")
     conf.set("Moody", "crux"+"markeredgecolor", "#000000")
 
+    conf.set("Moody", "grid", "True")
+    conf.set("Moody", "grid"+"Color", "#000000")
+    conf.set("Moody", "grid"+"alpha", "255")
+    conf.set("Moody", "grid"+"lineWidth", "0.5")
+    conf.set("Moody", "grid"+"lineStyle", ":")
+    conf.set("Moody", "grid"+"marker", "None")
+    conf.set("Moody", "grid"+"markersize", "3")
+    conf.set("Moody", "grid"+"markerfacecolor", "#ff0000")
+    conf.set("Moody", "grid"+"markeredgewidth", "1")
+    conf.set("Moody", "grid"+"markeredgecolor", "#000000")
+    conf.set("Moody", "grid"+"which", "both")
+    conf.set("Moody", "grid"+"axis", "both")
+
     # Standing-Katz
     conf.add_section("Standing_Katz")
     conf.set("Standing_Katz", "method", "0")

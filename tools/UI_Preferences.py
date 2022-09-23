@@ -557,7 +557,7 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
         ("button/psychrometric.png", prefPsychrometric.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
-        ("button/moody.png", moody.Widget,
+        ("button/moody.png", moody.Config,
          QtWidgets.QApplication.translate("pychemqt", "Moody chart")),
         ("button/moody.png", standing.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Standing-Katz chart")),
