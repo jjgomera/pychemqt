@@ -958,6 +958,69 @@ class LineConfig(QtWidgets.QGroupBox):
         return config
 
 
+class GridConfig(LineConfig):
+    """Extended version of LineConfig for grid specific line"""
+
+    WHICH = ["both", "major", "minor"]
+    AXIS = ["both", "x", "y"]
+
+    def __init__(self, confSection, title, parent=None):
+        """
+        confSection: Name key to identify the line
+        title: Title to use in QGroupbox
+        """
+        super().__init__(confSection, title, parent)
+
+        # Disable marker functionality for grid line
+        # Raise a error by duplicate marker kwarg in plot, anyway marker in
+        # grid line are useless
+        self.Marker.setVisible(False)
+
+        self.grid = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Show grid"))
+        self.layout().insertWidget(0, self.grid)
+
+        lyt = QtWidgets.QHBoxLayout()
+        lyt.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Which") + ":"))
+        self.gridWhich = QtWidgets.QComboBox()
+        for name in self.WHICH:
+            self.gridWhich.addItem(name)
+        lyt.addWidget(self.gridWhich)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed))
+        self.layout().insertLayout(1, lyt)
+
+        lyt = QtWidgets.QHBoxLayout()
+        lyt.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Axis") + ":"))
+        self.gridAxis = QtWidgets.QComboBox()
+        for name in self.AXIS:
+            self.gridAxis.addItem(name)
+        lyt.addWidget(self.gridAxis)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Fixed))
+        self.layout().insertLayout(2, lyt)
+
+    def setConfig(self, config, section):
+        LineConfig.setConfig(self, config, section)
+        self.grid.setChecked(config.getboolean(section, 'grid'))
+        txt = config.get(section, 'gridwhich')
+        self.gridWhich.setCurrentIndex(self.WHICH.index(txt))
+        txt = config.get(section, 'gridaxis')
+        self.gridAxis.setCurrentIndex(self.AXIS.index(txt))
+
+    def value(self, config, section):
+        """Update ConfigParser instance with the config"""
+        LineConfig.value(self, config, section)
+        config.set(section, "grid", str(self.grid.isChecked()))
+        config.set(section, "gridwhich", self.gridWhich.currentText())
+        config.set(section, "gridaxis", self.gridAxis.currentText())
+        return config
+
+
 class CustomCombo(QtWidgets.QComboBox):
     """General custom QComboBox"""
     valueChanged = QtCore.pyqtSignal("QString")

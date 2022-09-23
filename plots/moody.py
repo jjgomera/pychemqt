@@ -42,7 +42,7 @@ from matplotlib.patches import ConnectionPatch
 from lib.config import conf_dir
 from lib.friction import f_list, eD
 from lib.utilities import formatLine, representacion
-from UI.widgets import Entrada_con_unidades, LineConfig
+from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
 from plots.ui import Chart
 
@@ -87,9 +87,6 @@ def calculate(config):
 class Config(QtWidgets.QWidget):
     """Moody chart configuration"""
 
-    WHICH = ["both", "major", "minor"]
-    AXIS = ["both", "x", "y"]
-
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
@@ -118,43 +115,11 @@ class Config(QtWidgets.QWidget):
             "crux", QtWidgets.QApplication.translate(
                 "pychemqt", "Crux style line"))
         layout.addWidget(self.cruxconfig, 5, 1, 1, 2)
-        self.gridconfig = LineConfig(
+
+        self.gridconfig = GridConfig(
             "grid", QtWidgets.QApplication.translate(
                 "pychemqt", "Grid style line"))
         layout.addWidget(self.gridconfig, 6, 1, 1, 2)
-
-        # Disable marker functionality for grid line
-        # Raise a error by duplicate marker kwarg in plot, anyway marker in
-        # grid line are useless
-        self.gridconfig.Marker.setVisible(False)
-
-        self.grid = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Show grid"))
-        self.gridconfig.layout().insertWidget(0, self.grid)
-
-        lyt = QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Which") + ":"))
-        self.gridWhich = QtWidgets.QComboBox()
-        for name in self.WHICH:
-            self.gridWhich.addItem(name)
-        lyt.addWidget(self.gridWhich)
-        lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
-        self.gridconfig.layout().insertLayout(1, lyt)
-
-        lyt = QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Axis") + ":"))
-        self.gridAxis = QtWidgets.QComboBox()
-        for name in self.AXIS:
-            self.gridAxis.addItem(name)
-        lyt.addWidget(self.gridAxis)
-        lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
-        self.gridconfig.layout().insertLayout(2, lyt)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
@@ -167,11 +132,6 @@ class Config(QtWidgets.QWidget):
             self.lineconfig.setConfig(config, "Moody")
             self.cruxconfig.setConfig(config, "Moody")
             self.gridconfig.setConfig(config, "Moody")
-            self.grid.setChecked(config.getboolean("Moody", 'grid'))
-            txt = config.get("Moody", 'gridwhich')
-            self.gridWhich.setCurrentIndex(self.WHICH.index(txt))
-            txt = config.get("Moody", 'gridaxis')
-            self.gridAxis.setCurrentIndex(self.AXIS.index(txt))
 
     def value(self, config):
         """Update ConfigParser instance with the config"""
@@ -183,9 +143,6 @@ class Config(QtWidgets.QWidget):
         config = self.lineconfig.value(config, "Moody")
         config = self.cruxconfig.value(config, "Moody")
         config = self.gridconfig.value(config, "Moody")
-        config.set("Moody", "grid", str(self.grid.isChecked()))
-        config.set("Moody", "gridwhich", self.gridWhich.currentText())
-        config.set("Moody", "gridaxis", self.gridAxis.currentText())
         return config
 
 
