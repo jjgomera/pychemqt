@@ -41,7 +41,7 @@ from numpy import arange
 from lib.config import conf_dir
 from lib.crude import Z_list
 from lib.utilities import formatLine
-from UI.widgets import Entrada_con_unidades, LineConfig
+from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
 from plots.ui import Chart
 
@@ -137,6 +137,11 @@ class Widget(QtWidgets.QWidget):
                 "pychemqt", "Crux style line"))
         layout.addWidget(self.cruxconfig, 6, 1, 1, 2)
 
+        self.gridconfig = GridConfig(
+            "grid", QtWidgets.QApplication.translate(
+                "pychemqt", "Grid style line"))
+        layout.addWidget(self.gridconfig, 7, 1, 1, 2)
+
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
             QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
@@ -149,6 +154,7 @@ class Widget(QtWidgets.QWidget):
             self.Tr.setText(config.get("Standing_Katz", "Tr"))
             self.lineconfig.setConfig(config, "Standing_Katz")
             self.cruxconfig.setConfig(config, "Standing_Katz")
+            self.gridconfig.setConfig(config, "Standing_Katz")
 
     def value(self, config):
         if not config.has_section("Standing_Katz"):
@@ -159,6 +165,7 @@ class Widget(QtWidgets.QWidget):
         config.set("Standing_Katz", "Tr", self.Tr.text())
         config = self.lineconfig.value(config, "Standing_Katz")
         config = self.cruxconfig.value(config, "Standing_Katz")
+        config = self.gridconfig.value(config, "Standing_Katz")
         return config
 
 
@@ -202,7 +209,14 @@ class Standing_Katz(Chart):
         self.plt.ax.set_xlim(Prmin, Prmax)
         self.plt.ax.set_xlabel(r"$P_r=\frac{P}{P_c}$", ha='center', size='14')
         self.plt.ax.set_ylabel(r"$Z=\frac{PV}{nRT}$", va="bottom", size='14')
-        self.plt.ax.grid(b=True, which='both', color='0.6', ls=':')
+
+        grid = self.Preferences.getboolean("Standing_Katz", "grid")
+        kw = formatLine(self.Preferences, "Standing_Katz", "grid")
+        del kw["marker"]
+        if grid:
+            self.plt.ax.grid(grid, **kw)
+        else:
+            self.plt.ax.grid(grid)
 
         if not os.path.isfile(conf_dir+"standing_katz.dat"):
             calculate(self.Preferences)

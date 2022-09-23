@@ -368,6 +368,19 @@ def Preferences():
     conf.set("Standing_Katz", "crux"+"markeredgewidth", "1")
     conf.set("Standing_Katz", "crux"+"markeredgecolor", "#000000")
 
+    conf.set("Standing_Katz", "grid", "True")
+    conf.set("Standing_Katz", "grid"+"Color", "#000000")
+    conf.set("Standing_Katz", "grid"+"alpha", "255")
+    conf.set("Standing_Katz", "grid"+"lineWidth", "0.5")
+    conf.set("Standing_Katz", "grid"+"lineStyle", ":")
+    conf.set("Standing_Katz", "grid"+"marker", "None")
+    conf.set("Standing_Katz", "grid"+"markersize", "3")
+    conf.set("Standing_Katz", "grid"+"markerfacecolor", "#ff0000")
+    conf.set("Standing_Katz", "grid"+"markeredgewidth", "1")
+    conf.set("Standing_Katz", "grid"+"markeredgecolor", "#000000")
+    conf.set("Standing_Katz", "grid"+"which", "both")
+    conf.set("Standing_Katz", "grid"+"axis", "both")
+
     # Openbabel
     conf.add_section("Openbabel")
     conf.set("Openbabel", "BondColor", "#000000")
