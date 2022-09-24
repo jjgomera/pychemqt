@@ -200,7 +200,7 @@ class Standing_Katz(Chart):
 
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """
-        method = self.Preferences.getint("Standing_Katz", "method")
+        method = self.Preferences.get("Standing_Katz", "method")
 
         Prmin = self.Preferences.getfloat("Standing_Katz", "Prmin")
         Prmax = self.Preferences.getfloat("Standing_Katz", "Prmax")
