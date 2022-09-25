@@ -241,17 +241,10 @@ class CalculateDialog(QtWidgets.QDialog):
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
 
-    def calculate(self, value):
+    def calculate(self):
         """Calculate point procedure"""
-        if isinstance(value, int):
-            # Value is the index of method changed in dialog
-            index = value
-            Re = self.Re.value
-        else:
-            # Value is the Reynolds number changed in dialog
-            index = self.metodos.currentIndex()
-            Re = value
-
+        Re = self.Re.value
+        index = self.metodos.currentIndex()
         F = drag.f_list[index]
         if Re:
             Cd = F(Re)

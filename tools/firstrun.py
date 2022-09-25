@@ -302,10 +302,10 @@ def Preferences():
     conf.add_section("Moody")
     conf.set("Moody", "fanning", "False")
     conf.set("Moody", "method", "0")
-    conf.set("Moody", "ed", "[0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, "
+    conf.set("Moody", "ed", "0, 1e-6, 5e-6, 1e-5, 2e-5, 5e-5, 1e-4, 2e-4, "
              "4e-4, 6e-4, 8e-4, .001, .0015, .002, .003, .004, .006, .008, "
              ".01, .0125, .015, .0175, .02, .025, .03, .035, .04, .045, "
-             ".05, .06, .07]")
+             ".05, .06, .07")
 
     conf.set("Moody", "line"+"Color", "#000000")
     conf.set("Moody", "line"+"alpha", "255")
@@ -343,10 +343,8 @@ def Preferences():
     # Standing-Katz
     conf.add_section("Standing_Katz")
     conf.set("Standing_Katz", "method", "0")
-    conf.set("Standing_Katz", "Prmin", "0.8")
-    conf.set("Standing_Katz", "Prmax", "10")
-    conf.set("Standing_Katz", "Tr", "[1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35,"
-             "1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.2, 2.4, 2.6, 2.8, 3.]")
+    conf.set("Standing_Katz", "Tr", "1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.35,"
+             "1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2., 2.2, 2.4, 2.6, 2.8, 3.")
 
     conf.set("Standing_Katz", "line"+"Color", "#000000")
     conf.set("Standing_Katz", "line"+"alpha", "255")

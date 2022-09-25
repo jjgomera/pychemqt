@@ -56,7 +56,7 @@ def calculate(config):
     """Calculate procedure, the data are saved to file to fast load again"""
     fanning = config.getboolean("Moody", "fanning")
     method = config.getint("Moody", "method")
-    eD = eval(config.get("Moody", "eD"))
+    ed = map(float, config.get("Moody", "eD").split(","))
     F = f_list[method]
 
     dat = {}
@@ -72,7 +72,7 @@ def calculate(config):
 
     # turbulent
     turb = {}
-    for e in eD:
+    for e in ed:
         turb[e] = [F(Rei, e)/x for Rei in Re_turbulent]
         dat["turbulent"] = turb
 
@@ -233,7 +233,7 @@ class Moody(Chart):
             self.note.remove()
             self.note = None
         if f and Re:
-            self.note = self.plt.fig.text(0.85, 0.08, txt, size="6", va="top")
+            self.note = self.plt.fig.text(0.92, 0.05, txt, size="6", va="bottom")
         self.plt.draw()
 
     def plot(self):
@@ -399,8 +399,8 @@ class Moody(Chart):
         if dlg.exec_():
             Re = dlg.Re.value
             f = dlg.f.value
-            eD = dlg.eD.value
-            self.createCrux(Re, f, eD)
+            ed = dlg.eD.value
+            self.createCrux(Re, f, ed)
 
 
 class CalculateDialog(QtWidgets.QDialog):
@@ -446,13 +446,14 @@ class CalculateDialog(QtWidgets.QDialog):
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
 
-    def calculate(self, value):
+    def calculate(self):
+        """Calculate point procedure"""
         index = self.metodos.currentIndex()
         F = f_list[index]
         Re = self.Re.value
-        eD = self.eD.value
-        if Re and eD is not None:
-            f = F(Re, eD)
+        ed = self.eD.value
+        if Re and ed is not None:
+            f = F(Re, ed)
             if self.fanning.isChecked():
                 f /= 4
             self.f.setValue(f)

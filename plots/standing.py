@@ -68,12 +68,10 @@ def calculate(config, dat=None):
     calculated yet
     """
     method = config.getint("Standing_Katz", "method")
-    Tr = eval(config.get("Standing_Katz", "Tr"))
-    Prmin = config.getfloat("Standing_Katz", "Prmin")
-    Prmax = config.getfloat("Standing_Katz", "Prmax")
+    Tr = map(float, config.get("Standing_Katz", "Tr").split(","))
     Z = Z_list[method]
 
-    Pr = arange(Prmin, Prmax, 0.01)
+    Pr = arange(1e-3, 15, 0.01)
 
     if dat is None:
         dat = {}
@@ -105,24 +103,17 @@ def calculate(config, dat=None):
 class Widget(QtWidgets.QWidget):
     """Standing-Katz chart configuration"""
     def __init__(self, config=None, parent=None):
-        super(Widget, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Method:")), 1, 1)
         self.method = QtWidgets.QComboBox()
         for Z in Z_list:
             name = Z.__name__[2:].replace("_", "-")
-            year = re.search("((\d+))", Z.__doc__).group(0)
+            year = re.search(r"((\d+))", Z.__doc__).group(0)
             doc = "%s (%s)" % (name, year)
             self.method.addItem(doc)
         layout.addWidget(self.method, 1, 2)
-
-        layout.addWidget(QtWidgets.QLabel("Pr min:"), 2, 1)
-        self.Prmin = Entrada_con_unidades(float, width=60, decimales=1)
-        layout.addWidget(self.Prmin, 2, 2)
-        layout.addWidget(QtWidgets.QLabel("Pr max:"), 3, 1)
-        self.Prmax = Entrada_con_unidades(float, width=60, decimales=1)
-        layout.addWidget(self.Prmax, 3, 2)
 
         layout.addWidget(QtWidgets.QLabel("Tr:"), 4, 1)
         self.Tr = QtWidgets.QLineEdit()
@@ -149,19 +140,16 @@ class Widget(QtWidgets.QWidget):
         if config and config.has_section("Standing_Katz"):
             self.method.setCurrentIndex(config.getint(
                 "Standing_Katz", "method"))
-            self.Prmin.setValue(config.getfloat("Standing_Katz", "Prmin"))
-            self.Prmax.setValue(config.getfloat("Standing_Katz", "Prmax"))
             self.Tr.setText(config.get("Standing_Katz", "Tr"))
             self.lineconfig.setConfig(config, "Standing_Katz")
             self.cruxconfig.setConfig(config, "Standing_Katz")
             self.gridconfig.setConfig(config, "Standing_Katz")
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("Standing_Katz"):
             config.add_section("Standing_Katz")
         config.set("Standing_Katz", "method", str(self.method.currentIndex()))
-        config.set("Standing_Katz", "Prmin", str(self.Prmin.value))
-        config.set("Standing_Katz", "Prmax", str(self.Prmax.value))
         config.set("Standing_Katz", "Tr", self.Tr.text())
         config = self.lineconfig.value(config, "Standing_Katz")
         config = self.cruxconfig.value(config, "Standing_Katz")
@@ -172,7 +160,7 @@ class Widget(QtWidgets.QWidget):
 class ConfigDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
-        super(ConfigDialog, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
@@ -197,18 +185,19 @@ class Standing_Katz(Chart):
         "Standing and Katz compressivitity factors chart for natural gas")
     configDialog = ConfigDialog
     locLogo = (0.8, 0.15, 0.1, 0.1)
+    note = None
 
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """
         method = self.Preferences.get("Standing_Katz", "method")
 
-        Prmin = self.Preferences.getfloat("Standing_Katz", "Prmin")
-        Prmax = self.Preferences.getfloat("Standing_Katz", "Prmax")
-
         self.plt.ax.clear()
-        self.plt.ax.set_xlim(Prmin, Prmax)
+        self.plt.ax.set_xlim(0, 8)
+        self.plt.ax.set_ylim(0.2, 1.2)
         self.plt.ax.set_xlabel(r"$P_r=\frac{P}{P_c}$", ha='center', size='14')
         self.plt.ax.set_ylabel(r"$Z=\frac{PV}{nRT}$", va="bottom", size='14')
+
+        # TODO: Do a split chart with the high Pr region
 
         grid = self.Preferences.getboolean("Standing_Katz", "grid")
         kw = formatLine(self.Preferences, "Standing_Katz", "grid")
@@ -292,14 +281,14 @@ class Standing_Katz(Chart):
         if self.note:
             self.note.remove()
             self.note = None
-        self.note = self.plt.fig.text(0.85, 0.08, txt, size="8", va="top")
+        self.note = self.plt.fig.text(0.92, 0.05, txt, size="6", va="bottom")
         self.plt.draw()
 
 
 class CalculateDialog(QtWidgets.QDialog):
     """Dialog to calculate a specified point"""
     def __init__(self, parent=None):
-        super(CalculateDialog, self).__init__(parent)
+        super().__init__(parent)
         title = QtWidgets.QApplication.translate(
             "pychemqt", "Calculate compressibility factor of natural gas")
         self.setWindowTitle(title)
@@ -310,7 +299,7 @@ class CalculateDialog(QtWidgets.QDialog):
         self.method = QtWidgets.QComboBox()
         for Z in Z_list:
             name = Z.__name__[2:].replace("_", "-")
-            year = re.search("((\d+))", Z.__doc__).group(0)
+            year = re.search(r"((\d+))", Z.__doc__).group(0)
             doc = "%s (%s)" % (name, year)
             self.method.addItem(doc)
 
@@ -335,7 +324,8 @@ class CalculateDialog(QtWidgets.QDialog):
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
 
-    def calculate(self, value):
+    def calculate(self):
+        """Calculate point procedure"""
         index = self.method.currentIndex()
         Z = Z_list[index]
         Tr = self.Tr.value
