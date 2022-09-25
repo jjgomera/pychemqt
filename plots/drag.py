@@ -28,17 +28,86 @@ from numpy import logspace
 
 from lib import drag
 from lib.utilities import formatLine
-from UI.widgets import Entrada_con_unidades
+from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
 from plots.ui import Chart
-from plots.moody import ConfigDialog
+
+
+class Config(QtWidgets.QWidget):
+    """Drag sphere chart configuration"""
+
+    def __init__(self, config=None, parent=None):
+        super().__init__(parent)
+        layout = QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Method:")), 1, 1)
+        self.metodos = QtWidgets.QComboBox()
+        for f in drag.f_list:
+            self.metodos.addItem(f.__name__)
+        layout.addWidget(self.metodos, 1, 2)
+
+        self.lineconfig = LineConfig(
+            "line", QtWidgets.QApplication.translate(
+                "pychemqt", "Relative roughtness style line"))
+        layout.addWidget(self.lineconfig, 4, 1, 1, 2)
+        self.cruxconfig = LineConfig(
+            "crux", QtWidgets.QApplication.translate(
+                "pychemqt", "Crux style line"))
+        layout.addWidget(self.cruxconfig, 5, 1, 1, 2)
+
+        self.gridconfig = GridConfig(
+            "grid", QtWidgets.QApplication.translate(
+                "pychemqt", "Grid style line"))
+        layout.addWidget(self.gridconfig, 6, 1, 1, 2)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 0, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
+
+        if config and config.has_section("drag"):
+            self.metodos.setCurrentIndex(config.getint("drag", 'method'))
+            self.lineconfig.setConfig(config, "drag")
+            self.cruxconfig.setConfig(config, "drag")
+            self.gridconfig.setConfig(config, "drag")
+
+    def value(self, config):
+        """Update ConfigParser instance with the config"""
+        if not config.has_section("drag"):
+            config.add_section("drag")
+        config.set("drag", "method", str(self.metodos.currentIndex()))
+        config = self.lineconfig.value(config, "drag")
+        config = self.cruxconfig.value(config, "drag")
+        config = self.gridconfig.value(config, "drag")
+        return config
+
+
+class ConfigDialog(QtWidgets.QDialog):
+    """Dialog to configure moody chart"""
+    def __init__(self, config=None, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Drag sphere diagram configuration"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.widget = Config(config)
+        layout.addWidget(self.widget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+    def value(self, config):
+        """Function result for wizard"""
+        config = self.widget.value(config)
+        return config
 
 
 class Drag(Chart):
-    """Moody chart dialog"""
+    """Drag sphere chart dialog"""
     title = QtWidgets.QApplication.translate("pychemqt", "Drag Sphere")
     configDialog = ConfigDialog
     locLogo = (0.8, 0.85, 0.1, 0.1)
+    note = None
 
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""
@@ -58,13 +127,13 @@ class Drag(Chart):
             return
 
         Cd = None
-        # method = self.Preferences.getint("Moody", "method")
-        method = 0
-        F = drag._all[method]
+        method = self.Preferences.getint("drag", "method")
+        F = drag.f_list[method]
         Cd = F(Re)
         self.createCrux(Re, Cd)
 
-    def _txt(self, Re, Cd):
+    @staticmethod
+    def _txt(Re, Cd):
         txt = "Re: %0.4g\nCd: %0.4g" % (Re, Cd)
         return txt
 
@@ -86,14 +155,13 @@ class Drag(Chart):
         self.plt.lx.set_ydata(Cd)
         self.plt.ly.set_xdata(Re)
 
-        self.note = self.plt.fig.text(0.85, 0.08, txt, size="6", va="top")
+        self.note = self.plt.fig.text(0.92, 0.05, txt, size="6", va="top")
         self.plt.draw()
 
     def plot(self):
         """Plot the drag chart using the indicate method """
-        # method = self.Preferences.getint("Moody", "method")
-        method = 0
-        f = drag._all[method]
+        method = self.Preferences.getint("drag", "method")
+        f = drag.f_list[method]
 
         self.plt.ax.set_autoscale_on(False)
         self.plt.ax.clear()
@@ -107,10 +175,10 @@ class Drag(Chart):
                 v = None
             Cd.append(v)
 
-        kw = formatLine(self.Preferences, "Moody", "line")
+        kw = formatLine(self.Preferences, "drag", "line")
         self.plt.ax.plot(Re, Cd, **kw)
 
-        kw = formatLine(self.Preferences, "Moody", "crux")
+        kw = formatLine(self.Preferences, "drag", "crux")
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
 
@@ -118,7 +186,15 @@ class Drag(Chart):
             "pychemqt", "Reynolds number") + ", " + r"$Re=\frac{V\rho D}{\mu}$"
         self.plt.ax.set_xlabel(xlabel, ha='center', size='10')
         self.plt.ax.set_ylabel("Drag coefficient, $C_d$, [-]", size='10')
-        self.plt.ax.grid(True, "both", ls=":", lw=0.8)
+
+        grid = self.Preferences.getboolean("drag", "grid")
+        kw = formatLine(self.Preferences, "drag", "grid")
+        del kw["marker"]
+        if grid:
+            self.plt.ax.grid(grid, **kw)
+        else:
+            self.plt.ax.grid(grid)
+
         self.plt.ax.set_xlim(0.1, 1e6)
         self.plt.ax.set_ylim(0.06, 300)
         self.plt.ax.set_xscale("log")
@@ -137,7 +213,7 @@ class Drag(Chart):
 class CalculateDialog(QtWidgets.QDialog):
     """Dialog to calculate a specified point"""
     def __init__(self, parent=None):
-        super(CalculateDialog, self).__init__(parent)
+        super().__init__(parent)
         title = QtWidgets.QApplication.translate(
             "pychemqt", "Calculate friction factor")
         self.setWindowTitle(title)
@@ -146,7 +222,7 @@ class CalculateDialog(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Method:"))
         layout.addWidget(label, 1, 0)
         self.metodos = QtWidgets.QComboBox()
-        for f in drag._all:
+        for f in drag.f_list:
             self.metodos.addItem(f.__name__)
         self.metodos.currentIndexChanged.connect(self.calculate)
         layout.addWidget(self.metodos, 1, 1, 1, 2)
@@ -166,9 +242,17 @@ class CalculateDialog(QtWidgets.QDialog):
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
 
     def calculate(self, value):
-        index = self.metodos.currentIndex()
-        F = drag._all[index]
-        Re = self.Re.value
+        """Calculate point procedure"""
+        if isinstance(value, int):
+            # Value is the index of method changed in dialog
+            index = value
+            Re = self.Re.value
+        else:
+            # Value is the Reynolds number changed in dialog
+            index = self.metodos.currentIndex()
+            Re = value
+
+        F = drag.f_list[index]
         if Re:
             Cd = F(Re)
             self.Cd.setValue(Cd)

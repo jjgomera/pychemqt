@@ -1002,5 +1002,5 @@ def dragSphere(Re, method=None):
         return Clift(Re)
 
 
-_all = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
-        Haider, Turton, Concha, Swamee, Cheng, Terfous, Mikhailov)
+f_list = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
+          Haider, Turton, Concha, Swamee, Cheng, Terfous, Mikhailov)

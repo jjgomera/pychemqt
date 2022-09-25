@@ -381,6 +381,43 @@ def Preferences():
     conf.set("Standing_Katz", "grid"+"which", "both")
     conf.set("Standing_Katz", "grid"+"axis", "both")
 
+    # drag sphere
+    conf.add_section("drag")
+    conf.set("drag", "method", "0")
+
+    conf.set("drag", "line"+"Color", "#000000")
+    conf.set("drag", "line"+"alpha", "255")
+    conf.set("drag", "line"+"lineWidth", "0.5")
+    conf.set("drag", "line"+"lineStyle", "-")
+    conf.set("drag", "line"+"marker", "None")
+    conf.set("drag", "line"+"markersize", "3")
+    conf.set("drag", "line"+"markerfacecolor", "#ff0000")
+    conf.set("drag", "line"+"markeredgewidth", "1")
+    conf.set("drag", "line"+"markeredgecolor", "#000000")
+
+    conf.set("drag", "crux"+"Color", "#0000ff")
+    conf.set("drag", "crux"+"alpha", "255")
+    conf.set("drag", "crux"+"lineWidth", "0.5")
+    conf.set("drag", "crux"+"lineStyle", "-")
+    conf.set("drag", "crux"+"marker", "None")
+    conf.set("drag", "crux"+"markersize", "3")
+    conf.set("drag", "crux"+"markerfacecolor", "#ff0000")
+    conf.set("drag", "crux"+"markeredgewidth", "1")
+    conf.set("drag", "crux"+"markeredgecolor", "#000000")
+
+    conf.set("drag", "grid", "True")
+    conf.set("drag", "grid"+"Color", "#000000")
+    conf.set("drag", "grid"+"alpha", "255")
+    conf.set("drag", "grid"+"lineWidth", "0.5")
+    conf.set("drag", "grid"+"lineStyle", ":")
+    conf.set("drag", "grid"+"marker", "None")
+    conf.set("drag", "grid"+"markersize", "3")
+    conf.set("drag", "grid"+"markerfacecolor", "#ff0000")
+    conf.set("drag", "grid"+"markeredgewidth", "1")
+    conf.set("drag", "grid"+"markeredgecolor", "#000000")
+    conf.set("drag", "grid"+"which", "both")
+    conf.set("drag", "grid"+"axis", "both")
+
     # Openbabel
     conf.add_section("Openbabel")
     conf.set("Openbabel", "BondColor", "#000000")
