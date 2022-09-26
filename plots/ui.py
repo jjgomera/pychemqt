@@ -37,13 +37,16 @@ class Chart(QtWidgets.QDialog):
     """Generic chart dialog"""
 
     def __init__(self, parent=None):
-        super(Chart, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(self.title)
         layout = QtWidgets.QGridLayout(self)
         layout.setColumnStretch(3, 1)
+        self.plotWidget = QtWidgets.QWidget(self)
+        lyt = QtWidgets.QGridLayout(self.plotWidget)
         self.plt = mpl(self)
         self.plt.fig.canvas.mpl_connect('button_press_event', self.click)
-        layout.addWidget(self.plt, 2, 1, 1, 4)
+        lyt.addWidget(self.plt, 1, 1)
+        layout.addWidget(self.plotWidget, 2, 1, 1, 4)
 
         btBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Close, self)
@@ -65,6 +68,8 @@ class Chart(QtWidgets.QDialog):
         btBox.layout().insertWidget(0, butonConfig)
         layout.addWidget(btBox, 3, 1, 1, 4)
 
+        self.customUI()
+
         self.Preferences = ConfigParser()
         self.Preferences.read(conf_dir+"pychemqtrc")
         self.config()
@@ -82,6 +87,9 @@ class Chart(QtWidgets.QDialog):
             self.Preferences = dlg.value(self.Preferences)
             self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
             self.plot()
+
+    def customUI(self):
+        """Define custom UI element"""
 
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""

@@ -35,11 +35,12 @@ import json
 import os
 import re
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 from numpy import arange
 
 from lib.config import conf_dir
 from lib.crude import Z_list
+from lib.plot import mpl
 from lib.utilities import formatLine
 from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
@@ -187,25 +188,98 @@ class Standing_Katz(Chart):
     locLogo = (0.8, 0.15, 0.1, 0.1)
     note = None
 
+    def customUI(self):
+        """Define custom UI element"""
+        dlgBut = self.layout().itemAtPosition(3, 1).widget()
+        butPNG = dlgBut.layout().itemAt(2).widget()
+        butPNG.clicked.disconnect()
+        butPNG.clicked.connect(self.savePNG)
+
+        self.plt2 = mpl(self)
+        self.plt2.fig.canvas.mpl_connect('button_press_event', self.click)
+        self.plotWidget.layout().addWidget(self.plt2, 1, 1)
+        self.setMask()
+
+    def savePNG(self):
+        """Save chart image to png file"""
+        fmt = "Portable Network Graphics (*.png)"
+        fname, ext = QtWidgets.QFileDialog.getSaveFileName(
+            self,
+            QtWidgets.QApplication.translate("pychemqt", "Save chart to file"),
+            "./", fmt)
+        if fname and ext == fmt:
+            if fname.split(".")[-1] != "png":
+                fname += ".png"
+            pix = self.plotWidget.grab()
+            pix.save(fname, "png")
+
+    def setMask(self):
+        """Mask both plot to show only the region useful"""
+        w = self.plt.width()
+        h = self.plt.height()
+
+        pol = QtGui.QPolygon()
+        pol.append(QtCore.QPoint(int(0.05*w), int(0.05*h)))
+        pol.append(QtCore.QPoint(int(0.95*w), int(0.05*h)))
+        pol.append(QtCore.QPoint(int(0.95*w), int(0.23*h)))
+        pol.append(QtCore.QPoint(int(0.9*w), int(0.228*h)))
+        pol.append(QtCore.QPoint(int(0.3*w), int(0.698*h)))
+        pol.append(QtCore.QPoint(int(0.125*w), int(0.698*h)))
+        pol.append(QtCore.QPoint(int(0.125*w), int(0.7*h)))
+        pol.append(QtCore.QPoint(int(0.05*w), int(0.7*h)))
+        reg = QtGui.QRegion(pol)
+        self.plt.setMask(reg)
+
+        pol = QtGui.QPolygon()
+        pol.append(QtCore.QPoint(int(0.05*w), int(0.7*h)))
+        pol.append(QtCore.QPoint(int(0.3*w), int(0.7*h)))
+        pol.append(QtCore.QPoint(int(0.90*w), int(0.23*h)))
+        pol.append(QtCore.QPoint(int(0.90*w), int(0.228*h)))
+        pol.append(QtCore.QPoint(int(0.95*w), int(0.228*h)))
+        pol.append(QtCore.QPoint(int(0.95*w), int(h)))
+        pol.append(QtCore.QPoint(int(0.05*w), int(h)))
+        reg = QtGui.QRegion(pol)
+        self.plt2.setMask(reg)
+
+        x = (0, 1.8, 8)
+        y = (0.276, 0.276, 0.95)
+        self.plt.ax.plot(x, y, "black", lw=0.5)
+        x = (7, 8.8, 15)
+        y = (1.17, 1.17, 1.84)
+        self.plt2.ax.plot(x, y, "black", lw=0.5)
+
+        self.plt.draw()
+        self.plt2.draw()
+
+    def paintEvent(self, event):
+        """Do redraw in each change of window size or position"""
+        self.setMask()
+        Chart.paintEvent(self, event)
+
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """
         method = self.Preferences.get("Standing_Katz", "method")
 
         self.plt.ax.clear()
         self.plt.ax.set_xlim(0, 8)
-        self.plt.ax.set_ylim(0.2, 1.2)
+        self.plt.ax.set_ylim(0, 1.1)
         self.plt.ax.set_xlabel(r"$P_r=\frac{P}{P_c}$", ha='center', size='14')
         self.plt.ax.set_ylabel(r"$Z=\frac{PV}{nRT}$", va="bottom", size='14')
 
-        # TODO: Do a split chart with the high Pr region
+        self.plt2.ax.clear()
+        self.plt2.ax.set_xlim(7, 15)
+        self.plt2.ax.set_ylim(0.9, 2)
+        self.plt2.ax.set_xlabel(r"$P_r=\frac{P}{P_c}$", ha='center', size='14')
 
         grid = self.Preferences.getboolean("Standing_Katz", "grid")
         kw = formatLine(self.Preferences, "Standing_Katz", "grid")
         del kw["marker"]
         if grid:
             self.plt.ax.grid(grid, **kw)
+            self.plt2.ax.grid(grid, **kw)
         else:
             self.plt.ax.grid(grid)
+            self.plt2.ax.grid(grid)
 
         if not os.path.isfile(conf_dir+"standing_katz.dat"):
             calculate(self.Preferences)
@@ -233,6 +307,12 @@ class Standing_Katz(Chart):
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
         self.plt.lx.set_visible(False)
         self.plt.ly.set_visible(False)
+        self.plt2.lx = self.plt2.ax.axhline(**kw)  # the horiz line
+        self.plt2.ly = self.plt2.ax.axvline(**kw)  # the vert line
+        self.plt2.lx.set_visible(False)
+        self.plt2.ly.set_visible(False)
+        self.plt.ax.xaxis.tick_top()
+        self.plt2.ax.yaxis.tick_right()
         self.note = None
 
         # Plot data
@@ -241,6 +321,7 @@ class Standing_Katz(Chart):
         for Tr in sorted(dat[str(method)].keys()):
             line = dat[str(method)][Tr]
             self.plt.ax.plot(line["Pr"], line["Z"], **kw)
+            self.plt2.ax.plot(line["Pr"], line["Z"], **kw)
 
             # Add Tr legend
             # Position as possible at minimum position of line
@@ -255,9 +336,11 @@ class Standing_Katz(Chart):
 
             self.plt.ax.text(pzmin, zmin, str(Tr),
                              size="x-small", ha='left', va='bottom')
+            self.plt2.ax.text(line["Pr"][-1], line["Z"][-1], str(Tr),
+                              size="x-small", ha='right', va='bottom')
 
         # Add explicative legend of isoline
-        self.plt.ax.text(pzmin, zmin+0.1, r"$T_r$", size="12",
+        self.plt.ax.text(3, zmin+0.05, r"$T_r$", size="12",
                          ha='left', va='center')
 
         self.plt.draw()
@@ -274,14 +357,28 @@ class Standing_Katz(Chart):
         """Create a crux in selected point of plot and show data at bottom
         right corner"""
         txt = "Tr: %0.4g\nPr: %0.4g\nZ: %0.4g" % (Tr, Pr, Z)
-        self.plt.lx.set_visible(True)
-        self.plt.ly.set_visible(True)
-        self.plt.ly.set_xdata(Pr)
-        self.plt.lx.set_ydata(Z)
+
+        self.plt.lx.set_visible(False)
+        self.plt.ly.set_visible(False)
+        self.plt2.lx.set_visible(False)
+        self.plt2.ly.set_visible(False)
+
+        if Pr < 8:
+            self.plt.lx.set_visible(True)
+            self.plt.ly.set_visible(True)
+            self.plt.ly.set_xdata(Pr)
+            self.plt.lx.set_ydata(Z)
+
+        if Pr > 7:
+            self.plt2.lx.set_visible(True)
+            self.plt2.ly.set_visible(True)
+            self.plt2.ly.set_xdata(Pr)
+            self.plt2.lx.set_ydata(Z)
+
         if self.note:
             self.note.remove()
             self.note = None
-        self.note = self.plt.fig.text(0.92, 0.05, txt, size="6", va="bottom")
+        self.note = self.plt2.fig.text(0.92, 0.05, txt, size="6", va="bottom")
         self.plt.draw()
 
 
