@@ -37,6 +37,7 @@ import re
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from numpy import arange
+from scipy.optimize import fsolve
 
 from lib.config import conf_dir
 from lib.crude import Z_list
@@ -220,8 +221,8 @@ class Standing_Katz(Chart):
 
         pol = QtGui.QPolygon()
         pol.append(QtCore.QPoint(int(0.05*w), int(0.05*h)))
-        pol.append(QtCore.QPoint(int(0.95*w), int(0.05*h)))
-        pol.append(QtCore.QPoint(int(0.95*w), int(0.23*h)))
+        pol.append(QtCore.QPoint(int(w), int(0.05*h)))
+        pol.append(QtCore.QPoint(int(w), int(0.23*h)))
         pol.append(QtCore.QPoint(int(0.9*w), int(0.228*h)))
         pol.append(QtCore.QPoint(int(0.3*w), int(0.698*h)))
         pol.append(QtCore.QPoint(int(0.125*w), int(0.698*h)))
@@ -235,8 +236,8 @@ class Standing_Katz(Chart):
         pol.append(QtCore.QPoint(int(0.3*w), int(0.7*h)))
         pol.append(QtCore.QPoint(int(0.90*w), int(0.23*h)))
         pol.append(QtCore.QPoint(int(0.90*w), int(0.228*h)))
-        pol.append(QtCore.QPoint(int(0.95*w), int(0.228*h)))
-        pol.append(QtCore.QPoint(int(0.95*w), int(h)))
+        pol.append(QtCore.QPoint(int(w), int(0.228*h)))
+        pol.append(QtCore.QPoint(int(w), int(h)))
         pol.append(QtCore.QPoint(int(0.05*w), int(h)))
         reg = QtGui.QRegion(pol)
         self.plt2.setMask(reg)
@@ -255,6 +256,34 @@ class Standing_Katz(Chart):
         """Do redraw in each change of window size or position"""
         self.setMask()
         Chart.paintEvent(self, event)
+
+    def click(self, event):
+        """Update input and graph annotate when mouse click over chart"""
+        Pr = event.xdata
+        Z = event.ydata
+
+        # Exit if click event if out of axis
+        if Pr is None:
+            self.clearCrux()
+            return
+
+        method = self.Preferences.getint("Standing_Katz", "method")
+        f_Z = Z_list[method]
+
+        def f(Tr):
+            return f_Z(Tr, Pr) - Z
+
+        Tr = 0
+        for to in (1, 2, 3):
+            try:
+                rinput = fsolve(f, to, full_output=True)
+                if rinput[2] == 1:
+                    Tr = rinput[0]
+                    break
+            except ValueError:
+                continue
+
+        self.createCrux(Tr, Pr, Z)
 
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """
@@ -333,14 +362,13 @@ class Standing_Katz(Chart):
                     line["Pr"].append(pzmin)
                     line["Pr"].sort()
                 zmin = line["Z"][line["Pr"].index(pzmin)]
-
             self.plt.ax.text(pzmin, zmin, str(Tr),
                              size="x-small", ha='left', va='bottom')
             self.plt2.ax.text(line["Pr"][-1], line["Z"][-1], str(Tr),
                               size="x-small", ha='right', va='bottom')
 
         # Add explicative legend of isoline
-        self.plt.ax.text(3, zmin+0.05, r"$T_r$", size="12",
+        self.plt.ax.text(3, 1.07, r"$T_r$", size="12",
                          ha='left', va='center')
 
         self.plt.draw()
@@ -353,15 +381,23 @@ class Standing_Katz(Chart):
             Z = dlg.Z.value
             self.createCrux(Tr, Pr, Z)
 
-    def createCrux(self, Tr, Pr, Z):
-        """Create a crux in selected point of plot and show data at bottom
-        right corner"""
-        txt = "Tr: %0.4g\nPr: %0.4g\nZ: %0.4g" % (Tr, Pr, Z)
-
+    def clearCrux(self):
+        """Delete crux and note text"""
+        if self.note:
+            self.note.remove()
+            self.note = None
         self.plt.lx.set_visible(False)
         self.plt.ly.set_visible(False)
         self.plt2.lx.set_visible(False)
         self.plt2.ly.set_visible(False)
+        self.plt.draw()
+        self.plt2.draw()
+
+    def createCrux(self, Tr, Pr, Z):
+        """Create a crux in selected point of plot and show data at bottom
+        right corner"""
+
+        self.clearCrux()
 
         if Pr < 8:
             self.plt.lx.set_visible(True)
@@ -375,11 +411,15 @@ class Standing_Katz(Chart):
             self.plt2.ly.set_xdata(Pr)
             self.plt2.lx.set_ydata(Z)
 
-        if self.note:
-            self.note.remove()
-            self.note = None
-        self.note = self.plt2.fig.text(0.92, 0.05, txt, size="6", va="bottom")
+        if Tr:
+            txt = "Tr: %0.4g\nPr: %0.4g\nZ: %0.4g" % (Tr, Pr, Z)
+        else:
+            Tr = QtWidgets.QApplication.translate("pychemqt", "Not converged")
+            txt = "Tr: %s\nPr: %0.4g\nZ: %0.4g" % (Tr, Pr, Z)
+        self.note = self.plt2.fig.text(0.92, 0.05, txt, size="6")
+
         self.plt.draw()
+        self.plt2.draw()
 
 
 class CalculateDialog(QtWidgets.QDialog):
