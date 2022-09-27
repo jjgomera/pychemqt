@@ -35,6 +35,7 @@ from plots.ui import Chart
 
 class Config(QtWidgets.QWidget):
     """Drag sphere chart configuration"""
+    TITLE = QtWidgets.QApplication.translate("pychemqt", "Drag Sphere chart")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -47,7 +48,7 @@ class Config(QtWidgets.QWidget):
         layout.addWidget(self.metodos, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 1, 3)
+            QtWidgets.QSizePolicy.Fixed), 1, 3)
 
         self.lineconfig = LineConfig(
             "line", QtWidgets.QApplication.translate(

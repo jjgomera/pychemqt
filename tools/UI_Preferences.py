@@ -169,8 +169,9 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             self.tabla[i].setColumnWidth(0, 16)
             self.tabla[i].setItemDelegateForColumn(0, CheckEditor(self))
             self.tabla[i].horizontalHeader().setVisible(False)
-            for j in range(len(textos)):
-                item = QtWidgets.QTableWidgetItem(textos[j])
+
+            for j, txt in enumerate(textos):
+                item = QtWidgets.QTableWidgetItem(txt)
                 self.tabla[i].setVerticalHeaderItem(j, item)
                 self.tabla[i].setRowHeight(j, 24)
                 self.tabla[i].setItem(j, 0, QtWidgets.QTableWidgetItem(""))
@@ -557,49 +558,68 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
         ("button/psychrometric.png", prefPsychrometric.Widget,
          QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
-        ("button/moody.png", moody.Config,
-         QtWidgets.QApplication.translate("pychemqt", "Moody chart")),
-        ("button/moody.png", drag.Config,
-         QtWidgets.QApplication.translate("pychemqt", "Drag Sphere chart")),
-        ("button/moody.png", standing.Config,
-         QtWidgets.QApplication.translate("pychemqt", "Standing-Katz chart")),
+
+        ("button/moody.png", plots.Pref,
+         QtWidgets.QApplication.translate("pychemqt", "Chart")),
+
         ("chemistry/grupo18.png", ConfBabel,
          QtWidgets.QApplication.translate("pychemqt", "Openbabel"))]
 
     def __init__(self, config, parent=None):
         """Constructor, opcional config parameter to input project config"""
-        super(Preferences, self).__init__(parent)
+        super().__init__(parent)
         self.config = config
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Preferences"))
 
         layout = QtWidgets.QGridLayout(self)
-        self.lista = QtWidgets.QListWidget()
-        self.lista.setIconSize(QtCore.QSize(20, 20))
+        self.lista = QtWidgets.QTreeWidget()
+        self.lista.setIconSize(QtCore.QSize(30, 30))
+        self.lista.setHeaderHidden(True)
         self.lista.setSizePolicy(
             QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
         layout.addWidget(self.lista, 1, 1)
         self.stacked = QtWidgets.QStackedWidget()
         layout.addWidget(self.stacked, 1, 2)
+
+        count = 0
         for icon, dialog, title in self.classes:
-            self.stacked.addWidget(dialog(config))
+            item = QtWidgets.QTreeWidgetItem([title])
             icon = QtGui.QIcon(QtGui.QPixmap(
                 os.environ["pychemqt"]+"/images/%s" % icon))
-            self.lista.addItem(QtWidgets.QListWidgetItem(icon, title))
+            item.setIcon(0, icon)
+            item.setData(0, QtCore.Qt.UserRole, count)
+            count += 1
+            self.lista.addTopLevelItem(item)
 
-        self.lista.currentRowChanged.connect(self.stacked.setCurrentIndex)
+            if isinstance(dialog, tuple):
+                self.stacked.addWidget(QtWidgets.QWidget())
+                for dlg in dialog:
+                    child = QtWidgets.QTreeWidgetItem([dlg.TITLE])
+                    child.setIcon(0, icon)
+                    child.setData(0, QtCore.Qt.UserRole, count)
+                    item.addChild(child)
+                    count += 1
+                    self.stacked.addWidget(dlg(config))
+            else:
+                self.stacked.addWidget(dialog(config))
+
+        self.lista.currentItemChanged.connect(self.getIndex)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 2)
 
+    def getIndex(self, item):
+        self.stacked.setCurrentIndex(item.data(0, QtCore.Qt.UserRole))
+
     def value(self):
         """Return value for wizard"""
-        config = self.config
+        conf = self.config
         for indice in range(self.stacked.count()):
-            config = self.stacked.widget(indice).value(config)
-        return config
+            conf = self.stacked.widget(indice).value(conf)
+        return conf
 
 
 if __name__ == "__main__":

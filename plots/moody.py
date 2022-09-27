@@ -86,6 +86,7 @@ def calculate(config):
 
 class Config(QtWidgets.QWidget):
     """Moody chart configuration"""
+    TITLE = QtWidgets.QApplication.translate("pychemqt", "Moody chart")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -102,7 +103,7 @@ class Config(QtWidgets.QWidget):
         layout.addWidget(self.metodos, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 1, 3)
+            QtWidgets.QSizePolicy.Fixed), 1, 3)
         self.fanning = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Calculate fanning friction factor"))
         layout.addWidget(self.fanning, 2, 1, 1, 3)

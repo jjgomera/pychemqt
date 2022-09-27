@@ -104,6 +104,8 @@ def calculate(config, dat=None):
 
 class Config(QtWidgets.QWidget):
     """Standing-Katz chart configuration"""
+    TITLE = QtWidgets.QApplication.translate("pychemqt", "Standing-Katz chart")
+
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
@@ -118,7 +120,7 @@ class Config(QtWidgets.QWidget):
         layout.addWidget(self.method, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 1, 3)
+            QtWidgets.QSizePolicy.Fixed), 1, 3)
 
         layout.addWidget(QtWidgets.QLabel("Tr:"), 4, 1)
         self.Tr = QtWidgets.QLineEdit()
