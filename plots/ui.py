@@ -63,9 +63,9 @@ class Chart(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
         butonCalculate.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
-        btBox.layout().insertWidget(0, butonPNG)
-        btBox.layout().insertWidget(0, butonCalculate)
-        btBox.layout().insertWidget(0, butonConfig)
+        btBox.addButton(butonConfig, QtWidgets.QDialogButtonBox.ResetRole)
+        btBox.addButton(butonCalculate, QtWidgets.QDialogButtonBox.ResetRole)
+        btBox.addButton(butonPNG, QtWidgets.QDialogButtonBox.ResetRole)
         layout.addWidget(btBox, 3, 1, 1, 4)
 
         self.customUI()
