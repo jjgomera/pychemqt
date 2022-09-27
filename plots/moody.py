@@ -100,26 +100,29 @@ class Config(QtWidgets.QWidget):
             doc = name + " " + year
             self.metodos.addItem(doc)
         layout.addWidget(self.metodos, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 1, 3)
         self.fanning = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Calculate fanning friction factor"))
-        layout.addWidget(self.fanning, 2, 1, 1, 2)
+        layout.addWidget(self.fanning, 2, 1, 1, 3)
 
         layout.addWidget(QtWidgets.QLabel("ε/d:"), 3, 1)
         self.ed = QtWidgets.QLineEdit()
-        layout.addWidget(self.ed, 3, 2)
+        layout.addWidget(self.ed, 3, 2, 1, 2)
         self.lineconfig = LineConfig(
             "line", QtWidgets.QApplication.translate(
                 "pychemqt", "Relative roughtness style line"))
-        layout.addWidget(self.lineconfig, 4, 1, 1, 2)
+        layout.addWidget(self.lineconfig, 4, 1, 1, 3)
         self.cruxconfig = LineConfig(
             "crux", QtWidgets.QApplication.translate(
                 "pychemqt", "Crux style line"))
-        layout.addWidget(self.cruxconfig, 5, 1, 1, 2)
+        layout.addWidget(self.cruxconfig, 5, 1, 1, 3)
 
         self.gridconfig = GridConfig(
             "grid", QtWidgets.QApplication.translate(
                 "pychemqt", "Grid style line"))
-        layout.addWidget(self.gridconfig, 6, 1, 1, 2)
+        layout.addWidget(self.gridconfig, 6, 1, 1, 3)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,

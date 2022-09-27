@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - CalculateDialog: Dialog to calculate a specified point
 
 #   Configuration
-#   - Widget: Standing-Katz chart configuration
+#   - Config: Standing-Katz chart configuration
 #   - ConfigDialog: Dialog tool for standalone use
 ###############################################################################
 
@@ -102,7 +102,7 @@ def calculate(config, dat=None):
         json.dump(dat, file, indent=4)
 
 
-class Widget(QtWidgets.QWidget):
+class Config(QtWidgets.QWidget):
     """Standing-Katz chart configuration"""
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -116,24 +116,27 @@ class Widget(QtWidgets.QWidget):
             doc = "%s (%s)" % (name, year)
             self.method.addItem(doc)
         layout.addWidget(self.method, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Expanding,
+            QtWidgets.QSizePolicy.Expanding), 1, 3)
 
         layout.addWidget(QtWidgets.QLabel("Tr:"), 4, 1)
         self.Tr = QtWidgets.QLineEdit()
-        layout.addWidget(self.Tr, 4, 2)
+        layout.addWidget(self.Tr, 4, 2, 1, 2)
         self.lineconfig = LineConfig(
             "line", QtWidgets.QApplication.translate(
                 "pychemqt", "Reduced temperature style line"))
-        layout.addWidget(self.lineconfig, 5, 1, 1, 2)
+        layout.addWidget(self.lineconfig, 5, 1, 1, 3)
 
         self.cruxconfig = LineConfig(
             "crux", QtWidgets.QApplication.translate(
                 "pychemqt", "Crux style line"))
-        layout.addWidget(self.cruxconfig, 6, 1, 1, 2)
+        layout.addWidget(self.cruxconfig, 6, 1, 1, 3)
 
         self.gridconfig = GridConfig(
             "grid", QtWidgets.QApplication.translate(
                 "pychemqt", "Grid style line"))
-        layout.addWidget(self.gridconfig, 7, 1, 1, 2)
+        layout.addWidget(self.gridconfig, 7, 1, 1, 3)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Expanding,
@@ -166,7 +169,7 @@ class ConfigDialog(QtWidgets.QDialog):
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
-        self.widget = Widget(config)
+        self.widget = Config(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
