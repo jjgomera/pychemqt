@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=wrong-import-position, assignment-from-no-return
+
 
 """Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2022, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -331,7 +333,6 @@ class Entity(object):
 
     def propertiesListTitle(self, index):
         """Define titles for list properties in popup"""
-        pass
 
     def propertiesTitle(self):
         return [prop[0] for prop in self.propertiesNames()]
@@ -348,8 +349,8 @@ class Entity(object):
         preferences: ConfigParser instance with selected properties to show"""
         txt = []
         propiedades = self.properties()
-        for i in eval(preferences.get("TooltipEntity",
-                                      self.__class__.__name__)):
+        for i in map(int, preferences.get(
+                "TooltipEntity", self.__class__.__name__).split(",")):
             if isinstance(propiedades[i][0], list):
                 txt.append((propiedades[i][1], "", 0))
                 title = self.propertiesListTitle(i)

@@ -2380,11 +2380,11 @@ for _clas in _all:
     _clas.__doc__ = doc
 
 
-_magnitudes = []
+MAGNITUDES = []
 for unit in _all:
     for magnitud in unit.magnitudes():
-        _magnitudes.append(magnitud+(unit, ))
-_magnitudes.append(("Dimensionless",
+        MAGNITUDES.append(magnitud+(unit, ))
+MAGNITUDES.append(("Dimensionless",
                     QApplication.translate("pychemqt", "Dimensionless"),
                     Dimensionless))
 
@@ -2398,5 +2398,5 @@ for unit in _all:
 units_set = {}
 for _set in ("altsi", "si", "metric", "cgs", "english"):
     units_set[_set] = []
-    for magnitud, titulo, unit in _magnitudes[:-1]:
+    for magnitud, titulo, unit in MAGNITUDES[:-1]:
         units_set[_set].append(unit.__units__.index(unit_set[magnitud][_set]))

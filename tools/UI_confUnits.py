@@ -72,12 +72,12 @@ class UI_confUnits_widget(QtWidgets.QWidget):
 
         self.tabla = QtWidgets.QTableWidget()
         layout.addWidget(self.tabla, 3, 1, 5, 1)
-        self.tabla.setRowCount(len(unidades._magnitudes)-1)
+        self.tabla.setRowCount(len(unidades.MAGNITUDES)-1)
         self.tabla.setColumnCount(1)
         self.tabla.horizontalHeader().setVisible(False)
 
         self.combos = []
-        for i, magnitud in enumerate(unidades._magnitudes[:-1]):
+        for i, magnitud in enumerate(unidades.MAGNITUDES[:-1]):
             self.tabla.setVerticalHeaderItem(
                 i, QtWidgets.QTableWidgetItem(magnitud[1]))
             self.tabla.setRowHeight(i, 24)
@@ -133,7 +133,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
                 self.AltSI.setChecked(True)
                 self.load("altsi")
 
-            for combo, magnitud in zip(self.combos, unidades._magnitudes[:-1]):
+            for combo, magnitud in zip(self.combos, unidades.MAGNITUDES[:-1]):
                 combo.setCurrentIndex(config.getint("Units", magnitud[0]))
 
     def actualizar_lista_perfiles(self):
@@ -200,7 +200,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         else:
             config.set("Units", "System", "5")
 
-        for combo, magnitud in zip(self.combos, unidades._magnitudes[:-1]):
+        for combo, magnitud in zip(self.combos, unidades.MAGNITUDES[:-1]):
             config.set("Units", magnitud[0], str(combo.currentIndex()))
         return config
 
@@ -208,7 +208,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
     def default(cls, config):
         config.add_section("Units")
         config.set("Units", "System", "0")
-        for magnitud in unidades._magnitudes[:-1]:
+        for magnitud in unidades.MAGNITUDES[:-1]:
             config.set("Units", magnitud[0], "0")
         return config
 

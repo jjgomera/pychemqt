@@ -144,6 +144,12 @@ def Preferences():
     conf.set("PFD", "Guion", "0")
     conf.set("PFD", "Dash_offset", "0.0")
 
+    # TooltipEntity
+    conf.add_section("TooltipEntity")
+    conf.set("TooltipEntity", "Corriente", "0,1")
+    for equipo in equipos:
+        conf.set("TooltipEntity", equipo, "0,1")
+
     # Tooltip
     conf.add_section("Tooltip")
     conf.set("Tooltip", "Show", "True")
@@ -153,13 +159,7 @@ def Preferences():
     conf.set("Tooltip", "English", "False")
     conf.set("Tooltip", "Metric", "False")
     for magnitud in magnitudes[:-1]:
-        conf.set("Tooltip", magnitud, "[0,1]")
-
-    # TooltipEntity
-    conf.add_section("TooltipEntity")
-    conf.set("TooltipEntity", "Corriente", "[0,1]")
-    for equipo in equipos:
-        conf.set("TooltipEntity", equipo, "[0,1]")
+        conf.set("Tooltip", magnitud, "0,1")
 
     # NumericFactor
     conf.add_section("NumericFormat")

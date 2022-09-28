@@ -21,12 +21,12 @@ myTranslator = QtCore.QTranslator()
 if myTranslator.load("pychemqt_" + locale, "/home/jjgomera/pychemqt/i18n"):
     app.installTranslator(myTranslator)
 
-from lib.unidades import _magnitudes  # noqa
+from lib.unidades import MAGNITUDES  # noqa
 
 
 # For get a fresh new list of magnitudes when we add some new, the list can be
 # add at start of lib/firstrun.py file:
 magnitudes = []
-for magnitud, title, unit in _magnitudes:
+for magnitud, title, unit in MAGNITUDES:
     magnitudes.append(magnitud)
 pprint(magnitudes, compact=True, indent=4, width=79)

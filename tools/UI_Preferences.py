@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+from ast import literal_eval
 from configparser import ConfigParser
 from functools import partial
 from math import pi
@@ -38,12 +39,12 @@ import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from equipment import equipments
 from lib import unidades, corriente
 from lib.utilities import representacion
-from equipment import equipments
+import plots
 from tools.firstrun import which
 from UI import prefElemental, prefMEOS, prefPFD, prefPsychrometric, prefPetro
-from plots import drag, moody, standing
 from UI.delegate import CheckEditor
 from UI.widgets import ColorSelector, NumericFactor, PathConfig
 
@@ -51,7 +52,7 @@ from UI.widgets import ColorSelector, NumericFactor, PathConfig
 class ConfGeneral(QtWidgets.QDialog):
     """General configuration options"""
     def __init__(self, config=None, parent=None):
-        super(ConfGeneral, self).__init__(parent)
+        super().__init__(parent)
 
         layout = QtWidgets.QGridLayout(self)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
@@ -100,6 +101,7 @@ class ConfGeneral(QtWidgets.QDialog):
             self.showTrayIcon.setChecked(config.getboolean("General", 'Tray'))
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("General"):
             config.add_section("General")
         config.set("General", "Color_Resaltado",
@@ -116,7 +118,7 @@ class ConfGeneral(QtWidgets.QDialog):
 class ConfTooltipUnit(QtWidgets.QDialog):
     """Tooltip with unit alternate value configuration"""
     def __init__(self, config, parent=None):
-        super(ConfTooltipUnit, self).__init__(parent)
+        super().__init__(parent)
 
         layout = QtWidgets.QVBoxLayout(self)
         self.checkShow = QtWidgets.QCheckBox(
@@ -159,7 +161,7 @@ class ConfTooltipUnit(QtWidgets.QDialog):
         layout.addWidget(self.stacked)
 
         self.tabla = []
-        for i, magnitud in enumerate(unidades._magnitudes[:-1]):
+        for i, magnitud in enumerate(unidades.MAGNITUDES[:-1]):
             textos = magnitud[2].__text__
             self.tabla.append(QtWidgets.QTableWidget())
             self.stacked.addWidget(self.tabla[i])
@@ -178,7 +180,7 @@ class ConfTooltipUnit(QtWidgets.QDialog):
                 self.tabla[i].item(j, 0).setTextAlignment(
                     QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
                 self.tabla[i].openPersistentEditor(self.tabla[i].item(j, 0))
-            self.rellenar(magnitud[0], i, config)
+            self.fill(magnitud[0], i, config)
             self.eleccion.addItem(magnitud[1])
 
         if config.has_section("Tooltip"):
@@ -189,27 +191,31 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             self.Metric.setChecked(config.getboolean("Tooltip", "Metric"))
             self.CGS.setChecked(config.getboolean("Tooltip", "CGS"))
 
-    def rellenar(self, magnitud, tabla, config):
+    def fill(self, magnitud, tabla, config):
+        """Fill the the table with the data"""
         if config.has_section("Tooltip"):
-            lista = eval(config.get("Tooltip", magnitud))
-            for i in lista:
+            lst = map(int, config.get("Tooltip", magnitud).split(","))
+            for i in lst:
                 self.tabla[tabla].item(i, 0).setText("true")
 
-    def checkShow_Toggled(self, bool):
-        self.eleccion.setEnabled(bool)
-        self.groupsystems.setEnabled(bool)
+    def checkShow_Toggled(self, boolean):
+        "Enable/Disable widgets"""
+        self.eleccion.setEnabled(boolean)
+        self.groupsystems.setEnabled(boolean)
         for tabla in self.tabla:
-            tabla.setEnabled(bool)
+            tabla.setEnabled(boolean)
 
-    def systems(self, set, bool):
-        if bool:
+    def systems(self, unitSet, boolean):
+        """Check the units defined in the unit set"""
+        if boolean:
             txt = "true"
         else:
             txt = ""
-        for tabla, value in enumerate(unidades.units_set[set][:-1]):
+        for tabla, value in enumerate(unidades.units_set[unitSet][:-1]):
             self.tabla[tabla].item(value, 0).setText(txt)
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("Tooltip"):
             config.add_section("Tooltip")
         config.set("Tooltip", "Show", str(self.checkShow.isChecked()))
@@ -224,14 +230,14 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             for j in range(tabla.rowCount()):
                 if tabla.item(j, 0).text() == "true":
                     lista.append(j)
-            config.set("Tooltip", unidades._magnitudes[i][0], str(lista))
+            config.set("Tooltip", unidades.MAGNITUDES[i][0], str(lista))
         return config
 
 
 class ConfTooltipEntity(QtWidgets.QDialog):
     """Entity properties in popup window configuration"""
     def __init__(self, config, parent=None):
-        super(ConfTooltipEntity, self).__init__(parent)
+        super().__init__(parent)
 
         layout = QtWidgets.QVBoxLayout(self)
         self.eleccion = QtWidgets.QComboBox()
@@ -260,8 +266,8 @@ class ConfTooltipEntity(QtWidgets.QDialog):
             self.tabla[0].openPersistentEditor(self.tabla[0].item(i, 0))
 
         if config.has_option("TooltipEntity", "Corriente"):
-            lista = eval(config.get("TooltipEntity", "Corriente"))
-            for i in lista:
+            lst = map(int, config.get("TooltipEntity", "Corriente").split(","))
+            for i in lst:
                 self.tabla[0].item(i, 0).setText("true")
 
         for i, equipo in enumerate(equipments):
@@ -281,16 +287,18 @@ class ConfTooltipEntity(QtWidgets.QDialog):
                 self.tabla[-1].item(j, 0).setTextAlignment(
                     QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
                 self.tabla[-1].openPersistentEditor(self.tabla[-1].item(j, 0))
-            self.rellenar(equipo.__name__, i+1, config)
+            self.fill(equipo.__name__, i+1, config)
             self.eleccion.addItem(equipo.title)
 
-    def rellenar(self, equipo, tabla, config):
+    def fill(self, equipo, tabla, config):
+        """Fill the the table with the data"""
         if config.has_section("TooltipEntity"):
-            lista = eval(config.get("TooltipEntity", equipo))
-            for i in lista:
+            lst = map(int, config.get("TooltipEntity", equipo).split(","))
+            for i in lst:
                 self.tabla[tabla].item(i, 0).setText("true")
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("TooltipEntity"):
             config.add_section("TooltipEntity")
         lista = []
@@ -312,15 +320,15 @@ class ConfTooltipEntity(QtWidgets.QDialog):
 class ConfFormat(QtWidgets.QTableWidget):
     """Numeric format configuration"""
     def __init__(self, config=None, parent=None):
-        super(ConfFormat, self).__init__(parent)
+        super().__init__(parent)
         self.setColumnCount(2)
-        self.setRowCount(len(unidades._magnitudes))
+        self.setRowCount(len(unidades.MAGNITUDES))
         labels = [QtWidgets.QApplication.translate("pychemqt", "Format"),
                   QtWidgets.QApplication.translate("pychemqt", "Sample")]
         self.setHorizontalHeaderLabels(labels)
         self.config = []
         for i in range(self.rowCount()):
-            item = QtWidgets.QTableWidgetItem(unidades._magnitudes[i][1])
+            item = QtWidgets.QTableWidgetItem(unidades.MAGNITUDES[i][1])
             self.setVerticalHeaderItem(i, item)
             self.setRowHeight(i, 22)
             self.setItem(i, 0, QtWidgets.QTableWidgetItem(""))
@@ -331,16 +339,17 @@ class ConfFormat(QtWidgets.QTableWidget):
                 QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
 
         if config.has_section("NumericFormat"):
-            for i, magnitud in enumerate(unidades._magnitudes):
-                formato = eval(config.get("NumericFormat", magnitud[0]))
-                self.config.append(formato)
-                self.item(i, 0).setText(self.txt(formato))
-                self.item(i, 1).setText(representacion(pi, **formato))
+            for i, magnitud in enumerate(unidades.MAGNITUDES):
+                kw = literal_eval(config.get("NumericFormat", magnitud[0]))
+                self.config.append(kw)
+                self.item(i, 0).setText(self.txt(kw))
+                self.item(i, 1).setText(representacion(pi, **kw))
 
         self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.cellDoubleClicked.connect(self.showConfDialog)
 
-    def showConfDialog(self, fila, columna):
+    def showConfDialog(self, fila):
+        """Show dialog with numeric format configuration"""
         dialog = NumericFactor(self.config[fila], parent=self)
         if dialog.exec_():
             config = dialog.args()
@@ -348,7 +357,9 @@ class ConfFormat(QtWidgets.QTableWidget):
             self.item(fila, 0).setText(self.txt(config))
             self.item(fila, 1).setText(representacion(pi, **config))
 
-    def txt(self, formato):
+    @staticmethod
+    def txt(formato):
+        """Get the string format text"""
         if formato["signo"]:
             txt = "+"
         else:
@@ -364,9 +375,10 @@ class ConfFormat(QtWidgets.QTableWidget):
         return txt
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("NumericFormat"):
             config.add_section("NumericFormat")
-        for i, magnitud in enumerate(unidades._magnitudes):
+        for i, magnitud in enumerate(unidades.MAGNITUDES):
             config.set("NumericFormat", magnitud[0], str(self.config[i]))
         return config
 
@@ -374,17 +386,17 @@ class ConfFormat(QtWidgets.QTableWidget):
 class ConfApplications(QtWidgets.QDialog):
     """External applications configuration"""
     def __init__(self, config=None, parent=None):
-        super(ConfApplications, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        l = QtWidgets.QApplication.translate("pychemqt", "External Calculator")
+        t = QtWidgets.QApplication.translate("pychemqt", "External Calculator")
         msg = QtWidgets.QApplication.translate(
             "pychemqt", "Select External Calculator Application")
-        self.calculadora = PathConfig(l + ":", msg=msg, patron="exe")
+        self.calculadora = PathConfig(t + ":", msg=msg, patron="exe")
         layout.addWidget(self.calculadora, 1, 1)
-        l = QtWidgets.QApplication.translate("pychemqt", "Text viewer")
+        t = QtWidgets.QApplication.translate("pychemqt", "Text viewer")
         msg = QtWidgets.QApplication.translate(
             "pychemqt", "Select External Text Viewer Application")
-        self.textViewer = PathConfig(l + ":", msg=msg, patron="exe")
+        self.textViewer = PathConfig(t + ":", msg=msg, patron="exe")
         layout.addWidget(self.textViewer, 2, 1)
 
         terminal = QtWidgets.QGroupBox()
@@ -436,16 +448,16 @@ class ConfApplications(QtWidgets.QDialog):
 
         self.ipython.setEnabled(bool(which("ipython3")))
 
-        # TODO: Habilitar cuando añada soporte para otras terminales
+        # TODO: Enable option when add support for other terminals
         self.terminal.setEnabled(False)
 
     def value(self, config):
-        """Return value for main dialog"""
+        """Update ConfigParser instance with the config"""
         if not config.has_section("Applications"):
             config.add_section("Applications")
         config.set("Applications", "Calculator", self.calculadora.text())
         config.set("Applications", "TextViewer", self.textViewer.text())
-        config.set("Applications", "Shell",  self.terminal.text())
+        config.set("Applications", "Shell", self.terminal.text())
         config.set("Applications", "ipython", str(self.ipython.isChecked()))
         config.set("Applications", "maximized",
                    str(self.maximized.isChecked()))
@@ -459,7 +471,7 @@ class ConfApplications(QtWidgets.QDialog):
 class ConfBabel(QtWidgets.QDialog):
     """Openbabel image generation configuration options"""
     def __init__(self, config=None, parent=None):
-        super(ConfBabel, self).__init__(parent)
+        super().__init__(parent)
 
         layout = QtWidgets.QGridLayout(self)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
@@ -519,6 +531,7 @@ class ConfBabel(QtWidgets.QDialog):
                 config.getboolean("Openbabel", 'TighBond'))
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("Openbabel"):
             config.add_section("Openbabel")
         config.set("Openbabel", "BondColor", self.BondColor.color.name())
@@ -612,14 +625,15 @@ class Preferences(QtWidgets.QDialog):
         layout.addWidget(self.buttonBox, 2, 2)
 
     def getIndex(self, item):
+        """Get index of item"""
         self.stacked.setCurrentIndex(item.data(0, QtCore.Qt.UserRole))
 
     def value(self):
         """Return value for wizard"""
-        conf = self.config
+        config = self.config
         for indice in range(self.stacked.count()):
-            conf = self.stacked.widget(indice).value(conf)
-        return conf
+            config = self.stacked.widget(indice).value(config)
+        return config
 
 
 if __name__ == "__main__":
@@ -627,12 +641,9 @@ if __name__ == "__main__":
     pychemqt_dir = os.environ["PWD"] + "/"
     app = QtWidgets.QApplication(sys.argv)
 
-#    config={"format": 0, "decimales": 4, "signo": False}
-#    dialogo=NumericFactor(config)
-
-    config = ConfigParser()
-    config.read(conf_dir+"pychemqtrc")
-    dialogo = Preferences(config)
+    conf = ConfigParser()
+    conf.read(conf_dir+"pychemqtrc")
+    dialogo = Preferences(conf)
 
     dialogo.show()
     sys.exit(app.exec_())

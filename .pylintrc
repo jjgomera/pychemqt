@@ -2,5 +2,5 @@
 
 extension-pkg-whitelist = PyQt5, CoolProp
 
-disable = invalid-name, 
+disable = invalid-name, too-many-instance-attributes, too-many-statements
 

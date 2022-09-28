@@ -353,12 +353,12 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             Config = ConfigParser()
             Config.read(conf_dir+"pychemqtrc")
             try:
-                lista = eval(Config.get('Tooltip', self.magnitud))
+                lst = map(int, Config.get("Tooltip", self.magnitud).split(","))
             except:
-                lista = []
-            if len(lista) > 0:
+                lst = []
+            if lst:
                 valores = []
-                for i in lista:
+                for i in lst:
                     valores.append(representacion(
                         self.value.__getattribute__(self.value.__units__[i]),
                         self.decimales, self.tolerancia) + " " +
