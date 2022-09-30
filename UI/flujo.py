@@ -448,6 +448,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
 
 class GraphicsEntity(object):
     """Clase que modela la funcionalidad comun a corrientes y equipos en el PFD"""
+    tabla = None
 
     def view(self):
         with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt", encoding="utf-8") as temp:
@@ -595,14 +596,16 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 
     def hoverEnterEvent(self, event):
         if not (self.scene().addObj and self.scene().addType == "stream"):
-            self.tabla = Table_Graphics(self.corriente, self.id, self.scene().parent().Preferences)
+            self.tabla = Table_Graphics(self.corriente, self.id, Preferences)
             self.tabla.move(event.screenPos())
             self.tabla.show()
 
     def hoverLeaveEvent(self, event):
-        if not (self.scene().addObj and self.scene().addType == "stream"):
+        if self.tabla and not (self.scene().addObj and \
+                               self.scene().addType == "stream"):
             self.tabla.hide()
             self.tabla.deleteLater()
+            self.tabla = None
 
             #    def hoverMoveEvent(self, event):
             #        self.tabla.move(event.screenPos())
@@ -894,9 +897,11 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
 
     def hoverLeaveEvent(self, event):
         self.showInput(False)
-        if not self.scene().addObj and self.scene().addType == "stream":
+        if self.tabla and not (self.scene().addObj and \
+                               self.scene().addType == "stream"):
             self.tabla.hide()
             self.tabla.deleteLater()
+            self.tabla = None
 
             #    def hoverMoveEvent(self, event):
             #        self.tabla.move(event.screenPos())

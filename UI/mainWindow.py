@@ -1863,10 +1863,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.list.clearSelection()
             for element in sender.selectedItems():
                 if isinstance(element, flujo.StreamItem):
-                    self.list.Stream.child(element.id-1).setSelected(True)
+                    element = self.list.Stream.child(element.id-1)
+                    if element:
+                        element.setSelected(True)
                 elif isinstance(element, flujo.EquipmentItem) and \
                         element.tipo == "e":
-                    self.list.Equipment.child(element.id-1).setSelected(True)
+                    element = self.list.Equipment.child(element.id-1)
+                    if element:
+                        element.setSelected(True)
             self.list.blockSignals(False)
 
     def addText(self):
