@@ -33,7 +33,7 @@ _all = {
     QApplication.translate("pychemqt", "Fluid Flow"): (moody.Moody, drag.Drag),
     QApplication.translate("pychemqt", "Heat Exchanger"): chartHE}
 
-__all__ = ["moody", "standing", "chartHE"]
+__all__ = ["moody", "drag", "standing", "chartHE"]
 
 # List used in Preferences main window to add a subfolder of plot configuration
 Pref = moody.Config, drag.Config, standing.Config

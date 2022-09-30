@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 ###############################################################################
-# Moody plot
+# Common graphycal functionality for plots
 ###############################################################################
 
 
@@ -50,22 +50,22 @@ class Chart(QtWidgets.QDialog):
 
         btBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.Close, self)
-        butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
+        self.butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "image.png")),
             QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
-        butonPNG.clicked.connect(self.plt.savePNG)
-        butonConfig = QtWidgets.QPushButton(QtGui.QIcon(
+        self.butonPNG.clicked.connect(self.plt.savePNG)
+        self.butonConf = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "configure.png")),
             QtWidgets.QApplication.translate("pychemqt", "Configure"))
-        butonConfig.clicked.connect(self.configure)
-        butonCalculate = QtWidgets.QPushButton(QtGui.QIcon(
+        self.butonConf.clicked.connect(self.configure)
+        self.butonCalc = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "calculator.png")),
             QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
-        butonCalculate.clicked.connect(self.calculate)
+        self.butonCalc.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
-        btBox.addButton(butonConfig, QtWidgets.QDialogButtonBox.ResetRole)
-        btBox.addButton(butonCalculate, QtWidgets.QDialogButtonBox.ResetRole)
-        btBox.addButton(butonPNG, QtWidgets.QDialogButtonBox.ResetRole)
+        btBox.addButton(self.butonConf, QtWidgets.QDialogButtonBox.ResetRole)
+        btBox.addButton(self.butonCalc, QtWidgets.QDialogButtonBox.ResetRole)
+        btBox.addButton(self.butonPNG, QtWidgets.QDialogButtonBox.ResetRole)
         layout.addWidget(btBox, 3, 1, 1, 4)
 
         self.customUI()
@@ -74,9 +74,12 @@ class Chart(QtWidgets.QDialog):
         self.Preferences.read(conf_dir+"pychemqtrc")
         self.config()
         self.plot()
+        self.set_logo(self.plt)
 
+    def set_logo(self, plot):
+        """Draw pychemqt logo as watermark in plot"""
         logo = image.imread(os.path.join(IMAGE_PATH, "pychemqt_98.png"))
-        newax = self.plt.fig.add_axes(self.locLogo, anchor='SW')
+        newax = plot.fig.add_axes(self.locLogo, anchor='SW')
         newax.imshow(logo, alpha=0.5)
         newax.axis('off')
 

@@ -191,20 +191,19 @@ class Standing_Katz(Chart):
         "pychemqt",
         "Standing and Katz compressivitity factors chart for natural gas")
     configDialog = ConfigDialog
-    locLogo = (0.8, 0.15, 0.1, 0.1)
+    locLogo = (0.8, 0.12, 0.1, 0.1)
     note = None
 
     def customUI(self):
         """Define custom UI element"""
-        dlgBut = self.layout().itemAtPosition(3, 1).widget()
-        butPNG = dlgBut.layout().itemAt(2).widget()
-        butPNG.clicked.disconnect()
-        butPNG.clicked.connect(self.savePNG)
+        self.butonPNG.clicked.disconnect()
+        self.butonPNG.clicked.connect(self.savePNG)
 
         self.plt2 = mpl(self)
         self.plt2.fig.canvas.mpl_connect('button_press_event', self.click)
         self.plotWidget.layout().addWidget(self.plt2, 1, 1)
         self.setMask()
+        self.set_logo(self.plt2)
 
     def savePNG(self):
         """Save chart image to png file"""
