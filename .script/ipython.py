@@ -18,7 +18,7 @@ class IPythonLocalKernelApp(IPKernelApp):
         namespace = kernelapp.get_user_namespace()
         namespace["QtGui"]=QtGui
         namespace["QtCore"]=QtCore
-        app.exec_()"""
+        app.exec()"""
     #DEFAULT_INSTANCE_ARGS starting commandline
     DEFAULT_INSTANCE_ARGS = ['qtconsole','--pylab=inline', '--colors=linux']
 
@@ -73,7 +73,7 @@ class IPythonConsoleQtWidget(RichIPythonWidget):
             namespace["QtGui"]=QtGui
             namespace["QtCore"]=QtCore
 
-            app.exec_()"""
+            app.exec()"""
     _connection_file = None
 
     def __init__(self, *args, **kw):
@@ -121,4 +121,4 @@ namespace["widget"] = widget
 namespace["QtGui"]=QtGui
 namespace["QtCore"]=QtCore
 
-app.exec_()
+app.exec()

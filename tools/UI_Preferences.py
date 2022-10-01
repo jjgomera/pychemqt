@@ -351,7 +351,7 @@ class ConfFormat(QtWidgets.QTableWidget):
     def showConfDialog(self, fila):
         """Show dialog with numeric format configuration"""
         dialog = NumericFactor(self.config[fila], parent=self)
-        if dialog.exec_():
+        if dialog.exec():
             config = dialog.args()
             self.config[fila] = config
             self.item(fila, 0).setText(self.txt(config))
@@ -646,4 +646,4 @@ if __name__ == "__main__":
     dialogo = Preferences(conf)
 
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

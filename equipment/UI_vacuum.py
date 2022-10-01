@@ -249,4 +249,4 @@ if __name__ == "__main__":
     # entrada=Corriente(423.15, 3, 11784,  Mezcla([475], [1]), solido)
     dialogo = UI_equipment()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

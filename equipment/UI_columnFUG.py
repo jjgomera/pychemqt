@@ -352,4 +352,4 @@ if __name__ == "__main__":
                         HKsplit=0.95, feed=0)
     dialogo = UI_equipment(columna)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

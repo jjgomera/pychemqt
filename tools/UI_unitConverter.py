@@ -186,7 +186,7 @@ class UI_unitConverter(QtWidgets.QDialog):
             dialog = moneda()
         else:
             dialog = UI_conversorUnidades(_all[indice])
-        dialog.exec_()
+        dialog.exec()
 
 
 if __name__ == "__main__":
@@ -195,4 +195,4 @@ if __name__ == "__main__":
     # conversion_unidades = UI_unitConverter()
     conversion_unidades = moneda()
     conversion_unidades.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

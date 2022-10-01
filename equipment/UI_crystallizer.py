@@ -141,7 +141,7 @@ class UI_equipment(parents.UI_equip):
 
     def on_costIndex_clicked(self):
         dialog = costIndex.Ui_CostIndex()
-        if dialog.exec_():
+        if dialog.exec():
             self.indiceActual.setText(dialog.equipos.text())
             self.calcularCostos()
 
@@ -153,4 +153,4 @@ if __name__ == "__main__":
     agua=Corriente(300, 1, 3600, Mezcla([62], [1]))
     dialogo = UI_equipment(agua)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

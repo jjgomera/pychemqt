@@ -269,7 +269,7 @@ case it override flow of input stream"))
     def bottonCurva_clicked(self):
         dialog = bombaCurva.Ui_bombaCurva(
             self.Equipment.kwargs["curvaCaracteristica"], self)
-        if dialog.exec_():
+        if dialog.exec():
             self.curva = dialog.curva
             self.diametro.setValue(dialog.curva[0])
             self.velocidad.setValue(dialog.curva[1])
@@ -284,4 +284,4 @@ if __name__ == "__main__":
     bomba = Pump(entrada=agua, rendimiento=0.75, deltaP=2001325, tipo_bomba=1)
     dialogBomba = UI_equipment(equipment=bomba)
     dialogBomba.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

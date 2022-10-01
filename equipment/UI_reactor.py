@@ -123,7 +123,7 @@ class widgetReacciones(QtWidgets.QWidget):
 
     def botonNewClicked(self):
         dialog=UI_reacciones(parent=self)
-        if dialog.exec_():
+        if dialog.exec():
             pass
 
 
@@ -132,7 +132,7 @@ class widgetReacciones(QtWidgets.QWidget):
             indice=self.TablaReacciones.currentRow()
             reaccion=self.reacciones[indice]
             dialogo=UI_reacciones(reaccion, self)
-            dialogo.exec_()
+            dialogo.exec()
 #            self.rellenar(self.reaccion)
 #            self.activo=indice
         else:
@@ -444,7 +444,7 @@ class UI_reacciones(QtWidgets.QDialog):
 
             grafico=plot.Plot()
             grafico.data(t, k, 'ro', t, f(self.ajuste, t))
-            grafico.exec_()
+            grafico.exec()
 
 
 
@@ -584,7 +584,7 @@ class UI_equipment(UI_equip):
 
     def editorPerfil(self):
         dialog=inputTable.InputTableDialog(2, data=self.profile_T, title=QtWidgets.QApplication.translate("pychemqt", "Temperature profile"), horizontalHeader=["x", "T, "+unidades.Temperature(None).text()])
-        if dialog.exec_():
+        if dialog.exec():
             self.profile_T=dialog.data
 
 #    def cambiar_entrada(self, corriente):
@@ -637,4 +637,4 @@ if __name__ == "__main__":
 #    dialogo = UI_reacciones()
     dialogo = UI_equipment()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

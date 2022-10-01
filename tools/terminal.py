@@ -80,4 +80,4 @@ if __name__ == "__main__":
     preferences.read(conf_dir+"pychemqtrc")
 
     terminal = XTerm(preferences)
-    app.exec_()
+    app.exec()

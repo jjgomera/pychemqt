@@ -228,4 +228,4 @@ if __name__ == "__main__":
     # filtro = Baghouse(entrada=corriente, metodo=0, num_filtros=4, tiempo=3600)
     dialogo = UI_equipment()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

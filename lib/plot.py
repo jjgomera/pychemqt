@@ -150,4 +150,4 @@ if __name__ == '__main__':
     grafico = Plot()
     grafico.data(t, k, 'ro')
     grafico.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

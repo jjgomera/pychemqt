@@ -356,4 +356,4 @@ if __name__ == "__main__":
     #dialogo = Dialog_Finned()
     dialogo = FoulingWidget()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

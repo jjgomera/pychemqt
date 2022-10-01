@@ -501,7 +501,7 @@ class Tower(equipment):
         dialog.addText(0.1, 0.80, 'S = {:0.2f}'.format(S), size="large")
         dialog.addText(0.1, 0.75, 'nTrays = {:d}'.format(nTray), size="large")
 
-        dialog.exec_()
+        dialog.exec()
 
     def coste(self):
         self.tipo_pisos = self.kwargs.get("tipo_pisos", 0)

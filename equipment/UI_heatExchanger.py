@@ -138,4 +138,4 @@ if __name__ == "__main__":
     cambiador = Heat_Exchanger(entrada=agua, Tout=90+273.15)
     dialogo = UI_equipment(cambiador)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

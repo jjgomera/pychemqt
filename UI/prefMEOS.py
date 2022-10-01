@@ -322,4 +322,4 @@ if __name__ == "__main__":
 
     Dialog = Dialog(config)
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -219,4 +219,4 @@ if __name__ == "__main__":
     turbina = Turbine(entrada=agua, metodo=1, razon=0.3, rendimiento=1.)
     dialogo = UI_equipment(turbina)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

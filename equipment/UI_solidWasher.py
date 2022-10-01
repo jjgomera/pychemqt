@@ -151,4 +151,4 @@ if __name__ == "__main__":
     aire=Punto_Psicrometrico(caudal=1000, tdb=300, H=0)
     dialogo = UI_equipment(entradaSolido, aire)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

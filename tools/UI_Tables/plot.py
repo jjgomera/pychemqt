@@ -143,7 +143,7 @@ class PlotMEoS(QtWidgets.QWidget):
         index = self.config["fluid"]
         fluid = getClassFluid(method, index)
         dlg = Dialog_InfoFluid(fluid.__class__)
-        dlg.exec_()
+        dlg.exec()
 
     def mouseMoveEvent(self, event):
         # print(event.globalPos())
@@ -176,7 +176,7 @@ class PlotMEoS(QtWidgets.QWidget):
         menu.addSeparator()
         menu.addAction(self.toolbarVisibleAction)
         menu.addAction(self.gridToggleAction)
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
         if self.plot.ax._gridOn:
             self.gridToggleAction.setChecked(True)
@@ -188,11 +188,11 @@ class PlotMEoS(QtWidgets.QWidget):
 
     def edit(self):
         dialog = EditPlot(self, self.parent)
-        dialog.exec_()
+        dialog.exec()
 
     def editAxis(self):
         dialog = EditAxis(self.plot, self.parent)
-        dialog.exec_()
+        dialog.exec()
 
     def table(self, obj):
         """Export plot data to table
@@ -1029,7 +1029,7 @@ class EditPlot(QtWidgets.QDialog):
     def add(self):
         """Add a isoline to plot"""
         dialog = AddLine()
-        if dialog.exec_():
+        if dialog.exec():
             method = getMethod()
             projectConfig = self.parent.currentConfig
             points = get_points(config.Preferences)
@@ -1779,4 +1779,4 @@ if __name__ == "__main__":
     SteamTables = Plot3D()
 
     SteamTables.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

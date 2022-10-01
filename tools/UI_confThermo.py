@@ -220,7 +220,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         ids = eval(config.get("Components", "components"))
         index = EoSBIP.index(K_status[self.K.currentIndex()])
         dlg = BIP.Ui_BIP(ids, index)
-        dlg.exec_()
+        dlg.exec()
 
 
 class Dialog(QtWidgets.QDialog):
@@ -249,4 +249,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Dialog()
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

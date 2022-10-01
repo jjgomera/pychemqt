@@ -283,7 +283,7 @@ simulation, but a good election let you only focus in simulation"))
     def auto(self):
         """Dialog to define project parameter to auto thermal configuration"""
         dialogo = AutoDialog()
-        if dialogo.exec_():
+        if dialogo.exec():
             tmin = dialogo.Tmin.value
             tmax = dialogo.Tmax.value
             pmin = dialogo.Pmin.value
@@ -321,4 +321,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     ui = Wizard()
     ui.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

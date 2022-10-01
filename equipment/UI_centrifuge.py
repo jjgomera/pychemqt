@@ -139,4 +139,4 @@ if __name__ == "__main__":
     agua=Corriente(300, 1, 3600, Mezcla([62], [1]))
     dialogo = UI_equipment(agua)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

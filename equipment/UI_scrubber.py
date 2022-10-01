@@ -213,4 +213,4 @@ if __name__ == "__main__":
 #    dialogo = UI_equipment()
 
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

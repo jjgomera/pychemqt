@@ -279,4 +279,4 @@ if __name__ == "__main__":
                            compresor=1, Current_index=1000)
     dialogo = UI_equipment(compresor)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

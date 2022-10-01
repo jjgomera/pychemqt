@@ -305,7 +305,7 @@ class GeometricItem(object):
 
     def format(self):
         dialog = ConfLineDialog(self.pen())
-        if dialog.exec_():
+        if dialog.exec():
             pen = dialog.pen()
             self.setPen(pen)
             self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
@@ -404,7 +404,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
 
     def mouseDoubleClickEvent(self, event=None):
         dialog = TextItemDlg(self.toHtml())
-        if dialog.exec_():
+        if dialog.exec():
             self.setHtml(dialog.editor.texto)
             self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
 
@@ -574,12 +574,12 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 
     def mouseDoubleClickEvent(self, event=None):
         dialog = UI_corriente.Corriente_Dialog(self.corriente)
-        if dialog.exec_():
+        if dialog.exec():
             self.setCorriente(dialog.corriente)
 
     def copyFromProject(self):
         dialog = SelectStreamProject()
-        if dialog.exec_():
+        if dialog.exec():
             indice = dialog.stream.currentText()
             data = dialog.project["stream"][indice]
             corriente = Corriente()
@@ -835,7 +835,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
                 kwarg["project"] = self.scene().project
 
             dialog = self.dialogo(**kwarg)
-            if dialog.exec_():
+            if dialog.exec():
                 self.scene().project.setItem(self.id, dialog.Equipment)
                 #                self.up[0].setCorriente(dialog.Equipment.entrada)
                 for i, corriente in enumerate(dialog.Equipment.salida):
@@ -1091,7 +1091,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             item.setSelected(True)
         contextMenu = QtWidgets.QMenu()
         self.addActions(contextMenu, event.scenePos())
-        contextMenu.exec_(event.screenPos())
+        contextMenu.exec(event.screenPos())
 
     def selectAll(self):
         for item in list(self.items()):
@@ -1139,7 +1139,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
     def configure(self):
         dlg = Dialog()
-        if dlg.exec_():
+        if dlg.exec():
             pass
 
     def waitClick(self, numClick, type, object):
@@ -1582,4 +1582,4 @@ if __name__ == "__main__":
     #    dialogo = ConfLineDialog()
     dialogo = SelectStreamProject()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

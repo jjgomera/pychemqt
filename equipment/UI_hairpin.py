@@ -310,7 +310,7 @@ class UI_equipment(UI_equip):
 
     def showMaterial(self):
         dialogo = Catalogo_Materiales_Dialog()
-        if dialogo.exec_():
+        if dialogo.exec():
             material = dialogo.getMaterial()
             if material:
                 self.rTube.setValue(material[2])
@@ -320,7 +320,7 @@ class UI_equipment(UI_equip):
 
     def showFinTube(self):
         dialogo = Dialog_Finned(self.Equipment.kwargs)
-        if dialogo.exec_():
+        if dialogo.exec():
             kwarg = dialogo.kwarg()
             self.calculo(**kwarg)
 
@@ -340,4 +340,4 @@ if __name__ == "__main__":
         annulliFouling=0.000352, tubeFouling=0.000176, LTube=2.5)
     dialogo = UI_equipment(Cambiador)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -265,7 +265,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         else:
             dialog = UI_conversorUnidades(self.unidad, self.value)
 
-        if dialog.exec_() and self.retornar:
+        if dialog.exec() and self.retornar:
             # Change the value if change and retornar if active
             self.entrada.setText(
                 representacion(dialog.value.config(self.UIconfig))+self.suffix)
@@ -711,7 +711,7 @@ class ColorSelector(QtWidgets.QWidget):
         dlg = QtWidgets.QColorDialog(self.color, self)
         if self.isAlpha:
             dlg.setOption(QtWidgets.QColorDialog.ShowAlphaChannel)
-        if dlg.exec_():
+        if dlg.exec():
             self.setColor(dlg.currentColor())
             self.valueChanged.emit(dlg.currentColor().name())
 
@@ -762,7 +762,7 @@ class DragButton(QtWidgets.QToolButton):
         # pixmap = self.icon().pixmap(24, 24)
         # drag.setHotSpot(QtCore.QPoint(12, 12))
         # drag.setPixmap(pixmap)
-        # drag.exec_(QtCore.Qt.CopyAction)
+        # drag.exec(QtCore.Qt.CopyAction)
 
 
 class PathConfig(QtWidgets.QWidget):
@@ -1328,13 +1328,13 @@ class InputFont(QtWidgets.QWidget):
     def colorButtonClicked(self):
         """Show QColorDialog to change the color"""
         dlg = QtWidgets.QColorDialog(self.color, self)
-        if dlg.exec_():
+        if dlg.exec():
             self.setColor(dlg.currentColor())
 
     def fontButtonClicked(self):
         """Show QFontDialog to choose the font"""
         dlg = QtWidgets.QFontDialog(self.lineEdit.font())
-        if dlg.exec_():
+        if dlg.exec():
             self.setFont(dlg.currentFont())
 
 
@@ -1523,4 +1523,4 @@ if __name__ == "__main__":
     layout.addWidget(w6)
 
     ui.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

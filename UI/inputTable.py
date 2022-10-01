@@ -299,4 +299,4 @@ if __name__ == "__main__":
         title="titulo", horizontalHeader=hHeader,
         unit=[unidades.Temperature, unidades.Viscosity])
     ui.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

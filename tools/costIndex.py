@@ -257,7 +257,7 @@ class CostData(QtWidgets.QWidget):
     def on_costIndex_clicked(self):
         """Show costIndes dialog to show/change"""
         dialog = Ui_CostIndex()
-        if dialog.exec_():
+        if dialog.exec():
             with open(config.conf_dir+"CostIndex.dat", "r") as archivo:
                 self.indiceActual.setValue(
                     float(archivo.readlines()[self.indice][:-1]))
@@ -306,4 +306,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     CostIndex = Ui_CostIndex()
     CostIndex.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

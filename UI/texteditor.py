@@ -252,7 +252,7 @@ class TextEditor(QtWidgets.QWidget):
     def colordialog(self):
         """Show dialog to choose font color"""
         dialog = QtWidgets.QColorDialog(self.notas.textColor(), self)
-        if dialog.exec_():
+        if dialog.exec():
             self.FontColor.setPalette(QtGui.QPalette(dialog.currentColor()))
             self.notas.setTextColor(dialog.currentColor())
             format = QtGui.QTextCharFormat()
@@ -265,4 +265,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Form = TextEditor("Ejemplo")
     Form.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

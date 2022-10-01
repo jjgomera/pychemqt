@@ -190,4 +190,4 @@ if __name__ == "__main__":
     fireheater = Fired_Heater(entrada=agua, Tout=450)
     dialogo = UI_equipment(fireheater)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

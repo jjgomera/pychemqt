@@ -615,7 +615,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             QtWidgets.QApplication.translate("pychemqt", "Input diameter"),
             QtWidgets.QApplication.translate("pychemqt", "Output diameter")]
         dialog = Dialog(0, title, icon, parameter)
-        if dialog.exec_():
+        if dialog.exec():
             indice = self.Accesorios.rowCount()
             self.Accesorios.setRowCount(indice+1)
             if dialog.checkBox.isChecked():
@@ -652,7 +652,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             QtWidgets.QApplication.translate("pychemqt", "Input diameter"),
             QtWidgets.QApplication.translate("pychemqt", "Output diameter")]
         dialog = Dialog(0, title, icon, parameter)
-        if dialog.exec_():
+        if dialog.exec():
             indice = self.Accesorios.rowCount()
             self.Accesorios.setRowCount(indice+1)
             if dialog.checkBox.isChecked():
@@ -690,7 +690,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             QtWidgets.QApplication.translate("pychemqt", "Exit radio"),
             QtWidgets.QApplication.translate("pychemqt", "Pipe Diameter")]
         dialog = Dialog(3, title, icon, parameter)
-        if dialog.exec_():
+        if dialog.exec():
             indice = self.Accesorios.rowCount()
             self.Accesorios.setRowCount(indice+1)
             self.Accesorios.setItem(indice, 0, QtWidgets.QTableWidgetItem(
@@ -718,7 +718,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             QtWidgets.QApplication.translate("pychemqt", "Bend radio"),
             QtWidgets.QApplication.translate("pychemqt", "Pipe diameter")]
         dialog = Dialog(2, title, icon, parameter)
-        if dialog.exec_():
+        if dialog.exec():
             indice = self.Accesorios.rowCount()
             self.Accesorios.setRowCount(indice+1)
             self.Accesorios.setItem(indice, 0, QtWidgets.QTableWidgetItem(
@@ -742,7 +742,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "MB45.png")
         parameter = [QtWidgets.QApplication.translate("pychemqt", "Pipe diameter"), ""]
         dialog = Dialog(1, title, icon, parameter)
-        if dialog.exec_():
+        if dialog.exec():
             indice = self.Accesorios.rowCount()
             self.Accesorios.setRowCount(indice+1)
             self.Accesorios.setItem(indice, 0, QtWidgets.QTableWidgetItem(
@@ -1156,4 +1156,4 @@ if __name__ == "__main__":
     # tuberia = Pipe(entrada=agua, metodo=0, l=5, material=["Steel (ANSI)", "Sch. 40", 0.12192, '6"', 152.4, 11.43, 175.26, 42.07, 1.824, 55.06, -1, 2])
     dialogo = UI_equipment()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

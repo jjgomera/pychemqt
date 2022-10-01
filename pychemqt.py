@@ -386,4 +386,4 @@ sys.excepthook = exceptfunction
 # Finish splash and start qt main loop
 pychemqt.show()
 splash.finish(pychemqt)
-sys.exit(app.exec_())
+sys.exit(app.exec())

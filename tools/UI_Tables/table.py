@@ -193,7 +193,7 @@ class TablaMEoS(Tabla):
 
     def showFluid(self):
         dlg = Dialog_InfoFluid(self.Point.__class__)
-        dlg.exec_()
+        dlg.exec()
 
     def changeStatusThermo(self, config):
         fluid = getClassFluid(config["method"], config["fluid"])
@@ -222,7 +222,7 @@ class TablaMEoS(Tabla):
         col = self.horizontalHeader().logicalIndexAt(event)
         unit = self.units[col]
         dialog = NumericFactor(self.format[col], unit, self.orderUnit[col])
-        if dialog.exec_():
+        if dialog.exec():
             # Check unit change
             if unit != unidades.Dimensionless and \
                     dialog.unit.currentIndex() != self.orderUnit[col]:
@@ -281,7 +281,7 @@ class TablaMEoS(Tabla):
         menu.addSeparator()
         menu.addAction(actionDelete)
         menu.addAction(actionInsert)
-        menu.exec_(self.mapToGlobal(position))
+        menu.exec(self.mapToGlobal(position))
 
     def delete(self, rows):
         """Delete rows from table and for saved data"""
@@ -364,7 +364,7 @@ class TablaMEoS(Tabla):
             melting = False
 
         dlg = AddPoint(self.Point._new(), melting, self.parent)
-        if dlg.exec_():
+        if dlg.exec():
             self.blockSignals(True)
             if dlg.checkBelow.isChecked():
                 row += 1
@@ -578,7 +578,7 @@ class TablaMEoS(Tabla):
         menu.addAction(actionCopy)
         menu.addSeparator()
         menu.addAction(export)
-        menu.exec_(event.globalPos())
+        menu.exec(event.globalPos())
 
     def copy(self, event=None):
         """Copy selected values to clipboard"""
@@ -1112,4 +1112,4 @@ if __name__ == "__main__":
     SteamTables = AddPoint(fluid)
 
     SteamTables.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -134,4 +134,4 @@ if __name__ == "__main__":
     divisor = Divider(entrada=agua, salidas=2, split=[0.3, 0.7])
     dialogo = UI_equipment(divisor)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

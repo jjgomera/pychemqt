@@ -400,7 +400,7 @@ class Moody(Chart):
 
     def calculate(self):
         dlg = CalculateDialog()
-        if dlg.exec_():
+        if dlg.exec():
             Re = dlg.Re.value
             f = dlg.f.value
             ed = dlg.eD.value
@@ -468,4 +468,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Moody()
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

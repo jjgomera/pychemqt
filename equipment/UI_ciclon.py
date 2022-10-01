@@ -332,4 +332,4 @@ if __name__ == "__main__":
 
     # Ciclon = UI_equipment(ciclon)
     # Ciclon.show()
-    # sys.exit(app.exec_())
+    # sys.exit(app.exec())

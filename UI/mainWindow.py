@@ -1245,7 +1245,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def contextListMenu(self, event):
         contextMenu = QtWidgets.QMenu()
         self.currentScene.addActions(contextMenu, event)
-        contextMenu.exec_(event)
+        contextMenu.exec(event)
 
     def aboutToShow_MenuRecentFiles(self):
         self.menuRecentFiles.clear()
@@ -1545,7 +1545,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 # Configuration
     def wizard(self):
         dialog = wizard.Wizard(self.config[self.idTab])
-        if dialog.exec_():
+        if dialog.exec():
             self.updateConfig(dialog.value)
             self.updateStatus(QtWidgets.QApplication.translate(
                 "pychemqt", "Project configuration"), True)
@@ -1588,19 +1588,19 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def dialogConfig(self, UIconfig):
         Dialog = UIconfig.Dialog(self.config[self.idTab])
-        if Dialog.exec_():
+        if Dialog.exec():
             config = Dialog.value(self.config[self.idTab])
             self.updateConfig(config)
             self.saveControl()
 
     def costos(self):
         dialog = costIndex.Ui_CostIndex()
-        dialog.exec_()
+        dialog.exec()
 
     def Preferencias(self):
         global Preferences
         dialog = UI_Preferences.Preferences(Preferences)
-        if dialog.exec_():
+        if dialog.exec():
             preferences = dialog.value()
             preferences.write(open(conf_dir+"pychemqtrc", "w"))
             Preferences = ConfigParser()
@@ -1681,7 +1681,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def documentation(self):
         dialog = doi.ShowReference()
-        dialog.exec_()
+        dialog.exec()
 
     def log(self):
         command = Preferences.get("Applications", 'TextViewer')
@@ -1722,60 +1722,60 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         Tabla_Periodica = qtelemental.qtelemental()
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Launched periodic table aplication"))
-        Tabla_Periodica.exec_()
+        Tabla_Periodica.exec()
 
     def meos(self):
         dialog = UI_Tables.Dialog(self.currentConfig, self)
-        dialog.exec_()
+        dialog.exec()
 
     def diagramaPsicrometrico(self):
         Psychrometry = UI_psychrometry.UI_Psychrometry()
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Launched humid air properties aplication"))
-        Psychrometry.exec_()
+        Psychrometry.exec()
 
     def externalPrograms(self):
         dialog = dependences.ShowDependences()
-        dialog.exec_()
+        dialog.exec()
 
     def conversor_unidades(self):
         Conversor = UI_unitConverter.UI_unitConverter()
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Launched unit converter aplication"))
-        Conversor.exec_()
+        Conversor.exec()
 
     def conversor_moneda(self):
         Conversor = UI_unitConverter.moneda()
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Launched currency converter aplication"))
-        Conversor.exec_()
+        Conversor.exec()
 
     def chart(self, grafico):
         dialog = grafico()
         self.updateStatus(QtWidgets.QApplication.translate(
             "pychemqt", "Show") + " " + grafico.title)
-        dialog.exec_()
+        dialog.exec()
 
     def verComponentes(self):
         Base_datos = UI_databank.UI_databank()
-        Base_datos.exec_()
+        Base_datos.exec()
 
     def newcomponente(self):
         dialog = viewComponents.View_Component()
-        dialog.exec_()
+        dialog.exec()
 
     def pseudocomponente(self):
         Dialog = Definicion_Petro()
-        Dialog.exec_()
+        Dialog.exec()
 
     def newComponent_Contribution(self, name):
         Dialog = newComponent.Ui_Contribution(name)
-        Dialog.exec_()
+        Dialog.exec()
 
     # PFD
     def plot(self, indice, x=None, y=None):
         grafico = plots.__all__[indice]()
-        if grafico.exec_():
+        if grafico.exec():
             self.currentMdi.addSubWindow(grafico.plot)
             grafico.plot.show()
 
@@ -1875,7 +1875,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def addText(self):
         dialog = flujo.TextItemDlg()
-        if dialog.exec_():
+        if dialog.exec():
             self.currentScene.waitClick(
                 1, "txt", flujo.TextItem(dialog.editor.texto))
 

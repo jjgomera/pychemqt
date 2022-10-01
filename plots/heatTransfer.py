@@ -343,4 +343,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     dialogo = Efectividad()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

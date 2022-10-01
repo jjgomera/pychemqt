@@ -106,4 +106,4 @@ if __name__ == "__main__":
     mezclador = Mixer(criterio=0)
     dialogo = UI_equipment(mezclador, entradas=2)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

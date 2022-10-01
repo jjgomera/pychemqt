@@ -157,5 +157,5 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Binary_distillation(configuracion)
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 

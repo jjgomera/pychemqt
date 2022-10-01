@@ -546,7 +546,7 @@ class Definicion_Petro(newComponent):
         txt2 += "\n$r^2=%0.6f$" % r2
         dlg.plot.ax.text(0, T[-1], txt, size="14", va="top", ha="left")
         dlg.plot.ax.text(0, T[-1], txt2, size="10", va="top", ha="left")
-        if dlg.exec_():
+        if dlg.exec():
             self.curveParameters = parameters
             self.checkStatusCurve()
 
@@ -561,4 +561,4 @@ if __name__ == "__main__":
     petroleo = Petroleo(name="Petroleo", Nc=20)
     Dialog = View_Petro(petroleo)
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -153,7 +153,7 @@ class UI_databank_widget(QtWidgets.QWidget):
         indice = self.currentIndice
         if indice > 0:
             Dialog = viewComponents.View_Component(indice)
-            Dialog.exec_()
+            Dialog.exec()
 
     @property
     def currentIndice(self):
@@ -165,7 +165,7 @@ class UI_databank_widget(QtWidgets.QWidget):
 
     def newComponent(self):
         Dialog = viewComponents.View_Component(0)
-        if Dialog.exec_():
+        if Dialog.exec():
             self.rellenar()
 
     def copyComponent(self):
@@ -198,4 +198,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = UI_databank()
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

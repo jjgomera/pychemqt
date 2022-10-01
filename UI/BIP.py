@@ -112,4 +112,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Ui_BIP([38, 44, 45], 4)
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

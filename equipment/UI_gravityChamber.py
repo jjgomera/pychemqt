@@ -179,4 +179,4 @@ if __name__ == "__main__":
                             rendimientoAdmisible=0.95)
     dialogo = UI_equipment(camara)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

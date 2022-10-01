@@ -120,4 +120,4 @@ if __name__ == "__main__":
     editor = SimplePythonEditor()
     editor.show()
     editor.setText(open(sys.argv[0]).read())
-    app.exec_()
+    app.exec()

@@ -138,7 +138,7 @@ class plugin(object):
     def showChooseFluid(self):
         """Show dialog to choose/view fluid"""
         dlg = Ui_ChooseFluid(self.config)
-        if dlg.exec_():
+        if dlg.exec():
             # Update configuration
             if not self.config.has_section("MEoS"):
                 self.config.add_section("MEoS")
@@ -163,7 +163,7 @@ class plugin(object):
         use for enthalpy and entropy zero state
         Don't implemented yet"""
         dlg = Ui_ReferenceState(self.config)
-        if dlg.exec_():
+        if dlg.exec():
             # Get values
             if not self.config.has_section("MEoS"):
                 self.config.add_section("MEoS")
@@ -210,7 +210,7 @@ class plugin(object):
     def showProperties(self):
         """Show dialog to choose/sort properties to show in tables"""
         dlg = Ui_Properties(self.config)
-        if dlg.exec_():
+        if dlg.exec():
             # Update configuration
             if not self.config.has_section("MEoS"):
                 self.config.add_section("MEoS")
@@ -225,7 +225,7 @@ class plugin(object):
         Config = ConfigParser()
         Config.read(config.conf_dir + "pychemqtrc")
         dlg = ConfDialog(Config)
-        if dlg.exec_():
+        if dlg.exec():
             Config = dlg.value(Config)
             Config.write(open(config.conf_dir+"pychemqtrc", "w"))
 
@@ -234,7 +234,7 @@ class plugin(object):
         method = getMethod()
         index = self.config.getint("MEoS", "fluid")
         dlg = Ui_Saturation(method, index)
-        if dlg.exec_():
+        if dlg.exec():
             # Get values
             start = dlg.Inicial.value
             end = dlg.Final.value
@@ -321,7 +321,7 @@ class plugin(object):
     def showIsoproperty(self):
         """Show dialog to define input for isoproperty table calculations"""
         dlg = Ui_Isoproperty(self.parent())
-        if dlg.exec_():
+        if dlg.exec():
             self.parent().updateStatus(QtWidgets.QApplication.translate(
                 "pychemqt", "Launch MEoS Isoproperty calculation..."))
 
@@ -406,7 +406,7 @@ class plugin(object):
     def plot2D(self):
         """Add a generic 2D plot to project"""
         dlg = Plot2D(self.parent())
-        if dlg.exec_():
+        if dlg.exec():
             i = dlg.ejeX.currentIndex()
             j = dlg.ejeY.currentIndex()
             if j >= i:
@@ -428,7 +428,7 @@ class plugin(object):
     def plot3D(self):
         """Add a generic 3D plot to project"""
         dlg = Plot3D(self.parent())
-        if dlg.exec_():
+        if dlg.exec():
             i = dlg.ejeX.currentIndex()
             j = dlg.ejeY.currentIndex()
             k = dlg.ejeZ.currentIndex()
@@ -873,4 +873,4 @@ if __name__ == "__main__":
     SteamTables = Plot3D()
 
     SteamTables.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

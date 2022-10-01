@@ -149,4 +149,4 @@ if __name__ == "__main__":
 #    secador=Dryer(entradaSolido=Solido, entradaAire=Aire)
     dialogo = UI_equipment()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -164,7 +164,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
     def filter(self):
         """Show dialog with group compound filter"""
         dlg = DialogFilterFluid(self.all, self.group)
-        if dlg.exec_():
+        if dlg.exec():
             if dlg.showAll.isChecked():
                 cmps = mEoS.__all__
                 self.all = True
@@ -183,7 +183,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
     def info(self):
         """Show info dialog for fluid"""
         dialog = Dialog_InfoFluid(mEoS.__all__[self.lista.currentRow()])
-        dialog.exec_()
+        dialog.exec()
 
     def update(self, indice):
         """Update data when selected fluid change"""
@@ -1450,4 +1450,4 @@ if __name__ == "__main__":
     SteamTables = transportDialog(mEoS.__all__[16])
 
     SteamTables.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

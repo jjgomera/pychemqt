@@ -330,7 +330,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
     def configure(self):
         from UI.prefPsychrometric import Dialog
         dlg = Dialog(self.Preferences)
-        if dlg.exec_():
+        if dlg.exec():
             self.Preferences = dlg.value(self.Preferences)
             self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
             self.plot()
@@ -519,4 +519,4 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     aireHumedo = UI_Psychrometry()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

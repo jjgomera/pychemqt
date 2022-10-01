@@ -149,4 +149,4 @@ if __name__ == "__main__":
                                         rendimientoAdmisible=0.9)
     dialogo = UI_equipment(precipitador)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

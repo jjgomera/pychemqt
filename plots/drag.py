@@ -208,7 +208,7 @@ class Drag(Chart):
 
     def calculate(self):
         dlg = CalculateDialog()
-        if dlg.exec_():
+        if dlg.exec():
             Re = dlg.Re.value
             Cd = dlg.Cd.value
             self.createCrux(Re, Cd)
@@ -260,4 +260,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Drag()
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

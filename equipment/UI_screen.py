@@ -114,4 +114,4 @@ if __name__ == "__main__":
     agua=Corriente(T=300, P=1e5, caudal=3600)
     dialogo = UI_equipment()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

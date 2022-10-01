@@ -182,4 +182,4 @@ if __name__ == "__main__":
     flash = Flash(entrada=entrada)
     dialogo = UI_equipment(flash)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

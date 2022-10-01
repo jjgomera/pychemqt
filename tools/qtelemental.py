@@ -306,7 +306,7 @@ class qtelemental(QtWidgets.QDialog):
     def configure(self):
         from UI.prefElemental import Dialog
         dlg = Dialog(self.Preferences)
-        if dlg.exec_():
+        if dlg.exec():
             self.Preferences = dlg.value(self.Preferences)
             self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
             self.populate()
@@ -360,7 +360,7 @@ class boton(QtWidgets.QPushButton):
     def press(self):
         """Press button show elementDialog with other element data"""
         dialog = ElementDialog(self.Element)
-        dialog.exec_()
+        dialog.exec()
 
 
 class ElementDialog(QtWidgets.QDialog):
@@ -691,4 +691,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Form = qtelemental()
     Form.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

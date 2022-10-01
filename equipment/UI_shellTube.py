@@ -508,12 +508,12 @@ class UI_equipment(UI_equip):
     def selectMethods(self):
         """Show dialog for select calculation methods"""
         dialogo = Dialog_Methods(self.Equipment)
-        if dialogo.exec_():
+        if dialogo.exec():
             self.Equipment(**dialogo.kwargs)
 
     def showMaterial(self):
         dialogo = Catalogo_Materiales_Dialog()
-        if dialogo.exec_():
+        if dialogo.exec():
             pass
 
     def rellenarFouling(self, widget, txt):
@@ -529,7 +529,7 @@ class UI_equipment(UI_equip):
 
     def showFinTube(self):
         dialogo = Dialog_Finned()
-        if dialogo.exec_():
+        if dialogo.exec():
             pass
 
     def rellenar(self):
@@ -550,4 +550,4 @@ if __name__ == "__main__":
 #    aguaCaliente=Corriente(370, 1, 250, Mezcla([62], [1]))
     dialogo = UI_equipment()
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

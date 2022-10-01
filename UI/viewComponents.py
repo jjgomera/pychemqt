@@ -372,7 +372,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
         ylabel = "$"+self.proptex+r",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
-        dialog.exec_()
+        dialog.exec()
 
     def fit(self):
         """Fit experimental data to a DIPPR equation"""
@@ -383,7 +383,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
                 hasTc=True, Tc=self.parent.Tc.value, t=self.t,
                 property=self.data, eq=self.eq.value())
 
-        if dlg.exec_():
+        if dlg.exec():
             t = array(dlg.widget.column(0, unidades.Temperature))
             p = array(dlg.widget.column(1, self.unit))
             eq = dlg.widget.eqDIPPR.value()
@@ -724,7 +724,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
         ylabel = "$"+self.prop+r",\;"+self.unit.text()+"$"
         dialog.plot.ax.set_ylabel(ylabel, ha='right', size="12")
-        dialog.exec_()
+        dialog.exec()
 
     def fit(self):
         """Fit experimental data to a parametric equation"""
@@ -733,7 +733,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
             title=self.title(), horizontalHeader=hHeader,
             hasTc=self.prop == "sigma", Tc=self.parent.Tc.value,
             unit=[unidades.Temperature, self.unit])
-        if dlg.exec_():
+        if dlg.exec():
             t = array(dlg.widget.column(0))
             p = array(dlg.widget.column(1))
 
@@ -2056,4 +2056,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = View_Component(500)
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -85,7 +85,7 @@ class newComponent(QtWidgets.QDialog):
     def showDetails(self):
         """Show details of new component"""
         dialog = self.ViewDetails(self.unknown)
-        dialog.exec_()
+        dialog.exec()
 
 
 class View_Contribution(QtWidgets.QDialog):
@@ -579,4 +579,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Ui_Contribution("MarreroGani")
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

@@ -273,4 +273,4 @@ if __name__ == "__main__":
     # SteamTables = Ui_ReferenceState()
 
     SteamTables.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

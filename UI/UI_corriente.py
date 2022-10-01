@@ -885,7 +885,7 @@ class SolidDefinition(QtWidgets.QWidget):
 
     def botonGenerar_clicked(self):
         dialog = SolidDistribution(self)
-        if dialog.exec_():
+        if dialog.exec():
             self.distribucionTamanos.setData(dialog.matriz)
 
     def calculo(self, key=None, value=None, **kw):
@@ -1144,4 +1144,4 @@ if __name__ == "__main__":
     # dialogo = StreamDefinition(corriente)
     # dialogo.show()
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

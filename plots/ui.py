@@ -86,7 +86,7 @@ class Chart(QtWidgets.QDialog):
     def configure(self):
         """Show configure dialog and save changes"""
         dlg = self.configDialog(self.Preferences)
-        if dlg.exec_():
+        if dlg.exec():
             self.Preferences = dlg.value(self.Preferences)
             self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
             self.plot()

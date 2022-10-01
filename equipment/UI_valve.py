@@ -99,4 +99,4 @@ if __name__ == "__main__":
     valvula = Valve(entrada=agua, off=1, DeltaP=1000)
     dialogo = UI_equipment(valvula)
     dialogo.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

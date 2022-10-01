@@ -379,7 +379,7 @@ class Standing_Katz(Chart):
 
     def calculate(self):
         dlg = CalculateDialog()
-        if dlg.exec_():
+        if dlg.exec():
             Tr = dlg.Tr.value
             Pr = dlg.Pr.value
             Z = dlg.Z.value
@@ -481,4 +481,4 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Standing_Katz()
     Dialog.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

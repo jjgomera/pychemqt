@@ -328,4 +328,4 @@ if __name__ == "__main__":
 
     bombaCurva = Ui_bombaCurva(curva)
     bombaCurva.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
