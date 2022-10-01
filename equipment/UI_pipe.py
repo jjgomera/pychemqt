@@ -30,7 +30,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from scipy import pi
 
-from lib.config import Preferences
+from lib.config import Preferences, IMAGE_PATH
 from lib.utilities import representacion
 from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
                           Speed, Currency)
@@ -513,35 +513,35 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.botonAdd.clicked.connect(self.add)
         gridLayout.addWidget(self.botonAdd, 4, 1)
 
-        path = os.environ["pychemqt"]+"/images/equip/ER.png"
+        path = os.path.join(IMAGE_PATH, "equipment", "pipe", "ER.png")
         self.botonEntrada = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             QtWidgets.QApplication.translate("pychemqt", "Entrance"))
         self.botonEntrada.clicked.connect(self.EntradaRedondeada)
         gridLayout.addWidget(self.botonEntrada, 6, 1)
 
-        path = os.environ["pychemqt"]+"/images/equip/GE.png"
+        path = os.path.join(IMAGE_PATH, "equipment", "pipe", "GE.png")
         self.botonExpansion = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             QtWidgets.QApplication.translate("pychemqt", "Enlargement"))
         self.botonExpansion.clicked.connect(self.expansion)
         gridLayout.addWidget(self.botonExpansion, 7, 1)
 
-        path = os.environ["pychemqt"]+"/images/equip/GC.png"
+        path = os.path.join(IMAGE_PATH, "equipment", "pipe", "GC.png")
         self.botonContraccion = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             QtWidgets.QApplication.translate("pychemqt", "Contraction"))
         self.botonContraccion.clicked.connect(self.contraccion)
         gridLayout.addWidget(self.botonContraccion, 8, 1)
 
-        path = os.environ["pychemqt"]+"/images/equip/LB.png"
+        path = os.path.join(IMAGE_PATH, "equipment", "pipe", "LB.png")
         self.botonCodoLargo = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             QtWidgets.QApplication.translate("pychemqt", "Long bend"))
         self.botonCodoLargo.clicked.connect(self.CodoLargo)
         gridLayout.addWidget(self.botonCodoLargo, 9, 1)
 
-        path = os.environ["pychemqt"]+"/images/equip/MB45.png"
+        path = os.path.join(IMAGE_PATH, "equipment", "pipe", "MB45.png")
         self.botonCodoSegmentado = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             QtWidgets.QApplication.translate("pychemqt", "Mitre bend"))
@@ -579,7 +579,8 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 self.pulgadas.append([Di_in])
                 self.k.append([K])
                 self.TablaAccesorios.setRowCount(indice+1)
-                icon = os.environ["pychemqt"]+"images/equip/%s.png" % key
+                icon = os.path.join(IMAGE_PATH, "equipment", "pipe", key) \
+                    + ".png"
                 self.TablaAccesorios.setItem(
                     indice, 0, QtWidgets.QTableWidgetItem(QtGui.QIcon(
                         QtGui.QPixmap(icon)), key))
@@ -609,7 +610,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
 
     def expansion(self):
         title = QtWidgets.QApplication.translate("pychemqt", "Expansion")
-        icon = os.environ["pychemqt"]+"/images/equip/GE.png"
+        icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "GE.png")
         parameter = [
             QtWidgets.QApplication.translate("pychemqt", "Input diameter"),
             QtWidgets.QApplication.translate("pychemqt", "Output diameter")]
@@ -625,7 +626,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                     dialog.D1.value, dialog.D2.value, dialog.angulo.value())
             else:
                 icon = QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"]+"/images/equip/SE.png"))
+                    os.path.join(IMAGE_PATH, "equipment", "pipe", "SE.png")))
                 type = "SE"
                 txt = QtWidgets.QApplication.translate(
                     "pychemqt", "Sudden enlargement")
@@ -646,7 +647,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
 
     def contraccion(self):
         title = QtWidgets.QApplication.translate("pychemqt", "Contraction")
-        icon = os.environ["pychemqt"]+"/images/equip/GC.png"
+        icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "GC.png")
         parameter = [
             QtWidgets.QApplication.translate("pychemqt", "Input diameter"),
             QtWidgets.QApplication.translate("pychemqt", "Output diameter")]
@@ -662,7 +663,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                     dialog.D1.value, dialog.D2.value, dialog.angulo.value())
             else:
                 icon = QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"]+"/images/equip/SC.png"))
+                    os.path.join(IMAGE_PATH, "equipment", "pipe", "SC.png")))
                 type = "SC"
                 txt = QtWidgets.QApplication.translate(
                     "pychemqt", "Sudden contraction")
@@ -684,7 +685,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
 
     def EntradaRedondeada(self):
         title = QtWidgets.QApplication.translate("pychemqt", "Rounded entrance")
-        icon = os.environ["pychemqt"]+"/images/equip/ER.png"
+        icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "ER.png")
         parameter = [
             QtWidgets.QApplication.translate("pychemqt", "Exit radio"),
             QtWidgets.QApplication.translate("pychemqt", "Pipe Diameter")]
@@ -712,7 +713,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
 
     def CodoLargo(self):
         title = QtWidgets.QApplication.translate("pychemqt", "Long Pipe Bend")
-        icon = os.environ["pychemqt"]+"/images/equip/LB.png"
+        icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "LB.png")
         parameter = [
             QtWidgets.QApplication.translate("pychemqt", "Bend radio"),
             QtWidgets.QApplication.translate("pychemqt", "Pipe diameter")]
@@ -738,7 +739,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
 
     def CodoSegmentado(self):
         title = QtWidgets.QApplication.translate("pychemqt", "Mitre bend with custom angle")
-        icon = os.environ["pychemqt"]+"/images/equip/MB45.png"
+        icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "MB45.png")
         parameter = [QtWidgets.QApplication.translate("pychemqt", "Pipe diameter"), ""]
         dialog = Dialog(1, title, icon, parameter)
         if dialog.exec_():
