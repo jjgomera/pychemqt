@@ -1157,6 +1157,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
     def click(self):
         if self.addType in ["equip", "in", "out", "txt"]:
             self.object.setPos(self.Pos[0])
+
         elif self.addType == "stream":
             self.object.up = self.up
             self.object.down = self.down
@@ -1167,6 +1168,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.object.Ang_entrada = self.points[0].direction
             self.object.Ang_salida = self.points[1].direction
             self.object.redraw(self.Pos[0], self.Pos[1])
+
+            # Unchecked stream button in toolbox
+            self.parent().botonCorriente.setChecked(False)
+
         elif self.addType in ["square", "ellipse"]:
             rect = QtCore.QRectF(self.Pos[0], self.Pos[1])
             self.object.setRect(rect)

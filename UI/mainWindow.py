@@ -591,12 +591,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             slot=partial(self.addItem, "in"),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonEntrada)
-        actionCorriente, botonCorriente = createAction(
+        actionCorriente, self.botonCorriente = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Stream"),
             icon="equipment/stream",
             slot=partial(self.addItem, "stream"),
             button=True, checkable=True, parent=toolboxContenido)
-        l2.addWidget(botonCorriente)
+        l2.addWidget(self.botonCorriente)
         actionSalida, botonSalida = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Output"),
             icon="equipment/out",
