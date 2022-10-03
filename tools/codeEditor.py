@@ -38,17 +38,18 @@ import sys
 from PyQt5 import QtGui, QtWidgets
 try:
     from PyQt5.Qsci import QsciScintilla, QsciLexerPython
-except:
+except ImportError:
     pass
 
 
 if os.environ["PyQt5.Qsci"] == "True":
     # With scintilla available use as python editor
     class SimplePythonEditor(QsciScintilla):
+        """Code editor for python code using Qscintilla"""
         ARROW_MARKER_NUM = 8
 
         def __init__(self, parent=None):
-            super(SimplePythonEditor, self).__init__(parent)
+            super().__init__(parent)
 
             # Set the default font
             font = QtGui.QFont()
@@ -74,7 +75,6 @@ if os.environ["PyQt5.Qsci"] == "True":
 
             # Brace matching: enable for a brace immediately before or after
             # the current position
-            #
             self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
 
             # Current line visible with special background color
@@ -84,7 +84,6 @@ if os.environ["PyQt5.Qsci"] == "True":
             # Set Python lexer
             # Set style for Python comments (style number 1) to a fixed-width
             # courier.
-            #
             lexer = QsciLexerPython()
             lexer.setDefaultFont(font)
             self.setLexer(lexer)
@@ -100,7 +99,7 @@ if os.environ["PyQt5.Qsci"] == "True":
             # self.setMinimumSize(700, 450)
 
         def on_margin_clicked(self, nmargin, nline, modifiers):
-            # Toggle marker for the line the margin was clicked on
+            """Toggle marker for the line the margin was clicked on"""
             if self.markersAtLine(nline) != 0:
                 self.markerDelete(nline, self.ARROW_MARKER_NUM)
             else:
