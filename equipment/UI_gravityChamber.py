@@ -62,7 +62,7 @@ class UI_equipment(UI_equip):
                                                         "modelo"))
         lyt_Calc.addWidget(self.modelo, 2, 2, 1, 1)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1, 1, 6)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Width")), 4, 1, 1, 1)
@@ -99,8 +99,8 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(self.deltaP, 9, 2, 1, 1)
 
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
         group_Calc = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
             "pychemqt", "Results"))
         lyt_Calc.addWidget(group_Calc, 11, 1, 1, 5)
@@ -135,8 +135,8 @@ class UI_equipment(UI_equip):
         self.LCalc.setReadOnly(True)
         lyt.addWidget(self.LCalc, 2, 5)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 12, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 12, 1, 1, 6)
 
         # Output tab
         self.addSalida(

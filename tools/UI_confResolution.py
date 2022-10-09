@@ -113,8 +113,8 @@ class Dialog(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confResolution_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

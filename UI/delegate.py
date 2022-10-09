@@ -37,7 +37,7 @@ class CellEditor(QtWidgets.QItemDelegate):
 
     def createEditor(self, parent, option, index):
         widget = QtWidgets.QLineEdit(parent)
-        widget.setAlignment(QtCore.Qt.AlignRight)
+        widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         validator = QtGui.QDoubleValidator(self)
         locale = QtCore.QLocale("en")
         validator.setLocale(locale)
@@ -52,7 +52,7 @@ class SpinEditor(QtWidgets.QItemDelegate):
 
     def createEditor(self, parent, option, index):
         widget = QtWidgets.QSpinBox(parent)
-        widget.setAlignment(QtCore.Qt.AlignRight)
+        widget.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         widget.setMinimum(1)
         return widget
 
@@ -67,12 +67,12 @@ class CheckEditor(QtWidgets.QItemDelegate):
         return widget
 
     def setEditorData(self, editor, index):
-        value = bool(index.data(QtCore.Qt.DisplayRole))
+        value = bool(index.data(QtCore.Qt.ItemDataRole.DisplayRole))
         editor.setChecked(value)
 
     def setModelData(self, editor, model, index):
         value = editor.isChecked()
-        model.setData(index, QtCore.QVariant(value), QtCore.Qt.DisplayRole)
+        model.setData(index, QtCore.QVariant(value), QtCore.Qt.ItemDataRole.DisplayRole)
 
 
 class ComboEditor(QtWidgets.QItemDelegate):
@@ -90,7 +90,7 @@ class ComboEditor(QtWidgets.QItemDelegate):
         return self.editor
 
     def setEditorData(self, editor, index):
-        value = str(index.data(QtCore.Qt.DisplayRole).toString())
+        value = str(index.data(QtCore.Qt.ItemDataRole.DisplayRole).toString())
         try:
             num = self.items.index(value)
         except ValueError:
@@ -99,4 +99,4 @@ class ComboEditor(QtWidgets.QItemDelegate):
 
     def setModelData(self, editor, model, index):
         value = editor.currentText()
-        model.setData(index, QtCore.QVariant(value), QtCore.Qt.DisplayRole)
+        model.setData(index, QtCore.QVariant(value), QtCore.Qt.ItemDataRole.DisplayRole)

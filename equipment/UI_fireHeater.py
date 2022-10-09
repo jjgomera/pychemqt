@@ -53,7 +53,7 @@ class UI_equipment(UI_equip):
         self.Tout.valueChanged.connect(partial(self.changeParams, "Tout"))
         layout.addWidget(self.Tout, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy. Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy. Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 0, 1, 6)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pressure drop")), 3, 1)
@@ -78,8 +78,8 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "eficiencia"))
         layout.addWidget(self.eficiencia, 6, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 7, 0, 1, 6)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 0, 1, 6)
 
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Results"))
@@ -95,8 +95,8 @@ class UI_equipment(UI_equip):
             VolFlow, "QLiq", retornar=False, readOnly=True)
         lyt.addWidget(self.CombustibleRequerido, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 9, 0, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 9, 0, 1, 6)
 
         # Cost tab
         lyt_Cost = QtWidgets.QGridLayout(self.tabCostos)
@@ -136,16 +136,16 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "P_dis"))
         lyt_Cost.addWidget(self.P_dis, 4, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 1, 1, 6)
 
         self.Costos = CostData(self.Equipment)
         self.Costos.valueChanged.connect(self.changeParamsCoste)
         lyt_Cost.addWidget(self.Costos, 6, 1, 2, 5)
 
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 8, 1, 1, 6)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
         lyt_Cost.addWidget(group, 9, 1, 1, 6)
@@ -161,8 +161,8 @@ class UI_equipment(UI_equip):
         self.C_inst.setReadOnly(True)
         layout.addWidget(self.C_inst, 1, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 10, 1, 1, 6)
 
         self.mostrarSubclasificacion(0)
         if equipment:

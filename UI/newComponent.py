@@ -55,9 +55,9 @@ class newComponent(QtWidgets.QDialog):
         self.buttonShowDetails.setEnabled(False)
         layoutBottom.addWidget(self.buttonShowDetails)
         self.btonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel |
-            QtWidgets.QDialogButtonBox.Save)
-        self.btonBox.button(QtWidgets.QDialogButtonBox.Save).setEnabled(False)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+            QtWidgets.QDialogButtonBox.StandardButton.Save)
+        self.btonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Save).setEnabled(False)
         self.btonBox.accepted.connect(self.save)
         self.btonBox.rejected.connect(self.reject)
         layoutBottom.addWidget(self.btonBox)
@@ -79,7 +79,7 @@ class newComponent(QtWidgets.QDialog):
         self.unknown(**kwargs)
         self.status.setState(self.unknown.status, self.unknown.msg)
         self.buttonShowDetails.setEnabled(self.unknown.status)
-        self.btonBox.button(QtWidgets.QDialogButtonBox.Save).setEnabled(
+        self.btonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Save).setEnabled(
             self.unknown.status)
 
     def showDetails(self):
@@ -217,9 +217,9 @@ class View_Contribution(QtWidgets.QDialog):
         layout.addWidget(self.Parametro_solubilidad, 8, 8)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 8)
-        btn = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 8)
+        btn = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         btn.rejected.connect(self.accept)
         layout.addWidget(btn, 16, 1, 1, 8)
 
@@ -324,13 +324,13 @@ class Ui_Contribution(newComponent):
         self.Group.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Nk"))
         self.Group.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
             QtWidgets.QApplication.translate("pychemqt", "Group")))
-        self.Group.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.Group.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.Group.setSortingEnabled(True)
         self.Group.horizontalHeader().setStretchLastSection(True)
         self.Group.setColumnWidth(0, 50)
         self.Group.setItemDelegateForColumn(0, SpinEditor(self))
         self.Group.cellChanged.connect(self.cellChanged)
-        self.Group.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        self.Group.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
         layout.addWidget(self.Group, 2, 0, 3, 3)
 
         self.Formula = QtWidgets.QLabel()
@@ -338,7 +338,7 @@ class Ui_Contribution(newComponent):
         font.setPointSize(12)
         self.Formula.setFont(font)
         self.Formula.setAlignment(
-                QtCore.Qt.AlignCenter | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignCenter | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.Formula.setFixedHeight(50)
         layout.addWidget(self.Formula, 2, 3)
         self.btnDelete = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
@@ -353,8 +353,8 @@ class Ui_Contribution(newComponent):
         layout.addWidget(self.btnClear, 4, 3)
 
         self.line = QtWidgets.QFrame()
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(self.line, 5, 0, 1, 4)
 
         self.groupContributions = QtWidgets.QListWidget()
@@ -368,8 +368,8 @@ class Ui_Contribution(newComponent):
         self.btnAdd.clicked.connect(self.add)
         layout.addWidget(self.btnAdd, 6, 3)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 7, 1)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 1)
 
         # Show selection for method with several order contributions
         if self.unknown.SecondOrder:
@@ -390,7 +390,7 @@ class Ui_Contribution(newComponent):
                 self.Order3.toggled.connect(self.Order)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             12, 1)
         labelTb = QtWidgets.QLabel("Tb")
         labelTb.setToolTip(QtWidgets.QApplication.translate(
@@ -555,10 +555,10 @@ class Ui_Contribution(newComponent):
             self.Group.setRowCount(indice+1)
             self.Group.setItem(indice, 0, QtWidgets.QTableWidgetItem("1"))
             self.Group.item(indice, 0).setTextAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Group.setItem(indice, 1, QtWidgets.QTableWidgetItem(grupo))
             self.Group.item(indice, 1).setFlags(
-                QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsEnabled)
+                QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.Group.setRowHeight(indice, 20)
         else:
             indice = self.grupo.index(grupo)

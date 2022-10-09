@@ -161,7 +161,7 @@ class AutoDialog(QtWidgets.QDialog):
         layout.addWidget(self.Pmax, 4, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 5, 1, 1, 2)
@@ -174,17 +174,17 @@ class Wizard(QtWidgets.QWizard):
         self.config = config
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Configuration wizard..."))
-        self.setOptions(QtWidgets.QWizard.ExtendedWatermarkPixmap
-                        | QtWidgets.QWizard.IndependentPages
-                        | QtWidgets.QWizard.HaveCustomButton1)
-        self.setWizardStyle(QtWidgets.QWizard.ModernStyle)
+        self.setOptions(QtWidgets.QWizard.WizardOption.ExtendedWatermarkPixmap
+                        | QtWidgets.QWizard.WizardOption.IndependentPages
+                        | QtWidgets.QWizard.WizardOption.HaveCustomButton1)
+        self.setWizardStyle(QtWidgets.QWizard.WizardStyle.ModernStyle)
 
         botonAuto = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "Auto"))
         botonAuto.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt",
             "Choose good values from project components and conditions"))
-        self.setButton(QtWidgets.QWizard.CustomButton1, botonAuto)
+        self.setButton(QtWidgets.QWizard.WizardButton.CustomButton1, botonAuto)
         self.customButtonClicked.connect(self.auto)
 
         page1_welcome = QtWidgets.QWizardPage()
@@ -193,10 +193,10 @@ class Wizard(QtWidgets.QWizard):
         page1_welcome.setSubTitle(QtWidgets.QApplication.translate(
             "pychemqt",
             "That's the configuration wizard of a new project from pychemqt"))
-        page1_welcome.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
+        page1_welcome.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         page1_welcome.setPixmap(
-            QtWidgets.QWizard.WatermarkPixmap, QtGui.QPixmap(
+            QtWidgets.QWizard.WizardPixmap.WatermarkPixmap, QtGui.QPixmap(
                 os.path.join(os.environ["pychemqt"], "images", "logo_2.jpg")))
         lyt = QtWidgets.QVBoxLayout(page1_welcome)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
@@ -223,12 +223,12 @@ These are the options you must expecific next:<br>
             "pychemqt", "Define components"))
         page2_components.setSubTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Add componentes from database"))
-        page2_components.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
+        page2_components.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page2_components)
         self.componentes = UI_confComponents.UI_confComponents_widget(config)
         self.componentes.componentChanged.connect(self.button(
-            QtWidgets.QWizard.NextButton).setEnabled)
+            QtWidgets.QWizard.WizardButton.NextButton).setEnabled)
 
         lyt.addWidget(self.componentes)
         self.addPage(page2_components)
@@ -239,7 +239,7 @@ These are the options you must expecific next:<br>
         page3_thermo.setSubTitle(QtWidgets.QApplication.translate(
             "pychemqt", "The thermodynamics properties are the basic of \
 pychemqt, a bad selection would be disastrous for the results"))
-        page3_thermo.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
+        page3_thermo.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page3_thermo)
         self.thermo = UI_confThermo.UI_confThermo_widget(config)
@@ -252,7 +252,7 @@ pychemqt, a bad selection would be disastrous for the results"))
         page4_transport.setSubTitle(QtWidgets.QApplication.translate(
             "pychemqt", "The transport properties are important too for good \
 simulation results"))
-        page4_transport.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
+        page4_transport.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page4_transport)
         self.transport = UI_confTransport.UI_confTransport_widget(config)
@@ -265,7 +265,7 @@ simulation results"))
         page5_units.setSubTitle(QtWidgets.QApplication.translate(
             "pychemqt", "The preferred units are not necessary for the \
 simulation, but a good election let you only focus in simulation"))
-        page5_units.setPixmap(QtWidgets.QWizard.LogoPixmap, QtGui.QPixmap(
+        page5_units.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page5_units)
         self.units = UI_confUnits.UI_confUnits_widget(config)
@@ -276,9 +276,9 @@ simulation, but a good election let you only focus in simulation"))
     def checkComponents(self, id):
         """Component window can be only passed with any added components"""
         if id == 1:
-            self.button(QtWidgets.QWizard.NextButton).setEnabled(len(
+            self.button(QtWidgets.QWizard.WizardButton.NextButton).setEnabled(len(
                 self.componentes.indices) != 0)
-        self.button(QtWidgets.QWizard.CustomButton1).setVisible(id == 2)
+        self.button(QtWidgets.QWizard.WizardButton.CustomButton1).setVisible(id == 2)
 
     def auto(self):
         """Dialog to define project parameter to auto thermal configuration"""

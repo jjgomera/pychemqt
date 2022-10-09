@@ -182,9 +182,9 @@ class View_Petro(QtWidgets.QDialog):
         layout.addWidget(self.flashClosed, 10, 8)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 8)
-        button = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 8)
+        button = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         button.rejected.connect(self.reject)
         layout.addWidget(button, 16, 1, 1, 8)
 
@@ -268,7 +268,7 @@ class Definicion_Petro(newComponent):
 
         layout = QtWidgets.QVBoxLayout(self)
         self.toolBox = QtWidgets.QTabWidget()
-        self.toolBox.setTabPosition(QtWidgets.QTabWidget.South)
+        self.toolBox.setTabPosition(QtWidgets.QTabWidget.TabPosition.South)
         layout.addWidget(self.toolBox)
 
         # Distillation data definition
@@ -310,8 +310,8 @@ class Definicion_Petro(newComponent):
             self.changeParams, "P_curve"))
         lytcurve.addWidget(self.presion, 5, 2)
         lytcurve.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 4)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 4)
 
         # Widget with crude functionality
         crudeWidget = QtWidgets.QWidget()
@@ -339,7 +339,7 @@ class Definicion_Petro(newComponent):
         lyt.addWidget(self.checkCurva, 1, 1, 1, 2)
         lyt.addWidget(curveWidget, 2, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1)
         self.checkCrudo = QtWidgets.QRadioButton(
             QtWidgets.QApplication.translate(
@@ -350,7 +350,7 @@ class Definicion_Petro(newComponent):
         lyt.addWidget(self.checkCrudo, 4, 1, 1, 2)
         lyt.addWidget(crudeWidget, 5, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 2)
         self.checkBlend = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Blend if its necessary"))
@@ -362,8 +362,8 @@ class Definicion_Petro(newComponent):
         lyt.addWidget(self.cutButton, 7, 2)
         self.checkBlend.toggled.connect(self.cutButton.setEnabled)
         lyt.addItem(QtWidgets.QSpacerItem(
-            5, 5, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 1)
+            5, 5, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 8, 1)
 
         # Definition with bulk properties
         definitionPage = QtWidgets.QWidget()
@@ -453,7 +453,7 @@ class Definicion_Petro(newComponent):
         lyt.addWidget(self.N, 13, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             14, 1, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Alternate definition, poor accuracy")), 15, 1, 1, 2)
@@ -491,7 +491,7 @@ class Definicion_Petro(newComponent):
     def changeUnknown(self):
         self.status.setState(self.unknown.status, self.unknown.msg)
         self.buttonShowDetails.setEnabled(self.unknown.status)
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Save).setEnabled(
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Save).setEnabled(
             self.unknown.status)
 
     # Curve distillation definition

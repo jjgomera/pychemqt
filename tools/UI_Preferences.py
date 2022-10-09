@@ -64,8 +64,8 @@ class ConfGeneral(QtWidgets.QDialog):
         self.ColorButtonReadOnly = ColorSelector()
         layout.addWidget(self.ColorButtonReadOnly, 2, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 3, 1)
+            10, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 1)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Recent Files"))
         layout.addWidget(group, 4, 1, 1, 4)
@@ -76,8 +76,8 @@ class ConfGeneral(QtWidgets.QDialog):
         self.recentFiles.setRange(1, 20)
         lyt.addWidget(self.recentFiles)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
         self.loadLastProject = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate(
                 "pychemqt", "Load last session project"))
@@ -87,8 +87,8 @@ class ConfGeneral(QtWidgets.QDialog):
         layout.addWidget(self.showTrayIcon, 6, 1)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 14, 1, 1, 4)
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 14, 1, 1, 4)
 
         if config and config.has_section("General"):
             self.ColorButtonResaltado.setColor(
@@ -152,7 +152,7 @@ class ConfTooltipUnit(QtWidgets.QDialog):
         self.CGS.toggled.connect(partial(self.systems, "cgs"))
         lytSystems.addWidget(self.CGS)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed))
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed))
 
         self.eleccion = QtWidgets.QComboBox()
         layout.addWidget(self.eleccion)
@@ -178,7 +178,7 @@ class ConfTooltipUnit(QtWidgets.QDialog):
                 self.tabla[i].setRowHeight(j, 24)
                 self.tabla[i].setItem(j, 0, QtWidgets.QTableWidgetItem(""))
                 self.tabla[i].item(j, 0).setTextAlignment(
-                    QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                    QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.tabla[i].openPersistentEditor(self.tabla[i].item(j, 0))
             self.fill(magnitud[0], i, config)
             self.eleccion.addItem(magnitud[1])
@@ -262,7 +262,7 @@ class ConfTooltipEntity(QtWidgets.QDialog):
             self.tabla[0].setRowHeight(i, 24)
             self.tabla[0].setItem(i, 0, QtWidgets.QTableWidgetItem(""))
             self.tabla[0].item(i, 0).setTextAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.tabla[0].openPersistentEditor(self.tabla[0].item(i, 0))
 
         if config.has_option("TooltipEntity", "Corriente"):
@@ -285,7 +285,7 @@ class ConfTooltipEntity(QtWidgets.QDialog):
                 self.tabla[-1].setRowHeight(j, 24)
                 self.tabla[-1].setItem(j, 0, QtWidgets.QTableWidgetItem(""))
                 self.tabla[-1].item(j, 0).setTextAlignment(
-                    QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                    QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.tabla[-1].openPersistentEditor(self.tabla[-1].item(j, 0))
             self.fill(equipo.__name__, i+1, config)
             self.eleccion.addItem(equipo.title)
@@ -333,10 +333,10 @@ class ConfFormat(QtWidgets.QTableWidget):
             self.setRowHeight(i, 22)
             self.setItem(i, 0, QtWidgets.QTableWidgetItem(""))
             self.item(i, 0).setTextAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.setItem(i, 1, QtWidgets.QTableWidgetItem(""))
             self.item(i, 1).setTextAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         if config.has_section("NumericFormat"):
             for i, magnitud in enumerate(unidades.MAGNITUDES):
@@ -345,7 +345,7 @@ class ConfFormat(QtWidgets.QTableWidget):
                 self.item(i, 0).setText(self.txt(kw))
                 self.item(i, 1).setText(representacion(pi, **kw))
 
-        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.cellDoubleClicked.connect(self.showConfDialog)
 
     def showConfDialog(self, fila):
@@ -423,8 +423,8 @@ class ConfApplications(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Show maximized"))
         layoutTerminal.addWidget(self.maximized, 5, 1, 1, 3)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1)
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1)
 
         terminalTitle = QtWidgets.QApplication.translate("pychemqt", "Shell")
         if sys.platform == "win32":
@@ -486,7 +486,7 @@ class ConfBabel(QtWidgets.QDialog):
             "pychemqt", "Heteroatom in color"))
         layout.addWidget(self.checkColor, 3, 1, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 1, 1, 2)
 
         group = QtWidgets.QGroupBox(
@@ -504,15 +504,15 @@ class ConfBabel(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Do not show atoms"))
         lyt.addWidget(self.radioNone)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 2)
         self.checkTighBond = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Thicker bond lines"))
         layout.addWidget(self.checkTighBond, 7, 1, 1, 2)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 14, 1, 1, 4)
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 14, 1, 1, 4)
 
         if config and config.has_section("Openbabel"):
             self.BondColor.setColor(config.get("Openbabel", 'BondColor'))
@@ -590,7 +590,7 @@ class Preferences(QtWidgets.QDialog):
         self.lista.setIconSize(QtCore.QSize(30, 30))
         self.lista.setHeaderHidden(True)
         self.lista.setSizePolicy(
-            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Preferred)
+            QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Preferred)
         layout.addWidget(self.lista, 1, 1)
         self.stacked = QtWidgets.QStackedWidget()
         layout.addWidget(self.stacked, 1, 2)
@@ -601,7 +601,7 @@ class Preferences(QtWidgets.QDialog):
             icon = QtGui.QIcon(QtGui.QPixmap(
                 os.environ["pychemqt"]+"/images/%s" % icon))
             item.setIcon(0, icon)
-            item.setData(0, QtCore.Qt.UserRole, count)
+            item.setData(0, QtCore.Qt.ItemDataRole.UserRole, count)
             count += 1
             self.lista.addTopLevelItem(item)
 
@@ -610,7 +610,7 @@ class Preferences(QtWidgets.QDialog):
                 for dlg in dialog:
                     child = QtWidgets.QTreeWidgetItem([dlg.TITLE])
                     child.setIcon(0, icon)
-                    child.setData(0, QtCore.Qt.UserRole, count)
+                    child.setData(0, QtCore.Qt.ItemDataRole.UserRole, count)
                     item.addChild(child)
                     count += 1
                     self.stacked.addWidget(dlg(config))
@@ -619,14 +619,14 @@ class Preferences(QtWidgets.QDialog):
 
         self.lista.currentItemChanged.connect(self.getIndex)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 2)
 
     def getIndex(self, item):
         """Get index of item"""
-        self.stacked.setCurrentIndex(item.data(0, QtCore.Qt.UserRole))
+        self.stacked.setCurrentIndex(item.data(0, QtCore.Qt.ItemDataRole.UserRole))
 
     def value(self):
         """Return value for wizard"""

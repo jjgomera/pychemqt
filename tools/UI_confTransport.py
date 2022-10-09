@@ -37,15 +37,15 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout = QtWidgets.QGridLayout(self)
 
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.HLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line, 1, 1, 1, 7)
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.HLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line, 3, 1, 1, 7)
         lbl_Pure = QtWidgets.QLabel()
-        lbl_Pure.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_Pure.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         lbl_Pure.setText(QtWidgets.QApplication.translate(
             "pychemqt", "Pure Fluid Correlations"))
         layout.addWidget(lbl_Pure, 0, 1, 1, 3)
@@ -99,11 +99,11 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(self.w, 11, 1)
 
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.VLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line, 1, 2, 11, 1)
         lbl_hP = QtWidgets.QLabel()
-        lbl_hP.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_hP.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         lbl_hP.setText(QtWidgets.QApplication.translate(
             "pychemqt", "High Pressure Corrections"))
         layout.addWidget(lbl_hP, 2, 3)
@@ -129,11 +129,11 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(self.Corr_ThCondG, 9, 3)
 
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.VLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line, 0, 4, 12, 1)
         lbl_Mix = QtWidgets.QLabel()
-        lbl_Mix.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_Mix.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         lbl_Mix.setText(QtWidgets.QApplication.translate(
             "pychemqt", "Mixture Fluid Correlations"))
         layout.addWidget(lbl_Mix, 0, 5, 1, 3)
@@ -159,11 +159,11 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(self.ThGMix, 9, 5)
 
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.VLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line, 1, 6, 11, 1)
         lbl_hPMix = QtWidgets.QLabel()
-        lbl_hPMix.setAlignment(QtCore.Qt.AlignCenter)
+        lbl_hPMix.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         lbl_hPMix.setText(QtWidgets.QApplication.translate(
             "pychemqt", "High Pressure Corrections"))
         layout.addWidget(lbl_hPMix, 2, 7)
@@ -181,15 +181,15 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(self.Corr_ThGMix, 9, 7)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 12, 0)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 12, 0)
         self.rhoLEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use liquid density from EoS if available"))
         layout.addWidget(self.rhoLEoS, 13, 0, 1, 8)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 8)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 8)
 
         if config and config.has_section("Transport"):
             self.RhoL.setCurrentIndex(config.getint("Transport", "RhoL"))
@@ -298,7 +298,7 @@ class Dialog(QtWidgets.QDialog):
         self.datos = UI_confTransport_widget(config)
         layout.addWidget(self.datos)
         btnBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         btnBox.accepted.connect(self.accept)
         btnBox.rejected.connect(self.reject)
         layout.addWidget(btnBox)

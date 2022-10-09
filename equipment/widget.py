@@ -268,8 +268,8 @@ class Dialog_Finned(QtWidgets.QDialog):
         self.listTube.addItem("")
         layout.addWidget(self.listTube, 0, 1, 1, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 1, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+                                         QtWidgets.QSizePolicy.Policy.Fixed), 1, 1, 1, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Material")), 2, 1)
         self.listMaterial = QtWidgets.QComboBox()
@@ -281,8 +281,8 @@ class Dialog_Finned(QtWidgets.QDialog):
             "pychemqt", "Thermal Conductivity")), 3, 1)
         self.kFin = Entrada_con_unidades(ThermalConductivity)
         layout.addWidget(self.kFin, 3, 2)
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 4, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+                                         QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Root diameter")), 5, 1)
@@ -305,8 +305,8 @@ class Dialog_Finned(QtWidgets.QDialog):
         self.Nfin = Entrada_con_unidades(float, textounidad="fins/m")
         layout.addWidget(self.Nfin, 9, 2)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)

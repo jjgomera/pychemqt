@@ -103,14 +103,14 @@ class UI_equipment(parents.UI_equip):
         gridLayout_Costos.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Peso:", None)), 7, 4, 1, 1)
         self.Peso=Entrada_con_unidades(unidades.Mass, readOnly=True)
         gridLayout_Costos.addWidget(self.Peso,7,5,1,1)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,3,6,1)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),8,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),2,3,6,1)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),8,0,1,6)
 
         self.Costos=costIndex.CostData(1.7, 3)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,9,1,2,5)
 
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),11,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),11,0,1,6)
         self.groupBox_Costos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,12,1,1,5)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
@@ -120,7 +120,7 @@ class UI_equipment(parents.UI_equip):
         gridLayout_5.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Coste Instalación:", None)),1,1,1,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True, tolerancia=8, decimales=2)
         gridLayout_5.addWidget(self.C_inst,1,2,1,1)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),13,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),13,0,1,6)
 
         #Pestaña salida
         self.Salida= UI_corriente.Ui_corriente(readOnly=True)

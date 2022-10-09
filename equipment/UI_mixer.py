@@ -62,7 +62,7 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(self.criterio, 1, 2)
 
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 1, 1, 3)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Output Pressure")), 3, 1)
@@ -70,8 +70,8 @@ class UI_equipment(UI_equip):
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))
         lyt_Calc.addWidget(self.Pout, 3, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 3)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 4, 1, 1, 3)
 
         self.criterio_Changed(0)
 

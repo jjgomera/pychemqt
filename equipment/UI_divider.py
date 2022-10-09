@@ -76,7 +76,7 @@ class UI_equipment(UI_equip):
         self.fracciones.setRowCount(salidas)
         for i in range(salidas):
             itm = QtWidgets.QTableWidgetItem("%i" % i)
-            itm.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            itm.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.fracciones.setItem(0, i, itm)
             self.fracciones.setRowHeight(i, 20)
             widget = UI_corriente.Ui_corriente(readOnly=True)
@@ -93,14 +93,14 @@ class UI_equipment(UI_equip):
                 "pychemqt", "Flow")+", "+MassFlow.text())
             self.fracciones.setHorizontalHeaderItem(0, item)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
-                QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled |
-                QtCore.Qt.ItemIsSelectable)
+                QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled |
+                QtCore.Qt.ItemFlag.ItemIsSelectable)
         else:
             item = QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate(
                 "pychemqt", "Flow")+", "+MassFlow.text())
             self.fracciones.setHorizontalHeaderItem(0, item)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
-                QtCore.Qt.NoItemFlags)
+                QtCore.Qt.ItemFlag.NoItemFlags)
         self.changeParams("criterio", int)
 
     def changeParams(self, parametro, valor=None):

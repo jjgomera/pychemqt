@@ -51,8 +51,8 @@ class Ui_BIP(QtWidgets.QDialog):
         self.eleccion = QtWidgets.QComboBox()
         lyt.addWidget(self.eleccion, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 1, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
         self.stacked = QtWidgets.QStackedWidget()
         lyt.addWidget(self.stacked, 2, 1, 1, 3)
 
@@ -99,7 +99,7 @@ class Ui_BIP(QtWidgets.QDialog):
 
         self.eleccion.currentIndexChanged.connect(self.stacked.setCurrentIndex)
         button = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         button.accepted.connect(self.accept)
         button.rejected.connect(self.reject)
         lyt.addWidget(button, 3, 1, 1, 3)

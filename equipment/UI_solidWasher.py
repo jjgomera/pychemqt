@@ -59,7 +59,7 @@ class UI_equipment(parents.UI_equip):
         self.TipoCalculo.addItem(QtWidgets.QApplication.translate("equipment", "Diseño, calcular el flujo de aire necesario", None))
         self.TipoCalculo.currentIndexChanged.connect(self.calculo)
         gridLayout_Calculo.addWidget(self.TipoCalculo, 1, 2, 1, 4)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,1,1,6)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),2,1,1,6)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Humedad relativa en el aire:", None)), 3, 1, 1, 1)
         self.HumedadAire=Entrada_con_unidades(float, max=1, spinbox=True, step=0.01)
         self.HumedadAire.valueChanged.connect(self.calculo)
@@ -81,7 +81,7 @@ class UI_equipment(parents.UI_equip):
         self.DeltaP.valueChanged.connect(self.calculo)
         gridLayout_Calculo.addWidget(self.DeltaP,7,2,1,1)
 
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),8,1,1,6)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),8,1,1,6)
         self.groupBox_Calculo = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Datos calculados", None))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,9,1,1,5)
         gridLayout_1 = QtWidgets.QGridLayout(self.groupBox_Calculo)
@@ -95,7 +95,7 @@ class UI_equipment(parents.UI_equip):
         self.HumedadCalculada=Entrada_con_unidades(float, readOnly=True, textounidad="%")
         gridLayout_1.addWidget(self.HumedadCalculada,3,2,1,1)
 
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),11,1,1,6)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),11,1,1,6)
 
         #Pestaña salida
         self.SalidaSolido= UI_corriente.Ui_corriente(readOnly=True)

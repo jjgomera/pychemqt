@@ -63,8 +63,8 @@ class ChartHeat(Chart):
         self.mixed.currentIndexChanged.connect(self.plot)
         lyt.addWidget(self.mixed)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
         self.layout().addLayout(lyt, 0, 1, 1, 3)
 
         self.image = self.plt.fig.add_axes(self.locImage, anchor='SW')

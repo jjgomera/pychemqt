@@ -49,7 +49,7 @@ class Chart(QtWidgets.QDialog):
         layout.addWidget(self.plotWidget, 2, 1, 1, 4)
 
         btBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Close, self)
+            QtWidgets.QDialogButtonBox.StandardButton.Close, self)
         self.butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "image.png")),
             QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
@@ -63,9 +63,9 @@ class Chart(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
         self.butonCalc.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
-        btBox.addButton(self.butonConf, QtWidgets.QDialogButtonBox.ResetRole)
-        btBox.addButton(self.butonCalc, QtWidgets.QDialogButtonBox.ResetRole)
-        btBox.addButton(self.butonPNG, QtWidgets.QDialogButtonBox.ResetRole)
+        btBox.addButton(self.butonConf, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(self.butonCalc, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(self.butonPNG, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
         layout.addWidget(btBox, 3, 1, 1, 4)
 
         self.customUI()

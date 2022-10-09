@@ -50,9 +50,9 @@ class UI_equipment(parents.UI_equip):
         #Pestaña definición rendimientos
         self.Rendimientos= QtWidgets.QTableWidget(1, 2)
         self.Rendimientos.setItemDelegateForColumn(1, CellEditor(self))
-        self.Rendimientos.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.Rendimientos.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.Rendimientos.verticalHeader().hide()
-        self.Rendimientos.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+        self.Rendimientos.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
         if self.entrada:
             self.rellenarTablaRendimientos()
         self.rendimientos=[]
@@ -68,7 +68,7 @@ class UI_equipment(parents.UI_equip):
         self.TipoCalculo.addItem(QtWidgets.QApplication.translate("equipment", "Calcular número de filtros", None))
         self.TipoCalculo.currentIndexChanged.connect(self.tipoCalculoCambiado)
         gridLayout_Calculo.addWidget(self.TipoCalculo, 1, 2, 1, 4)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,1,1,6)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),2,1,1,6)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Nº de filtros:", None)), 3, 1, 1, 1)
         self.numFiltros=Entrada_con_unidades(int, spinbox=True, step=1, width=50, resaltado=True, min=1, start=1)
         self.numFiltros.valueChanged.connect(self.calculo)
@@ -81,7 +81,7 @@ class UI_equipment(parents.UI_equip):
         self.deltaP=Entrada_con_unidades(unidades.Pressure, retornar=False, readOnly=True)
         self.deltaP.valueChanged.connect(self.calculo)
         gridLayout_Calculo.addWidget(self.deltaP,5,2,1,1)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),6,1,1,6)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),6,1,1,6)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Membranas por filtro:", None)), 7, 1, 1, 1)
         self.MembranaCelda=Entrada_con_unidades(int, spinbox=True, step=1, width=70, value=78, min=1)
         self.MembranaCelda.valueChanged.connect(self.calculo)
@@ -106,7 +106,7 @@ class UI_equipment(parents.UI_equip):
         self.Limpieza=Entrada_con_unidades(int, spinbox=True, step=1, width=70, value=1, min=0)
         self.Limpieza.valueChanged.connect(self.calculo)
         gridLayout_Calculo.addWidget(self.Limpieza,9,5,1,1)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,1,1,6)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,1,1,6)
 
         self.groupBox_Calculo = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Datos calculados", None))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo,11,1,1,5)
@@ -120,7 +120,7 @@ class UI_equipment(parents.UI_equip):
         self.gridLayout_1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Superficie:", None)),2,1,1,1)
         self.superficie=Entrada_con_unidades(unidades.Area, readOnly=True)
         self.gridLayout_1.addWidget(self.superficie,2,2,1,1)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),12,1,1,6)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),12,1,1,6)
 
         #Salidas
         self.SalidaGas= UI_corriente.Ui_corriente(readOnly=True)
@@ -143,10 +143,10 @@ class UI_equipment(parents.UI_equip):
         for i in range(len(self.entrada.solido.distribucion)):
             self.Rendimientos.setRowHeight(i, 22)
             self.Rendimientos.setItem(i, 0, QtWidgets.QTableWidgetItem(representacion(1e6*self.entrada.solido.diametros[i])))
-            self.Rendimientos.item(i, 0).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-            self.Rendimientos.item(i, 0).setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)
+            self.Rendimientos.item(i, 0).setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignVCenter)
+            self.Rendimientos.item(i, 0).setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable|QtCore.Qt.ItemFlag.ItemIsEnabled)
             self.Rendimientos.setItem(i, 1, QtWidgets.QTableWidgetItem(""))
-            self.Rendimientos.item(i, 1).setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
+            self.Rendimientos.item(i, 1).setTextAlignment(QtCore.Qt.AlignmentFlag.AlignRight|QtCore.Qt.AlignmentFlag.AlignVCenter)
 
     def cambiarRendimientos(self, fila, columna):
         numero=float(self.Rendimientos.item(fila, columna).text())

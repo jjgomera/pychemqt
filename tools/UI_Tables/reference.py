@@ -63,7 +63,7 @@ class Ui_ReferenceState(QtWidgets.QDialog):
         layout.addWidget(self.personalizado, 4, 1, 1, 7)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 1)
         layout.addWidget(QtWidgets.QLabel("T:"), 5, 2)
         self.T = Entrada_con_unidades(unidades.Temperature, value=298.15)
@@ -72,8 +72,8 @@ class Ui_ReferenceState(QtWidgets.QDialog):
         self.P = Entrada_con_unidades(unidades.Pressure, value=101325)
         layout.addWidget(self.P, 6, 3)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 5, 4, 2, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 4, 2, 1)
         layout.addWidget(QtWidgets.QLabel("h:"), 5, 5)
         self.h = Entrada_con_unidades(unidades.Enthalpy, value=0)
         layout.addWidget(self.h, 5, 6)
@@ -81,11 +81,11 @@ class Ui_ReferenceState(QtWidgets.QDialog):
         self.s = Entrada_con_unidades(unidades.SpecificHeat, value=0)
         layout.addWidget(self.s, 6, 6)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 7, 7)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 7)
 
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 8, 1, 1, 7)
@@ -145,10 +145,10 @@ class Ui_Properties(QtWidgets.QDialog):
         self.prop.verticalHeader().hide()
         self.prop.horizontalHeader().hide()
         self.prop.horizontalHeader().setStretchLastSection(True)
-        self.prop.setGridStyle(QtCore.Qt.NoPen)
+        self.prop.setGridStyle(QtCore.Qt.PenStyle.NoPen)
         self.prop.setColumnWidth(0, 18)
-        self.prop.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.prop.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.prop.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.prop.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.prop.setItemDelegateForColumn(0, CheckEditor(self))
         for i, value in enumerate(values):
             if value == 1:
@@ -182,14 +182,14 @@ class Ui_Properties(QtWidgets.QDialog):
         self.checkFase.setChecked(fase)
         layout.addWidget(self.checkFase, 7, 1, 1, 2)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Reset | QtWidgets.QDialogButtonBox.Ok |
-            QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Reset | QtWidgets.QDialogButtonBox.StandardButton.Ok |
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.addButton(
             QtWidgets.QApplication.translate("pychemqt", "Mark all"),
-            QtWidgets.QDialogButtonBox.ResetRole)
+            QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
         self.buttonBox.addButton(
             QtWidgets.QApplication.translate("pychemqt", "No Mark"),
-            QtWidgets.QDialogButtonBox.ResetRole)
+            QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
         self.btYes = QtWidgets.QPushButton
         self.buttonBox.clicked.connect(self.buttonClicked)
         layout.addWidget(self.buttonBox, 8, 1, 1, 2)
@@ -230,14 +230,14 @@ class Ui_Properties(QtWidgets.QDialog):
     def buttonClicked(self, boton):
         """Actions for dialogbuttonbox functionality"""
         if self.buttonBox.buttonRole(boton) == \
-                QtWidgets.QDialogButtonBox.AcceptRole:
+                QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole:
             self.accept()
         elif self.buttonBox.buttonRole(boton) == \
-                QtWidgets.QDialogButtonBox.RejectRole:
+                QtWidgets.QDialogButtonBox.ButtonRole.RejectRole:
             self.reject()
         else:
             if boton == \
-                    self.buttonBox.button(QtWidgets.QDialogButtonBox.Reset):
+                    self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Reset):
                 values = self._default
             elif boton.text() == \
                     QtWidgets.QApplication.translate("pychemqt", "No Mark"):

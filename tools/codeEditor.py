@@ -69,13 +69,13 @@ if os.environ["PyQt5.Qsci"] == "True":
             # Clickable margin 1 for showing markers
             self.setMarginSensitivity(1, True)
             self.marginClicked.connect(self.on_margin_clicked)
-            self.markerDefine(QsciScintilla.RightArrow, self.ARROW_MARKER_NUM)
+            self.markerDefine(QsciScintilla.MarkerSymbol.RightArrow, self.ARROW_MARKER_NUM)
             self.setMarkerBackgroundColor(
                 QtGui.QColor("#ee1111"), self.ARROW_MARKER_NUM)
 
             # Brace matching: enable for a brace immediately before or after
             # the current position
-            self.setBraceMatching(QsciScintilla.SloppyBraceMatch)
+            self.setBraceMatching(QsciScintilla.BraceMatch.SloppyBraceMatch)
 
             # Current line visible with special background color
             self.setCaretLineVisible(True)

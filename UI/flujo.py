@@ -52,7 +52,7 @@ from tools import UI_confResolution, UI_confThermo
 factor = 5     # Value for keyboard navigation
 
 brushColor = "#aaaaaa"
-brushPattern = QtCore.Qt.Dense7Pattern
+brushPattern = QtCore.Qt.BrushStyle.Dense7Pattern
 
 
 class GraphicsView(QtWidgets.QGraphicsView):
@@ -70,9 +70,9 @@ class GraphicsView(QtWidgets.QGraphicsView):
         """
         super(GraphicsView, self).__init__(parent)
         self.PFD = PFD
-        self.setDragMode(QtWidgets.QGraphicsView.RubberBandDrag)
-        self.setRenderHints(QtGui.QPainter.Antialiasing |
-                            QtGui.QPainter.TextAntialiasing)
+        self.setDragMode(QtWidgets.QGraphicsView.DragMode.RubberBandDrag)
+        self.setRenderHints(QtGui.QPainter.RenderHint.Antialiasing |
+                            QtGui.QPainter.RenderHint.TextAntialiasing)
         self.setBackgroundBrush(
             QtGui.QBrush(QtGui.QColor(brushColor), brushPattern))
         self.setMouseTracking(True)
@@ -81,12 +81,12 @@ class GraphicsView(QtWidgets.QGraphicsView):
         # Widgets to show in the statusbar of mainwindow
         self.statusWidget = []
         self.statusPosition = ClickableLabel()
-        self.statusPosition.setFrameShape(QtWidgets.QFrame.WinPanel)
-        self.statusPosition.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusPosition.setFrameShape(QtWidgets.QFrame.Shape.WinPanel)
+        self.statusPosition.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.statusWidget.append(self.statusPosition)
         self.statusThermo = ClickableLabel()
-        self.statusThermo.setFrameShape(QtWidgets.QFrame.WinPanel)
-        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusThermo.setFrameShape(QtWidgets.QFrame.Shape.WinPanel)
+        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.statusWidget.append(self.statusThermo)
 
         self.statusPosition.clicked.connect(
@@ -140,7 +140,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
 
     # def dragMoveEvent(self, event):
         # if event.mimeData().hasFormat("application/x-equipment"):
-            # event.setDropAction(QtCore.Qt.CopyAction)
+            # event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             # event.accept()
         # else:
             # event.ignore()
@@ -151,7 +151,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
             # stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
             # icon = QtGui.QIcon()
             # stream >> icon
-            # event.setDropAction(QtCore.Qt.CopyAction)
+            # event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             # print(event.pos())
             # event.accept()
             # self.updateGeometry()
@@ -216,20 +216,20 @@ class SelectStreamProject(QtWidgets.QDialog):
         self.stream = QtWidgets.QComboBox()
         lyt1.addWidget(self.stream)
         lyt1.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
         layout.addLayout(lyt1)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding))
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding))
 
         lyt2 = QtWidgets.QHBoxLayout()
         self.status = QtWidgets.QLabel()
         lyt2.addWidget(self.status)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(False)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(False)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         lyt2.addWidget(self.buttonBox)
@@ -246,7 +246,7 @@ class SelectStreamProject(QtWidgets.QDialog):
             print(e)
             self.status.setText(QtGui.QApplication.translate(
                 "pychemqt", "Failed to loading project..."))
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(True)
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(True)
         self.status.setText(QtWidgets.QApplication.translate(
             "pychemqt", "Project loaded succesfully"))
         self.stream.clear()
@@ -263,7 +263,7 @@ class TextItemDlg(QtWidgets.QDialog):
         self.editor = texteditor.TextEditor()
         self.editor.notas.textChanged.connect(self.updateUi)
         layout.addWidget(self.editor, 1, 1, 1, 1)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 1, 1, 1)
@@ -274,7 +274,7 @@ class TextItemDlg(QtWidgets.QDialog):
         self.updateUi()
 
     def updateUi(self):
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setEnabled(bool(self.editor.notas.toPlainText()))
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(bool(self.editor.notas.toPlainText()))
 
 
 class GeometricItem(object):
@@ -284,19 +284,19 @@ class GeometricItem(object):
         super(GeometricItem, self).__init__(parent)
         self.setPen(self._pen())
         self.setFlags(
-            QtWidgets.QGraphicsItem.ItemIsSelectable | QtWidgets.QGraphicsItem.ItemIsMovable | QtWidgets.QGraphicsItem.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.ItemIsFocusable)
+            QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsMovable | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsFocusable)
         self.setZValue(-1)
 
     def _pen(self):
         pen = QtGui.QPen(QtGui.QColor(Preferences.get("PFD", 'Color_Stream')))
         pen.setWidthF(Preferences.getfloat("PFD", 'Width'))
         pen.setJoinStyle(
-            [QtCore.Qt.MiterJoin, QtCore.Qt.BevelJoin, QtCore.Qt.RoundJoin][Preferences.getint("PFD", 'Union')])
+            [QtCore.Qt.PenJoinStyle.MiterJoin, QtCore.Qt.PenJoinStyle.BevelJoin, QtCore.Qt.PenJoinStyle.RoundJoin][Preferences.getint("PFD", 'Union')])
         pen.setMiterLimit(Preferences.getfloat("PFD", 'Miter_limit'))
         pen.setCapStyle(
-            [QtCore.Qt.FlatCap, QtCore.Qt.RoundCap, QtCore.Qt.SquareCap][Preferences.getint("PFD", 'Punta')])
-        pen.setStyle([QtCore.Qt.SolidLine, QtCore.Qt.DashLine, QtCore.Qt.DotLine, QtCore.Qt.DashDotLine,
-                      QtCore.Qt.DashDotDotLine][Preferences.getint("PFD", 'Guion')])
+            [QtCore.Qt.PenCapStyle.FlatCap, QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenCapStyle.SquareCap][Preferences.getint("PFD", 'Punta')])
+        pen.setStyle([QtCore.Qt.PenStyle.SolidLine, QtCore.Qt.PenStyle.DashLine, QtCore.Qt.PenStyle.DotLine, QtCore.Qt.PenStyle.DashDotLine,
+                      QtCore.Qt.PenStyle.DashDotDotLine][Preferences.getint("PFD", 'Guion')])
         pen.setDashOffset(Preferences.getfloat("PFD", 'Dash_offset'))
         return pen
 
@@ -308,7 +308,7 @@ class GeometricItem(object):
         if dialog.exec():
             pen = dialog.pen()
             self.setPen(pen)
-            self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
+            self.itemChange(QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange, 0)
 
     def contextMenu(self):
         contextMenu = QtWidgets.QMenu("%s Item" % self.type, self.scene().parent())
@@ -321,7 +321,7 @@ class GeometricItem(object):
 
     def itemChange(self, change, variant):
         if self.scene():
-            if change == QtWidgets.QGraphicsItem.ItemPositionChange:
+            if change == QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange:
                 if self.scene().parent().dirty[self.scene().parent().idTab] == False:
                     self.scene().parent().dirty[self.scene().parent().idTab] = True
                     self.scene().parent().activeControl(True)
@@ -329,43 +329,43 @@ class GeometricItem(object):
         return QtWidgets.QGraphicsItem.itemChange(self, change, variant)
 
     def keyPressEvent(self, event):
-        if event.modifiers() & QtCore.Qt.ShiftModifier:
-            if event.key() == QtCore.Qt.Key_Up:
+        if event.modifiers() & QtCore.Qt.KeyboardModifier.ShiftModifier:
+            if event.key() == QtCore.Qt.Key.Key_Up:
                 rect = self.rect()
                 rect.setBottom(self.rect().bottom() - factor)
                 self.setRect(rect)
-            elif event.key() == QtCore.Qt.Key_Down:
+            elif event.key() == QtCore.Qt.Key.Key_Down:
                 rect = self.rect()
                 rect.setBottom(self.rect().bottom() + factor)
                 self.setRect(rect)
-            elif event.key() == QtCore.Qt.Key_Left:
+            elif event.key() == QtCore.Qt.Key.Key_Left:
                 rect = self.rect()
                 rect.setRight(self.rect().right() - factor)
                 self.setRect(rect)
-            elif event.key() == QtCore.Qt.Key_Right:
+            elif event.key() == QtCore.Qt.Key.Key_Right:
                 rect = self.rect()
                 rect.setRight(self.rect().right() + factor)
                 self.setRect(rect)
         else:
-            if event.key() == QtCore.Qt.Key_Delete or event.key() == QtCore.Qt.Key_Backspace:
+            if event.key() == QtCore.Qt.Key.Key_Delete or event.key() == QtCore.Qt.Key.Key_Backspace:
                 self.delete()
-            elif event.key() == QtCore.Qt.Key_Escape:
+            elif event.key() == QtCore.Qt.Key.Key_Escape:
                 self.setSelected(False)
-            elif event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
+            elif event.key() == QtCore.Qt.Key.Key_Return or event.key() == QtCore.Qt.Key.Key_Enter:
                 self.setCurrentCell(self.currentRow() - 1, self.currentColumn())
-            elif event.key() == QtCore.Qt.Key_Up:
+            elif event.key() == QtCore.Qt.Key.Key_Up:
                 rect = self.rect()
                 rect.moveTop(self.rect().y() - factor)
                 self.setRect(rect)
-            elif event.key() == QtCore.Qt.Key_Down:
+            elif event.key() == QtCore.Qt.Key.Key_Down:
                 rect = self.rect()
                 rect.moveTop(self.rect().y() + factor)
                 self.setRect(rect)
-            elif event.key() == QtCore.Qt.Key_Left:
+            elif event.key() == QtCore.Qt.Key.Key_Left:
                 rect = self.rect()
                 rect.moveLeft(self.rect().x() - factor)
                 self.setRect(rect)
-            elif event.key() == QtCore.Qt.Key_Right:
+            elif event.key() == QtCore.Qt.Key.Key_Right:
                 rect = self.rect()
                 rect.moveLeft(self.rect().x() + factor)
                 self.setRect(rect)
@@ -390,10 +390,10 @@ class TextItem(QtWidgets.QGraphicsTextItem):
     def __init__(self, text, parent=None, position=QtCore.QPointF(0, 0), transform=QtGui.QTransform(), selectable=True):
         super(TextItem, self).__init__(parent=parent)
         if selectable:
-            self.setFlags(QtWidgets.QGraphicsItem.ItemIsSelectable | QtWidgets.QGraphicsItem.ItemIsMovable |
-                          QtWidgets.QGraphicsItem.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.ItemIsFocusable)
+            self.setFlags(QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsMovable |
+                          QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsFocusable)
         else:
-            self.setFlags(QtWidgets.QGraphicsItem.ItemIsMovable)
+            self.setFlags(QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsMovable)
         self.setHtml(text)
         self.setPos(position)
         self.setTransform(transform)
@@ -406,7 +406,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         dialog = TextItemDlg(self.toHtml())
         if dialog.exec():
             self.setHtml(dialog.editor.texto)
-            self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
+            self.itemChange(QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange, 0)
 
     def contextMenu(self):
         if self.selectable:
@@ -422,7 +422,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
 
     def itemChange(self, change, variant):
         if self.scene():
-            if change == QtWidgets.QGraphicsItem.ItemPositionChange:
+            if change == QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange:
                 if self.scene().parent().dirty[self.scene().parent().idTab] == False:
                     self.scene().parent().dirty[self.scene().parent().idTab] = True
                     self.scene().parent().activeControl(True)
@@ -430,19 +430,19 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         return QtWidgets.QGraphicsItem.itemChange(self, change, variant)
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Delete or event.key() == QtCore.Qt.Key_Backspace:
+        if event.key() == QtCore.Qt.Key.Key_Delete or event.key() == QtCore.Qt.Key.Key_Backspace:
             self.delete()
-        elif event.key() == QtCore.Qt.Key_Escape:
+        elif event.key() == QtCore.Qt.Key.Key_Escape:
             self.setSelected(False)
-        elif event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
+        elif event.key() == QtCore.Qt.Key.Key_Return or event.key() == QtCore.Qt.Key.Key_Enter:
             self.mouseDoubleClickEvent()
-        elif event.key() == QtCore.Qt.Key_Up:
+        elif event.key() == QtCore.Qt.Key.Key_Up:
             self.setPos(QtCore.QPointF(self.pos().x(), self.pos().y() - factor))
-        elif event.key() == QtCore.Qt.Key_Down:
+        elif event.key() == QtCore.Qt.Key.Key_Down:
             self.setPos(QtCore.QPointF(self.pos().x(), self.pos().y() + factor))
-        elif event.key() == QtCore.Qt.Key_Left:
+        elif event.key() == QtCore.Qt.Key.Key_Left:
             self.setPos(QtCore.QPointF(self.pos().x() - factor, self.pos().y()))
-        elif event.key() == QtCore.Qt.Key_Right:
+        elif event.key() == QtCore.Qt.Key.Key_Right:
             self.setPos(QtCore.QPointF(self.pos().x() + factor, self.pos().y()))
 
 
@@ -538,7 +538,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
         self.setPen(self._pen())
         qp = QtGui.QPainterPath()
         self.setPath(qp)
-        self.setFlags(QtWidgets.QGraphicsItem.ItemIsSelectable | QtWidgets.QGraphicsItem.ItemIsFocusable)
+        self.setFlags(QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsFocusable)
         if StreamItem.free_id:
             self.id = StreamItem.free_id.pop(0)
         else:
@@ -570,7 +570,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
         else:
             pen.setColor(QtGui.QColor("red"))
         self.setPen(pen)
-        self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
+        self.itemChange(QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange, 0)
 
     def mouseDoubleClickEvent(self, event=None):
         dialog = UI_corriente.Corriente_Dialog(self.corriente)
@@ -587,11 +587,11 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             self.setCorriente(corriente)
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Delete or event.key() == QtCore.Qt.Key_Backspace:
+        if event.key() == QtCore.Qt.Key.Key_Delete or event.key() == QtCore.Qt.Key.Key_Backspace:
             self.delete()
-        elif event.key() == QtCore.Qt.Key_Escape:
+        elif event.key() == QtCore.Qt.Key.Key_Escape:
             self.setSelected(False)
-        elif event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
+        elif event.key() == QtCore.Qt.Key.Key_Return or event.key() == QtCore.Qt.Key.Key_Enter:
             self.mouseDoubleClickEvent()
 
     def hoverEnterEvent(self, event):
@@ -737,8 +737,8 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
         imagen = os.environ["pychemqt"] + "images/equipment/%s.svg" % name
         super(EquipmentItem, self).__init__(imagen, parent=parent)
         self.dialogoId = dialogoId
-        self.setFlags(QtWidgets.QGraphicsItem.ItemIsSelectable | QtWidgets.QGraphicsItem.ItemIsMovable |
-                      QtWidgets.QGraphicsItem.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.ItemIsFocusable)
+        self.setFlags(QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsMovable |
+                      QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemSendsGeometryChanges | QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsFocusable)
         self.imagen = imagen
         self.angle = 0
         self.setAcceptHoverEvents(True)
@@ -841,7 +841,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
                 for i, corriente in enumerate(dialog.Equipment.salida):
                     self.down[i].setCorriente(corriente)
 
-                self.itemChange(QtWidgets.QGraphicsItem.ItemPositionChange, 0)
+                self.itemChange(QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange, 0)
         else:
             if self.output:
                 self.down[0].mouseDoubleClickEvent()
@@ -909,28 +909,28 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
             #
 
     def keyPressEvent(self, event):
-        if event.key() == QtCore.Qt.Key_Delete or event.key() == QtCore.Qt.Key_Backspace:
+        if event.key() == QtCore.Qt.Key.Key_Delete or event.key() == QtCore.Qt.Key.Key_Backspace:
             self.delete()
-        elif event.key() == QtCore.Qt.Key_Escape:
+        elif event.key() == QtCore.Qt.Key.Key_Escape:
             self.setSelected(False)
-        elif event.key() == QtCore.Qt.Key_Return or event.key() == QtCore.Qt.Key_Enter:
+        elif event.key() == QtCore.Qt.Key.Key_Return or event.key() == QtCore.Qt.Key.Key_Enter:
             self.mouseDoubleClickEvent()
-        elif event.key() == QtCore.Qt.Key_Up:
+        elif event.key() == QtCore.Qt.Key.Key_Up:
             self.setPos(QtCore.QPointF(self.pos().x(), self.pos().y() - factor))
             self.mouseMoveEvent()
-        elif event.key() == QtCore.Qt.Key_Down:
+        elif event.key() == QtCore.Qt.Key.Key_Down:
             self.setPos(QtCore.QPointF(self.pos().x(), self.pos().y() + factor))
             self.mouseMoveEvent()
-        elif event.key() == QtCore.Qt.Key_Left:
+        elif event.key() == QtCore.Qt.Key.Key_Left:
             self.setPos(QtCore.QPointF(self.pos().x() - factor, self.pos().y()))
             self.mouseMoveEvent()
-        elif event.key() == QtCore.Qt.Key_Right:
+        elif event.key() == QtCore.Qt.Key.Key_Right:
             self.setPos(QtCore.QPointF(self.pos().x() + factor, self.pos().y()))
             self.mouseMoveEvent()
 
     def itemChange(self, change, variant):
         if self.scene():
-            if change == QtWidgets.QGraphicsItem.ItemPositionChange:
+            if change == QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange:
                 if self.scene().parent().dirty[self.scene().parent().idTab] == False:
                     self.scene().parent().dirty[self.scene().parent().idTab] = True
                     self.scene().parent().activeControl(True)
@@ -1042,31 +1042,31 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         menu.addSeparator()
         menu.addAction(createAction(QtWidgets.QApplication.translate("pychemqt", "Select All"),
                                     slot=self.selectAll,
-                                    shortcut=QtGui.QKeySequence.SelectAll,
+                                    shortcut=QtGui.QKeySequence.StandardKey.SelectAll,
                                     icon=os.environ["pychemqt"] + "/images/button/selectAll",
                                     parent=self))
         menu.addSeparator()
         actionCut = createAction(QtWidgets.QApplication.translate("pychemqt", "Cut"),
                                  slot=self.cut,
-                                 shortcut=QtGui.QKeySequence.Cut,
+                                 shortcut=QtGui.QKeySequence.StandardKey.Cut,
                                  icon=os.environ["pychemqt"] + "/images/button/editCut",
                                  parent=self)
         menu.addAction(actionCut)
         actionCopy = createAction(QtWidgets.QApplication.translate("pychemqt", "Copy"),
                                   slot=self.copy,
-                                  shortcut=QtGui.QKeySequence.Copy,
+                                  shortcut=QtGui.QKeySequence.StandardKey.Copy,
                                   icon=os.environ["pychemqt"] + "/images/button/editCopy",
                                   parent=self)
         menu.addAction(actionCopy)
         actionPaste = createAction(QtWidgets.QApplication.translate("pychemqt", "Paste"),
                                    slot=partial(self.paste, pos),
-                                   shortcut=QtGui.QKeySequence.Paste,
+                                   shortcut=QtGui.QKeySequence.StandardKey.Paste,
                                    icon=os.environ["pychemqt"] + "/images/button/editPaste",
                                    parent=self)
         menu.addAction(actionPaste)
         actionDelete = createAction(QtWidgets.QApplication.translate("pychemqt", "Delete All"),
                                     slot=self.delete,
-                                    shortcut=QtGui.QKeySequence.Delete,
+                                    shortcut=QtGui.QKeySequence.StandardKey.Delete,
                                     icon=os.environ["pychemqt"] + "/images/button/editDelete",
                                     parent=self)
         menu.addAction(actionDelete)
@@ -1147,7 +1147,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         self.object = object
         self.addType = type
         self.addObj = True
-        self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.CrossCursor))
+        self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.CrossCursor))
         self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Click in desire text position in screen"))
         self.clickCollector = WaitforClick(numClick, self)
@@ -1202,7 +1202,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.objects[self.addType][id] = self.object
         self.parent().list.updateList(self.objects)
 
-        self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
 
     #        for item in self.items():
     #            if isinstance(item, QtSvg.QGraphicsSvgItem):

@@ -43,7 +43,7 @@ class Widget(QtWidgets.QDialog):
         lyt = QtWidgets.QGridLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
         scroll = QtWidgets.QScrollArea()
-        scroll.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        scroll.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
         lyt.addWidget(scroll)
         dlg = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout(dlg)
@@ -72,8 +72,8 @@ class Widget(QtWidgets.QDialog):
         lyt.addWidget(self.resolution)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 14, 1, 1, 4)
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 14, 1, 1, 4)
         scroll.setWidget(dlg)
 
         if config and config.has_section("PFD"):
@@ -125,7 +125,7 @@ class Dialog(QtWidgets.QDialog):
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -138,10 +138,10 @@ class Dialog(QtWidgets.QDialog):
 
 class ConfLine(QtWidgets.QWidget):
     """Composite widget with line format configuration tools"""
-    join = [QtCore.Qt.MiterJoin, QtCore.Qt.BevelJoin, QtCore.Qt.RoundJoin]
-    cap = [QtCore.Qt.FlatCap, QtCore.Qt.RoundCap, QtCore.Qt.SquareCap]
-    line = [QtCore.Qt.SolidLine, QtCore.Qt.DashLine, QtCore.Qt.DotLine,
-            QtCore.Qt.DashDotLine, QtCore.Qt.DashDotDotLine]
+    join = [QtCore.Qt.PenJoinStyle.MiterJoin, QtCore.Qt.PenJoinStyle.BevelJoin, QtCore.Qt.PenJoinStyle.RoundJoin]
+    cap = [QtCore.Qt.PenCapStyle.FlatCap, QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenCapStyle.SquareCap]
+    line = [QtCore.Qt.PenStyle.SolidLine, QtCore.Qt.PenStyle.DashLine, QtCore.Qt.PenStyle.DotLine,
+            QtCore.Qt.PenStyle.DashDotLine, QtCore.Qt.PenStyle.DashDotDotLine]
 
     def __init__(self, pen=None, parent=None):
         super(ConfLine, self).__init__(parent)
@@ -263,8 +263,8 @@ class ConfLine(QtWidgets.QWidget):
         lyt4.addWidget(self.dashOffset)
         lyt.addLayout(lyt4)
         lyt.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding))
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding))
 
         if pen:
             self.ColorButtonLine.setColor(pen.color().name())
@@ -300,7 +300,7 @@ class ConfLineDialog(QtWidgets.QDialog, ConfLine):
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Edit format line"))
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         self.layout().addWidget(buttonBox)

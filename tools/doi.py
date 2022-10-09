@@ -70,24 +70,24 @@ class ShowReference(QtWidgets.QDialog):
         self.searchWidget.hide()
         layout.addWidget(self.searchWidget, 2, 2)
 
-        bttBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        bttBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         bttBox.rejected.connect(self.reject)
         layout.addWidget(bttBox, 3, 1, 1, 2)
 
-        shSearch = QtWidgets.QShortcut(QtGui.QKeySequence.Find, self)
+        shSearch = QtWidgets.QShortcut(QtGui.QKeySequence.StandardKey.Find, self)
         shSearch.activated.connect(self.enableSearch)
-        shHide = QtWidgets.QShortcut(QtGui.QKeySequence.Cancel, self)
+        shHide = QtWidgets.QShortcut(QtGui.QKeySequence.StandardKey.Cancel, self)
         shHide.activated.connect(self.disableSearch)
-        self.shNext = QtWidgets.QShortcut(QtGui.QKeySequence.FindNext, self)
+        self.shNext = QtWidgets.QShortcut(QtGui.QKeySequence.StandardKey.FindNext, self)
         self.shNext.activated.connect(self.searchNext)
         self.shNext.setEnabled(False)
         self.shPrevious = QtWidgets.QShortcut(
-            QtGui.QKeySequence.FindPrevious, self)
+            QtGui.QKeySequence.StandardKey.FindPrevious, self)
         self.shPrevious.activated.connect(self.searchPrevious)
         self.shPrevious.setEnabled(False)
 
         self.fill()
-        self.tree.sortItems(0, QtCore.Qt.AscendingOrder)
+        self.tree.sortItems(0, QtCore.Qt.SortOrder.AscendingOrder)
         self.tree.itemDoubleClicked.connect(self.open)
         self.tree.setColumnWidth(0, 200)
         self.tree.setColumnWidth(1, 200)
@@ -98,7 +98,7 @@ class ShowReference(QtWidgets.QDialog):
     def enableSearch(self):
         """Show search widgets"""
         self.searchWidget.show()
-        self.searchTxt.setFocus(QtCore.Qt.ShortcutFocusReason)
+        self.searchTxt.setFocus(QtCore.Qt.FocusReason.ShortcutFocusReason)
 
     def disableSearch(self):
         """Hide search widgets"""
@@ -114,7 +114,7 @@ class ShowReference(QtWidgets.QDialog):
         self.searchResults = []
         for col in range(3):
             self.searchResults += self.tree.findItems(
-                txt, QtCore.Qt.MatchContains | QtCore.Qt.MatchRecursive, col)
+                txt, QtCore.Qt.MatchFlag.MatchContains | QtCore.Qt.MatchFlag.MatchRecursive, col)
 
         # Enable navitation in search results if search if successful
         if self.searchResults:
@@ -214,7 +214,7 @@ class ShowReference(QtWidgets.QDialog):
 
                 # Show item sorted by autor in libraries
                 if "EoS" not in library:
-                    itemModule.sortChildren(1, QtCore.Qt.AscendingOrder)
+                    itemModule.sortChildren(1, QtCore.Qt.SortOrder.AscendingOrder)
 
         # Equipment
         itemEquipment = QtWidgets.QTreeWidgetItem(

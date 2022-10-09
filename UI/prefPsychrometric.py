@@ -58,7 +58,7 @@ class Widget(QtWidgets.QWidget):
         lyt = QtWidgets.QGridLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
         scroll = QtWidgets.QScrollArea()
-        scroll.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        scroll.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
         lyt.addWidget(scroll)
 
         dlg = QtWidgets.QWidget()
@@ -88,8 +88,8 @@ class Widget(QtWidgets.QWidget):
         self.refprop.setEnabled(False)
         layout.addWidget(self.refprop, 3, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 4, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
 
         self.satlineconfig = LineConfig(
             "saturation", QtWidgets.QApplication.translate(
@@ -113,8 +113,8 @@ class Widget(QtWidgets.QWidget):
             self.comboIsolineas.addItem(text)
             self.Isolineas.addWidget(Isolinea(unit, name, config, "Psychr"))
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 2)
 
         scroll.setWidget(dlg)
 
@@ -161,7 +161,7 @@ class Dialog(QtWidgets.QDialog):
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

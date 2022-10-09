@@ -68,7 +68,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "condenser"))
         lyt.addWidget(self.condenser, 3, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 0, 1, 5)
 
         group = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
@@ -91,7 +91,7 @@ class UI_equipment(UI_equip):
         self.HK = QtWidgets.QComboBox()
         layout.addWidget(self.HK, 2, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            40, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed), 2, 3)
+            40, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed), 2, 3)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Spit in residue")), 2, 4)
         self.HKsplit = Entrada_con_unidades(float, spinbox=True, max=1.)
@@ -108,7 +108,7 @@ class UI_equipment(UI_equip):
         self.LK.currentIndexChanged.connect(partial(self.changeParams, "LK"))
         self.HK.currentIndexChanged.connect(partial(self.changeParams, "HK"))
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 0, 1, 5)
 
         lyt.addWidget(QtWidgets.QLabel(
@@ -132,7 +132,7 @@ class UI_equipment(UI_equip):
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
         lyt.addWidget(self.DeltaP, 8, 4)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             9, 0, 1, 5)
         self.buttonMcCabe = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "McCabe-Thiele"))
@@ -200,7 +200,7 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.material, 3, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            30, 30, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            30, 30, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             1, 3, 5, 1)
 
         self.groupBox_Pisos = QtWidgets.QGroupBox(
@@ -224,7 +224,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "material_pisos"))
         layout.addWidget(self.materialPisos, 2, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Diameter")), 4, 1)
@@ -236,7 +236,7 @@ class UI_equipment(UI_equip):
                                                 step=1, width=50)
         layout.addWidget(self.NumeroPisos, 5, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 2)
 
         self.groupBox_relleno = QtWidgets.QGroupBox(
@@ -254,7 +254,7 @@ class UI_equipment(UI_equip):
                                                    textounidad=texto)
         layout.addWidget(self.C_unit_relleno, 2, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1, 1, 2)
 
         lyt.addWidget(QtWidgets.QLabel(
@@ -283,7 +283,7 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.Costos, 10, 1, 2, 5)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             12, 1, 1, 6)
 
         self.groupBox_Costos = QtWidgets.QGroupBox(

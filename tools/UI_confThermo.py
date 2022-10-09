@@ -65,7 +65,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             self.mixing_rule.addItem(m)
         layout.addWidget(self.mixing_rule, 2, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 0, 1, 4)
         text = QtWidgets.QApplication.translate("pychemqt", "Enthalpy:")
         layout.addWidget(QtWidgets.QLabel(text), 4, 0, 1, 2)
@@ -80,7 +80,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             self.Cp_ideal.addItem(cp)
         layout.addWidget(self.Cp_ideal, 5, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 0, 1, 4)
         self.MEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Use MEoS for single compounds if it's available"))
@@ -105,8 +105,8 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             "pychemqt", "Use GERG EoS for mix if it's posible"))
         layout.addWidget(self.GERG, 12, 0, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 13, 0, 1, 5)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 13, 0, 1, 5)
 
         if os.environ["freesteam"] == "True":
             self.iapws.toggled.connect(self.freesteam.setEnabled)
@@ -233,7 +233,7 @@ class Dialog(QtWidgets.QDialog):
         self.datos = UI_confThermo_widget(config)
         layout.addWidget(self.datos)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

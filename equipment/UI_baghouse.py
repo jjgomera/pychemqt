@@ -51,7 +51,7 @@ class UI_equipment(UI_equip):
                  QtWidgets.QApplication.translate("pychemqt", "Efficiency")]
         self.efic = Tabla(2, horizontalHeader=title, filas=1, stretch=False)
         self.efic.setColumnReadOnly(0, True)
-        self.efic.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.efic.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.efic.editingFinished.connect(self.cambiarRendimientos)
         self.tabWidget.insertTab(
             1, self.efic,
@@ -67,7 +67,7 @@ class UI_equipment(UI_equip):
         self.metodo.currentIndexChanged.connect(self.tipoCalculoCambiado)
         lyt_Calc.addWidget(self.metodo, 1, 2, 1, 3)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 1, 1, 6)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "No cells")), 3, 1)
@@ -89,7 +89,7 @@ class UI_equipment(UI_equip):
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
         lyt_Calc.addWidget(self.deltaP, 5, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 6)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Bags per cell")), 7, 1)
@@ -129,8 +129,8 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "limpieza"))
         lyt_Calc.addWidget(self.limpieza, 9, 5)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
 
         groupbox = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Results"))
@@ -163,8 +163,8 @@ class UI_equipment(UI_equip):
         self.floorArea = Entrada_con_unidades(Area, readOnly=True)
         lyt.addWidget(self.floorArea, 3, 5)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 12, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 12, 1, 1, 6)
 
         # Output tab
         self.addSalida(

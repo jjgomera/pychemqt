@@ -60,8 +60,8 @@ class Widget(QtWidgets.QWidget):
             QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
         layout.addWidget(self.ElementalLog, 3, 1, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 4, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 4, 3)
 
         if config.has_section("Applications"):
             self.ElementalColorby.setCurrentText(
@@ -94,7 +94,7 @@ class Dialog(QtWidgets.QDialog):
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

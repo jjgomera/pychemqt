@@ -146,7 +146,7 @@ class TextEditor(QtWidgets.QWidget):
         """Merge format to current text"""
         cursor = self.notas.textCursor()
         if not cursor.hasSelection():
-            cursor.select(QtGui.QTextCursor.Document)
+            cursor.select(QtGui.QTextCursor.SelectionType.Document)
         cursor.mergeCharFormat(format)
         self.notas.mergeCurrentCharFormat(format)
 
@@ -156,16 +156,16 @@ class TextEditor(QtWidgets.QWidget):
         self.MergeFormat(format)
 
     def izquierda(self):
-        self.notas.setAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignAbsolute)
+        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignAbsolute)
 
     def centrar(self):
-        self.notas.setAlignment(QtCore.Qt.AlignHCenter)
+        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
 
     def derecha(self):
-        self.notas.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignAbsolute)
+        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignAbsolute)
 
     def justificar(self):
-        self.notas.setAlignment(QtCore.Qt.AlignJustify)
+        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignJustify)
 
     def PointSize(self, size):
         puntos = int(size)
@@ -177,9 +177,9 @@ class TextEditor(QtWidgets.QWidget):
     def Negrita(self):
         format = QtGui.QTextCharFormat()
         if self.actionNegrita.isChecked():
-            format.setFontWeight(QtGui.QFont.Bold)
+            format.setFontWeight(QtGui.QFont.Weight.Bold)
         else:
-            format.setFontWeight(QtGui.QFont.Normal)
+            format.setFontWeight(QtGui.QFont.Weight.Normal)
         self.MergeFormat(format)
 
     def Cursiva(self):
@@ -204,9 +204,9 @@ class TextEditor(QtWidgets.QWidget):
             self.actionSubScript.blockSignals(False)
         format = QtGui.QTextCharFormat()
         if self.actionSuperScript.isChecked():
-            format.setVerticalAlignment(QtGui.QTextCharFormat.AlignSuperScript)
+            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignSuperScript)
         else:
-            format.setVerticalAlignment(QtGui.QTextCharFormat.AlignNormal)
+            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignNormal)
         self.MergeFormat(format)
 
     def Subindice(self):
@@ -216,9 +216,9 @@ class TextEditor(QtWidgets.QWidget):
             self.actionSuperScript.blockSignals(False)
         format = QtGui.QTextCharFormat()
         if self.actionSubScript.isChecked():
-            format.setVerticalAlignment(QtGui.QTextCharFormat.AlignSubScript)
+            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignSubScript)
         else:
-            format.setVerticalAlignment(QtGui.QTextCharFormat.AlignNormal)
+            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignNormal)
         self.MergeFormat(format)
 
     def updateUI(self):
@@ -229,25 +229,25 @@ class TextEditor(QtWidgets.QWidget):
         self.FontSize.setCurrentIndex(self.FontSize.findText(
             str(int(self.notas.fontPointSize()))))
         self.actionNegrita.setChecked(
-            self.notas.fontWeight() == QtGui.QFont.Bold)
+            self.notas.fontWeight() == QtGui.QFont.Weight.Bold)
         self.actionCursiva.setChecked(self.notas.fontItalic())
         self.actionSubrayado.setChecked(self.notas.fontUnderline())
         format = self.notas.currentCharFormat()
         self.actionTachado.setChecked(format.fontStrikeOut())
         self.actionSuperScript.setChecked(False)
         self.actionSubScript.setChecked(False)
-        if format.verticalAlignment() == QtGui.QTextCharFormat.AlignSuperScript:
+        if format.verticalAlignment() == QtGui.QTextCharFormat.VerticalAlignment.AlignSuperScript:
             self.actionSuperScript.setChecked(True)
-        elif format.verticalAlignment() == QtGui.QTextCharFormat.AlignSubScript:
+        elif format.verticalAlignment() == QtGui.QTextCharFormat.VerticalAlignment.AlignSubScript:
             self.actionSubScript.setChecked(True)
         self.actionAlinearIzquierda.setChecked(
-            self.notas.alignment() == QtCore.Qt.AlignLeft)
+            self.notas.alignment() == QtCore.Qt.AlignmentFlag.AlignLeft)
         self.actionCentrar.setChecked(
-            self.notas.alignment() == QtCore.Qt.AlignHCenter)
+            self.notas.alignment() == QtCore.Qt.AlignmentFlag.AlignHCenter)
         self.actionJustificar.setChecked(
-            self.notas.alignment() == QtCore.Qt.AlignJustify)
+            self.notas.alignment() == QtCore.Qt.AlignmentFlag.AlignJustify)
         self.actionAlinearDerecha.setChecked(
-            self.notas.alignment() == QtCore.Qt.AlignRight)
+            self.notas.alignment() == QtCore.Qt.AlignmentFlag.AlignRight)
 
     def colordialog(self):
         """Show dialog to choose font color"""

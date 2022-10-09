@@ -54,7 +54,7 @@ class UI_equipment(UI_equip):
         self.metodo.currentIndexChanged.connect(self.tipoCalculoCambiado)
         lyt_Calc.addWidget(self.metodo, 1, 2, 1, 4)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 1, 1, 6)
 
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
@@ -69,7 +69,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "rendimientoAdmisible"))
         lyt_Calc.addWidget(self.rendimientoAdmisible, 4, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 1, 1, 6)
 
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
@@ -96,8 +96,8 @@ class UI_equipment(UI_equip):
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
         lyt_Calc.addWidget(self.deltaP, 9, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
 
         groupbox = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
             "pychemqt", "Result"))
@@ -113,8 +113,8 @@ class UI_equipment(UI_equip):
         self.rendimiento = Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.rendimiento, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 12, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 12, 1, 1, 6)
 
         # Output tab
         self.addSalida(

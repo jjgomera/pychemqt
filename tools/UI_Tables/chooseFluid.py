@@ -58,8 +58,8 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
         layout.addWidget(self.lista, 1, 1, 5, 1)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel,
-            QtCore.Qt.Vertical)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+            QtCore.Qt.Orientation.Vertical)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.helpRequested.connect(self.info)
@@ -86,7 +86,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
         gridLayout.addWidget(self.radioPR, 4, 1, 1, 2)
 
         gridLayout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 1)
         gridLayout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Viscosity")), 6, 1)
@@ -97,8 +97,8 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
         self.thermal = QtWidgets.QComboBox()
         gridLayout.addWidget(self.thermal, 7, 2)
         gridLayout.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Maximum), 8, 2)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Maximum), 8, 2)
 
         botonFilter = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"] +
@@ -257,7 +257,7 @@ class DialogFilterFluid(QtWidgets.QDialog):
                 checkBox.setChecked(boolean)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 3, 1)
@@ -288,8 +288,8 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
         self.CAS = QtWidgets.QLabel()
         layout.addWidget(self.CAS, 4, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            30, 30, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 1, 3, 3, 1)
+            30, 30, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 1, 3, 3, 1)
 
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "M")+":"), 1, 4)
@@ -309,8 +309,8 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
             unidades.Density, "DenGas", readOnly=True)
         layout.addWidget(self.rhoc, 4, 5)
         layout.addItem(QtWidgets.QSpacerItem(
-            30, 30, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 1, 6, 3, 1)
+            30, 30, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 1, 6, 3, 1)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "T triple")+":"), 1, 7)
@@ -331,7 +331,7 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
         layout.addWidget(self.f_acent, 4, 8)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Equation")+": "), 6, 1)
@@ -345,7 +345,7 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Others"))
         self.moreButton.clicked.connect(self.more)
         layout.addWidget(self.moreButton, 9, 1)
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         btBox.clicked.connect(self.reject)
         layout.addWidget(btBox, 9, 2, 1, 7)
 
@@ -652,8 +652,8 @@ class transportDialog(QtWidgets.QDialog):
         eqVisco = QtWidgets.QComboBox()
         lyt_viscosity.addWidget(eqVisco, 1, 2)
         lyt_viscosity.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 1, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
         stackedVisco = QtWidgets.QStackedWidget()
         lyt_viscosity.addWidget(stackedVisco, 2, 1, 1, 3)
         eqVisco.currentIndexChanged.connect(
@@ -681,8 +681,8 @@ class transportDialog(QtWidgets.QDialog):
         eqThermo = QtWidgets.QComboBox()
         lyt_conductivity.addWidget(eqThermo, 1, 2)
         lyt_conductivity.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 1, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
         stackedThermo = QtWidgets.QStackedWidget()
         lyt_conductivity.addWidget(stackedThermo, 2, 1, 1, 3)
         eqThermo.currentIndexChanged.connect(
@@ -741,8 +741,8 @@ class transportDialog(QtWidgets.QDialog):
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
             lyt_dielectric.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         # Tab surface tension
         tab2 = QtWidgets.QWidget()
@@ -775,8 +775,8 @@ class transportDialog(QtWidgets.QDialog):
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
             lyt_surface.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         # Tab liquid density
         tab5 = QtWidgets.QWidget()
@@ -825,8 +825,8 @@ class transportDialog(QtWidgets.QDialog):
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
             lyt_liquid_density.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         # Tab vapor density
         tab6 = QtWidgets.QWidget()
@@ -874,8 +874,8 @@ class transportDialog(QtWidgets.QDialog):
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
             lyt_vapor_density.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         # Tab vapor presure
         tab7 = QtWidgets.QWidget()
@@ -924,8 +924,8 @@ class transportDialog(QtWidgets.QDialog):
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
             lyt_vapor_pressure.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         # Tab melting presure
         tab8 = QtWidgets.QWidget()
@@ -991,8 +991,8 @@ class transportDialog(QtWidgets.QDialog):
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
             lyt_melting.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         # Tab sublimation presure
         tab9 = QtWidgets.QWidget()
@@ -1053,10 +1053,10 @@ class transportDialog(QtWidgets.QDialog):
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Not Implemented")), 1, 1)
             lyt_sublimation.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 2, 1)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         btBox.clicked.connect(self.reject)
         gridLayout.addWidget(btBox, 2, 1)
 
@@ -1195,8 +1195,8 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
                 Tabla_denominator,
                 QtWidgets.QApplication.translate("pychemqt", "Denominator"))
             gridLayout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 10, 3)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
 
         elif eq["eq"] == 2:
             Tabla_Visco2 = Tabla(
@@ -1209,8 +1209,8 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
             Tabla_Visco2.resizeColumnsToContents()
             gridLayout.addWidget(Tabla_Visco2, 6, 1, 1, 3)
             gridLayout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 10, 3)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
 
         elif eq["eq"] == 3:
             # ecs formulation
@@ -1253,8 +1253,8 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
             Tabla_Visco4.resizeColumnsToContents()
             gridLayout.addWidget(Tabla_Visco4, 6, 1, 1, 3)
             gridLayout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 10, 3)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
 
 
 class Widget_Conductivity_Data(QtWidgets.QWidget):
@@ -1352,8 +1352,8 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
 
         if "critical" in eq and eq["critical"]:
             gridLayout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Fixed,
-                QtWidgets.QSizePolicy.Fixed), 5, 3)
+                10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+                QtWidgets.QSizePolicy.Policy.Fixed), 5, 3)
             gridLayout.addWidget(QtWidgets.QLabel(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Critical enhancement")), 7, 1, 1, 3)
@@ -1434,8 +1434,8 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
                 gridLayout.addWidget(code_ThermK, 8, 1, 1, 3)
 
             gridLayout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Expanding,
-                QtWidgets.QSizePolicy.Expanding), 15, 3)
+                10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding), 15, 3)
 
 
 if __name__ == "__main__":

@@ -137,7 +137,7 @@ class UI_equipment(UI_equip):
         gridLayout_Calculo.addWidget(self.Material, 1, 1, 1, 1)
         self.BondWorkIndex=Entrada_con_unidades(float)
         gridLayout_Calculo.addWidget(self.BondWorkIndex, 1, 2, 1, 1)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,0,1,5)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,0,1,5)
 
         #Pestaña costos
         gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
@@ -151,14 +151,14 @@ class UI_equipment(UI_equip):
         self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Pulverizador", None))
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 2, 1, 1)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,1,1,2)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),2,1,1,2)
 
         self.Costos = costIndex.CostData(self.Equipment)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,4,1,2,5)
 
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),6,1,1,6)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,1,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),6,1,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,1,1,6)
         self.groupBox_Costos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,7,1,1,6)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)

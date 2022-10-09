@@ -98,7 +98,7 @@ myTranslator = QtCore.QTranslator()
 if myTranslator.load("pychemqt_" + locale, os.environ["pychemqt"] + "i18n"):
     app.installTranslator(myTranslator)
 qtTranslator = QtCore.QTranslator()
-path = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.TranslationsPath)
+path = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.LibraryPath.TranslationsPath)
 if qtTranslator.load("qt_" + locale, path):
     app.installTranslator(qtTranslator)
 
@@ -248,10 +248,10 @@ class SplashScreen(QtWidgets.QSplashScreen):
 
     def showMessage(self, message):
         """Procedure to update message in splash"""
-        align = QtCore.Qt.Alignment(QtCore.Qt.AlignBottom
-                                    | QtCore.Qt.AlignRight
-                                    | QtCore.Qt.AlignAbsolute)
-        color = QtGui.QColor(QtCore.Qt.white)
+        align = QtCore.Qt.Alignment(QtCore.Qt.AlignmentFlag.AlignBottom
+                                    | QtCore.Qt.AlignmentFlag.AlignRight
+                                    | QtCore.Qt.AlignmentFlag.AlignAbsolute)
+        color = QtGui.QColor(QtCore.Qt.GlobalColor.white)
         QtWidgets.QSplashScreen.showMessage(self, message, align, color)
         QtWidgets.QApplication.processEvents()
 

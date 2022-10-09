@@ -76,7 +76,7 @@ class ShowDependences(QtWidgets.QDialog):
             self.tree.addTopLevelItem(item)
 
         layout.addWidget(self.tree)
-        button = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        button = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         button.rejected.connect(self.reject)
         layout.addWidget(button)
 

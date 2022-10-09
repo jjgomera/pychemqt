@@ -65,7 +65,7 @@ class XTerm(QtCore.QProcess):
             args.append("python3")
 
         self.start(term, args)
-        if self.error() == QtCore.QProcess.FailedToStart:
+        if self.error() == QtCore.QProcess.ProcessError.FailedToStart:
             print("xterm not installed")
 
 

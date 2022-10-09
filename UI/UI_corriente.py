@@ -73,7 +73,7 @@ class Ui_corriente(QtWidgets.QWidget):
 
         gridLayout1 = QtWidgets.QVBoxLayout(self)
         self.toolBox = QtWidgets.QTabWidget()
-        self.toolBox.setTabPosition(QtWidgets.QTabWidget.South)
+        self.toolBox.setTabPosition(QtWidgets.QTabWidget.TabPosition.South)
         gridLayout1.addWidget(self.toolBox)
 
         # Standard definition
@@ -204,7 +204,7 @@ class Corriente_Dialog(QtWidgets.QDialog, Ui_corriente):
         self.status = Status()
         layout.addWidget(self.status)
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox)
@@ -242,7 +242,7 @@ class StreamDefinition(QtWidgets.QWidget):
         self.x.valueChanged.connect(partial(self.calculo, "x"))
         lyt.addWidget(self.x, 3, 2, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 1, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Mass flow")), 5, 1)
@@ -264,7 +264,7 @@ class StreamDefinition(QtWidgets.QWidget):
         lyt.addWidget(self.caudalVolumetrico, 7, 2, 1, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             8, 1, 1, 1)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Composition")), 9, 1)
@@ -279,10 +279,10 @@ class StreamDefinition(QtWidgets.QWidget):
         self.tipoFraccion.currentIndexChanged.connect(
             self.tipoFraccionesCambiado)
         self.tipoFraccion.setSizePolicy(
-            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+            QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
         lyt.addWidget(self.tipoFraccion, 9, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            5, 5, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            5, 5, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             10, 1, 1, 1)
 
         composition = QtWidgets.QWidget()
@@ -291,19 +291,19 @@ class StreamDefinition(QtWidgets.QWidget):
         self.xi = []
         for i, nombre in enumerate(self.nombres):
             label = QtWidgets.QLabel(nombre)
-            label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
             comp_lyt.addWidget(label, i, 1)
             widget = Entrada_con_unidades(float)
             widget.valueChanged.connect(self.changeFraction)
             comp_lyt.addWidget(widget, i, 2)
             self.xi.append(widget)
         scroll = QtWidgets.QScrollArea()
-        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         scroll.setWidget(composition)
         lyt.addWidget(scroll, 10, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 11, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 11, 3)
 
         if stream:
             self.setStream(stream)
@@ -475,15 +475,15 @@ class PsychroDefinition(QtWidgets.QWidget):
         self.inputs.stateChanged.connect(partial(self.calculo, "state"))
         layout.addWidget(self.inputs, 1, 1, 1, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 1, 3)
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Fixed), 2, 1)
+        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+                                         QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
+        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+                                         QtWidgets.QSizePolicy.Policy.Fixed), 2, 1)
 
         vlayout = QtWidgets.QVBoxLayout()
         layout.addLayout(vlayout, 1, 4, 6, 1)
-        vlayout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
-                                          QtWidgets.QSizePolicy.Expanding))
+        vlayout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+                                          QtWidgets.QSizePolicy.Policy.Expanding))
         groupbox = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
             "pychemqt", "Calculated properties"))
         vlayout.addWidget(groupbox)
@@ -530,8 +530,8 @@ class PsychroDefinition(QtWidgets.QWidget):
             "pychemqt", "Water fraction")), 11, 1)
         self.Xw = Entrada_con_unidades(float, readOnly=True)
         lytGroup.addWidget(self.Xw, 11, 2)
-        vlayout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
-                                          QtWidgets.QSizePolicy.Expanding))
+        vlayout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+                                          QtWidgets.QSizePolicy.Policy.Expanding))
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Mass Flow")), 3, 1)
@@ -548,8 +548,8 @@ class PsychroDefinition(QtWidgets.QWidget):
         self.caudalVolumetrico = Entrada_con_unidades(unidades.VolFlow, readOnly=readOnly)
         self.caudalVolumetrico.valueChanged.connect(partial(self.updatekwargsFlow, "caudalVolumetrico"))
         layout.addWidget(self.caudalVolumetrico, 5, 2)
-        layout.addItem(QtWidgets.QSpacerItem(5, 5, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 9, 2)
+        layout.addItem(QtWidgets.QSpacerItem(5, 5, QtWidgets.QSizePolicy.Policy.Expanding,
+                                         QtWidgets.QSizePolicy.Policy.Expanding), 9, 2)
 
         self.setReadOnly(readOnly)
         self.inputs.updateInputs(0)
@@ -609,10 +609,10 @@ class StreamProperties(QtWidgets.QTableWidget):
             self.setRowHeight(i, 24)
         self.setColumnWidth(0, 85)
         self.setColumnWidth(1, 85)
-        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
-        self.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
-        self.horizontalHeader().resizeSections(QtWidgets.QHeaderView.Fixed)
+        self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
+        self.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeMode.Fixed)
+        self.horizontalHeader().resizeSections(QtWidgets.QHeaderView.ResizeMode.Fixed)
         horheader = [QtWidgets.QApplication.translate("pychemqt", "Liquid"),
                      QtWidgets.QApplication.translate("pychemqt", "Vapor")]
         self.setHorizontalHeaderLabels(horheader)
@@ -749,14 +749,14 @@ class SolidDefinition(QtWidgets.QWidget):
         self.CaudalSolidos = []
         for i, nombre in enumerate(self.NameSol):
             label = QtWidgets.QLabel(nombre)
-            label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
             comp_lyt.addWidget(label, i, 1)
             widget = Entrada_con_unidades(unidades.MassFlow)
             widget.valueChanged.connect(self.caudalesSolidoFinished)
             comp_lyt.addWidget(widget, i, 2)
             self.CaudalSolidos.append(widget)
         scroll = QtWidgets.QScrollArea()
-        scroll.setFrameShape(QtWidgets.QFrame.NoFrame)
+        scroll.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         scroll.setMinimumHeight(min(100, 30*len(M)))
         scroll.setWidget(composition)
         lyt.addWidget(scroll, 1, 1, 1, 2)
@@ -788,16 +788,16 @@ class SolidDefinition(QtWidgets.QWidget):
             QtWidgets.QApplication.translate("pychemqt", "Normalize"))
         self.botonNormalizar.clicked.connect(self.botonNormalizar_clicked)
         dialog.addButton(self.botonNormalizar,
-                         QtWidgets.QDialogButtonBox.AcceptRole)
+                         QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole)
         self.botonGenerar = QtWidgets.QPushButton(
             QtWidgets.QApplication.translate("pychemqt", "Generate"))
         self.botonGenerar.clicked.connect(self.botonGenerar_clicked)
         dialog.addButton(self.botonGenerar,
-                         QtWidgets.QDialogButtonBox.AcceptRole)
+                         QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole)
         lyt.addWidget(dialog, 7, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 3)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 8, 3)
 
         self.distribucionTamanos.setConnected()
         self.setSolido(solid)
@@ -833,9 +833,9 @@ class SolidDefinition(QtWidgets.QWidget):
         self.diametroParticula.setReadOnly(bool)
         self.checkDistribucion.setDisabled(bool)
         if bool:
-            triggers = QtWidgets.QAbstractItemView.NoEditTriggers
+            triggers = QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers
         else:
-            triggers = QtWidgets.QAbstractItemView.AllEditTriggers
+            triggers = QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers
         self.distribucionTamanos.setEditTriggers(triggers)
 
     def distribucionFinished(self):
@@ -1014,10 +1014,10 @@ class SolidDistribution(QtWidgets.QDialog):
         self.diametros = QtWidgets.QLineEdit()
         layout.addWidget(self.diametros, 3, 1, 1, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 3)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+                                         QtWidgets.QSizePolicy.Policy.Expanding), 4, 1, 1, 3)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.accepted.connect(self.aceptar)
         layout.addWidget(self.buttonBox, 5, 0, 1, 2)
@@ -1035,8 +1035,8 @@ class SolidDistribution(QtWidgets.QDialog):
                 entry = Entrada_con_unidades(unit, self.model[key]["magnitud"][i])
                 self.entries[key].append(entry)
                 lyt.addWidget(entry, i, 2)
-            lyt.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding,
-                                          QtWidgets.QSizePolicy.Expanding), i+1, 1)
+            lyt.addItem(QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+                                          QtWidgets.QSizePolicy.Policy.Expanding), i+1, 1)
             self.stacked.addWidget(widget)
 
         self.standardCambiado("Tyler")

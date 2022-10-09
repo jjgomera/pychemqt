@@ -83,11 +83,11 @@ class Status(QtWidgets.QLabel):
         """
         super(Status, self).__init__(parent)
         self.setState(state)
-        self.setAlignment(QtCore.Qt.AlignCenter)
-        self.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.setFrameShape(QtWidgets.QFrame.Panel)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                           QtWidgets.QSizePolicy.Preferred)
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.setFrameShape(QtWidgets.QFrame.Shape.Panel)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Preferred)
         self.oldState = 0
         self.oldText = ""
 
@@ -205,7 +205,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.entrada.setFixedSize(width, 24)
         self.entrada.editingFinished.connect(self.entrada_editingFinished)
         self.entrada.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         if unidad == int:
             if max == float("inf"):
                 max = 1000000000
@@ -243,7 +243,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
 
         if texto:
             self.texto = QtWidgets.QLabel()
-            self.texto.setAlignment(QtCore.Qt.AlignVCenter)
+            self.texto.setAlignment(QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.texto.setIndent(5)
             txt = ""
             if self.UIconfig:
@@ -254,8 +254,8 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             layout.addWidget(self.texto, 0, 4)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 0, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 0, 5)
         self.setResaltado(resaltado)
 
     def unidades_clicked(self):
@@ -306,12 +306,12 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         paleta = QtGui.QPalette()
         if bool:
             paleta.setColor(
-                QtGui.QPalette.Base, QtGui.QColor(self.colorResaltado))
+                QtGui.QPalette.ColorRole.Base, QtGui.QColor(self.colorResaltado))
         elif self.readOnly:
             paleta.setColor(
-                QtGui.QPalette.Base, QtGui.QColor(self.colorReadOnly))
+                QtGui.QPalette.ColorRole.Base, QtGui.QColor(self.colorReadOnly))
         else:
-            paleta.setColor(QtGui.QPalette.Base, QtGui.QColor("white"))
+            paleta.setColor(QtGui.QPalette.ColorRole.Base, QtGui.QColor("white"))
         self.entrada.setPalette(paleta)
 
     def setReadOnly(self, readOnly):
@@ -368,18 +368,18 @@ class Entrada_con_unidades(QtWidgets.QWidget):
     def keyPressEvent(self, e):
         """Manage the key press to emulate a QSpinbox"""
         if not self.readOnly:
-            if e.key() in [QtCore.Qt.Key_Insert, QtCore.Qt.Key_Backspace]:
+            if e.key() in [QtCore.Qt.Key.Key_Insert, QtCore.Qt.Key.Key_Backspace]:
                 self.clear()
             if self.spinbox:
                 if not self.value:
                     self.value = self.start
-                if e.key() == QtCore.Qt.Key_Up:
+                if e.key() == QtCore.Qt.Key.Key_Up:
                     valor = self.value+self.step
                     if valor > self.max:
                         self.setValue(self.max)
                     else:
                         self.setValue(valor)
-                elif e.key() == QtCore.Qt.Key_Down:
+                elif e.key() == QtCore.Qt.Key.Key_Down:
                     valor = self.value-self.step
                     if valor < self.min:
                         self.setValue(self.min)
@@ -414,7 +414,7 @@ class Tabla(QtWidgets.QTableWidget):
                  readOnly=False, columnReadOnly=None,
                  horizontalHeader=None, verticalHeader=True,
                  verticalHeaderLabels=None, verticalHeaderModel="",
-                 verticalOffset=0, orientacion=QtCore.Qt.AlignRight,
+                 verticalOffset=0, orientacion=QtCore.Qt.AlignmentFlag.AlignRight,
                  delegate=CellEditor, delegateforRow=None,
                  parent=None):
         """
@@ -468,9 +468,9 @@ class Tabla(QtWidgets.QTableWidget):
         # readOnly state
         self.readOnly = readOnly
         if readOnly:
-            self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+            self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         else:
-            self.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
+            self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
         if columnReadOnly is None:
             self.columnReadOnly = [self.readOnly]*self.columnas
         else:
@@ -488,7 +488,7 @@ class Tabla(QtWidgets.QTableWidget):
         self.dinamica = dinamica
 
         # self.setAlternatingRowColors(True)
-        self.setGridStyle(QtCore.Qt.DotLine)
+        self.setGridStyle(QtCore.Qt.PenStyle.DotLine)
         self.orientacion = orientacion
         for i in range(filas):
             self.addRow()
@@ -525,14 +525,14 @@ class Tabla(QtWidgets.QTableWidget):
         for j in range(self.columnCount()):
             self.setItem(row, j, QtWidgets.QTableWidgetItem(data[j]))
             self.item(row, j).setTextAlignment(
-                self.orientacion | QtCore.Qt.AlignVCenter)
+                self.orientacion | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
             if self.columnReadOnly[j]:
-                flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+                flags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
                 self.item(row, j).setBackground(inactivo)
             else:
-                flags = QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | \
-                    QtCore.Qt.ItemIsSelectable
+                flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | \
+                    QtCore.Qt.ItemFlag.ItemIsSelectable
             self.item(row, j).setFlags(flags)
 
         self.setVHeader(row)
@@ -583,7 +583,7 @@ class Tabla(QtWidgets.QTableWidget):
             value = representacion(value, **fmt)
         self.item(row, column).setText(value)
         self.item(row, column).setTextAlignment(
-            self.orientacion | QtCore.Qt.AlignVCenter)
+            self.orientacion | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
     def setColumn(self, column, data, **fmt):
         """Set data for a complete column"""
@@ -626,7 +626,7 @@ class Tabla(QtWidgets.QTableWidget):
                     # self.verticalHeaderModel+str(fila)))
                 self.item(fila, columna).setText(str(dato))
                 self.item(fila+self.verticalOffset, columna).setTextAlignment(
-                    self.orientacion | QtCore.Qt.AlignVCenter)
+                    self.orientacion | QtCore.Qt.AlignmentFlag.AlignVCenter)
         for i in range(self.verticalOffset, self.rowCount()):
             self.setRowHeight(i+self.verticalOffset, 20)
 
@@ -641,10 +641,10 @@ class Tabla(QtWidgets.QTableWidget):
     def setColumnReadOnly(self, column, bool):
         """Set readonly estate per column"""
         if bool:
-            flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+            flags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
         else:
-            flags = QtCore.Qt.ItemIsEditable | QtCore.Qt.ItemIsEnabled | \
-                QtCore.Qt.ItemIsSelectable
+            flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | \
+                QtCore.Qt.ItemFlag.ItemIsSelectable
 
         for row in range(self.rowCount()):
             self.item(row, column).setFlags(flags)
@@ -682,13 +682,13 @@ class ColorSelector(QtWidgets.QWidget):
         self.button.clicked.connect(self.ColorButtonClicked)
         lyt.addWidget(self.button)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
 
         if isAlpha:
-            self.isAlpha = QtGui.QColor.HexArgb
+            self.isAlpha = QtGui.QColor.NameFormat.HexArgb
         else:
-            self.isAlpha = QtGui.QColor.HexRgb
+            self.isAlpha = QtGui.QColor.NameFormat.HexRgb
 
         r = int(color[1:3], 16)
         g = int(color[3:5], 16)
@@ -710,7 +710,7 @@ class ColorSelector(QtWidgets.QWidget):
         """Show the QColorDialog to let user choose new color"""
         dlg = QtWidgets.QColorDialog(self.color, self)
         if self.isAlpha:
-            dlg.setOption(QtWidgets.QColorDialog.ShowAlphaChannel)
+            dlg.setOption(QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel)
         if dlg.exec():
             self.setColor(dlg.currentColor())
             self.valueChanged.emit(dlg.currentColor().name())
@@ -762,7 +762,7 @@ class DragButton(QtWidgets.QToolButton):
         # pixmap = self.icon().pixmap(24, 24)
         # drag.setHotSpot(QtCore.QPoint(12, 12))
         # drag.setPixmap(pixmap)
-        # drag.exec(QtCore.Qt.CopyAction)
+        # drag.exec(QtCore.Qt.DropAction.CopyAction)
 
 
 class PathConfig(QtWidgets.QWidget):
@@ -789,8 +789,8 @@ class PathConfig(QtWidgets.QWidget):
         if title:
             layout.addWidget(QtWidgets.QLabel(title))
             layout.addItem(QtWidgets.QSpacerItem(
-                10, 10, QtWidgets.QSizePolicy.Fixed,
-                QtWidgets.QSizePolicy.Fixed))
+                10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+                QtWidgets.QSizePolicy.Policy.Fixed))
 
         self.path = QtWidgets.QLineEdit()
         self.path.setFixedHeight(24)
@@ -863,7 +863,7 @@ class LineConfig(QtWidgets.QGroupBox):
         lyt1 = QtWidgets.QHBoxLayout()
         self.Width = QtWidgets.QDoubleSpinBox()
         self.Width.setFixedWidth(60)
-        self.Width.setAlignment(QtCore.Qt.AlignRight)
+        self.Width.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.Width.setRange(0.1, 5)
         self.Width.setDecimals(1)
         self.Width.setSingleStep(0.1)
@@ -884,14 +884,14 @@ class LineConfig(QtWidgets.QGroupBox):
         self.Marker.currentIndexChanged.connect(self.changeMarker)
         lyt1.addWidget(self.Marker)
         lyt1.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
         layout.addLayout(lyt1)
 
         lyt2 = QtWidgets.QHBoxLayout()
         self.MarkerSize = QtWidgets.QDoubleSpinBox()
         self.MarkerSize.setFixedWidth(60)
-        self.MarkerSize.setAlignment(QtCore.Qt.AlignRight)
+        self.MarkerSize.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.MarkerSize.setRange(0.1, 5)
         self.MarkerSize.setDecimals(1)
         self.MarkerSize.setSingleStep(0.1)
@@ -904,7 +904,7 @@ class LineConfig(QtWidgets.QGroupBox):
         lyt2.addWidget(self.MarkerColor)
         self.EdgeSize = QtWidgets.QDoubleSpinBox()
         self.EdgeSize.setFixedWidth(60)
-        self.EdgeSize.setAlignment(QtCore.Qt.AlignRight)
+        self.EdgeSize.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.EdgeSize.setRange(0.1, 5)
         self.EdgeSize.setDecimals(1)
         self.EdgeSize.setSingleStep(0.1)
@@ -988,8 +988,8 @@ class GridConfig(LineConfig):
             self.gridWhich.addItem(name)
         lyt.addWidget(self.gridWhich)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
         self.layout().insertLayout(1, lyt)
 
         lyt = QtWidgets.QHBoxLayout()
@@ -1000,8 +1000,8 @@ class GridConfig(LineConfig):
             self.gridAxis.addItem(name)
         lyt.addWidget(self.gridAxis)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed))
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
         self.layout().insertLayout(2, lyt)
 
     def setConfig(self, config, section):
@@ -1060,8 +1060,8 @@ class LineStyleCombo(CustomCombo):
 
 class PFDLineCombo(LineStyleCombo):
     """Custom QComboBox for select PFD line styles for stream"""
-    key = [QtCore.Qt.SolidLine, QtCore.Qt.DashLine, QtCore.Qt.DotLine,
-           QtCore.Qt.DashDotLine, QtCore.Qt.DashDotDotLine]
+    key = [QtCore.Qt.PenStyle.SolidLine, QtCore.Qt.PenStyle.DashLine, QtCore.Qt.PenStyle.DotLine,
+           QtCore.Qt.PenStyle.DashDotLine, QtCore.Qt.PenStyle.DashDotDotLine]
     image = {
         key[0]: os.path.join("images", "button", "solid_line.png"),
         key[1]: os.path.join("images", "button", "dash_line.png"),
@@ -1136,7 +1136,7 @@ class NumericFactor(QtWidgets.QDialog):
             int, width=45, value=5, boton=False, spinbox=True, min=1, max=12)
         layout.addWidget(self.FiguresExponential, 7, 3)
         layout.addItem(QtWidgets.QSpacerItem(
-            30, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            30, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             8, 1)
         self.checkExpVariable = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate(
@@ -1166,14 +1166,14 @@ class NumericFactor(QtWidgets.QDialog):
         self.checkExpVariable.toggled.connect(self.labelTolerancia.setEnabled)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             13, 1)
         self.muestra = QtWidgets.QLabel()
         layout.addWidget(self.muestra, 14, 1, 1, 3)
 
         buttonBox = QtWidgets.QDialogButtonBox()
-        buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel |
-                                     QtWidgets.QDialogButtonBox.Ok)
+        buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+                                     QtWidgets.QDialogButtonBox.StandardButton.Ok)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 20, 1, 1, 3)
@@ -1218,8 +1218,8 @@ class NumericFactor(QtWidgets.QDialog):
 
         if unit and unit.__text__:
             layout.addItem(QtWidgets.QSpacerItem(
-                20, 10, QtWidgets.QSizePolicy.Fixed,
-                QtWidgets.QSizePolicy.Fixed), 15, 1, 1, 3)
+                20, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+                QtWidgets.QSizePolicy.Policy.Fixed), 15, 1, 1, 3)
             self.muestra = QtWidgets.QLabel()
             layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
                 "pychemqt", "Convert units")), 16, 1)
@@ -1283,7 +1283,7 @@ class InputFont(QtWidgets.QWidget):
         self.lineEdit = QtWidgets.QLineEdit()
         self.lineEdit.setFixedHeight(24)
         # self.lineEdit.setSizePolicy(
-            # QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+            # QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         layout.addWidget(self.lineEdit)
         self.fontButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"] +
@@ -1315,7 +1315,7 @@ class InputFont(QtWidgets.QWidget):
     def setColor(self, color):
         self.colorButton.setPalette(QtGui.QPalette(color))
         paleta = QtGui.QPalette()
-        paleta.setColor(QtGui.QPalette.Text, color)
+        paleta.setColor(QtGui.QPalette.ColorRole.Text, color)
         self.lineEdit.setPalette(paleta)
         self.colorChanged.emit(color.name())
         self.color = color
@@ -1344,18 +1344,18 @@ class Table_Graphics(QtWidgets.QWidget):
     desired if availables"""
     def __init__(self, entity, id, preferences, parent=None):
         super(Table_Graphics, self).__init__(parent)
-        self.setWindowFlags(QtCore.Qt.Popup)
+        self.setWindowFlags(QtCore.Qt.WindowType.Popup)
         layout = QtWidgets.QVBoxLayout(self)
         if isinstance(entity, Corriente):
             title = "Stream %i" % id
         else:
             title = "Equipment %i" % id
         label = QtWidgets.QLabel(title)
-        label.setAlignment(QtCore.Qt.AlignCenter)
+        label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(label)
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.HLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line)
         if entity:
             if entity.status:
@@ -1364,7 +1364,7 @@ class Table_Graphics(QtWidgets.QWidget):
                     label = QtWidgets.QLabel(txt)
                     label.setToolTip(tooltip)
                     if j:
-                        label.setAlignment(QtCore.Qt.AlignRight)
+                        label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
                     layout.addWidget(label)
             else:
                 layout.addWidget(QtWidgets.QLabel(entity.msg))
@@ -1417,13 +1417,13 @@ def okToContinue(parent, dirty, func, parameters):
         parent,
         QtWidgets.QApplication.translate("pychemqt", "Unsaved changes"),
         QtWidgets.QApplication.translate("pychemqt", "Save unsaved changes?"),
-        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No |
-        QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Yes)
-    if dialog == QtWidgets.QMessageBox.Cancel:
+        QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No |
+        QtWidgets.QMessageBox.StandardButton.Cancel, QtWidgets.QMessageBox.StandardButton.Yes)
+    if dialog == QtWidgets.QMessageBox.StandardButton.Cancel:
         return False
-    elif dialog == QtWidgets.QMessageBox.No:
+    elif dialog == QtWidgets.QMessageBox.StandardButton.No:
         return True
-    elif dialog == QtWidgets.QMessageBox.Yes:
+    elif dialog == QtWidgets.QMessageBox.StandardButton.Yes:
         func(*parameters)
         return True
 
@@ -1470,7 +1470,7 @@ def mathTex2QPixmap(mathTex, fs):
 
     # convert mpl figure to QPixmap
     buf, size = fig.canvas.print_to_buffer()
-    qimage = QtGui.QImage(buf, size[0], size[1], QtGui.QImage.Format_ARGB32)
+    qimage = QtGui.QImage(buf, size[0], size[1], QtGui.QImage.Format.Format_ARGB32)
     qpixmap = QtGui.QPixmap(qimage)
 
     return qpixmap
@@ -1488,9 +1488,9 @@ class QLabelMath(QtWidgets.QLabel):
             Font size used in image
         """
         super(QLabelMath, self).__init__(*args, **kw)
-        self.setAlignment(QtCore.Qt.AlignCenter)
-        self.setFrameShape(QtWidgets.QFrame.NoFrame)
-        self.setFrameStyle(QtWidgets.QFrame.Plain)
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
+        self.setFrameStyle(QtWidgets.QFrame.Shadow.Plain)
         self.fs = fs
         if tex:
             pixmap = mathTex2QPixmap(tex, fs)

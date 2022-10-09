@@ -65,8 +65,8 @@ class UI_equipment(UI_equip):
         self.LTube.valueChanged.connect(partial(self.changeParams, "LTube"))
         lyt.addWidget(self.LTube, 4, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 5, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 1)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Tube internal diameter")), 6, 1)
         self.DiTube = Entrada_con_unidades(Length, "pipeDiameter")
@@ -88,8 +88,8 @@ class UI_equipment(UI_equip):
         self.rTube.valueChanged.connect(partial(self.changeParams, "rTube"))
         lyt.addWidget(self.rTube, 9, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 10, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 10, 1)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Annulli external diameter")), 11, 1)
         self.DeeTube = Entrada_con_unidades(Length, "pipeDiameter")
@@ -112,8 +112,8 @@ class UI_equipment(UI_equip):
         buttonPipe.clicked.connect(self.showMaterial)
         lyt.addWidget(buttonPipe, 6, 3, 4, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 14, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 14, 1)
         self.tubeFinned = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Finned Tube"))
         lyt.addWidget(self.tubeFinned, 15, 1, 1, 4)
@@ -139,8 +139,8 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "annulliFouling"))
         lyt.addWidget(self.annulliFouling, 17, 2, 1, 5)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 20, 1, 1, 6)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 20, 1, 1, 6)
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
@@ -170,8 +170,8 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.orientacion, 3, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 4, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
 
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Output inside temperature")), 5, 1)
@@ -199,8 +199,8 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.annulliXout, 6, 5)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 1, 1, 6)
 
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Results"))
@@ -249,7 +249,7 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.CF, 2, 8)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            0, 0, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             17, 1, 1, 6)
 
         # Cost tab
@@ -263,8 +263,8 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "material"))
         lyt.addWidget(self.material, 2, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 0, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 3, 0, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Design Pressure")), 4, 1)
         self.P_dis = Entrada_con_unidades(Pressure)
@@ -272,19 +272,19 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "P_dis"))
         lyt.addWidget(self.P_dis, 4, 2, 1, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 0, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 0, 1, 6)
 
         self.Costos = CostData(self.Equipment)
         self.Costos.valueChanged.connect(self.changeParamsCoste)
         lyt.addWidget(self.Costos, 6, 1, 2, 5)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 0, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 8, 0, 1, 6)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 0, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 0, 1, 6)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
         lyt.addWidget(group, 9, 1, 1, 5)

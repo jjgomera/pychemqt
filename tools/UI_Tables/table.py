@@ -172,10 +172,10 @@ class TablaMEoS(Tabla):
         super(TablaMEoS, self).__init__(*args, **kwargs)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
         self.horizontalHeader().setContextMenuPolicy(
-            QtCore.Qt.CustomContextMenu)
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.horizontalHeader().customContextMenuRequested.connect(
             self.hHeaderClicked)
-        self.verticalHeader().setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.verticalHeader().setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.verticalHeader().customContextMenuRequested.connect(
             self.vHeaderClicked)
         self.itemSelectionChanged.connect(self.selectPoint)
@@ -186,8 +186,8 @@ class TablaMEoS(Tabla):
         # Widgets to show in the statusbar of mainwindow
         self.statusWidget = []
         self.statusThermo = ClickableLabel()
-        self.statusThermo.setFrameShape(QtWidgets.QFrame.WinPanel)
-        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusThermo.setFrameShape(QtWidgets.QFrame.Shape.WinPanel)
+        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.statusThermo.clicked.connect(self.showFluid)
         self.statusWidget.append(self.statusThermo)
 
@@ -257,7 +257,7 @@ class TablaMEoS(Tabla):
 
         actionCopy = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Copy"),
-            slot=self.copy, shortcut=QtGui.QKeySequence.Copy,
+            slot=self.copy, shortcut=QtGui.QKeySequence.StandardKey.Copy,
             icon=os.environ["pychemqt"] +
             os.path.join("images", "button", "editCopy"),
             parent=self)
@@ -550,7 +550,7 @@ class TablaMEoS(Tabla):
 
         # Set calculate point readOnly
         if not self.readOnly:
-            flags = QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+            flags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
             color = config.Preferences.get("General", 'Color_ReadOnly')
             for i, bool in enumerate(self.columnReadOnly):
                 if not bool:
@@ -563,7 +563,7 @@ class TablaMEoS(Tabla):
         menu = QtWidgets.QMenu()
         actionCopy = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Copy"),
-            slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.Copy,
+            slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.StandardKey.Copy,
             icon=os.environ["pychemqt"] +
             os.path.join("images", "button", "editCopy"),
             parent=self)
@@ -750,8 +750,8 @@ class Ui_Saturation(QtWidgets.QDialog):
         layoutg2.addWidget(self.VariarXconP, 4, 1)
 
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.HLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line, 2, 1, 1, 4)
 
         self.labelFix = QtWidgets.QLabel()
@@ -775,7 +775,7 @@ class Ui_Saturation(QtWidgets.QDialog):
         layout.addWidget(self.Incremento, 6, 2)
 
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 10, 1, 1, 4)
@@ -926,8 +926,8 @@ class Ui_Isoproperty(QtWidgets.QDialog):
         layout.addWidget(self.vary, 2, 2)
 
         line = QtWidgets.QFrame()
-        line.setFrameShape(QtWidgets.QFrame.HLine)
-        line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(line, 3, 1, 1, 2)
 
         self.labelFix = QtWidgets.QLabel()
@@ -951,7 +951,7 @@ class Ui_Isoproperty(QtWidgets.QDialog):
         layout.addWidget(self.Incremento, 7, 2)
 
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 10, 1, 1, 2)
@@ -1042,20 +1042,20 @@ class AddPoint(QtWidgets.QDialog):
         layout.addWidget(self.checkBelow, i+4, 1, 1, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Reset | QtWidgets.QDialogButtonBox.Ok |
-            QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Reset | QtWidgets.QDialogButtonBox.StandardButton.Ok |
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.clicked.connect(self.click)
         layout.addWidget(self.buttonBox, i+5, 1, 1, 2)
 
     def click(self, button):
         """Manage mouse click event over buttonbox"""
-        if QtWidgets.QDialogButtonBox.Reset == \
+        if QtWidgets.QDialogButtonBox.StandardButton.Reset == \
                 self.buttonBox.standardButton(button):
             self.reset()
-        elif QtWidgets.QDialogButtonBox.Ok == \
+        elif QtWidgets.QDialogButtonBox.StandardButton.Ok == \
                 self.buttonBox.standardButton(button):
             self.accept()
-        elif QtWidgets.QDialogButtonBox.Cancel == \
+        elif QtWidgets.QDialogButtonBox.StandardButton.Cancel == \
                 self.buttonBox.standardButton(button):
             self.reject()
 

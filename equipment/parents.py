@@ -234,15 +234,15 @@ class UI_equip(QtWidgets.QDialog):
         self.checkIgnorar.toggled.connect(self.ignorar)
         layout.addWidget(self.checkIgnorar, 1, 1, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok |
-            QtWidgets.QDialogButtonBox.Help)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok |
+            QtWidgets.QDialogButtonBox.StandardButton.Help)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.helpRequested.connect(self.ayuda)
         layout.addWidget(self.buttonBox, 1, 2, 1, 1)
 
         if not equipment.help:
-            button = self.buttonBox.button(QtWidgets.QDialogButtonBox.Help)
+            button = self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Help)
             button.setVisible(False)
 
         # Input tab

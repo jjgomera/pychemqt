@@ -53,7 +53,7 @@ class UI_equipment (UI_equip):
         self.off.currentIndexChanged.connect(self.criterio_Changed)
         lyt_Calc.addWidget(self.off, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 1, 1, 6)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pout")), 3, 1)
@@ -76,8 +76,8 @@ class UI_equipment (UI_equip):
         self.Bubble.valueChanged.connect(partial(self.changeParams, "Bubble"))
         lyt_Calc.addWidget(self.Bubble, 6, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
 
         self.criterio_Changed(0)
         if equipment:

@@ -48,7 +48,7 @@ class eqDIPPR(QtWidgets.QWidget):
         self.eqDIPPR.setValue(value)
         self.eqDIPPR.setRange(1, 9)
         self.eqDIPPR.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.eqDIPPR.setFixedWidth(50)
         txt = QtWidgets.QApplication.translate("pychemqt", "Equation") + "\n"
         txt += "\t1:\tY = A+B*T+C*T²+D*T³+E*T⁴\n"
@@ -125,8 +125,8 @@ class InputTableWidget(QtWidgets.QWidget):
         clearButton.clicked.connect(self.delete)
         gridLayout.addWidget(clearButton, 1, 3)
         gridLayout.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 1, 4)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 4)
 
         self.tabla = Tabla(self.columnas, horizontalHeader=horizontalHeader,
                            verticalHeader=False, stretch=False)
@@ -276,9 +276,9 @@ class InputTableDialog(QtWidgets.QDialog):
         self.widget = InputTableWidget(columnas, **kwargs)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         if help:
-            self.buttonBox.addButton(QtWidgets.QDialogButtonBox.Help)
+            self.buttonBox.addButton(QtWidgets.QDialogButtonBox.StandardButton.Help)
             self.buttonBox.helpRequested.connect(self.ayuda)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)

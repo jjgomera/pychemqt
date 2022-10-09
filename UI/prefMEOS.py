@@ -77,7 +77,7 @@ class Isolinea(QtWidgets.QDialog):
         self.Personalizar.toggled.connect(self.intervalo.setDisabled)
         self.Personalizar.toggled.connect(self.Lista.setEnabled)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 4)
         if unit.__name__ != "float" and section != "Psychr":
             self.Critica = QtWidgets.QCheckBox(
@@ -85,7 +85,7 @@ class Isolinea(QtWidgets.QDialog):
                     "pychemqt", "Include critic point line"))
             layout.addWidget(self.Critica, 7, 1, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             8, 1, 1, 4)
 
         self.lineconfig = LineConfig(
@@ -94,7 +94,7 @@ class Isolinea(QtWidgets.QDialog):
         layout.addWidget(self.lineconfig, 9, 1, 1, 4)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             10, 1)
         self.label = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Label"))
@@ -111,12 +111,12 @@ class Isolinea(QtWidgets.QDialog):
                                            readOnly=True)
         self.label5.setFixedWidth(30)
         layout.addWidget(self.label5, 14, 2)
-        self.Posicion = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.Posicion = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
         self.Posicion.valueChanged.connect(self.label5.setValue)
         layout.addWidget(self.Posicion, 14, 3, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 4)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 4)
 
         if config.has_section(section):
             self.inicio.setValue(config.getfloat(section, ConfSection+'Start'))
@@ -206,7 +206,7 @@ class Widget(QtWidgets.QDialog):
         lyt = QtWidgets.QGridLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
         scroll = QtWidgets.QScrollArea()
-        scroll.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        scroll.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
         lyt.addWidget(scroll)
 
         dlg = QtWidgets.QWidget()
@@ -221,8 +221,8 @@ class Widget(QtWidgets.QDialog):
         self.refprop.setEnabled(False)
         layout.addWidget(self.refprop, 4, 1, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 4, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
         self.lineconfig = LineConfig(
             "saturation", QtWidgets.QApplication.translate(
                 "pychemqt", "Saturation Line Style"))
@@ -256,8 +256,8 @@ class Widget(QtWidgets.QDialog):
         layout.addWidget(self.grid, 9, 1, 1, 2)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 2)
 
         scroll.setWidget(dlg)
 
@@ -300,7 +300,7 @@ class Dialog(QtWidgets.QDialog):
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

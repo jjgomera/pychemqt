@@ -122,12 +122,12 @@ class PlotMEoS(QtWidgets.QWidget):
         # Widgets to show in the statusbar of mainwindow
         self.statusWidget = []
         self.statusPosition = QtWidgets.QLabel()
-        self.statusPosition.setFrameShape(QtWidgets.QFrame.WinPanel)
-        self.statusPosition.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusPosition.setFrameShape(QtWidgets.QFrame.Shape.WinPanel)
+        self.statusPosition.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.statusWidget.append(self.statusPosition)
         self.statusThermo = ClickableLabel()
-        self.statusThermo.setFrameShape(QtWidgets.QFrame.WinPanel)
-        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.statusThermo.setFrameShape(QtWidgets.QFrame.Shape.WinPanel)
+        self.statusThermo.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.statusWidget.append(self.statusThermo)
         self.statusThermo.clicked.connect(self.showFluid)
 
@@ -227,7 +227,7 @@ class PlotMEoS(QtWidgets.QWidget):
 
         tabla.setData(list(map(list, transpose(data))))
         tabla.verticalHeader().setContextMenuPolicy(
-            QtCore.Qt.CustomContextMenu)
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
 
         self.parent.centralWidget().currentWidget().addSubWindow(tabla)
         title = QtWidgets.QApplication.translate("pychemqt", "Table from") + \
@@ -627,7 +627,7 @@ class Plot2D(QtWidgets.QDialog):
         layout_GroupY.addWidget(self.Yscale)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -683,7 +683,7 @@ class Plot3D(QtWidgets.QDialog):
         layout.addWidget(self.ejeZ, 3, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 4, 1, 1, 2)
@@ -769,7 +769,7 @@ class EditPlot(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Color")), 2, 3)
         self.Grosor = QtWidgets.QDoubleSpinBox()
-        self.Grosor.setAlignment(QtCore.Qt.AlignRight)
+        self.Grosor.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.Grosor.setRange(0.1, 5)
         self.Grosor.setDecimals(1)
         self.Grosor.setSingleStep(0.1)
@@ -788,7 +788,7 @@ class EditPlot(QtWidgets.QDialog):
         self.Marca = MarkerCombo()
         layout.addWidget(self.Marca, 5, 1)
         self.markerSize = QtWidgets.QDoubleSpinBox()
-        self.markerSize.setAlignment(QtCore.Qt.AlignRight)
+        self.markerSize.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.markerSize.setDecimals(1)
         self.markerSize.setSingleStep(0.1)
         layout.addWidget(self.markerSize, 5, 2)
@@ -802,7 +802,7 @@ class EditPlot(QtWidgets.QDialog):
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Color")), 6, 3)
         self.markerEdgeSize = QtWidgets.QDoubleSpinBox()
-        self.markerEdgeSize.setAlignment(QtCore.Qt.AlignRight)
+        self.markerEdgeSize.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.markerEdgeSize.setDecimals(1)
         self.markerEdgeSize.setSingleStep(0.1)
         layout.addWidget(self.markerEdgeSize, 7, 2)
@@ -834,7 +834,7 @@ class EditPlot(QtWidgets.QDialog):
             showNull=True)
         self.labelAnnotationPos.setFixedWidth(40)
         lytPosition.addWidget(self.labelAnnotationPos)
-        self.annotationPos = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.annotationPos = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
         self.annotationPos.setRange(0, 100)
         self.annotationPos.setValue(50)
         self.annotationPos.valueChanged.connect(
@@ -850,7 +850,7 @@ class EditPlot(QtWidgets.QDialog):
             showNull=True)
         self.labelAnnotationRot.setFixedWidth(40)
         lytAngle.addWidget(self.labelAnnotationRot)
-        self.annotationRot = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.annotationRot = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
         self.annotationRot.setRange(0, 360)
         self.annotationRot.setValue(0)
         self.annotationRot.valueChanged.connect(
@@ -872,8 +872,8 @@ class EditPlot(QtWidgets.QDialog):
             self.annotationVA.addItem(alig)
         lytVA.addWidget(self.annotationVA)
         lytVA.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding))
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding))
         lytAnnotation.addLayout(lytVA, 5, 1, 1, 3)
 
         self.annotationVisible.stateChanged.connect(
@@ -901,7 +901,7 @@ class EditPlot(QtWidgets.QDialog):
         self.botonRemove.clicked.connect(self.remove)
         layoutButton.addWidget(self.botonRemove)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Close)
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.rejected.connect(self.close)
         layoutButton.addWidget(self.buttonBox)
 
@@ -1252,7 +1252,7 @@ class AddLine(QtWidgets.QDialog):
             self.tipo.addItem(title)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
@@ -1280,7 +1280,7 @@ class EditAxis(QtWidgets.QDialog):
         lb = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Title"))
         lb.setSizePolicy(
-            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+            QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
         lytTitle.addWidget(lb)
         self.title = InputFont()
         lytTitle.addWidget(self.title)
@@ -1302,10 +1302,10 @@ class EditAxis(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Show Grid"))
         layout.addWidget(self.gridCheckbox, 3, 1, 1, self.fig.dim)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 1, 1, self.fig.dim)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 1, 1, self.fig.dim)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Close)
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, self.fig.dim)
 

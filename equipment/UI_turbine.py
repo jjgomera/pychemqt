@@ -57,7 +57,7 @@ class UI_equipment(UI_equip):
             self.on_tipoCalculo_currentIndexChanged)
         lyt_Calc.addWidget(self.metodo, 1, 2, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 0, 1, 4)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Thermodynamic:")), 3, 1)
@@ -68,7 +68,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "termodinamica"))
         lyt_Calc.addWidget(self.termodinamica, 3, 2, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 0, 1, 4)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Out Pressure")), 5, 1)
@@ -122,8 +122,8 @@ class UI_equipment(UI_equip):
         lyt_Cost.addWidget(self.Costos, 1, 0, 1, 2)
 
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 0, 1, 2)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 0, 1, 2)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
         lyt_Cost.addWidget(group, 3, 0, 1, 2)
@@ -139,7 +139,7 @@ class UI_equipment(UI_equip):
                                            readOnly=True)
         lyt.addWidget(self.C_inst, 1, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 0, 1, 2)
 
         self.on_tipoCalculo_currentIndexChanged(0)

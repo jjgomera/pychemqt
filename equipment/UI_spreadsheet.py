@@ -65,7 +65,7 @@ class TableDelegate(QtWidgets.QItemDelegate):
         return self.editor
 
     def setEditorData(self, editor, index):
-        value = index.data(QtCore.Qt.DisplayRole)
+        value = index.data(QtCore.Qt.ItemDataRole.DisplayRole)
         if index.column() < 4:
             try:
                 num = self.items[index.column()].index(value)
@@ -81,7 +81,7 @@ class TableDelegate(QtWidgets.QItemDelegate):
         else:
             value = editor.text().upper()
 
-        model.setData(index, QtCore.QVariant(value), QtCore.Qt.DisplayRole)
+        model.setData(index, QtCore.QVariant(value), QtCore.Qt.ItemDataRole.DisplayRole)
 
 
 class UI_equipment(UI_equip):
@@ -123,15 +123,15 @@ class UI_equipment(UI_equip):
                   QtWidgets.QApplication.translate("pychemqt", "Cell")]
         self.datamap = Tabla(
             5, filas=1, dinamica=True, horizontalHeader=header,
-            verticalHeader=False, orientacion=QtCore.Qt.AlignLeft,
+            verticalHeader=False, orientacion=QtCore.Qt.AlignmentFlag.AlignLeft,
             delegate=None, delegateforRow=TableDelegate, parent=self)
         self.datamap.setEnabled(False)
         self.datamap.cellChanged.connect(self.cellChanged)
         self.datamap.rowFinished.connect(self.addRow)
         layout.addWidget(self.datamap, 2, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1)
 
         entitys = []
         for stream in list(self.project.streams.keys()):

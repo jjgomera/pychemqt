@@ -55,12 +55,12 @@ class widgetReacciones(QtWidgets.QWidget):
         self.indices, self.nombres, M=getComponents()
         gridLayout = QtWidgets.QGridLayout(self)
 
-        self.TablaReacciones=Tabla(5, horizontalHeader=[QtWidgets.QApplication.translate("pychemqt", "Reaction"), "ΔHr, %s" %unidades.MolarEnthalpy(None).text(), QtWidgets.QApplication.translate("pychemqt", "Type"), QtWidgets.QApplication.translate("pychemqt", "Phase"), QtWidgets.QApplication.translate("pychemqt", "Description")], dinamica=False, verticalHeader=True, orientacion=QtCore.Qt.AlignLeft)
+        self.TablaReacciones=Tabla(5, horizontalHeader=[QtWidgets.QApplication.translate("pychemqt", "Reaction"), "ΔHr, %s" %unidades.MolarEnthalpy(None).text(), QtWidgets.QApplication.translate("pychemqt", "Type"), QtWidgets.QApplication.translate("pychemqt", "Phase"), QtWidgets.QApplication.translate("pychemqt", "Description")], dinamica=False, verticalHeader=True, orientacion=QtCore.Qt.AlignmentFlag.AlignLeft)
         self.TablaReacciones.setMinimumWidth(500)
-        self.TablaReacciones.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.TablaReacciones.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.TablaReacciones.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.TablaReacciones.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.TablaReacciones.horizontalHeader().setStretchLastSection(True)
-        self.TablaReacciones.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.TablaReacciones.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.TablaReacciones.itemSelectionChanged.connect(self.actualizarBotones)
         gridLayout.addWidget(self.TablaReacciones,1,1,6,4)
 
@@ -69,7 +69,7 @@ class widgetReacciones(QtWidgets.QWidget):
         gridLayout.addWidget(self.botonAbrir,1,5)
         self.botonGuardar=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/fileSave.png")), QtWidgets.QApplication.translate("pychemqt", "Save"))
         self.botonGuardar.clicked.connect(self.botonGuardarClicked)
-        self.botonGuardar.setSizePolicy(QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed)
+        self.botonGuardar.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed)
         self.botonGuardar.setEnabled(False)
         gridLayout.addWidget(self.botonGuardar,2,5)
 
@@ -88,7 +88,7 @@ class widgetReacciones(QtWidgets.QWidget):
         self.botonClear=QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(os.environ["pychemqt"]+"/images/button/clear.png")), QtWidgets.QApplication.translate("pychemqt", "Clear"))
         self.botonClear.clicked.connect(self.botonClearClicked)
         gridLayout.addWidget(self.botonClear,6,5)
-        gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,1)
+        gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,1)
 
 
     def actualizarBotones(self, bool=True):
@@ -106,10 +106,10 @@ class widgetReacciones(QtWidgets.QWidget):
             for fila, reaccion in enumerate(reacciones):
                 self.TablaReacciones.addRow()
                 self.TablaReacciones.setValue(fila, 0, reaccion.text)
-                self.TablaReacciones.setValue(fila, 1, "%0.4e" %reaccion.Hr.config(), QtCore.Qt.AlignRight)
+                self.TablaReacciones.setValue(fila, 1, "%0.4e" %reaccion.Hr.config(), QtCore.Qt.AlignmentFlag.AlignRight)
                 self.TablaReacciones.setValue(fila, 2, str(reaccion.tipo+1)+" - "+reaction.Reaction.TEXT_TYPE[reaccion.tipo])
                 self.TablaReacciones.setValue(fila, 3, reaction.Reaction.TEXT_PHASE[reaccion.fase])
-                self.TablaReacciones.item(fila, 4).setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+                self.TablaReacciones.item(fila, 4).setFlags(QtCore.Qt.ItemFlag.ItemIsEditable|QtCore.Qt.ItemFlag.ItemIsEnabled|QtCore.Qt.ItemFlag.ItemIsSelectable)
             for i in range(4):
                 self.TablaReacciones.resizeColumnToContents(i)
         self.changed.emit()
@@ -169,10 +169,10 @@ class widgetReacciones(QtWidgets.QWidget):
             fila=self.TablaReacciones.rowCount()
             self.TablaReacciones.addRow()
         self.TablaReacciones.setValue(fila, 0, self.Formula.text())
-        self.TablaReacciones.setValue(fila, 1, "%0.4e" %self.Hr.value.config(), QtCore.Qt.AlignRight)
+        self.TablaReacciones.setValue(fila, 1, "%0.4e" %self.Hr.value.config(), QtCore.Qt.AlignmentFlag.AlignRight)
         self.TablaReacciones.setValue(fila, 2, str(self.tipo.currentIndex()+1)+" - "+self.tipo.currentText())
         self.TablaReacciones.setValue(fila, 3, self.Fase.currentText())
-        self.TablaReacciones.item(fila, 4).setFlags(QtCore.Qt.ItemIsEditable|QtCore.Qt.ItemIsEnabled|QtCore.Qt.ItemIsSelectable)
+        self.TablaReacciones.item(fila, 4).setFlags(QtCore.Qt.ItemFlag.ItemIsEditable|QtCore.Qt.ItemFlag.ItemIsEnabled|QtCore.Qt.ItemFlag.ItemIsSelectable)
         for i in range(4):
             self.TablaReacciones.resizeColumnToContents(i)
         self.reacciones.insert(fila, self.reaccion)
@@ -195,7 +195,7 @@ class UI_reacciones(QtWidgets.QDialog):
             self.key.addItem("%i - %s" %(i+1, nombre))
         self.key.currentIndexChanged.connect(partial(self.changeParams, "key"))
         lyt.addWidget(self.key)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Fixed))
         gridLayout.addLayout(lyt,1,1,1,5)
 
         lyt=QtWidgets.QHBoxLayout()
@@ -206,8 +206,8 @@ class UI_reacciones(QtWidgets.QDialog):
         self.fase.currentIndexChanged.connect(partial(self.changeParams, "fase"))
         lyt.addWidget(self.fase)
         self.Formula=QtWidgets.QLabel()
-        self.Formula.setAlignment(QtCore.Qt.AlignCenter)
-        self.Formula.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed)
+        self.Formula.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.Formula.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Fixed)
         lyt.addWidget(self.Formula)
         gridLayout.addLayout(lyt,2,1,1,5)
 
@@ -220,13 +220,13 @@ class UI_reacciones(QtWidgets.QDialog):
         self.Estequiometria.addRow()
         brush=QtGui.QBrush(QtGui.QColor("#eaeaea"))
         self.Estequiometria.item(len(self.indices), 0).setBackground(brush)
-        self.Estequiometria.item(len(self.indices), 0).setFlags(QtCore.Qt.NoItemFlags)
+        self.Estequiometria.item(len(self.indices), 0).setFlags(QtCore.Qt.ItemFlag.NoItemFlags)
         self.Estequiometria.cellChanged.connect(self.reaccionCambiada)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Expanding))
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Expanding))
         gridLayout.addLayout(lyt,3,1,1,2)
 
         lyt=QtWidgets.QGridLayout()
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,1)
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),1,1)
         self.formula=QtWidgets.QCheckBox(QtWidgets.QApplication.translate("pychemqt", "Use name in formula"))
         self.formula.toggled.connect(partial(self.changeParams, "formula"))
         lyt.addWidget(self.formula,1,2,1,2)
@@ -237,10 +237,10 @@ class UI_reacciones(QtWidgets.QDialog):
         self.Hr=Entrada_con_unidades(unidades.MolarEnthalpy, readOnly=True)
         self.Hr.valueChanged.connect(partial(self.changeParams, "Hr"))
         lyt.addWidget(self.Hr,3,3)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Expanding))
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Expanding))
         gridLayout.addLayout(lyt,3,3,1,2)
 
-        gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),4,2)
+        gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),4,2)
 
         lyt=QtWidgets.QHBoxLayout()
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Type")))
@@ -249,20 +249,20 @@ class UI_reacciones(QtWidgets.QDialog):
             self.tipo.addItem(txt)
         self.tipo.currentIndexChanged.connect(partial(self.changeParams, "tipo"))
         lyt.addWidget(self.tipo)
-        lyt.addItem(QtWidgets.QSpacerItem(20,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed))
+        lyt.addItem(QtWidgets.QSpacerItem(20,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed))
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Concentration")))
         self.base=QtWidgets.QComboBox()
         for txt in reaction.Reaction.TEXT_BASE:
             self.base.addItem(txt)
         self.base.currentIndexChanged.connect(partial(self.changeParams, "base"))
         lyt.addWidget(self.base)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Fixed))
         gridLayout.addLayout(lyt,5,1,1,5)
 
         self.stacked = QtWidgets.QStackedWidget()
         self.tipo.currentIndexChanged.connect(self.stacked.setCurrentIndex)
         gridLayout.addWidget(self.stacked,6,1,1,5)
-        gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),7,1,1,5)
+        gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),7,1,1,5)
 
         widget=QtWidgets.QWidget()
         self.stacked.addWidget(widget)
@@ -280,8 +280,8 @@ class UI_reacciones(QtWidgets.QDialog):
         for i in unidades.Temperature.__text__:
             self.unidadesTemperatura.addItem(i)
         lyt.addWidget(self.unidadesTemperatura,3,3)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),4,4)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),5,1,1,5)
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),4,4)
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),5,1,1,5)
 
 
         widget=QtWidgets.QWidget()
@@ -309,7 +309,7 @@ class UI_reacciones(QtWidgets.QDialog):
         self.KEq_Dat.setFixedWidth(120)
         lyt.addWidget(self.KEq_Dat,3,3,1,2)
         self.KEq_Tab=Tabla(4, horizontalHeader=["T, K", "Keq", "Kcalc", "%Error"], verticalHeader=False, columnReadOnly=[False, False, True, True])
-        self.KEq_Tab.setSizePolicy(QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding)
+        self.KEq_Tab.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding)
         self.KEq_Tab.setFixedWidth(400)
         self.KEq_Tab.setConnected()
         self.KEq_Tab.rowFinished.connect(self.Regresion)
@@ -344,7 +344,7 @@ class UI_reacciones(QtWidgets.QDialog):
 
         self.status=Status()
         gridLayout.addWidget(self.status, 10,1)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel|QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         gridLayout.addWidget(self.buttonBox,10,2,1,4)
@@ -471,7 +471,7 @@ class UI_equipment(UI_equip):
         self.DeltaP=Entrada_con_unidades(unidades.Pressure)
         self.DeltaP.valueChanged.connect(self.calculo)
         gridLayout_Calculo.addWidget(self.DeltaP,3,1,1,1)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),4,0,1,5)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),4,0,1,5)
         lyt=QtWidgets.QHBoxLayout()
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Type")))
         self.tipo=QtWidgets.QComboBox()
@@ -479,9 +479,9 @@ class UI_equipment(UI_equip):
         self.tipo.addItem(QtWidgets.QApplication.translate("pychemqt", "PFR, plug flow"))
         self.tipo.currentIndexChanged.connect(self.tipoCambiado)
         lyt.addWidget(self.tipo)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed))
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Fixed))
         gridLayout_Calculo.addLayout(lyt,5,0,1,5)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),6,0,1,5)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),6,0,1,5)
 
         groupbox=QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Thermal mode"))
         layout=QtWidgets.QGridLayout(groupbox)
@@ -531,7 +531,7 @@ class UI_equipment(UI_equip):
         self.modo.addItem(QtWidgets.QApplication.translate("pychemqt", "Design, calculate volumen"))
         self.modo.currentIndexChanged.connect(self.calculo)
         lyt.addWidget(self.modo,1,2,1,3)
-        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),1,5)
+        lyt.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Fixed),1,5)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Reactor Volume")),2,1)
         self.V=Entrada_con_unidades(unidades.Volume, "VolLiq")
         lyt.addWidget(self.V,2,2)
@@ -540,12 +540,12 @@ class UI_equipment(UI_equip):
 #        for i, nombre in enumerate(self.nombres):
 #            self.key.addItem("%i - %s" %(i+1, nombre))
         lyt.addWidget(self.key,3,2)
-        lyt.addItem(QtWidgets.QSpacerItem(20,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),3,3)
+        lyt.addItem(QtWidgets.QSpacerItem(20,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),3,3)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Conversion")),3,4)
         self.conversion=Entrada_con_unidades(float, max=1)
         lyt.addWidget(self.conversion,3,5)
 
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,0,1,5)
+        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,0,1,5)
 
         groupBox_Calculo = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(groupBox_Calculo,11,0,1,5)

@@ -43,8 +43,8 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         layout = QtWidgets.QGridLayout(self)
         systems = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Systems of measurement"))
-        systems.setSizePolicy(QtWidgets.QSizePolicy.Preferred,
-                              QtWidgets.QSizePolicy.Fixed)
+        systems.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                              QtWidgets.QSizePolicy.Policy.Fixed)
         layout.addWidget(systems, 1, 1, 1, 2)
         lytSystems = QtWidgets.QHBoxLayout(systems)
         self.SI = QtWidgets.QRadioButton(
@@ -68,7 +68,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         self.CGS.toggled.connect(partial(self.load, "cgs"))
         lytSystems.addWidget(self.CGS)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed), 2, 1, 1, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 2)
 
         self.tabla = QtWidgets.QTableWidget()
         layout.addWidget(self.tabla, 3, 1, 5, 1)
@@ -221,8 +221,8 @@ class Dialog(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confUnits_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

@@ -102,8 +102,8 @@ class Config(QtWidgets.QWidget):
             self.metodos.addItem(doc)
         layout.addWidget(self.metodos, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 1, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
         self.fanning = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Calculate fanning friction factor"))
         layout.addWidget(self.fanning, 2, 1, 1, 3)
@@ -126,8 +126,8 @@ class Config(QtWidgets.QWidget):
         layout.addWidget(self.gridconfig, 6, 1, 1, 3)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 3)
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 3)
 
         if config and config.has_section("Moody"):
             self.metodos.setCurrentIndex(config.getint("Moody", 'method'))
@@ -160,7 +160,7 @@ class ConfigDialog(QtWidgets.QDialog):
         self.widget = Config(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -445,7 +445,7 @@ class CalculateDialog(QtWidgets.QDialog):
         layout.addWidget(self.f, 5, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Close)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)

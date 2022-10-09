@@ -42,7 +42,7 @@ class mpl(FigureCanvasQTAgg):
         self.setParent(parent)
         self.ax = self.fig.add_subplot(111)
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         self.updateGeometry()
 
     def plot(self, *args, **kwargs):
@@ -72,8 +72,8 @@ class matplotlib(FigureCanvasQTAgg):
         self.dim = dim
         FigureCanvasQTAgg.__init__(self, self.fig)
         FigureCanvasQTAgg.setSizePolicy(
-            self, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding)
+            self, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
         self.setParent(parent)
 
@@ -124,13 +124,13 @@ class Plot(QtWidgets.QDialog):
         gridLayout.addWidget(self.toolbar, 2, 1)
         buttonBox = QtWidgets.QDialogButtonBox()
         if accept:
-            buttonBox.addButton(QtWidgets.QDialogButtonBox.Ok)
+            buttonBox.addButton(QtWidgets.QDialogButtonBox.StandardButton.Ok)
             buttonBox.accepted.connect(self.accept)
         if cancel:
-            buttonBox.addButton(QtWidgets.QDialogButtonBox.Cancel)
+            buttonBox.addButton(QtWidgets.QDialogButtonBox.StandardButton.Cancel)
             buttonBox.rejected.connect(self.reject)
         buttonBox.setSizePolicy(
-            QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+            QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
         gridLayout.addWidget(buttonBox, 2, 2)
 
     def addText(self, *args, **kwargs):

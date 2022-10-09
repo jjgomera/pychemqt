@@ -72,7 +72,7 @@ but without any warranty, it is provided "as is" without warranty of any kind
 
 You can start by creating a new project or opening an existing project.""")
             rect.setLeft(150)
-            painter.drawText(rect, QtCore.Qt.AlignVCenter, txt)
+            painter.drawText(rect, QtCore.Qt.AlignmentFlag.AlignVCenter, txt)
 
 
 class TreeEquipment(QtWidgets.QTreeWidget):
@@ -83,7 +83,7 @@ class TreeEquipment(QtWidgets.QTreeWidget):
         super(TreeEquipment, self).__init__(parent)
         self.setIconSize(QtCore.QSize(30, 30))
         self.headerItem().setHidden(True)
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
 
     def updateList(self, items):
         self.clear()
@@ -206,13 +206,13 @@ class FlowLayout(QtWidgets.QLayout):
         for item in self.itemList:
             wid = item.widget()
             spaceX = self.spacing() + wid.style().layoutSpacing(
-                QtWidgets.QSizePolicy.PushButton,
-                QtWidgets.QSizePolicy.PushButton,
-                QtCore.Qt.Horizontal)*self.spacing()
+                QtWidgets.QSizePolicy.ControlType.PushButton,
+                QtWidgets.QSizePolicy.ControlType.PushButton,
+                QtCore.Qt.Orientation.Horizontal)*self.spacing()
             spaceY = self.spacing() + wid.style().layoutSpacing(
-                QtWidgets.QSizePolicy.PushButton,
-                QtWidgets.QSizePolicy.PushButton,
-                QtCore.Qt.Vertical)*self.spacing()
+                QtWidgets.QSizePolicy.ControlType.PushButton,
+                QtWidgets.QSizePolicy.ControlType.PushButton,
+                QtCore.Qt.Orientation.Vertical)*self.spacing()
             nextX = x + item.sizeHint().width() + spaceX
             if nextX - spaceX > rect.right() and lineHeight > 0:
                 x = rect.x()
@@ -253,7 +253,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         fileNewAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&New"),
             slot=self.fileNew,
-            shortcut=QtGui.QKeySequence.New,
+            shortcut=QtGui.QKeySequence.StandardKey.New,
             icon="button/fileNew",
             tip=QtWidgets.QApplication.translate(
                 "pychemqt", "Start new project"),
@@ -261,21 +261,21 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         fileOpenAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Open"),
             slot=self.fileOpen,
-            shortcut=QtGui.QKeySequence.Open,
+            shortcut=QtGui.QKeySequence.StandardKey.Open,
             icon="button/fileOpen",
             tip=QtWidgets.QApplication.translate("pychemqt", "Open project"),
             parent=self)
         self.fileSaveAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Save"),
             slot=self.fileSave,
-            shortcut=QtGui.QKeySequence.Save,
+            shortcut=QtGui.QKeySequence.StandardKey.Save,
             icon="button/fileSave",
             tip=QtWidgets.QApplication.translate("pychemqt", "Save project"),
             parent=self)
         self.fileSaveAsAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Save &as"),
             slot=self.fileSaveAs,
-            shortcut=QtGui.QKeySequence.SaveAs,
+            shortcut=QtGui.QKeySequence.StandardKey.SaveAs,
             icon="button/fileSaveAs",
             tip=QtWidgets.QApplication.translate(
                 "pychemqt", "Save project as"),
@@ -290,14 +290,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.fileCloseAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Close"),
             slot=self.fileClose,
-            shortcut=QtGui.QKeySequence.Close,
+            shortcut=QtGui.QKeySequence.StandardKey.Close,
             icon="button/fileClose",
             tip=QtWidgets.QApplication.translate("pychemqt", "Close project"),
             parent=self)
         ExitAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Exit"),
             slot=self.closeEvent,
-            shortcut=QtGui.QKeySequence.Quit,
+            shortcut=QtGui.QKeySequence.StandardKey.Quit,
             icon="button/exit",
             tip=QtWidgets.QApplication.translate("pychemqt", "Quit pychemqt"),
             parent=self)
@@ -345,7 +345,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             QtWidgets.QApplication.translate("pychemqt", "&Preferences"),
             slot=self.Preferencias,
             icon="button/configure",
-            shortcut=QtGui.QKeySequence.Preferences,
+            shortcut=QtGui.QKeySequence.StandardKey.Preferences,
             tip=QtWidgets.QApplication.translate(
                 "pychemqt", "Defining general preferences"),
             parent=self)
@@ -354,7 +354,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             QtWidgets.QApplication.translate("pychemqt", "Zoom in"),
             slot=partial(self.zoom, "+"),
             icon="button/zoomIn",
-            shortcut=QtGui.QKeySequence.ZoomIn, parent=self)
+            shortcut=QtGui.QKeySequence.StandardKey.ZoomIn, parent=self)
         self.actionZoom = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Zoom"),
             slot=partial(self.zoom, "Dialog"),
@@ -364,7 +364,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             QtWidgets.QApplication.translate("pychemqt", "Zoom out"),
             slot=partial(self.zoom, "-"),
             icon="button/zoomOut",
-            shortcut=QtGui.QKeySequence.ZoomOut,
+            shortcut=QtGui.QKeySequence.StandardKey.ZoomOut,
             parent=self)
         actionOverviewWindow = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Overview window"),
@@ -506,7 +506,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.BarraArchivo.addAction(self.fileSaveAsAction)
         self.BarraArchivo.addAction(self.fileSaveAllAction)
         self.BarraArchivo.addAction(ExitAction)
-        self.addToolBar(QtCore.Qt.TopToolBarArea, self.BarraArchivo)
+        self.addToolBar(QtCore.Qt.ToolBarArea.TopToolBarArea, self.BarraArchivo)
 
         self.BarraVer = QtWidgets.QToolBar(
             QtWidgets.QApplication.translate("pychemqt", "View"), self)
@@ -518,7 +518,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.BarraVer.addSeparator()
         self.BarraVer.addAction(self.actionVerToolbar)
         self.BarraVer.addAction(self.actionVerItem)
-        self.addToolBar(QtCore.Qt.TopToolBarArea, self.BarraVer)
+        self.addToolBar(QtCore.Qt.ToolBarArea.TopToolBarArea, self.BarraVer)
 
         self.BarraHerramientas = QtWidgets.QToolBar(
             QtWidgets.QApplication.translate("pychemqt", "Tools"), self)
@@ -534,7 +534,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.BarraHerramientas.addAction(externalProgramAction)
         self.BarraHerramientas.addSeparator()
         self.BarraHerramientas.addAction(actionAyuda)
-        self.addToolBar(QtCore.Qt.TopToolBarArea, self.BarraHerramientas)
+        self.addToolBar(QtCore.Qt.ToolBarArea.TopToolBarArea, self.BarraHerramientas)
 
         # Paleta Toolbox
         self.toolboxPalette = QtWidgets.QDockWidget(
@@ -546,7 +546,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.toolboxPalette.setFeatures(
             QtWidgets.QDockWidget.AllDockWidgetFeatures)
         self.toolboxPalette.setAllowedAreas(
-            QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+            QtCore.Qt.DockWidgetArea.LeftDockWidgetArea | QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
 
         self.toolboxPalette.visibilityChanged.connect(
             self.actionVerToolbar.setChecked)
@@ -556,7 +556,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         txt = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Plot"))
-        txt.setAlignment(QtCore.Qt.AlignCenter)
+        txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l1 = FlowLayout(spacing=10)
         actionTexto, botonTexto = createAction(
@@ -582,7 +582,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         txt = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Flux"))
-        txt.setAlignment(QtCore.Qt.AlignCenter)
+        txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l2 = FlowLayout(spacing=10)
         actionEntrada, botonEntrada = createAction(
@@ -650,7 +650,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         txt = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Basics"))
-        txt.setAlignment(QtCore.Qt.AlignCenter)
+        txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l3 = FlowLayout(spacing=10)
         actionTorreFUG, botonTorreFUG = createAction(
@@ -713,7 +713,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         txt = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Solids"))
-        txt.setAlignment(QtCore.Qt.AlignCenter)
+        txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l4 = FlowLayout(spacing=10)
         actionBaghouse, botonBaghouse = createAction(
@@ -787,7 +787,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         txt = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Tools"))
-        txt.setAlignment(QtCore.Qt.AlignCenter)
+        txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l5 = FlowLayout()
         actionControler, botonControler = createAction(
@@ -1003,7 +1003,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.toolboxItem.setObjectName("item")
         self.list = TreeEquipment()
         self.list.setSelectionMode(
-            QtWidgets.QAbstractItemView.ExtendedSelection)
+            QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.list.itemSelectionChanged.connect(self.selectionChanged)
         self.list.customContextMenuRequested.connect(self.contextListMenu)
         self.toolboxItem.setWidget(self.list)
@@ -1011,7 +1011,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.toolboxItem.setFeatures(
             QtWidgets.QDockWidget.AllDockWidgetFeatures)
         self.toolboxItem.setAllowedAreas(
-            QtCore.Qt.LeftDockWidgetArea | QtCore.Qt.RightDockWidgetArea)
+            QtCore.Qt.DockWidgetArea.LeftDockWidgetArea | QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
         self.toolboxItem.visibilityChanged.connect(
             self.actionVerItem.setChecked)
         self.actionVerItem.triggered.connect(self.toolboxItem.setVisible)
@@ -1024,8 +1024,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.status.setReadOnly(True)
         toolbox.setWidget(self.status)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(8), toolbox)
-        toolbox.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-        toolbox.setAllowedAreas(QtCore.Qt.BottomDockWidgetArea)
+        toolbox.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+        toolbox.setAllowedAreas(QtCore.Qt.DockWidgetArea.BottomDockWidgetArea)
         toolbox.visibilityChanged.connect(actionVerStatus.setChecked)
         actionVerStatus.triggered.connect(toolbox.setVisible)
 
@@ -1144,14 +1144,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     "pychemqt", "Unsaved changes"),
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Save unsaved changes?"),
-                QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No
-                | QtWidgets.QMessageBox.Cancel,
-                QtWidgets.QMessageBox.Yes)
-            if dialog == QtWidgets.QMessageBox.Cancel:
+                QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
+                | QtWidgets.QMessageBox.StandardButton.Cancel,
+                QtWidgets.QMessageBox.StandardButton.Yes)
+            if dialog == QtWidgets.QMessageBox.StandardButton.Cancel:
                 return False
-            elif dialog == QtWidgets.QMessageBox.No:
+            elif dialog == QtWidgets.QMessageBox.StandardButton.No:
                 return True
-            elif dialog == QtWidgets.QMessageBox.Yes:
+            elif dialog == QtWidgets.QMessageBox.StandardButton.Yes:
                 self.fileSaveAll()
                 return True
         else:
@@ -1181,12 +1181,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             QtGui.QIcon(IMAGE_PATH + "button/arrow-left.png"),
             QtWidgets.QApplication.translate("pychemqt", "&Previous"),
             self.currentMdi.activatePreviousSubWindow,
-            QtGui.QKeySequence.PreviousChild)
+            QtGui.QKeySequence.StandardKey.PreviousChild)
         self.menuVentana.addAction(
             QtGui.QIcon(IMAGE_PATH + "button/arrow-right.png"),
             QtWidgets.QApplication.translate("pychemqt", "&Next"),
             self.currentMdi.activateNextSubWindow,
-            QtGui.QKeySequence.NextChild)
+            QtGui.QKeySequence.StandardKey.NextChild)
         self.menuVentana.addSeparator()
         self.menuVentana.addAction(
             QtGui.QIcon(IMAGE_PATH + "button/tile.png"),
@@ -1797,7 +1797,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             rect = self.currentScene.sceneRect()
             img = QtGui.QImage(
                 rect.width(), rect.height(),
-                QtGui.QImage.Format_ARGB32_Premultiplied)
+                QtGui.QImage.Format.Format_ARGB32_Premultiplied)
             p = QtGui.QPainter(img)
             self.currentScene.render(p)
             p.end()

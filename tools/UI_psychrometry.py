@@ -159,7 +159,7 @@ class PsychroInput(QtWidgets.QWidget):
         self.z.setEnabled(False)
         layout.addWidget(self.z, 2, 2, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1, 1, 2)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
@@ -203,7 +203,7 @@ class PsychroInput(QtWidgets.QWidget):
         self.h.valueChanged.connect(partial(self.updateKwargs, "h"))
         layout.addWidget(self.h, 12, 2, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             13, 1, 1, 2)
 
         self.setReadOnly(readOnly)
@@ -286,16 +286,16 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.inputs.pressureChanged.connect(self.plot)
         layout.addWidget(self.inputs, 1, 1, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         self.buttonShowToolbox = QtWidgets.QToolButton()
         self.buttonShowToolbox.setCheckable(True)
         self.buttonShowToolbox.toggled.connect(self.showToolBar)
         layout.addWidget(self.buttonShowToolbox, 1, 2, 2, 1)
         self.line = QtWidgets.QFrame()
-        self.line.setFrameShape(QtWidgets.QFrame.VLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
+        self.line.setFrameShape(QtWidgets.QFrame.Shape.VLine)
+        self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         layout.addWidget(self.line, 1, 3, 3, 1)
 
         self.progressBar = QtWidgets.QProgressBar()
@@ -304,7 +304,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.status = QtWidgets.QLabel()
         layout.addWidget(self.status, 3, 3)
 
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
             os.environ["pychemqt"] +
             os.path.join("images", "button", "image.png")),

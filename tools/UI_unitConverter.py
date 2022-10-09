@@ -70,14 +70,14 @@ class UI_conversorUnidades(QtWidgets.QDialog):
             self.tabla.setRowHeight(i, 24)
             self.tabla.setItem(i, 0, QtWidgets.QTableWidgetItem(""))
             self.tabla.item(i, 0).setTextAlignment(
-                QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         for i, tip in enumerate(self.tooltip):
             self.tabla.item(i, 0).setToolTip(tip)
         self.tabla.cellChanged.connect(self.update)
         lyt.addWidget(self.tabla, 2, 1)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -169,7 +169,7 @@ class UI_unitConverter(QtWidgets.QDialog):
         self.lista.itemDoubleClicked.connect(self.showChildWindow)
         self.verticalLayout.addWidget(self.lista)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Close)
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.rejected.connect(self.reject)
         self.verticalLayout.addWidget(self.buttonBox)
         for unidad in _all:

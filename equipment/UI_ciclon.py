@@ -82,7 +82,7 @@ class UI_equipment(UI_equip):
             self.modeloEficiencia_Changed)
         lyt_Calc.addWidget(self.modelo_ciclon, 3, 3, 1, 4)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 0, 1, 5)
 
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
@@ -117,7 +117,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "num_ciclones"))
         lyt_Calc.addWidget(self.num_ciclones, 9, 2, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             10, 0, 1, 4)
 
         group = QtWidgets.QGroupBox(
@@ -138,7 +138,7 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.V, 3, 2)
 
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 4, 7, 1)
         group2 = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Geometry"))
@@ -172,18 +172,18 @@ class UI_equipment(UI_equip):
         self.NCalc = Entrada_con_unidades(int, readOnly=True)
         lyt.addWidget(self.NCalc, 9, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 0, 7, 10, 1)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 0, 7, 10, 1)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 6, 10, 1)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 6, 10, 1)
 
         image = QtWidgets.QLabel()
         path = os.environ["pychemqt"]+"/images/equip/ciclon.gif"
         image.setPixmap(QtGui.QPixmap(path))
         image.setScaledContents(True)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         image.setSizePolicy(sizePolicy)
         lyt_Calc.addWidget(image, 0, 8, 12, 1)
 
@@ -198,15 +198,15 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "tipo_costo"))
         lyt_Cost.addWidget(self.tipo_costo, 1, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Fixed), 1, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
 
         self.Costos = CostData(self.Equipment)
         self.Costos.valueChanged.connect(self.changeParamsCoste)
         lyt_Cost.addWidget(self.Costos, 3, 1, 1, 3)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 3)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 4, 1, 1, 3)
 
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))

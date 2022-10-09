@@ -43,8 +43,8 @@ class UI_confComponents_widget(QtWidgets.QWidget):
             self.comprobarBotones)
         layout.addWidget(self.databank, 1, 1, 17, 1)
 
-        layout.addItem(QtWidgets.QSpacerItem(30, 30, QtWidgets.QSizePolicy.Expanding,
-                                         QtWidgets.QSizePolicy.Fixed), 1, 2, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(30, 30, QtWidgets.QSizePolicy.Policy.Expanding,
+                                         QtWidgets.QSizePolicy.Policy.Fixed), 1, 2, 1, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Components list")), 2, 3)
         self.DeleteComponente = QtWidgets.QToolButton()
@@ -74,8 +74,8 @@ class UI_confComponents_widget(QtWidgets.QWidget):
         layout.addWidget(self.clearComp, 8, 2)
 
         self.ListaComponentes = QtWidgets.QListWidget()
-        self.ListaComponentes.setSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                            QtWidgets.QSizePolicy.Expanding)
+        self.ListaComponentes.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                                            QtWidgets.QSizePolicy.Policy.Expanding)
         self.ListaComponentes.itemSelectionChanged.connect(self.comprobarBotones)
         layout.addWidget(self.ListaComponentes, 3, 3, 7, 1)
 
@@ -95,8 +95,8 @@ class UI_confComponents_widget(QtWidgets.QWidget):
         self.clearSolido.clicked.connect(self.clearSolids)
         layout.addWidget(self.clearSolido, 15, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Fixed,
-                                         QtWidgets.QSizePolicy.Expanding), 10, 4, 1, 1)
+        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+                                         QtWidgets.QSizePolicy.Policy.Expanding), 10, 4, 1, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Solids", None)), 11, 3)
         self.ListaSolidos = QtWidgets.QListWidget()
@@ -254,8 +254,8 @@ class Dialog(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confComponents_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Cancel |
-                                                QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
+                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

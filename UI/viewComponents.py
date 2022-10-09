@@ -146,8 +146,8 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             self.coeff[-1].valueChanged.connect(self.valueChanged.emit)
             lyt.addWidget(self.coeff[-1], 1+i, 5)
         lyt.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 3)
 
         self.eq = eqDIPPR(1)
         lyt.addWidget(self.eq, 0, 0, 1, 6)
@@ -518,8 +518,8 @@ class Parametric_widget(QtWidgets.QGroupBox):
             layout.addWidget(self.advancedCoeff[-1], 5, 5)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
 
         self.changeId(id)
         if array:
@@ -867,10 +867,10 @@ class View_Component(QtWidgets.QDialog):
         lyt.addWidget(tabWidget)
 
         self.btnBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Discard |
-            QtWidgets.QDialogButtonBox.Save |
-            QtWidgets.QDialogButtonBox.Apply |
-            QtWidgets.QDialogButtonBox.Close)
+            QtWidgets.QDialogButtonBox.StandardButton.Discard |
+            QtWidgets.QDialogButtonBox.StandardButton.Save |
+            QtWidgets.QDialogButtonBox.StandardButton.Apply |
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.btnBox.clicked.connect(self.buttonClicked)
         lyt.addWidget(self.btnBox)
 
@@ -962,11 +962,11 @@ class View_Component(QtWidgets.QDialog):
         self.energiaGibbsGas.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.energiaGibbsGas, 10, 5)
         lytGeneral.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 11, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 11, 3)
         lytGeneral.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 11, 6)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 11, 6)
 
         # Cp tab
         tab2 = QtWidgets.QWidget()
@@ -1008,8 +1008,8 @@ class View_Component(QtWidgets.QDialog):
         self.cpf.valueChanged.connect(self.setDirty)
         lytCpIdeal.addWidget(self.cpf, 3, 5)
         lytCpIdeal.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 4, 1, 1, 4)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 4, 1, 1, 4)
 
         self.cpGasDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
             "pychemqt", "Cp ideal gas DIPPR"), unidades.MolarSpecificHeat,
@@ -1027,8 +1027,8 @@ class View_Component(QtWidgets.QDialog):
         self.cpSolidDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpSolidDIPPR, 2, 2)
         lytCp.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 1)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 3, 1)
 
         # Density tab
         tab3 = QtWidgets.QWidget()
@@ -1048,8 +1048,8 @@ class View_Component(QtWidgets.QDialog):
         self.RhoLiquid.valueChanged.connect(self.setDirty)
         lytRho.addWidget(self.RhoLiquid, 1, 2)
         lytRho.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 1)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
         # Viscosity tab
         tab4 = QtWidgets.QWidget()
@@ -1074,8 +1074,8 @@ class View_Component(QtWidgets.QDialog):
         self.muParametric.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muParametric, 2, 1)
         lytMu.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 1)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 3, 1)
 
         # Pressure vapor and vaporization heat tab
         tab5 = QtWidgets.QWidget()
@@ -1105,8 +1105,8 @@ class View_Component(QtWidgets.QDialog):
         self.PvWagner.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.PvWagner, 2, 2)
         lytVapor.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 1)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 3, 1)
 
         # Thermal conductiity and surface tension tab
         tab6 = QtWidgets.QWidget()
@@ -1136,8 +1136,8 @@ class View_Component(QtWidgets.QDialog):
         self.SigmaParametric.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.SigmaParametric, 2, 2)
         lytThermal.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 1)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 3, 1)
 
         # EOS tab
         # Add here other EOS parameter when add to database
@@ -1153,8 +1153,8 @@ class View_Component(QtWidgets.QDialog):
         self.Henry.valueChanged.connect(self.setDirty)
         lytEOS.addWidget(self.Henry, 1, 1, 2, 1)
         lytEOS.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 1)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 1)
 
         grp = QtWidgets.QGroupBox("Cubic")
         lyt = QtWidgets.QVBoxLayout(grp)
@@ -1172,8 +1172,8 @@ class View_Component(QtWidgets.QDialog):
         formulaMSRK = QLabelMath(math)
         lyt_MSRK.addWidget(formulaMSRK, 1, 1, 1, 3)
         lyt_MSRK.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_MSRK.addWidget(QtWidgets.QLabel("m"), 3, 1)
         self.MSRKa = Entrada_con_unidades(float)
         self.MSRKa.valueChanged.connect(self.setDirty)
@@ -1188,8 +1188,8 @@ class View_Component(QtWidgets.QDialog):
         button.clicked.connect(partial(self.help, "lib.EoS.Cubic.MSRK.html"))
         lyt_MSRK.addWidget(button, 4, 6)
         lyt_MSRK.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 5)
 
         grpMelhem = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpMelhem)
@@ -1200,8 +1200,8 @@ class View_Component(QtWidgets.QDialog):
         formulaMelhem = QLabelMath(math)
         lyt_Melhem.addWidget(formulaMelhem, 1, 1, 1, 2)
         lyt_Melhem.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_Melhem.addWidget(QtWidgets.QLabel("m"), 3, 1)
         self.Melhemm = Entrada_con_unidades(float)
         self.Melhemm.valueChanged.connect(self.setDirty)
@@ -1217,8 +1217,8 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.PRMelhem.html"))
         lyt_Melhem.addWidget(button, 4, 6)
         lyt_Melhem.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 5)
 
         grpSRKAPI = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpSRKAPI)
@@ -1229,8 +1229,8 @@ class View_Component(QtWidgets.QDialog):
         formulaSRKAPI = QLabelMath(math)
         lyt_SRKAPI.addWidget(formulaSRKAPI, 1, 1, 1, 2)
         lyt_SRKAPI.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_SRKAPI.addWidget(QLabelMath("$S_1$"), 3, 1)
         self.SRKAPIS1 = Entrada_con_unidades(float)
         self.SRKAPIS1.valueChanged.connect(self.setDirty)
@@ -1246,16 +1246,16 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.SRKAPI.html"))
         lyt_SRKAPI.addWidget(button, 4, 6)
         lyt_SRKAPI.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 5)
 
         grpMathias = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpMathias)
         self.cubicElection.addItem("PR-Mathias-Copeman")
         lyt_Mathias = QtWidgets.QGridLayout(grpMathias)
         lyt_Mathias.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_Mathias.addWidget(QLabelMath("$C_1$"), 3, 1)
         self.MathiasCopemanC1 = Entrada_con_unidades(float)
         self.MathiasCopemanC1.valueChanged.connect(self.setDirty)
@@ -1275,16 +1275,16 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.PRMathiasCopeman.html"))
         lyt_Mathias.addWidget(button, 5, 6)
         lyt_Mathias.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 5)
 
         grpSV = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpSV)
         self.cubicElection.addItem("PR-Stryjek-Vera")
         lyt_SV = QtWidgets.QGridLayout(grpSV)
         lyt_SV.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_SV.addWidget(QLabelMath("$K_1$"), 3, 1)
         self.SVk0 = Entrada_con_unidades(float)
         self.SVk0.valueChanged.connect(self.setDirty)
@@ -1304,16 +1304,16 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.PRSV2.html"))
         lyt_SV.addWidget(button, 5, 6)
         lyt_SV.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 5)
 
         grpZV = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpZV)
         self.cubicElection.addItem("PR-Zaboloy-Vera")
         lyt_ZV = QtWidgets.QGridLayout(grpZV)
         lyt_ZV.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_ZV.addWidget(QLabelMath("$K_1$"), 3, 1)
         self.ZVk1 = Entrada_con_unidades(float)
         self.ZVk1.valueChanged.connect(self.setDirty)
@@ -1329,8 +1329,8 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.PRZV.html"))
         lyt_ZV.addWidget(button, 4, 6)
         lyt_ZV.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 5)
 
         grpAlmeida = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpAlmeida)
@@ -1341,8 +1341,8 @@ class View_Component(QtWidgets.QDialog):
         formulaAlmeida = QLabelMath(math)
         lyt_Almeida.addWidget(formulaAlmeida, 1, 1, 1, 2)
         lyt_Almeida.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_Almeida.addWidget(QtWidgets.QLabel("m"), 3, 1)
         self.Almeidam = Entrada_con_unidades(float)
         self.Almeidam.valueChanged.connect(self.setDirty)
@@ -1362,16 +1362,16 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.PRAlmeida.html"))
         lyt_Almeida.addWidget(button, 5, 6)
         lyt_Almeida.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 5)
 
         grpPT = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpPT)
         self.cubicElection.addItem("PR-Patel-Teja")
         lyt_PT = QtWidgets.QGridLayout(grpPT)
         lyt_PT.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 2, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 3)
         lyt_PT.addWidget(QLabelMath(r"$\zeta_c$"), 3, 1)
         self.PTZc = Entrada_con_unidades(float)
         self.PTZc.valueChanged.connect(self.setDirty)
@@ -1387,16 +1387,16 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.PT.html"))
         lyt_PT.addWidget(button, 4, 6)
         lyt_PT.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 5)
 
         grpTB = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpTB)
         self.cubicElection.addItem("Trebble-Bishnoi")
         lyt_TB = QtWidgets.QGridLayout(grpTB)
         lyt_TB.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 3, 3)
         lyt_TB.addWidget(QLabelMath(r"$q_1$"), 4, 1)
         self.TBq1 = Entrada_con_unidades(float)
         self.TBq1.valueChanged.connect(self.setDirty)
@@ -1412,16 +1412,16 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.TB.html"))
         lyt_TB.addWidget(button, 5, 6)
         lyt_TB.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 6, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 5)
 
         grpTBS = QtWidgets.QWidget()
         self.cubicStacked.addWidget(grpTBS)
         self.cubicElection.addItem("Trebble-Bishnoi-Salim")
         lyt_TBS = QtWidgets.QGridLayout(grpTBS)
         lyt_TBS.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 3, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 3, 3)
         lyt_TBS.addWidget(QLabelMath(r"$\zeta_c$"), 4, 1)
         self.TBSZc = Entrada_con_unidades(float)
         self.TBSZc.valueChanged.connect(self.setDirty)
@@ -1445,12 +1445,12 @@ class View_Component(QtWidgets.QDialog):
             partial(self.help, "lib.EoS.Cubic.TBS.html"))
         lyt_TBS.addWidget(button, 5, 7)
         lyt_TBS.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 7, 6)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 6)
 
         lytEOS.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 5, 5)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 5, 5)
         self.cubicElection.currentIndexChanged.connect(
             self.cubicStacked.setCurrentIndex)
 
@@ -1502,8 +1502,8 @@ class View_Component(QtWidgets.QDialog):
         self.wMod.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.wMod, 8, 2)
         lytOthers.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 1, 3)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
         lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "UNIQUAC area")), 1, 4)
         self.UNIQUACArea = Entrada_con_unidades(float)
@@ -1546,12 +1546,12 @@ class View_Component(QtWidgets.QDialog):
         lytOthers.addWidget(self.watson, 8, 5)
 
         lytOthers.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 9, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 9, 1)
 
         label_UNIFAC = QtWidgets.QLabel(
                 QtWidgets.QApplication.translate("pychemqt", "UNIFAC Groups"))
-        label_UNIFAC.setAlignment(QtCore.Qt.AlignTop)
+        label_UNIFAC.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         lytOthers.addWidget(label_UNIFAC, 10, 1)
         HHeader = [
             QtWidgets.QApplication.translate("pychemqt", "Group"),
@@ -1562,12 +1562,12 @@ class View_Component(QtWidgets.QDialog):
         self.UNIFAC.setItemDelegateForColumn(1, SpinEditor(self))
         self.UNIFAC.resizeColumnsToContents()
         self.UNIFAC.setSizePolicy(
-            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+            QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         lytOthers.addWidget(self.UNIFAC, 10, 2)
 
         lytOthers.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 11, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 11, 3)
 
         self.change(index)
         self.dirty = False
@@ -1589,10 +1589,10 @@ class View_Component(QtWidgets.QDialog):
             else:
                 index = sql.N_comp
 
-        btnDiscard = self.btnBox.button(QtWidgets.QDialogButtonBox.Discard)
-        btnSave = self.btnBox.button(QtWidgets.QDialogButtonBox.Save)
-        btnApply = self.btnBox.button(QtWidgets.QDialogButtonBox.Apply)
-        btnClose = self.btnBox.button(QtWidgets.QDialogButtonBox.Close)
+        btnDiscard = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Discard)
+        btnSave = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Save)
+        btnApply = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Apply)
+        btnClose = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Close)
         if index == 0:
             btnDiscard.setVisible(True)
             btnSave.setVisible(True)
@@ -1734,7 +1734,7 @@ class View_Component(QtWidgets.QDialog):
                 self.UNIFAC.setItem(i, 0, item)
                 self.UNIFAC.setItem(i, 1, item2)
                 self.UNIFAC.item(i, 1).setTextAlignment(
-                        QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                        QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         if self.cmp.M:
             self.M.setValue(self.cmp.M)
@@ -1952,15 +1952,15 @@ class View_Component(QtWidgets.QDialog):
 
     def buttonClicked(self, boton):
         role = self.btnBox.buttonRole(boton)
-        if role == QtWidgets.QDialogButtonBox.AcceptRole:
+        if role == QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole:
             componente = self.getComponent()
             sql.inserElementsFromArray(sql.databank_Custom_name, [componente])
             self.accept()
-        elif role == QtWidgets.QDialogButtonBox.ApplyRole:
+        elif role == QtWidgets.QDialogButtonBox.ButtonRole.ApplyRole:
             componente = self.getComponent()
             sql.updateElement(componente, self.index)
             self.accept()
-        elif role == QtWidgets.QDialogButtonBox.DestructiveRole:
+        elif role == QtWidgets.QDialogButtonBox.ButtonRole.DestructiveRole:
             componente = self.getComponent()
             if self.index == 0:
                 func = sql.inserElementsFromArray

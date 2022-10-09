@@ -77,7 +77,7 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.BaseDatos.setMinimumWidth(375)
         self.BaseDatos.verticalHeader().hide()
         self.BaseDatos.setEditTriggers(
-            QtWidgets.QAbstractItemView.NoEditTriggers)
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.BaseDatos.setShowGrid(False)
         self.BaseDatos.setRowCount(0)
         self.BaseDatos.setColumnCount(3)
@@ -88,7 +88,7 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.BaseDatos.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem(
             QtWidgets.QApplication.translate("pychemqt", "Formula")))
         self.BaseDatos.setSelectionBehavior(
-            QtWidgets.QAbstractItemView.SelectRows)
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.BaseDatos.horizontalHeader().setStretchLastSection(True)
         self.BaseDatos.currentCellChanged.connect(self.checkButton)
         self.BaseDatos.doubleClicked.connect(self.mostrarPropiedades)
@@ -187,7 +187,7 @@ class UI_databank(QtWidgets.QDialog):
         self.databank = UI_databank_widget()
         layout.addWidget(self.databank)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

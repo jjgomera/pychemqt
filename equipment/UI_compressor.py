@@ -58,7 +58,7 @@ class UI_equipment(UI_equip):
             self.on_tipoCalculo_currentIndexChanged)
         lyt_Calc.addWidget(self.metodo, 1, 2, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 0, 1, 4)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Thermodynamic:")), 3, 1)
@@ -69,7 +69,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "termodinamica"))
         lyt_Calc.addWidget(self.termodinamica, 3, 2, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            40, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 0, 1, 4)
         lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Out Pressure")), 5, 1)
@@ -158,19 +158,19 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "rpm"))
         lyt_Cost.addWidget(self.rpm, 4, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Maximum), 5, 1, 1, 6)
+            40, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Maximum), 5, 1, 1, 6)
 
         self.Costos = CostData(self.Equipment)
         self.Costos.valueChanged.connect(self.changeParamsCoste)
         lyt_Cost.addWidget(self.Costos, 6, 1, 1, 3)
 
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 8, 1, 1, 6)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
         group = QtWidgets.QGroupBox()
         group.setTitle(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))

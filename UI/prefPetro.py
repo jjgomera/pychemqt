@@ -104,8 +104,8 @@ class Widget(QtWidgets.QWidget):
             self.H.addItem(method)
         layout.addWidget(self.H, 11, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 15, 1, 1, 3)
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 1, 1, 3)
 
         if config.has_section("petro"):
             self.M.setCurrentIndex(
@@ -151,7 +151,7 @@ class ConfigDialog(QtWidgets.QDialog):
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

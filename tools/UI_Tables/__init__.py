@@ -839,8 +839,8 @@ class Dialog(QtWidgets.QDialog, plugin):
         layout.addWidget(conf, 4, 1)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 5, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 1)
         menuCalculate = self._menuCalculate()
         calculate = QtWidgets.QPushButton(menuCalculate.title())
         calculate.setMenu(menuCalculate)
@@ -857,9 +857,9 @@ class Dialog(QtWidgets.QDialog, plugin):
             plot.setEnabled(False)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 7, 1, 1, 3)
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Close)
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 1, 1, 3)
+        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
         btBox.clicked.connect(self.reject)
         layout.addWidget(btBox, 8, 1, 1, 3)
 

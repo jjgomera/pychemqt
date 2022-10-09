@@ -83,7 +83,7 @@ class UI_equipment(UI_equip):
         lyt1.addWidget(self.Text, 3, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 0, 1, 3)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Pressure loss")), 6, 1)
@@ -91,8 +91,8 @@ class UI_equipment(UI_equip):
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
         lyt.addWidget(self.DeltaP, 6, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 7, 0, 1, 3)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 0, 1, 3)
 
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Results"))
@@ -110,7 +110,7 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.ToutCalc, 1, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            0, 0, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             9, 0, 1, 3)
 
         if equipment:

@@ -61,7 +61,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "mode"))
         lyt.addWidget(self.mode, 1, 2, 1, 4)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 1, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Air Relative Humidity")), 3, 1)
@@ -93,7 +93,7 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.DeltaP, 7, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             8, 1, 1, 6)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Results"))
@@ -113,7 +113,7 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.HumedadCalculada, 3, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             11, 1, 1, 6)
 
         # Output Tab

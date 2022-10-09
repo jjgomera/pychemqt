@@ -44,7 +44,7 @@ class Plot(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvasQTAgg.__init__(self, self.fig)
         self.setParent(parent)
-        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
+        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
         FigureCanvasQTAgg.updateGeometry(self)
 
 
@@ -56,10 +56,10 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         self.showMaximized()
 
         self.gridLayout = QtWidgets.QGridLayout(self)
-        self.botones = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Open|QtWidgets.QDialogButtonBox.Save|QtWidgets.QDialogButtonBox.Reset, QtCore.Qt.Vertical)
+        self.botones = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Apply|QtWidgets.QDialogButtonBox.StandardButton.Open|QtWidgets.QDialogButtonBox.StandardButton.Save|QtWidgets.QDialogButtonBox.StandardButton.Reset, QtCore.Qt.Orientation.Vertical)
         self.botones.clicked.connect(self.botones_clicked)
         self.gridLayout.addWidget(self.botones,1,1,3,1)
-        self.gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,2,3,1)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),1,2,3,1)
         self.gridLayout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Curves")),1,3)
         self.lista=QtWidgets.QComboBox()
         self.lista.currentIndexChanged.connect(self.cambiarCurvaVista)
@@ -70,7 +70,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         self.gridLayout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "RPM")),3,3)
         self.rpm=Entrada_con_unidades(int, width=60, textounidad="rpm")
         self.gridLayout.addWidget(self.rpm,3,4)
-        self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),4,1,1,4)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),4,1,1,4)
 
         self.Tabla=Tabla(4, horizontalHeader=[QtWidgets.QApplication.translate("pychemqt", "Flowrate"), QtWidgets.QApplication.translate("pychemqt", "Head"), QtWidgets.QApplication.translate("pychemqt", "Power"), QtWidgets.QApplication.translate("pychemqt", "NPSH")], verticalOffset=1, filas=1, stretch=False)
         self.Tabla.setColumnWidth(0, 100)
@@ -88,9 +88,9 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         self.Tabla.setRowHeight(0, 24)
         self.Tabla.setFixedWidth(360)
         self.Tabla.setConnected()
-        self.Tabla.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.Tabla.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.gridLayout.addWidget(self.Tabla,5,1,1,4)
-        self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,5,5,1)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),1,5,5,1)
 
         self.checkCarga = QtWidgets.QCheckBox(QtWidgets.QApplication.translate("pychemqt", "Heat"))
         self.gridLayout.addWidget(self.checkCarga,1,6)
@@ -101,12 +101,12 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         self.rejilla = QtWidgets.QCheckBox(QtWidgets.QApplication.translate("pychemqt", "Grid"))
         self.rejilla.toggled.connect(self.rejilla_toggled)
         self.gridLayout.addWidget(self.rejilla,1,9)
-        self.gridLayout.addItem(QtWidgets.QSpacerItem(1000,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Fixed),1,10)
+        self.gridLayout.addItem(QtWidgets.QSpacerItem(1000,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Fixed),1,10)
         self.Plot = Plot(self, width=5, height=1, dpi=100)
         self.gridLayout.addWidget(self.Plot,2,6,4,5)
 
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok|QtWidgets.QDialogButtonBox.Cancel)
+        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok|QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         self.gridLayout.addWidget(self.buttonBox,6,9,1,2)
@@ -153,7 +153,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
 
 
     def botones_clicked(self, boton):
-        if boton == self.botones.button(QtWidgets.QDialogButtonBox.Reset):
+        if boton == self.botones.button(QtWidgets.QDialogButtonBox.StandardButton.Reset):
             self.diametro.clear()
             self.rpm.clear()
             self.Tabla.clear()
@@ -162,7 +162,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
             self.checkNPSH.setChecked(False)
             self.rejilla.setChecked(False)
 
-        elif boton == self.botones.button(QtWidgets.QDialogButtonBox.Open):
+        elif boton == self.botones.button(QtWidgets.QDialogButtonBox.StandardButton.Open):
             fname = str(QtWidgets.QFileDialog.getOpenFileName(self, QtWidgets.QApplication.translate("pychemqt", "Open curve file"), "./", "cpickle file (*.pkl);;All files (*.*)")[0])
             if fname:
                 with open(fname, "r") as archivo:
@@ -178,7 +178,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
                 self.cambiarCurvaVista(self.lista.count()-1)
                 self.actualizarPlot()
 
-        elif boton == self.botones.button(QtWidgets.QDialogButtonBox.Apply):
+        elif boton == self.botones.button(QtWidgets.QDialogButtonBox.StandardButton.Apply):
             txt=str(self.diametro.value)+'", '+str(self.rpm.value)+" rpm"
             indice=self.lista.findText(txt)
             if indice ==-1:

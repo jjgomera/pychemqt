@@ -64,7 +64,7 @@ class UI_equipment(UI_equip):
         self.Carga.valueChanged.connect(partial(self.cambiar_data, "Carga"))
         lyt.addWidget(self.Carga, 3, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 1, 1, 2)
         self.usarCurva = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Pump curve"))
@@ -78,8 +78,8 @@ class UI_equipment(UI_equip):
             partial(self.cambiar_data, "rendimiento"))
         lyt.addWidget(self.rendimiento, 7, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 8, 1, 1, 6)
 
         self.groupBox_Curva = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Pump curve"))
@@ -147,12 +147,12 @@ case it override flow of input stream"))
         self.rendimientoCalculado.setReadOnly(True)
         layout.addWidget(self.rendimientoCalculado, 2, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Minimum), 0, 3)
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum), 0, 3)
         lyt.addWidget(group, 9, 1, 1, 6)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 10, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
 
         # Design tab
         # self.tabDiseno = QtWidgets.QWidget()
@@ -212,8 +212,8 @@ case it override flow of input stream"))
         lyt.addWidget(self.Costos, 6, 1, 2, 4)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 7, 1, 1, 4)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 1, 1, 4)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated costs"))
         lyt.addWidget(group, 8, 1, 1, 4)
@@ -239,8 +239,8 @@ case it override flow of input stream"))
         self.C_inst.setReadOnly(True)
         layout.addWidget(self.C_inst, 1, 5)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 9, 1, 1, 4)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 9, 1, 1, 4)
 
         if equipment:
             self.setEquipment(equipment)

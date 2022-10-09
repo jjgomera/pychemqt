@@ -67,7 +67,7 @@ class Dialog_Methods(QtWidgets.QDialog):
         layout.addWidget(self.shellSide, 3, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
@@ -144,7 +144,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "rearHead"))
         lyt.addWidget(self.rearHead, 5, 2, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Orientation")), 7, 1)
@@ -160,7 +160,7 @@ class UI_equipment(UI_equip):
         botonMetodos.clicked.connect(self.selectMethods)
         lyt.addWidget(botonMetodos, 9, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             10, 1, 1, 6)
 
         # Tubes tab
@@ -208,7 +208,7 @@ class UI_equipment(UI_equip):
         self.buttonPipe.clicked.connect(self.showMaterial)
         lyt.addWidget(self.buttonPipe, 4, 4, 4, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             8, 1, 1, 6)
 
         lyt.addWidget(QtWidgets.QLabel(
@@ -243,7 +243,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "tubeFouling"))
         lyt.addWidget(self.tubeFouling, 12, 2, 1, 3)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             15, 1, 1, 6)
 
         # Shell tab
@@ -263,7 +263,7 @@ class UI_equipment(UI_equip):
         self.serie.valueChanged.connect(partial(self.changeParams, "serie"))
         lyt.addWidget(self.serie, 2, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Shell Diameter")), 4, 1)
@@ -271,14 +271,14 @@ class UI_equipment(UI_equip):
         self.DShell.valueChanged.connect(partial(self.changeParams, "DShell"))
         lyt.addWidget(self.DShell, 4, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 1, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Shell Material")), 6, 1)
         self.materialShell = QtWidgets.QComboBox()
         lyt.addWidget(self.materialShell, 6, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             7, 1, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Fouling")), 8, 1)
@@ -287,7 +287,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "shellFouling"))
         lyt.addWidget(self.shellFouling, 8, 2, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             9, 1, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Sealing Strips")), 10, 1)
@@ -319,7 +319,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "clearanceShellBundle"))
         lyt.addWidget(self.ClearanceShellBundle, 3, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             15, 1, 1, 6)
 
         # Fitting tab
@@ -336,7 +336,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "baffleType"))
         lyt.addWidget(self.baffleType, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 1, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Inlet spacing")), 3, 1)
@@ -385,10 +385,10 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "baffleCutBase"))
         lyt.addWidget(self.baffleCutBase, 7, 5)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             1, 3, 6, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             8, 1, 1, 6)
 
         group = QtWidgets.QGroupBox(
@@ -424,11 +424,11 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "nozzleOutTubesideDiameter"))
         layout.addWidget(self.nozzleOutTubesideDiameter, 2, 3)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed),
             1, 4, 2, 1)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             15, 1, 1, 6)
 
         # Calculate tab
@@ -440,7 +440,7 @@ class UI_equipment(UI_equip):
         self.modo.addItem(QtWidgets.QApplication.translate("pychemqt", "Design"))
         lyt.addWidget(self.modo, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             15, 1, 1, 6)
 
         # Cost tab
@@ -462,14 +462,14 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "P_dis"))
         lyt.addWidget(self.materialCoste, 2, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             3, 0, 1, 6)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Design Pressure")), 4, 1)
         self.Pdiseno = Entrada_con_unidades(Pressure)
         lyt.addWidget(self.Pdiseno, 4, 2, 1, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             5, 0, 1, 6)
 
         self.Costos = CostData(self.Equipment)
@@ -477,10 +477,10 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.Costos, 6, 1, 2, 5)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             8, 0, 1, 6)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             10, 0, 1, 6)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))

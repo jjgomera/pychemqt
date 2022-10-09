@@ -85,8 +85,8 @@ class UI_equipment(UI_equip):
         gridLayout_Calculo.addWidget(self.modelo_DeltaP, 3, 2, 1, 5)
 
         gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Fixed,
-            QtWidgets.QSizePolicy.Fixed), 4, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 6)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Diameter")), 5, 1)
         self.diametro = Entrada_con_unidades(Length)
@@ -131,8 +131,8 @@ class UI_equipment(UI_equip):
         LtLayout.addWidget(self.Lt)
 
         gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 8, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 8, 1, 1, 6)
         self.groupBox_Calculo = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo, 9, 1, 1, 5)
@@ -149,8 +149,8 @@ class UI_equipment(UI_equip):
         gridLayout_1.addWidget(self.deltaP, 2, 2)
 
         gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 11, 1, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 11, 1, 1, 6)
 
         # Output Tab
         self.SalidaGas = UI_corriente.Ui_corriente(readOnly=True, psychro=True)

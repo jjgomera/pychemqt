@@ -78,7 +78,7 @@ class UI_equipment(parents.UI_equip):
         self.material.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.material, 3, 2, 1, 1)
 
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(30,30,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),1,3,5,1)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(30,30,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),1,3,5,1)
 
         self.groupBox_Pisos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Torre de pisos", None))
         gridLayout_Costos.addWidget(self.groupBox_Pisos,1,4,4,2)
@@ -104,14 +104,14 @@ class UI_equipment(parents.UI_equip):
         self.materialPisos.addItem(QtWidgets.QApplication.translate("equipment", "Titanio", None))
         self.materialPisos.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_1.addWidget(self.materialPisos, 2, 2, 1, 1)
-        gridLayout_1.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),3,1,1,2)
+        gridLayout_1.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),3,1,1,2)
         gridLayout_1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Diametro:", None)), 4, 1, 1, 1)
         self.diametroPisos=Entrada_con_unidades(unidades.Length)
         gridLayout_1.addWidget(self.diametroPisos,4,2,1,1)
         gridLayout_1.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Número:", None)), 5, 1, 1, 1)
         self.NumeroPisos=Entrada_con_unidades(int, spinbox=True, min=1, step=1, width=50)
         gridLayout_1.addWidget(self.NumeroPisos,5,2,1,1)
-        gridLayout_1.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),6,1,1,2)
+        gridLayout_1.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),6,1,1,2)
 
         self.groupBox_relleno = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Torre de relleno", None))
         gridLayout_Costos.addWidget(self.groupBox_relleno,1, 4, 4, 2)
@@ -122,7 +122,7 @@ class UI_equipment(parents.UI_equip):
         gridLayout_2.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Coste unitario:", None)),2,1,1,1)
         self.C_unit_relleno=Entrada_con_unidades(unidades.Currency, retornar=False, textounidad="%s / %s" % (unidades.Currency(None).text(), unidades.Volume(None).text("VolLiq")))
         gridLayout_2.addWidget(self.C_unit_relleno,2,2,1,1)
-        gridLayout_2.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),3,1,1,2)
+        gridLayout_2.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),3,1,1,2)
 
         gridLayout_Costos.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate("equipment", "Diametro:", None)),5,1,1,1)
         self.Dc=Entrada_con_unidades(unidades.Length)
@@ -144,7 +144,7 @@ class UI_equipment(parents.UI_equip):
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,10,1,2,4)
 
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),12,1,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),12,1,1,6)
 
         self.groupBox_Costos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,13,1,1,5)

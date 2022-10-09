@@ -61,14 +61,14 @@ class UI_equipment(parents.UI_equip):
         self.tipo.addItem(QtWidgets.QApplication.translate("equipment", "Plate and frame", None))
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 1, 1, 3)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Fixed,QtWidgets.QSizePolicy.Fixed),2,0,1,2)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),2,0,1,2)
 
         self.Costos=costIndex.CostData(1.3, 2)
         self.Costos.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Costos,4,0,2,5)
 
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),6,0,1,6)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Expanding,QtWidgets.QSizePolicy.Expanding),10,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),6,0,1,6)
+        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,0,1,6)
         self.groupBox_Costos = QtWidgets.QGroupBox(QtWidgets.QApplication.translate("equipment", "Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,7,0,1,4)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)

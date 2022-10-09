@@ -56,7 +56,7 @@ class UI_equipment (UI_equip):
             partial(self.changeParams, "metodo"))
         lyt_Calc.addWidget(self.flash, 0, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             1, 1, 1, 6)
 
         # Cost tab
@@ -131,10 +131,10 @@ class UI_equipment (UI_equip):
         self.Peso = Entrada_con_unidades(Mass, readOnly=True)
         lyt_Cost.addWidget(self.Peso, 7, 5)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 3, 6, 1)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             8, 0, 1, 6)
 
         self.Costos = CostData(self.Equipment)
@@ -142,7 +142,7 @@ class UI_equipment (UI_equip):
         lyt_Cost.addWidget(self.Costos, 9, 1, 2, 5)
 
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             11, 0, 1, 6)
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
@@ -161,7 +161,7 @@ class UI_equipment (UI_equip):
         self.C_inst.setReadOnly(True)
         layout.addWidget(self.C_inst, 1, 2)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding),
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             13, 0, 1, 6)
 
         # Output tab

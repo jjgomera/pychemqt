@@ -67,7 +67,7 @@ class Ui_CostIndex(QtWidgets.QDialog):
         self.equipos = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.equipos, 3, 3, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            30, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed),
+            30, 0, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 1, 1, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Heat exchangers & Tanks")), 4, 2, 1, 1)
@@ -113,7 +113,7 @@ class Ui_CostIndex(QtWidgets.QDialog):
         self.ingenieria = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.ingenieria, 13, 3, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.Ok | QtWidgets.QDialogButtonBox.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 14, 1, 1, 3)
@@ -176,9 +176,9 @@ class Ui_CostIndex(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Unsaved changes"),
             QtWidgets.QApplication.translate("pychemqt",
                                              "Save unsaved changes?"),
-            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
-            QtWidgets.QMessageBox.Yes)
-        if dialog == QtWidgets.QMessageBox.Yes:
+            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
+            QtWidgets.QMessageBox.StandardButton.Yes)
+        if dialog == QtWidgets.QMessageBox.StandardButton.Yes:
             self.accept()
         else:
             event.accept()
@@ -226,8 +226,8 @@ class CostData(QtWidgets.QWidget):
         factor = equipment.kwargs["f_install"]
         gridLayout = QtWidgets.QGridLayout(self)
         gridLayout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 1, 0, 1, 7)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 1, 0, 1, 7)
         gridLayout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate(
                 "pychemqt", "Instalation factor:")), 2, 0)
@@ -255,8 +255,8 @@ class CostData(QtWidgets.QWidget):
         self.costIndex.setVisible(False)
         gridLayout.addWidget(self.costIndex, 3, 5)
         gridLayout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Expanding,
-            QtWidgets.QSizePolicy.Expanding), 4, 0, 1, 7)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 4, 0, 1, 7)
 
     def on_costIndex_clicked(self):
         """Show costIndes dialog to show/change"""
