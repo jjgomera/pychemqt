@@ -1240,7 +1240,7 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
             Tabla_Visco4 = Tabla(
                 8, stretch=False, readOnly=True,
                 horizontalHeader=["a", "b", "c", "A", "B", "C", "D", "E"])
-            format = {"format": 1, "decimales": 10}
+            format = {"fmt": 1, "decimales": 10}
             Tabla_Visco4.setColumn(0, eq["a"], **format)
             Tabla_Visco4.setColumn(1, eq["b"], **format)
             Tabla_Visco4.setColumn(2, eq["c"], **format)

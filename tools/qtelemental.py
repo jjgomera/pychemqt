@@ -656,9 +656,9 @@ class ElementDialog(QtWidgets.QDialog):
         self.isotopes.setColumn(0, [iso[0] for iso in elemento.isotopes],
                                 decimales=0)
         self.isotopes.setColumn(1, [iso[1] for iso in elemento.isotopes],
-                                format=1, decimales=10)
+                                fmt=1, decimales=10)
         self.isotopes.setColumn(2, [iso[2] for iso in elemento.isotopes],
-                                format=1, decimales=10)
+                                fmt=1, decimales=10)
         lyt_C.addWidget(self.isotopes, 9, 1, 1, 2)
         lyt_C.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
