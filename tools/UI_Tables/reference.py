@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 from lib import unidades
 from lib.thermo import ThermoAdvanced

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###                                       Diálogo de definición de unidades de secado de sólidos, UI_dryer                                      ###
 ############################################################################
 
-from PyQt5 import QtCore, QtWidgets
+from qt import QtCore, QtWidgets
 
 
 from equipment.gas_solid_liquid import Dryer

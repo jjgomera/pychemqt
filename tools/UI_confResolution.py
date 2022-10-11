@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from configparser import ConfigParser
 
-from PyQt5 import QtWidgets
+from qt import QtWidgets
 
 
 from UI.widgets import Entrada_con_unidades

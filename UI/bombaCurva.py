@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import pickle
 from functools import partial
 
-from PyQt5 import QtCore, QtWidgets
+from qt import QtCore, QtWidgets
 
 from matplotlib import rcParams
 rcParams['backend'] = 'QT5Agg'  #Fija el backend de las ventanas de matplotlib a qt5

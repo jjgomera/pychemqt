@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###                                               Diálogo de definición de tuberías, UI_pipe                                                     ###
 #######################################################################
 
-from PyQt5 import QtCore, QtWidgets
+from qt import QtCore, QtWidgets
 
 
 from equipment.distillation import Tower

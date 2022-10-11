@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from scipy import log, exp, r_
 from scipy.optimize import leastsq
 from scipy.special import erf
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 
 from lib.compuestos import Componente
 from lib.config import Entity, getMainWindowConfig
@@ -58,7 +58,7 @@ class Solid(Entity):
               "solids": None}
 
     status = 0
-    msg = QApplication.translate("pychemqt", "undefined")
+    msg = QtWidgets.QApplication.translate("pychemqt", "undefined")
 
     def __call__(self, **kwargs):
         """All equipment are callables, so we can instance or add/change

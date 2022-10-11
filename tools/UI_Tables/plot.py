@@ -42,7 +42,7 @@ import json
 from math import log10, atan, pi
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 from numpy import concatenate, linspace, logspace, transpose, log, nan
 from matplotlib.font_manager import FontProperties
 
@@ -146,9 +146,9 @@ class PlotMEoS(QtWidgets.QWidget):
         dlg.exec()
 
     def mouseMoveEvent(self, event):
-        # print(event.globalPos())
+        # print(event.globalPosition())
         QtWidgets.QWidget.mouseMoveEvent(self, event)
-        self.mouseMove.emit(event.globalPos())
+        self.mouseMove.emit(event.globalPosition())
 
     def closeEvent(self, event):
         self.parent.dirty[self.parent.idTab] = True
@@ -176,7 +176,7 @@ class PlotMEoS(QtWidgets.QWidget):
         menu.addSeparator()
         menu.addAction(self.toolbarVisibleAction)
         menu.addAction(self.gridToggleAction)
-        menu.exec(event.globalPos())
+        menu.exec(event.globalPosition())
 
         if self.plot.ax._gridOn:
             self.gridToggleAction.setChecked(True)
@@ -1440,7 +1440,7 @@ def convertFont(qfont):
     """
     family = str(qfont.family())
 
-    # Matplotlib use 0-1000 scale, qt only 0-100 scale
+    # Matplotlib use 0-1000 scale, Qt only 0-100 scale
     weight = 10*qfont.weight()
 
     if qfont.style() == 0:

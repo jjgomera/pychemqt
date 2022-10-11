@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 import os
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 from UI.widgets import ColorSelector, Entrada_con_unidades, PFDLineCombo
 from tools import UI_confResolution
@@ -125,7 +125,8 @@ class Dialog(QtWidgets.QDialog):
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -138,10 +139,17 @@ class Dialog(QtWidgets.QDialog):
 
 class ConfLine(QtWidgets.QWidget):
     """Composite widget with line format configuration tools"""
-    join = [QtCore.Qt.PenJoinStyle.MiterJoin, QtCore.Qt.PenJoinStyle.BevelJoin, QtCore.Qt.PenJoinStyle.RoundJoin]
-    cap = [QtCore.Qt.PenCapStyle.FlatCap, QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenCapStyle.SquareCap]
-    line = [QtCore.Qt.PenStyle.SolidLine, QtCore.Qt.PenStyle.DashLine, QtCore.Qt.PenStyle.DotLine,
-            QtCore.Qt.PenStyle.DashDotLine, QtCore.Qt.PenStyle.DashDotDotLine]
+    join = [QtCore.Qt.PenJoinStyle.MiterJoin,
+            QtCore.Qt.PenJoinStyle.BevelJoin,
+            QtCore.Qt.PenJoinStyle.RoundJoin]
+    cap = [QtCore.Qt.PenCapStyle.FlatCap,
+           QtCore.Qt.PenCapStyle.RoundCap,
+           QtCore.Qt.PenCapStyle.SquareCap]
+    line = [QtCore.Qt.PenStyle.SolidLine,
+            QtCore.Qt.PenStyle.DashLine,
+            QtCore.Qt.PenStyle.DotLine,
+            QtCore.Qt.PenStyle.DashDotLine,
+            QtCore.Qt.PenStyle.DashDotDotLine]
 
     def __init__(self, pen=None, parent=None):
         super(ConfLine, self).__init__(parent)

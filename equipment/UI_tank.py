@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###                             Diálogo de definición de tanques de almacenamiento, UI_tank                                        ###
 #######################################################################
 
-from PyQt5 import QtCore, QtWidgets
+from qt import QtCore, QtWidgets
 
 
 from equipment.tank import Tank

@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import log, exp
 import os
 
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 from scipy import optimize, polyval, roots, r_
 from scipy.constants import g
 
@@ -103,7 +103,7 @@ class Pump(equipment):
     >>> print("%0.2f" % bomba.C_inst)
     3493.24
     """
-    title = QApplication.translate("pychemqt", "Pump")
+    title = QtWidgets.QApplication.translate("pychemqt", "Pump")
     help = ""
     kwargs = {
         "entrada": None,
@@ -138,36 +138,36 @@ class Pump(equipment):
     salida = [None]
 
     TEXT_BOMBA = (
-        QApplication.translate("pychemqt", "Centrifugal"),
-        QApplication.translate("pychemqt", "Reciprocating"),
-        QApplication.translate("pychemqt", "Gear pump"),
-        QApplication.translate("pychemqt", "Vertical mixed flow"),
-        QApplication.translate("pychemqt", "Vertical axial flow"))
+        QtWidgets.QApplication.translate("pychemqt", "Centrifugal"),
+        QtWidgets.QApplication.translate("pychemqt", "Reciprocating"),
+        QtWidgets.QApplication.translate("pychemqt", "Gear pump"),
+        QtWidgets.QApplication.translate("pychemqt", "Vertical mixed flow"),
+        QtWidgets.QApplication.translate("pychemqt", "Vertical axial flow"))
     TEXT_CENTRIFUGA = (
-        QApplication.translate("pychemqt", "One stage, 3550 rpm, VSC"),
-        QApplication.translate("pychemqt", "One stage, 1750 rpm, VSC"),
-        QApplication.translate("pychemqt", "One stage, 3550 rpm, HSC"),
-        QApplication.translate("pychemqt", "One stage, 1750 rpm, HSC"),
-        QApplication.translate("pychemqt", "Two stage, 3550 rpm, HSC"),
-        QApplication.translate("pychemqt", "Multistage, 3550 rpm, HSC"))
+        QtWidgets.QApplication.translate("pychemqt", "One stage, 3550 rpm, VSC"),
+        QtWidgets.QApplication.translate("pychemqt", "One stage, 1750 rpm, VSC"),
+        QtWidgets.QApplication.translate("pychemqt", "One stage, 3550 rpm, HSC"),
+        QtWidgets.QApplication.translate("pychemqt", "One stage, 1750 rpm, HSC"),
+        QtWidgets.QApplication.translate("pychemqt", "Two stage, 3550 rpm, HSC"),
+        QtWidgets.QApplication.translate("pychemqt", "Multistage, 3550 rpm, HSC"))
     TEXT_MATERIAL = (
-        QApplication.translate("pychemqt", "Cast iron"),
-        QApplication.translate("pychemqt", "Case steel"),
-        QApplication.translate("pychemqt", "304 or 316 fittings"),
-        QApplication.translate("pychemqt", "Stainless steel 304 or 316"),
-        QApplication.translate("pychemqt", "Case Gould's alloy no. 20"),
-        QApplication.translate("pychemqt", "Nickel"),
-        QApplication.translate("pychemqt", "Monel (Ni-Cu)"),
-        QApplication.translate("pychemqt", "ISO B"),
-        QApplication.translate("pychemqt", "ISO C"),
-        QApplication.translate("pychemqt", "Titanium"),
-        QApplication.translate("pychemqt", "Hastelloy C (Ni-Fe-Mo)"),
-        QApplication.translate("pychemqt", "Ductile iron"),
-        QApplication.translate("pychemqt", "Bronze"))
+        QtWidgets.QApplication.translate("pychemqt", "Cast iron"),
+        QtWidgets.QApplication.translate("pychemqt", "Case steel"),
+        QtWidgets.QApplication.translate("pychemqt", "304 or 316 fittings"),
+        QtWidgets.QApplication.translate("pychemqt", "Stainless steel 304 or 316"),
+        QtWidgets.QApplication.translate("pychemqt", "Case Gould's alloy no. 20"),
+        QtWidgets.QApplication.translate("pychemqt", "Nickel"),
+        QtWidgets.QApplication.translate("pychemqt", "Monel (Ni-Cu)"),
+        QtWidgets.QApplication.translate("pychemqt", "ISO B"),
+        QtWidgets.QApplication.translate("pychemqt", "ISO C"),
+        QtWidgets.QApplication.translate("pychemqt", "Titanium"),
+        QtWidgets.QApplication.translate("pychemqt", "Hastelloy C (Ni-Fe-Mo)"),
+        QtWidgets.QApplication.translate("pychemqt", "Ductile iron"),
+        QtWidgets.QApplication.translate("pychemqt", "Bronze"))
     TEXT_MOTOR = (
-        QApplication.translate("pychemqt", "Open drip-proof"),
-        QApplication.translate("pychemqt", "Totally enclosed, fan-cooled"),
-        QApplication.translate("pychemqt", "Explosion-proof"))
+        QtWidgets.QApplication.translate("pychemqt", "Open drip-proof"),
+        QtWidgets.QApplication.translate("pychemqt", "Totally enclosed, fan-cooled"),
+        QtWidgets.QApplication.translate("pychemqt", "Explosion-proof"))
     TEXT_RPM = ("3600 RPM", "1800 RPM", "1200 RPM")
 
     @property
@@ -179,7 +179,7 @@ class Pump(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")
             self.status = 0
         else:
             P = self.kwargs["Pout"] or self.kwargs["deltaP"] \
@@ -191,11 +191,11 @@ class Pump(equipment):
                         self.status = 1
                         return True
                     elif P:
-                        self.msg = QApplication.translate(
+                        self.msg = QtWidgets.QApplication.translate(
                             "pychemqt", "undefined pump curve")
                         self.status = 0
                     else:
-                        self.msg = QApplication.translate(
+                        self.msg = QtWidgets.QApplication.translate(
                             "pychemqt", "undefined out pressure condition")
                         self.status = 0
                 elif self.kwargs["curvaCaracteristica"]:
@@ -203,7 +203,7 @@ class Pump(equipment):
                     self.status = 1
                     return True
                 else:
-                    self.msg = QApplication.translate(
+                    self.msg = QtWidgets.QApplication.translate(
                         "pychemqt", "undefined pump curve")
                     self.status = 0
             else:
@@ -212,11 +212,11 @@ class Pump(equipment):
                     self.status = 1
                     return True
                 elif P:
-                    self.msg = QApplication.translate(
+                    self.msg = QtWidgets.QApplication.translate(
                         "pychemqt", "undefined efficiency")
                     self.status = 0
                 else:
-                    self.msg = QApplication.translate(
+                    self.msg = QtWidgets.QApplication.translate(
                         "pychemqt", "undefined out pressure condition")
                     self.status = 0
 
@@ -438,13 +438,13 @@ class Pump(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(8))
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += QApplication.translate(
+            txt += QtWidgets.QApplication.translate(
                 "pychemqt", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(8, 11))
@@ -459,43 +459,43 @@ class Pump(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Input Pressure"),
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Input Pressure"),
               "Pin", Pressure),
-             (QApplication.translate("pychemqt", "Output Pressure"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output Pressure"),
               "PoutCalculada", Pressure),
-             (QApplication.translate("pychemqt", "Head"), "headCalculada",
+             (QtWidgets.QApplication.translate("pychemqt", "Head"), "headCalculada",
               Length),
-             (QApplication.translate("pychemqt", "Brake horsepower"),
+             (QtWidgets.QApplication.translate("pychemqt", "Brake horsepower"),
               "P_freno", Power),
-             (QApplication.translate("pychemqt", "Volumetric Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Volumetric Flow"),
               "volflow", VolFlow),
-             (QApplication.translate("pychemqt", "Power"), "power", Power),
-             (QApplication.translate("pychemqt", "Efficiency"),
+             (QtWidgets.QApplication.translate("pychemqt", "Power"), "power", Power),
+             (QtWidgets.QApplication.translate("pychemqt", "Efficiency"),
               "rendimientoCalculado", Dimensionless),
              ("Cp/Cv", "cp_cv", Dimensionless),
-             (QApplication.translate("pychemqt", "Base index"),
+             (QtWidgets.QApplication.translate("pychemqt", "Base index"),
               "Base_index", float),
-             (QApplication.translate("pychemqt", "Current index"),
+             (QtWidgets.QApplication.translate("pychemqt", "Current index"),
               "Current_index", float),
-             (QApplication.translate("pychemqt", "Install factor"),
+             (QtWidgets.QApplication.translate("pychemqt", "Install factor"),
               "f_install", float),
-             (QApplication.translate("pychemqt", "Pump Type"),
+             (QtWidgets.QApplication.translate("pychemqt", "Pump Type"),
               ("TEXT_BOMBA", "tipo_bomba"), str),
-             (QApplication.translate("pychemqt", "Centrifuge Type"),
+             (QtWidgets.QApplication.translate("pychemqt", "Centrifuge Type"),
               ("TEXT_CENTRIFUGA", "tipo_centrifuga"), str),
-             (QApplication.translate("pychemqt", "Material"),
+             (QtWidgets.QApplication.translate("pychemqt", "Material"),
               ("TEXT_MATERIAL", "material"), str),
-             (QApplication.translate("pychemqt", "Motor Type"),
+             (QtWidgets.QApplication.translate("pychemqt", "Motor Type"),
               ("TEXT_MOTOR", "motor"), str),
-             (QApplication.translate("pychemqt", "Motor RPM"),
+             (QtWidgets.QApplication.translate("pychemqt", "Motor RPM"),
               ("TEXT_RPM", "rpm"), str),
-             (QApplication.translate("pychemqt", "Pump Cost"),
+             (QtWidgets.QApplication.translate("pychemqt", "Pump Cost"),
               "C_bomba", Currency),
-             (QApplication.translate("pychemqt", "Motor Cost"),
+             (QtWidgets.QApplication.translate("pychemqt", "Motor Cost"),
               "C_motor", Currency),
-             (QApplication.translate("pychemqt", "Purchase Cost"),
+             (QtWidgets.QApplication.translate("pychemqt", "Purchase Cost"),
               "C_adq", Currency),
-             (QApplication.translate("pychemqt", "Installed Cost"),
+             (QtWidgets.QApplication.translate("pychemqt", "Installed Cost"),
               "C_inst", Currency)]
         return l
 

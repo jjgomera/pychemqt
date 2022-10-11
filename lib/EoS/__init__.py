@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 
 from lib.EoS import cubic
 from lib.EoS.cubic import alfa
@@ -38,7 +38,7 @@ H_name = [h.__title__.split(" (")[0] for h in H]
 H_status = [h.__status__ for h in H]
 
 mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
-cp_ideal = (QApplication.translate("pychemqt", "Ideal"), "DIPPR")
+cp_ideal = (QtWidgets.QApplication.translate("pychemqt", "Ideal"), "DIPPR")
 
 __all__ = [BWRS, BWRSoave, Cubic, Grayson_Streed, Lee_Kesler, virial]
 

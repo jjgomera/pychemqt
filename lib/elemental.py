@@ -68,7 +68,7 @@ import os
 import sqlite3
 
 from numpy import linspace, logspace, log
-from PyQt5.QtCore import QLocale
+from qt import QtCore
 
 from lib.utilities import colors
 
@@ -79,7 +79,7 @@ connection = sqlite3.connect(os.path.join(
 databank = connection.cursor()
 
 # Load system locale to implement a custon translation system (non qt)
-locale = QLocale.system().name().upper()
+locale = QtCore.QLocale.system().name().upper()
 if "_" in locale:
     locale = locale.split("_")[0]
 

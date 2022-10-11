@@ -27,10 +27,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from time import sleep
 
-from PyQt5.QtCore import QThread, QMutex
+from qt import QtCore
 
 
-class WaitforClick(QThread):
+class WaitforClick(QtCore.QThread):
     """
     Thread used in PFD drawing to specified stream input and output or add
     equipment.
@@ -49,14 +49,14 @@ class WaitforClick(QThread):
                 break
 
 
-class Evaluate(QThread):
+class Evaluate(QtCore.QThread):
     """
     Thread used to insolate calculation process in entities (stream, project
     and equipment, so gui can response while calculation is in process
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.mutex = QMutex()
+        self.mutex = QtCore.QMutex()
         self.entity = None
         self.kwargs = None
 
@@ -64,7 +64,7 @@ class Evaluate(QThread):
         """Rewrite QThread start procedure"""
         self.entity = entity
         self.kwargs = kwargs
-        QThread.start(self)
+        QtCore.QThread.start(self)
 
     def run(self):
         """Evaluate entity"""

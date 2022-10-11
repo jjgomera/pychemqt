@@ -29,7 +29,7 @@ from functools import partial
 import logging
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 from lib.config import Entity, IMAGE_PATH
 from lib.thread import Evaluate

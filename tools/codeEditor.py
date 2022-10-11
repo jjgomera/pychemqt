@@ -35,16 +35,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import sys
 
-from PyQt5 import QtGui, QtWidgets
+from qt import QtGui, QtWidgets
 try:
-    from PyQt5.Qsci import QsciScintilla, QsciLexerPython
+    from qt import Qsci
 except ImportError:
     pass
 
 
 if os.environ["PyQt5.Qsci"] == "True":
     # With scintilla available use as python editor
-    class SimplePythonEditor(QsciScintilla):
+    class SimplePythonEditor(Qsci.QsciScintilla):
         """Code editor for python code using Qscintilla"""
         ARROW_MARKER_NUM = 8
 
@@ -69,13 +69,13 @@ if os.environ["PyQt5.Qsci"] == "True":
             # Clickable margin 1 for showing markers
             self.setMarginSensitivity(1, True)
             self.marginClicked.connect(self.on_margin_clicked)
-            self.markerDefine(QsciScintilla.MarkerSymbol.RightArrow, self.ARROW_MARKER_NUM)
+            self.markerDefine(Qsci.QsciScintilla.MarkerSymbol.RightArrow, self.ARROW_MARKER_NUM)
             self.setMarkerBackgroundColor(
                 QtGui.QColor("#ee1111"), self.ARROW_MARKER_NUM)
 
             # Brace matching: enable for a brace immediately before or after
             # the current position
-            self.setBraceMatching(QsciScintilla.BraceMatch.SloppyBraceMatch)
+            self.setBraceMatching(Qsci.QsciScintilla.BraceMatch.SloppyBraceMatch)
 
             # Current line visible with special background color
             self.setCaretLineVisible(True)
@@ -84,16 +84,16 @@ if os.environ["PyQt5.Qsci"] == "True":
             # Set Python lexer
             # Set style for Python comments (style number 1) to a fixed-width
             # courier.
-            lexer = QsciLexerPython()
+            lexer = Qsci.QsciLexerPython()
             lexer.setDefaultFont(font)
             self.setLexer(lexer)
-            # self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
-            # self.SendScintilla(QsciScintilla.SCI_STYLESETFONT, 1)
+            # self.SendScintilla(Qsci.QsciScintilla.SCI_STYLESETFONT, 1, 'Courier')
+            # self.SendScintilla(Qsci.QsciScintilla.SCI_STYLESETFONT, 1)
 
             # Don't want to see the horizontal scrollbar at all
             # Use raw message to Scintilla here (all messages are documented
             # here: http://www.scintilla.org/ScintillaDoc.html)
-            self.SendScintilla(QsciScintilla.SCI_SETHSCROLLBAR, 0)
+            self.SendScintilla(Qsci.QsciScintilla.SCI_SETHSCROLLBAR, 0)
 
             # not too small
             # self.setMinimumSize(700, 450)

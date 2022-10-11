@@ -27,7 +27,7 @@ import subprocess
 import sys
 import time
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, plots, viewComponents
 from UI.petro import Definicion_Petro
@@ -169,7 +169,7 @@ class FlowLayout(QtWidgets.QLayout):
         return None
 
     def expandingDirections(self):
-        return QtCore.Qt.Orientations(QtCore.Qt.Orientation(0))
+        return QtCore.Qt.Orientation.Horizontal
 
     def hasHeightForWidth(self):
         return True
@@ -544,9 +544,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.toolboxPalette.setWidget(toolboxContenido)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.toolboxPalette)
         self.toolboxPalette.setFeatures(
-            QtWidgets.QDockWidget.AllDockWidgetFeatures)
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+            | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable)
         self.toolboxPalette.setAllowedAreas(
-            QtCore.Qt.DockWidgetArea.LeftDockWidgetArea | QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
+            QtCore.Qt.DockWidgetArea.LeftDockWidgetArea
+            | QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
 
         self.toolboxPalette.visibilityChanged.connect(
             self.actionVerToolbar.setChecked)
@@ -1009,7 +1012,9 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.toolboxItem.setWidget(self.list)
         self.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.toolboxItem)
         self.toolboxItem.setFeatures(
-            QtWidgets.QDockWidget.AllDockWidgetFeatures)
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable
+            | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
+            | QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable)
         self.toolboxItem.setAllowedAreas(
             QtCore.Qt.DockWidgetArea.LeftDockWidgetArea | QtCore.Qt.DockWidgetArea.RightDockWidgetArea)
         self.toolboxItem.visibilityChanged.connect(
@@ -1144,7 +1149,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     "pychemqt", "Unsaved changes"),
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Save unsaved changes?"),
-                QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No
+                QtWidgets.QMessageBox.StandardButton.Yes
+                | QtWidgets.QMessageBox.StandardButton.No
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
                 QtWidgets.QMessageBox.StandardButton.Yes)
             if dialog == QtWidgets.QMessageBox.StandardButton.Cancel:
@@ -1177,31 +1183,38 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuVentana.clear()
 
         # Add subwindow options
-        self.menuVentana.addAction(
-            QtGui.QIcon(IMAGE_PATH + "button/arrow-left.png"),
+        actionLeft = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Previous"),
-            self.currentMdi.activatePreviousSubWindow,
-            QtGui.QKeySequence.StandardKey.PreviousChild)
-        self.menuVentana.addAction(
-            QtGui.QIcon(IMAGE_PATH + "button/arrow-right.png"),
+            icon="button/arrow-left.png",
+            slot=self.currentMdi.activatePreviousSubWindow,
+            shortcut=QtGui.QKeySequence.StandardKey.PreviousChild, parent=self)
+        self.menuVentana.addAction(actionLeft)
+        actionRight = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Next"),
-            self.currentMdi.activateNextSubWindow,
-            QtGui.QKeySequence.StandardKey.NextChild)
+            icon="button/arrow-right.png",
+            slot=self.currentMdi.activateNextSubWindow,
+            shortcut=QtGui.QKeySequence.StandardKey.NextChild, parent=self)
+        self.menuVentana.addAction(actionRight)
         self.menuVentana.addSeparator()
-        self.menuVentana.addAction(
-            QtGui.QIcon(IMAGE_PATH + "button/tile.png"),
+
+        actionTile = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Tile"),
-            self.currentMdi.tileSubWindows)
-        self.menuVentana.addAction(
-            QtGui.QIcon(IMAGE_PATH + "button/cascade.png"),
+            icon="button/tile.png",
+            slot=self.currentMdi.tileSubWindows, parent=self)
+        self.menuVentana.addAction(actionTile)
+        actionCascade = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Cascade"),
-            self.currentMdi.cascadeSubWindows)
-        self.menuVentana.addAction(
+            icon="button/cascade.png",
+            slot=self.currentMdi.cascadeSubWindows, parent=self)
+        self.menuVentana.addAction(actionCascade)
+        actionRestore = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Restore All"),
-            self.windowRestoreAll)
-        self.menuVentana.addAction(
+            slot=self.windowRestoreAll, parent=self)
+        self.menuVentana.addAction(actionRestore)
+        actionIconize = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Iconize All"),
-            self.windowMinimizeAll)
+            slot=self.windowMinimizeAll, parent=self)
+        self.menuVentana.addAction(actionIconize)
         self.menuVentana.addSeparator()
 
         # Add subwindow list

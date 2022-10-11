@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import atexit
 
-from PyQt5 import QtCore, QtWidgets
+from qt import QtCore, QtWidgets
 
 from tools.firstrun import which
 

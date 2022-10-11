@@ -27,7 +27,7 @@ from math import pi
 
 from matplotlib import image
 from numpy import arange, logspace, arctan
-from PyQt5 import QtWidgets
+from qt import QtWidgets
 
 from lib.config import IMAGE_PATH
 from lib.heatTransfer import (efectividad, TemperatureEffectiveness,

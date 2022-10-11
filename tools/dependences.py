@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from PyQt5 import QtGui, QtWidgets
+from qt import QtGui, QtWidgets
 
 optional_modules = (
     ("freesteam", QtWidgets.QApplication.translate(

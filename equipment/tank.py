@@ -23,8 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from math import log, exp, pi
 
-from PyQt5.QtWidgets import  QApplication
-
 from lib.unidades import Density, Length, Currency, Volume
 from lib.corriente import Corriente
 from .parents import equipment

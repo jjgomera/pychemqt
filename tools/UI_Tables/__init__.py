@@ -32,7 +32,7 @@ from functools import partial
 from math import log10
 import os
 
-from PyQt5 import QtGui, QtWidgets
+from qt import QtGui, QtWidgets
 from numpy import arange, append, concatenate, linspace, logspace
 from scipy.optimize import fsolve
 

@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 from scipy.optimize import fsolve
 
 from lib.corriente import Corriente
@@ -61,7 +61,7 @@ class Divider(equipment):
     360.0
     """
 
-    title = QApplication.translate("pychemqt", "Divider")
+    title = QtWidgets.QApplication.translate("pychemqt", "Divider")
     kwargs = {"entrada": None,
               "criterio": 0,
               "salidas": 0,
@@ -72,8 +72,8 @@ class Divider(equipment):
     kwargsValue = ("deltaP", )
 
     TEXT_CRITERIO = [
-        QApplication.translate("pychemqt", "Flux ratio"),
-        QApplication.translate("pychemqt", "Flowrate (overwrite input flow)")]
+        QtWidgets.QApplication.translate("pychemqt", "Flux ratio"),
+        QtWidgets.QApplication.translate("pychemqt", "Flowrate (overwrite input flow)")]
 
     @property
     def isCalculable(self):
@@ -89,14 +89,14 @@ class Divider(equipment):
             self.kwargs["split"] = [1.]
 
         if not self.kwargs["entrada"]:
-            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")
             self.status = 0
         elif not self.kwargs["split"]:
-            self.msg = QApplication.translate("pychemqt",
+            self.msg = QtWidgets.QApplication.translate("pychemqt",
                                               "undefined split fraction")
             self.status = 0
         elif self.kwargs["salidas"] != len(self.kwargs["split"]):
-            self.msg = QApplication.translate("pychemqt",
+            self.msg = QtWidgets.QApplication.translate("pychemqt",
                                               "incomplete split fraction")
             self.status = 0
         else:
@@ -142,24 +142,24 @@ class Divider(equipment):
     def propTxt(self):
         """Text format for report"""
         txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(0)
         for i, salida in enumerate(self.salida):
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Output stream")+str(i),
+                QtWidgets.QApplication.translate("pychemqt", "Output stream")+str(i),
                 salida.caudalmolar.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(1)
         for i, salida in enumerate(self.salida):
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Output stream")+str(i),
+                QtWidgets.QApplication.translate("pychemqt", "Output stream")+str(i),
                 salida.caudalmasico.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(2)
         for i, salida in enumerate(self.salida):
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Output stream")+str(i),
+                QtWidgets.QApplication.translate("pychemqt", "Output stream")+str(i),
                 salida.Q.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(7)
@@ -168,21 +168,21 @@ class Divider(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QApplication.translate("pychemqt", "Feed Molar Flow"),
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Feed Molar Flow"),
               "inputMolarFlow", unidades.MolarFlow),
-             (QApplication.translate("pychemqt", "Feed Mass Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Feed Mass Flow"),
               "inputMassFlow", unidades.MassFlow),
-             (QApplication.translate("pychemqt", "Feed Volumetric Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Feed Volumetric Flow"),
               "inputVolFlow", unidades.VolFlow),
-             (QApplication.translate("pychemqt", "Feed Temperature"),
+             (QtWidgets.QApplication.translate("pychemqt", "Feed Temperature"),
               "inputT", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Feed Pressure"), "inputP",
+             (QtWidgets.QApplication.translate("pychemqt", "Feed Pressure"), "inputP",
               unidades.Pressure),
-             (QApplication.translate("pychemqt", "Number of Product Streams"),
+             (QtWidgets.QApplication.translate("pychemqt", "Number of Product Streams"),
               "output", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Split Fractions"), "split",
+             (QtWidgets.QApplication.translate("pychemqt", "Split Fractions"), "split",
               unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Pressure Loss"), "deltaP",
+             (QtWidgets.QApplication.translate("pychemqt", "Pressure Loss"), "deltaP",
               unidades.DeltaP)]
         return l
 
@@ -245,7 +245,7 @@ class Mixer(equipment):
     >>> print(mezclador.salida[0].T)
     341.6818851215901
     """
-    title = QApplication.translate("pychemqt", "Mixer")
+    title = QtWidgets.QApplication.translate("pychemqt", "Mixer")
     help = ""
     kwargs = {"entrada": [],
               "id_entrada": 0,
@@ -256,9 +256,9 @@ class Mixer(equipment):
     kwargsList = ("criterio", )
 
     TEXT_METODO = [
-        QApplication.translate("pychemqt", "Inputs minimum pressure"),
-        QApplication.translate("pychemqt", "Inputs mean pressure"),
-        QApplication.translate("pychemqt", "Custom")]
+        QtWidgets.QApplication.translate("pychemqt", "Inputs minimum pressure"),
+        QtWidgets.QApplication.translate("pychemqt", "Inputs mean pressure"),
+        QtWidgets.QApplication.translate("pychemqt", "Custom")]
 
     @property
     def isCalculable(self):
@@ -274,18 +274,18 @@ class Mixer(equipment):
             Some input stream have a warning status definitions
         """
         if self.kwargs["criterio"] == 2 and not self.kwargs["Pout"]:
-            self.msg = QApplication.translate("pychemqt",
+            self.msg = QtWidgets.QApplication.translate("pychemqt",
                                               "pressure output not defined")
             self.status = 0
         elif not self.kwargs["entrada"]:
-            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")
             self.status = 0
         elif sum([s.status for s in self.kwargs["entrada"]]) == 0:
-            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")
             self.status = 0
         elif len(self.kwargs["entrada"]) != sum(
                 [s.status for s in self.kwargs["entrada"]]):
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "some input stream isn't defined")
             self.status = 3
             return True
@@ -365,7 +365,7 @@ class Mixer(equipment):
     def propTxt(self):
         """Text format for report"""
         txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(3))
 
@@ -373,23 +373,23 @@ class Mixer(equipment):
         txt += self.propertiesToText(3)
         for i, entrada in enumerate(self.kwargs["entrada"]):
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Input stream")+str(i),
+                QtWidgets.QApplication.translate("pychemqt", "Input stream")+str(i),
                 entrada.caudalmolar.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(4)
         for i, entrada in enumerate(self.kwargs["entrada"]):
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Input stream")+str(i),
+                QtWidgets.QApplication.translate("pychemqt", "Input stream")+str(i),
                 entrada.caudalmasico.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(5)
         for i, entrada in enumerate(self.kwargs["entrada"]):
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Input stream")+str(i),
+                QtWidgets.QApplication.translate("pychemqt", "Input stream")+str(i),
                 entrada.Q.str)+os.linesep
 
         txt += os.linesep+"#"
-        txt += QApplication.translate("pychemqt", "Output Molar Composition")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Output Molar Composition")
         txt += os.linesep
         for comp, x in zip(self.salida[0].componente, self.salida[0].fraccion):
             txt += "%-25s\t %0.4f" % (comp.nombre, x)+os.linesep
@@ -399,17 +399,17 @@ class Mixer(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QApplication.translate("pychemqt", "Output Temperature"),
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Output Temperature"),
               "outT", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Output Pressure"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output Pressure"),
               "Pout", unidades.Pressure),
-             (QApplication.translate("pychemqt", "Output vapor fraction"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output vapor fraction"),
               "outX", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Output Molar Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output Molar Flow"),
               "outMolarFlow", unidades.MolarFlow),
-             (QApplication.translate("pychemqt", "Output Mass Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output Mass Flow"),
               "outMassFlow", unidades.MassFlow),
-             (QApplication.translate("pychemqt", "Output Volumetric Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output Volumetric Flow"),
               "outVolFlow", unidades.VolFlow)]
         return l
 
@@ -462,7 +462,7 @@ class Valve(equipment):
     2.0
     """
 
-    title = QApplication.translate("pychemqt", "Valve")
+    title = QtWidgets.QApplication.translate("pychemqt", "Valve")
     help = ""
     kwargs = {"entrada": None,
               "off": 0,
@@ -474,9 +474,9 @@ class Valve(equipment):
     kwargsValue = ("Pout", "DeltaP", "Dew", "Bubble")
     kwargsList = ("off", )
 
-    TEXT_WORKING = [QApplication.translate("pychemqt", "Totally open"),
-                    QApplication.translate("pychemqt", "Partially open"),
-                    QApplication.translate("pychemqt", "Close")]
+    TEXT_WORKING = [QtWidgets.QApplication.translate("pychemqt", "Totally open"),
+                    QtWidgets.QApplication.translate("pychemqt", "Partially open"),
+                    QtWidgets.QApplication.translate("pychemqt", "Close")]
 
     @property
     def isCalculable(self):
@@ -488,7 +488,7 @@ class Valve(equipment):
         """
         if self.kwargs["off"] == 1:
             if not self.kwargs["entrada"]:
-                self.msg = QApplication.translate("pychemqt",
+                self.msg = QtWidgets.QApplication.translate("pychemqt",
                                                   "undefined input")
                 self.status = 0
             elif self.kwargs["Pout"] or self.kwargs["DeltaP"] or \
@@ -497,7 +497,7 @@ class Valve(equipment):
                 self.msg = ""
                 return True
             else:
-                self.msg = QApplication.translate("pychemqt",
+                self.msg = QtWidgets.QApplication.translate("pychemqt",
                                                   "undefined exit condition")
                 self.status = 0
         elif self.kwargs["off"] == 2:
@@ -506,7 +506,7 @@ class Valve(equipment):
             return True
         else:
             if not self.kwargs["entrada"]:
-                self.msg = QApplication.translate("pychemqt",
+                self.msg = QtWidgets.QApplication.translate("pychemqt",
                                                   "undefined input")
                 self.status = 0
             else:
@@ -572,7 +572,7 @@ class Valve(equipment):
     def propTxt(self):
         """Text format for report"""
         txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(4))
         return txt
@@ -580,13 +580,13 @@ class Valve(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QApplication.translate("pychemqt", "Output Temperature"),
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Output Temperature"),
               "outT", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Output Pressure"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output Pressure"),
               "Pout", unidades.Pressure),
-             (QApplication.translate("pychemqt", "Output vapor fraction"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output vapor fraction"),
               "outX", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Working Condition"),
+             (QtWidgets.QApplication.translate("pychemqt", "Working Condition"),
               ("TEXT_WORKING", "off"), str)]
         return l
 

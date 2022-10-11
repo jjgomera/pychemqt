@@ -29,7 +29,7 @@ Module with stream definition:
 import logging
 import os
 
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 from scipy.constants import R
 
 from lib.physics import R_atml
@@ -123,7 +123,7 @@ class Corriente(config.Entity):
               "refprop": None}
 
     status = 0
-    msg = QApplication.translate("pychemqt", "Unknown variables")
+    msg = QtWidgets.QApplication.translate("pychemqt", "Unknown variables")
     kwargs_forbidden = ["entrada", "mezcla", "solido"]
     solido = None
 
@@ -249,15 +249,15 @@ class Corriente(config.Entity):
         logging.debug('kwarg; %s' % kw_new)
         if self.calculable:
             statusmsg = (
-                QApplication.translate("pychemqt", "Underspecified"),
-                QApplication.translate("pychemqt", "Solved"),
-                QApplication.translate("pychemqt", "Ignored"),
-                QApplication.translate("pychemqt", "Warning"),
-                QApplication.translate("pychemqt", "Calculating..."),
-                QApplication.translate("pychemqt", "Error"))
+                QtWidgets.QApplication.translate("pychemqt", "Underspecified"),
+                QtWidgets.QApplication.translate("pychemqt", "Solved"),
+                QtWidgets.QApplication.translate("pychemqt", "Ignored"),
+                QtWidgets.QApplication.translate("pychemqt", "Warning"),
+                QtWidgets.QApplication.translate("pychemqt", "Calculating..."),
+                QtWidgets.QApplication.translate("pychemqt", "Error"))
             status = statusmsg[self.status]
             logging.debug('%s %s' % (status, self.msg))
-            QApplication.processEvents()
+            QtWidgets.QApplication.processEvents()
 
             self.status = 1
             self.calculo()
@@ -683,7 +683,7 @@ class Corriente(config.Entity):
     def txt(self):
         txt = str(self.notasPlain)+os.linesep+os.linesep
         txt += "#---------------"
-        txt += QApplication.translate("pychemqt", "Input properties")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Input properties")
         txt += "-----------------#"+os.linesep
         for key, value in list(self.kwargs.items()):
             if value:
@@ -691,152 +691,152 @@ class Corriente(config.Entity):
 
         if self.calculable:
             txt += os.linesep + "#---------------"
-            txt += QApplication.translate("pychemqt", "Global stream")
+            txt += QtWidgets.QApplication.translate("pychemqt", "Global stream")
             txt += "-------------------#"+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Temperature"),
+                QtWidgets.QApplication.translate("pychemqt", "Temperature"),
                 self.T.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Pressure"),
+                QtWidgets.QApplication.translate("pychemqt", "Pressure"),
                 self.P.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Vapor Fraction"),
+                QtWidgets.QApplication.translate("pychemqt", "Vapor Fraction"),
                 self.x.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Molar Flow"),
+                QtWidgets.QApplication.translate("pychemqt", "Molar Flow"),
                 self.caudalmasico.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Mass Flow"),
+                QtWidgets.QApplication.translate("pychemqt", "Mass Flow"),
                 self.caudalmolar.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Volumetric Flow"),
+                QtWidgets.QApplication.translate("pychemqt", "Volumetric Flow"),
                 self.Q.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Enthalpy"),
+                QtWidgets.QApplication.translate("pychemqt", "Enthalpy"),
                 self.h.str)+os.linesep
             txt += "%-25s\t%s" % ("Tc", self.Tc.str)+os.linesep
             txt += "%-25s\t%s" % ("Pc", self.Pc.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QApplication.translate("pychemqt", "SG, water=1"),
+                QtWidgets.QApplication.translate("pychemqt", "SG, water=1"),
                 self.SG.str)+os.linesep
             txt += os.linesep+"%-25s\t%s" % (
-                QApplication.translate("pychemqt", "Molecular weight"),
+                QtWidgets.QApplication.translate("pychemqt", "Molecular weight"),
                 self.M.str)+os.linesep
-            txt += "#"+QApplication.translate("pychemqt", "Molar Composition")
+            txt += "#"+QtWidgets.QApplication.translate("pychemqt", "Molar Composition")
             txt += os.linesep
             for cmp, xi in zip(self.componente, self.fraccion):
                 txt += "%-25s\t %0.4f" % (cmp.nombre, xi)+os.linesep
 
             if self.x > 0:
                 txt += os.linesep+"#---------------"
-                txt += QApplication.translate("pychemqt", "Vapor Only")
+                txt += QtWidgets.QApplication.translate("pychemqt", "Vapor Only")
                 txt += "--------------------#"+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Molar Flow"),
+                    QtWidgets.QApplication.translate("pychemqt", "Molar Flow"),
                     self.Gas.caudalmasico.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Mass Flow"),
+                    QtWidgets.QApplication.translate("pychemqt", "Mass Flow"),
                     self.Gas.caudalmolar.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Volumetric Flow"),
+                    QtWidgets.QApplication.translate("pychemqt", "Volumetric Flow"),
                     self.Gas.Q.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Molecular weight"),
+                    QtWidgets.QApplication.translate("pychemqt", "Molecular weight"),
                     self.Gas.M.str)+os.linesep
                 txt += os.linesep+"#"
-                txt += QApplication.translate("pychemqt", "Molar Composition")
+                txt += QtWidgets.QApplication.translate("pychemqt", "Molar Composition")
                 txt += os.linesep
                 for cmp, xi in zip(self.componente, self.Gas.fraccion):
                     txt += "%-25s\t %0.4f" % (cmp.nombre, xi)+os.linesep
 
                 txt += os.linesep+"%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Density"),
+                    QtWidgets.QApplication.translate("pychemqt", "Density"),
                     self.Gas.rho.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Compresibility"),
+                    QtWidgets.QApplication.translate("pychemqt", "Compresibility"),
                     self.Gas.Z.str)+os.linesep
 
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Enthalpy"),
+                    QtWidgets.QApplication.translate("pychemqt", "Enthalpy"),
                     self.Gas.h.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Heat Capacity"),
+                    QtWidgets.QApplication.translate("pychemqt", "Heat Capacity"),
                     self.Gas.cp.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Viscosity"),
+                    QtWidgets.QApplication.translate("pychemqt", "Viscosity"),
                     self.Gas.mu.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Thermal conductivity"),
+                    QtWidgets.QApplication.translate("pychemqt", "Thermal conductivity"),
                     self.Gas.k.str)+os.linesep
 
             if self.x < 1:
                 txt += os.linesep+"#---------------"
-                txt += QApplication.translate("pychemqt", "Liquid Only")
+                txt += QtWidgets.QApplication.translate("pychemqt", "Liquid Only")
                 txt += "-------------------#"+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Molar Flow"),
+                    QtWidgets.QApplication.translate("pychemqt", "Molar Flow"),
                     self.Liquido.caudalmasico.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Mass Flow"),
+                    QtWidgets.QApplication.translate("pychemqt", "Mass Flow"),
                     self.Liquido.caudalmolar.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Volumetric Flow"),
+                    QtWidgets.QApplication.translate("pychemqt", "Volumetric Flow"),
                     self.Liquido.Q.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Molecular weight"),
+                    QtWidgets.QApplication.translate("pychemqt", "Molecular weight"),
                     self.Liquido.M.str)+os.linesep
                 txt += os.linesep+"#"
-                txt += QApplication.translate("pychemqt", "Molar Composition")
+                txt += QtWidgets.QApplication.translate("pychemqt", "Molar Composition")
                 txt += os.linesep
                 for cmp, xi in zip(self.componente, self.Liquido.fraccion):
                     txt += "%-25s\t %0.4f" % (cmp.nombre, xi)+os.linesep
 
                 txt += os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Density"),
+                    QtWidgets.QApplication.translate("pychemqt", "Density"),
                     self.Liquido.rho.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Compresibility"),
+                    QtWidgets.QApplication.translate("pychemqt", "Compresibility"),
                     self.Liquido.Z.str)+os.linesep
 
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Enthalpy"),
+                    QtWidgets.QApplication.translate("pychemqt", "Enthalpy"),
                     self.Liquido.h.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Heat Capacity"),
+                    QtWidgets.QApplication.translate("pychemqt", "Heat Capacity"),
                     self.Liquido.cp.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Viscosity"),
+                    QtWidgets.QApplication.translate("pychemqt", "Viscosity"),
                     self.Liquido.mu.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Thermal Conductivity"),
+                    QtWidgets.QApplication.translate("pychemqt", "Thermal Conductivity"),
                     self.Liquido.k.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QApplication.translate("pychemqt", "Surface Tension"),
+                    QtWidgets.QApplication.translate("pychemqt", "Surface Tension"),
                     self.Liquido.sigma.str)+os.linesep
 
         else:
             txt += os.linesep+"#---------------"
-            txt += QApplication.translate("pychemqt", "No Fluid Stream")
+            txt += QtWidgets.QApplication.translate("pychemqt", "No Fluid Stream")
             txt += "-------------------#"+os.linesep
 
         if self.solido.status:
             txt += os.linesep+"#---------------"
-            txt += QApplication.translate("pychemqt", "Solid")
+            txt += QtWidgets.QApplication.translate("pychemqt", "Solid")
             txt += "-------------------#"+os.linesep
             for cmp, G in zip(self.solido.componente, self.solido.caudalUnitario):
                 txt += "%-25s\t%s" % (cmp.nombre, G.str)+os.linesep
             txt += os.linesep
-            txt += "%-25s\t%s" % (QApplication.translate("pychemqt", "Density"),
+            txt += "%-25s\t%s" % (QtWidgets.QApplication.translate("pychemqt", "Density"),
                                            self.solido.rho.str)+os.linesep
-            txt += "%-25s\t%s" % (QApplication.translate("pychemqt", "Mean Diameter"),
+            txt += "%-25s\t%s" % (QtWidgets.QApplication.translate("pychemqt", "Mean Diameter"),
                                   self.solido.diametro_medio.str)+os.linesep
             if self.solido.diametros:
                 txt += os.linesep + "#"
-                txt += QApplication.translate("pychemqt",
+                txt += QtWidgets.QApplication.translate("pychemqt",
                                               "Particle Size Distribution")
                 txt += os.linesep
-                txt += "%s, %s \t%s" % (QApplication.translate("pychemqt", "Diameter"), unidades.Length.text("ParticleDiameter"), QApplication.translate("pychemqt", "Fraction"))+os.linesep
+                txt += "%s, %s \t%s" % (QtWidgets.QApplication.translate("pychemqt", "Diameter"), unidades.Length.text("ParticleDiameter"), QtWidgets.QApplication.translate("pychemqt", "Fraction"))+os.linesep
                 for di, xi in zip(self.solido.diametros, self.solido.fracciones):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
@@ -850,14 +850,14 @@ class Corriente(config.Entity):
             else:
                 param = "%-40s\t%s"
             if self.x == 0:
-                txtphases = "%60s" % QApplication.translate("pychemqt", "Liquid")+os.linesep
+                txtphases = "%60s" % QtWidgets.QApplication.translate("pychemqt", "Liquid")+os.linesep
                 phases = [self.Liquido]
             elif self.x == 1:
-                txtphases = "%60s" % QApplication.translate("pychemqt", "Gas")+os.linesep
+                txtphases = "%60s" % QtWidgets.QApplication.translate("pychemqt", "Gas")+os.linesep
                 phases = [self.Gas]
             else:
-                txtphases = "%60s\t%20s" % (QApplication.translate("pychemqt", "Liquid"),
-                                     QApplication.translate("pychemqt", "Gas"))+os.linesep
+                txtphases = "%60s\t%20s" % (QtWidgets.QApplication.translate("pychemqt", "Liquid"),
+                                     QtWidgets.QApplication.translate("pychemqt", "Gas"))+os.linesep
                 phases = [self.Liquido, self.Gas]
 
             complejos = ""
@@ -897,10 +897,10 @@ class Corriente(config.Entity):
     def _doc(self):
         """Return a text repr of class with all properties"""
         if self._thermo == "meos":
-            title = QApplication.translate("pychemqt", "Advanced MEoS properties")
+            title = QtWidgets.QApplication.translate("pychemqt", "Advanced MEoS properties")
             doc_param = [self.cmp._constants["__doi__"]]
         else:
-            title = QApplication.translate("pychemqt", "Advanced thermo properties")
+            title = QtWidgets.QApplication.translate("pychemqt", "Advanced thermo properties")
             doc_param = self.cmp.__doi__
         doc = ""
         for doi in doc_param:
@@ -915,22 +915,22 @@ class Corriente(config.Entity):
     @classmethod
     def propertiesNames(cls):
         list = [
-            (QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
-            (QApplication.translate("pychemqt", "Pressure"), "P", unidades.Pressure),
-            (QApplication.translate("pychemqt", "Vapor Fraction"), "x", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Molar Flow"), "caudalmolar", unidades.MolarFlow),
-            (QApplication.translate("pychemqt", "Mass Flow"), "caudalmasico", unidades.MassFlow),
-            (QApplication.translate("pychemqt", "Volumetric Flow"), "Q", unidades.VolFlow),
-            (QApplication.translate("pychemqt", "Enthalpy"), "h", unidades.Enthalpy),
-            (QApplication.translate("pychemqt", "Critic Temperature"), "Tc", unidades.Temperature),
-            (QApplication.translate("pychemqt", "Critic Pressure"), "Pc", unidades.Pressure),
-            (QApplication.translate("pychemqt", "SG, water=1"), "SG", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Molecular weight"), "M", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Molar Composition"), "fraccion", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Mass Composition"), "fraccion_masica", unidades.Dimensionless),
-            (QApplication.translate("pychemqt", "Molar Component Flow"), "caudalunitariomolar", unidades.MolarFlow),
-            (QApplication.translate("pychemqt", "Mass Component Flow"),  "caudalunitariomasico", unidades.MassFlow),
-            (QApplication.translate("pychemqt", "Notes"), "notasPlain", str)]
+            (QtWidgets.QApplication.translate("pychemqt", "Temperature"), "T", unidades.Temperature),
+            (QtWidgets.QApplication.translate("pychemqt", "Pressure"), "P", unidades.Pressure),
+            (QtWidgets.QApplication.translate("pychemqt", "Vapor Fraction"), "x", unidades.Dimensionless),
+            (QtWidgets.QApplication.translate("pychemqt", "Molar Flow"), "caudalmolar", unidades.MolarFlow),
+            (QtWidgets.QApplication.translate("pychemqt", "Mass Flow"), "caudalmasico", unidades.MassFlow),
+            (QtWidgets.QApplication.translate("pychemqt", "Volumetric Flow"), "Q", unidades.VolFlow),
+            (QtWidgets.QApplication.translate("pychemqt", "Enthalpy"), "h", unidades.Enthalpy),
+            (QtWidgets.QApplication.translate("pychemqt", "Critic Temperature"), "Tc", unidades.Temperature),
+            (QtWidgets.QApplication.translate("pychemqt", "Critic Pressure"), "Pc", unidades.Pressure),
+            (QtWidgets.QApplication.translate("pychemqt", "SG, water=1"), "SG", unidades.Dimensionless),
+            (QtWidgets.QApplication.translate("pychemqt", "Molecular weight"), "M", unidades.Dimensionless),
+            (QtWidgets.QApplication.translate("pychemqt", "Molar Composition"), "fraccion", unidades.Dimensionless),
+            (QtWidgets.QApplication.translate("pychemqt", "Mass Composition"), "fraccion_masica", unidades.Dimensionless),
+            (QtWidgets.QApplication.translate("pychemqt", "Molar Component Flow"), "caudalunitariomolar", unidades.MolarFlow),
+            (QtWidgets.QApplication.translate("pychemqt", "Mass Component Flow"),  "caudalunitariomasico", unidades.MassFlow),
+            (QtWidgets.QApplication.translate("pychemqt", "Notes"), "notasPlain", str)]
         return list
 
     def propertiesListTitle(self, index):

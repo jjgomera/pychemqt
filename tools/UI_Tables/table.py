@@ -33,7 +33,7 @@ from functools import partial
 from math import ceil, floor
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 from numpy import delete, insert
 
 from lib import meos, mEoS, coolProp, refProp, unidades, config
@@ -578,7 +578,7 @@ class TablaMEoS(Tabla):
         menu.addAction(actionCopy)
         menu.addSeparator()
         menu.addAction(export)
-        menu.exec(event.globalPos())
+        menu.exec(event.globalPosition())
 
     def copy(self, event=None):
         """Copy selected values to clipboard"""

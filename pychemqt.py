@@ -244,13 +244,14 @@ class SplashScreen(QtWidgets.QSplashScreen):
         QtWidgets.QSplashScreen.__init__(
             self,
             QtGui.QPixmap(os.environ["pychemqt"] + "/images/splash.jpg"))
-        QtWidgets.QApplication.flush()
+        # QtWidgets.QApplication.flush()
+        QtWidgets.QApplication.processEvents()
 
     def showMessage(self, message):
         """Procedure to update message in splash"""
-        align = QtCore.Qt.Alignment(QtCore.Qt.AlignmentFlag.AlignBottom
-                                    | QtCore.Qt.AlignmentFlag.AlignRight
-                                    | QtCore.Qt.AlignmentFlag.AlignAbsolute)
+        align = (QtCore.Qt.AlignmentFlag.AlignBottom
+                 | QtCore.Qt.AlignmentFlag.AlignRight
+                 | QtCore.Qt.AlignmentFlag.AlignAbsolute)
         color = QtGui.QColor(QtCore.Qt.GlobalColor.white)
         QtWidgets.QSplashScreen.showMessage(self, message, align, color)
         QtWidgets.QApplication.processEvents()

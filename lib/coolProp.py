@@ -37,7 +37,7 @@ __doi__ = {
 
 import os
 
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 
 try:
     import CoolProp as CP
@@ -508,25 +508,25 @@ class CoolProp(ThermoAdvanced):
         """Return fluid phase with translation support"""
         phase = estado.phase()
         if phase == CP.iphase_supercritical:
-            msg = QApplication.translate("pychemqt", "Supercritical fluid")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Supercritical fluid")
             x = 1
         elif phase == CP.iphase_supercritical_liquid:
-            msg = QApplication.translate("pychemqt", "Supercritical liquid")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Supercritical liquid")
             x = 1
         elif phase == CP.iphase_supercritical_gas:
-            msg = QApplication.translate("pychemqt", "Supercritical gas")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Supercritical gas")
             x = 1
         elif phase == CP.iphase_gas:
-            msg = QApplication.translate("pychemqt", "Vapor")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Vapor")
             x = 1
         elif phase == CP.iphase_liquid:
-            msg = QApplication.translate("pychemqt", "Liquid")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Liquid")
             x = 0
         elif phase == CP.iphase_twophase:
-            msg = QApplication.translate("pychemqt", "Two phases")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Two phases")
             x = estado.Q()
         elif phase == CP.iphase_critical_point:
-            msg = QApplication.translate("pychemqt", "Critical point")
+            msg = QtWidgets.QApplication.translate("pychemqt", "Critical point")
             x = 1
 
         return msg, x

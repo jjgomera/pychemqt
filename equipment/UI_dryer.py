@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from functools import partial
 
-from PyQt5 import QtWidgets
+from qt import QtWidgets
 
 
 from equipment.gas_solid_liquid import Dryer

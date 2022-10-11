@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from functools import partial
 from math import exp, log
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 from numpy import all
 from scipy.special import erf

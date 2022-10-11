@@ -32,7 +32,7 @@ try:
 except:
     pass
 
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 
 from .parents import equipment
 
@@ -55,7 +55,7 @@ class Spreadsheet(equipment):
                 celda: Celda en la que colocar el dato
 
     """
-    title = QApplication.translate("pychemqt", "Spreadsheet")
+    title = QtWidgets.QApplication.translate("pychemqt", "Spreadsheet")
     help = ""
     kwargs = {
         "project": None,
@@ -71,12 +71,12 @@ class Spreadsheet(equipment):
         self.status = 1
         if not self.kwargs["filename"] or \
                 not os.path.isfile(self.kwargs["filename"]):
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined spreadsheet filename")
             self.status = 0
             return
         if not self.kwargs["datamap"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined spreadsheet data map")
             self.status = 3
         return True
@@ -172,22 +172,22 @@ class Spreadsheet(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Data map")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Data map")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(0)
         if self.kwargs["datamap"]:
             for data in self.kwargs["datamap"]:
                 txt += "{0[entity]}.{0[property]}.{0[unit]} ---> {0[sheet]}.{0[cell]}".format(data)+os.linesep
         else:
-            txt += QApplication.translate("pychemqt", "Undefined")+os.linesep
+            txt += QtWidgets.QApplication.translate("pychemqt", "Undefined")+os.linesep
 
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Spreadsheet path"),
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Spreadsheet path"),
               "filename", str),
-             (QApplication.translate("pychemqt", "Data map"), "datamap", None)]
+             (QtWidgets.QApplication.translate("pychemqt", "Data map"), "datamap", None)]
         return l
 
     def propertiesListTitle(self, index):

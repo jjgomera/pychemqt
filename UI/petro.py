@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from functools import partial
 
-from PyQt5 import QtGui, QtWidgets
+from qt import QtGui, QtWidgets
 from scipy import arange
 
 

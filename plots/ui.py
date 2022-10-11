@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from configparser import ConfigParser
 import os
 
-from PyQt5 import QtGui, QtWidgets
+from qt import QtGui, QtWidgets
 from matplotlib import image
 
 from lib.config import conf_dir, IMAGE_PATH

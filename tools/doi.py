@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import subprocess
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 import lib
 from lib.config import IMAGE_PATH

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from PyQt5 import QtWidgets
+from qt import QtWidgets
 
 from lib.EoS import K, H, alfa, mix, cp_ideal, K_name, H_name, K_status
 from lib.bip import EoSBIP

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from PyQt5 import QtWidgets
+from qt import QtWidgets
 
 from matplotlib.backends.backend_qt5agg import (
     FigureCanvasQTAgg, NavigationToolbar2QT)
@@ -42,7 +42,8 @@ class mpl(FigureCanvasQTAgg):
         self.setParent(parent)
         self.ax = self.fig.add_subplot(111)
         self.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding)
         self.updateGeometry()
 
     def plot(self, *args, **kwargs):

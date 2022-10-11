@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import inspect
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 from lib import meos, mEoS, unidades
 from tools.codeEditor import SimplePythonEditor

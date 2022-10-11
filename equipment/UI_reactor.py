@@ -27,7 +27,7 @@ from functools import partial
 from math import exp, log
 import os
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets
 
 from scipy.optimize import leastsq
 from scipy import array

@@ -27,7 +27,7 @@ import os, sys
 path=os.path.dirname("/home/jjgomera/pychemqt/")
 sys.path.append(path)
 
-from PyQt5 import QtWidgets
+from qt import QtWidgets
 
 
 from lib import unidades

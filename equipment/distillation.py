@@ -32,7 +32,7 @@ import os
 from numpy.lib.scimath import log10
 from scipy import pi, linspace
 from scipy.optimize import fsolve
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 
 from lib import unidades
 from lib.corriente import Corriente
@@ -80,7 +80,7 @@ class Flash(equipment):
         fraccionMolar=[.3, 0.25, 0.05, 0.15, 0.25], **kw)
     >>> flash = Flash(entrada=entrada)
     """
-    title = QApplication.translate("pychemqt", "Flash Separator")
+    title = QtWidgets.QApplication.translate("pychemqt", "Flash Separator")
     help = ""
     kwargs = {
         "entrada": None,
@@ -107,24 +107,24 @@ class Flash(equipment):
     indiceCostos = 3
 
     TEXT_FLASH = [
-        QApplication.translate("pychemqt", "Use P and T from input stream")]
-    TEXT_ORIENTATION = [QApplication.translate("pychemqt", "Horizontal"),
-                        QApplication.translate("pychemqt", "Vertical")]
+        QtWidgets.QApplication.translate("pychemqt", "Use P and T from input stream")]
+    TEXT_ORIENTATION = [QtWidgets.QApplication.translate("pychemqt", "Horizontal"),
+                        QtWidgets.QApplication.translate("pychemqt", "Vertical")]
     TEXT_MATERIAL = [
-        QApplication.translate("pychemqt", "Carbon steel"),
-        QApplication.translate("pychemqt", "Stainless steel 304"),
-        QApplication.translate("pychemqt", "Stainless steel 316"),
-        QApplication.translate("pychemqt", "Carpenter 20CB-3"),
-        QApplication.translate("pychemqt", "Nickel 200"),
-        QApplication.translate("pychemqt", "Monel 400"),
-        QApplication.translate("pychemqt", "Inconel 600"),
-        QApplication.translate("pychemqt", "Incoloy 825"),
-        QApplication.translate("pychemqt", "Titanium")]
+        QtWidgets.QApplication.translate("pychemqt", "Carbon steel"),
+        QtWidgets.QApplication.translate("pychemqt", "Stainless steel 304"),
+        QtWidgets.QApplication.translate("pychemqt", "Stainless steel 316"),
+        QtWidgets.QApplication.translate("pychemqt", "Carpenter 20CB-3"),
+        QtWidgets.QApplication.translate("pychemqt", "Nickel 200"),
+        QtWidgets.QApplication.translate("pychemqt", "Monel 400"),
+        QtWidgets.QApplication.translate("pychemqt", "Inconel 600"),
+        QtWidgets.QApplication.translate("pychemqt", "Incoloy 825"),
+        QtWidgets.QApplication.translate("pychemqt", "Titanium")]
     TEXT_HEAD = [
-        QApplication.translate("pychemqt", "Ellipsoidal"),
-        QApplication.translate("pychemqt", "Hemispherical"),
-        QApplication.translate("pychemqt", "Bumped"),
-        QApplication.translate("pychemqt", "Flat")]
+        QtWidgets.QApplication.translate("pychemqt", "Ellipsoidal"),
+        QtWidgets.QApplication.translate("pychemqt", "Hemispherical"),
+        QtWidgets.QApplication.translate("pychemqt", "Bumped"),
+        QtWidgets.QApplication.translate("pychemqt", "Flat")]
 
     @property
     def isCalculable(self):
@@ -136,7 +136,7 @@ class Flash(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")
             self.status = 0
             return
 
@@ -258,19 +258,19 @@ class Flash(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(3)) + os.linesep
 
         txt += self.propertiesToText(range(3, 6))
-        txt += QApplication.translate(
+        txt += QtWidgets.QApplication.translate(
             "pychemqt", "Vapor Output Molar Composition") + os.linesep
         for cmp, xi in zip(self.salida[0].componente, self.salida[0].fraccion):
             txt += "    %-21s\t %0.4f" % (cmp.nombre, xi) + os.linesep
 
         txt += os.linesep
         txt += self.propertiesToText(range(8, 11))
-        txt += QApplication.translate(
+        txt += QtWidgets.QApplication.translate(
             "pychemqt", "Liquid Output Molar Composition") + os.linesep
         for cmp, xi in zip(self.salida[1].componente, self.salida[1].fraccion):
             txt += "    %-21s\t %0.4f" % (cmp.nombre, xi) + os.linesep
@@ -278,36 +278,36 @@ class Flash(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Mode"),
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Mode"),
               ("TEXT_FLASH", "flash"), str),
-             (QApplication.translate("pychemqt", "Output Temperature"),
+             (QtWidgets.QApplication.translate("pychemqt", "Output Temperature"),
               "Tout", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Output Pressure"), "Pout",
+             (QtWidgets.QApplication.translate("pychemqt", "Output Pressure"), "Pout",
               unidades.Pressure),
-             (QApplication.translate("pychemqt", "Vapor Output Molar Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Vapor Output Molar Flow"),
               "VaporMolarFlow", unidades.MolarFlow),
-             (QApplication.translate("pychemqt", "Vapor Output Mass Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Vapor Output Mass Flow"),
               "VaporMassFlow", unidades.MassFlow),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Vapor Output Volumetric Flow"), "VaporVolFlow",
                  unidades.VolFlow),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Vapor Output Molar Composition"),
                  "VaporMolarComposition", unidades.Dimensionless),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Vapor Output Mass Composition"),
                  "VaporMassComposition", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Liquid Output Molar Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Liquid Output Molar Flow"),
               "LiquidMolarFlow", unidades.MolarFlow),
-             (QApplication.translate("pychemqt", "Liquid Output Mass Flow"),
+             (QtWidgets.QApplication.translate("pychemqt", "Liquid Output Mass Flow"),
               "LiquidMassFlow", unidades.MassFlow),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Liquid Output Volumetric Flow"),
                  "LiquidVolFlow", unidades.VolFlow),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Liquid Output Molar Composition"),
                  "LiquidMolarComposition", unidades.Dimensionless),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Liquid Output Mass Composition"),
                  "LiquidMassComposition", unidades.Dimensionless)]
         return l
@@ -360,7 +360,7 @@ class Flash(equipment):
 
 class Tower(equipment):
     """Class to define the common functionality of distillation units"""
-    title = QApplication.translate("pychemqt", "Distillation Tower")
+    title = QtWidgets.QApplication.translate("pychemqt", "Distillation Tower")
 
     Condenser = Heat_Exchanger()
     Reboiler = Heat_Exchanger()
@@ -369,26 +369,26 @@ class Tower(equipment):
                        "C_adq", "C_inst")
 
     TEXT_PROCESS = [
-        QApplication.translate("pychemqt", "Destillation"),
-        QApplication.translate("pychemqt", "Absortion")]
+        QtWidgets.QApplication.translate("pychemqt", "Destillation"),
+        QtWidgets.QApplication.translate("pychemqt", "Absortion")]
     TEXT_COLUMN = [
-        QApplication.translate("pychemqt", "Tray column"),
-        QApplication.translate("pychemqt", "Packed column")]
+        QtWidgets.QApplication.translate("pychemqt", "Tray column"),
+        QtWidgets.QApplication.translate("pychemqt", "Packed column")]
     TEXT_MATERIAL = [
-        QApplication.translate("pychemqt", "Carbon steel"),
-        QApplication.translate("pychemqt", "Stainless steel 304"),
-        QApplication.translate("pychemqt", "Stainless steel 316"),
-        QApplication.translate("pychemqt", "Carpenter 20CB-3"),
-        QApplication.translate("pychemqt", "Nickel 200"),
-        QApplication.translate("pychemqt", "Monel 400"),
-        QApplication.translate("pychemqt", "Inconel 600"),
-        QApplication.translate("pychemqt", "Incoloy 825"),
-        QApplication.translate("pychemqt", "Titanium")]
+        QtWidgets.QApplication.translate("pychemqt", "Carbon steel"),
+        QtWidgets.QApplication.translate("pychemqt", "Stainless steel 304"),
+        QtWidgets.QApplication.translate("pychemqt", "Stainless steel 316"),
+        QtWidgets.QApplication.translate("pychemqt", "Carpenter 20CB-3"),
+        QtWidgets.QApplication.translate("pychemqt", "Nickel 200"),
+        QtWidgets.QApplication.translate("pychemqt", "Monel 400"),
+        QtWidgets.QApplication.translate("pychemqt", "Inconel 600"),
+        QtWidgets.QApplication.translate("pychemqt", "Incoloy 825"),
+        QtWidgets.QApplication.translate("pychemqt", "Titanium")]
     TEXT_TRAY = [
-        QApplication.translate("pychemqt", "Valve tray"),
-        QApplication.translate("pychemqt", "Grid tray"),
-        QApplication.translate("pychemqt", "Bubble cap tray"),
-        QApplication.translate("pychemqt", "Sieve tray")]
+        QtWidgets.QApplication.translate("pychemqt", "Valve tray"),
+        QtWidgets.QApplication.translate("pychemqt", "Grid tray"),
+        QtWidgets.QApplication.translate("pychemqt", "Bubble cap tray"),
+        QtWidgets.QApplication.translate("pychemqt", "Sieve tray")]
 
     def isCalculable(self):
         if self.kwargs["tipo"]:
@@ -453,13 +453,13 @@ class Tower(equipment):
         dialog = Plot()
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(
-            QApplication.translate("pychemqt", "x-y Diagram for")
+            QtWidgets.QApplication.translate("pychemqt", "x-y Diagram for")
             + "{:s}/{:s} P={:s}".format(A, B, P.str), size="x-large")
         dialog.plot.ax.set_xlabel(
-            QApplication.translate("pychemqt", "Liquid Mole Fraction")
+            QtWidgets.QApplication.translate("pychemqt", "Liquid Mole Fraction")
             + " {:s}".format(A), size="x-large")
         dialog.plot.ax.set_ylabel(
-            QApplication.translate("pychemqt", "Vapor Mole Fraction")
+            QtWidgets.QApplication.translate("pychemqt", "Vapor Mole Fraction")
             + " {:s}".format(B), size="x-large")
         dialog.plot.ax.set_xticks(linspace(0, 1.0, 21))
         dialog.plot.ax.set_yticks(linspace(0.05, 1.0, 20))
@@ -615,7 +615,7 @@ class ColumnFUG(Tower):
         W: Cover width
         Wb: Cover width at botom head
     """
-    title = QApplication.translate("pychemqt", "Column (Shortcut method)")
+    title = QtWidgets.QApplication.translate("pychemqt", "Column (Shortcut method)")
     kwargs = {"entrada": None,
               "feed": 0,
               "LK": 0,
@@ -649,8 +649,8 @@ class ColumnFUG(Tower):
     indiceCostos = 3
 
     TEXT_FEED = ["Kirkbride", "Fenske"]
-    TEXT_CONDENSER = [QApplication.translate("pychemqt", "Total"),
-                      QApplication.translate("pychemqt", "Partial")]
+    TEXT_CONDENSER = [QtWidgets.QApplication.translate("pychemqt", "Total"),
+                      QtWidgets.QApplication.translate("pychemqt", "Partial")]
 
     def cleanOldValues(self, **kwargs):
         if "R" in kwargs:
@@ -670,41 +670,41 @@ class ColumnFUG(Tower):
             self.statusMcCabe = False
 
         if not self.kwargs["entrada"]:
-            self.msg = QApplication.translate("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")
             self.status = 0
             return
 
         if not self.kwargs["R"] and not self.kwargs["R_Rmin"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined reflux ratio condition")
             self.status = 0
             return
 
         if not self.kwargs["LKsplit"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt",
                 "undefined light key component recuperation in top product")
             self.status = 0
             return
         if not self.kwargs["HKsplit"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt",
                 "undefined heavy key component recuperation in bottom product")
             self.status = 0
             return
         if self.kwargs["LK"] == -1:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined light key component")
             self.status = 0
             return
         if self.kwargs["HK"] == -1:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined heavy key component")
             self.status = 0
             return
 
         if self.kwargs["HK"] <= self.kwargs["LK"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "key component bad specified")
             self.status = 0
             return
@@ -840,54 +840,54 @@ class ColumnFUG(Tower):
         return Tower.McCabe(self, self.kwargs["LK"], self.kwargs["HK"])
 
     def propTxt(self):
-        txt="#---------------"+QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Top Output Temperature"), self.salida[0].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Top Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Top Output Mass Flow"), self.salida[0].caudalmolar.str)+os.linesep
-        txt+="#"+QApplication.translate("pychemqt", "Top Output Molar Composition")+os.linesep
+        txt="#---------------"+QtWidgets.QApplication.translate("pychemqt", "Calculate properties")+"-----------------#"+os.linesep
+        txt+=os.linesep+"%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Top Output Temperature"), self.salida[0].T.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Top Output Pressure"), self.salida[0].P.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Top Output Mass Flow"), self.salida[0].caudalmolar.str)+os.linesep
+        txt+="#"+QtWidgets.QApplication.translate("pychemqt", "Top Output Molar Composition")+os.linesep
         for componente, fraccion in zip(self.salida[0].componente, self.salida[0].fraccion):
             txt+="%-25s\t %0.4f" %(componente.nombre, fraccion)+os.linesep
 
-        txt+=os.linesep+"%-25s\t%s" %(QApplication.translate("pychemqt", "Bottom Output Temperature"), self.salida[1].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Bottom Output Pressure"), self.salida[1].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Bottom Output Mass Flow"), self.salida[1].caudalmolar.str)+os.linesep
-        txt+="#"+QApplication.translate("pychemqt", "Bottom Output Molar Composition")+os.linesep
+        txt+=os.linesep+"%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Bottom Output Temperature"), self.salida[1].T.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Bottom Output Pressure"), self.salida[1].P.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Bottom Output Mass Flow"), self.salida[1].caudalmolar.str)+os.linesep
+        txt+="#"+QtWidgets.QApplication.translate("pychemqt", "Bottom Output Molar Composition")+os.linesep
         for componente, fraccion in zip(self.salida[1].componente, self.salida[1].fraccion):
             txt+="%-25s\t %0.4f" %(componente.nombre, fraccion)+os.linesep
 
-        txt+=os.linesep+"%-25s\t %s" %(QApplication.translate("pychemqt", "Feed Calculate method"), self.TEXT_FEED[self.kwargs["feed"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Condenser type"), self.TEXT_CONDENSER[self.kwargs["condenser"]])+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Light Key Component"), self.salida[0].componente[self.kwargs["LK"]].nombre)+os.linesep
-        txt+="%-25s\t %s" %(QApplication.translate("pychemqt", "Heavy Key Component"), self.salida[0].componente[self.kwargs["HK"]].nombre)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Minimum Reflux Ratio"), self.Rmin.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Reflux Ratio"), self.RCalculada.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Stage Number"), self.NTray.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Feed Stage"), self.N_feed.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Condenser Duty"), self.DutyCondenser.str)+os.linesep
-        txt+="%-25s\t%s" %(QApplication.translate("pychemqt", "Reboiler Duty"), self.DutyReboiler.str)+os.linesep
+        txt+=os.linesep+"%-25s\t %s" %(QtWidgets.QApplication.translate("pychemqt", "Feed Calculate method"), self.TEXT_FEED[self.kwargs["feed"]])+os.linesep
+        txt+="%-25s\t %s" %(QtWidgets.QApplication.translate("pychemqt", "Condenser type"), self.TEXT_CONDENSER[self.kwargs["condenser"]])+os.linesep
+        txt+="%-25s\t %s" %(QtWidgets.QApplication.translate("pychemqt", "Light Key Component"), self.salida[0].componente[self.kwargs["LK"]].nombre)+os.linesep
+        txt+="%-25s\t %s" %(QtWidgets.QApplication.translate("pychemqt", "Heavy Key Component"), self.salida[0].componente[self.kwargs["HK"]].nombre)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Minimum Reflux Ratio"), self.Rmin.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Reflux Ratio"), self.RCalculada.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Stage Number"), self.NTray.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Feed Stage"), self.N_feed.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Condenser Duty"), self.DutyCondenser.str)+os.linesep
+        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("pychemqt", "Reboiler Duty"), self.DutyReboiler.str)+os.linesep
 
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Top Output Temperature"), "DestiladoT", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Top Output Pressure"), "DestiladoP", unidades.Pressure),
-             (QApplication.translate("pychemqt", "Top Output Mass Flow"), "DestiladoMassFlow", unidades.MassFlow),
-             (QApplication.translate("pychemqt", "Top Output Molar Composition"), "DestiladoMolarComposition", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Bottom Output Temperature"), "ResiduoT", unidades.Temperature),
-             (QApplication.translate("pychemqt", "Bottom Output Pressure"), "ResiduoP", unidades.Pressure),
-             (QApplication.translate("pychemqt", "Bottom Output Mass Flow"), "ResiduoMassFlow", unidades.MassFlow),
-             (QApplication.translate("pychemqt", "Bottom Output Molar Composition"), "ResiduoMolarComposition", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Feed Calculate method"), ("TEXT_FEED", "feed"), str),
-             (QApplication.translate("pychemqt", "Condenser type"), ("TEXT_CONDENSER", "condenser"), str),
-             (QApplication.translate("pychemqt", "Light Key Component"), "LKName", str),
-             (QApplication.translate("pychemqt", "Heavy Key Component"), "HKName", str),
-             (QApplication.translate("pychemqt", "Minimum Reflux Ratio"), "Rmin", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Reflux Ratio"), "RCalculada", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Stage Number"), "NTray", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Feed Stage"), "N_feed", unidades.Dimensionless),
-             (QApplication.translate("pychemqt", "Condenser Duty"), "DutyCondenser", unidades.Power),
-             (QApplication.translate("pychemqt", "Reboiler Duty"), "DutyReboiler", unidades.Power)]
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Top Output Temperature"), "DestiladoT", unidades.Temperature),
+             (QtWidgets.QApplication.translate("pychemqt", "Top Output Pressure"), "DestiladoP", unidades.Pressure),
+             (QtWidgets.QApplication.translate("pychemqt", "Top Output Mass Flow"), "DestiladoMassFlow", unidades.MassFlow),
+             (QtWidgets.QApplication.translate("pychemqt", "Top Output Molar Composition"), "DestiladoMolarComposition", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("pychemqt", "Bottom Output Temperature"), "ResiduoT", unidades.Temperature),
+             (QtWidgets.QApplication.translate("pychemqt", "Bottom Output Pressure"), "ResiduoP", unidades.Pressure),
+             (QtWidgets.QApplication.translate("pychemqt", "Bottom Output Mass Flow"), "ResiduoMassFlow", unidades.MassFlow),
+             (QtWidgets.QApplication.translate("pychemqt", "Bottom Output Molar Composition"), "ResiduoMolarComposition", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("pychemqt", "Feed Calculate method"), ("TEXT_FEED", "feed"), str),
+             (QtWidgets.QApplication.translate("pychemqt", "Condenser type"), ("TEXT_CONDENSER", "condenser"), str),
+             (QtWidgets.QApplication.translate("pychemqt", "Light Key Component"), "LKName", str),
+             (QtWidgets.QApplication.translate("pychemqt", "Heavy Key Component"), "HKName", str),
+             (QtWidgets.QApplication.translate("pychemqt", "Minimum Reflux Ratio"), "Rmin", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("pychemqt", "Reflux Ratio"), "RCalculada", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("pychemqt", "Stage Number"), "NTray", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("pychemqt", "Feed Stage"), "N_feed", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("pychemqt", "Condenser Duty"), "DutyCondenser", unidades.Power),
+             (QtWidgets.QApplication.translate("pychemqt", "Reboiler Duty"), "DutyReboiler", unidades.Power)]
         return l
 
     def propertiesListTitle(self, index):

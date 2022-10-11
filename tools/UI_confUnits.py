@@ -27,7 +27,7 @@ import os
 from functools import partial
 from configparser import ConfigParser
 
-from PyQt5 import QtGui, QtWidgets
+from qt import QtGui, QtWidgets
 
 
 from lib import unidades

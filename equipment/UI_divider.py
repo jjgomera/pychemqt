@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from PyQt5 import QtCore, QtWidgets
+from qt import QtCore, QtWidgets
 
 from lib.unidades import Pressure, MassFlow
 from equipment.parents import UI_equip

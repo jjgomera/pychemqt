@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import pi, exp, sqrt, log
 import os
 
-from PyQt5.QtWidgets import QApplication
+from qt import QtWidgets
 
 from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless,
                           Length, Power)
@@ -59,7 +59,7 @@ class Scrubber(Separador_SolidGas):
         modelo_DeltaP:
             0 - Young (1977)
     """
-    title = QApplication.translate("pychemqt", "Scrubber")
+    title = QtWidgets.QApplication.translate("pychemqt", "Scrubber")
     help = ""
     kwargs = {"entradaGas": None,
               "entradaLiquido": None,
@@ -77,8 +77,8 @@ class Scrubber(Separador_SolidGas):
     calculateValue = ("deltaP", "rendimiento")
 
     TEXT_TIPO = [
-        QApplication.translate("pychemqt", "Rating: Calculate efficiency"),
-        QApplication.translate("pychemqt", "Design: Calculate diameter")]
+        QtWidgets.QApplication.translate("pychemqt", "Rating: Calculate efficiency"),
+        QtWidgets.QApplication.translate("pychemqt", "Design: Calculate diameter")]
     TEXT_MODEL = ["Johnstone (1954)",
                   "Calvert (1972)"]
     TEXT_MODEL_DELTAP = ["Calvert (1968)",
@@ -124,32 +124,32 @@ class Scrubber(Separador_SolidGas):
             self.statusDeltaP = 0
 
         if not self.kwargs["entradaGas"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined gas stream")
             self.status = 0
             return
         if not self.kwargs["entradaLiquido"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined liquid stream")
             self.status = 0
             return
         if self.kwargs["tipo_calculo"] == 0 and not self.kwargs["diametro"]:
-            self.msg = QApplication.translate("pychemqt", "undefined diameter")
+            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined diameter")
             self.status = 0
             return
         elif self.kwargs["tipo_calculo"] == 1 and \
                 not self.kwargs["rendimientoAdmisible"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined efficiency")
             self.status = 0
             return
 
         if self.kwargs["modelo_rendimiento"] == 0 and not self.kwargs["k"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined venturi constant")
             self.status = 3
         elif self.kwargs["modelo_rendimiento"] == 1 and not self.kwargs["f"]:
-            self.msg = QApplication.translate(
+            self.msg = QtWidgets.QApplication.translate(
                 "pychemqt", "undefined calvert coefficient")
             self.status = 3
 
@@ -297,7 +297,7 @@ class Scrubber(Separador_SolidGas):
         Gas = self.kwargs["entradaGas"]
 
         txt = os.linesep + "#---------------"
-        txt += QApplication.translate("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(13))
         txt += Separador_SolidGas.propTxt(self, 13, Gas)
@@ -305,27 +305,27 @@ class Scrubber(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QApplication.translate("pychemqt", "Mode"),
+        l = [(QtWidgets.QApplication.translate("pychemqt", "Mode"),
               ("TEXT_TIPO", "tipo_calculo"), str),
-             (QApplication.translate("pychemqt", "Model"),
+             (QtWidgets.QApplication.translate("pychemqt", "Model"),
               ("TEXT_MODEL", "modelo_rendimiento"), str),
-             (QApplication.translate("pychemqt", "Pressure Loss Model"),
+             (QtWidgets.QApplication.translate("pychemqt", "Pressure Loss Model"),
               ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
-             (QApplication.translate("pychemqt", "Throat Diameter"), "Dt",
+             (QtWidgets.QApplication.translate("pychemqt", "Throat Diameter"), "Dt",
               Length),
-             (QApplication.translate("pychemqt", "Throat Length"), "Lt",
+             (QtWidgets.QApplication.translate("pychemqt", "Throat Length"), "Lt",
               Length),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Johnstone method scrubber constant"),
                  "k", Dimensionless),
-             (QApplication.translate(
+             (QtWidgets.QApplication.translate(
                  "pychemqt", "Calvert method scrubber constant"),
                  "f", Dimensionless),
-             (QApplication.translate("pychemqt", "Drops Diameter"), "dd",
+             (QtWidgets.QApplication.translate("pychemqt", "Drops Diameter"), "dd",
               Length),
-             (QApplication.translate("pychemqt", "Throat Cross Area"), "At",
+             (QtWidgets.QApplication.translate("pychemqt", "Throat Cross Area"), "At",
               Area),
-             (QApplication.translate("pychemqt", "Throat Speed"), "Vg", Speed)]
+             (QtWidgets.QApplication.translate("pychemqt", "Throat Speed"), "Vg", Speed)]
 
         for prop in Separador_SolidGas.propertiesEquipment():
             l.append(prop)
@@ -349,7 +349,7 @@ class Dryer(equipment):
         deltaP: Perdida de presión del equipo
 
     """
-    title=QApplication.translate("pychemqt", "Solid dryer")
+    title=QtWidgets.QApplication.translate("pychemqt", "Solid dryer")
     help=""
     kwargs={"entradaSolido": None,
             "entradaAire": None,
@@ -367,20 +367,20 @@ class Dryer(equipment):
     calculateValue=("CombustibleRequerido", "Heat")
 
     TEXT_MODE=(
-        QApplication.translate("pychemqt", "Rating, calculate output conditions"),
-        QApplication.translate("pychemqt", "Design, calculate air flow necessary"))
+        QtWidgets.QApplication.translate("pychemqt", "Rating, calculate output conditions"),
+        QtWidgets.QApplication.translate("pychemqt", "Design, calculate air flow necessary"))
 
 
     @property
     def isCalculable(self):
         if not self.kwargs["entradaSolido"]:
-            self.msg=QApplication.translate("pychemqt", "undefined solid stream input")
+            self.msg=QtWidgets.QApplication.translate("pychemqt", "undefined solid stream input")
             self.status=0
         elif not self.kwargs["entradaAire"]:
-            self.msg=QApplication.translate("pychemqt", "undefined air stream input")
+            self.msg=QtWidgets.QApplication.translate("pychemqt", "undefined air stream input")
             self.status=0
         elif not self.kwargs["HR"]:
-            self.msg=QApplication.translate("pychemqt", "using default air output relative humid 100%")
+            self.msg=QtWidgets.QApplication.translate("pychemqt", "using default air output relative humid 100%")
             self.status=3
             return True
         else:
