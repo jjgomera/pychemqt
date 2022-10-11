@@ -230,7 +230,8 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             for j in range(tabla.rowCount()):
                 if tabla.item(j, 0).text() == "true":
                     lista.append(j)
-            config.set("Tooltip", unidades.MAGNITUDES[i][0], str(lista))
+            config.set("Tooltip", unidades.MAGNITUDES[i][0],
+                       ", ".join(map(str, lista)))
         return config
 
 
@@ -305,14 +306,15 @@ class ConfTooltipEntity(QtWidgets.QDialog):
         for j in range(self.tabla[0].rowCount()):
             if self.tabla[0].item(j, 0).text() == "true":
                 lista.append(j)
-        config.set("TooltipEntity", "Corriente", str(lista))
+        config.set("TooltipEntity", "Corriente", ", ".join(map(str, lista)))
 
         for i, tabla in enumerate(self.tabla[1:]):
             lista = []
             for j in range(tabla.rowCount()):
                 if tabla.item(j, 0).text() == "true":
                     lista.append(j)
-            config.set("TooltipEntity", equipments[i].__name__, str(lista))
+            config.set("TooltipEntity", equipments[i].__name__,
+                       ", ".join(map(str, lista)))
 
         return config
 
@@ -632,7 +634,10 @@ class Preferences(QtWidgets.QDialog):
         """Return value for wizard"""
         config = self.config
         for indice in range(self.stacked.count()):
-            config = self.stacked.widget(indice).value(config)
+            try:
+                config = self.stacked.widget(indice).value(config)
+            except AttributeError:
+                pass
         return config
 
 
