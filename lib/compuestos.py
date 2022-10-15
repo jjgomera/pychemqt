@@ -127,7 +127,6 @@ Others method:
 import math
 import os
 import re
-import tempfile
 
 from numpy.lib.scimath import log, log10
 from numpy import exp
@@ -5208,36 +5207,6 @@ class Componente(object):
         self.energia_formacion_solido = cmp[147]
         self.PolarParameter = cmp[148]
         self.smile = str(cmp[149])
-
-        # Molecule graphic plot from smile code
-        if self.smile and os.environ["pybel"] == "True":
-            from pybel import readstring
-            mol = readstring("smi", self.smile)
-            self.imageFile = tempfile.NamedTemporaryFile("w", suffix=".svg")
-
-            # Define generated image from configuration
-            Pref = config.Preferences
-            opt = {}
-            opt["B"] = Pref.get("Openbabel", 'BondColor')
-            alpha = Pref.getfloat("Openbabel", "BackColorAlpha")
-            if alpha:
-                opt["b"] = Pref.get("Openbabel", 'BackColor')
-            else:
-                opt["b"] = "none"
-
-            if not Pref.getboolean("Openbabel", 'AtomsColor'):
-                opt["u"] = None
-
-            if Pref.getboolean("Openbabel", 'AtomsAll'):
-                opt["a"] = None
-            elif Pref.getboolean("Openbabel", 'AtomsNone'):
-                opt["C"] = None
-
-            if Pref.getboolean("Openbabel", 'TighBond'):
-                opt["t"] = None
-
-            mol.write("svg", filename=self.imageFile.name, overwrite=True,
-                      opt=opt)
 
         # Desglosar formula en elementos y átomos de cada elemento
         decmp = atomic_decomposition(self.formula)

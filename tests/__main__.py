@@ -32,7 +32,7 @@ from test_lib import TestLib
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('.')
 os.environ["freesteam"] = "False"
-os.environ["pybel"] = "False"
+os.environ["openbabel"] = "False"
 os.environ["CoolProp"] = "False"
 os.environ["refprop"] = "False"
 os.environ["ezodf"] = "False"

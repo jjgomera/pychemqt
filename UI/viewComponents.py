@@ -20,8 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from functools import partial
 import os
+import tempfile
 
-from qt import QtCore, QtGui, QtWidgets
+from qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets
 
 from scipy import array, optimize, linspace
 
@@ -29,7 +30,7 @@ from lib.plot import Plot
 from lib.compuestos import (Componente, MuL_Parametric, Pv_Antoine, Pv_Wagner,
                             Tension_Parametric, Henry, DIPPR)
 from lib import unidades, sql
-from lib.config import IMAGE_PATH
+from lib.config import IMAGE_PATH, Preferences
 from lib.EoS.Cubic.MSRK import dat as MSRKdat
 from lib.EoS.Cubic.PRMelhem import dat as Melhemdat
 from lib.EoS.Cubic.SRKAPI import S1, S2
@@ -40,6 +41,7 @@ from lib.EoS.Cubic.PRAlmeida import dat as Almeidadat
 from lib.EoS.Cubic.PT import dat as PTdat
 from lib.EoS.Cubic.TB import dat as TBdat
 from lib.EoS.Cubic.TBS import dat as TBSdat
+from lib.openbabel import imageFromSmile
 
 from UI.inputTable import InputTableDialog, eqDIPPR
 from UI.delegate import SpinEditor
@@ -897,7 +899,7 @@ class View_Component(QtWidgets.QDialog):
         lytGeneral.addWidget(self.alternateName, 3, 2)
 
         labelSmile = QtWidgets.QLabel(
-                QtWidgets.QApplication.translate("pychemqt", "Smile Code"))
+            QtWidgets.QApplication.translate("pychemqt", "Smile Code"))
         lytGeneral.addWidget(labelSmile, 4, 1)
         self.smile = QtWidgets.QLineEdit()
         self.smile.editingFinished.connect(self.setDirty)
@@ -906,9 +908,10 @@ class View_Component(QtWidgets.QDialog):
         labelFormula2 = QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Expanded Formula"))
         lytGeneral.addWidget(labelFormula2, 5, 1)
-        self.formula2 = QtWidgets.QLabel()
-        lytGeneral.addWidget(self.formula2, 5, 2, 6, 1)
-        if os.environ["pybel"] != "True":
+        self.formula2 = QtSvgWidgets.QSvgWidget()
+        lytGeneral.addWidget(self.formula2, 6, 1, 5, 3,
+                             QtCore.Qt.AlignmentFlag.AlignCenter)
+        if os.environ["openbabel"] != "True":
             labelFormula2.setVisible(False)
             self.formula2.setVisible(False)
 
@@ -962,11 +965,11 @@ class View_Component(QtWidgets.QDialog):
         self.energiaGibbsGas.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.energiaGibbsGas, 10, 5)
         lytGeneral.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Expanding), 11, 3)
         lytGeneral.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 11, 6)
+            QtWidgets.QSizePolicy.Policy.Expanding), 12, 1, 1, 6)
 
         # Cp tab
         tab2 = QtWidgets.QWidget()
@@ -1636,7 +1639,6 @@ class View_Component(QtWidgets.QDialog):
         self.CAS.clear()
         self.formula1.clear()
         self.smile.clear()
-        self.formula2.clear()
         self.UNIFAC.clear()
         self.M.clear()
         self.Tc.clear()
@@ -1720,10 +1722,16 @@ class View_Component(QtWidgets.QDialog):
         self.CAS.setText(self.cmp.CASNumber)
         self.formula1.setText(self.cmp.formula)
 
-        if self.cmp.smile and os.environ["pybel"] == "True":
+        if self.cmp.smile and os.environ["openbabel"] == "True":
             self.smile.setText(self.cmp.smile)
-            pix = QtGui.QIcon(self.cmp.imageFile.name).pixmap(100, 100)
-            self.formula2.setPixmap(pix)
+
+            imageFile = tempfile.NamedTemporaryFile("w", suffix=".svg")
+            imageFromSmile(self.cmp.smile, imageFile.name, Preferences)
+
+            renderer = QtSvg.QSvgRenderer(imageFile.name)
+            self.formula2.load(imageFile.name)
+            self.formula2.renderer().setViewBox(QtCore.QRect(0, 0, 200, 200))
+            self.formula2.setFixedSize(renderer.defaultSize())
 
         if self.cmp.UNIFAC != []:
             self.UNIFAC.setRowCount(len(self.cmp.UNIFAC))
@@ -2054,6 +2062,6 @@ class View_Component(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = View_Component(500)
+    Dialog = View_Component(623)
     Dialog.show()
     sys.exit(app.exec())

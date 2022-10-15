@@ -41,6 +41,7 @@ from qt import QtCore, QtGui, QtWidgets
 
 from equipment import equipments
 from lib import unidades, corriente
+from lib.openbabel import ConfBabel
 from lib.utilities import representacion
 import plots
 from tools.firstrun import which
@@ -469,85 +470,6 @@ class ConfApplications(QtWidgets.QDialog):
                    self.BackgroundColor.color.name())
         return config
 
-
-class ConfBabel(QtWidgets.QDialog):
-    """Openbabel image generation configuration options"""
-    def __init__(self, config=None, parent=None):
-        super().__init__(parent)
-
-        layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Bond color:")), 1, 1)
-        self.BondColor = ColorSelector()
-        layout.addWidget(self.BondColor, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Foreground color:")), 2, 1)
-        self.BackgroundColor = ColorSelector(isAlpha=True)
-        layout.addWidget(self.BackgroundColor, 2, 2)
-        self.checkColor = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
-            "pychemqt", "Heteroatom in color"))
-        layout.addWidget(self.checkColor, 3, 1, 1, 2)
-        layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            4, 1, 1, 2)
-
-        group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Atom details"))
-        layout.addWidget(group, 5, 1, 1, 2)
-        lyt = QtWidgets.QVBoxLayout(group)
-        self.radioAll = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate("pychemqt", "Show all atoms"))
-        lyt.addWidget(self.radioAll)
-        self.radioEnd = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Show only terminal atoms"))
-        lyt.addWidget(self.radioEnd)
-        self.radioNone = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate("pychemqt", "Do not show atoms"))
-        lyt.addWidget(self.radioNone)
-        layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            6, 1, 1, 2)
-        self.checkTighBond = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Thicker bond lines"))
-        layout.addWidget(self.checkTighBond, 7, 1, 1, 2)
-
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 14, 1, 1, 4)
-
-        if config and config.has_section("Openbabel"):
-            self.BondColor.setColor(config.get("Openbabel", 'BondColor'))
-            alpha = config.getint("Openbabel", "BackColorAlpha")
-            self.BackgroundColor.setColor(
-                config.get("Openbabel", 'BackColor'), alpha)
-            self.checkColor.setChecked(
-                config.getboolean("Openbabel", 'AtomsColor'))
-            self.radioAll.setChecked(
-                config.getboolean("Openbabel", 'AtomsAll'))
-            self.radioEnd.setChecked(
-                config.getboolean("Openbabel", 'AtomsEnd'))
-            self.radioNone.setChecked(
-                config.getboolean("Openbabel", 'AtomsNone'))
-            self.checkTighBond.setChecked(
-                config.getboolean("Openbabel", 'TighBond'))
-
-    def value(self, config):
-        """Update ConfigParser instance with the config"""
-        if not config.has_section("Openbabel"):
-            config.add_section("Openbabel")
-        config.set("Openbabel", "BondColor", self.BondColor.color.name())
-        config.set("Openbabel", "BackColor",
-                   str(self.BackgroundColor.color.name()))
-        config.set("Openbabel", "BackColorAlpha",
-                   str(self.BackgroundColor.color.alpha()))
-        config.set("Openbabel", "AtomsColor", str(self.checkColor.isChecked()))
-        config.set("Openbabel", "AtomsAll", str(self.radioAll.isChecked()))
-        config.set("Openbabel", "AtomsEnd", str(self.radioEnd.isChecked()))
-        config.set("Openbabel", "AtomsNone", str(self.radioNone.isChecked()))
-        config.set("Openbabel", "TighBond",
-                   str(self.checkTighBond.isChecked()))
-        return config
 
 
 class Preferences(QtWidgets.QDialog):
