@@ -31,7 +31,7 @@ import subprocess
 from copy import deepcopy
 from xml.dom import minidom
 
-from qt import QtCore, QtGui, QtSvg, QtWidgets
+from qt import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
 from lib import unidades
 from lib.EoS import K, H
@@ -721,7 +721,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             dialog.show()
 
 
-class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
+class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
     """Clase que define los equipos en el diagrama de flujo"""
     up = []
     down = []
@@ -849,7 +849,7 @@ class EquipmentItem(QtSvg.QGraphicsSvgItem, GraphicsEntity):
                 self.up[0].mouseDoubleClickEvent()
 
     def mousePressEvent(self, event):
-        QtSvg.QGraphicsSvgItem.mousePressEvent(self, event)
+        QtSvgWidgets.QGraphicsSvgItem.mousePressEvent(self, event)
         if self.scene().addObj:
             if self.scene().addType == "stream":
                 if len(self.scene().Pos) == 0:

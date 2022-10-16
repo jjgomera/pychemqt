@@ -1377,7 +1377,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
                  checkable=False, button=False, parent=None):
     if not tip:
         tip = text
-    action = QtWidgets.QAction(text, parent)
+    action = QtGui.QAction(text, parent)
     if icon:
         action.setIcon(QtGui.QIcon(IMAGE_PATH + icon))
     if shortcut:

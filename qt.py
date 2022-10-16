@@ -17,19 +17,29 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
+###############################################################################
+# Module to support both PyQt5 and PyQt6 libraries in pychemqt project
+# For future in mind let PyQt6 as default version and monkey patch the PyQt5
+# library with the minor changes necessary to work
+###############################################################################
+
 
 try:
     from PyQt6 import QtWidgets, QtGui, QtCore, QtSvg, QtSvgWidgets, Qsci
 
-    # Define qt version if it's necessary
+    # Define qt version, unused nowday but defined if it's necessary
     __qt__ = 6
-
-    # Define changes
-    QtCore.QLibraryInfo.location = QtCore.QLibraryInfo.path
-    QtSvg.QGraphicsSvgItem = QtSvgWidgets.QGraphicsSvgItem
-    QtWidgets.QAction = QtGui.QAction
 
 except ImportError:
     from PyQt5 import QtWidgets, QtGui, QtCore, QtSvg, Qsci
 
     __qt__ = 5
+
+    # Define changes
+    QtCore.QLibraryInfo.path = QtCore.QLibraryInfo.location
+    QtCore.QLibraryInfo.LibraryPath = QtCore.QLibraryInfo.LibraryLocation
+
+    QtSvgWidgets = QtSvg
+    QtGui.QAction = QtWidgets.QAction
+
+__all__ = QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets, Qsci

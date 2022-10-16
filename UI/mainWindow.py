@@ -1269,7 +1269,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if recentFiles:
             self.menuRecentFiles.addSeparator()
             for i, fname in enumerate(recentFiles):
-                action = QtWidgets.QAction("&%d %s" % (i + 1, fname), self)
+                action = QtGui.QAction("&%d %s" % (i + 1, fname), self)
                 action.setData(QtCore.QVariant(fname))
                 action.triggered.connect(self.loadFile)
                 self.menuRecentFiles.addAction(action)
@@ -1429,7 +1429,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def loadFile(self, fname=None):
         if not fname:
             action = self.sender()
-            if isinstance(action, QtWidgets.QAction):
+            if isinstance(action, QtGui.QAction):
                 fname = str(action.data())
             else:
                 return

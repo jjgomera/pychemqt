@@ -57,11 +57,12 @@ os.environ["pychemqt"] = path + os.sep
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
 # Check mandatory external dependences
-# PyQt5
+# qt
 try:
-    from PyQt5 import QtCore, QtGui, QtWidgets
+    from qt import QtCore, QtGui, QtWidgets
 except ImportError as err:
-    print("PyQt5 could not be found, you must install it.")
+    print("PyQt could not be found, you must install it" + os.linesep)
+    print("PyQt5 and PyQt6 are supported")
     raise err
 
 # Qt application definition
@@ -98,7 +99,7 @@ myTranslator = QtCore.QTranslator()
 if myTranslator.load("pychemqt_" + locale, os.environ["pychemqt"] + "i18n"):
     app.installTranslator(myTranslator)
 qtTranslator = QtCore.QTranslator()
-path = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.LibraryPath.TranslationsPath)
+path = QtCore.QLibraryInfo.path(QtCore.QLibraryInfo.LibraryPath.TranslationsPath)
 if qtTranslator.load("qt_" + locale, path):
     app.installTranslator(qtTranslator)
 
