@@ -40,7 +40,7 @@ os.environ["openpyxl"] = "False"
 os.environ["xlwt"] = "False"
 os.environ["icu"] = "False"
 os.environ["reportlab"] = "False"
-os.environ["PyQt5.Qsci"] = "False"
+os.environ["Qsci"] = "False"
 
 
 # Don't print the numpy RuntimeWarning

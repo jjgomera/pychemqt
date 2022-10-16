@@ -46,9 +46,8 @@ optional_modules = (
         "Unicode collation algorithm for improved string sorting disabled")),
     ("reportlab", QtWidgets.QApplication.translate(
         "pychemqt", "Pdf report exporting disabled")),
-    ("PyQt5.Qsci", QtWidgets.QApplication.translate(
-        "pychemqt", "Qscintilla custom module editor disabled")),
-    )
+    ("Qsci", QtWidgets.QApplication.translate(
+        "pychemqt", "Qscintilla custom module editor disabled")))
 
 
 class ShowDependences(QtWidgets.QDialog):
@@ -66,9 +65,19 @@ class ShowDependences(QtWidgets.QDialog):
              QtWidgets.QApplication.translate("pychemqt", "Status")])
         self.tree.setHeaderItem(header)
 
+    # if module == "Qsci":
+        # # Special case for Qsci, a optional module from qt
+        # from qt import Qsci
+        # if Qsci:
+            # os.environ[module] = "True"
+
         for module, txt in optional_modules:
             if os.environ[module] == "True":
-                mod = __import__(module)
+                if module == "Qsci":
+                    # Special case for Qsci, a optional module from qt
+                    mod = __import__("qt").Qsci
+                else:
+                    mod = __import__(module)
                 st = mod.__file__
             else:
                 st = QtWidgets.QApplication.translate("pychemqt", "not found")
@@ -93,7 +102,7 @@ if __name__ == "__main__":
     os.environ["xlwt"] = "False"
     os.environ["icu"] = "False"
     os.environ["reportlab"] = "False"
-    os.environ["PyQt5.Qsci"] = "True"
+    os.environ["Qsci"] = "True"
     app = QtWidgets.QApplication(sys.argv)
     dialog = ShowDependences()
     dialog.show()

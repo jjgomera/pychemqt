@@ -35,14 +35,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import sys
 
-from qt import QtGui, QtWidgets
-try:
-    from qt import Qsci
-except ImportError:
-    pass
+from qt import QtGui, QtWidgets, Qsci
 
 
-if os.environ["PyQt5.Qsci"] == "True":
+if os.environ["Qsci"] == "True":
     # With scintilla available use as python editor
     class SimplePythonEditor(Qsci.QsciScintilla):
         """Code editor for python code using Qscintilla"""
@@ -62,7 +58,7 @@ if os.environ["PyQt5.Qsci"] == "True":
             # Margin 0 is used for line numbers
             fontmetrics = QtGui.QFontMetrics(font)
             self.setMarginsFont(font)
-            self.setMarginWidth(0, fontmetrics.width("000") + 6)
+            self.setMarginWidth(0, fontmetrics.horizontalAdvance("000") + 6)
             self.setMarginLineNumbers(0, True)
             self.setMarginsBackgroundColor(QtGui.QColor("#cccccc"))
 

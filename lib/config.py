@@ -40,7 +40,7 @@ Configuration tools
 from configparser import ConfigParser
 import os
 
-from PyQt5 import QtWidgets
+from qt import QtWidgets
 
 # TODO: Delete when it isn´t necessary debug
 # os.environ["pychemqt"] = "/home/jjgomera/Programacion/pychemqt/"
@@ -53,7 +53,7 @@ from PyQt5 import QtWidgets
 # os.environ["xlwt"] = "True"
 # os.environ["icu"] = "True"
 # os.environ["reportlab"] = "True"
-# os.environ["PyQt5.Qsci"] = "True"
+# os.environ["Qsci"] = "False"
 
 
 from lib.sql import databank

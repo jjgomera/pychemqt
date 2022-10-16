@@ -25,13 +25,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
 try:
-    from PyQt6 import QtWidgets, QtGui, QtCore, QtSvg, QtSvgWidgets, Qsci
+    from PyQt6 import QtWidgets, QtGui, QtCore, QtSvg, QtSvgWidgets
+
+    try:
+        from PyQt6 import Qsci
+    except ImportError:
+        Qsci = False
 
     # Define qt version, unused nowday but defined if it's necessary
     __qt__ = 6
 
 except ImportError:
-    from PyQt5 import QtWidgets, QtGui, QtCore, QtSvg, Qsci
+    from PyQt5 import QtWidgets, QtGui, QtCore, QtSvg
+
+    try:
+        from PyQt5 import Qsci
+    except ImportError:
+        Qsci = False
 
     __qt__ = 5
 

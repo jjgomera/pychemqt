@@ -185,21 +185,30 @@ else:
 # Check external optional modules
 from tools.dependences import optional_modules  # noqa
 for module, use in optional_modules:
-    try:
-        __import__(module)
-        os.environ[module] = "True"
-    except ImportError:
-        print("%s could not be found, %s" % (module, use))
-        os.environ[module] = ""
+    if module == "Qsci":
+        # Special case for Qsci, a optional module from qt
+        from qt import Qsci
+        if Qsci:
+            os.environ[module] = "True"
+        else:
+            print("%s could not be found, %s" % (module, use))
+            os.environ[module] = ""
     else:
-        # Check required version
-        if module == "CoolProp":
-            import CoolProp.CoolProp as CP
-            version = CP.get_global_param_string("version")
-            mayor, minor = map(int, version.split(".")[:2])
-            if mayor < 6:
-                print("Find CoolProp %s but CoolProp 6 required" % version)
-                os.environ[module] = ""
+        try:
+            __import__(module)
+            os.environ[module] = "True"
+        except ImportError:
+            print("%s could not be found, %s" % (module, use))
+            os.environ[module] = ""
+        else:
+            # Check required version
+            if module == "CoolProp":
+                import CoolProp.CoolProp as CP
+                version = CP.get_global_param_string("version")
+                mayor, minor = map(int, version.split(".")[:2])
+                if mayor < 6:
+                    print("Find CoolProp %s but CoolProp 6 required" % version)
+                    os.environ[module] = ""
 
 
 # Logging configuration
