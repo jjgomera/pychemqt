@@ -26,6 +26,7 @@ import os
 
 from qt import QtGui, QtWidgets
 
+
 optional_modules = (
     ("freesteam", QtWidgets.QApplication.translate(
         "pychemqt", "freesteam thermal option disabled")),
@@ -53,9 +54,9 @@ optional_modules = (
 class ShowDependences(QtWidgets.QDialog):
     """Dialog to show optional dependences availability"""
     def __init__(self, parent=None):
-        super(ShowDependences, self).__init__(parent)
-        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/showPrograms.png")))
+        super().__init__(parent)
+        self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            os.environ["pychemqt"], "images", "button", "showPrograms.png"))))
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "External program"))
         layout = QtWidgets.QVBoxLayout(self)
@@ -65,12 +66,6 @@ class ShowDependences(QtWidgets.QDialog):
              QtWidgets.QApplication.translate("pychemqt", "Status")])
         self.tree.setHeaderItem(header)
 
-    # if module == "Qsci":
-        # # Special case for Qsci, a optional module from qt
-        # from qt import Qsci
-        # if Qsci:
-            # os.environ[module] = "True"
-
         for module, txt in optional_modules:
             if os.environ[module] == "True":
                 if module == "Qsci":
@@ -79,31 +74,24 @@ class ShowDependences(QtWidgets.QDialog):
                 else:
                     mod = __import__(module)
                 st = mod.__file__
+                icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                    os.environ["pychemqt"], "images", "button", "ok.png")))
             else:
-                st = QtWidgets.QApplication.translate("pychemqt", "not found")
+                st = QtWidgets.QApplication.translate(
+                    "pychemqt", "Module not found")
+                st += ", " + txt
+                icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                    os.environ["pychemqt"], "images", "button",
+                    "fileClose.png")))
             item = QtWidgets.QTreeWidgetItem([module, st])
+            item.setIcon(0, icon)
             self.tree.addTopLevelItem(item)
 
+        self.tree.resizeColumnToContents(0)
+        self.tree.resizeColumnToContents(1)
+        self.resize(800, 300)
         layout.addWidget(self.tree)
-        button = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        button = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         button.rejected.connect(self.reject)
         layout.addWidget(button)
-
-
-if __name__ == "__main__":
-    import sys
-    os.environ["pychemqt"] = "/home/jjgomera/pychemqt/"
-    os.environ["freesteam"] = "False"
-    os.environ["openbabel"] = "False"
-    os.environ["CoolProp"] = "False"
-    os.environ["refprop"] = "False"
-    os.environ["ezodf"] = "False"
-    os.environ["openpyxl"] = "False"
-    os.environ["xlwt"] = "False"
-    os.environ["icu"] = "False"
-    os.environ["reportlab"] = "False"
-    os.environ["Qsci"] = "True"
-    app = QtWidgets.QApplication(sys.argv)
-    dialog = ShowDependences()
-    dialog.show()
-    app.exec()
