@@ -215,7 +215,7 @@ class ConfLine(QtWidgets.QWidget):
         self.groupJoint.addButton(toolJoinMitter)
         self.groupJoint.addButton(toolJoinBevel)
         self.groupJoint.addButton(toolJoinRound)
-        self.groupJoint.buttonClicked["int"].connect(self.mitterlimitEnabled)
+        self.groupJoint.idClicked.connect(self.mitterlimitEnabled)
         lyt.addLayout(lyt2)
 
         lyt3 = QtWidgets.QHBoxLayout()

@@ -421,7 +421,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
     valueChanged = QtCore.pyqtSignal()
 
     dict_latex = {
-        "henry": r"$\lnH = \frac{A}{T}+B\lnT+CT+D$",
+        "henry": r"$\ln H = \frac{A}{T}+B\ln T+CT+D$",
         "tension": r"$\sigma=A(1-T_r)^B$",
         "antoine": r"$P_v=e^{A-\frac{B}{C+T}}$",
         "wagner": r"$P_v=\frac{P_c}{Tr}e^{a\tau+b\tau^{1.5}+c\tau^3+d\tau^6}$",
