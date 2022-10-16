@@ -47,6 +47,11 @@ if os.environ["Qsci"] == "True":
         def __init__(self, parent=None):
             super().__init__(parent)
 
+            # For now set read-only property for all its uses,
+            # possible modify when add same programatic functionality and use
+            # this at code editor
+            self.setReadOnly(True)
+
             # Set the default font
             font = QtGui.QFont()
             font.setFamily('Courier')
@@ -105,6 +110,10 @@ else:
     # Use a normal Qt widget
     class SimplePythonEditor(QtWidgets.QPlainTextEdit):
         """Simple text editor without scintilla dependence"""
+        def __init__(self, *args):
+            super().__init__(*args)
+            self.setReadOnly(True)
+
         def setText(self, txt):
             """Define the same functionality as for scintilla api"""
             self.setPlainText(txt)
