@@ -5139,8 +5139,15 @@ class Componente(object):
         else:
             self.Vc = 0
 
-        self.rhoc = 1/self.Vc
-        self.Zc = self.Pc*self.Vc*self.M/1000/R/self.Tc
+        if self.Vc:
+            self.rhoc = 1/self.Vc
+        else:
+            self.rhoc = 0
+
+        if self.Tc:
+            self.Zc = self.Pc*self.Vc*self.M/1000/R/self.Tc
+        else:
+            self.Zc = 0
 
         if cmp[7] != 0:
             self.API = cmp[7]
