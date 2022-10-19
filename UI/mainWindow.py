@@ -1458,6 +1458,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.dirty.append(False)
             self.filename.append(fname)
             self.addRecentFile(fname)
+            self.clearWindow()
 
             project = Project()
             project.readFromJSON(data)
@@ -1531,13 +1532,17 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         except AttributeError:
             return
 
+        self.clearWindow()
+
+        self.wdg = wdgs
+        for wdg in wdgs:
+            self.statusBar().addWidget(wdg)
+            wdg.show()
+
+    def clearWindow(self):
         for wdg in self.wdg:
             self.statusBar().removeWidget(wdg)
-        self.wdg = wdgs
-
-        for wdg in wdgs:
-            self.statusBar().addPermanentWidget(wdg)
-            wdg.show()
+        self.statusBar().reformat()
 
     def fileClose(self, int):
         if self.okToContinue(int):
@@ -1554,6 +1559,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 self.list.clear()
                 flujo.StreamItem.id = 0
                 flujo.EquipmentItem.id = 0
+            self.clearWindow()
 
 # Configuration
     def wizard(self):
