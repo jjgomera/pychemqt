@@ -74,14 +74,14 @@ class ShowReference(QtWidgets.QDialog):
         bttBox.rejected.connect(self.reject)
         layout.addWidget(bttBox, 3, 1, 1, 2)
 
-        shSearch = QtWidgets.QShortcut(QtGui.QKeySequence.StandardKey.Find, self)
+        shSearch = QtGui.QShortcut(QtGui.QKeySequence.StandardKey.Find, self)
         shSearch.activated.connect(self.enableSearch)
-        shHide = QtWidgets.QShortcut(QtGui.QKeySequence.StandardKey.Cancel, self)
+        shHide = QtGui.QShortcut(QtGui.QKeySequence.StandardKey.Cancel, self)
         shHide.activated.connect(self.disableSearch)
-        self.shNext = QtWidgets.QShortcut(QtGui.QKeySequence.StandardKey.FindNext, self)
+        self.shNext = QtGui.QShortcut(QtGui.QKeySequence.StandardKey.FindNext, self)
         self.shNext.activated.connect(self.searchNext)
         self.shNext.setEnabled(False)
-        self.shPrevious = QtWidgets.QShortcut(
+        self.shPrevious = QtGui.QShortcut(
             QtGui.QKeySequence.StandardKey.FindPrevious, self)
         self.shPrevious.activated.connect(self.searchPrevious)
         self.shPrevious.setEnabled(False)

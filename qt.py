@@ -52,5 +52,6 @@ except ImportError:
     QtSvgWidgets = QtSvg
     QtGui.QAction = QtWidgets.QAction
     QtGui.QActionGroup = QtWidgets.QActionGroup
+    QtGui.QShortcut = QtWidgets.QShortcut
 
 __all__ = QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets, Qsci
