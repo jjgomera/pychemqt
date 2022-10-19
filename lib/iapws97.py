@@ -236,9 +236,9 @@ class IAPWS97(ThermoWater):
         self.x = unidades.Dimensionless(st.x)
         self.region = st.region
         self.phase = self.getphase(phase=st.phase)
-        self.name = st.name
-        self.synonim = st.synonim
-        self.CAS = st.CAS
+        self.name = "iapws97"
+        self.synonim = "R-718"
+        self.CAS = "7732-18-5"
 
         self.T = unidades.Temperature(st.T)
         self.P = unidades.Pressure(st.P, "MPa")

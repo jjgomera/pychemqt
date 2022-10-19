@@ -235,7 +235,7 @@ class Test(TestCase):
 
         st = R1233zd(T=300, rho=1308.8, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 20.02)
-        self.assertEqual(round(st.k.WmK, 6), 0.091408)
+        self.assertEqual(round(st.k.WmK, 6), 0.091409)
 
         st = R1233zd(T=445, rho=0, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 0)
@@ -243,4 +243,4 @@ class Test(TestCase):
 
         st = R1233zd(T=445, rho=168.52, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 3.00)
-        self.assertEqual(round(st.k.WmK, 6), 0.026030)
+        self.assertEqual(round(st.k.WmK, 6), 0.026044)
