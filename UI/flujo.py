@@ -42,7 +42,7 @@ from lib.corriente import Corriente
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
 from UI.widgets import createAction, Table_Graphics, PathConfig, ClickableLabel
-from UI.prefPFD import ConfLineDialog, Dialog
+from UI.prefPFD import ConfLine, ConfLineDialog, Dialog
 from equipment import *
 from equipment.parents import equipment
 from tools import UI_confResolution, UI_confThermo
@@ -290,13 +290,10 @@ class GeometricItem(object):
     def _pen(self):
         pen = QtGui.QPen(QtGui.QColor(Preferences.get("PFD", 'Color_Stream')))
         pen.setWidthF(Preferences.getfloat("PFD", 'Width'))
-        pen.setJoinStyle(
-            [QtCore.Qt.PenJoinStyle.MiterJoin, QtCore.Qt.PenJoinStyle.BevelJoin, QtCore.Qt.PenJoinStyle.RoundJoin][Preferences.getint("PFD", 'Union')])
+        pen.setJoinStyle(ConfLine.join[Preferences.getint("PFD", 'Union')])
         pen.setMiterLimit(Preferences.getfloat("PFD", 'Miter_limit'))
-        pen.setCapStyle(
-            [QtCore.Qt.PenCapStyle.FlatCap, QtCore.Qt.PenCapStyle.RoundCap, QtCore.Qt.PenCapStyle.SquareCap][Preferences.getint("PFD", 'Punta')])
-        pen.setStyle([QtCore.Qt.PenStyle.SolidLine, QtCore.Qt.PenStyle.DashLine, QtCore.Qt.PenStyle.DotLine, QtCore.Qt.PenStyle.DashDotLine,
-                      QtCore.Qt.PenStyle.DashDotDotLine][Preferences.getint("PFD", 'Guion')])
+        pen.setCapStyle(ConfLine.cap[Preferences.getint("PFD", 'Punta')])
+        pen.setStyle(ConfLine.line[Preferences.getint("PFD", 'Guion')])
         pen.setDashOffset(Preferences.getfloat("PFD", 'Dash_offset'))
         return pen
 
@@ -1280,10 +1277,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
             pen = QtGui.QPen(QtGui.QColor(obj["color"]))
             pen.setWidthF(obj["width"])
-            pen.setJoinStyle(obj["joinStyle"])
+            pen.setJoinStyle(ConfLine.join[obj["joinStyle"]])
             pen.setMiterLimit(obj["miterLimit"])
-            pen.setCapStyle(obj["capStyle"])
-            pen.setStyle(obj["style"])
+            pen.setCapStyle(ConfLine.cap[obj["capStyle"]])
+            pen.setStyle(ConfLine.line[obj["style"]])
             pen.setDashOffset(obj["dashOffset"])
             s.setPen(pen)
 
@@ -1301,10 +1298,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
             pen = QtGui.QPen(QtGui.QColor(obj["color"]))
             pen.setWidthF(obj["width"])
-            pen.setJoinStyle(obj["joinStyle"])
+            pen.setJoinStyle(ConfLine.join[obj["joinStyle"]])
             pen.setMiterLimit(obj["miterLimit"])
-            pen.setCapStyle(obj["capStyle"])
-            pen.setStyle(obj["style"])
+            pen.setCapStyle(ConfLine.cap[obj["capStyle"]])
+            pen.setStyle(ConfLine.line[obj["style"]])
             pen.setDashOffset(obj["dashOffset"])
             s.setPen(pen)
 
@@ -1326,10 +1323,11 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
             pen = QtGui.QPen(QtGui.QColor(obj["pen"]["color"]))
             pen.setWidthF(obj["pen"]["width"])
-            pen.setJoinStyle(obj["pen"]["joinStyle"])
+
+            pen.setJoinStyle(ConfLine.join[obj["pen"]["joinStyle"]])
             pen.setMiterLimit(obj["pen"]["miterLimit"])
-            pen.setCapStyle(obj["pen"]["capStyle"])
-            pen.setStyle(obj["pen"]["style"])
+            pen.setCapStyle(ConfLine.cap[obj["pen"]["capStyle"]])
+            pen.setStyle(ConfLine.line[obj["pen"]["style"]])
             pen.setDashOffset(obj["pen"]["dashOffset"])
             s.setPen(pen)
 

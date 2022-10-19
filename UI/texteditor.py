@@ -35,7 +35,7 @@ class TextEditor(QtWidgets.QWidget):
 
     def __init__(self, texto="", parent=None):
         """Constructor, opcional parameter texto to set initial value"""
-        super(TextEditor, self).__init__(parent)
+        super().__init__(parent)
         self.texto = texto
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Notes"))
@@ -47,7 +47,7 @@ class TextEditor(QtWidgets.QWidget):
         self.fontComboBox = QtWidgets.QFontComboBox()
         self.fontComboBox.setToolTip(
             QtWidgets.QApplication.translate("pychemqt", "Font name"))
-        self.fontComboBox.activated[str].connect(self.font)
+        self.fontComboBox.textActivated.connect(self.font)
         toolbar.addWidget(self.fontComboBox)
         self.FontColor = QtWidgets.QPushButton()
         self.FontColor.setFixedSize(22, 22)
@@ -61,7 +61,7 @@ class TextEditor(QtWidgets.QWidget):
             self.FontSize.addItem(str(i))
         self.FontSize.setToolTip(
             QtWidgets.QApplication.translate("pychemqt", "Font size"))
-        self.FontSize.activated[str].connect(self.PointSize)
+        self.FontSize.textActivated.connect(self.PointSize)
         toolbar.addWidget(self.FontSize)
 
         self.actionNegrita = createAction(
@@ -122,7 +122,7 @@ class TextEditor(QtWidgets.QWidget):
         self.notas.cursorPositionChanged.connect(self.updateUI)
         gridLayout.addWidget(self.notas)
 
-        group = QtWidgets.QActionGroup(self)
+        group = QtGui.QActionGroup(self)
         group.addAction(self.actionAlinearIzquierda)
         group.addAction(self.actionCentrar)
         group.addAction(self.actionJustificar)
