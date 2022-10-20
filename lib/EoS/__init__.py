@@ -30,17 +30,20 @@ from . import Lee_Kesler
 from . import virial
 
 
-K = Cubic._all + BWRS._all + Lee_Kesler._all + Grayson_Streed._all + virial._all
+# K = Cubic._all + BWRS._all + Lee_Kesler._all + Grayson_Streed._all + virial._all
+K = Cubic._all + BWRS._all + Grayson_Streed._all + virial._all
 K_name = [k.__title__.split(" (")[0] for k in K]
 K_status = [k.__status__ for k in K]
-H = Cubic._all + BWRS._all + Lee_Kesler._all
+# H = Cubic._all + BWRS._all + Lee_Kesler._all
+H = Cubic._all + BWRS._all
 H_name = [h.__title__.split(" (")[0] for h in H]
 H_status = [h.__status__ for h in H]
 
 mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
 cp_ideal = (QtWidgets.QApplication.translate("pychemqt", "Ideal"), "DIPPR")
 
-__all__ = [BWRS, BWRSoave, Cubic, Grayson_Streed, Lee_Kesler, virial]
+# __all__ = [BWRS, BWRSoave, Cubic, Grayson_Streed, Lee_Kesler, virial]
+__all__ = [BWRS, BWRSoave, Cubic, Grayson_Streed, virial]
 
 # Add references
 # each submodule must define its custom __doi__
