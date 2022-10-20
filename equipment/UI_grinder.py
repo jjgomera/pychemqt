@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###                                              Diálogo de definición de molinos, UI_grinder                                                  ###
 #######################################################################
 
-from qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets
 
 from equipment.parents import UI_equip
 from equipment.solids import Grinder

@@ -32,7 +32,7 @@ import logging
 import os
 import json
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 from scipy import pi
 from numpy import arctan
 

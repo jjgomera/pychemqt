@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from functools import partial
 import os
 
-from qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets
 
 from UI.widgets import Entrada_con_unidades
 from lib.config import conf_dir

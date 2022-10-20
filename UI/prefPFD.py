@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 import os
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from UI.widgets import ColorSelector, Entrada_con_unidades, PFDLineCombo
 from tools import UI_confResolution

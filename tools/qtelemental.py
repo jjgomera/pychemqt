@@ -30,7 +30,7 @@ from configparser import ConfigParser
 import logging
 import os
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from UI.widgets import Entrada_con_unidades, Tabla
 from lib import unidades

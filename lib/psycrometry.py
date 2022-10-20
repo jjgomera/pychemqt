@@ -71,7 +71,7 @@ from iapws.iapws97 import _PSat_T, _Region1, prop0
 
 from numpy import exp, roots, linspace, arange, concatenate
 from numpy.lib.scimath import log
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from scipy.optimize import fsolve
 
 # Avoid raise error at import this module if the the optional dependence isn't

@@ -59,7 +59,7 @@ conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 # Check mandatory external dependences
 # qt
 try:
-    from qt import QtCore, QtGui, QtWidgets
+    from tools.qt import QtCore, QtGui, QtWidgets
 except ImportError as err:
     print("PyQt could not be found, you must install it" + os.linesep)
     print("PyQt5 and PyQt6 are supported")
@@ -187,7 +187,7 @@ from tools.dependences import optional_modules  # noqa
 for module, use in optional_modules:
     if module == "Qsci":
         # Special case for Qsci, a optional module from qt
-        from qt import Qsci
+        from tools.qt import Qsci
         if Qsci:
             os.environ[module] = "True"
         else:

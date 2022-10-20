@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from functools import partial
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib import sql
 from lib.config import IMAGE_PATH

@@ -30,7 +30,7 @@ import sqlite3
 
 from numpy import polyval
 from scipy.optimize import fsolve
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.sql import databank_name

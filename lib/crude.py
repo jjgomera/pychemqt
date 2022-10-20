@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from math import pi, exp, log, sin
 import warnings
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from numpy.lib.scimath import log10
 from scipy.optimize import fsolve
 

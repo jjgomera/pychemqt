@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from time import sleep
 
-from qt import QtCore
+from tools.qt import QtCore
 
 
 class WaitforClick(QtCore.QThread):

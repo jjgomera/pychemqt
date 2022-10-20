@@ -27,7 +27,7 @@ import subprocess
 import sys
 import time
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, plots, viewComponents
 from UI.petro import Definicion_Petro

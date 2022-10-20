@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib.petro import Petroleo
 

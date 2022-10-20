@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib import unidades
 from UI.widgets import LineConfig

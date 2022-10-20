@@ -32,7 +32,7 @@ import os
 from numpy.lib.scimath import log10
 from scipy import pi, linspace
 from scipy.optimize import fsolve
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.corriente import Corriente

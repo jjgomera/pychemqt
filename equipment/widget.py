@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   * Dialog_Finned: Finned tube definition
 ###############################################################################
 
-from qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets
 
 
 from lib.unidades import Fouling, Length, ThermalConductivity

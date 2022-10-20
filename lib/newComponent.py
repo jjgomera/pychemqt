@@ -45,7 +45,7 @@ from math import exp, log
 import time
 
 from scipy.constants import R
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.compuestos import atomic_decomposition, facent_LeeKesler, RhoL_Rackett

@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import sqlite3
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 
 # Standard pipe database

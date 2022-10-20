@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from qt import QtGui, QtWidgets
+from tools.qt import QtGui, QtWidgets
 
 
 optional_modules = (

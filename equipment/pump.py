@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import log, exp
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from scipy import optimize, polyval, roots, r_
 from scipy.constants import g
 

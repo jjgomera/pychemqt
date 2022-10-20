@@ -56,7 +56,7 @@ not suitable for nonpolar substances with large molecular weight.
 from math import log, exp
 
 from scipy.constants import R
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.eos import EoS

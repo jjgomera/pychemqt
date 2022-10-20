@@ -33,7 +33,7 @@ from functools import partial
 from math import ceil, floor
 import os
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 from numpy import delete, insert
 
 from lib import meos, mEoS, coolProp, refProp, unidades, config

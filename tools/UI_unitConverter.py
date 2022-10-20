@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import logging
 import os
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib.unidades import Currency, getrates, _all
 from lib.config import conf_dir

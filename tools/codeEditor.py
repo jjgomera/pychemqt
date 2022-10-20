@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import sys
 
-from qt import QtGui, QtWidgets, Qsci
+from tools.qt import QtGui, QtWidgets, Qsci
 
 
 if os.environ["Qsci"] == "True":

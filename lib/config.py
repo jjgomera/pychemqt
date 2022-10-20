@@ -40,7 +40,7 @@ Configuration tools
 from configparser import ConfigParser
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 # TODO: Delete when it isn´t necessary debug
 # os.environ["pychemqt"] = "/home/jjgomera/Programacion/pychemqt/"

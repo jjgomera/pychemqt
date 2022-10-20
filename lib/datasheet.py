@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from qt import QtGui
+from tools.qt import QtGui
 
 from lib import config
 from lib.utilities import representacion

@@ -29,7 +29,7 @@ Module with stream definition:
 import logging
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from scipy.constants import R
 
 from lib.physics import R_atml

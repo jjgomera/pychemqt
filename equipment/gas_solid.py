@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 import os
 from math import exp, sqrt, ceil
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from scipy import roots
 from scipy.constants import pi, g, e, epsilon_0
 from scipy.optimize import fsolve

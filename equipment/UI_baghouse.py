@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from numpy import any
 

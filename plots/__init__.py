@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Module to define plots tools
 ###############################################################################
 
-from qt import QtWidgets as Q
+from tools.qt import QtWidgets as Q
 
 from plots import drag, moody, standing
 from plots.heatTransfer import chartHE

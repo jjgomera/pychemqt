@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from configparser import ConfigParser
 import tempfile
 
-from qt import QtCore, QtWidgets, QtSvg, QtSvgWidgets, QtGui
+from tools.qt import QtCore, QtWidgets, QtSvg, QtSvgWidgets, QtGui
 
 try:
     from openbabel.pybel import readstring

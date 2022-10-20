@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 import os
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 
 from tools.UI_databank import UI_databank_widget

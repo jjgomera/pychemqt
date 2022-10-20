@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from scipy import log, exp, r_
 from scipy.optimize import leastsq
 from scipy.special import erf
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib.compuestos import Componente
 from lib.config import Entity, getMainWindowConfig

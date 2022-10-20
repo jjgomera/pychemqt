@@ -35,7 +35,7 @@ import json
 import os
 import re
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 from numpy import arange
 from scipy.optimize import fsolve
 

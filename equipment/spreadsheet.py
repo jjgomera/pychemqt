@@ -32,7 +32,7 @@ try:
 except:
     pass
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from .parents import equipment
 

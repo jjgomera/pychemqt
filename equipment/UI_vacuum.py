@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###                                              Diálogo de definición de filtros de mangas, UI_baghouse                                       ###
 ##########################################################################
 
-from qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets
 
 
 from equipment.gas_solid import Baghouse

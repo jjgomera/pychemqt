@@ -68,7 +68,7 @@ import os
 import sqlite3
 
 from numpy import linspace, logspace, log
-from qt import QtCore
+from tools.qt import QtCore
 
 from lib.utilities import colors
 

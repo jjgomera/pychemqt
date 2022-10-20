@@ -37,7 +37,7 @@ __doi__ = {
 
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 try:
     import CoolProp as CP

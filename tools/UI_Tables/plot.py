@@ -42,7 +42,7 @@ import json
 from math import log10, atan, pi
 import os
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 from numpy import concatenate, linspace, logspace, transpose, log, nan
 from matplotlib.font_manager import FontProperties
 

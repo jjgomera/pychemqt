@@ -102,8 +102,8 @@ import json
 import logging
 import os
 
-from qt import QtWidgets
-from qt import QtCore
+from tools.qt import QtWidgets
+from tools.qt import QtCore
 import scipy.constants as k
 
 from lib.config import conf_dir, getMainWindowConfig

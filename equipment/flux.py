@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from scipy.optimize import fsolve
 
 from lib.corriente import Corriente

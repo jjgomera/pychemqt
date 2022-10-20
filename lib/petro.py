@@ -92,7 +92,7 @@ PNA decomposition procedures:
 
 from configparser import ConfigParser
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from numpy import array
 from numpy.lib.scimath import log, log10
 from numpy.linalg import solve

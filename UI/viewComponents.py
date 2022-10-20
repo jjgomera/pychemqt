@@ -22,7 +22,7 @@ from functools import partial
 import os
 import tempfile
 
-from qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets
 
 from scipy import array, optimize, linspace
 

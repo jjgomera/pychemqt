@@ -37,7 +37,7 @@ from math import pi
 import os
 import sys
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from equipment import equipments
 from lib import unidades, corriente

@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from functools import partial
 import os
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from scipy import pi
 

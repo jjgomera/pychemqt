@@ -32,7 +32,7 @@ import os
 import random
 from math import exp
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 
 def representacion(number, fmt=0, total=0, decimales=4, eng=False, tol=5,

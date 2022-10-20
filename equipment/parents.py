@@ -29,7 +29,7 @@ from functools import partial
 import logging
 import os
 
-from qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib.config import Entity, IMAGE_PATH
 from lib.thread import Evaluate

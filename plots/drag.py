@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from numpy import logspace
 
 from lib import drag

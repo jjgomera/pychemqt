@@ -159,7 +159,7 @@ import json
 import logging
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from scipy import sinh, cosh, tanh, arctan, exp, log
 from scipy.constants import Boltzmann, pi, Avogadro, R, u
 from scipy.optimize import fsolve

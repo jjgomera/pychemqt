@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ############################
 
 from scipy.optimize import fsolve
-from qt import QtWidgets
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.corriente import Corriente

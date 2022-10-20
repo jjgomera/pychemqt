@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import sqrt, exp, log
 import os
 
-from qt import QtWidgets
+from tools.qt import QtWidgets
 from scipy import pi, arccos, sin, cos, tanh
 from scipy.constants import g
 from scipy.optimize import fsolve

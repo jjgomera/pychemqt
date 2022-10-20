@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###Módulo que define los dialogos de definición de gráficos
 
-from qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets
 
 from scipy import arange
 from numpy import transpose

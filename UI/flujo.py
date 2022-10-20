@@ -31,7 +31,7 @@ import subprocess
 from copy import deepcopy
 from xml.dom import minidom
 
-from qt import QtCore, QtGui, QtSvgWidgets, QtWidgets
+from tools.qt import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
 from lib import unidades
 from lib.EoS import K, H
