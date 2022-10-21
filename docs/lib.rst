@@ -16,6 +16,7 @@ Submodules
     lib.coolProp
     lib.crude
     lib.datasheet
+    lib.drag
     lib.elemental
     lib.eos
     lib.EoS
@@ -28,6 +29,7 @@ Submodules
     lib.mEoS
     lib.mezcla
     lib.newComponent
+    lib.openbabel
     lib.petro
     lib.physics
     lib.pipeDatabase
