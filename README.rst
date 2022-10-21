@@ -10,10 +10,6 @@
     :target: https://codecov.io/gh/jjgomera/pychemqt
     :alt: codecov.io analysis
 
-.. image:: https://landscape.io/github/jjgomera/pychemqt/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/jjgomera/pychemqt/master
-    :alt: Code Health
-
 .. image:: https://readthedocs.org/projects/pychemqt/badge/?version=latest
     :target: http://pychemqt.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
@@ -28,7 +24,7 @@ Dependencies
 ============
 
 * `python3 <http://www.python.org/>`__, version 3.x required
-* `pyqt5 <http://www.riverbankcomputing.co.uk/news>`__, developed with version 5.3 
+* `pyqt binding <http://www.riverbankcomputing.co.uk/news>`__, support both PyQt5 and PyQt6
 * `Numpy-scipy <http://scipy.org/Download>`__: python library for mathematical computation
 * `matplotlib <http://matplotlib.sourceforge.net/>`__: python library for graphical representation of data
 * `iapws <https://github.com/jjgomera/iapws/>`__: python library for thermodynamic properties of water by IAPWS standards
