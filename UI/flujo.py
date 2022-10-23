@@ -32,6 +32,10 @@ from copy import deepcopy
 from xml.dom import minidom
 
 from tools.qt import QtCore, QtGui, QtSvgWidgets, QtWidgets
+try:
+    import ezodf
+except ImportError:
+    pass
 
 from lib import unidades
 from lib.EoS import K, H
@@ -443,52 +447,77 @@ class TextItem(QtWidgets.QGraphicsTextItem):
             self.setPos(QtCore.QPointF(self.pos().x() + factor, self.pos().y()))
 
 
-class GraphicsEntity(object):
-    """Clase que modela la funcionalidad comun a corrientes y equipos en el PFD"""
+class GraphicsEntity():
+    """Class with common functionality for Entity in PFD"""
+
     tabla = None
 
     def view(self):
-        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".txt", encoding="utf-8") as temp:
-            temp.write(QtWidgets.QApplication.translate("pychemqt", "Project Name") + ": " +
-                       self.scene().parent().currentFilename + os.linesep)
+        """Generate text report with properties calculated of entity"""
+        with tempfile.NamedTemporaryFile(
+                "w", delete=False, suffix=".txt", encoding="utf-8") as temp:
+            title = QtWidgets.QApplication.translate(
+                "pychemqt", "Project Name") + ": "
+            title += self.scene().parent().currentFilename
+            temp.write(title + os.linesep)
+
             if isinstance(self.entity, Corriente):
-                temp.write(QtWidgets.QApplication.translate("pychemqt", "Stream Id"))
+                temp.write(QtWidgets.QApplication.translate(
+                    "pychemqt", "Stream Id"))
             else:
-                temp.write(QtWidgets.QApplication.translate("pychemqt", "Equipment Id"))
+                temp.write(QtWidgets.QApplication.translate(
+                    "pychemqt", "Equipment Id"))
             temp.write(": %i" % self.id + os.linesep)
-            ahora = datetime.today()
-            temp.write(QtWidgets.QApplication.translate("pychemqt", "Report generated at") + " %s - %s" % (
-                ahora.strftime("%H:%M:%S"), ahora.strftime("%d/%m/%Y")) + os.linesep)
+
+            now = datetime.today()
+            temp.write(QtWidgets.QApplication.translate(
+                "pychemqt", "Report generated at"))
+            temp.write(now.strftime("%H:%M:%S - %d/%m/%Y") + os.linesep)
             temp.write(self.entity.txt())
-            subprocess.Popen([Preferences.get("Applications", 'TextViewer'), temp.name])
+            subprocess.Popen(
+                [Preferences.get("Applications", 'TextViewer'), temp.name])
 
     def exportExcel(self):
-        msg = QtWidgets.QApplication.translate("pychemqt", "Select Spreadsheet")
-        patrones = []
+        """Export data to spreadsheet file"""
+        msg = QtWidgets.QApplication.translate(
+            "pychemqt", "Select Spreadsheet")
+
+        ext = []
         if os.environ["ezodf"]:
-            patrones.append(QtWidgets.QApplication.translate("pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
+            ext.append(
+                QtWidgets.QApplication.translate(
+                    "pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
         if os.environ["xlwt"]:
-            patrones.append(
-                QtWidgets.QApplication.translate("pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL") + " (*.xls)")
+            ext.append(
+                QtWidgets.QApplication.translate(
+                    "pychemqt", "Microsoft Excel 97/2000/XP/2003 XMLL")
+                + " (*.xls)")
         if os.environ["openpyxl"]:
-            patrones.append(QtWidgets.QApplication.translate("pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
-        patron = ";;".join(patrones)
-        dir = os.path.dirname(str(self.scene().parent().currentFilename))
-        ruta = str(QtWidgets.QFileDialog.getSaveFileName(self.scene().parent(), msg, dir, patron)[0])
+            ext.append(
+                QtWidgets.QApplication.translate(
+                    "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
+
+        patron = ";;".join(ext)
+        folder = os.path.dirname(str(self.scene().parent().currentFilename))
+        ruta = QtWidgets.QFileDialog.getSaveFileName(
+            self.scene().parent(), msg, folder, patron)[0]
+
         if ruta:
             name, ext = os.path.splitext(ruta)
             if not ext or ext not in (".ods", ".xlsx", ".xls"):
-                ruta += "." + str(patrones[0]).split(".")[-1][:-1]
+                ruta += "." + str(ext[0]).split(".")[-1][:-1]
 
             if ruta[-3:] == "ods":
-                import ezodf
-                templatefile = os.environ["pychemqt"] + os.sep + "dat" + os.sep + "templates" + os.sep + self.entity.__class__.__name__.lower() + ".ots"
+                templatefile = os.path.join(
+                    os.environ["pychemqt"], "dat", "templates",
+                    self.entity.__class__.__name__.lower()) + ".ots"
+
                 if os.path.isfile(templatefile):
                     spreadsheet = ezodf.newdoc("ods", ruta, templatefile)
                     sheet = spreadsheet.sheets[0]
-                    for attr, type, cell in self.entity.datamap2xls():
+                    for attr, tipo, cell in self.entity.datamap2xls():
                         prop = self.entity._prop(attr)
-                        if type == "value":
+                        if tipo == "value":
                             value = prop.config()
                         else:
                             value = prop.text()
@@ -501,22 +530,27 @@ class GraphicsEntity(object):
                     propiedades = self.entity.properties()
                     sheet.reset(size=(len(propiedades) + 1, 10))
 
-                    for i, (name, attr, unit) in enumerate(self.entity.propertiesNames()):
+                    for i, (name, attr, unit) in enumerate(
+                            self.entity.propertiesNames()):
                         value = self.entity._prop(attr)
                         txt = ""
-                        if unit in unidades._all and not isinstance(value, list):
+                        if isinstance(value, list):
+                            print(value)
+                            # txt = value[0].text()
+                        elif unit in unidades._all:
                             txt = value.text()
                             value = value.config()
-                        elif isinstance(value, list):
-                            txt = value[0].text()
 
                         sheet["B%i" % (i + 2)].set_value(name)
                         sheet["C%i" % (i + 2)].set_value(value)
                         sheet["D%i" % (i + 2)].set_value(txt)
 
                 spreadsheet.save()
+
             elif ruta[-4:] == "xlsx":
+                # TODO:
                 print(ruta, "is xlsx")
+
             elif ruta[-3:] == "xls":
                 print(ruta, "is xls")
 
@@ -527,7 +561,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
     down = None
     id = 0
     free_id = []
-    type = "stream"
+    tipo = "stream"
 
     def __init__(self, parent=None):
         super(StreamItem, self).__init__()
@@ -727,7 +761,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
     id = 0
     id_in = 0
     id_out = 0
-    type = "equip"
+    tipo = "equip"
 
     def __init__(self, name, dialogoId, parent=None):
         self.name = name
@@ -1124,7 +1158,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         else:
             items = self.selectedItems()
         for item in items:
-            tipo = item.type
+            tipo = item.tipo
             if tipo in ["stream", "equip"]:
                 item.postDelete()
                 del self.objects[tipo][item.id]
@@ -1139,17 +1173,18 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         if dlg.exec():
             pass
 
-    def waitClick(self, numClick, type, object):
+    def waitClick(self, numClick, tipo, object):
         self.Pos = []
         self.object = object
-        self.addType = type
+        self.addType = tipo
         self.addObj = True
-        self.views()[0].viewport().setCursor(QtGui.QCursor(QtCore.Qt.CursorShape.CrossCursor))
+        self.views()[0].viewport().setCursor(
+            QtGui.QCursor(QtCore.Qt.CursorShape.CrossCursor))
         self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Click in desire text position in screen"))
-        self.clickCollector = WaitforClick(numClick, self)
-        self.clickCollector.finished.connect(self.click)
-        self.clickCollector.start()
+        clickCollector = WaitforClick(numClick, self)
+        clickCollector.finished.connect(self.click)
+        clickCollector.start()
 
     def click(self):
         if self.addType in ["equip", "in", "out", "txt"]:
@@ -1207,31 +1242,29 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
     #            item.setAcceptHoverEvents(False)
 
 
-
-
     def readItemFromStream(self, stream):
-        type = QtCore.QString()
+        tipo = QtCore.QString()
         matrix = QtGui.QTransform()
-        stream >> type >> matrix
-        if type == "txt":
+        stream >> tipo >> matrix
+        if tipo == "txt":
             text = QtCore.QString()
             stream >> text
             item = TextItem(text)
-        elif type == "square":
+        elif tipo == "square":
             rect = QtCore.QRectF()
             pen = QtGui.QPen()
             stream >> rect >> pen
             item = RectItem()
             item.setRect(rect)
             item.setPen(pen)
-        elif type == "ellipse":
+        elif tipo == "ellipse":
             rect = QtCore.QRectF()
             pen = QtGui.QPen()
             stream >> rect >> pen
             item = EllipseItem()
             item.setRect(rect)
             item.setPen(pen)
-        elif type == "equip":
+        elif tipo == "equip":
             name = QtCore.QString()
             stream >> name
             dialogoid = stream.readInt32()
@@ -1241,7 +1274,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         return item
 
     def writeItemToStream(self, stream, item):
-        stream << QtCore.QString(item.type) << item.transform()
+        stream << QtCore.QString(item.tipo) << item.transform()
         if isinstance(item, TextItem):
             stream << item.toHtml()
         elif isinstance(item, EllipseItem):

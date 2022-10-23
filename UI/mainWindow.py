@@ -1898,27 +1898,27 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.currentScene.waitClick(
                 1, "txt", flujo.TextItem(dialog.editor.texto))
 
-    def addItem(self, type, bool=True):
-        if type == "square":
+    def addItem(self, tipo, bool=True):
+        if tipo == "square":
             obj = flujo.RectItem()
             num = 2
-        elif type == "ellipse":
+        elif tipo == "ellipse":
             obj = flujo.EllipseItem()
             num = 2
-        elif type == "in":
+        elif tipo == "in":
             obj = flujo.EquipmentItem("in", None)
             num = 1
-        elif type == "out":
+        elif tipo == "out":
             obj = flujo.EquipmentItem("out", None)
             num = 1
-        elif type == "stream":
+        elif tipo == "stream":
             if bool:
                 obj = flujo.StreamItem()
                 num = 2
             else:
                 self.currentScene.clickCollector.quit()
                 return
-        self.currentScene.waitClick(num, type, obj)
+        self.currentScene.waitClick(num, tipo, obj)
 
     def addEquipment(self, equipo):
         equip = equipment.UI_equipments.index(equipo)
