@@ -321,6 +321,18 @@ class GeometricItem():
         pen.setDashOffset(Preferences.getfloat("PFD", 'Dash_offset'))
         return pen
 
+    def getPen(self):
+        """Get item pen properties in a json serializable format"""
+        pen = {}
+        pen["color"] = self.pen().color().name()
+        pen["width"] = self.pen().widthF()
+        pen["joinStyle"] = ConfLine.join.index(self.pen().joinStyle())
+        pen["miterLimit"] = self.pen().miterLimit()
+        pen["capStyle"] = ConfLine.cap.index(self.pen().capStyle())
+        pen["style"] = ConfLine.line.index(self.pen().style())
+        pen["dashOffset"] = self.pen().dashOffset()
+        return pen
+
     def delete(self):
         """Delete item from scene"""
         self.scene().delete(self)
@@ -1599,16 +1611,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             square["y"] = obj.rect().y()
             square["width"] = obj.rect().width()
             square["height"] = obj.rect().height()
-
-            pen = {}
-            pen["color"] = obj.pen().color().name()
-            pen["width"] = obj.pen().widthF()
-            pen["joinStyle"] = obj.pen().joinStyle()
-            pen["miterLimit"] = obj.pen().miterLimit()
-            pen["capStyle"] = obj.pen().capStyle()
-            pen["style"] = obj.pen().style()
-            pen["dashOffset"] = obj.pen().dashOffset()
-            square["pen"] = pen
+            square["pen"] = obj.getPen()
             squares[i] = square
         data["square"] = squares
 
@@ -1619,15 +1622,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             ellipse["y"] = obj.rect().y()
             ellipse["width"] = obj.rect().width()
             ellipse["height"] = obj.rect().height()
-            pen = {}
-            pen["color"] = obj.pen().color().name()
-            pen["width"] = obj.pen().widthF()
-            pen["joinStyle"] = obj.pen().joinStyle()
-            pen["miterLimit"] = obj.pen().miterLimit()
-            pen["capStyle"] = obj.pen().capStyle()
-            pen["style"] = obj.pen().style()
-            pen["dashOffset"] = obj.pen().dashOffset()
-            ellipse["pen"] = pen
+            ellipse["pen"] = obj.getPen()
             ellipses[i] = ellipse
         data["ellipse"] = ellipses
 
@@ -1638,15 +1633,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             stream["input_y"] = obj.entrada.y()
             stream["output_x"] = obj.salida.x()
             stream["output_y"] = obj.salida.y()
-            pen = {}
-            pen["color"] = obj.pen().color().name()
-            pen["width"] = obj.pen().widthF()
-            pen["joinStyle"] = obj.pen().joinStyle()
-            pen["miterLimit"] = obj.pen().miterLimit()
-            pen["capStyle"] = obj.pen().capStyle()
-            pen["style"] = obj.pen().style()
-            pen["dashOffset"] = obj.pen().dashOffset()
-            stream["pen"] = pen
+            stream["pen"] = obj.getPen()
 
             stream["up_id"] = obj.up.id
             stream["up_type"] = obj.up.tipo
