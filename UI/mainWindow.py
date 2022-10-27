@@ -1519,6 +1519,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         y = self.config[-1].getint("PFD", "y")
         scene.setSceneRect(0, 0, x, y)
         PFD.setScene(scene)
+        scene.defineShortcut()
         PFD.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "PFD.png"))))
         PFD.zoomChanged.connect(self.zoomValue.setValue)

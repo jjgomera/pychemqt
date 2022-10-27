@@ -28,6 +28,7 @@ from functools import partial
 from datetime import datetime
 import tempfile
 import os
+from random import randint
 import json
 import subprocess
 from copy import deepcopy
@@ -1188,6 +1189,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.Pos.append(event.scenePos())
 
     def addActions(self, menu, pos=None):
+        actionCut, actionCopy, actionPaste = self.defineShortcut(pos)
         menu.addAction(
             QtWidgets.QApplication.translate("pychemqt", "Redraw"),
             self.update)
@@ -1238,7 +1240,35 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         for item in items:
             menuEl = item.contextMenu()
             menu.addAction(menuEl.menuAction())
+
         return menu
+
+    def defineShortcut(self, pos=None):
+        # Delete actions of last run
+        for action in self.views()[0].actions():
+            self.views()[0].removeAction(action)
+
+        # Add actions to QGraphicsView to enable key shortcut
+        actionCut = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Cut"),
+            slot=self.cut,
+            shortcut=QtGui.QKeySequence.StandardKey.Cut,
+            icon=os.path.join(IMAGE_PATH, "button", "editCut"), parent=self)
+        actionCopy = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Copy"),
+            slot=self.copy,
+            shortcut=QtGui.QKeySequence.StandardKey.Copy,
+            icon=os.path.join(IMAGE_PATH, "button", "editCopy"), parent=self)
+        actionPaste = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Paste"),
+            slot=partial(self.paste, pos),
+            shortcut=QtGui.QKeySequence.StandardKey.Paste,
+            icon=os.path.join(IMAGE_PATH, "button", "editPaste"), parent=self)
+        self.views()[0].addAction(actionCopy)
+        self.views()[0].addAction(actionCut)
+        self.views()[0].addAction(actionPaste)
+        return actionCut, actionCopy, actionPaste
+
 
     def contextMenuEvent(self, event):
         item = self.itemAt(event.scenePos(), self.views()[0].transform())
@@ -1252,13 +1282,18 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         for item in list(self.items()):
             item.setSelected(True)
 
-    def copy(self, item=None):
-        if not item:
-            item = self.selectedItems()[0]
+    def copy(self, items=None):
+        print("copy")
+        if not items:
+            items = self.selectedItems()
         self.copiedItem.clear()
-        self.pasteOffset = 5
-        st = QtCore.QDataStream(self.copiedItem, QtCore.QIODevice.WriteOnly)
-        self.writeItemToStream(st, item)
+        self.pasteOffset = 50
+        st = QtCore.QDataStream(
+            self.copiedItem, QtCore.QIODevice.OpenModeFlag.WriteOnly)
+
+        st.writeInt32(len(items))
+        for item in items:
+            self.writeItemToStream(st, item)
 
     def cut(self):
         item = self.selectedItems()[0]
@@ -1267,15 +1302,20 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         del item
 
     def paste(self, pos=None):
-        st = QtCore.QDataStream(self.copiedItem, QtCore.QIODevice.ReadOnly)
-        item = self.readItemFromStream(st)
-        if pos:
-            item.setPos(pos)
-        else:
-            offset = QtCore.QPointF(self.pasteOffset, self.pasteOffset)
-            item.setPos(item.pos() + offset)
-            self.pasteOffset += 5
-        self.addItem(item)
+        st = QtCore.QDataStream(
+            self.copiedItem, QtCore.QIODevice.OpenModeFlag.ReadOnly)
+        count = st.readInt32()
+        for it in range(count):
+            item = self.readItemFromStream(st)
+            if pos:
+                item.setPos(pos)
+            else:
+                offset = QtCore.QPointF(
+                    randint(-item.pos().x(), item.pos().x()),
+                    randint(-item.pos().y(), item.pos().y()))
+                item.setPos(item.pos() + offset)
+                self.pasteOffset += 5
+            self.addItem(item)
 
     def delete(self, items=None):
         if items:
