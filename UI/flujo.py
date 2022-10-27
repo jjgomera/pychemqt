@@ -859,7 +859,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
     def __init__(self, name, dialogoId, parent=None):
         self.name = name
         imagen = os.environ["pychemqt"] + "images/equipment/%s.svg" % name
-        super(EquipmentItem, self).__init__(imagen, parent=parent)
+        super().__init__(imagen, parent=parent)
         self.dialogoId = dialogoId
         self.setFlags(
             QtWidgets.QGraphicsItem.GraphicsItemFlag.ItemIsSelectable
@@ -1283,7 +1283,6 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             item.setSelected(True)
 
     def copy(self, items=None):
-        print("copy")
         if not items:
             items = self.selectedItems()
         self.copiedItem.clear()
@@ -1410,14 +1409,30 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
     #                item.hoverLeaveEvent(None)
     #            item.setAcceptHoverEvents(False)
 
+    def writeItemToStream(self, stream, item):
+        stream.writeQString(item.tipo)
+        stream << item.transform() << item.pos()
+        if isinstance(item, TextItem):
+            stream.writeQString(item.toHtml())
+        elif isinstance(item, (RectItem, EllipseItem)):
+            stream << item.rect() << item.pen()
+        # TODO: Add equipment and stream copy support adding in project api
+        # elif isinstance(item, EquipmentItem):
+            # # print(item.name, item.dialogoId)
+            # stream.writeQString(item.name)
+            # # stream << QtCore.QString(item.name)
+            # if item.tipo == "e":
+                # stream.writeInt32(item.dialogoId)
+
     def readItemFromStream(self, stream):
-        tipo = QtCore.QString()
+        tipo = stream.readQString()
         matrix = QtGui.QTransform()
-        stream >> tipo >> matrix
+        stream >> matrix
+        pos = QtCore.QPointF()
+        stream >> pos
         if tipo == "txt":
-            text = QtCore.QString()
-            stream >> text
-            item = TextItem(text)
+            txt = stream.readQString()
+            item = TextItem(txt)
         elif tipo == "square":
             rect = QtCore.QRectF()
             pen = QtGui.QPen()
@@ -1432,27 +1447,14 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             item = EllipseItem()
             item.setRect(rect)
             item.setPen(pen)
-        elif tipo == "equip":
-            name = QtCore.QString()
-            stream >> name
-            dialogoid = stream.readInt32()
-            item = EquipmentItem(name, dialogoid)
+        # elif tipo == "equip":
+            # name = stream.readQString()
+            # dialogoid = stream.readInt32()
+            # item = EquipmentItem(name, dialogoid)
 
         item.setTransform(matrix)
+        item.setPos(pos)
         return item
-
-    def writeItemToStream(self, stream, item):
-        stream << QtCore.QString(item.tipo) << item.transform()
-        if isinstance(item, TextItem):
-            stream << item.toHtml()
-        elif isinstance(item, EllipseItem):
-            stream << item.rect() << item.pen()
-        elif isinstance(item, RectItem):
-            stream << item.rect() << item.pen()
-        elif isinstance(item, EquipmentItem):
-            stream.writeString(item.name)
-            # stream << QtCore.QString(item.name)
-            stream.writeInt32(item.dialogoId)
 
     def readFromJSON(self, data):
         self.objects = deepcopy(GraphicsScene.objects)
