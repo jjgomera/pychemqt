@@ -198,6 +198,607 @@ class GraphicsView(QtWidgets.QGraphicsView):
             self.statusThermo.setText(txt)
 
 
+class GraphicsScene(QtWidgets.QGraphicsScene):
+    copiedItem = QtCore.QByteArray()
+    pasteOffset = 5
+    points = []
+    addObj = False
+    addType = ""
+    project = Project()
+    objects = {"txt": [], "square": [], "ellipse": [], "stream": {}, "in": {},
+               "out": {}, "equip": {}}
+
+    def mousePressEvent(self, event):
+        QtWidgets.QGraphicsScene.mousePressEvent(self, event)
+        if self.addObj and self.addType != "stream":
+            self.Pos.append(event.scenePos())
+
+    def addActions(self, menu, pos=None):
+        actionCut, actionCopy, actionPaste = self.defineShortcut(pos)
+        menu.addAction(
+            QtWidgets.QApplication.translate("pychemqt", "Redraw"),
+            self.update)
+        menu.addAction(
+            QtWidgets.QApplication.translate("pychemqt", "Configure"),
+            self.configure)
+        menu.addSeparator()
+        menu.addAction(createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Select All"),
+            slot=self.selectAll,
+            shortcut=QtGui.QKeySequence.StandardKey.SelectAll,
+            icon=os.path.join(IMAGE_PATH, "button", "selectAll"), parent=self))
+        menu.addSeparator()
+        actionCut = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Cut"),
+            slot=self.cut,
+            shortcut=QtGui.QKeySequence.StandardKey.Cut,
+            icon=os.path.join(IMAGE_PATH, "button", "editCut"), parent=self)
+        menu.addAction(actionCut)
+        actionCopy = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Copy"),
+            slot=self.copy,
+            shortcut=QtGui.QKeySequence.StandardKey.Copy,
+            icon=os.path.join(IMAGE_PATH, "button", "editCopy"), parent=self)
+        menu.addAction(actionCopy)
+        actionPaste = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Paste"),
+            slot=partial(self.paste, pos),
+            shortcut=QtGui.QKeySequence.StandardKey.Paste,
+            icon=os.path.join(IMAGE_PATH, "button", "editPaste"), parent=self)
+        menu.addAction(actionPaste)
+        actionDelete = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Delete All"),
+            slot=self.delete,
+            shortcut=QtGui.QKeySequence.StandardKey.Delete,
+            icon=os.path.join(IMAGE_PATH, "button", "editDelete"), parent=self)
+        menu.addAction(actionDelete)
+        menu.addSeparator()
+
+        if self.copiedItem.isEmpty():
+            actionPaste.setEnabled(False)
+        items = self.selectedItems()
+        if not items:
+            actionCut.setEnabled(False)
+            actionCopy.setEnabled(False)
+            actionDelete.setEnabled(False)
+
+        for item in items:
+            menuEl = item.contextMenu()
+            menu.addAction(menuEl.menuAction())
+
+        return menu
+
+    def defineShortcut(self, pos=None):
+        # Delete actions of last run
+        for action in self.views()[0].actions():
+            self.views()[0].removeAction(action)
+
+        # Add actions to QGraphicsView to enable key shortcut
+        actionCut = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Cut"),
+            slot=self.cut,
+            shortcut=QtGui.QKeySequence.StandardKey.Cut,
+            icon=os.path.join(IMAGE_PATH, "button", "editCut"), parent=self)
+        actionCopy = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Copy"),
+            slot=self.copy,
+            shortcut=QtGui.QKeySequence.StandardKey.Copy,
+            icon=os.path.join(IMAGE_PATH, "button", "editCopy"), parent=self)
+        actionPaste = createAction(
+            QtWidgets.QApplication.translate("pychemqt", "Paste"),
+            slot=partial(self.paste, pos),
+            shortcut=QtGui.QKeySequence.StandardKey.Paste,
+            icon=os.path.join(IMAGE_PATH, "button", "editPaste"), parent=self)
+        self.views()[0].addAction(actionCopy)
+        self.views()[0].addAction(actionCut)
+        self.views()[0].addAction(actionPaste)
+        return actionCut, actionCopy, actionPaste
+
+
+    def contextMenuEvent(self, event):
+        item = self.itemAt(event.scenePos(), self.views()[0].transform())
+        if item:
+            item.setSelected(True)
+        contextMenu = QtWidgets.QMenu()
+        self.addActions(contextMenu, event.scenePos())
+        contextMenu.exec(event.screenPos())
+
+    def selectAll(self):
+        for item in list(self.items()):
+            item.setSelected(True)
+
+    def copy(self, items=None):
+        if not items:
+            items = self.selectedItems()
+        self.copiedItem.clear()
+        self.pasteOffset = 50
+        st = QtCore.QDataStream(
+            self.copiedItem, QtCore.QIODevice.OpenModeFlag.WriteOnly)
+
+        st.writeInt32(len(items))
+        for item in items:
+            self.writeItemToStream(st, item)
+
+    def cut(self):
+        item = self.selectedItems()[0]
+        self.copy(item)
+        self.removeItem(item)
+        del item
+
+    def paste(self, pos=None):
+        st = QtCore.QDataStream(
+            self.copiedItem, QtCore.QIODevice.OpenModeFlag.ReadOnly)
+        count = st.readInt32()
+        for it in range(count):
+            item = self.readItemFromStream(st)
+
+            # Discard stream item
+            if isinstance(item, StreamItem):
+                continue
+
+            if pos:
+                item.setPos(pos)
+            else:
+                offset = QtCore.QPointF(
+                    randint(-item.pos().x(), item.pos().x()),
+                    randint(-item.pos().y(), item.pos().y()))
+                item.setPos(item.pos() + offset)
+                self.pasteOffset += 5
+            self.addItem(item)
+
+            # Add new equipment to project
+            if item.tipo == "e":
+                if item.name == "in":
+                    self.project.copyInput(item.id-1)
+                elif item.name == "out":
+                    self.project.setOutput(item.id, Corriente())
+                else:
+                    self.project.copyItem(item.id-1)
+
+    def delete(self, items=None):
+        if items:
+            items = [items]
+        else:
+            items = self.selectedItems()
+        for item in items:
+            tipo = item.tipo
+            if tipo in ["stream", "equip"]:
+                item.postDelete()
+                del self.objects[tipo][item.id]
+            else:
+                self.objects[tipo].remove(item)
+            self.removeItem(item)
+        self.update()
+        self.parent().list.updateList(self.objects)
+
+    def configure(self):
+        dlg = Dialog()
+        if dlg.exec():
+            pass
+
+    def waitClick(self, numClick, tipo, object):
+        self.Pos = []
+        self.object = object
+        self.addType = tipo
+        self.addObj = True
+        self.views()[0].viewport().setCursor(
+            QtGui.QCursor(QtCore.Qt.CursorShape.CrossCursor))
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+            "pychemqt", "Click in desire text position in screen"))
+        clickCollector = WaitforClick(numClick, self)
+        clickCollector.finished.connect(self.click)
+        clickCollector.start()
+
+    def click(self):
+        if self.addType in ["equip", "in", "out", "txt"]:
+            self.object.setPos(self.Pos[0])
+
+        elif self.addType == "stream":
+            self.object.up = self.up
+            self.object.down = self.down
+            self.up.down = self.up.down + [self.object]
+            self.down.up = self.down.up + [self.object]
+            self.up.down_used += 1
+            self.down.up_used += 1
+            self.object.Ang_entrada = self.points[0].direction
+            self.object.Ang_salida = self.points[1].direction
+            self.object.redraw(self.Pos[0], self.Pos[1])
+
+            # Unchecked stream button in toolbox
+            self.parent().botonCorriente.setChecked(False)
+
+        elif self.addType in ["square", "ellipse"]:
+            rect = QtCore.QRectF(self.Pos[0], self.Pos[1])
+            self.object.setRect(rect)
+
+        self.addItem(self.object)
+        if self.addType == "equip":
+            self.project.addItem(
+                "e%i" % self.object.id, self.object.dialogo.Equipment)
+        elif self.addType == "in":
+            self.project.addItem(
+                "i%i" % self.object.id, self.object.dialogo.corriente)
+        elif self.addType == "out":
+            self.project.addItem(
+                "o%i" % self.object.id, self.object.dialogo.corriente)
+        elif self.addType == "stream":
+            self.project.addStream(
+                self.object.id, "%s%i" % (self.up.tipo, self.up.id),
+                "%s%i" % (self.down.tipo, self.down.id), Corriente(),
+                self.up.down_used - 1, self.down.up_used - 1)
+
+        self.parent().dirty[self.parent().idTab] = True
+        self.parent().saveControl()
+        self.update()
+        self.object.setSelected(True)
+
+        self.parent().statusBar().clearMessage()
+        self.addObj = False
+        if self.addType in ("txt", "square", "ellipse"):
+            self.objects[self.addType].append(self.object)
+        else:
+            id = self.object.id
+            self.objects[self.addType][id] = self.object
+        self.parent().list.updateList(self.objects)
+
+        self.views()[0].viewport().setCursor(
+            QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
+    #        for item in self.items():
+    #            if isinstance(item, QtSvg.QGraphicsSvgItem):
+    #                item.hoverLeaveEvent(None)
+    #            item.setAcceptHoverEvents(False)
+
+    def writeItemToStream(self, stream, item):
+        stream.writeQString(item.tipo)
+        stream << item.transform() << item.pos()
+        if isinstance(item, TextItem):
+            stream.writeQString(item.toHtml())
+        elif isinstance(item, (RectItem, EllipseItem)):
+            stream << item.rect() << item.pen()
+        elif isinstance(item, EquipmentItem):
+            stream.writeQString(item.name)
+            if item.tipo == "e":
+                stream.writeInt32(item.dialogoId)
+
+    def readItemFromStream(self, stream):
+        tipo = stream.readQString()
+        matrix = QtGui.QTransform()
+        stream >> matrix
+        pos = QtCore.QPointF()
+        stream >> pos
+        if tipo == "txt":
+            txt = stream.readQString()
+            item = TextItem(txt)
+        elif tipo == "square":
+            rect = QtCore.QRectF()
+            pen = QtGui.QPen()
+            stream >> rect >> pen
+            item = RectItem()
+            item.setRect(rect)
+            item.setPen(pen)
+        elif tipo == "ellipse":
+            rect = QtCore.QRectF()
+            pen = QtGui.QPen()
+            stream >> rect >> pen
+            item = EllipseItem()
+            item.setRect(rect)
+            item.setPen(pen)
+        elif tipo in ("e", "i", "o"):
+            name = stream.readQString()
+            if tipo == "e":
+                dialogoid = stream.readInt32()
+            else:
+                dialogoid = None
+            item = EquipmentItem(name, dialogoid)
+        elif tipo == "stream":
+            item = StreamItem()
+
+        item.setTransform(matrix)
+        item.setPos(pos)
+        return item
+
+    def readFromJSON(self, data):
+        self.objects = deepcopy(GraphicsScene.objects)
+
+        for text in data["PFD"]["txt"].values():
+            txt = text["txt"]
+            s = TextItem(txt)
+            x = text["x"]
+            y = text["y"]
+            pos = QtCore.QPoint(x, y)
+            s.setPos(pos)
+            self.objects["txt"].append(s)
+            self.addItem(s)
+
+        for obj in data["PFD"]["square"].values():
+            s = RectItem()
+            x = obj["x"]
+            y = obj["y"]
+            width = obj["width"]
+            height = obj["height"]
+            rect = QtCore.QRect(x, y, width, height)
+            s.setRect(rect)
+
+            pen = QtGui.QPen(QtGui.QColor(obj["color"]))
+            pen.setWidthF(obj["width"])
+            pen.setJoinStyle(ConfLine.join[obj["joinStyle"]])
+            pen.setMiterLimit(obj["miterLimit"])
+            pen.setCapStyle(ConfLine.cap[obj["capStyle"]])
+            pen.setStyle(ConfLine.line[obj["style"]])
+            pen.setDashOffset(obj["dashOffset"])
+            s.setPen(pen)
+
+            self.objects["square"].append(s)
+            self.addItem(s)
+
+        for obj in data["PFD"]["ellipse"].values():
+            s = EllipseItem()
+            x = obj["x"]
+            y = obj["y"]
+            width = obj["width"]
+            height = obj["height"]
+            rect = QtCore.QRect(x, y, width, height)
+            s.setRect(rect)
+
+            pen = QtGui.QPen(QtGui.QColor(obj["color"]))
+            pen.setWidthF(obj["width"])
+            pen.setJoinStyle(ConfLine.join[obj["joinStyle"]])
+            pen.setMiterLimit(obj["miterLimit"])
+            pen.setCapStyle(ConfLine.cap[obj["capStyle"]])
+            pen.setStyle(ConfLine.line[obj["style"]])
+            pen.setDashOffset(obj["dashOffset"])
+            s.setPen(pen)
+
+            self.objects["ellipse"].append(s)
+            self.addItem(s)
+
+        id_stream = []
+        up_stream = {}
+        down_stream = {}
+        for id, obj in data["PFD"]["stream"].items():
+            id = int(id)
+            s = StreamItem()
+            in_x = obj["input_x"]
+            in_y = obj["input_y"]
+            entrada = QtCore.QPointF(in_x, in_y)
+            out_x = obj["output_x"]
+            out_y = obj["output_y"]
+            salida = QtCore.QPointF(out_x, out_y)
+
+            pen = QtGui.QPen(QtGui.QColor(obj["pen"]["color"]))
+            pen.setWidthF(obj["pen"]["width"])
+
+            pen.setJoinStyle(ConfLine.join[obj["pen"]["joinStyle"]])
+            pen.setMiterLimit(obj["pen"]["miterLimit"])
+            pen.setCapStyle(ConfLine.cap[obj["pen"]["capStyle"]])
+            pen.setStyle(ConfLine.line[obj["pen"]["style"]])
+            pen.setDashOffset(obj["pen"]["dashOffset"])
+            s.setPen(pen)
+
+            up_type = obj["up_type"]
+            down_type = obj["down_type"]
+            up_id = obj["up_id"]
+            down_id = obj["down_id"]
+            id_stream.append(id)
+            up_stream[id] = up_type, up_id
+            down_stream[id] = down_type, down_id
+
+            s.id = id
+            s.entrada = entrada
+            s.salida = salida
+            s.Ang_entrada = obj["input_angle"]
+            s.Ang_salida = obj["output_angle"]
+            self.objects["stream"][id_stream[-1]] = s
+            self.addItem(s)
+
+            txt = obj["label"]
+            x = obj["label_x"]
+            y = obj["label_y"]
+            pos = QtCore.QPointF(x, y)
+            s.idLabel.setPos(pos)
+            s.idLabel.setHtml(txt)
+            visible = obj["label_visible"]
+            s.idLabel.setVisible(visible)
+
+        angle_in = {}
+        for id, obj in data["PFD"]["in"].items():
+            id = int(id)
+            s = EquipmentItem("in", None)
+            x = obj["x"]
+            y = obj["y"]
+            pos = QtCore.QPointF(x, y)
+            s.setPos(pos)
+
+            angle_in[id] = obj["angle"]
+            down = [self.objects["stream"][obj["down_id"]]]
+            s.down = down
+            self.objects["in"][id] = s
+            self.addItem(s)
+
+        angle_out = {}
+        for id, obj in data["PFD"]["out"].items():
+            id = int(id)
+            s = EquipmentItem("out", None)
+            x = obj["x"]
+            y = obj["y"]
+            pos = QtCore.QPointF(x, y)
+            s.setPos(pos)
+
+            angle_out[id] = obj["angle"]
+            up = [self.objects["stream"][obj["up_id"]]]
+            s.up = up
+            self.objects["out"][id] = s
+            self.addItem(s)
+
+        angle_equip = {}
+        for id, obj in data["PFD"]["equip"].items():
+            id = int(id)
+
+            name = obj["name"]
+            dialogoId = obj["dialogo_id"]
+            s = EquipmentItem(name, dialogoId)
+            s.id = id
+
+            x = obj["x"]
+            y = obj["y"]
+            pos = QtCore.QPointF(x, y)
+            s.setPos(pos)
+
+            angle_equip[id] = obj["angle"]
+            up = [self.objects["stream"][i] for i in obj["up_id"]]
+            s.up = up
+            down = [self.objects["stream"][i] for i in obj["down_id"]]
+            s.down = down
+
+            self.objects["equip"][id] = s
+            self.addItem(s)
+
+            txt = obj["label"]
+            x = obj["label_x"]
+            y = obj["label_y"]
+            pos = QtCore.QPointF(x, y)
+            s.idLabel.setPos(pos)
+            s.idLabel.setHtml(txt)
+            visible = obj["label_visible"]
+            s.idLabel.setVisible(visible)
+
+        for id in id_stream:
+            tipo, i = up_stream[id]
+            self.objects["stream"][id].up = self.getObject(tipo, i)
+            tipo, i = down_stream[id]
+            self.objects["stream"][id].down = self.getObject(tipo, i)
+            self.objects["stream"][id].redraw()
+
+        for id, angle in angle_in.items():
+            self.objects["in"][id].rotate(angle)
+        for id, angle in angle_out.items():
+            self.objects["out"][id].rotate(angle)
+        for id, angle in angle_equip.items():
+            self.objects["equip"][id].rotate(angle)
+
+    def writeToJSON(self, data):
+        """Save json format to write to file"""
+        txts = {}
+        for i, obj in enumerate(self.objects["txt"]):
+            txt = {}
+            txt["txt"] = obj.toHtml()
+            txt["x"] = obj.pos().x()
+            txt["y"] = obj.pos().y()
+            txts[i] = txt
+        data["txt"] = txts
+
+        squares = {}
+        for i, obj in enumerate(self.objects["square"]):
+            square = {}
+            square["x"] = obj.rect().x()
+            square["y"] = obj.rect().y()
+            square["width"] = obj.rect().width()
+            square["height"] = obj.rect().height()
+            square["pen"] = obj.getPen()
+            squares[i] = square
+        data["square"] = squares
+
+        ellipses = {}
+        for i, obj in enumerate(self.objects["ellipse"]):
+            ellipse = {}
+            ellipse["x"] = obj.rect().x()
+            ellipse["y"] = obj.rect().y()
+            ellipse["width"] = obj.rect().width()
+            ellipse["height"] = obj.rect().height()
+            ellipse["pen"] = obj.getPen()
+            ellipses[i] = ellipse
+        data["ellipse"] = ellipses
+
+        streams = {}
+        for idx, obj in self.objects["stream"].items():
+            stream = {}
+            stream["input_x"] = obj.entrada.x()
+            stream["input_y"] = obj.entrada.y()
+            stream["output_x"] = obj.salida.x()
+            stream["output_y"] = obj.salida.y()
+            stream["pen"] = obj.getPen()
+
+            stream["up_id"] = obj.up.id
+            stream["up_type"] = obj.up.tipo
+            stream["down_id"] = obj.down.id
+            stream["down_type"] = obj.down.tipo
+            stream["input_angle"] = obj.Ang_entrada
+            stream["output_angle"] = obj.Ang_salida
+            stream["label"] = obj.idLabel.toHtml()
+            stream["label_x"] = obj.idLabel.pos().x()
+            stream["label_y"] = obj.idLabel.pos().y()
+            stream["label_visible"] = int(obj.idLabel.isVisible())
+            streams[idx] = stream
+        data["stream"] = streams
+
+        ins = {}
+        for idx, obj in self.objects["in"].items():
+            in_ = {}
+            in_["x"] = obj.x()
+            in_["y"] = obj.y()
+            in_["angle"] = obj.angle
+
+            if obj.down:
+                in_["down_id"] = obj.down[0].id
+            else:
+                in_["down_id"] = None
+            ins[idx] = in_
+        data["in"] = ins
+
+        outs = {}
+        for idx, obj in self.objects["out"].items():
+            out = {}
+            out["x"] = obj.x()
+            out["y"] = obj.y()
+            out["angle"] = obj.angle
+
+            if obj.up:
+                out["up_id"] = obj.up[0].id
+            else:
+                out["up_id"] = None
+            outs[idx] = out
+        data["out"] = outs
+
+        equipments = {}
+        for idx, obj in self.objects["equip"].items():
+            equip = {}
+            equip["name"] = obj.name
+            equip["dialogo_id"] = obj.dialogoId
+            equip["x"] = obj.pos().x()
+            equip["y"] = obj.pos().y()
+            equip["angle"] = obj.angle
+
+            ups = []
+            for up in obj.up:
+                ups.append(up.id)
+            equip["up_id"] = ups
+            downs = []
+            for down in obj.down:
+                downs.append(down.id)
+            equip["down_id"] = downs
+
+            equip["label"] = obj.idLabel.toHtml()
+            equip["label_x"] = obj.idLabel.pos().x()
+            equip["label_y"] = obj.idLabel.pos().y()
+            equip["label_visible"] = int(obj.idLabel.isVisible())
+            equipments[idx] = equip
+        data["equip"] = equipments
+
+    def getObject(self, tipo, id):
+        """Return the object of project"""
+        if tipo == "e":
+            lista = self.objects["equip"]
+        elif tipo == "i":
+            lista = self.objects["in"]
+        elif tipo == "o":
+            lista = self.objects["out"]
+        elif tipo == "s":
+            lista = self.objects["stream"]
+        else:
+            raise Exception
+        return lista[id]
+
+
 class SelectStreamProject(QtWidgets.QDialog):
     """Dialog to select a stream for any external project"""
     project = None
@@ -1171,592 +1772,6 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             self.output[i].direction = new_angle
             salida.Ang_entrada = new_angle
             salida.redraw()
-
-
-class GraphicsScene(QtWidgets.QGraphicsScene):
-    copiedItem = QtCore.QByteArray()
-    pasteOffset = 5
-    points = []
-    addObj = False
-    addType = ""
-    project = Project()
-    objects = {"txt": [], "square": [], "ellipse": [], "stream": {}, "in": {},
-               "out": {}, "equip": {}}
-
-    def mousePressEvent(self, event):
-        QtWidgets.QGraphicsScene.mousePressEvent(self, event)
-        if self.addObj and self.addType != "stream":
-            self.Pos.append(event.scenePos())
-
-    def addActions(self, menu, pos=None):
-        actionCut, actionCopy, actionPaste = self.defineShortcut(pos)
-        menu.addAction(
-            QtWidgets.QApplication.translate("pychemqt", "Redraw"),
-            self.update)
-        menu.addAction(
-            QtWidgets.QApplication.translate("pychemqt", "Configure"),
-            self.configure)
-        menu.addSeparator()
-        menu.addAction(createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Select All"),
-            slot=self.selectAll,
-            shortcut=QtGui.QKeySequence.StandardKey.SelectAll,
-            icon=os.path.join(IMAGE_PATH, "button", "selectAll"), parent=self))
-        menu.addSeparator()
-        actionCut = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Cut"),
-            slot=self.cut,
-            shortcut=QtGui.QKeySequence.StandardKey.Cut,
-            icon=os.path.join(IMAGE_PATH, "button", "editCut"), parent=self)
-        menu.addAction(actionCut)
-        actionCopy = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Copy"),
-            slot=self.copy,
-            shortcut=QtGui.QKeySequence.StandardKey.Copy,
-            icon=os.path.join(IMAGE_PATH, "button", "editCopy"), parent=self)
-        menu.addAction(actionCopy)
-        actionPaste = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Paste"),
-            slot=partial(self.paste, pos),
-            shortcut=QtGui.QKeySequence.StandardKey.Paste,
-            icon=os.path.join(IMAGE_PATH, "button", "editPaste"), parent=self)
-        menu.addAction(actionPaste)
-        actionDelete = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Delete All"),
-            slot=self.delete,
-            shortcut=QtGui.QKeySequence.StandardKey.Delete,
-            icon=os.path.join(IMAGE_PATH, "button", "editDelete"), parent=self)
-        menu.addAction(actionDelete)
-        menu.addSeparator()
-
-        if self.copiedItem.isEmpty():
-            actionPaste.setEnabled(False)
-        items = self.selectedItems()
-        if not items:
-            actionCut.setEnabled(False)
-            actionCopy.setEnabled(False)
-            actionDelete.setEnabled(False)
-
-        for item in items:
-            menuEl = item.contextMenu()
-            menu.addAction(menuEl.menuAction())
-
-        return menu
-
-    def defineShortcut(self, pos=None):
-        # Delete actions of last run
-        for action in self.views()[0].actions():
-            self.views()[0].removeAction(action)
-
-        # Add actions to QGraphicsView to enable key shortcut
-        actionCut = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Cut"),
-            slot=self.cut,
-            shortcut=QtGui.QKeySequence.StandardKey.Cut,
-            icon=os.path.join(IMAGE_PATH, "button", "editCut"), parent=self)
-        actionCopy = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Copy"),
-            slot=self.copy,
-            shortcut=QtGui.QKeySequence.StandardKey.Copy,
-            icon=os.path.join(IMAGE_PATH, "button", "editCopy"), parent=self)
-        actionPaste = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Paste"),
-            slot=partial(self.paste, pos),
-            shortcut=QtGui.QKeySequence.StandardKey.Paste,
-            icon=os.path.join(IMAGE_PATH, "button", "editPaste"), parent=self)
-        self.views()[0].addAction(actionCopy)
-        self.views()[0].addAction(actionCut)
-        self.views()[0].addAction(actionPaste)
-        return actionCut, actionCopy, actionPaste
-
-
-    def contextMenuEvent(self, event):
-        item = self.itemAt(event.scenePos(), self.views()[0].transform())
-        if item:
-            item.setSelected(True)
-        contextMenu = QtWidgets.QMenu()
-        self.addActions(contextMenu, event.scenePos())
-        contextMenu.exec(event.screenPos())
-
-    def selectAll(self):
-        for item in list(self.items()):
-            item.setSelected(True)
-
-    def copy(self, items=None):
-        if not items:
-            items = self.selectedItems()
-        self.copiedItem.clear()
-        self.pasteOffset = 50
-        st = QtCore.QDataStream(
-            self.copiedItem, QtCore.QIODevice.OpenModeFlag.WriteOnly)
-
-        st.writeInt32(len(items))
-        for item in items:
-            self.writeItemToStream(st, item)
-
-    def cut(self):
-        item = self.selectedItems()[0]
-        self.copy(item)
-        self.removeItem(item)
-        del item
-
-    def paste(self, pos=None):
-        st = QtCore.QDataStream(
-            self.copiedItem, QtCore.QIODevice.OpenModeFlag.ReadOnly)
-        count = st.readInt32()
-        for it in range(count):
-            item = self.readItemFromStream(st)
-            if pos:
-                item.setPos(pos)
-            else:
-                offset = QtCore.QPointF(
-                    randint(-item.pos().x(), item.pos().x()),
-                    randint(-item.pos().y(), item.pos().y()))
-                item.setPos(item.pos() + offset)
-                self.pasteOffset += 5
-            self.addItem(item)
-
-    def delete(self, items=None):
-        if items:
-            items = [items]
-        else:
-            items = self.selectedItems()
-        for item in items:
-            tipo = item.tipo
-            if tipo in ["stream", "equip"]:
-                item.postDelete()
-                del self.objects[tipo][item.id]
-            else:
-                self.objects[tipo].remove(item)
-            self.removeItem(item)
-        self.update()
-        self.parent().list.updateList(self.objects)
-
-    def configure(self):
-        dlg = Dialog()
-        if dlg.exec():
-            pass
-
-    def waitClick(self, numClick, tipo, object):
-        self.Pos = []
-        self.object = object
-        self.addType = tipo
-        self.addObj = True
-        self.views()[0].viewport().setCursor(
-            QtGui.QCursor(QtCore.Qt.CursorShape.CrossCursor))
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
-            "pychemqt", "Click in desire text position in screen"))
-        clickCollector = WaitforClick(numClick, self)
-        clickCollector.finished.connect(self.click)
-        clickCollector.start()
-
-    def click(self):
-        if self.addType in ["equip", "in", "out", "txt"]:
-            self.object.setPos(self.Pos[0])
-
-        elif self.addType == "stream":
-            self.object.up = self.up
-            self.object.down = self.down
-            self.up.down = self.up.down + [self.object]
-            self.down.up = self.down.up + [self.object]
-            self.up.down_used += 1
-            self.down.up_used += 1
-            self.object.Ang_entrada = self.points[0].direction
-            self.object.Ang_salida = self.points[1].direction
-            self.object.redraw(self.Pos[0], self.Pos[1])
-
-            # Unchecked stream button in toolbox
-            self.parent().botonCorriente.setChecked(False)
-
-        elif self.addType in ["square", "ellipse"]:
-            rect = QtCore.QRectF(self.Pos[0], self.Pos[1])
-            self.object.setRect(rect)
-
-        self.addItem(self.object)
-        if self.addType == "equip":
-            self.project.addItem(
-                "e%i" % self.object.id, self.object.dialogo.Equipment)
-        elif self.addType == "in":
-            self.project.addItem(
-                "i%i" % self.object.id, self.object.dialogo.corriente)
-        elif self.addType == "out":
-            self.project.addItem(
-                "o%i" % self.object.id, self.object.dialogo.corriente)
-        elif self.addType == "stream":
-            self.project.addStream(
-                self.object.id, "%s%i" % (self.up.tipo, self.up.id),
-                "%s%i" % (self.down.tipo, self.down.id), Corriente(),
-                self.up.down_used - 1, self.down.up_used - 1)
-
-        self.parent().dirty[self.parent().idTab] = True
-        self.parent().saveControl()
-        self.update()
-        self.object.setSelected(True)
-
-        self.parent().statusBar().clearMessage()
-        self.addObj = False
-        if self.addType in ("txt", "square", "ellipse"):
-            self.objects[self.addType].append(self.object)
-        else:
-            id = self.object.id
-            self.objects[self.addType][id] = self.object
-        self.parent().list.updateList(self.objects)
-
-        self.views()[0].viewport().setCursor(
-            QtGui.QCursor(QtCore.Qt.CursorShape.ArrowCursor))
-    #        for item in self.items():
-    #            if isinstance(item, QtSvg.QGraphicsSvgItem):
-    #                item.hoverLeaveEvent(None)
-    #            item.setAcceptHoverEvents(False)
-
-    def writeItemToStream(self, stream, item):
-        stream.writeQString(item.tipo)
-        stream << item.transform() << item.pos()
-        if isinstance(item, TextItem):
-            stream.writeQString(item.toHtml())
-        elif isinstance(item, (RectItem, EllipseItem)):
-            stream << item.rect() << item.pen()
-        # TODO: Add equipment and stream copy support adding in project api
-        # elif isinstance(item, EquipmentItem):
-            # # print(item.name, item.dialogoId)
-            # stream.writeQString(item.name)
-            # # stream << QtCore.QString(item.name)
-            # if item.tipo == "e":
-                # stream.writeInt32(item.dialogoId)
-
-    def readItemFromStream(self, stream):
-        tipo = stream.readQString()
-        matrix = QtGui.QTransform()
-        stream >> matrix
-        pos = QtCore.QPointF()
-        stream >> pos
-        if tipo == "txt":
-            txt = stream.readQString()
-            item = TextItem(txt)
-        elif tipo == "square":
-            rect = QtCore.QRectF()
-            pen = QtGui.QPen()
-            stream >> rect >> pen
-            item = RectItem()
-            item.setRect(rect)
-            item.setPen(pen)
-        elif tipo == "ellipse":
-            rect = QtCore.QRectF()
-            pen = QtGui.QPen()
-            stream >> rect >> pen
-            item = EllipseItem()
-            item.setRect(rect)
-            item.setPen(pen)
-        # elif tipo == "equip":
-            # name = stream.readQString()
-            # dialogoid = stream.readInt32()
-            # item = EquipmentItem(name, dialogoid)
-
-        item.setTransform(matrix)
-        item.setPos(pos)
-        return item
-
-    def readFromJSON(self, data):
-        self.objects = deepcopy(GraphicsScene.objects)
-
-        for text in data["PFD"]["txt"].values():
-            txt = text["txt"]
-            s = TextItem(txt)
-            x = text["x"]
-            y = text["y"]
-            pos = QtCore.QPoint(x, y)
-            s.setPos(pos)
-            self.objects["txt"].append(s)
-            self.addItem(s)
-
-        for obj in data["PFD"]["square"].values():
-            s = RectItem()
-            x = obj["x"]
-            y = obj["y"]
-            width = obj["width"]
-            height = obj["height"]
-            rect = QtCore.QRect(x, y, width, height)
-            s.setRect(rect)
-
-            pen = QtGui.QPen(QtGui.QColor(obj["color"]))
-            pen.setWidthF(obj["width"])
-            pen.setJoinStyle(ConfLine.join[obj["joinStyle"]])
-            pen.setMiterLimit(obj["miterLimit"])
-            pen.setCapStyle(ConfLine.cap[obj["capStyle"]])
-            pen.setStyle(ConfLine.line[obj["style"]])
-            pen.setDashOffset(obj["dashOffset"])
-            s.setPen(pen)
-
-            self.objects["square"].append(s)
-            self.addItem(s)
-
-        for obj in data["PFD"]["ellipse"].values():
-            s = EllipseItem()
-            x = obj["x"]
-            y = obj["y"]
-            width = obj["width"]
-            height = obj["height"]
-            rect = QtCore.QRect(x, y, width, height)
-            s.setRect(rect)
-
-            pen = QtGui.QPen(QtGui.QColor(obj["color"]))
-            pen.setWidthF(obj["width"])
-            pen.setJoinStyle(ConfLine.join[obj["joinStyle"]])
-            pen.setMiterLimit(obj["miterLimit"])
-            pen.setCapStyle(ConfLine.cap[obj["capStyle"]])
-            pen.setStyle(ConfLine.line[obj["style"]])
-            pen.setDashOffset(obj["dashOffset"])
-            s.setPen(pen)
-
-            self.objects["ellipse"].append(s)
-            self.addItem(s)
-
-        id_stream = []
-        up_stream = {}
-        down_stream = {}
-        for id, obj in data["PFD"]["stream"].items():
-            id = int(id)
-            s = StreamItem()
-            in_x = obj["input_x"]
-            in_y = obj["input_y"]
-            entrada = QtCore.QPointF(in_x, in_y)
-            out_x = obj["output_x"]
-            out_y = obj["output_y"]
-            salida = QtCore.QPointF(out_x, out_y)
-
-            pen = QtGui.QPen(QtGui.QColor(obj["pen"]["color"]))
-            pen.setWidthF(obj["pen"]["width"])
-
-            pen.setJoinStyle(ConfLine.join[obj["pen"]["joinStyle"]])
-            pen.setMiterLimit(obj["pen"]["miterLimit"])
-            pen.setCapStyle(ConfLine.cap[obj["pen"]["capStyle"]])
-            pen.setStyle(ConfLine.line[obj["pen"]["style"]])
-            pen.setDashOffset(obj["pen"]["dashOffset"])
-            s.setPen(pen)
-
-            up_type = obj["up_type"]
-            down_type = obj["down_type"]
-            up_id = obj["up_id"]
-            down_id = obj["down_id"]
-            id_stream.append(id)
-            up_stream[id] = up_type, up_id
-            down_stream[id] = down_type, down_id
-
-            s.id = id
-            s.entrada = entrada
-            s.salida = salida
-            s.Ang_entrada = obj["input_angle"]
-            s.Ang_salida = obj["output_angle"]
-            self.objects["stream"][id_stream[-1]] = s
-            self.addItem(s)
-
-            txt = obj["label"]
-            x = obj["label_x"]
-            y = obj["label_y"]
-            pos = QtCore.QPointF(x, y)
-            s.idLabel.setPos(pos)
-            s.idLabel.setHtml(txt)
-            visible = obj["label_visible"]
-            s.idLabel.setVisible(visible)
-
-        angle_in = {}
-        for id, obj in data["PFD"]["in"].items():
-            id = int(id)
-            s = EquipmentItem("in", None)
-            x = obj["x"]
-            y = obj["y"]
-            pos = QtCore.QPointF(x, y)
-            s.setPos(pos)
-
-            angle_in[id] = obj["angle"]
-            down = [self.objects["stream"][obj["down_id"]]]
-            s.down = down
-            self.objects["in"][id] = s
-            self.addItem(s)
-
-        angle_out = {}
-        for id, obj in data["PFD"]["out"].items():
-            id = int(id)
-            s = EquipmentItem("out", None)
-            x = obj["x"]
-            y = obj["y"]
-            pos = QtCore.QPointF(x, y)
-            s.setPos(pos)
-
-            angle_out[id] = obj["angle"]
-            up = [self.objects["stream"][obj["up_id"]]]
-            s.up = up
-            self.objects["out"][id] = s
-            self.addItem(s)
-
-        angle_equip = {}
-        for id, obj in data["PFD"]["equip"].items():
-            id = int(id)
-
-            name = obj["name"]
-            dialogoId = obj["dialogo_id"]
-            s = EquipmentItem(name, dialogoId)
-            s.id = id
-
-            x = obj["x"]
-            y = obj["y"]
-            pos = QtCore.QPointF(x, y)
-            s.setPos(pos)
-
-            angle_equip[id] = obj["angle"]
-            up = [self.objects["stream"][i] for i in obj["up_id"]]
-            s.up = up
-            down = [self.objects["stream"][i] for i in obj["down_id"]]
-            s.down = down
-
-            self.objects["equip"][id] = s
-            self.addItem(s)
-
-            txt = obj["label"]
-            x = obj["label_x"]
-            y = obj["label_y"]
-            pos = QtCore.QPointF(x, y)
-            s.idLabel.setPos(pos)
-            s.idLabel.setHtml(txt)
-            visible = obj["label_visible"]
-            s.idLabel.setVisible(visible)
-
-        for id in id_stream:
-            tipo, i = up_stream[id]
-            self.objects["stream"][id].up = self.getObject(tipo, i)
-            tipo, i = down_stream[id]
-            self.objects["stream"][id].down = self.getObject(tipo, i)
-            self.objects["stream"][id].redraw()
-
-        for id, angle in angle_in.items():
-            self.objects["in"][id].rotate(angle)
-        for id, angle in angle_out.items():
-            self.objects["out"][id].rotate(angle)
-        for id, angle in angle_equip.items():
-            self.objects["equip"][id].rotate(angle)
-
-    def writeToJSON(self, data):
-        """Save json format to write to file"""
-        txts = {}
-        for i, obj in enumerate(self.objects["txt"]):
-            txt = {}
-            txt["txt"] = obj.toHtml()
-            txt["x"] = obj.pos().x()
-            txt["y"] = obj.pos().y()
-            txts[i] = txt
-        data["txt"] = txts
-
-        squares = {}
-        for i, obj in enumerate(self.objects["square"]):
-            square = {}
-            square["x"] = obj.rect().x()
-            square["y"] = obj.rect().y()
-            square["width"] = obj.rect().width()
-            square["height"] = obj.rect().height()
-            square["pen"] = obj.getPen()
-            squares[i] = square
-        data["square"] = squares
-
-        ellipses = {}
-        for i, obj in enumerate(self.objects["ellipse"]):
-            ellipse = {}
-            ellipse["x"] = obj.rect().x()
-            ellipse["y"] = obj.rect().y()
-            ellipse["width"] = obj.rect().width()
-            ellipse["height"] = obj.rect().height()
-            ellipse["pen"] = obj.getPen()
-            ellipses[i] = ellipse
-        data["ellipse"] = ellipses
-
-        streams = {}
-        for idx, obj in self.objects["stream"].items():
-            stream = {}
-            stream["input_x"] = obj.entrada.x()
-            stream["input_y"] = obj.entrada.y()
-            stream["output_x"] = obj.salida.x()
-            stream["output_y"] = obj.salida.y()
-            stream["pen"] = obj.getPen()
-
-            stream["up_id"] = obj.up.id
-            stream["up_type"] = obj.up.tipo
-            stream["down_id"] = obj.down.id
-            stream["down_type"] = obj.down.tipo
-            stream["input_angle"] = obj.Ang_entrada
-            stream["output_angle"] = obj.Ang_salida
-            stream["label"] = obj.idLabel.toHtml()
-            stream["label_x"] = obj.idLabel.pos().x()
-            stream["label_y"] = obj.idLabel.pos().y()
-            stream["label_visible"] = int(obj.idLabel.isVisible())
-            streams[idx] = stream
-        data["stream"] = streams
-
-        ins = {}
-        for idx, obj in self.objects["in"].items():
-            in_ = {}
-            in_["x"] = obj.x()
-            in_["y"] = obj.y()
-            in_["angle"] = obj.angle
-
-            if obj.down:
-                in_["down_id"] = obj.down[0].id
-            else:
-                in_["down_id"] = None
-            ins[idx] = in_
-        data["in"] = ins
-
-        outs = {}
-        for idx, obj in self.objects["out"].items():
-            out = {}
-            out["x"] = obj.x()
-            out["y"] = obj.y()
-            out["angle"] = obj.angle
-
-            if obj.up:
-                out["up_id"] = obj.up[0].id
-            else:
-                out["up_id"] = None
-            outs[idx] = out
-        data["out"] = outs
-
-        equipments = {}
-        for idx, obj in self.objects["equip"].items():
-            equip = {}
-            equip["name"] = obj.name
-            equip["dialogo_id"] = obj.dialogoId
-            equip["x"] = obj.pos().x()
-            equip["y"] = obj.pos().y()
-            equip["angle"] = obj.angle
-
-            ups = []
-            for up in obj.up:
-                ups.append(up.id)
-            equip["up_id"] = ups
-            downs = []
-            for down in obj.down:
-                downs.append(down.id)
-            equip["down_id"] = downs
-
-            equip["label"] = obj.idLabel.toHtml()
-            equip["label_x"] = obj.idLabel.pos().x()
-            equip["label_y"] = obj.idLabel.pos().y()
-            equip["label_visible"] = int(obj.idLabel.isVisible())
-            equipments[idx] = equip
-        data["equip"] = equipments
-
-    def getObject(self, tipo, id):
-        """Return the object of project"""
-        if tipo == "e":
-            lista = self.objects["equip"]
-        elif tipo == "i":
-            lista = self.objects["in"]
-        elif tipo == "o":
-            lista = self.objects["out"]
-        elif tipo == "s":
-            lista = self.objects["stream"]
-        else:
-            raise Exception
-        return lista[id]
-
 
 if __name__ == "__main__":
     import sys

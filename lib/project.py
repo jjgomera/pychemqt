@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 ###############################################################################
-# Module for project definition (pdf of equipment, configuration and many more)
+# Module for project definition (pfd of equipment, configuration and many more)
 ###############################################################################
 
 import os
@@ -44,8 +44,12 @@ class Project(object):
 
     def __init__(self, items={}, streams={}, config=None):
         """
-        items: diccionario con los equipos
-        stream: diccionario con las corrientes
+        Parameters
+        ----------
+        items : dict
+            Equipment of project
+        stream : dict
+            Stream of project
         """
         self.items = items
         self.out = {}
@@ -64,9 +68,10 @@ class Project(object):
     def __bool__(self):
         return True
 
-#    @property
-#    def equipCount(self):
-#        return len(self.)
+    @property
+    def equipCount(self):
+        return len(self.items)
+
     @property
     def streamCount(self):
         return len(self.streams)
@@ -80,6 +85,15 @@ class Project(object):
         # return grafo
 
     def getObject(self, id):
+        """Return object of project, id define the object to return, i1 for
+        first input stream, o3 for third stream output, e2 for the second
+        equipment or s5 for the fifth stream
+
+        Parameters
+        ----------
+        id : str
+            Id of object
+        """
         if id[0] in ["e", "i", "o"]:
             return self.items[id]
         else:
@@ -106,6 +120,13 @@ class Project(object):
         self.items["e%i" % id] = obj
         self.run("e%i" % id)
 
+    def copyItem(self, idx):
+        obj = self.getItem(idx)
+        new_kwargs = obj.kwargs.copy()
+        del new_kwargs["entrada"]
+        new_obj = obj.__class__(**new_kwargs)
+        self.addItem("e%i" % (idx+1), new_obj)
+
     def getItem(self, id):
         return self.items["e%i" % id]
 
@@ -115,6 +136,11 @@ class Project(object):
 
     def getInput(self, id):
         return self.items["i%i" % id]
+
+    def copyInput(self, idx):
+        obj = self.getInput(idx)
+        new_obj = Corriente(**obj.kwargs)
+        self.setInput(idx+1, new_obj)
 
     def setOutput(self, id, obj):
         self.items["o%i" % id] = obj
@@ -161,22 +187,22 @@ class Project(object):
                 lista.append((key, value))
         return lista
 
-    def run(self, name):
-        """Ejecuta el projecto de forma recursiva hasta que encuentra un equipo no resuelto"""
-        tipo = name[0]
-        ind = int(name[1])
+    def run(self, idx):
+        """Run project starting for the item set with idx and recursively"""
+        tipo = idx[0]
+        ind = int(idx[1])
 
         if tipo == "i":
             obj = self.getInput(ind)
             if obj.status:
-                key, (up, down, ind_up, ind_down, oldobj) = self.getDownToEquip(name)[0]
+                key, (up, down, ind_up, ind_down, oldobj) = self.getDownToEquip(idx)[0]
                 self.setStream(key, obj)
                 self.run("s%i" % key)
 
         elif tipo == "e":
             obj = self.getItem(ind)
             if obj.status:
-                for key, (up, down, ind_up, ind_down, oldobj) in self.getDownToEquip(name):
+                for key, (up, down, ind_up, ind_down, oldobj) in self.getDownToEquip(idx):
                     self.setStream(key, obj.salida[ind_up])
                     self.run("s%i" % key)
 
@@ -245,13 +271,10 @@ class Project(object):
             for option, value in options.items():
                 config.set(section, option, value)
 
-        # FIXME: Delete this section when all project were updates with last
-        # configuration options
-        config.set("Transport", "RhoLEoS", "False")
-
         self.setConfig(config)
         if not huella:
-            os.rename(conf_dir+"pychemqtrc_temporal", conf_dir+"pychemqtrc_temporal_bak")
+            os.rename(conf_dir+"pychemqtrc_temporal",
+                      conf_dir+"pychemqtrc_temporal_bak")
         config.write(open(conf_dir+"pychemqtrc_temporal", "w"))
 
         # read equipments
@@ -295,7 +318,8 @@ class Project(object):
         self.setStreams(streams)
 
         if not huella:
-            os.rename(conf_dir+"pychemqtrc_temporal_bak", conf_dir+"pychemqtrc_temporal")
+            os.rename(conf_dir+"pychemqtrc_temporal_bak",
+                      conf_dir+"pychemqtrc_temporal")
 
     # def printer(self):
         # # Draw as PNG
@@ -319,7 +343,7 @@ class Project(object):
 
 if __name__ == '__main__':
 
-    from .corriente import Corriente
+    from lib.corriente import Corriente
 
 #    project=Project()
 #    project.addItem("i1", Corriente())
@@ -365,3 +389,5 @@ if __name__ == '__main__':
     project.addStream(2, "i2", "e1", ind_down=1)
     project.addItem("o1", Corriente())
     project.addStream(3, "e1", "o1")
+    project.copyItem("e1")
+    print(project)
