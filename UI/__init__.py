@@ -22,7 +22,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # UI module
 ###############################################################################
 
+import glob
+import os
 
-__all__ = ["BIP", "bombaCurva", "delegate", "flujo", "inputTable",
-           "mainWindow", "newComponent", "plots", "texteditor",
-           "UI_corriente", "viewComponents", "widgets", "wizard"]
+
+files = sorted(glob.glob(os.path.join("UI", "*.py")))
+
+__all__ = []
+for file in files:
+    fname, ext = os.path.splitext(os.path.basename(file))
+    if fname != "__init__" and "pref" not in fname:
+        __all__.append(fname)

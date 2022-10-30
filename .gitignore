@@ -95,6 +95,7 @@ docs/lib.iapws97.rst
 docs/lib.meos.rst
 docs/lib.mezcla.rst
 docs/lib.newComponent.rst
+docs/lib.openbabel.rst
 docs/lib.petro.rst
 docs/lib.physics.rst
 docs/lib.pipeDatabase.rst
@@ -118,6 +119,9 @@ docs/lib.EoS.BWRSoave.rst
 docs/lib.EoS.Grayson_Streed.rst
 docs/lib.EoS.Lee_Kesler.rst
 docs/lib.EoS.virial.rst
+
+docs/UI.rst
+docs/UI.*.rst
 
 # Script propios
 #.script/

@@ -7,3 +7,4 @@ API reference
    lib
    tools
    plots
+   UI

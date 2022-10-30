@@ -1439,8 +1439,8 @@ def mathTex2QPixmap(mathTex, fs):
     fs : int
         Font size of text to show
 
-    Return
-    ------
+    Returns
+    -------
     qpixmap : :class:`QtGui.QPixmap`
         QPixmap ready to show in any other qt widget
     """

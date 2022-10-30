@@ -20,12 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 # Generate the *-ref.rst files with list of references
 
-import lib
+import os
 
-all = lib.__all__
+import lib
+import UI
 
 total = []
-for library in all:
+for library in lib.__all__:
     # Import module to intronspection
     __import__("lib.%s" % library)
     module = lib.__getattribute__(library)
@@ -108,3 +109,32 @@ with open("docs/references.rst", "w") as file:
                 ref += ", http://dx.doi.org/%s" % lnk["doi"]
 
             print(ref, file=file)
+
+# UI module
+# Generate index file
+txt = "UI package" + os.linesep
+txt += "==========" + os.linesep + os.linesep
+txt += "Submodules" + os.linesep
+txt += "----------" + os.linesep + os.linesep
+txt += ".. toctree::" + os.linesep
+txt += "    :maxdepth: 2" + os.linesep + os.linesep
+
+for mod in UI.__all__:
+    txt += "    UI.%s" % mod + os.linesep
+
+with open("docs/UI.rst", "w") as file:
+    file.write(txt)
+
+# Generate each module documentation file
+for ui in UI.__all__:
+    # Make UI.rst schemas
+    with open("docs/UI.%s.rst" % ui, "w") as file:
+        print("UI.%s module" % ui, file=file)
+        print("="*(len(ui)+4+7), file=file)
+        print("", file=file)
+        print(".. automodule:: UI.%s" % ui, file=file)
+        print("    :members:", file=file)
+        print("    :undoc-members:", file=file)
+        print("    :private-members:", file=file)
+        print("    :show-inheritance:", file=file)
+        print("    :member-order: bysource", file=file)
