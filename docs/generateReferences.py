@@ -25,7 +25,25 @@ import os
 import lib
 import UI
 
+# List with all references
 total = []
+
+# Lib module
+# Generate index file
+txt = "lib package" + os.linesep
+txt += "===========" + os.linesep + os.linesep
+txt += "Submodules" + os.linesep
+txt += "----------" + os.linesep + os.linesep
+txt += ".. toctree::" + os.linesep
+txt += "    :maxdepth: 2" + os.linesep + os.linesep
+
+for mod in lib.__all__:
+    txt += "    lib.%s" % mod + os.linesep
+
+with open("docs/lib.rst", "w") as file:
+    file.write(txt)
+
+
 for library in lib.__all__:
     # Import module to intronspection
     __import__("lib.%s" % library)
@@ -88,27 +106,6 @@ for library in lib.__all__:
                 if rf not in total:
                     total.append(rf)
 
-# Global references file
-with open("docs/references.rst", "w") as file:
-    print("References", file=file)
-    print("----------", file=file)
-
-    id = 0
-    for lnk in sorted(total, key=lambda lnk: str.upper(lnk["autor"])):
-        if lnk["autor"] or lnk["title"] or lnk["ref"]:
-            id += 1
-            ref = "%i. " % id
-            if lnk["autor"]:
-                ref += "%s; " % lnk["autor"]
-            if lnk["title"]:
-                ref += "%s. " % lnk["title"]
-            if lnk["ref"]:
-                ref += "%s" % lnk["ref"]
-
-            if lnk["doi"]:
-                ref += ", http://dx.doi.org/%s" % lnk["doi"]
-
-            print(ref, file=file)
 
 # UI module
 # Generate index file
@@ -138,3 +135,26 @@ for ui in UI.__all__:
         print("    :private-members:", file=file)
         print("    :show-inheritance:", file=file)
         print("    :member-order: bysource", file=file)
+
+
+# Generate global references file
+with open("docs/references.rst", "w") as file:
+    print("References", file=file)
+    print("----------", file=file)
+
+    id = 0
+    for lnk in sorted(total, key=lambda lnk: str.upper(lnk["autor"])):
+        if lnk["autor"] or lnk["title"] or lnk["ref"]:
+            id += 1
+            ref = "%i. " % id
+            if lnk["autor"]:
+                ref += "%s; " % lnk["autor"]
+            if lnk["title"]:
+                ref += "%s. " % lnk["title"]
+            if lnk["ref"]:
+                ref += "%s" % lnk["ref"]
+
+            if lnk["doi"]:
+                ref += ", http://dx.doi.org/%s" % lnk["doi"]
+
+            print(ref, file=file)

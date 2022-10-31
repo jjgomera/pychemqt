@@ -16,22 +16,40 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-###############################################################################
-# Module for graphics elements of PFD
-###############################################################################
+
+Module for graphics elements in PFD, defining the main qt graphics class:
+
+    * :class:`GraphicsView`: PFD viewer
+    * :class:`GraphicsScene`: PFD scene to manage the graphical elements
+
+and the different graphical items:
+
+    * :class:`GeometricItem`: Common functionality for geometric PFD elements
+    * :class:`RectItem`: Class to plot a rectangular item
+    * :class:`EllipseItem`: Class to plot a circle or oval item
+    * :class:`TextItem`: Class to plot a text item
+    * :class:`GraphicsEntity`: Common functionality for Entity in PFD
+    * :class:`StreamItem`: Class to plot a mass stream
+    * :class:`EquipmentItem`: Class to plot equipment item
+
+Dialog related defined:
+
+    * :class:`SelectStreamProject`: Dialog to select a stream from a project
+    * :class:`TextItemDlg`: Dialog to edit texts in PFD
+'''
 
 
 from ast import literal_eval
-from functools import partial
+from copy import deepcopy
 from datetime import datetime
-import tempfile
+from functools import partial
+import json
 import os
 from random import randint
-import json
 import subprocess
-from copy import deepcopy
+import tempfile
 from xml.dom import minidom
 
 try:
@@ -40,15 +58,15 @@ except ImportError:
     pass
 
 from lib import unidades
+from lib.config import Preferences, IMAGE_PATH
+from lib.corriente import Corriente
 from lib.EoS import K, H
 from lib.project import Project
 from lib.thread import WaitforClick
-from lib.config import Preferences, IMAGE_PATH
-from lib.corriente import Corriente
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
-from UI.widgets import createAction, Table_Graphics, PathConfig, ClickableLabel
 from UI.prefPFD import ConfLine, ConfLineDialog, Dialog
+from UI.widgets import createAction, Table_Graphics, PathConfig, ClickableLabel
 from equipment import flux, spreadsheet, UI_equipments
 from equipment.parents import equipment
 from tools import UI_confResolution, UI_confThermo
@@ -199,6 +217,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
 
 
 class GraphicsScene(QtWidgets.QGraphicsScene):
+    """Graphics PFD scene too manage the graphical elements"""
     copiedItem = QtCore.QByteArray()
     pasteOffset = 5
     points = []
@@ -799,104 +818,6 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         return lista[id]
 
 
-class SelectStreamProject(QtWidgets.QDialog):
-    """Dialog to select a stream for any external project"""
-    project = None
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
-            "pychemqt", "Select stream from file"))
-
-        layout = QtWidgets.QVBoxLayout(self)
-        label = QtWidgets.QApplication.translate("pychemqt", "Project path")
-        msg = QtWidgets.QApplication.translate(
-            "pychemqt", "Select pychemqt project file")
-        patrones = []
-        patrones.append(QtWidgets.QApplication.translate(
-            "pychemqt", "pychemqt project file") + " (*.pcq)")
-        patron = ";;".join(patrones)
-        self.filename = PathConfig(label + ":", msg=msg, patron=patron)
-        self.filename.valueChanged.connect(self.changeproject)
-        layout.addWidget(self.filename)
-
-        lyt1 = QtWidgets.QHBoxLayout()
-        lyt1.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Streams")))
-        self.stream = QtWidgets.QComboBox()
-        lyt1.addWidget(self.stream)
-        lyt1.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Fixed))
-        layout.addLayout(lyt1)
-
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding))
-
-        lyt2 = QtWidgets.QHBoxLayout()
-        self.status = QtWidgets.QLabel()
-        lyt2.addWidget(self.status)
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok
-            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
-        self.buttonBox.button(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(False)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        lyt2.addWidget(self.buttonBox)
-        layout.addLayout(lyt2)
-
-    def changeproject(self, path):
-        """Upgrade dialog with the streams of loaded file"""
-        self.stream.clear()
-        st = QtWidgets.QApplication.translate("pychemqt", "Loading project...")
-        self.status.setText(st)
-        QtWidgets.QApplication.processEvents()
-        try:
-            with open(path, "r") as file:
-                self.project = json.load(file)
-        except Exception as e:
-            self.status.setText(QtWidgets.QApplication.translate(
-                "pychemqt", "Failed to loading project..."))
-            raise e
-        self.buttonBox.button(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(True)
-        self.status.setText(QtWidgets.QApplication.translate(
-            "pychemqt", "Project loaded succesfully"))
-        for stream in sorted(self.project["stream"].keys()):
-            self.stream.addItem(stream)
-
-
-class TextItemDlg(QtWidgets.QDialog):
-    """Dialog to edit texts in PFD"""
-
-    def __init__(self, text=None, parent=None):
-        super().__init__(parent)
-        layout = QtWidgets.QGridLayout(self)
-        self.editor = texteditor.TextEditor()
-        self.editor.notas.textChanged.connect(self.updateUi)
-        layout.addWidget(self.editor, 1, 1, 1, 1)
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok
-            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 2, 1, 1, 1)
-        self.editor.notas.setFocus()
-        if text:
-            self.editor.setText(text)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Edit text"))
-        self.updateUi()
-
-    def updateUi(self):
-        """Set enable/disable OK button"""
-        self.buttonBox.button(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(
-                bool(self.editor.notas.toPlainText()))
-
-
 class GeometricItem():
     """Generic class with common functionality for geometric PFD elements"""
     tipo = ""
@@ -1016,19 +937,19 @@ class GeometricItem():
 
 
 class RectItem(GeometricItem, QtWidgets.QGraphicsRectItem):
-    """Clase que define un rectangulo"""
+    """Class to plot a rectangular item"""
     tipo = "square"
     icon = os.path.join(IMAGE_PATH, "equipment", "square.png")
 
 
 class EllipseItem(GeometricItem, QtWidgets.QGraphicsEllipseItem):
-    """Clase que define una circunferencia"""
+    """Class to plot a circle or oval item"""
     tipo = "ellipse"
     icon = os.path.join(IMAGE_PATH, "equipment", "cirle.png")
 
 
 class TextItem(QtWidgets.QGraphicsTextItem):
-    """Clase que define los textos en el diagrama de flujo"""
+    """Class to plot a text item"""
     tipo = "txt"
 
     def __init__(self, text, parent=None, position=QtCore.QPointF(0, 0),
@@ -1213,7 +1134,7 @@ class GraphicsEntity():
 
 
 class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
-    """Clase que define una corriente gráficamente"""
+    """Class to plot a mass stream"""
     up = None
     down = None
     id = 0
@@ -1447,7 +1368,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 
 
 class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
-    """Clase que define los equipos en el diagrama de flujo"""
+    """Class to plot equipment item"""
     up = []
     down = []
     up_used = 0
@@ -1772,6 +1693,105 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             self.output[i].direction = new_angle
             salida.Ang_entrada = new_angle
             salida.redraw()
+
+
+class SelectStreamProject(QtWidgets.QDialog):
+    """Dialog to select a stream from any external project"""
+    project = None
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Select stream from file"))
+
+        layout = QtWidgets.QVBoxLayout(self)
+        label = QtWidgets.QApplication.translate("pychemqt", "Project path")
+        msg = QtWidgets.QApplication.translate(
+            "pychemqt", "Select pychemqt project file")
+        patrones = []
+        patrones.append(QtWidgets.QApplication.translate(
+            "pychemqt", "pychemqt project file") + " (*.pcq)")
+        patron = ";;".join(patrones)
+        self.filename = PathConfig(label + ":", msg=msg, patron=patron)
+        self.filename.valueChanged.connect(self.changeproject)
+        layout.addWidget(self.filename)
+
+        lyt1 = QtWidgets.QHBoxLayout()
+        lyt1.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Streams")))
+        self.stream = QtWidgets.QComboBox()
+        lyt1.addWidget(self.stream)
+        lyt1.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
+        layout.addLayout(lyt1)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding))
+
+        lyt2 = QtWidgets.QHBoxLayout()
+        self.status = QtWidgets.QLabel()
+        lyt2.addWidget(self.status)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+        self.buttonBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(False)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        lyt2.addWidget(self.buttonBox)
+        layout.addLayout(lyt2)
+
+    def changeproject(self, path):
+        """Upgrade dialog with the streams of loaded file"""
+        self.stream.clear()
+        st = QtWidgets.QApplication.translate("pychemqt", "Loading project...")
+        self.status.setText(st)
+        QtWidgets.QApplication.processEvents()
+        try:
+            with open(path, "r") as file:
+                self.project = json.load(file)
+        except Exception as e:
+            self.status.setText(QtWidgets.QApplication.translate(
+                "pychemqt", "Failed to loading project..."))
+            raise e
+        self.buttonBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(True)
+        self.status.setText(QtWidgets.QApplication.translate(
+            "pychemqt", "Project loaded succesfully"))
+        for stream in sorted(self.project["stream"].keys()):
+            self.stream.addItem(stream)
+
+
+class TextItemDlg(QtWidgets.QDialog):
+    """Dialog to edit texts in PFD"""
+
+    def __init__(self, text=None, parent=None):
+        super().__init__(parent)
+        layout = QtWidgets.QGridLayout(self)
+        self.editor = texteditor.TextEditor()
+        self.editor.notas.textChanged.connect(self.updateUi)
+        layout.addWidget(self.editor, 1, 1, 1, 1)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox, 2, 1, 1, 1)
+        self.editor.notas.setFocus()
+        if text:
+            self.editor.setText(text)
+        self.setWindowTitle(
+            QtWidgets.QApplication.translate("pychemqt", "Edit text"))
+        self.updateUi()
+
+    def updateUi(self):
+        """Set enable/disable OK button"""
+        self.buttonBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(
+                bool(self.editor.notas.toPlainText()))
+
 
 if __name__ == "__main__":
     import sys
