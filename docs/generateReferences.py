@@ -23,6 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 import os
 
 import lib
+import plots
 import UI
 
 # List with all references
@@ -84,7 +85,6 @@ for library in lib.__all__:
         print("    :members:", file=file)
         print("    :undoc-members:", file=file)
         print("    :private-members:", file=file)
-        print("    :show-inheritance:", file=file)
         print("    :member-order: bysource", file=file)
 
         if hasattr(module, "__doi__") and module.__doi__:
@@ -105,6 +105,34 @@ for library in lib.__all__:
                         id, rf["autor"], rf["title"], rf["ref"]), file=file)
                 if rf not in total:
                     total.append(rf)
+
+# Plots module
+# Generate index file
+# txt = "UI package" + os.linesep
+# txt += "==========" + os.linesep + os.linesep
+# txt += "Submodules" + os.linesep
+# txt += "----------" + os.linesep + os.linesep
+# txt += ".. toctree::" + os.linesep
+# txt += "    :maxdepth: 2" + os.linesep + os.linesep
+
+# for mod in UI.__all__:
+    # txt += "    UI.%s" % mod + os.linesep
+
+# with open("docs/UI.rst", "w") as file:
+    # file.write(txt)
+
+# Generate each module documentation file
+for plt in plots.__all__:
+    # Make plots.rst schemas
+    with open("docs/plots.%s.rst" % plt, "w") as file:
+        print("plots.%s module" % plt, file=file)
+        print("="*(len(plt)+6+7), file=file)
+        print("", file=file)
+        print(".. automodule:: plots.%s" % plt, file=file)
+        print("    :members:", file=file)
+        print("    :undoc-members:", file=file)
+        print("    :private-members:", file=file)
+        print("    :member-order: bysource", file=file)
 
 
 # UI module
@@ -127,13 +155,12 @@ for ui in UI.__all__:
     # Make UI.rst schemas
     with open("docs/UI.%s.rst" % ui, "w") as file:
         print("UI.%s module" % ui, file=file)
-        print("="*(len(ui)+4+7), file=file)
+        print("="*(len(ui)+3+7), file=file)
         print("", file=file)
         print(".. automodule:: UI.%s" % ui, file=file)
         print("    :members:", file=file)
         print("    :undoc-members:", file=file)
         print("    :private-members:", file=file)
-        print("    :show-inheritance:", file=file)
         print("    :member-order: bysource", file=file)
 
 

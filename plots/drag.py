@@ -15,16 +15,26 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Drag sphere chart
-###############################################################################
+.. include:: drag.rst
 
 
-from tools.qt import QtWidgets
+The module include all related moody chart functionality
+    * :class:`Drag`: Chart dialog
+    * :class:`CalculateDialog`: Dialog to calculate a specified point
+
+and its configuration
+
+    * :class:`Config`: Drag sphere chart configuration
+    * :class:`ConfigDialog`: Dialog tool for standalone use
+
+'''
+
+
 from numpy import logspace
+from tools.qt import QtWidgets
 
 from lib import drag
 from lib.utilities import formatLine
@@ -52,7 +62,7 @@ class Config(QtWidgets.QWidget):
 
         self.lineconfig = LineConfig(
             "line", QtWidgets.QApplication.translate(
-                "pychemqt", "Relative roughtness style line"))
+                "pychemqt", "Drag coefficient style line"))
         layout.addWidget(self.lineconfig, 4, 1, 1, 3)
         self.cruxconfig = LineConfig(
             "crux", QtWidgets.QApplication.translate(
@@ -95,7 +105,8 @@ class ConfigDialog(QtWidgets.QDialog):
         self.widget = Config(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -240,7 +251,8 @@ class CalculateDialog(QtWidgets.QDialog):
         layout.addWidget(self.Cd, 5, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Close)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)

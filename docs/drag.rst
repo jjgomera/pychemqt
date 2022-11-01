@@ -1,3 +1,32 @@
+Plot the drag coefficiente as function of reynolds number of a sphere.
+
+.. image:: images/drag.png
+    :alt: drag sphere diagram
+
+The diagram include all Reynolds number range, support for click interaction,
+let user save the chart as image and a dialog to calculate a individual point:
+
+.. image:: images/dragPoint.png
+    :alt: calculate point
+
+Configuration
+-------------
+
+.. image:: images/dragConf.png
+    :alt: drag diagram configuration
+
+The diagram let user configure several options like:
+
+* Equation to use, by default the Barati correlation, but it's possible
+  use one of available in :doc:`lib.drag <../lib.drag>`
+* Line style used in plot
+* Line style used in crux when use mouse
+* Grid line visibility and style
+
+
+Example
+-------
+
 Comparing some correlations with experimental data
 
 .. code-block:: python
@@ -87,6 +116,6 @@ Comparing some correlations with experimental data
     pyplot.show()
 
 
-.. image:: images/drag.png
+.. image:: images/dragExample.png
     :alt: Drag coefficient for smooth spheres
 

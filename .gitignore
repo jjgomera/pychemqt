@@ -120,6 +120,8 @@ docs/lib.EoS.Grayson_Streed.rst
 docs/lib.EoS.Lee_Kesler.rst
 docs/lib.EoS.virial.rst
 
+docs/plots.*.rst
+
 docs/UI.rst
 docs/UI.*.rst
 
