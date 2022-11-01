@@ -15,20 +15,22 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library with all moody chart functionality
-#
-#   - calculate: Calculate procedure
-#   - Moody: Chart dialog
-#   - CalculateDialog: Dialog to calculate a specified point
+.. include:: moody.rst
 
-#   Configuration
-#   - Config: Moody chart configuration
-#   - ConfigDialog: Dialog tool for standalone use
-###############################################################################
+
+The module include all related moody chart functionality
+    * :class:`Moody`: Chart dialog
+    * :func:`calculate`: Calculate procedure
+    * :class:`CalculateDialog`: Dialog to calculate a specified point
+
+and its configuration
+
+    * :class:`Config`: Moody chart configuration
+    * :class:`ConfigDialog`: Dialog tool for standalone use
+'''
 
 
 import json
