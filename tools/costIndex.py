@@ -267,11 +267,11 @@ class CostData(QtWidgets.QWidget):
                     float(file.readlines()[self.indice][:-1]))
             self.valueChanged.emit("Current_index", self.indiceActual.value)
 
-    def enterEvent(self):
+    def enterEvent(self, event=None):
         """Show costIndex button when mouse enter in widget"""
         self.costIndex.setVisible(True)
 
-    def leaveEvent(self):
+    def leaveEvent(self, event=None):
         """Hide costIndex button when mouse leave widget"""
         self.costIndex.setVisible(False)
 
