@@ -45,7 +45,8 @@ from lib.openbabel import ConfBabel
 from lib.utilities import representacion
 import plots
 from tools.firstrun import which
-from UI import prefElemental, prefMEOS, prefPFD, prefPsychrometric, prefPetro
+from tools.qtelemental import Config as ConfigElemental
+from UI import prefMEOS, prefPFD, prefPsychrometric, prefPetro
 from UI.delegate import CheckEditor
 from UI.widgets import ColorSelector, NumericFactor, PathConfig
 
@@ -489,7 +490,7 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "Pseudocomponents")),
         ("button/applications.png", ConfApplications,
          QtWidgets.QApplication.translate("pychemqt", "Applications")),
-        ("button/periodicTable.png", prefElemental.Widget,
+        ("button/periodicTable.png", ConfigElemental,
          QtWidgets.QApplication.translate("pychemqt", "Elemental table")),
         ("button/tables.png", prefMEOS.Widget,
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
@@ -543,14 +544,16 @@ class Preferences(QtWidgets.QDialog):
 
         self.lista.currentItemChanged.connect(self.getIndex)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 2)
 
     def getIndex(self, item):
         """Get index of item"""
-        self.stacked.setCurrentIndex(item.data(0, QtCore.Qt.ItemDataRole.UserRole))
+        self.stacked.setCurrentIndex(
+            item.data(0, QtCore.Qt.ItemDataRole.UserRole))
 
     def value(self):
         """Return value for wizard"""

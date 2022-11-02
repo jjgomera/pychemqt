@@ -1,11 +1,12 @@
-tools.qtelemental package
-=========================
-This tool show a Mendeleev periodic table with several properties shown for the element with the mouse over.
+This tool show a Mendeleev periodic table with several properties shown for the
+element with the mouse over.
 
 .. image:: images/qtelemental.png 
     :alt: qtelemental 
 
-Other properties can be shown clicking in the desired element. The properties availables are:
+Other properties can be shown clicking in the desired element. The properties
+availables are:
+
     * Atomic number
     * Name
     * Alternate name
@@ -47,4 +48,14 @@ Other properties can be shown clicking in the desired element. The properties av
     * Color
     * Notes
 
-Furthermore the element name is available in several languages: English, Spanish, German, French, Portuguese, Italian, Chinese
+Furthermore the element name and several properties has internationalization
+support with several languages availables: English, Spanish, German, French,
+Portuguese, Italian, Chinese
+
+Configuration
+-------------
+
+.. image:: images/qtElementalConf.png
+    :alt: Periodic table configuration
+
+It's possible change the appareance of element button choosing the property

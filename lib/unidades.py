@@ -190,6 +190,7 @@ class unidad(float):
         is a tuple with format (Name, title)
         * __units_set__: Dict with standart unit for units system (*altsi*,
         *si*, *metric*, *cgs*, *english*)
+
     """
     __title__ = ""
     rates = {}

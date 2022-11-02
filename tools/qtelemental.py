@@ -15,15 +15,21 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Basic periodic table with properties dialog
-#   - qtelemental: Periodic table
-#   - boton: Element button in periodic table
-#   - ElementDialog: Dialog to show properties of components
-###############################################################################
+.. include:: qtelemental.rst
+
+
+The module include all related functionality
+    * :class:`qtelemental`: Periodic table dialog
+    * :class:`boton`: Element button in periodic table
+    * :class:`ElementDialog`: Dialog to show properties of components
+
+and its configuration
+    * :class:`Config`: Configuration widget
+    * :class:`ConfigDialog`: Dialog tool for standalone use
+'''
 
 
 from configparser import ConfigParser
@@ -304,8 +310,7 @@ class qtelemental(QtWidgets.QDialog):
             widget.setText("<font color={:}>{:}</font>".format(color, data))
 
     def configure(self):
-        from UI.prefElemental import Dialog
-        dlg = Dialog(self.Preferences)
+        dlg = ConfigDialog(self.Preferences)
         if dlg.exec():
             self.Preferences = dlg.value(self.Preferences)
             self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
@@ -686,6 +691,80 @@ class ElementDialog(QtWidgets.QDialog):
         return widget
 
 
+class Config(QtWidgets.QWidget):
+    """External applications configuration"""
+    def __init__(self, config=None, parent=None):
+        super().__init__(parent)
+        layout = QtWidgets.QGridLayout(self)
+
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Color by element:")),
+            1, 1)
+        colorby = ["Element", "serie", "group_element", "period", "block", "phase",
+                   "lattice_type", "space_group", "density_Solid",
+                   "density_Liq", "density_Gas", "date", "atomic_mass",
+                   "atomic_volume", "atomic_radius", "covalent_radius",
+                   "vanderWaals_radius", "electronegativity",
+                   "electron_affinity", "first_ionization", "Tf", "Tb",
+                   "Heat_f", "Heat_b", "Cp", "k", "T_debye"]
+        self.ElementalColorby = QtWidgets.QComboBox()
+        for c in colorby:
+            self.ElementalColorby.addItem(c)
+        layout.addWidget(self.ElementalColorby, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Color definition")),
+            2, 1)
+        self.ElementalDefinition = QtWidgets.QSpinBox()
+        self.ElementalDefinition.setMaximumWidth(50)
+        self.ElementalDefinition.setMinimum(5)
+        layout.addWidget(self.ElementalDefinition, 2, 2)
+        self.ElementalLog = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
+        layout.addWidget(self.ElementalLog, 3, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 4, 3)
+
+        if config.has_section("Applications"):
+            self.ElementalColorby.setCurrentText(
+                config.get("Applications", 'elementalColorby'))
+            self.ElementalDefinition.setValue(
+                config.getint("Applications", 'elementalDefinition'))
+            self.ElementalLog.setChecked(
+                config.getboolean("Applications", 'elementalLog'))
+
+    def value(self, config):
+        """Return value for main dialog"""
+        if not config.has_section("Applications"):
+            config.add_section("Applications")
+        config.set("Applications", "elementalColorby",
+                   self.ElementalColorby.currentText())
+        config.set("Applications", "elementalDefinition",
+                   str(self.ElementalDefinition.value()))
+        config.set("Applications", "elementalLog",
+                   str(self.ElementalLog.isChecked()))
+        return config
+
+
+class ConfigDialog(QtWidgets.QDialog):
+    """Dialog to config thermal method calculations"""
+    def __init__(self, config=None, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Qtelemental configuration"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.widget = Config(config)
+        layout.addWidget(self.widget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+    def value(self, config):
+        """Function result for wizard"""
+        config = self.widget.value(config)
+        return config
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
