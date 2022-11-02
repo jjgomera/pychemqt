@@ -55,7 +55,7 @@ Portuguese, Italian, Chinese
 Configuration
 -------------
 
-.. image:: images/qtElementalConf.png
+.. image:: images/qtelementalConf.png
     :alt: Periodic table configuration
 
 It's possible change the appareance of element button choosing the property

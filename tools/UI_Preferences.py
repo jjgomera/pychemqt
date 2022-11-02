@@ -37,16 +37,16 @@ from math import pi
 import os
 import sys
 
-from tools.qt import QtCore, QtGui, QtWidgets
-
 from equipment import equipments
 from lib import unidades, corriente
 from lib.openbabel import ConfBabel
 from lib.utilities import representacion
 import plots
 from tools.firstrun import which
+from tools.qt import QtCore, QtGui, QtWidgets
 from tools.qtelemental import Config as ConfigElemental
-from UI import prefMEOS, prefPFD, prefPsychrometric, prefPetro
+from tools.UI_psychrometry import Config as ConfigPsychrometry
+from UI import prefMEOS, prefPFD, prefPetro
 from UI.delegate import CheckEditor
 from UI.widgets import ColorSelector, NumericFactor, PathConfig
 
@@ -154,7 +154,8 @@ class ConfTooltipUnit(QtWidgets.QDialog):
         self.CGS.toggled.connect(partial(self.systems, "cgs"))
         lytSystems.addWidget(self.CGS)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed))
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed))
 
         self.eleccion = QtWidgets.QComboBox()
         layout.addWidget(self.eleccion)
@@ -180,7 +181,8 @@ class ConfTooltipUnit(QtWidgets.QDialog):
                 self.tabla[i].setRowHeight(j, 24)
                 self.tabla[i].setItem(j, 0, QtWidgets.QTableWidgetItem(""))
                 self.tabla[i].item(j, 0).setTextAlignment(
-                    QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                    QtCore.Qt.AlignmentFlag.AlignRight
+                    | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.tabla[i].openPersistentEditor(self.tabla[i].item(j, 0))
             self.fill(magnitud[0], i, config)
             self.eleccion.addItem(magnitud[1])
@@ -265,7 +267,8 @@ class ConfTooltipEntity(QtWidgets.QDialog):
             self.tabla[0].setRowHeight(i, 24)
             self.tabla[0].setItem(i, 0, QtWidgets.QTableWidgetItem(""))
             self.tabla[0].item(i, 0).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.tabla[0].openPersistentEditor(self.tabla[0].item(i, 0))
 
         if config.has_option("TooltipEntity", "Corriente"):
@@ -288,7 +291,8 @@ class ConfTooltipEntity(QtWidgets.QDialog):
                 self.tabla[-1].setRowHeight(j, 24)
                 self.tabla[-1].setItem(j, 0, QtWidgets.QTableWidgetItem(""))
                 self.tabla[-1].item(j, 0).setTextAlignment(
-                    QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                    QtCore.Qt.AlignmentFlag.AlignRight
+                    | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.tabla[-1].openPersistentEditor(self.tabla[-1].item(j, 0))
             self.fill(equipo.__name__, i+1, config)
             self.eleccion.addItem(equipo.title)
@@ -337,10 +341,12 @@ class ConfFormat(QtWidgets.QTableWidget):
             self.setRowHeight(i, 22)
             self.setItem(i, 0, QtWidgets.QTableWidgetItem(""))
             self.item(i, 0).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.setItem(i, 1, QtWidgets.QTableWidgetItem(""))
             self.item(i, 1).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
         if config.has_section("NumericFormat"):
             for i, magnitud in enumerate(unidades.MAGNITUDES):
@@ -349,7 +355,8 @@ class ConfFormat(QtWidgets.QTableWidget):
                 self.item(i, 0).setText(self.txt(kw))
                 self.item(i, 1).setText(representacion(pi, **kw))
 
-        self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.cellDoubleClicked.connect(self.showConfDialog)
 
     def showConfDialog(self, fila):
@@ -472,7 +479,6 @@ class ConfApplications(QtWidgets.QDialog):
         return config
 
 
-
 class Preferences(QtWidgets.QDialog):
     """Preferences main dialog"""
     classes = [
@@ -494,7 +500,7 @@ class Preferences(QtWidgets.QDialog):
          QtWidgets.QApplication.translate("pychemqt", "Elemental table")),
         ("button/tables.png", prefMEOS.Widget,
          QtWidgets.QApplication.translate("pychemqt", "mEoS")),
-        ("button/psychrometric.png", prefPsychrometric.Widget,
+        ("button/psychrometric.png", ConfigPsychrometry,
          QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
 
         ("button/moody.png", plots.Pref,
@@ -515,7 +521,8 @@ class Preferences(QtWidgets.QDialog):
         self.lista.setIconSize(QtCore.QSize(30, 30))
         self.lista.setHeaderHidden(True)
         self.lista.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Preferred)
+            QtWidgets.QSizePolicy.Policy.Maximum,
+            QtWidgets.QSizePolicy.Policy.Preferred)
         layout.addWidget(self.lista, 1, 1)
         self.stacked = QtWidgets.QStackedWidget()
         layout.addWidget(self.stacked, 1, 2)

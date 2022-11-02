@@ -15,26 +15,33 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Psychrometric graphic tools
-#   - PsychroPlot: Plot widget for psychrometric chart
-#   - PsychroInput: Widget with input for psychrometric state
-#   - UI_Psychrometry: Psychrometric chart
-###############################################################################
+.. include:: UI_psychrometry.rst
+
+
+The module include all related psychrometry chart functionality
+    * :class:`UI_Psychrometry`: Psychrometric chart
+    * :class:`PsychroPlot`: Plot widget for psychrometric chart
+    * :class:`PsychroInput`: Widget with input for psychrometric state
+
+and its configuration
+
+    * :class:`Config`: Psychrometric chart configuration
+    * :class:`ConfigDialog`: Dialog tool for standalone use
+'''
 
 
 from configparser import ConfigParser
 from functools import partial
 import logging
+from math import pi
 import os
 import json
 
-from tools.qt import QtCore, QtGui, QtWidgets
-from scipy import pi
 from numpy import arctan
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib.psycrometry import PsyState, PsychroState, _Pbar, _height
 from lib.config import conf_dir
@@ -42,7 +49,8 @@ from lib.plot import mpl
 from lib.unidades import (Temperature, Pressure, Length, Mass,
                           SpecificVolume, Enthalpy)
 from lib.utilities import formatLine
-from UI.widgets import Entrada_con_unidades
+from UI.prefMEOS import Isolinea
+from UI.widgets import Entrada_con_unidades, LineConfig
 
 
 class PsychroPlot(mpl):
@@ -101,6 +109,7 @@ class PsychroPlot(mpl):
         self.showPointData(state, chart)
 
     def clearCrux(self):
+        """Clear crux lines for click interaction in plot"""
         self.lx.set_ydata(0)
         self.ly.set_xdata(0)
 
@@ -137,19 +146,19 @@ class PsychroInput(QtWidgets.QWidget):
         constructor
         optional state parameter to assign initial psychrometric state
         """
-        super(PsychroInput, self).__init__(parent)
+        super().__init__(parent)
 
         self.state = PsychroState(P=101325)
 
         layout = QtWidgets.QGridLayout(self)
         self.checkPresion = QtWidgets.QRadioButton(
-                QtWidgets.QApplication.translate("pychemqt", "Pressure"))
+            QtWidgets.QApplication.translate("pychemqt", "Pressure"))
         layout.addWidget(self.checkPresion, 1, 1, 1, 1)
         self.P = Entrada_con_unidades(Pressure, value=101325)
         self.P.valueChanged.connect(self.changePressure)
         layout.addWidget(self.P, 1, 2, 1, 1)
         self.checkAltitud = QtWidgets.QRadioButton(
-                QtWidgets.QApplication.translate("pychemqt", "Altitude"))
+            QtWidgets.QApplication.translate("pychemqt", "Altitude"))
         layout.addWidget(self.checkAltitud, 2, 1, 1, 1)
         self.z = Entrada_con_unidades(Length, value=0)
         self.checkPresion.toggled.connect(self.P.setEnabled)
@@ -159,8 +168,8 @@ class PsychroInput(QtWidgets.QWidget):
         self.z.setEnabled(False)
         layout.addWidget(self.z, 2, 2, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            3, 1, 1, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 1, 1, 2)
 
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Select point")), 4, 1, 1, 2)
@@ -203,8 +212,8 @@ class PsychroInput(QtWidgets.QWidget):
         self.h.valueChanged.connect(partial(self.updateKwargs, "h"))
         layout.addWidget(self.h, 12, 2, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            13, 1, 1, 2)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 13, 1, 1, 2)
 
         self.setReadOnly(readOnly)
         self.updateInputs(0)
@@ -269,7 +278,7 @@ class PsychroInput(QtWidgets.QWidget):
 class UI_Psychrometry(QtWidgets.QDialog):
     """Psychrometric charts tool"""
     def __init__(self, parent=None):
-        super(UI_Psychrometry, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Psychrometric chart"))
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
@@ -304,15 +313,14 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.status = QtWidgets.QLabel()
         layout.addWidget(self.status, 3, 3)
 
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
-        butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "image.png")),
+        btBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
+        butonPNG = QtWidgets.QPushButton(QtGui.QIcon(os.path.join(
+            os.environ["pychemqt"], "images", "button", "image.png")),
             QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
         butonPNG.clicked.connect(self.plt.savePNG)
-        butonConfig = QtWidgets.QPushButton(QtGui.QIcon(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "configure.png")),
+        butonConfig = QtWidgets.QPushButton(QtGui.QIcon(os.path.join(
+            os.environ["pychemqt"], "images", "button", "configure.png")),
             QtWidgets.QApplication.translate("pychemqt", "Configure"))
         butonConfig.clicked.connect(self.configure)
         btBox.rejected.connect(self.reject)
@@ -328,8 +336,8 @@ class UI_Psychrometry(QtWidgets.QDialog):
             "pychemqt", "Started psychrometric chart tool"))
 
     def configure(self):
-        from UI.prefPsychrometric import Dialog
-        dlg = Dialog(self.Preferences)
+        """Show configuration dialog"""
+        dlg = ConfigDialog(self.Preferences)
         if dlg.exec():
             self.Preferences = dlg.value(self.Preferences)
             self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
@@ -418,68 +426,68 @@ class UI_Psychrometry(QtWidgets.QDialog):
         # Saturation line
         t = [Temperature(ti).config() for ti in data["t"]]
         Hs = data["Hs"]
-        format = formatLine(self.Preferences, "Psychr", "saturation")
+        fmt = formatLine(self.Preferences, "Psychr", "saturation")
         if chart:
-            self.plt.plot(t, Hs, **format)
+            self.plt.plot(t, Hs, **fmt)
         else:
-            self.plt.plot(Hs, t, **format)
+            self.plt.plot(Hs, t, **fmt)
 
         # Iso dew bulb temperaure lines, vertial lines in normal h-Tdb plot,
         # vertical in mollier diagram
-        format = formatLine(self.Preferences, "Psychr", "isotdb")
+        fmt = formatLine(self.Preferences, "Psychr", "isotdb")
         for i, T in enumerate(t):
             if chart:
-                self.plt.plot([T, T], [0, Hs[i]], **format)
+                self.plt.plot([T, T], [0, Hs[i]], **fmt)
             else:
-                self.plt.plot([0, Hs[i]], [T, T], **format)
+                self.plt.plot([0, Hs[i]], [T, T], **fmt)
 
         # Iso humidity lines, horizontal lines in normal h-Tdb plot, vertical
         # in mollier diagram
         H = data["H"]
         th = data["th"]
         tm = Temperature(self.Preferences.getfloat("Psychr", "isotdbEnd"))
-        format = formatLine(self.Preferences, "Psychr", "isow")
+        fmt = formatLine(self.Preferences, "Psychr", "isow")
         for i, H in enumerate(H):
             ts = Temperature(th[i]).config()
             if chart:
-                self.plt.plot([ts, tm.config()], [H, H], **format)
+                self.plt.plot([ts, tm.config()], [H, H], **fmt)
             else:
-                self.plt.plot([H, H], [ts, tm.config()], **format)
+                self.plt.plot([H, H], [ts, tm.config()], **fmt)
 
         # Iso relative humidity lines
-        format = formatLine(self.Preferences, "Psychr", "isohr")
+        fmt = formatLine(self.Preferences, "Psychr", "isohr")
         for Hr, H0 in list(data["Hr"].items()):
             if chart:
-                self.plt.plot(t, H0, **format)
+                self.plt.plot(t, H0, **fmt)
                 self.drawlabel("isohr", t, H0, Hr, "%")
             else:
-                self.plt.plot(H0, t, **format)
+                self.plt.plot(H0, t, **fmt)
                 self.drawlabel("isohr", H0, t, Hr, "%")
 
         # Iso wet bulb temperature lines
-        format = formatLine(self.Preferences, "Psychr", "isotwb")
+        fmt = formatLine(self.Preferences, "Psychr", "isotwb")
         for T, (H, Tw) in list(data["Twb"].items()):
             value = Temperature(T).config()
             Tw_conf = [Temperature(Twi).config() for Twi in Tw]
             txt = Temperature.text()
             if chart:
-                self.plt.plot(Tw_conf, H, **format)
+                self.plt.plot(Tw_conf, H, **fmt)
                 self.drawlabel("isotwb", Tw_conf, H, value, txt)
             else:
-                self.plt.plot(H, Tw_conf, **format)
+                self.plt.plot(H, Tw_conf, **fmt)
                 self.drawlabel("isotwb", H, Tw_conf, value, txt)
 
         # Isochor lines
-        format = formatLine(self.Preferences, "Psychr", "isochor")
+        fmt = formatLine(self.Preferences, "Psychr", "isochor")
         for v, (Td, H) in list(data["v"].items()):
             value = SpecificVolume(v).config()
             Td_conf = [Temperature(Tdi).config() for Tdi in Td]
             txt = SpecificVolume.text()
             if chart:
-                self.plt.plot(Td_conf, H, **format)
+                self.plt.plot(Td_conf, H, **fmt)
                 self.drawlabel("isochor", Td_conf, H, value, txt)
             else:
-                self.plt.plot(H, Td_conf, **format)
+                self.plt.plot(H, Td_conf, **fmt)
                 self.drawlabel("isochor", H, Td_conf, value, txt)
 
         if self.plt.state:
@@ -511,8 +519,148 @@ class UI_Psychrometry(QtWidgets.QDialog):
         return punto
 
     def setProgressValue(self, value):
+        """Update progress bar with new value"""
         self.progressBar.setValue(int(value))
         QtWidgets.QApplication.processEvents()
+
+
+class Config(QtWidgets.QWidget):
+    """Phychrometric chart configuration"""
+    lineas = [
+        ("IsoTdb", Temperature,
+         QtWidgets.QApplication.translate(
+             "pychemqt", "Iso dry bulb temperature")),
+        ("IsoW", float,
+         QtWidgets.QApplication.translate(
+             "pychemqt", "Iso absolute humidity")),
+        ("IsoHR", float,
+         QtWidgets.QApplication.translate(
+             "pychemqt", "Iso relative humidity")),
+        ("IsoTwb", Temperature,
+         QtWidgets.QApplication.translate(
+             "pychemqt", "Iso wet bulb temperature")),
+        ("Isochor", SpecificVolume,
+         QtWidgets.QApplication.translate("pychemqt", "Isochor"))]
+
+    def __init__(self, config, parent=None):
+        """constructor, config optional parameter to input project config"""
+        super().__init__(parent)
+        lyt = QtWidgets.QGridLayout(self)
+        lyt.setContentsMargins(0, 0, 0, 0)
+        scroll = QtWidgets.QScrollArea()
+        scroll.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
+        lyt.addWidget(scroll)
+
+        dlg = QtWidgets.QWidget()
+        layout = QtWidgets.QGridLayout(dlg)
+
+        groupType = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Chart type"))
+        groupLayout = QtWidgets.QVBoxLayout(groupType)
+        self.checkASHRAE = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate(
+                "pychemqt", "ASHRAE Chart, W vs Tdb"))
+        groupLayout.addWidget(self.checkASHRAE)
+        self.checkMollier = QtWidgets.QRadioButton(
+            QtWidgets.QApplication.translate("pychemqt", "Mollier Chart ix"))
+        groupLayout.addWidget(self.checkMollier)
+        layout.addWidget(groupType, 0, 1, 1, 2)
+
+        self.virial = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Use virial equation of state"))
+        layout.addWidget(self.virial, 1, 1, 1, 2)
+        self.coolProp = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Use external library coolProp (faster)"))
+        self.coolProp.setEnabled(False)
+        layout.addWidget(self.coolProp, 2, 2)
+        self.refprop = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+            "pychemqt", "Use external library refprop (fastest)"))
+        self.refprop.setEnabled(False)
+        layout.addWidget(self.refprop, 3, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
+
+        self.satlineconfig = LineConfig(
+            "saturation", QtWidgets.QApplication.translate(
+                "pychemqt", "Saturation Line Style"))
+        layout.addWidget(self.satlineconfig, 5, 1, 1, 2)
+        self.cruxlineconfig = LineConfig(
+            "crux", QtWidgets.QApplication.translate(
+                "pychemqt", "Crux Line Style"))
+        layout.addWidget(self.cruxlineconfig, 6, 1, 1, 2)
+        group = QtWidgets.QGroupBox(
+            QtWidgets.QApplication.translate("pychemqt", "Isolines"))
+        layout.addWidget(group, 7, 1, 1, 2)
+        layoutgroup = QtWidgets.QGridLayout(group)
+        self.comboIsolineas = QtWidgets.QComboBox()
+        layoutgroup.addWidget(self.comboIsolineas, 1, 1)
+        self.Isolineas = QtWidgets.QStackedWidget()
+        self.comboIsolineas.currentIndexChanged.connect(
+            self.Isolineas.setCurrentIndex)
+        layoutgroup.addWidget(self.Isolineas, 2, 1)
+        for name, unit, text in self.lineas:
+            self.comboIsolineas.addItem(text)
+            self.Isolineas.addWidget(Isolinea(unit, name, config, "Psychr"))
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 2)
+
+        scroll.setWidget(dlg)
+
+        if os.environ["CoolProp"]:
+            self.virial.toggled.connect(self.coolProp.setEnabled)
+        if os.environ["refprop"]:
+            self.virial.toggled.connect(self.refprop.setEnabled)
+
+        if config.has_section("Psychr"):
+            if config.getboolean("Psychr", 'chart'):
+                self.checkASHRAE.setChecked(True)
+            else:
+                self.checkMollier.setChecked(True)
+            self.virial.setChecked(config.getboolean("Psychr", 'virial'))
+            self.coolProp.setChecked(config.getboolean("Psychr", 'coolprop'))
+            self.refprop.setChecked(config.getboolean("Psychr", 'refprop'))
+            self.satlineconfig.setConfig(config, "Psychr")
+            self.cruxlineconfig.setConfig(config, "Psychr")
+
+    def value(self, config):
+        """Return value for main dialog"""
+        if not config.has_section("Psychr"):
+            config.add_section("Psychr")
+
+        config.set("Psychr", "chart", str(self.checkASHRAE.isChecked()))
+        config.set("Psychr", "virial", str(self.virial.isChecked()))
+        config.set("Psychr", "coolprop", str(self.coolProp.isChecked()))
+        config.set("Psychr", "refprop", str(self.refprop.isChecked()))
+        config = self.satlineconfig.value(config, "Psychr")
+        config = self.cruxlineconfig.value(config, "Psychr")
+
+        for indice in range(self.Isolineas.count()):
+            config = self.Isolineas.widget(indice).value(config)
+        return config
+
+
+class ConfigDialog(QtWidgets.QDialog):
+    """Dialog to config thermal method calculations"""
+    def __init__(self, config=None, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(QtWidgets.QApplication.translate(
+            "pychemqt", "Psychrometric chart configuration"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.widget = Config(config)
+        layout.addWidget(self.widget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+    def value(self, config):
+        """Function result for wizard"""
+        config = self.widget.value(config)
+        return config
 
 
 if __name__ == "__main__":
