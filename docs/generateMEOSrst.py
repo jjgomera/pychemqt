@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-import lib
+from lib.mEoS import __all__
 
 
 # Generate index file
@@ -35,7 +35,7 @@ txt += " is automatically updated here:" + os.linesep + os.linesep
 txt += ".. toctree::" + os.linesep
 txt += "    :maxdepth: 1" + os.linesep + os.linesep
 
-for mod in lib.mEoS.__all__:
+for mod in __all__:
     txt += "    lib.mEoS.%s" % mod.__name__ + os.linesep
     txt2 += "* :doc:`%s <lib.mEoS.%s>` (%s)" % (mod.__name__, mod.__name__,
                                                 mod.name) + os.linesep
@@ -46,7 +46,7 @@ with open("docs/lib.mEoSlst.rst", "w") as file:
     file.write(txt2)
 
 # Generate the individual compounds files
-for mod in lib.mEoS.__all__:
+for mod in __all__:
     txt = "lib.mEoS.%s" % mod.__name__
     txt += os.linesep + "="*len(txt) + os.linesep + os.linesep
 

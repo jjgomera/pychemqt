@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-import lib
+from lib.EoS import __all__, Cubic, cubic
 
 
 # Generate index file
@@ -33,7 +33,7 @@ txt += "program, the available equation include:" + os.linesep + os.linesep
 txt += ".. toctree::" + os.linesep
 txt += "    :maxdepth: 3" + os.linesep + os.linesep
 
-for mod in lib.EoS.__all__:
+for mod in __all__:
     txt += "    %s" % mod.__name__ + os.linesep
 
 with open("docs/lib.EoS.rst", "w") as file:
@@ -47,7 +47,7 @@ txt += "Library with the implemented cubic equation of state" + os.linesep
 txt += os.linesep + ".. toctree::" + os.linesep
 txt += "    :maxdepth: 1" + os.linesep + os.linesep
 
-for mod in lib.EoS.Cubic._all:
+for mod in Cubic._all:
     txt += "    lib.EoS.Cubic.%s" % mod.__name__ + os.linesep
 
 txt += os.linesep
@@ -65,7 +65,7 @@ txt += os.linesep + ".. include:: EoSnotimplement.rst" + os.linesep
 
 txt += "References" + os.linesep
 txt += "----------" + os.linesep
-for id, rf in lib.EoS.cubic.__doi__.items():
+for id, rf in cubic.__doi__.items():
     id = str(id)
     txt += ".. [%s] %s; %s. %s" % (id, rf["autor"], rf["title"], rf["ref"])
     txt += os.linesep
@@ -74,7 +74,7 @@ with open("docs/lib.EoS.Cubic.rst", "w") as file:
     file.write(txt)
 
 # Generate the cubic eos files
-for mod in lib.EoS.Cubic._all:
+for mod in Cubic._all:
     library = mod.__name__
 
     with open("docs/lib.EoS.Cubic.%s.rst" % library, "w") as file:
@@ -102,7 +102,7 @@ for mod in lib.EoS.Cubic._all:
             print(ref, file=file)
 
 # Generate files for simple equation methods
-for mod in lib.EoS.__all__:
+for mod in __all__:
     if len(mod._all) > 1:
         continue
 

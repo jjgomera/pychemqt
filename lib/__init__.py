@@ -36,9 +36,5 @@ for file in files:
     if fname != "__init__" and fname not in ["project"]:
         __all__.append(fname)
 
+# Sort without upper-lower case classification
 __all__.sort(key=lambda v: v.upper())
-
-
-for module in __all__:
-    child_module = "lib." + module
-    __import__(child_module)
