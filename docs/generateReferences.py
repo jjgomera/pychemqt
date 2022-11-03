@@ -24,6 +24,7 @@ import os
 
 import lib
 import plots
+import tools
 import UI
 
 # List with all references
@@ -130,7 +131,33 @@ for plt in plots.__all__:
         print("", file=file)
         print(".. automodule:: plots.%s" % plt, file=file)
         print("    :members:", file=file)
-        print("    :undoc-members:", file=file)
+        print("    :private-members:", file=file)
+        print("    :member-order: bysource", file=file)
+
+# Tools module
+# Generate index file
+txt = "tools package" + os.linesep
+txt += "=============" + os.linesep + os.linesep
+txt += "Submodules" + os.linesep
+txt += "----------" + os.linesep + os.linesep
+txt += ".. toctree::" + os.linesep
+txt += "    :maxdepth: 2" + os.linesep + os.linesep
+
+for mod in tools.__all__:
+    txt += "    tools.%s" % mod + os.linesep
+
+with open("docs/tools.rst", "w") as file:
+    file.write(txt)
+
+# Generate each module documentation file
+for tool in tools.__all__:
+    # Make tools.rst schemas
+    with open("docs/tools.%s.rst" % tool, "w") as file:
+        print("tools.%s module" % tool, file=file)
+        print("="*(len(tool)+6+7), file=file)
+        print("", file=file)
+        print(".. automodule:: tools.%s" % tool, file=file)
+        print("    :members:", file=file)
         print("    :private-members:", file=file)
         print("    :member-order: bysource", file=file)
 

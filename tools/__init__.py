@@ -22,7 +22,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Tools module
 ###############################################################################
 
+import glob
+import os
 
-__all__ = ["UI_confComponents", "UI_confTransport", "UI_confThermo",
-           "UI_confUnits", "UI_confResolution", "UI_databank",
-           "UI_unitConverter", "UI_psychrometry"]
+
+files = glob.glob(os.path.join("tools", "*.py"))
+
+__all__ = ["UI_Tables"]
+for file in files:
+    fname, ext = os.path.splitext(os.path.basename(file))
+    if fname != "__init__":
+        __all__.append(fname)
+
+# Sort without upper-lower case classification
+__all__.sort(key=lambda v: v.upper())
