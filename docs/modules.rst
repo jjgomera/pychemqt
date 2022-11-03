@@ -2,9 +2,10 @@ API reference
 =============
 
 .. toctree::
-   :maxdepth: 5
+    :maxdepth: 5
 
-   lib
-   tools
-   plots
-   UI
+    equipment
+    lib
+    plots
+    tools
+    UI

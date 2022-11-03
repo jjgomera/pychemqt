@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
+import equipment
 import lib
 import plots
 import tools
@@ -83,11 +84,6 @@ for library in lib.__all__:
         print("="*(len(library)+4+7), file=file)
         print("", file=file)
         print(".. automodule:: lib.%s" % library, file=file)
-        print("    :members:", file=file)
-        print("    :undoc-members:", file=file)
-        print("    :private-members:", file=file)
-        print("    :show-inheritance:", file=file)
-        print("    :member-order: bysource", file=file)
 
         if hasattr(module, "__doi__") and module.__doi__:
             print("", file=file)
@@ -131,9 +127,6 @@ for lib in plots.__all__:
         print("="*(len(lib)+6+7), file=file)
         print("", file=file)
         print(".. automodule:: plots.%s" % lib, file=file)
-        print("    :members:", file=file)
-        print("    :private-members:", file=file)
-        print("    :member-order: bysource", file=file)
 
 
 # Tools module
@@ -159,9 +152,6 @@ for tool in tools.__all__:
         print("="*(len(tool)+6+7), file=file)
         print("", file=file)
         print(".. automodule:: tools.%s" % tool, file=file)
-        print("    :members:", file=file)
-        # print("    :private-members:", file=file)
-        print("    :member-order: bysource", file=file)
 
 
 # UI module
@@ -187,11 +177,47 @@ for lib in UI.__all__:
         print("="*(len(lib)+3+7), file=file)
         print("", file=file)
         print(".. automodule:: UI.%s" % lib, file=file)
-        print("    :members:", file=file)
-        print("    :undoc-members:", file=file)
-        print("    :private-members:", file=file)
-        print("    :show-inheritance:", file=file)
-        print("    :member-order: bysource", file=file)
+
+
+# Equipment module
+# Generate index file
+txt = "equipment package" + os.linesep
+txt += "=================" + os.linesep + os.linesep
+txt += "Submodules" + os.linesep
+txt += "----------" + os.linesep + os.linesep
+txt += ".. toctree::" + os.linesep
+txt += "    :maxdepth: 1" + os.linesep + os.linesep
+
+for mod in equipment.__all__:
+    txt += "    equipment.%s" % mod + os.linesep
+
+with open("docs/equipment.rst", "w") as file:
+    file.write(txt)
+
+# Generate each module documentation file
+for equip in equipment.equipments:
+    # Make equipment.rst schemas
+    with open("docs/equipment.%s.rst" % equip.__name__, "w") as file:
+        print("equipment.%s module" % equip.__name__, file=file)
+        print("="*(len(equip.__name__)+10+7), file=file)
+        print("", file=file)
+        print(".. autoclass:: equipment.%s" % equip.__name__, file=file)
+
+        if equip.__doi__:
+            print("", file=file)
+            print(".. include:: equipment.%s_ref.rst" % equip.__name__, file=file)
+
+    if equip.__doi__:
+        with open("docs/equipment.%s_ref.rst" % equip.__name__, "w") as file:
+            print("References", file=file)
+            print("----------", file=file)
+            for id, rf in enumerate(equip.__doi__):
+                id = str(id+1)
+                print(".. [%s] %s; %s. %s" % (
+                    id, rf["autor"], rf["title"], rf["ref"]), file=file)
+
+                if rf not in total:
+                    total.append(rf)
 
 
 # Generate global references file
