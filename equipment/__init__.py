@@ -91,7 +91,6 @@ from equipment.gas_solid_liquid import Dryer, Scrubber
 from equipment.spreadsheet import Spreadsheet
 from equipment.reactor import Reactor
 
-
 # To get a list of equipment available to add to lib/firstrun.py file:
 # equipos=[equipment.__name__ for equipment in equipments]
 # print equipos
