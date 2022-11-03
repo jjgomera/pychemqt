@@ -28,9 +28,9 @@ import glob
 import os
 
 
-files = sorted(glob.glob(os.path.join("lib", "*.py")))
-__all__ = ["EoS", "mEoS"]
+files = glob.glob(os.path.join("lib", "*.py"))
 
+__all__ = ["EoS", "mEoS"]
 for file in files:
     fname, ext = os.path.splitext(os.path.basename(file))
     if fname != "__init__" and fname not in ["project"]:

@@ -22,8 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 The module include a unit converter graphical application
-    * :class:`UI_conversorUnidades`: Dialog to show all values of a magnitud
-    in every supported unit
+    * :class:`UI_conversorUnidades`: Dialog to show all values of a magnitud \
+in every supported unit
     * :class:`moneda`: Customized unit converter for currency values
     * :class:`UI_unitConverter`: Dialog to choose between the availables unit
 '''

@@ -142,7 +142,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinx.ext.autosummary',
+    # 'sphinx.ext.autosummary',
     # 'sphinx.ext.napoleon',
     'numpydoc',
 ]
@@ -415,13 +415,15 @@ numpydoc_show_inherited_class_members = True
 numpydoc_class_members_toctree = False
 
 # Autosummary configuration
-autosummary_generate = True
+# autosummary_generate = True
 
 # Autodoc configuration
 autodoc_default_options = {
+    'members': True,
     'member-order': 'bysource',
     'special-members': '__init__',
-    'undoc-members': None,
+    'undoc-members': False,
+    'private-members': True,
 }
 
 # Let mathjax render expression without internet conection
