@@ -15,16 +15,18 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Tools with units converter UI
-#    - UI_conversorUnidades: Dialog to show all values of a magnitud in every
-#        supported unit
-#    - moneda: Customized unit converter for currency values
-#    - UI_unitConverter: Dialog to choose between the availables unit
-###############################################################################
+.. include:: UI_unitConverter.rst
+
+
+The module include a unit converter graphical application
+    * :class:`UI_conversorUnidades`: Dialog to show all values of a magnitud
+    in every supported unit
+    * :class:`moneda`: Customized unit converter for currency values
+    * :class:`UI_unitConverter`: Dialog to choose between the availables unit
+'''
 
 
 import logging
@@ -44,7 +46,7 @@ class UI_conversorUnidades(QtWidgets.QDialog):
         unidad: unidades class
         valor: optional value to show
         """
-        super(UI_conversorUnidades, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(unidad.__title__)
         self.mutex = QtCore.QMutex()
 
@@ -70,14 +72,16 @@ class UI_conversorUnidades(QtWidgets.QDialog):
             self.tabla.setRowHeight(i, 24)
             self.tabla.setItem(i, 0, QtWidgets.QTableWidgetItem(""))
             self.tabla.item(i, 0).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
         for i, tip in enumerate(self.tooltip):
             self.tabla.item(i, 0).setToolTip(tip)
         self.tabla.cellChanged.connect(self.update)
         lyt.addWidget(self.tabla, 2, 1)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -87,10 +91,12 @@ class UI_conversorUnidades(QtWidgets.QDialog):
             self.fill(self.value)
 
     def fill(self, valor):
+        """Fill tables header with units titles"""
         for i, key in enumerate(self.unidad.__units__):
             self.tabla.item(i, 0).setText(valor.format(key))
 
     def update(self, fila, columna):
+        """Update tables with values"""
         if self.mutex.tryLock():
             new = self.tabla.item(fila, columna).text()
             self.value = self.unidad(float(new), self.unidad.__units__[fila])
@@ -104,7 +110,7 @@ class moneda(UI_conversorUnidades):
         - Add country flags to easy recognize
     """
     def __init__(self, valor=None, parent=None):
-        super(moneda, self).__init__(Currency, valor=valor, parent=parent)
+        super().__init__(Currency, valor=valor, parent=parent)
 
         self.fecha = QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Date") + ": " + self.value.date)
@@ -117,8 +123,9 @@ class moneda(UI_conversorUnidades):
         for i in range(len(Currency.__units__)):
             header = self.tabla.verticalHeaderItem(i)
             header.setIcon(QtGui.QIcon(QtGui.QPixmap(
-                os.environ["pychemqt"] +
-                "/images/flag/%s.png" % Currency.__units__[i])))
+                os.path.join(os.environ["pychemqt"], "images", "flag",
+                             "%s.png" % Currency.__units__[i]))))
+
             # Set backgroundcolor to better look or rare currencies
             # Use olimpic continent color code
             main = len(Currency._uMain)
@@ -145,6 +152,7 @@ class moneda(UI_conversorUnidades):
             header.setBackground(QtGui.QBrush(QtGui.QColor(color)))
 
     def getrates(self):
+        """Get rates exchanges from file"""
         filename = conf_dir + "moneda.dat"
         getrates(filename)
         self.value = Currency(self.value)
@@ -160,7 +168,7 @@ class UI_unitConverter(QtWidgets.QDialog):
     """
 
     def __init__(self, parent=None):
-        super(UI_unitConverter, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Units converter"))
 
