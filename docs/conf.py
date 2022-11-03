@@ -411,7 +411,7 @@ intersphinx_mapping = {'https://docs.python.org/': None}
 
 # Numpydoc configuration
 numpydoc_show_class_members = True
-numpydoc_show_inherited_class_members = True
+numpydoc_show_inherited_class_members = False
 numpydoc_class_members_toctree = False
 
 # Autosummary configuration
@@ -422,8 +422,9 @@ autodoc_default_options = {
     'members': True,
     'member-order': 'bysource',
     'special-members': '__init__',
-    'undoc-members': False,
+    'undoc-members': True,
     'private-members': True,
+    'show-inheritance': True,
 }
 
 # Let mathjax render expression without internet conection
