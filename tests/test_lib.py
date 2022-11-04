@@ -26,7 +26,8 @@ import lib
 from lib import EoS
 
 TestLib = TestSuite()
-for mname in lib.__all__[2:]:
+for mname in lib.__all__:
+    __import__("lib." + mname)
     module = lib.__getattribute__(mname)
     TestLib.addTest(DocTestSuite(module))
 
