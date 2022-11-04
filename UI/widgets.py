@@ -1094,6 +1094,33 @@ class MarkerCombo(CustomCombo):
             else:
                 self.addItem(self.text[key])
 
+class BrushCombo(QtWidgets.QComboBox):
+    """Custom QComboBox to choose a QBrush style shown the selected style"""
+
+    BRUSH = [
+        QtCore.Qt.BrushStyle.NoBrush,
+        QtCore.Qt.BrushStyle.Dense7Pattern,
+        QtCore.Qt.BrushStyle.Dense6Pattern,
+        QtCore.Qt.BrushStyle.Dense5Pattern,
+        QtCore.Qt.BrushStyle.Dense4Pattern,
+        QtCore.Qt.BrushStyle.Dense3Pattern,
+        QtCore.Qt.BrushStyle.Dense2Pattern,
+        QtCore.Qt.BrushStyle.Dense1Pattern,
+        QtCore.Qt.BrushStyle.SolidPattern,
+        QtCore.Qt.BrushStyle.HorPattern,
+        QtCore.Qt.BrushStyle.VerPattern,
+        QtCore.Qt.BrushStyle.CrossPattern,
+        QtCore.Qt.BrushStyle.BDiagPattern,
+        QtCore.Qt.BrushStyle.FDiagPattern,
+        QtCore.Qt.BrushStyle.DiagCrossPattern]
+
+    def paintEvent(self, event):
+        """Paint the widget with the selected QBrush"""
+        painter = QtGui.QPainter(self)
+        brush = self.BRUSH[self.currentIndex()]
+        painter.setBrush(brush)
+        painter.drawRect(event.rect())
+
 
 class NumericFactor(QtWidgets.QDialog):
     """Numeric format configuration dialog"""

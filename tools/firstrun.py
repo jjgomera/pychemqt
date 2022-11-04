@@ -134,6 +134,8 @@ def Preferences():
     conf.add_section("PFD")
     conf.set("PFD", "x", "800")
     conf.set("PFD", "y", "600")
+    conf.set("PFD", "brush", "1")
+    conf.set("PFD", "brushColor", "#aaaaaa")
     conf.set("PFD", "Color_Entrada", "#c80000")
     conf.set("PFD", "Color_Salida", "#0000c8")
     conf.set("PFD", "Color_Stream", "#000000")

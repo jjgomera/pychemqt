@@ -31,7 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from tools.qt import QtCore, QtGui, QtWidgets
 
-from UI.widgets import ColorSelector, Entrada_con_unidades, PFDLineCombo
+from UI.widgets import (ColorSelector, Entrada_con_unidades, PFDLineCombo,
+                        BrushCombo)
 from tools import UI_confResolution
 
 
@@ -49,24 +50,45 @@ class Widget(QtWidgets.QDialog):
         layout = QtWidgets.QGridLayout(dlg)
 
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Input color")), 1, 1)
+            QtWidgets.QApplication.translate("pychemqt", "Brush color")), 1, 1)
+        self.ColorButtonBrush = ColorSelector()
+        layout.addWidget(self.ColorButtonBrush, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Brush style")), 2, 1)
+        self.brush = BrushCombo()
+        layout.addWidget(self.brush, 2, 2)
+        for style in self.brush.BRUSH:
+            pix = QtGui.QPixmap(50, 50)
+            pix.fill(QtGui.QColorConstants.White)
+
+            painter = QtGui.QPainter()
+            painter.begin(pix)
+            brush = QtGui.QBrush(style)
+            painter.setBrush(brush)
+            painter.drawRect(0, 0, 50, 50)
+            icon = QtGui.QIcon(pix)
+            painter.end()
+            self.brush.addItem(icon, str(style).split(".")[-1])
+
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Input color")), 4, 1)
         self.ColorButtonEntrada = ColorSelector()
-        layout.addWidget(self.ColorButtonEntrada, 1, 2)
+        layout.addWidget(self.ColorButtonEntrada, 4, 2)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Output color:")), 2, 1)
+            "pychemqt", "Output color:")), 5, 1)
         self.ColorButtonSalida = ColorSelector()
-        layout.addWidget(self.ColorButtonSalida, 2, 2)
+        layout.addWidget(self.ColorButtonSalida, 5, 2)
 
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "Line format"))
-        layout.addWidget(group, 3, 1, 1, 3)
+        layout.addWidget(group, 6, 1, 1, 3)
         lyt = QtWidgets.QHBoxLayout(group)
         self.lineFormat = ConfLine()
         lyt.addWidget(self.lineFormat)
 
         group = QtWidgets.QGroupBox(
             QtWidgets.QApplication.translate("pychemqt", "PFD resolution"))
-        layout.addWidget(group, 4, 1, 1, 3)
+        layout.addWidget(group, 7, 1, 1, 3)
         lyt = QtWidgets.QHBoxLayout(group)
         self.resolution = UI_confResolution.UI_confResolution_widget(config)
         lyt.addWidget(self.resolution)
@@ -77,6 +99,9 @@ class Widget(QtWidgets.QDialog):
         scroll.setWidget(dlg)
 
         if config and config.has_section("PFD"):
+            self.ColorButtonBrush.setColor(
+                config.get("PFD", 'brushColor'))
+            self.brush.setCurrentIndex(config.getint("PFD", "brush"))
             self.ColorButtonEntrada.setColor(
                 config.get("PFD", 'Color_Entrada'))
             self.ColorButtonSalida.setColor(config.get("PFD", 'Color_Salida'))
@@ -98,6 +123,9 @@ class Widget(QtWidgets.QDialog):
         if not config.has_section("PFD"):
             config.add_section("PFD")
         config = self.resolution.value(config)
+        config.set("PFD", "brushColor",
+                   self.ColorButtonBrush.color.name())
+        config.set("PFD", "brush", str(self.brush.currentIndex()))
         config.set("PFD", "Color_Entrada",
                    self.ColorButtonEntrada.color.name())
         config.set("PFD", "Color_Salida", self.ColorButtonSalida.color.name())

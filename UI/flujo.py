@@ -66,18 +66,16 @@ from lib.thread import WaitforClick
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
 from UI.prefPFD import ConfLine, ConfLineDialog, Dialog
-from UI.widgets import createAction, Table_Graphics, PathConfig, ClickableLabel
+from UI.widgets import (createAction, Table_Graphics, PathConfig,
+                        ClickableLabel, BrushCombo)
 from equipment import flux, spreadsheet, UI_equipments
 from equipment.parents import equipment
 from tools import UI_confResolution, UI_confThermo
 from tools.qt import QtCore, QtGui, QtSvgWidgets, QtWidgets
 
 
-# TODO: Add configuration dialog
-factor = 5     # Value for keyboard navigation
-
-brushColor = "#aaaaaa"
-brushPattern = QtCore.Qt.BrushStyle.Dense7Pattern
+# Value for keyboard navigation, unnecessary add to configuration
+factor = 5
 
 
 class GraphicsView(QtWidgets.QGraphicsView):
@@ -98,8 +96,12 @@ class GraphicsView(QtWidgets.QGraphicsView):
         self.setDragMode(QtWidgets.QGraphicsView.DragMode.RubberBandDrag)
         self.setRenderHints(QtGui.QPainter.RenderHint.Antialiasing
                             | QtGui.QPainter.RenderHint.TextAntialiasing)
+
+        brushColor = Preferences.get("PFD", "brushColor")
+        brushPattern = BrushCombo.BRUSH[Preferences.getint("PFD", "brush")]
         self.setBackgroundBrush(
             QtGui.QBrush(QtGui.QColor(brushColor), brushPattern))
+
         self.setMouseTracking(True)
         # self.setAcceptDrops(True)
 
