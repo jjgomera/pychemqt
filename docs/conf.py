@@ -419,12 +419,12 @@ numpydoc_class_members_toctree = False
 
 # Autodoc configuration
 autodoc_default_options = {
-    'members': True,
+    'members': None,
     'member-order': 'bysource',
     'special-members': '__init__',
-    'undoc-members': True,
-    'private-members': True,
-    'show-inheritance': True,
+    'undoc-members': None,
+    'private-members': None,
+    'show-inheritance': None,
 }
 
 # Let mathjax render expression without internet conection
