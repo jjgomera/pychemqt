@@ -65,9 +65,8 @@ from lib.project import Project
 from lib.thread import WaitforClick
 from UI import texteditor, UI_corriente
 from UI.plots import Plot_Distribucion
-from UI.prefPFD import ConfLine, ConfLineDialog, Dialog
-from UI.widgets import (createAction, Table_Graphics, PathConfig,
-                        ClickableLabel, BrushCombo)
+from UI.prefPFD import ConfLine, ConfLineDialog, Dialog, BrushCombo
+from UI.widgets import createAction, Table_Graphics, PathConfig, ClickableLabel
 from equipment import flux, spreadsheet, UI_equipments
 from equipment.parents import equipment
 from tools import UI_confResolution, UI_confThermo

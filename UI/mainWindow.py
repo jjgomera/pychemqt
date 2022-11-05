@@ -30,6 +30,7 @@ import time
 from tools.qt import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, plots, viewComponents
+from UI.prefPFD import BrushCombo
 from UI.petro import Definicion_Petro
 from UI.widgets import createAction
 import plots as charts
@@ -1633,10 +1634,23 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 "pychemqt", "pychemqt configuration change"), False)
 
     def changePreferenceLive(self):
+        """Upgrade UI when change preferences"""
+
+        # Upgrade tray icon status
         if Preferences.getboolean("General", 'Tray'):
             self.systemtray.show()
         else:
             self.systemtray.hide()
+
+        # Change PFD brush
+        if self.currentMdi:
+            for subwindow in self.currentMdi.subWindowList():
+                if isinstance(subwindow.widget(), flujo.GraphicsView):
+                    brushColor = Preferences.get("PFD", "brushColor")
+                    stl = BrushCombo.BRUSH[Preferences.getint("PFD", "brush")]
+                    subwindow.widget().setBackgroundBrush(
+                        QtGui.QBrush(QtGui.QColor(brushColor), stl))
+
         config.Preferences = Preferences
 
     def activeControl(self, boolean):

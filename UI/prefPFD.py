@@ -15,31 +15,30 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library to configure process flow diagram (PFD)
-#
-#   - Widget: PFD configuration
-#   - Dialog: Dialog tool for standalone use
-#   - ConfLine: Composite widget with line format configuration tools
-#   - ConfLineDialog: ConfLine dialog for standalone use
-###############################################################################
+Library to configure process flow diagram (PFD)
+
+    * :class:`Widget`: PFD configuration
+    * :class:`Dialog`: Dialog tool for standalone use
+    * :class:`ConfLine`: Composite widget with line format configuration tools
+    * :class:`ConfLineDialog`: ConfLine dialog for standalone use
+'''
 
 
 import os
-from tools.qt import QtCore, QtGui, QtWidgets
 
-from UI.widgets import (ColorSelector, Entrada_con_unidades, PFDLineCombo,
-                        BrushCombo)
+from UI.widgets import ColorSelector, Entrada_con_unidades
+from UI.widgets import PFDLineCombo
 from tools import UI_confResolution
+from tools.qt import QtCore, QtGui, QtWidgets
 
 
 class Widget(QtWidgets.QDialog):
     """Flow Diagram configuration"""
     def __init__(self, config=None, parent=None):
-        super(Widget, self).__init__(parent)
+        super().__init__(parent)
 
         lyt = QtWidgets.QGridLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
@@ -120,6 +119,7 @@ class Widget(QtWidgets.QDialog):
             self.lineFormat.width.setValue(config.getfloat("PFD", 'Width'))
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         if not config.has_section("PFD"):
             config.add_section("PFD")
         config = self.resolution.value(config)
@@ -146,7 +146,7 @@ class Widget(QtWidgets.QDialog):
 class Dialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
-        super(Dialog, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "PFD configuration"))
         layout = QtWidgets.QVBoxLayout(self)
@@ -165,6 +165,45 @@ class Dialog(QtWidgets.QDialog):
         return config
 
 
+class BrushCombo(QtWidgets.QComboBox):
+    """Custom QComboBox to choose a QBrush style shown the selected style"""
+
+    BRUSH = [
+        QtCore.Qt.BrushStyle.NoBrush,
+        QtCore.Qt.BrushStyle.Dense7Pattern,
+        QtCore.Qt.BrushStyle.Dense6Pattern,
+        QtCore.Qt.BrushStyle.Dense5Pattern,
+        QtCore.Qt.BrushStyle.Dense4Pattern,
+        QtCore.Qt.BrushStyle.Dense3Pattern,
+        QtCore.Qt.BrushStyle.Dense2Pattern,
+        QtCore.Qt.BrushStyle.Dense1Pattern,
+        QtCore.Qt.BrushStyle.SolidPattern,
+        QtCore.Qt.BrushStyle.HorPattern,
+        QtCore.Qt.BrushStyle.VerPattern,
+        QtCore.Qt.BrushStyle.CrossPattern,
+        QtCore.Qt.BrushStyle.BDiagPattern,
+        QtCore.Qt.BrushStyle.FDiagPattern,
+        QtCore.Qt.BrushStyle.DiagCrossPattern]
+
+    def paintEvent(self, event):
+        """Paint the widget with the selected QBrush"""
+        # Paint default element
+        painter = QtWidgets.QStylePainter(self)
+        opt = QtWidgets.QStyleOptionComboBox()
+        self.initStyleOption(opt)
+        painter.drawComplexControl(
+            QtWidgets.QStyle.ComplexControl.CC_ComboBox, opt)
+
+        # Apply selected brush
+        brush = self.BRUSH[self.currentIndex()]
+        painter.setBrush(brush)
+
+        # Don't paint the arrow region in QComboBox
+        rect = event.rect()
+        rect.setRight(rect.right()-24)
+        painter.drawRect(rect)
+
+
 class ConfLine(QtWidgets.QWidget):
     """Composite widget with line format configuration tools"""
     join = [QtCore.Qt.PenJoinStyle.MiterJoin,
@@ -180,7 +219,7 @@ class ConfLine(QtWidgets.QWidget):
             QtCore.Qt.PenStyle.DashDotDotLine]
 
     def __init__(self, pen=None, parent=None):
-        super(ConfLine, self).__init__(parent)
+        super().__init__(parent)
         lyt = QtWidgets.QVBoxLayout(self)
 
         lyt1 = QtWidgets.QHBoxLayout()
@@ -207,9 +246,9 @@ class ConfLine(QtWidgets.QWidget):
             "pychemqt", "Mitter Limit"))
         lyt2.addWidget(self.mitterLimit)
         toolJoinMitter = QtWidgets.QToolButton()
-        toolJoinMitter.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "stroke-join-miter.png"))))
+        toolJoinMitter.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            os.environ["pychemqt"], "images", "button",
+            "stroke-join-miter.png"))))
         toolJoinMitter.setIconSize(QtCore.QSize(24, 24))
         toolJoinMitter.setCheckable(True)
         toolJoinMitter.setToolTip(QtWidgets.QApplication.translate(
@@ -218,9 +257,9 @@ class ConfLine(QtWidgets.QWidget):
             "filled"))
         lyt2.addWidget(toolJoinMitter)
         toolJoinBevel = QtWidgets.QToolButton()
-        toolJoinBevel.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "stroke-join-bevel.png"))))
+        toolJoinBevel.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            os.environ["pychemqt"], "images", "button",
+            "stroke-join-bevel.png"))))
         toolJoinBevel.setIconSize(QtCore.QSize(24, 24))
         toolJoinBevel.setCheckable(True)
         toolJoinBevel.setToolTip(QtWidgets.QApplication.translate(
@@ -229,9 +268,9 @@ class ConfLine(QtWidgets.QWidget):
             "filled"))
         lyt2.addWidget(toolJoinBevel)
         toolJoinRound = QtWidgets.QToolButton()
-        toolJoinRound.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "stroke-join-round.png"))))
+        toolJoinRound.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            os.environ["pychemqt"], "images", "button",
+            "stroke-join-round.png"))))
         toolJoinRound.setIconSize(QtCore.QSize(24, 24))
         toolJoinRound.setCheckable(True)
         toolJoinRound.setToolTip(QtWidgets.QApplication.translate(
@@ -250,9 +289,9 @@ class ConfLine(QtWidgets.QWidget):
         lyt3.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Cap")))
         toolCapFlat = QtWidgets.QToolButton()
-        toolCapFlat.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "stroke-cap-butt.png"))))
+        toolCapFlat.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            os.environ["pychemqt"], "images", "button",
+            "stroke-cap-butt.png"))))
         toolCapFlat.setIconSize(QtCore.QSize(24, 24))
         toolCapFlat.setCheckable(True)
         toolCapFlat.setToolTip(QtWidgets.QApplication.translate(
@@ -261,18 +300,18 @@ class ConfLine(QtWidgets.QWidget):
             "the line"))
         lyt3.addWidget(toolCapFlat)
         toolCapRound = QtWidgets.QToolButton()
-        toolCapRound.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "stroke-cap-round.png"))))
+        toolCapRound.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            os.environ["pychemqt"], "images", "button",
+            "stroke-cap-round.png"))))
         toolCapRound.setIconSize(QtCore.QSize(24, 24))
         toolCapRound.setCheckable(True)
         toolCapRound.setToolTip(QtWidgets.QApplication.translate(
             "pychemqt", "Round Cap: A rounded line end"))
         lyt3.addWidget(toolCapRound)
         toolCapSquare = QtWidgets.QToolButton()
-        toolCapSquare.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "stroke-cap-square.png"))))
+        toolCapSquare.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            os.environ["pychemqt"], "images", "button",
+            "stroke-cap-square.png"))))
         toolCapSquare.setIconSize(QtCore.QSize(24, 24))
         toolCapSquare.setCheckable(True)
         toolCapSquare.setToolTip(QtWidgets.QApplication.translate(
@@ -313,8 +352,9 @@ class ConfLine(QtWidgets.QWidget):
             self.dashOffset.setValue(pen.dashOffset())
             self.width.setValue(pen.widthF())
 
-    def mitterlimitEnabled(self, id):
-        self.mitterLimit.setEnabled(id == -2)
+    def mitterlimitEnabled(self, index):
+        """Enable mitterLimit widget only if joinmitter is enabled"""
+        self.mitterLimit.setEnabled(index == -2)
 
     def pen(self):
         """Return a QPen with the live configuration"""
@@ -332,25 +372,12 @@ class ConfLineDialog(QtWidgets.QDialog, ConfLine):
     """Dialog derived ConfLine for standalone use"""
 
     def __init__(self, pen=None, parent=None):
-        super(ConfLineDialog, self).__init__(pen)
+        super().__init__(pen, parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Edit format line"))
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         self.layout().addWidget(buttonBox)
-
-
-if __name__ == "__main__":
-    import sys
-    from configparser import ConfigParser
-    app = QtWidgets.QApplication(sys.argv)
-
-    conf_dir = os.path.expanduser('~') + "/.pychemqt/"
-    config = ConfigParser()
-    config.read(conf_dir+"pychemqtrc")
-
-    Dialog = Dialog(config)
-    Dialog.show()
-    sys.exit(app.exec())
