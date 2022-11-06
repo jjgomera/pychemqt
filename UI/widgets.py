@@ -685,10 +685,11 @@ class ColorSelector(QtWidgets.QWidget):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed))
 
+        self.isAlpha = isAlpha
         if isAlpha:
-            self.isAlpha = QtGui.QColor.NameFormat.HexArgb
+            self.name = QtGui.QColor.NameFormat.HexArgb
         else:
-            self.isAlpha = QtGui.QColor.NameFormat.HexRgb
+            self.name = QtGui.QColor.NameFormat.HexRgb
 
         r = int(color[1:3], 16)
         g = int(color[3:5], 16)
@@ -703,8 +704,8 @@ class ColorSelector(QtWidgets.QWidget):
             color = QtGui.QColor(color)
             color.setAlpha(alpha)
         self.color = color
-        self.button.setStyleSheet("background: %s;" % color.name(self.isAlpha))
-        self.RGB.setText(color.name(self.isAlpha))
+        self.button.setStyleSheet("background: %s;" % color.name(self.name))
+        self.RGB.setText(color.name(self.name))
 
     def ColorButtonClicked(self):
         """Show the QColorDialog to let user choose new color"""
@@ -720,10 +721,14 @@ class ColorSelector(QtWidgets.QWidget):
         txt = self.RGB.text()
 
         # Avoid the editing finished with no changes
-        if txt == self.color.name(self.isAlpha):
+        if txt == self.color.name(self.name):
             return
 
         # Define the new color from text
+        # From Qt 6.4 qcolor can read a color by name including the SVG color
+        # keyword names
+        # https://www.w3.org/TR/SVG11/types.html#ColorKeywords
+        # Anyway it's retain this manual reading code for qt5 compatibility
         if self.isAlpha:
             alpha = int(txt[1:3], 16)
             r = int(txt[3:5], 16)
@@ -736,7 +741,7 @@ class ColorSelector(QtWidgets.QWidget):
         # Only accept new value if it's valid
         if color.isValid():
             self.setColor(color)
-            self.valueChanged.emit(color.name(self.isAlpha))
+            self.valueChanged.emit(color.name(self.name))
 
 
 class DragButton(QtWidgets.QToolButton):
