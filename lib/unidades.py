@@ -2137,7 +2137,9 @@ class Currency(unidad):
       ("tmt", QtWidgets.QApplication.translate("pychemqt", "Turkmenistan manat"), "T"),
       ("uzs", QtWidgets.QApplication.translate("pychemqt", "Uzbekistan som"), "som"),
 
-      ("bdt", QtWidgets.QApplication.translate("pychemqt", "Bangladeshi taka"), "৳"),
+      # Disabling bangladeshi taka symbol becaus raise opentype warning
+      # ("bdt", QtWidgets.QApplication.translate("pychemqt", "Bangladeshi taka"), "৳"),
+      ("bdt", QtWidgets.QApplication.translate("pychemqt", "Bangladeshi taka"), ""),
       ("btn", QtWidgets.QApplication.translate("pychemqt", "Bhutanese ngultrum"), "Nu."),
       ("cnh", QtWidgets.QApplication.translate("pychemqt", "Renminbi"), "¥"),
       ("khr", QtWidgets.QApplication.translate("pychemqt", "Cambodian riel"), "៛"),
