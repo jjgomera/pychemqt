@@ -392,9 +392,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         self.parent().list.updateList(self.objects)
 
     def configure(self):
-        dlg = Dialog()
+        dlg = Dialog(Preferences)
         if dlg.exec():
-            pass
+            preferences = dlg.value(Preferences)
+            self.parent().updatePreferences(preferences)
 
     def waitClick(self, numClick, tipo, object):
         self.Pos = []

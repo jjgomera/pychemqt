@@ -1623,15 +1623,19 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         dialog = UI_Preferences.Preferences(Preferences)
         if dialog.exec():
             preferences = dialog.value()
-            preferences.write(open(conf_dir+"pychemqtrc", "w"))
-            Preferences = ConfigParser()
-            Preferences.read(conf_dir+"pychemqtrc")
+            self.updatePreferences(preferences)
             self.updateStatus(QtWidgets.QApplication.translate(
                 "pychemqt", "pychemqt configuration change"), True)
-            self.changePreferenceLive()
         else:
             self.updateStatus(QtWidgets.QApplication.translate(
                 "pychemqt", "pychemqt configuration change"), False)
+
+    def updatePreferences(self, preferences):
+        preferences.write(open(conf_dir+"pychemqtrc", "w"))
+        Preferences = ConfigParser()
+        Preferences.read(conf_dir+"pychemqtrc")
+        config.Preferences = Preferences
+        self.changePreferenceLive()
 
     def changePreferenceLive(self):
         """Upgrade UI when change preferences"""
@@ -1650,8 +1654,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     stl = BrushCombo.BRUSH[Preferences.getint("PFD", "brush")]
                     subwindow.widget().setBackgroundBrush(
                         QtGui.QBrush(QtGui.QColor(brushColor), stl))
-
-        config.Preferences = Preferences
 
     def activeControl(self, boolean):
         self.fileSaveAsAction.setEnabled(boolean)
