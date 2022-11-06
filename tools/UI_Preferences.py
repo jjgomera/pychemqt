@@ -15,19 +15,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library to show/configure pychemqt general preferences
-#
-#   Preferences: Preferences main dialog
-#   - ConfGeneral: General configuration options
-#   - ConfTooltipUnit: Tooltip with unit alternate value configuration
-#   - ConfFormat: Numeric format configuration
-#   - ConfApplications: External applications configuration
-#   - ConfTooltipEntity: Entity properties in popup window configuration
-###############################################################################
+Library to show/configure pychemqt general preferences
+
+    * :class:`ConfGeneral`: General configuration options
+    * :class:`ConfTooltipUnit`: Tooltip with unit alternate value configuration
+    * :class:`ConfFormat`: Numeric format configuration
+    * :class:`ConfApplications`: External applications configuration
+    * :class:`ConfTooltipEntity`: Entity properties in popup configuration
+'''
 
 
 from ast import literal_eval
@@ -164,24 +162,25 @@ class ConfTooltipUnit(QtWidgets.QDialog):
         layout.addWidget(self.stacked)
 
         self.tabla = []
-        for i, magnitud in enumerate(unidades.MAGNITUDES[:-1]):
+        for magnitud in unidades.MAGNITUDES[:-1]:
+            # Discard last magnitud, dimensionless
             textos = magnitud[2].__text__
-            self.tabla.append(QtWidgets.QTableWidget())
-            self.stacked.addWidget(self.tabla[i])
+            tabla = QtWidgets.QTableWidget()
+            self.stacked.addWidget(tabla)
 
-            self.tabla[i].setRowCount(len(textos))
-            self.tabla[i].setColumnCount(1)
-            self.tabla[i].setColumnWidth(0, 16)
-            self.tabla[i].setItemDelegateForColumn(0, CheckEditor(self))
-            self.tabla[i].horizontalHeader().setVisible(False)
+            tabla.setRowCount(len(textos))
+            tabla.setColumnCount(1)
+            tabla.setColumnWidth(0, 16)
+            tabla.setItemDelegateForColumn(0, CheckEditor(self))
+            tabla.horizontalHeader().setVisible(False)
 
             for j, txt in enumerate(textos):
-                self.tabla[i].setRowHeight(j, 24)
-                self.tabla[i].setItem(j, 0, QtWidgets.QTableWidgetItem(""))
-                self.tabla[i].item(j, 0).setTextAlignment(
+                tabla.setRowHeight(j, 24)
+                tabla.setItem(j, 0, QtWidgets.QTableWidgetItem(""))
+                tabla.item(j, 0).setTextAlignment(
                     QtCore.Qt.AlignmentFlag.AlignRight
                     | QtCore.Qt.AlignmentFlag.AlignVCenter)
-                self.tabla[i].openPersistentEditor(self.tabla[i].item(j, 0))
+                tabla.openPersistentEditor(tabla.item(j, 0))
 
                 header = QtWidgets.QTableWidgetItem(txt)
                 if magnitud[0] == "Currency":
@@ -190,11 +189,11 @@ class ConfTooltipUnit(QtWidgets.QDialog):
                         "%s.png" % unidades.Currency.__units__[j]))))
                     header.setToolTip(unidades.Currency.__tooltip__[j])
 
-                self.tabla[i].setVerticalHeaderItem(j, header)
+                tabla.setVerticalHeaderItem(j, header)
 
-            self.fill(magnitud[0], i, config)
+            self.fill(magnitud[0], tabla, config)
+            self.tabla.append(tabla)
             self.eleccion.addItem(magnitud[1])
-
 
         if config.has_section("Tooltip"):
             self.checkShow.setChecked(config.getboolean("Tooltip", "Show"))
@@ -204,12 +203,13 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             self.Metric.setChecked(config.getboolean("Tooltip", "Metric"))
             self.CGS.setChecked(config.getboolean("Tooltip", "CGS"))
 
-    def fill(self, magnitud, tabla, config):
+    @staticmethod
+    def fill(magnitud, tabla, config):
         """Fill the the table with the data"""
         if config.has_section("Tooltip"):
             lst = map(int, config.get("Tooltip", magnitud).split(","))
             for i in lst:
-                self.tabla[tabla].item(i, 0).setText("true")
+                tabla.item(i, 0).setText("true")
 
     def checkShow_Toggled(self, boolean):
         "Enable/Disable widgets"""
