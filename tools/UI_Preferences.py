@@ -176,16 +176,25 @@ class ConfTooltipUnit(QtWidgets.QDialog):
             self.tabla[i].horizontalHeader().setVisible(False)
 
             for j, txt in enumerate(textos):
-                item = QtWidgets.QTableWidgetItem(txt)
-                self.tabla[i].setVerticalHeaderItem(j, item)
                 self.tabla[i].setRowHeight(j, 24)
                 self.tabla[i].setItem(j, 0, QtWidgets.QTableWidgetItem(""))
                 self.tabla[i].item(j, 0).setTextAlignment(
                     QtCore.Qt.AlignmentFlag.AlignRight
                     | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.tabla[i].openPersistentEditor(self.tabla[i].item(j, 0))
+
+                header = QtWidgets.QTableWidgetItem(txt)
+                if magnitud[0] == "Currency":
+                    header.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                        os.environ["pychemqt"], "images", "flag",
+                        "%s.png" % unidades.Currency.__units__[j]))))
+                    header.setToolTip(unidades.Currency.__tooltip__[j])
+
+                self.tabla[i].setVerticalHeaderItem(j, header)
+
             self.fill(magnitud[0], i, config)
             self.eleccion.addItem(magnitud[1])
+
 
         if config.has_section("Tooltip"):
             self.checkShow.setChecked(config.getboolean("Tooltip", "Show"))
@@ -509,10 +518,14 @@ class Preferences(QtWidgets.QDialog):
         ("chemistry/grupo18.png", ConfBabel,
          QtWidgets.QApplication.translate("pychemqt", "Openbabel"))]
 
-    def __init__(self, config, parent=None):
+    def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter to input project config"""
         super().__init__(parent)
+
+        if config is None:
+            config = ConfigParser()
         self.config = config
+
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Preferences"))
 
