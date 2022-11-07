@@ -2,7 +2,7 @@ API reference
 =============
 
 .. toctree::
-    :maxdepth: 5
+    :maxdepth: 4
 
     equipment
     lib
