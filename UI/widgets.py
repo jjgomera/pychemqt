@@ -1397,7 +1397,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
     if button:
         boton = DragButton(parent)
 
-        boton.setIcon(QtGui.QIcon(QtGui.QPixmap(IMAGE_PATH + icon)))
+        boton.setIcon(QtGui.QIcon(IMAGE_PATH + icon))
         boton.setToolTip(tip)
         boton.setStatusTip(tip)
         if slot:

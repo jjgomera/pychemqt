@@ -96,12 +96,12 @@ class PlotMEoS(QtWidgets.QWidget):
 
         self.editAxesAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Edit &Axis"),
-            icon=os.environ["pychemqt"]+"/images/button/editor",
+            icon=os.path.join("button", "editor.png"),
             slot=self.editAxis, parent=self)
         self.editAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Edit &Plot"),
             slot=self.edit,
-            icon=os.environ["pychemqt"]+"/images/button/fit",
+            icon=os.path.join("button", "fit.png"),
             parent=self)
         self.editMarginAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Edit &Margins"),
@@ -109,7 +109,7 @@ class PlotMEoS(QtWidgets.QWidget):
         self.saveAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Save Plot"),
             slot=self.toolbar.save_figure,
-            icon=os.environ["pychemqt"]+"/images/button/fileSave", parent=self)
+            icon=os.path.join("button", "fileSave.png"), parent=self)
         self.toolbarVisibleAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Toggle &Toolbar"),
             self.toolbar.setVisible, checkable=True, parent=self)

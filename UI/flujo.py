@@ -229,16 +229,19 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
                "out": {}, "equip": {}}
 
     def mousePressEvent(self, event):
+        """Save event pos to locate item"""
         QtWidgets.QGraphicsScene.mousePressEvent(self, event)
         if self.addObj and self.addType != "stream":
             self.Pos.append(event.scenePos())
 
     def addActions(self, menu, pos=None):
+        """Define actions and state of its to add to context menuw"""
         actionCut, actionCopy, actionPaste = self.defineShortcut(pos)
         menu.addAction(
             QtWidgets.QApplication.translate("pychemqt", "Redraw"),
             self.update)
         menu.addAction(
+            QtGui.QIcon(os.path.join(IMAGE_PATH, "button", "configure.png")),
             QtWidgets.QApplication.translate("pychemqt", "Configure"),
             self.configure)
         menu.addSeparator()
@@ -246,31 +249,31 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             QtWidgets.QApplication.translate("pychemqt", "Select All"),
             slot=self.selectAll,
             shortcut=QtGui.QKeySequence.StandardKey.SelectAll,
-            icon=os.path.join(IMAGE_PATH, "button", "selectAll"), parent=self))
+            icon=os.path.join("button", "selectAll.png"), parent=self))
         menu.addSeparator()
         actionCut = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Cut"),
             slot=self.cut,
             shortcut=QtGui.QKeySequence.StandardKey.Cut,
-            icon=os.path.join(IMAGE_PATH, "button", "editCut"), parent=self)
+            icon=os.path.join("button", "editCut.png"), parent=self)
         menu.addAction(actionCut)
         actionCopy = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Copy"),
             slot=self.copy,
             shortcut=QtGui.QKeySequence.StandardKey.Copy,
-            icon=os.path.join(IMAGE_PATH, "button", "editCopy"), parent=self)
+            icon=os.path.join("button", "editCopy.png"), parent=self)
         menu.addAction(actionCopy)
         actionPaste = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Paste"),
             slot=partial(self.paste, pos),
             shortcut=QtGui.QKeySequence.StandardKey.Paste,
-            icon=os.path.join(IMAGE_PATH, "button", "editPaste"), parent=self)
+            icon=os.path.join("button", "editPaste.png"), parent=self)
         menu.addAction(actionPaste)
         actionDelete = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Delete All"),
             slot=self.delete,
             shortcut=QtGui.QKeySequence.StandardKey.Delete,
-            icon=os.path.join(IMAGE_PATH, "button", "editDelete"), parent=self)
+            icon=os.path.join("button", "editDelete.png"), parent=self)
         menu.addAction(actionDelete)
         menu.addSeparator()
 
@@ -289,6 +292,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         return menu
 
     def defineShortcut(self, pos=None):
+        """Add actions to QGraphicsView to enable keyboard shortcut"""
         # Delete actions of last run
         for action in self.views()[0].actions():
             self.views()[0].removeAction(action)
@@ -298,24 +302,24 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             QtWidgets.QApplication.translate("pychemqt", "Cut"),
             slot=self.cut,
             shortcut=QtGui.QKeySequence.StandardKey.Cut,
-            icon=os.path.join(IMAGE_PATH, "button", "editCut"), parent=self)
+            icon=os.path.join("button", "editCut.png"), parent=self)
         actionCopy = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Copy"),
             slot=self.copy,
             shortcut=QtGui.QKeySequence.StandardKey.Copy,
-            icon=os.path.join(IMAGE_PATH, "button", "editCopy"), parent=self)
+            icon=os.path.join("button", "editCopy.png"), parent=self)
         actionPaste = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Paste"),
             slot=partial(self.paste, pos),
             shortcut=QtGui.QKeySequence.StandardKey.Paste,
-            icon=os.path.join(IMAGE_PATH, "button", "editPaste"), parent=self)
+            icon=os.path.join("button", "editPaste.png"), parent=self)
         self.views()[0].addAction(actionCopy)
         self.views()[0].addAction(actionCut)
         self.views()[0].addAction(actionPaste)
         return actionCut, actionCopy, actionPaste
 
-
     def contextMenuEvent(self, event):
+        """Create the context menu to show then right click"""
         item = self.itemAt(event.scenePos(), self.views()[0].transform())
         if item:
             item.setSelected(True)
@@ -324,10 +328,13 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         contextMenu.exec(event.screenPos())
 
     def selectAll(self):
+        """Select all itemin scene"""
         for item in list(self.items()):
             item.setSelected(True)
 
     def copy(self, items=None):
+        """Copy selected items to internal clickboard, StreamItem is not
+        suppoerted"""
         if not items:
             items = self.selectedItems()
         self.copiedItem.clear()
@@ -340,12 +347,14 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.writeItemToStream(st, item)
 
     def cut(self):
+        """Copy selected items to internal clickboard and delete of scene"""
         item = self.selectedItems()[0]
         self.copy(item)
         self.removeItem(item)
         del item
 
     def paste(self, pos=None):
+        """Paste item saved in internal clipboard to the scene"""
         st = QtCore.QDataStream(
             self.copiedItem, QtCore.QIODevice.OpenModeFlag.ReadOnly)
         count = st.readInt32()
@@ -1469,7 +1478,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
         return self.equipment
 
     def mouseDoubleClickEvent(self, event=None):
-        if self.dialogoId != None:
+        if self.dialogoId is not None:
             kwarg = {"equipment": self.equipment}
             # Aditional parameters for selected equipment
             if isinstance(self.equipment, flux.Divider):

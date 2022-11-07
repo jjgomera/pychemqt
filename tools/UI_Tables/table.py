@@ -258,22 +258,21 @@ class TablaMEoS(Tabla):
         actionCopy = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Copy"),
             slot=self.copy, shortcut=QtGui.QKeySequence.StandardKey.Copy,
-            icon=os.environ["pychemqt"] +
-            os.path.join("images", "button", "editCopy"),
+            icon=os.path.join("button", "editCopy.png"),
             parent=self)
         if not self.selectedItems():
             actionCopy.setEnabled(False)
 
         actionDelete = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Delete Point"),
-            icon=os.environ["pychemqt"]+"/images/button/editDelete",
+            icon=os.path.join("button", "editDelete.png"),
             slot=partial(self.delete, rows), parent=self)
         if not rows:
             actionDelete.setEnabled(False)
 
         actionInsert = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Insert Point"),
-            icon=os.environ["pychemqt"]+"/images/button/add",
+            icon=os.path.join("button", "add.png"),
             slot=partial(self.add, row), parent=self)
 
         menu = QtWidgets.QMenu()
@@ -550,11 +549,12 @@ class TablaMEoS(Tabla):
 
         # Set calculate point readOnly
         if not self.readOnly:
-            flags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
             color = config.Preferences.get("General", 'Color_ReadOnly')
             for i, bool in enumerate(self.columnReadOnly):
                 if not bool:
-                    self.item(row, i).setFlags(flags)
+                    self.item(row, i).setFlags(
+                        QtCore.Qt.ItemFlag.ItemIsEnabled
+                        | QtCore.Qt.ItemFlag.ItemIsSelectable)
                     self.item(row, i).setBackground(QtGui.QColor(color))
         self.blockSignals(False)
 
@@ -563,15 +563,14 @@ class TablaMEoS(Tabla):
         menu = QtWidgets.QMenu()
         actionCopy = createAction(
             QtWidgets.QApplication.translate("pychemqt", "&Copy"),
-            slot=partial(self.copy, event), shortcut=QtGui.QKeySequence.StandardKey.Copy,
-            icon=os.environ["pychemqt"] +
-            os.path.join("images", "button", "editCopy"),
+            slot=partial(self.copy, event),
+            shortcut=QtGui.QKeySequence.StandardKey.Copy,
+            icon=os.path.join("button", "editCopy.png"),
             parent=self)
         export = createAction(
             QtWidgets.QApplication.translate("pychemqt", "E&xport to csv"),
             self.exportCSV,
-            icon=os.environ["pychemqt"] +
-            os.path.join("images", "button", "export"),
+            icon=os.path.join("button", "export.png"),
             tip=QtWidgets.QApplication.translate(
                 "pychemqt", "Export table to file"),
             parent=self)
