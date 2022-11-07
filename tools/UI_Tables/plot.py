@@ -176,7 +176,7 @@ class PlotMEoS(QtWidgets.QWidget):
         menu.addSeparator()
         menu.addAction(self.toolbarVisibleAction)
         menu.addAction(self.gridToggleAction)
-        menu.exec(event.globalPosition())
+        menu.exec(event.globalPos())
 
         if self.plot.ax._gridOn:
             self.gridToggleAction.setChecked(True)

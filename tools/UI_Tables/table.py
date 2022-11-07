@@ -577,7 +577,7 @@ class TablaMEoS(Tabla):
         menu.addAction(actionCopy)
         menu.addSeparator()
         menu.addAction(export)
-        menu.exec(event.globalPosition())
+        menu.exec(event.globalPos())
 
     def copy(self, event=None):
         """Copy selected values to clipboard"""
