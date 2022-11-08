@@ -99,3 +99,6 @@ are saved in hard-disk to speed-up loading in next execution or other graph
 generation, that files in .pkl format are saved in main program configuration
 folder.
 
+
+API reference
+-------------

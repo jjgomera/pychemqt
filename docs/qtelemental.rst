@@ -59,3 +59,7 @@ Configuration
     :alt: Periodic table configuration
 
 It's possible change the appareance of element button choosing the property
+
+
+API reference
+-------------

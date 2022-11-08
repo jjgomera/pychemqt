@@ -85,7 +85,7 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 	* Currency converter
 	* `Periodic table of elements <tools.qtelemental.html>`__
 	* `Psychometric chart <tools.UI_psychrometry.html>`__
-	* `High quality calculation of properties using multi-parameter equations <tools.UITables.html>`__
+	* `High quality calculation of properties using multi-parameter equations <tools.UI_Tables.html>`__
 	* Introspection support with a python shell (Linux only)
 
 * Configurable: Units system, property correlation, EoS to use...

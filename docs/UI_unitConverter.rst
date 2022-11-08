@@ -6,3 +6,7 @@ This main feature include this standalone tool for direct conversion.
 
 .. image:: images/unitConverter.png 
     :alt: unit conversion
+
+
+API reference
+-------------

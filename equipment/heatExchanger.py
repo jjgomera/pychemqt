@@ -207,7 +207,7 @@ class Fired_Heater(equipment):
     """Class to model a fire heater
 
     Parameters
-    ------------
+    ----------
     entrada : Corriente
         Input stream to equipment
     Tout : float

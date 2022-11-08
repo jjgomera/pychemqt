@@ -39,3 +39,7 @@ For each kind of line it's possible configure the line style, width, linestyle, 
 **Units**
 
 The units used in chart are the used in the last project open in main program. So it's configurable using the project units configuration dialog.
+
+
+API reference
+-------------
