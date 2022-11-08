@@ -135,11 +135,12 @@
     },
     "equipment": {},
     "stream": {},
+    "external_dependences": [],
     "PFD": {
-        "x": 0,
+        "x": 1,
         "y": 0,
-        "height": 463,
-        "width": 776,
+        "height": 313,
+        "width": 742,
         "txt": {},
         "square": {},
         "ellipse": {},
@@ -152,9 +153,9 @@
         "0": {
             "class": "TablaMEoS",
             "x": 0,
-            "y": 0,
-            "height": 220,
-            "width": 871,
+            "y": 714,
+            "height": 223,
+            "width": 1487,
             "window": {
                 "column": 15,
                 "title": "Tabla: WATER: Especificar puntos de estado (REFPROP)",
@@ -382,10 +383,10 @@
         },
         "1": {
             "class": "PlotMEoS",
-            "x": 0,
+            "x": 745,
             "y": 0,
-            "height": 463,
-            "width": 871,
+            "height": 706,
+            "width": 743,
             "window": {
                 "filename": "meos-water.json",
                 "windowTitle": "Plot water: T=f(s)",
@@ -429,10 +430,10 @@
                 "grid": false,
                 "xscale": "linear",
                 "yscale": "linear",
-                "xmin": -0.703011434242804,
-                "xmax": 14.763240119098883,
-                "ymin": -86.3425,
-                "ymax": 1813.1924999999999,
+                "xmin": -0.1,
+                "xmax": 12.0,
+                "ymin": -10.0,
+                "ymax": 1000.0,
                 "zmin": null,
                 "zmax": null,
                 "marginleft": 0.08,
@@ -1061,13 +1062,15 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
+                            "rot": 0.0,
                             "pos": 50,
-                            "rot": 0,
-                            "family": "sans-serif",
+                            "family": [
+                                "sans-serif"
+                            ],
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": "small",
+                            "size": 7.497,
                             "va": "center"
                         }
                     },
@@ -1684,13 +1687,15 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
+                            "rot": 0.0,
                             "pos": 50,
-                            "rot": 0,
-                            "family": "sans-serif",
+                            "family": [
+                                "sans-serif"
+                            ],
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": "small",
+                            "size": 7.497,
                             "va": "center"
                         }
                     },
@@ -32937,8 +32942,8 @@
             "class": "PlotMEoS",
             "x": 0,
             "y": 0,
-            "height": 463,
-            "width": 871,
+            "height": 707,
+            "width": 745,
             "window": {
                 "filename": "meos-water.json",
                 "windowTitle": "Plot water: v=f(u)",
@@ -33614,13 +33619,15 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
+                            "rot": 0.0,
                             "pos": 50,
-                            "rot": 0,
-                            "family": "sans-serif",
+                            "family": [
+                                "sans-serif"
+                            ],
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": "small",
+                            "size": 7.497,
                             "va": "center"
                         }
                     },
@@ -34237,13 +34244,15 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
+                            "rot": 0.0,
                             "pos": 50,
-                            "rot": 0,
-                            "family": "sans-serif",
+                            "family": [
+                                "sans-serif"
+                            ],
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": "small",
+                            "size": 7.497,
                             "va": "center"
                         }
                     },
