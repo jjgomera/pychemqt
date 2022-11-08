@@ -821,7 +821,6 @@ class EditPlot(QtWidgets.QDialog):
         label = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Label"))
         lytTitle.addWidget(label)
-        # self.annotationLabel = QtWidgets.QLineEdit()
         self.annotationLabel = InputFont()
         lytTitle.addWidget(self.annotationLabel)
         lytAnnotation.addLayout(lytTitle, 2, 1, 1, 3)
@@ -1252,7 +1251,8 @@ class AddLine(QtWidgets.QDialog):
             self.tipo.addItem(title)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
@@ -1279,8 +1279,8 @@ class EditAxis(QtWidgets.QDialog):
         lytTitle = QtWidgets.QHBoxLayout()
         lb = QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Title"))
-        lb.setSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Maximum, QtWidgets.QSizePolicy.Policy.Maximum)
+        lb.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
+                         QtWidgets.QSizePolicy.Policy.Maximum)
         lytTitle.addWidget(lb)
         self.title = InputFont()
         lytTitle.addWidget(self.title)

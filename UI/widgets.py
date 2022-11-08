@@ -1065,8 +1065,9 @@ class LineStyleCombo(CustomCombo):
 
 class PFDLineCombo(LineStyleCombo):
     """Custom QComboBox for select PFD line styles for stream"""
-    key = [QtCore.Qt.PenStyle.SolidLine, QtCore.Qt.PenStyle.DashLine, QtCore.Qt.PenStyle.DotLine,
-           QtCore.Qt.PenStyle.DashDotLine, QtCore.Qt.PenStyle.DashDotDotLine]
+    key = [QtCore.Qt.PenStyle.SolidLine, QtCore.Qt.PenStyle.DashLine,
+           QtCore.Qt.PenStyle.DotLine, QtCore.Qt.PenStyle.DashDotLine,
+           QtCore.Qt.PenStyle.DashDotDotLine]
     image = {
         key[0]: os.path.join("images", "button", "solid_line.png"),
         key[1]: os.path.join("images", "button", "dash_line.png"),
@@ -1141,8 +1142,8 @@ class NumericFactor(QtWidgets.QDialog):
             int, width=45, value=5, boton=False, spinbox=True, min=1, max=12)
         layout.addWidget(self.FiguresExponential, 7, 3)
         layout.addItem(QtWidgets.QSpacerItem(
-            30, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            8, 1)
+            30, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 8, 1)
         self.checkExpVariable = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate(
                 "pychemqt", "Exponential for big/small values"))
@@ -1171,14 +1172,15 @@ class NumericFactor(QtWidgets.QDialog):
         self.checkExpVariable.toggled.connect(self.labelTolerancia.setEnabled)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            20, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            13, 1)
+            20, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 13, 1)
         self.muestra = QtWidgets.QLabel()
         layout.addWidget(self.muestra, 14, 1, 1, 3)
 
         buttonBox = QtWidgets.QDialogButtonBox()
-        buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
-                                     QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        buttonBox.setStandardButtons(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 20, 1, 1, 3)
@@ -1287,12 +1289,11 @@ class InputFont(QtWidgets.QWidget):
 
         self.lineEdit = QtWidgets.QLineEdit()
         self.lineEdit.setFixedHeight(24)
-        # self.lineEdit.setSizePolicy(
-            # QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         layout.addWidget(self.lineEdit)
         self.fontButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "font.png"))), "")
+            os.path.join(IMAGE_PATH, "button", "font.png"))), "")
+        self.fontButton.setAutoDefault(False)
+        self.fontButton.setDefault(False)
         self.fontButton.setFixedSize(24, 24)
         self.fontButton.setIconSize(QtCore.QSize(24, 24))
         self.fontButton.clicked.connect(self.fontButtonClicked)
