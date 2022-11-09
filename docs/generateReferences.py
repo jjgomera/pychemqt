@@ -153,6 +153,10 @@ for tool in tools.__all__:
         print("", file=file)
         print(".. automodule:: tools.%s" % tool, file=file)
 
+        if tool == "UI_Tables":
+            for sub in ("chooseFluid", "library", "plot", "reference", "table"):
+                print(".. automodule:: tools.%s.%s" % (tool, sub), file=file)
+
 
 # UI module
 # Generate index file

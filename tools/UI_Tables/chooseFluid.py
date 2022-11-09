@@ -33,10 +33,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import inspect
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
-
 from lib import meos, mEoS, unidades
+from lib.config import IMAGE_PATH
 from tools.codeEditor import SimplePythonEditor
+from tools.qt import QtCore, QtGui, QtWidgets
 from UI.widgets import Entrada_con_unidades, Tabla, QLabelMath
 
 
@@ -47,7 +47,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
 
     def __init__(self, config=None, parent=None):
         """config: instance with project config to set initial values"""
-        super(Ui_ChooseFluid, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Choose fluid"))
         layout = QtWidgets.QGridLayout(self)
@@ -58,7 +58,8 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
         layout.addWidget(self.lista, 1, 1, 5, 1)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel,
             QtCore.Qt.Orientation.Vertical)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -86,8 +87,8 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
         gridLayout.addWidget(self.radioPR, 4, 1, 1, 2)
 
         gridLayout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            5, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 1)
         gridLayout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Viscosity")), 6, 1)
         self.visco = QtWidgets.QComboBox()
@@ -100,15 +101,13 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Maximum), 8, 2)
 
-        botonFilter = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "filter.png"))),
+        botonFilter = QtWidgets.QPushButton(QtGui.QIcon(
+            os.path.join(IMAGE_PATH, "button", "filter.png")),
             QtWidgets.QApplication.translate("pychemqt", "Filter"))
         botonFilter.clicked.connect(self.filter)
         layout.addWidget(botonFilter, 3, 2, 1, 1)
-        botonInfo = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "helpAbout.png"))),
+        botonInfo = QtWidgets.QPushButton(QtGui.QIcon(
+            os.path.join(IMAGE_PATH, "button", "helpAbout.png")),
             QtWidgets.QApplication.translate("pychemqt", "Info"))
         botonInfo.clicked.connect(self.info)
         layout.addWidget(botonInfo, 4, 2, 1, 1)
@@ -132,7 +131,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
 
     def id(self):
         """Return correct id of selected fluid in mEoS.__all__ list"""
-        id = self.lista.currentRow()
+        index = self.lista.currentRow()
 
         # Correct id for hidden classes
         if not self.all:
@@ -145,11 +144,11 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
                 else:
                     hiden += len(module)
 
-                if visible >= id:
+                if visible >= index:
                     break
             # Add the hidden element above the selected one
-            id += hiden
-        return id
+            index += hiden
+        return index
 
     def fill(self, compounds):
         """Fill list fluid
@@ -232,7 +231,7 @@ class DialogFilterFluid(QtWidgets.QDialog):
                   "Heteroatom", "CFCs", "Siloxanes", "PseudoCompounds"]
 
     def __init__(self, all=True, group=None, parent=None):
-        super(DialogFilterFluid, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Filter fluids families to show"))
         layout = QtWidgets.QGridLayout(self)
@@ -257,7 +256,8 @@ class DialogFilterFluid(QtWidgets.QDialog):
                 checkBox.setChecked(boolean)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 3, 1)
@@ -267,7 +267,7 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
     """Dialog to show parameter of element with meos"""
     def __init__(self, element, parent=None):
         """element: class of element to show info"""
-        super(Dialog_InfoFluid, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
         self.element = element
 
@@ -331,8 +331,8 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
         layout.addWidget(self.f_acent, 4, 8)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            5, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 1)
         layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
             "pychemqt", "Equation")+": "), 6, 1)
         self.eq = QtWidgets.QComboBox()
@@ -345,7 +345,8 @@ class Dialog_InfoFluid(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Others"))
         self.moreButton.clicked.connect(self.more)
         layout.addWidget(self.moreButton, 9, 1)
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        btBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         btBox.clicked.connect(self.reject)
         layout.addWidget(btBox, 9, 2, 1, 7)
 
@@ -381,7 +382,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
     """Widget to show meos data"""
     def __init__(self, eq, parent=None):
         """eq: dict with equation parameter"""
-        super(Widget_MEoS_Data, self).__init__(parent)
+        super().__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
         txt = "; ".join((eq["__doi__"]["autor"], eq["__doi__"]["title"],
                         eq["__doi__"]["ref"]))
@@ -530,24 +531,25 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
         self.fill(eq)
 
     def fill(self, eq):
-        format = {"fmt": 1, "total": 5}
+        """Fill widget with data of equations"""
+        fmt = {"fmt": 1, "total": 5}
 
         if "ao_log" in eq["cp"]:
             # Phi_o term
             self.Tabla_Cp_poly.setColumn(
-                0, eq["cp"]["ao_pow"], **format)
-            self.Tabla_Cp_poly.setColumn(1, eq["cp"]["pow"], **format)
+                0, eq["cp"]["ao_pow"], **fmt)
+            self.Tabla_Cp_poly.setColumn(1, eq["cp"]["pow"], **fmt)
             self.Tabla_Cp_poly.resizeColumnsToContents()
             if "ao_exp" in eq["cp"]:
-                self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
-                self.Tabla_Cp_exp.setColumn(1, eq["cp"]["titao"], **format)
+                self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **fmt)
+                self.Tabla_Cp_exp.setColumn(1, eq["cp"]["titao"], **fmt)
             else:
                 self.Tabla_Cp_exp.setEnabled(False)
             self.Tabla_Cp_exp.resizeColumnsToContents()
 
             if "hyp" in eq["cp"]:
-                self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
-                self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
+                self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **fmt)
+                self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **fmt)
             else:
                 self.Tabla_Cp_hyp.setEnabled(False)
             self.Tabla_Cp_hyp.resizeColumnsToContents()
@@ -561,63 +563,63 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 t.insert(0, 0)
 
             if an:
-                self.Tabla_Cp_poly.setColumn(0, an, **format)
-                self.Tabla_Cp_poly.setColumn(1, t, **format)
+                self.Tabla_Cp_poly.setColumn(0, an, **fmt)
+                self.Tabla_Cp_poly.setColumn(1, t, **fmt)
             else:
                 self.Tabla_Cp_poly.setEnabled(False)
             self.Tabla_Cp_poly.resizeColumnsToContents()
 
             if "ao_exp" in eq["cp"]:
-                self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **format)
-                self.Tabla_Cp_exp.setColumn(1, eq["cp"]["exp"], **format)
+                self.Tabla_Cp_exp.setColumn(0, eq["cp"]["ao_exp"], **fmt)
+                self.Tabla_Cp_exp.setColumn(1, eq["cp"]["exp"], **fmt)
             else:
                 self.Tabla_Cp_exp.setEnabled(False)
             self.Tabla_Cp_exp.resizeColumnsToContents()
 
             if "hyp" in eq["cp"]:
-                self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **format)
-                self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **format)
+                self.Tabla_Cp_hyp.setColumn(0, eq["cp"]["ao_hyp"], **fmt)
+                self.Tabla_Cp_hyp.setColumn(1, eq["cp"]["hyp"], **fmt)
             else:
                 self.Tabla_Cp_hyp.setEnabled(False)
             self.Tabla_Cp_hyp.resizeColumnsToContents()
 
         if eq["__type__"] == "Helmholtz":
             if eq.get("nr1", []):
-                self.Tabla_lineal.setColumn(0, eq["nr1"], **format)
-                self.Tabla_lineal.setColumn(1, eq["t1"], **format)
-                self.Tabla_lineal.setColumn(2, eq["d1"], **format)
+                self.Tabla_lineal.setColumn(0, eq["nr1"], **fmt)
+                self.Tabla_lineal.setColumn(1, eq["t1"], **fmt)
+                self.Tabla_lineal.setColumn(2, eq["d1"], **fmt)
             else:
                 self.Tabla_lineal.setEnabled(False)
 
             if eq.get("nr2", []):
-                self.Tabla_exponential.setColumn(0, eq["nr2"], **format)
-                self.Tabla_exponential.setColumn(1, eq["t2"], **format)
-                self.Tabla_exponential.setColumn(2, eq["d2"], **format)
-                self.Tabla_exponential.setColumn(3, eq["gamma2"], **format)
-                self.Tabla_exponential.setColumn(4, eq["c2"], **format)
+                self.Tabla_exponential.setColumn(0, eq["nr2"], **fmt)
+                self.Tabla_exponential.setColumn(1, eq["t2"], **fmt)
+                self.Tabla_exponential.setColumn(2, eq["d2"], **fmt)
+                self.Tabla_exponential.setColumn(3, eq["gamma2"], **fmt)
+                self.Tabla_exponential.setColumn(4, eq["c2"], **fmt)
             else:
                 self.Tabla_exponential.setEnabled(False)
 
             if eq.get("nr3", []):
-                self.Tabla_gauss.setColumn(0, eq["nr3"], **format)
-                self.Tabla_gauss.setColumn(1, eq["t3"], **format)
-                self.Tabla_gauss.setColumn(2, eq["d3"], **format)
-                self.Tabla_gauss.setColumn(3, eq["alfa3"], **format)
-                self.Tabla_gauss.setColumn(4, eq["beta3"], **format)
-                self.Tabla_gauss.setColumn(5, eq["gamma3"], **format)
-                self.Tabla_gauss.setColumn(6, eq["epsilon3"], **format)
+                self.Tabla_gauss.setColumn(0, eq["nr3"], **fmt)
+                self.Tabla_gauss.setColumn(1, eq["t3"], **fmt)
+                self.Tabla_gauss.setColumn(2, eq["d3"], **fmt)
+                self.Tabla_gauss.setColumn(3, eq["alfa3"], **fmt)
+                self.Tabla_gauss.setColumn(4, eq["beta3"], **fmt)
+                self.Tabla_gauss.setColumn(5, eq["gamma3"], **fmt)
+                self.Tabla_gauss.setColumn(6, eq["epsilon3"], **fmt)
             else:
                 self.Tabla_gauss.setEnabled(False)
 
             if eq.get("nr4", []):
-                self.Tabla_noanalytic.setColumn(0, eq["nr4"], **format)
-                self.Tabla_noanalytic.setColumn(1, eq["a4"], **format)
-                self.Tabla_noanalytic.setColumn(2, eq["b4"], **format)
-                self.Tabla_noanalytic.setColumn(3, eq["A"], **format)
-                self.Tabla_noanalytic.setColumn(4, eq["B"], **format)
-                self.Tabla_noanalytic.setColumn(5, eq["C"], **format)
-                self.Tabla_noanalytic.setColumn(6, eq["D"], **format)
-                self.Tabla_noanalytic.setColumn(7, eq["beta4"], **format)
+                self.Tabla_noanalytic.setColumn(0, eq["nr4"], **fmt)
+                self.Tabla_noanalytic.setColumn(1, eq["a4"], **fmt)
+                self.Tabla_noanalytic.setColumn(2, eq["b4"], **fmt)
+                self.Tabla_noanalytic.setColumn(3, eq["A"], **fmt)
+                self.Tabla_noanalytic.setColumn(4, eq["B"], **fmt)
+                self.Tabla_noanalytic.setColumn(5, eq["C"], **fmt)
+                self.Tabla_noanalytic.setColumn(6, eq["D"], **fmt)
+                self.Tabla_noanalytic.setColumn(7, eq["beta4"], **fmt)
             else:
                 self.Tabla_noanalytic.setEnabled(False)
 
@@ -627,14 +629,14 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             self.Tabla_noanalytic.resizeColumnsToContents()
 
         elif eq["__type__"] == "MBWR":
-            self.Tabla_MBWR.setColumn(0, eq["b"][1:], **format)
+            self.Tabla_MBWR.setColumn(0, eq["b"][1:], **fmt)
             self.Tabla_MBWR.resizeColumnsToContents()
 
 
 class transportDialog(QtWidgets.QDialog):
     """Dialog to show parameters for transport and ancillary equations"""
     def __init__(self, element, parent=None):
-        super(transportDialog, self).__init__(parent)
+        super().__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
 
         tabWidget = QtWidgets.QTabWidget()
@@ -1056,7 +1058,8 @@ class transportDialog(QtWidgets.QDialog):
                 10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
                 QtWidgets.QSizePolicy.Policy.Expanding), 2, 1)
 
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        btBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         btBox.clicked.connect(self.reject)
         gridLayout.addWidget(btBox, 2, 1)
 
@@ -1067,7 +1070,7 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
         """
         element: element class for code extract
         eq: dict with viscosity parameter"""
-        super(Widget_Viscosity_Data, self).__init__(parent)
+        super().__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
         if eq["eq"] == 0:
             txt = element.__getattribute__(element, eq["method"]).__doc__
@@ -1240,16 +1243,16 @@ class Widget_Viscosity_Data(QtWidgets.QWidget):
             Tabla_Visco4 = Tabla(
                 8, stretch=False, readOnly=True,
                 horizontalHeader=["a", "b", "c", "A", "B", "C", "D", "E"])
-            format = {"fmt": 1, "decimales": 10}
-            Tabla_Visco4.setColumn(0, eq["a"], **format)
-            Tabla_Visco4.setColumn(1, eq["b"], **format)
-            Tabla_Visco4.setColumn(2, eq["c"], **format)
-            Tabla_Visco4.setColumn(3, eq["A"], **format)
-            Tabla_Visco4.setColumn(4, eq["B"], **format)
-            Tabla_Visco4.setColumn(5, eq["C"], **format)
+            fmt = {"fmt": 1, "decimales": 10}
+            Tabla_Visco4.setColumn(0, eq["a"], **fmt)
+            Tabla_Visco4.setColumn(1, eq["b"], **fmt)
+            Tabla_Visco4.setColumn(2, eq["c"], **fmt)
+            Tabla_Visco4.setColumn(3, eq["A"], **fmt)
+            Tabla_Visco4.setColumn(4, eq["B"], **fmt)
+            Tabla_Visco4.setColumn(5, eq["C"], **fmt)
             if "D" in eq:
-                Tabla_Visco4.setColumn(6, eq["D"], **format)
-                Tabla_Visco4.setColumn(7, eq["E"], **format)
+                Tabla_Visco4.setColumn(6, eq["D"], **fmt)
+                Tabla_Visco4.setColumn(7, eq["E"], **fmt)
             Tabla_Visco4.resizeColumnsToContents()
             gridLayout.addWidget(Tabla_Visco4, 6, 1, 1, 3)
             gridLayout.addItem(QtWidgets.QSpacerItem(
@@ -1263,7 +1266,7 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
         """
         element: element class for code extract
         eq: dict with thermal conductivity parameter"""
-        super(Widget_Conductivity_Data, self).__init__(parent)
+        super().__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
         if eq["eq"] == 0:
             txt = element.__getattribute__(element, eq["method"]).__doc__
@@ -1321,7 +1324,7 @@ class Widget_Conductivity_Data(QtWidgets.QWidget):
                 # Hardcoded method
                 gridLayout.addWidget(QtWidgets.QLabel(
                     QtWidgets.QApplication.translate(
-                    "pychemqt", "Special hardcoded term")), 5, 1, 1, 3)
+                        "pychemqt", "Special hardcoded term")), 5, 1, 1, 3)
                 code_SpecialK = SimplePythonEditor()
                 code = inspect.getsource(
                     element.__getattribute__(element, eq["special"]))

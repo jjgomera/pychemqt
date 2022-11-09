@@ -20,16 +20,65 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 .. include:: UI_Tables.rst
 
+The module include all UI related functionality of module
+    * :class:`plugin`: Implement common functionality used in menu and dialog
+    * :class:`Menu`: QMenu to add to mainwindow mainmenu
+    * :class:`Dialog`: QDialog with all meos functionality
+
+Dialogs for configuration:
+    * :class:`reference.Ui_ReferenceState`: Dialog to select reference state
+    * :class:`reference.Ui_Properties`: Dialog for select and sort shown \
+    properties in tables
+
+Dialogs for fluid selection:
+    * :class:`chooseFluid.Ui_ChooseFluid`: Dialog to choose fluid for \
+    calculations
+    * :class:`chooseFluid.DialogFilterFluid`: Dialog for filter compounds \
+    family to show
+    * :class:`chooseFluid.Dialog_InfoFluid`: Dialog to show parameter of \
+    element with meos
+    * :class:`chooseFluid.Widget_MEoS_Data`: Widget to show meos data
+    * :class:`chooseFluid.transportDialog`: Dialog for transport and \
+    ancillary equations
+    * :class:`chooseFluid.Widget_Viscosity_Data`: Widget to show viscosity data
+    * :class:`chooseFluid.Widget_Conductivity_Data`: Widget to show thermal \
+    conductivity data
+
+Library function for plugin
+    * :func:`library.getMethod`: Return the thermo method name to use
+    * :func:`library.getClassFluid`: Return the thermo class to calculate
+    * :func:`library.calcPoint`: Calculate point state and check state in P-T \
+    range of eq
+    * :func:`library.get_propiedades`: Get the properties to show in tables
+    * :func:`library._getData`: Get values of properties in fluid
+
+Plot functionality:
+    * :class:`plot.PlotMEoS`: Plot widget to show meos data as plot
+    * :class:`plot.Plot2D`: Dialog for select a special 2D plot
+    * :class:`plot.Plot3D`: Dialog for define a 3D plot
+    * :class:`plot.EditPlot`: Dialog to edit plot
+    * :class:`plot.AddLine`: Dialog to add new isoline to plot
+    * :class:`plot.EditAxis`: Dialog to configure axes plot properties
+    * :class:`plot.AxisWidget`: Dialog to configure axes plot properties
+    * :func:`plot.calcIsoline`: Isoline calculation procedure
+    * :func:`plot.get_points`: Get point number to plot lines from Preferences
+    * :func:`plot.getLineFormat`: get matplotlib line format from preferences
+    * :func:`plot.plotIsoline`: plot isoline procedure
+    * :func:`plot.plot2D3D`: general procedure for plotting 2D and 3D
+    * :func:`plot._getunitTransform`: Return the axis unit transform function \
+    to map data to configurated unit
+
+Table functionality:
+    * :class:`table.TablaMEoS`: Tabla subclass to show meos data
+    * :class:`table.Ui_Saturation`: Dialog to define a two-phase table
+    * :class:`table.Ui_Isoproperty`: Dialog to define a isoproperty table
+    * :class:`table.AddPoint`: Dialog to add new point to line2D
+    * :func:`table.createTabla`: create TablaMEoS
+
+
+The calculation library itself is in the `lib.meos <lib.meos.html>`__ module
+with the compounds implemented in `lib.mEoS <lib.mEoS.html>`__
 '''
-
-
-###############################################################################
-# Library with meos plugin functionality
-#
-#   plugin: Implement meos functionality to common use in menu and dialog
-#   Menu: QMenu to add to mainwindow mainmenu with all meos addon functionality
-#   Dialog: QDialog with all meos functionality
-###############################################################################
 
 
 from configparser import ConfigParser
@@ -37,24 +86,26 @@ from functools import partial
 from math import log10
 import os
 
-from tools.qt import QtGui, QtWidgets
 from numpy import arange, append, concatenate, linspace, logspace
 from scipy.optimize import fsolve
 
-from lib import meos, mEoS, unidades, config
+from lib import config, meos, mEoS, unidades
 from lib.thermo import ThermoAdvanced
+from tools.qt import QtGui, QtWidgets
 from UI.prefMEOS import Dialog as ConfDialog
 from UI.widgets import createAction
 
-from .chooseFluid import Ui_ChooseFluid
-from .reference import Ui_ReferenceState, Ui_Properties
-from .plot import PlotMEoS, Plot2D, Plot3D, calcIsoline, get_points, plot2D3D
-from .table import Ui_Saturation, Ui_Isoproperty, createTabla
-from .library import N_PROP, KEYS, UNITS
-from .library import getClassFluid, getMethod, calcPoint, saveProperties
+from tools.UI_Tables.chooseFluid import Ui_ChooseFluid
+from tools.UI_Tables.reference import Ui_ReferenceState, Ui_Properties
+from tools.UI_Tables.plot import (PlotMEoS, Plot2D, Plot3D, calcIsoline,
+                                  get_points, plot2D3D)
+from tools.UI_Tables.table import Ui_Saturation, Ui_Isoproperty, createTabla
+from tools.UI_Tables.library import N_PROP, KEYS, UNITS
+from tools.UI_Tables.library import (getClassFluid, getMethod, calcPoint,
+                                     saveProperties)
 
 
-class plugin(object):
+class plugin():
     """Common functionality to add to menu and dialog in main window"""
 
     def _txt(self):
@@ -811,8 +862,8 @@ class Menu(QtWidgets.QMenu, plugin):
         self.addSeparator()
 
         # Disable calculation action if fluid and reference are not defined
-        if not (self.config.has_option("MEoS", "fluid") and
-                self.config.has_option("MEoS", "reference")):
+        if not (self.config.has_option("MEoS", "fluid")
+                and self.config.has_option("MEoS", "reference")):
             menuCalculate.setEnabled(False)
             menuPlot.setEnabled(False)
 
@@ -856,15 +907,16 @@ class Dialog(QtWidgets.QDialog, plugin):
         layout.addWidget(plot, 6, 2)
 
         # Disable calculation action if fluid and reference are not defined
-        if not (self.config.has_option("MEoS", "fluid") and
-                self.config.has_option("MEoS", "reference")):
+        if not (self.config.has_option("MEoS", "fluid")
+                and self.config.has_option("MEoS", "reference")):
             calculate.setEnabled(False)
             plot.setEnabled(False)
 
         layout.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 7, 1, 1, 3)
-        btBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        btBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         btBox.clicked.connect(self.reject)
         layout.addWidget(btBox, 8, 1, 1, 3)
 

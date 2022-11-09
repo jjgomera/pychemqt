@@ -1,5 +1,3 @@
-tools.UI_Tables package
-=========================
 Tool for use the multiparamter equation of state of several fluids to high
 accuracy property calculations.
 

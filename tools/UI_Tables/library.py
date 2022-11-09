@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+from ast import literal_eval
 from configparser import ConfigParser
 
 from lib import mEoS, coolProp, refProp, config, unidades
@@ -64,15 +65,15 @@ def getClassFluid(method, fluid):
     if method == "refprop":
         # RefProp case, the base instance with the ids kwargs to define the
         # defined compount
-        id = mEoS.__all__[fluid].id
-        fluid = refProp.RefProp(ids=[id])
+        index = mEoS.__all__[fluid].id
+        fluid = refProp.RefProp(ids=[index])
         fluid._fixed()
 
     elif method == "coolprop":
         # CoolProp case, the base instance with the ids kwargs to define the
         # defined compount
-        id = mEoS.__all__[fluid].id
-        fluid = coolProp.CoolProp(ids=[id])
+        index = mEoS.__all__[fluid].id
+        fluid = coolProp.CoolProp(ids=[index])
 
     else:
         # MEOS case, the instance of specified mEoS subclass
@@ -80,16 +81,17 @@ def getClassFluid(method, fluid):
 
     return fluid
 
-def getLimit(fluid, config):
+
+def getLimit(fluid, conf):
     method = getMethod()
     if method == "meos":
-        if isinstance(config, dict):
-            option = config
+        if isinstance(conf, dict):
+            option = conf
         else:
             option = {}
-            option["eq"] = config.getint("MEoS", "eq")
-            option["visco"] = config.getint("MEoS", "visco")
-            option["thermal"] = config.getint("MEoS", "thermal")
+            option["eq"] = conf.getint("MEoS", "eq")
+            option["visco"] = conf.getint("MEoS", "visco")
+            option["thermal"] = conf.getint("MEoS", "thermal")
         Tmin = fluid.eq[option["eq"]]["Tmin"]
         Tmax = fluid.eq[option["eq"]]["Tmax"]
         Pmin = fluid._new(T=fluid.eq[option["eq"]]["Tmin"], x=1, **option).P
@@ -115,10 +117,11 @@ def getLimit(fluid, config):
 
     return Tmin, Tmax, Pmin, Pmax
 
-def calcPoint(fluid, config, **kwargs):
+
+def calcPoint(fluid, conf, **kwargs):
     """Procedure to calculate point state and check state in P-T range of eq"""
     method = getMethod()
-    Tmin, Tmax, Pmin, Pmax = getLimit(fluid, config)
+    Tmin, Tmax, Pmin, Pmax = getLimit(fluid, conf)
 
     if "T" in kwargs:
         if kwargs["T"] < Tmin or kwargs["T"] > Tmax:
@@ -147,25 +150,25 @@ def calcPoint(fluid, config, **kwargs):
     return fluido
 
 
-def get_propiedades(config):
+def get_propiedades(conf):
     """Procedure to get the properties to show in tables
     Input:
-        config: configparser instance with mainwindow preferences
-    Output:
+        conf: configparser instance with mainwindow preferences
+    eanOutput:
         array with properties, key and units
     """
-    booleanos = config.get("MEoS", "properties")
-    order = config.get("MEoS", "propertiesOrder")
+    booleanos = conf.get("MEoS", "properties")
+    order = conf.get("MEoS", "propertiesOrder")
     if isinstance(booleanos, str):
-        booleanos = eval(booleanos)
+        booleanos = literal_eval(booleanos)
     if isinstance(order, str):
-        order = eval(order)
+        order = literal_eval(order)
 
     propiedades = []
     keys = []
     units = []
-    for indice, bool in zip(order, booleanos):
-        if bool:
+    for indice, boolean in zip(order, booleanos):
+        if boolean:
             name, key, unit = ThermoAdvanced.properties()[indice]
             propiedades.append(name)
             keys.append(key)
@@ -173,15 +176,13 @@ def get_propiedades(config):
     return propiedades, keys, units
 
 
-def _getData(fluid, keys, phase=True, unit=None, table=True):
+def _getData(fluid, keys, phase=True, unit=None):
     """Procedure to get values of properties in fluid
     Input:
         fluid: fluid instance to get values
         keys: array with desired parameter to get
         phase: boolean to get the properties values for both phases
         unit: unidades subclass
-        table: boolean if the values are for a table, the none values are repr
-            as text msg
     """
     fila = []
     for i, key in enumerate(keys):

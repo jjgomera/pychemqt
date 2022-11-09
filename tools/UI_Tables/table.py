@@ -33,10 +33,10 @@ from functools import partial
 from math import ceil, floor
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
 from numpy import delete, insert
+from tools.qt import QtCore, QtGui, QtWidgets
 
-from lib import meos, mEoS, coolProp, refProp, unidades, config
+from lib import meos, mEoS, coolProp, unidades, config
 from lib.thermo import ThermoAdvanced
 from lib.utilities import representacion, exportTable
 from UI.widgets import (Entrada_con_unidades, createAction, Status, Tabla,
@@ -169,13 +169,14 @@ class TablaMEoS(Tabla):
             self.format = [
                 {"fmt": 1, "decimales": 6, "signo": False}]*args[0]
 
-        super(TablaMEoS, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
         self.horizontalHeader().setContextMenuPolicy(
             QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.horizontalHeader().customContextMenuRequested.connect(
             self.hHeaderClicked)
-        self.verticalHeader().setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+        self.verticalHeader().setContextMenuPolicy(
+            QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.verticalHeader().customContextMenuRequested.connect(
             self.vHeaderClicked)
         self.itemSelectionChanged.connect(self.selectPoint)
@@ -706,7 +707,7 @@ class Ui_Saturation(QtWidgets.QDialog):
         fluid: int
             Index of fluid in list
         """
-        super(Ui_Saturation, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Saturation Table"))
         layout = QtWidgets.QGridLayout(self)
@@ -774,7 +775,8 @@ class Ui_Saturation(QtWidgets.QDialog):
         layout.addWidget(self.Incremento, 6, 2)
 
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 10, 1, 1, 4)

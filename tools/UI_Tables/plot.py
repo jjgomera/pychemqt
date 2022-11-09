@@ -32,7 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   - getLineFormat: get matplotlib line format from preferences
 #   - plotIsoline: plot isoline procedure
 #   - plot2D3D: general procedure for plotting 2D and 3D
-#   - _getunitTransform
+#   - _getunitTransform: Return the axis unit transform function to map data
+#     to configurated unit
 ###############################################################################
 
 
@@ -42,9 +43,9 @@ import json
 from math import log10, atan, pi
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
 from numpy import concatenate, linspace, logspace, transpose, log, nan
 from matplotlib.font_manager import FontProperties
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib import meos, unidades, plot, config
 from lib.thermo import ThermoAdvanced
@@ -72,7 +73,7 @@ class PlotMEoS(QtWidgets.QWidget):
             toolbar: boolean to add the matplotlib toolbar
             filename: filename for data
         """
-        super(PlotMEoS, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
         self.setMouseTracking(True)
         self.parent = parent
@@ -139,6 +140,7 @@ class PlotMEoS(QtWidgets.QWidget):
             self.editMarginAction.setEnabled(False)
 
     def showFluid(self):
+        """Show dialog with properties of selected fluid"""
         method = self.config["method"]
         index = self.config["fluid"]
         fluid = getClassFluid(method, index)
@@ -146,7 +148,6 @@ class PlotMEoS(QtWidgets.QWidget):
         dlg.exec()
 
     def mouseMoveEvent(self, event):
-        # print(event.globalPosition())
         QtWidgets.QWidget.mouseMoveEvent(self, event)
         self.mouseMove.emit(event.globalPosition())
 
@@ -248,13 +249,12 @@ class PlotMEoS(QtWidgets.QWidget):
             print(filenameSoft)
             with open(filenameSoft, "rb") as archivo:
                 data = json.load(archivo)
-            return data
         elif os.path.isfile(filenameHard):
             print(filenameHard)
             with gzip.GzipFile(filenameHard, 'rb') as archivo:
                 data = json.load(archivo)
             self._saveData(data)
-            return data
+        return data
 
     def _saveData(self, data):
         """Save changes in data to file"""
@@ -535,17 +535,17 @@ class PlotMEoS(QtWidgets.QWidget):
             x = line["x"]
             y = line["y"]
 
-            format = {}
-            format["lw"] = line["lw"]
-            format["ls"] = line["ls"]
-            format["marker"] = line["marker"]
-            format["color"] = line["color"]
-            format["ms"] = line["ms"]
-            format["mfc"] = line["mfc"]
-            format["mew"] = line["mew"]
-            format["mec"] = line["mec"]
+            fmt = {}
+            fmt["lw"] = line["lw"]
+            fmt["ls"] = line["ls"]
+            fmt["marker"] = line["marker"]
+            fmt["color"] = line["color"]
+            fmt["ms"] = line["ms"]
+            fmt["mfc"] = line["mfc"]
+            fmt["mew"] = line["mew"]
+            fmt["mec"] = line["mec"]
 
-            ln, = grafico.plot.ax.plot(x, y, label=label, **format)
+            ln, = grafico.plot.ax.plot(x, y, label=label, **fmt)
             ln.set_visible(line["visible"])
             ln.set_antialiased(line["antialiased"])
 
@@ -1557,19 +1557,19 @@ def getLineFormat(Preferences, name):
     """get matplotlib line format from preferences
         Preferences: configparser instance with pycheqmt preferences
         name: name of isoline"""
-    format = formatLine(Preferences, "MEOS", name)
+    fmt = formatLine(Preferences, "MEOS", name)
 
     # Anotation
     if name != "saturation":
-        format["annotate"] = Preferences.getboolean("MEOS", name+"label")
-        format["pos"] = Preferences.getint("MEOS", name+"position")
-        format["unit"] = Preferences.getboolean("MEOS", name+"units")
-        format["variable"] = Preferences.getboolean("MEOS", name+"variable")
+        fmt["annotate"] = Preferences.getboolean("MEOS", name+"label")
+        fmt["pos"] = Preferences.getint("MEOS", name+"position")
+        fmt["unit"] = Preferences.getboolean("MEOS", name+"units")
+        fmt["variable"] = Preferences.getboolean("MEOS", name+"variable")
 
-    return format
+    return fmt
 
 
-def plotIsoline(data, axis, title, unidad, grafico, transform, **format):
+def plotIsoline(data, axis, title, unidad, grafico, transform, **fmt):
     """Procedure to plot any isoline
     Input:
         data: section of property isoline of matrix data
@@ -1578,25 +1578,25 @@ def plotIsoline(data, axis, title, unidad, grafico, transform, **format):
         unidad: unidades subclass with isoline unit
         grafico: PlotMEoS instance to plot data
         transform: unit transform function for use configurated units in plots
-        format: any matplotlib plot kwargs
+        fmt: any matplotlib plot kwargs
     """
     x, y, z = axis
     fx, fy, fz = transform
     xscale = grafico.plot.ax.get_xscale()
     yscale = grafico.plot.ax.get_yscale()
-    annotate = format.pop("annotate")
-    pos = format.pop("pos")
-    unit = format.pop("unit")
-    variable = format.pop("variable")
+    annotate = fmt.pop("annotate")
+    pos = fmt.pop("pos")
+    unit = fmt.pop("unit")
+    variable = fmt.pop("variable")
     for key in sorted(data.keys()):
         xi = list(map(fx, data[key][x]))
         yi = list(map(fy, data[key][y]))
         label = "%s =%s" % (title, unidad(key).str)
         if z:
             zi = list(map(fz, data[key][z]))
-            line, = grafico.plot.ax.plot(xi, yi, zi, label=label, **format)
+            line, = grafico.plot.ax.plot(xi, yi, zi, label=label, **fmt)
         else:
-            line, = grafico.plot.ax.plot(xi, yi, label=label, **format)
+            line, = grafico.plot.ax.plot(xi, yi, label=label, **fmt)
 
         # Add annotate for isolines
         if not z:
@@ -1661,7 +1661,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
     transform = (functionx, functiony, functionz)
 
     # Plot saturation lines
-    format = getLineFormat(Preferences, "saturation")
+    fmt = getLineFormat(Preferences, "saturation")
     if x == "P" and y == "T":
         satLines = QtWidgets.QApplication.translate(
             "pychemqt", "Saturation Line"),
@@ -1676,9 +1676,9 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
         ysat = list(map(functiony, data["saturation_%i" % fase][y]))
         if z:
             zsat = list(map(functionz, data["saturation_%i" % fase][z]))
-            grafico.plot.ax.plot(xsat, ysat, zsat, label=label, **format)
+            grafico.plot.ax.plot(xsat, ysat, zsat, label=label, **fmt)
         else:
-            grafico.plot.ax.plot(xsat, ysat, label=label, **format)
+            grafico.plot.ax.plot(xsat, ysat, label=label, **fmt)
 
     # Plot melting and sublimation lines
     if "melting" in data:
@@ -1687,9 +1687,9 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
         ymel = list(map(functiony, data["melting"][y]))
         if z:
             zmel = list(map(functionz, data["melting"][z]))
-            grafico.plot.ax.plot(xmel, ymel, zmel, label=label, **format)
+            grafico.plot.ax.plot(xmel, ymel, zmel, label=label, **fmt)
         else:
-            grafico.plot.ax.plot(xmel, ymel, label=label, **format)
+            grafico.plot.ax.plot(xmel, ymel, label=label, **fmt)
     if "sublimation" in data:
         xsub = list(map(functionx, data["sublimation"][x]))
         ysub = list(map(functiony, data["sublimation"][y]))
@@ -1697,49 +1697,49 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
             "pychemqt", "Sublimation Line")
         if z:
             zmel = list(map(functionz, data["melting"][z]))
-            grafico.plot.ax.plot(xmel, ymel, zmel, label=label, **format)
+            grafico.plot.ax.plot(xmel, ymel, zmel, label=label, **fmt)
         else:
-            grafico.plot.ax.plot(xsub, ysub, label=label, **format)
+            grafico.plot.ax.plot(xsub, ysub, label=label, **fmt)
 
     # Plot quality isolines
     if x not in ["P", "T"] or y not in ["P", "T"] or z:
-        format = getLineFormat(Preferences, "Isoquality")
+        fmt = getLineFormat(Preferences, "Isoquality")
         plotIsoline(data["x"], (x, y, z), "x", unidades.Dimensionless, grafico,
-                    transform, **format)
+                    transform, **fmt)
 
     # Plot isotherm lines
     if x != "T" and y != "T" or z:
-        format = getLineFormat(Preferences, "Isotherm")
+        fmt = getLineFormat(Preferences, "Isotherm")
         plotIsoline(data["T"], (x, y, z), "T", unidades.Temperature, grafico,
-                    transform, **format)
+                    transform, **fmt)
 
     # Plot isobar lines
     if x != "P" and y != "P" or z:
-        format = getLineFormat(Preferences, "Isobar")
+        fmt = getLineFormat(Preferences, "Isobar")
         plotIsoline(data["P"], (x, y, z), "P", unidades.Pressure, grafico,
-                    transform, **format)
+                    transform, **fmt)
 
     # Plot isochor lines
     if x not in ["rho", "v"] and y not in ["rho", "v"] or z:
-        format = getLineFormat(Preferences, "Isochor")
+        fmt = getLineFormat(Preferences, "Isochor")
         plotIsoline(data["v"], (x, y, z), "v", unidades.SpecificVolume,
-                    grafico, transform, **format)
+                    grafico, transform, **fmt)
         # Plot isodensity lines
         if "rho" in data:
             plotIsoline(data["rho"], (x, y, z), "rho", unidades.Density,
-                        grafico, transform, **format)
+                        grafico, transform, **fmt)
 
     # Plot isoenthalpic lines
     if x != "h" and y != "h" or z:
-        format = getLineFormat(Preferences, "Isoenthalpic")
+        fmt = getLineFormat(Preferences, "Isoenthalpic")
         plotIsoline(data["h"], (x, y, z), "h", unidades.Enthalpy, grafico,
-                    transform, **format)
+                    transform, **fmt)
 
     # Plot isoentropic lines
     if x != "s" and y != "s" or z:
-        format = getLineFormat(Preferences, "Isoentropic")
+        fmt = getLineFormat(Preferences, "Isoentropic")
         plotIsoline(data["s"], (x, y, z), "s", unidades.SpecificHeat, grafico,
-                    transform, **format)
+                    transform, **fmt)
 
 
 def _getunitTransform(eje):

@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
+from ast import literal_eval
 import os
 
 from tools.qt import QtCore, QtGui, QtWidgets
@@ -41,7 +42,7 @@ class Ui_ReferenceState(QtWidgets.QDialog):
     """Dialog for select reference state"""
     def __init__(self, config=None, parent=None):
         """config: instance with project config to set initial values"""
-        super(Ui_ReferenceState, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Select reference state"))
         layout = QtWidgets.QGridLayout(self)
@@ -63,8 +64,8 @@ class Ui_ReferenceState(QtWidgets.QDialog):
         layout.addWidget(self.personalizado, 4, 1, 1, 7)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            5, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 1)
         layout.addWidget(QtWidgets.QLabel("T:"), 5, 2)
         self.T = Entrada_con_unidades(unidades.Temperature, value=298.15)
         layout.addWidget(self.T, 5, 3)
@@ -85,7 +86,8 @@ class Ui_ReferenceState(QtWidgets.QDialog):
             QtWidgets.QSizePolicy.Policy.Expanding), 7, 7)
 
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 8, 1, 1, 7)
@@ -111,12 +113,12 @@ class Ui_ReferenceState(QtWidgets.QDialog):
             self.OTO.setChecked(True)
             self.setEnabled(False)
 
-    def setEnabled(self, bool):
+    def setEnabled(self, boolean):
         """Enable custom entriees"""
-        self.T.setEnabled(bool)
-        self.P.setEnabled(bool)
-        self.h.setEnabled(bool)
-        self.s.setEnabled(bool)
+        self.T.setEnabled(boolean)
+        self.P.setEnabled(boolean)
+        self.h.setEnabled(boolean)
+        self.s.setEnabled(boolean)
 
 
 class Ui_Properties(QtWidgets.QDialog):
@@ -124,15 +126,15 @@ class Ui_Properties(QtWidgets.QDialog):
     _default = [1, 0, 1, 0, 0, 1, 0, 1, 1]+[0]*(N_PROP-9)
 
     def __init__(self, config=None, parent=None):
-        super(Ui_Properties, self).__init__(parent)
+        super().__init__(parent)
         if config and config.has_option("MEoS", "properties"):
             values = config.get("MEoS", "properties")
             if isinstance(values, str):
-                values = eval(values)
+                values = literal_eval(values)
             fase = config.getboolean("MEoS", "phase")
             self.order = config.get("MEoS", "propertiesOrder")
             if isinstance(self.order, str):
-                self.order = eval(self.order)
+                self.order = literal_eval(self.order)
         else:
             values = self._default
             fase = False
@@ -147,8 +149,10 @@ class Ui_Properties(QtWidgets.QDialog):
         self.prop.horizontalHeader().setStretchLastSection(True)
         self.prop.setGridStyle(QtCore.Qt.PenStyle.NoPen)
         self.prop.setColumnWidth(0, 18)
-        self.prop.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-        self.prop.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.prop.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.prop.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.prop.setItemDelegateForColumn(0, CheckEditor(self))
         for i, value in enumerate(values):
             if value == 1:
@@ -182,8 +186,9 @@ class Ui_Properties(QtWidgets.QDialog):
         self.checkFase.setChecked(fase)
         layout.addWidget(self.checkFase, 7, 1, 1, 2)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Reset | QtWidgets.QDialogButtonBox.StandardButton.Ok |
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Reset
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.addButton(
             QtWidgets.QApplication.translate("pychemqt", "Mark all"),
             QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
@@ -236,8 +241,8 @@ class Ui_Properties(QtWidgets.QDialog):
                 QtWidgets.QDialogButtonBox.ButtonRole.RejectRole:
             self.reject()
         else:
-            if boton == \
-                    self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Reset):
+            if boton == self.buttonBox.button(
+                    QtWidgets.QDialogButtonBox.StandardButton.Reset):
                 values = self._default
             elif boton.text() == \
                     QtWidgets.QApplication.translate("pychemqt", "No Mark"):
