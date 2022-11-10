@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=too-many-locals
 
 '''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2022, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -48,14 +49,21 @@ from .plot import PlotMEoS
 
 
 # Table data
-def createTabla(config, title, fluidos=None, parent=None):
+def createTabla(conf, title, fluidos=None, parent=None):
     """Create TablaMEoS to add to mainwindow
-        config: configparser instance with project configuration
-        title: title for the table
-        fluidos: optional array with meos instances to fill de table
-        parent: mainwindow pointer
-        """
-    propiedades, keys, units = get_propiedades(config)
+
+    Parameters
+    ----------
+    conf : ConfigParser
+        configparser instance with project configuration
+    title : str
+        title for the table
+    fluidos : lib.MEoS
+        optional array with meos instances to fill de table
+    parent : object
+        mainwindow pointer
+    """
+    propiedades, keys, units = get_propiedades(conf)
 
     # Add the unit suffix to properties title
     for i, unit in enumerate(units):
@@ -65,7 +73,7 @@ def createTabla(config, title, fluidos=None, parent=None):
         propiedades[i] = propiedades[i]+os.linesep+sufx
 
     # Add two phases properties if requested
-    if config.getboolean("MEoS", "phase"):
+    if conf.getboolean("MEoS", "phase"):
         for i in range(len(propiedades)-1, -1, -1):
             if keys[i] in ThermoAdvanced.propertiesPhase():
                 txt = [propiedades[i]]
@@ -89,7 +97,7 @@ def createTabla(config, title, fluidos=None, parent=None):
         tabla = TablaMEoS(len(propiedades), readOnly=True, **kw)
         data = []
         for fluido in fluidos:
-            fila = _getData(fluido, keys, config.getboolean("MEoS", "phase"))
+            fila = _getData(fluido, keys, conf.getboolean("MEoS", "phase"))
             data.append(fila)
         tabla.setData(data)
 
@@ -101,7 +109,7 @@ def createTabla(config, title, fluidos=None, parent=None):
                 columnInput.append(False)
             else:
                 columnInput.append(True)
-            if config.getboolean("MEoS", "phase") and \
+            if conf.getboolean("MEoS", "phase") and \
                     key in ThermoAdvanced.propertiesPhase():
                 columnInput.append(True)
                 columnInput.append(True)
@@ -109,7 +117,7 @@ def createTabla(config, title, fluidos=None, parent=None):
         kw["dinamica"] = True
 
         # Discard the keys from single phase state as input values
-        if config.getboolean("MEoS", "phase"):
+        if conf.getboolean("MEoS", "phase"):
             for i in range(len(keys)-1, -1, -1):
                 if keys[i] in ThermoAdvanced.propertiesPhase():
                     keys[i:i+1] = [keys[i], "", ""]
@@ -120,10 +128,10 @@ def createTabla(config, title, fluidos=None, parent=None):
     tabla.setWindowTitle(prefix+": "+title)
     tabla.resizeColumnsToContents()
 
-    conf = {}
-    conf["method"] = getMethod()
-    conf["fluid"] = config.getint("MEoS", "fluid")
-    tabla.changeStatusThermo(conf)
+    state = {}
+    state["method"] = getMethod()
+    state["fluid"] = conf.getint("MEoS", "fluid")
+    tabla.changeStatusThermo(state)
 
     return tabla
 
@@ -133,6 +141,7 @@ class TablaMEoS(Tabla):
     load support in project"""
     Plot = None
     icon = os.path.join(config.IMAGE_PATH, "button", "table.png")
+    Point = None
 
     def __init__(self, *args, **kwargs):
         """Constructor with additional kwargs don't recognize in Tabla
@@ -193,12 +202,13 @@ class TablaMEoS(Tabla):
         self.statusWidget.append(self.statusThermo)
 
     def showFluid(self):
+        """Show fluid info dialog"""
         dlg = Dialog_InfoFluid(self.Point.__class__)
         dlg.exec()
 
-    def changeStatusThermo(self, config):
-        fluid = getClassFluid(config["method"], config["fluid"])
-        txt = "%s (%s)" % (fluid.name, config["method"])
+    def changeStatusThermo(self, conf):
+        fluid = getClassFluid(conf["method"], conf["fluid"])
+        txt = "%s (%s)" % (fluid.name, conf["method"])
         self.statusThermo.setText(txt)
 
     def closeEvent(self, event):
@@ -243,9 +253,9 @@ class TablaMEoS(Tabla):
             self.format[col] = dialog.args()
             self.setStr()
             self.resizeColumnToContents(col)
-        range = QtWidgets.QTableWidgetSelectionRange(
+        rango = QtWidgets.QTableWidgetSelectionRange(
             0, col, self.rowCount()-1, col)
-        self.setRangeSelected(range, True)
+        self.setRangeSelected(rango, True)
 
     def vHeaderClicked(self, position):
         """Show dialog to manage item in table"""
@@ -394,8 +404,8 @@ class TablaMEoS(Tabla):
             self.setRow(row, datatoTable)
 
             # Update verticalHeader
-            for row in range(self.rowCount()):
-                self.setVHeader(row)
+            for title in range(self.rowCount()):
+                self.setVHeader(title)
 
             # Add point to data plot
             if plot is None:
@@ -551,8 +561,8 @@ class TablaMEoS(Tabla):
         # Set calculate point readOnly
         if not self.readOnly:
             color = config.Preferences.get("General", 'Color_ReadOnly')
-            for i, bool in enumerate(self.columnReadOnly):
-                if not bool:
+            for i, boolean in enumerate(self.columnReadOnly):
+                if not boolean:
                     self.item(row, i).setFlags(
                         QtCore.Qt.ItemFlag.ItemIsEnabled
                         | QtCore.Qt.ItemFlag.ItemIsSelectable)
@@ -588,9 +598,9 @@ class TablaMEoS(Tabla):
     def exportCSV(self):
         """Export data table as a csv file"""
         if self.parent.currentFilename:
-            dir = os.path.dirname(str(self.parent.currentFilename))
+            folder = os.path.dirname(str(self.parent.currentFilename))
         else:
-            dir = "."
+            folder = "."
 
         pat = []
         pat.append(QtWidgets.QApplication.translate(
@@ -609,7 +619,7 @@ class TablaMEoS(Tabla):
 
         fname, ext = QtWidgets.QFileDialog.getSaveFileName(
             self, QtWidgets.QApplication.translate(
-                "pychemqt", "Export table to file"), dir, patron)
+                "pychemqt", "Export table to file"), folder, patron)
         if fname and ext:
             ext = ext.split(".")[-1][:-1]
             exportTable(self.data, fname, ext, self.horizontalHeaderLabel)
@@ -625,9 +635,9 @@ class TablaMEoS(Tabla):
             data["htitle"].append(self.horizontalHeaderItem(column).text())
 
         # Save units as index
-        all = unidades._all
-        all.append(unidades.Dimensionless)
-        data["unit"] = [all.index(unit) for unit in self.units]
+        units = unidades._all
+        units.append(unidades.Dimensionless)
+        data["unit"] = [units.index(unit) for unit in self.units]
 
         # Save method calculation options
         if isinstance(self.Point, meos.MEoS):
@@ -664,9 +674,9 @@ class TablaMEoS(Tabla):
         """Load data table from saved file"""
 
         # Get units
-        all = unidades._all
-        all.append(unidades.Dimensionless)
-        units = [all[i] for i in data["unit"]]
+        units = unidades._all
+        units.append(unidades.Dimensionless)
+        units = [units[i] for i in data["unit"]]
 
         # Create Tabla
         kwargs = {}
@@ -809,9 +819,9 @@ class Ui_Saturation(QtWidgets.QDialog):
         self.VariarXconT.setEnabled(self.VL.isChecked())
         self.VariarTemperatura.setChecked(not self.VL.isChecked())
 
-    def updateVar(self, bool):
+    def updateVar(self, boolean):
         """Update input values units and text"""
-        if bool:
+        if boolean:
             # Select initial values
             fix, inicial, final, step = 0, 0, 0, 0
             if self.VL.isChecked():
@@ -908,7 +918,7 @@ class Ui_Isoproperty(QtWidgets.QDialog):
     keys = ["T", "P", "rho", "v", "h", "s", "u", "x"]
 
     def __init__(self, parent=None):
-        super(Ui_Isoproperty, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Specify Isoproperty Table"))
         layout = QtWidgets.QGridLayout(self)
@@ -952,7 +962,8 @@ class Ui_Isoproperty(QtWidgets.QDialog):
         layout.addWidget(self.Incremento, 7, 2)
 
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         layout.addWidget(buttonBox, 10, 1, 1, 2)
@@ -1001,7 +1012,7 @@ class AddPoint(QtWidgets.QDialog):
         fluid: initial fluid instance
         melting: boolean to add melting line calculation
         """
-        super(AddPoint, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Add Point to line"))
         layout = QtWidgets.QGridLayout(self)
@@ -1019,34 +1030,36 @@ class AddPoint(QtWidgets.QDialog):
             layout.addWidget(entrada, i, 2)
 
         self.status = Status(self.fluid.status, self.fluid.msg)
-        layout.addWidget(self.status, i+1, 1, 1, 2)
+        row = len(meos.inputData)
+        layout.addWidget(self.status, row+1, 1, 1, 2)
 
         if isinstance(fluid, meos.MEoS) and fluid._melting:
             self.checkMelting = QtWidgets.QRadioButton(
                 QtWidgets.QApplication.translate("pychemqt", "Melting Point"))
             self.checkMelting.setChecked(melting)
-            layout.addWidget(self.checkMelting, i+2, 1, 1, 2)
-            i += 1
+            layout.addWidget(self.checkMelting, row+2, 1, 1, 2)
+            row += 1
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "To")), i+2, 1)
+            QtWidgets.QApplication.translate("pychemqt", "To")), row+2, 1)
         self.To = Entrada_con_unidades(unidades.Temperature)
         self.To.valueChanged.connect(partial(self.update, "To"))
-        layout.addWidget(self.To, i+2, 2)
+        layout.addWidget(self.To, row+2, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "rhoo")), i+3, 1)
+            QtWidgets.QApplication.translate("pychemqt", "rhoo")), row+3, 1)
         self.rhoo = Entrada_con_unidades(unidades.Density)
         self.rhoo.valueChanged.connect(partial(self.update, "rhoo"))
-        layout.addWidget(self.rhoo, i+3, 2)
+        layout.addWidget(self.rhoo, row+3, 2)
 
         self.checkBelow = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
             "pychemqt", "Add below selected point"))
-        layout.addWidget(self.checkBelow, i+4, 1, 1, 2)
+        layout.addWidget(self.checkBelow, row+4, 1, 1, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Reset | QtWidgets.QDialogButtonBox.StandardButton.Ok |
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Reset
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.clicked.connect(self.click)
-        layout.addWidget(self.buttonBox, i+5, 1, 1, 2)
+        layout.addWidget(self.buttonBox, row+5, 1, 1, 2)
 
     def click(self, button):
         """Manage mouse click event over buttonbox"""
@@ -1079,13 +1092,13 @@ class AddPoint(QtWidgets.QDialog):
         self.blockSignals(True)
         Config = ConfigParser()
         Config.read(config.conf_dir + "pychemqtrc")
-        for key, input in zip(self.keys, self.Inputs):
-            input.setValue(fluid.__getattribute__(key))
+        for key, data in zip(self.keys, self.Inputs):
+            data.setValue(fluid.__getattribute__(key))
             if key in fluid.kwargs and \
                     fluid.kwargs[key] != fluid.__class__.kwargs[key]:
-                input.setResaltado(True)
+                data.setResaltado(True)
             else:
-                input.setResaltado(False)
+                data.setResaltado(False)
         self.blockSignals(False)
 
     def reset(self):
@@ -1094,23 +1107,17 @@ class AddPoint(QtWidgets.QDialog):
         self.status.setState(self.fluid.status, self.fluid.msg)
         self.rhoo.clear()
         self.To.clear()
-        for input in self.Inputs:
-            input.clear()
-            input.setResaltado(False)
+        for inputData in self.Inputs:
+            inputData.clear()
+            inputData.setResaltado(False)
 
 
 if __name__ == "__main__":
     import sys
-    from lib.refProp import RefProp
     from lib.mEoS import H2O
 
     app = QtWidgets.QApplication(sys.argv)
-    conf = config.getMainWindowConfig()
-
-    fluid = RefProp(ids=[62])
-    # fluid = H2O()
-
-    SteamTables = AddPoint(fluid)
-
+    cmp = H2O()
+    SteamTables = AddPoint(cmp)
     SteamTables.show()
     sys.exit(app.exec())

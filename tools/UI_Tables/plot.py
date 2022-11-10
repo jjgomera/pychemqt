@@ -182,16 +182,19 @@ class PlotMEoS(QtWidgets.QWidget):
         if self.plot.ax._gridOn:
             self.gridToggleAction.setChecked(True)
 
-    def grid(self, bool):
-        self.plot.ax.grid(bool)
-        self.plot.ax._gridOn = bool
+    def grid(self, boolean):
+        """Set grid visibility of plot"""
+        self.plot.ax.grid(boolean)
+        self.plot.ax._gridOn = boolean
         self.plot.draw()
 
     def edit(self):
+        """Show edit plot dialog"""
         dialog = EditPlot(self, self.parent)
         dialog.exec()
 
     def editAxis(self):
+        """Show edit axes dialog"""
         dialog = EditAxis(self.plot, self.parent)
         dialog.exec()
 
@@ -216,7 +219,7 @@ class PlotMEoS(QtWidgets.QWidget):
             data = obj.get_data(orig=True)
 
         # Don't import at top level to avoid recursion import
-        from .table import TablaMEoS  # noqa
+        from .table import TablaMEoS
 
         tabla = TablaMEoS(self.dim, horizontalHeader=HHeader, units=units,
                           stretch=False, readOnly=True, parent=self.parent)
@@ -591,16 +594,16 @@ class PlotMEoS(QtWidgets.QWidget):
 
         return grafico
 
-    def changeStatusThermo(self, config):
-        fluid = getClassFluid(config["method"], config["fluid"])
-        txt = "%s (%s)" % (fluid.name, config["method"])
+    def changeStatusThermo(self, conf):
+        fluid = getClassFluid(conf["method"], conf["fluid"])
+        txt = "%s (%s)" % (fluid.name, conf["method"])
         self.statusThermo.setText(txt)
 
 
 class Plot2D(QtWidgets.QDialog):
     """Dialog for select a special 2D plot"""
     def __init__(self, parent=None):
-        super(Plot2D, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Setup 2D Plot"))
         layout = QtWidgets.QVBoxLayout(self)
@@ -627,7 +630,8 @@ class Plot2D(QtWidgets.QDialog):
         layout_GroupY.addWidget(self.Yscale)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -662,7 +666,7 @@ class Plot3D(QtWidgets.QDialog):
     """Dialog for configure a 3D plot"""
 
     def __init__(self, parent=None):
-        super(Plot3D, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Setup 3D Plot"))
         layout = QtWidgets.QGridLayout(self)
@@ -683,7 +687,8 @@ class Plot3D(QtWidgets.QDialog):
         layout.addWidget(self.ejeZ, 3, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 4, 1, 1, 2)
@@ -742,7 +747,7 @@ class Plot3D(QtWidgets.QDialog):
 class EditPlot(QtWidgets.QDialog):
     """Dialog to edit plot. This dialog let user change plot p"""
     def __init__(self, plotMEoS, parent=None):
-        super(EditPlot, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Edit Plot"))
         layout = QtWidgets.QGridLayout(self)
@@ -946,7 +951,8 @@ class EditPlot(QtWidgets.QDialog):
         self.annotationVA.currentIndexChanged.connect(
             partial(self.changeValue, "textVA"))
 
-    def _updateLabel(self, label, value):
+    @staticmethod
+    def _updateLabel(label, value):
         label.setValue(value)
 
     def update(self, i):
@@ -1196,8 +1202,8 @@ class EditPlot(QtWidgets.QDialog):
         if var in units:
             unit = units[var]
             for key in data[var]:
-                str = unit(key).str
-                if str[1:] == " ".join(txt[2:]):
+                string = unit(key).str
+                if string[1:] == " ".join(txt[2:]):
                     del data[var][key]
                     self.plotMEoS._saveData(data)
                     break
@@ -1234,7 +1240,7 @@ class AddLine(QtWidgets.QDialog):
               float, None)]
 
     def __init__(self, parent=None):
-        super(AddLine, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Add Line to Plot"))
         layout = QtWidgets.QGridLayout(self)
@@ -1260,17 +1266,17 @@ class AddLine(QtWidgets.QDialog):
         self.isolineaChanged(0)
         self.tipo.currentIndexChanged.connect(self.isolineaChanged)
 
-    def isolineaChanged(self, int):
+    def isolineaChanged(self, key):
         """Let show only the active inputs"""
         for i in self.input:
             i.setVisible(False)
-        self.input[int].setVisible(True)
+        self.input[key].setVisible(True)
 
 
 class EditAxis(QtWidgets.QDialog):
     """Dialog to configure axes plot properties, label, margins, scales"""
     def __init__(self, fig=None, parent=None):
-        super(EditAxis, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             QtWidgets.QApplication.translate("pychemqt", "Edit Axis"))
         layout = QtWidgets.QGridLayout(self)
@@ -1462,7 +1468,7 @@ class AxisWidget(QtWidgets.QGroupBox):
     """Dialog to configure axes plot properties"""
     def __init__(self, name, parent=None):
         title = name+" "+QtWidgets.QApplication.translate("pychemqt", "Axis")
-        super(AxisWidget, self).__init__(title, parent)
+        super().__init__(title, parent)
         lyt = QtWidgets.QGridLayout(self)
         lyt.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Label")), 1, 1)
@@ -1663,8 +1669,8 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
     # Plot saturation lines
     fmt = getLineFormat(Preferences, "saturation")
     if x == "P" and y == "T":
-        satLines = QtWidgets.QApplication.translate(
-            "pychemqt", "Saturation Line"),
+        satLines = (QtWidgets.QApplication.translate(
+            "pychemqt", "Saturation Line"))
     else:
         satLines = [
             QtWidgets.QApplication.translate(
@@ -1753,26 +1759,24 @@ def _getunitTransform(eje):
         index = config.getMainWindowConfig().getint("Units", "Temperature")
         func = [float, unidades.K2C, unidades.K2R, unidades.K2F, unidades.K2Re]
         return func[index]
-    else:
-        unit = meos.units[meos.keys.index(eje)]
-        factor = unit(1.).config()
 
-        def f(val):
-            if val is not None and type(val) != str:
-                return val*factor
-            else:
-                return nan
+    unit = meos.units[meos.keys.index(eje)]
+    factor = unit(1.).config()
 
-        return f
-        # return lambda val: val*factor if val is not None else nan
+    def f(val):
+        if val is not None and not isinstance(val, str):
+            return val*factor
+        return nan
+
+    return f
+    # return lambda val: val*factor if val is not None else nan
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    conf = config.getMainWindowConfig()
-
+    # conf = config.getMainWindowConfig()
     # SteamTables = AddPoint(conf)
     # SteamTables=AddLine(None)
     # SteamTables = Dialog(conf)
