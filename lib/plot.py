@@ -68,7 +68,7 @@ class mpl(FigureCanvasQTAgg):
 
 class matplotlib(FigureCanvasQTAgg):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
-    def __init__(self,  dim=2, parent=None):
+    def __init__(self, dim=2, parent=None):
         self.fig = Figure(figsize=(10, 10), dpi=100)
         self.dim = dim
         FigureCanvasQTAgg.__init__(self, self.fig)
@@ -84,7 +84,7 @@ class matplotlib(FigureCanvasQTAgg):
                 left=0.08, right=0.98, bottom=0.08, top=0.92)
 
         else:
-            self.ax = Axes3D(self.fig)
+            self.ax = self.fig.add_subplot(projection="3d")
             self.ax.mouse_init(rotate_btn=1, zoom_btn=2)
 
     def plot_3D(self, labels, xdata, ydata, zdata, config=None):

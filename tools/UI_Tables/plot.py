@@ -745,7 +745,7 @@ class Plot3D(QtWidgets.QDialog):
 
 
 class EditPlot(QtWidgets.QDialog):
-    """Dialog to edit plot. This dialog let user change plot p"""
+    """Dialog to edit plot. This dialog let user change plot properties"""
     def __init__(self, plotMEoS, parent=None):
         super().__init__(parent)
         self.setWindowTitle(
