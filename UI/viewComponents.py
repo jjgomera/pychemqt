@@ -26,7 +26,7 @@ from tools.qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets
 
 from scipy import array, optimize, linspace
 
-from lib.plot import Plot
+from lib.plot import PlotDialog
 from lib.compuestos import (Componente, MuL_Parametric, Pv_Antoine, Pv_Wagner,
                             Tension_Parametric, Henry, DIPPR)
 from lib import unidades, sql
@@ -353,7 +353,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         kw["Tc"] = self.parent.Tc.value
         kw["M"] = self.parent.M.value
         var = [DIPPR(self.prop, ti, array[:-2], **kw) for ti in t]
-        dialog = Plot()
+        dialog = PlotDialog()
         dialog.addData(t, var)
         if self.data:
             dialog.addData(self.t, self.data, "ro")
@@ -705,7 +705,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         args = [coeff]
         eq = self.function(self.prop)
         var = [eq(ti, *args, **kw) for ti in t]
-        dialog = Plot()
+        dialog = PlotDialog()
         dialog.addData(t, var)
         if self.t and self.data:
             dialog.addData(self.t, self.data, "ro")

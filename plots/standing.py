@@ -43,7 +43,7 @@ from scipy.optimize import fsolve
 
 from lib.config import conf_dir
 from lib.crude import Z_list
-from lib.plot import mpl
+from lib.plot import PlotWidget
 from lib.utilities import formatLine
 from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
@@ -202,7 +202,7 @@ class Standing_Katz(Chart):
         self.butonPNG.clicked.disconnect()
         self.butonPNG.clicked.connect(self.savePNG)
 
-        self.plt2 = mpl(self)
+        self.plt2 = PlotWidget(self)
         self.plt2.fig.canvas.mpl_connect('button_press_event', self.click)
         self.plotWidget.layout().addWidget(self.plt2, 1, 1)
         self.setMask()

@@ -27,7 +27,7 @@ from scipy import arange
 from numpy import transpose
 
 from UI.widgets import Tabla
-from lib.plot import mpl
+from lib.plot import PlotWidget
 from lib import config, unidades
 from lib.corriente import Corriente
 from lib.mezcla import Mezcla
@@ -53,7 +53,7 @@ class Binary_distillation(QtWidgets.QDialog):
         self.Comp2.setCurrentIndex(1)
         tab=QtWidgets.QTabWidget()
         layout.addWidget(tab,2,1,1,5)
-        self.plot=mpl()
+        self.plot=PlotWidget()
         tab.addTab(self.plot, QtWidgets.QApplication.translate("equipment", "Plot"))
         self.tabla=Tabla(2, horizontalHeader=["x", "y"], stretch=False, readOnly=True)
         tab.addTab(self.tabla, QtWidgets.QApplication.translate("equipment", "Table"))
@@ -126,7 +126,7 @@ class Binary_distillation(QtWidgets.QDialog):
         self.plot(0, x, y)
 
 
-class Plot_Distribucion(mpl):
+class Plot_Distribucion(PlotWidget):
     title=QtWidgets.QApplication.translate("pychemqt", "Solid Distribution")
     def __init__(self, id, solido, parent=None):
         super(Plot_Distribucion, self).__init__(parent)

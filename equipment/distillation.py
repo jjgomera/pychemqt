@@ -36,7 +36,7 @@ from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.corriente import Corriente
-from lib.plot import Plot
+from lib.plot import PlotDialog
 from equipment.parents import equipment
 from equipment.heatExchanger import Heat_Exchanger
 
@@ -450,7 +450,7 @@ class Tower(equipment):
         xP = xD
         yP = xD
 
-        dialog = Plot()
+        dialog = PlotDialog()
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(
             QtWidgets.QApplication.translate("pychemqt", "x-y Diagram for")

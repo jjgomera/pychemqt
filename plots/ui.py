@@ -26,11 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from configparser import ConfigParser
 import os
 
-from tools.qt import QtGui, QtWidgets
 from matplotlib import image
+from tools.qt import QtGui, QtWidgets
 
 from lib.config import conf_dir, IMAGE_PATH
-from lib.plot import mpl
+from lib.plot import PlotWidget
 
 
 class Chart(QtWidgets.QDialog):
@@ -43,7 +43,7 @@ class Chart(QtWidgets.QDialog):
         layout.setColumnStretch(3, 1)
         self.plotWidget = QtWidgets.QWidget(self)
         lyt = QtWidgets.QGridLayout(self.plotWidget)
-        self.plt = mpl(self)
+        self.plt = PlotWidget(self)
         self.plt.fig.canvas.mpl_connect('button_press_event', self.click)
         lyt.addWidget(self.plt, 1, 1)
         layout.addWidget(self.plotWidget, 2, 1, 1, 4)
@@ -63,9 +63,12 @@ class Chart(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
         self.butonCalc.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
-        btBox.addButton(self.butonConf, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-        btBox.addButton(self.butonCalc, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-        btBox.addButton(self.butonPNG, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(
+            self.butonConf, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(
+            self.butonCalc, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(
+            self.butonPNG, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
         layout.addWidget(btBox, 3, 1, 1, 4)
 
         self.customUI()

@@ -442,7 +442,7 @@ class UI_reacciones(QtWidgets.QDialog):
             else:
                 f=lambda par, T: exp(par[0]+par[1]/T+par[2]*log(T)+par[3]*T+par[4]*T**2+par[5]*T**3+par[6]*T**4+par[7]*T**5)
 
-            grafico=plot.Plot()
+            grafico=plot.PlotDialog()
             grafico.data(t, k, 'ro', t, f(self.ajuste, t))
             grafico.exec()
 

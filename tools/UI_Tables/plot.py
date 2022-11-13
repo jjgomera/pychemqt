@@ -45,6 +45,7 @@ import os
 
 from numpy import concatenate, linspace, logspace, transpose, log, nan
 from matplotlib.font_manager import FontProperties
+from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib import meos, unidades, plot, config
@@ -82,7 +83,7 @@ class PlotMEoS(QtWidgets.QWidget):
         self.notes = []
 
         layout = QtWidgets.QVBoxLayout(self)
-        self.plot = plot.matplotlib(dim)
+        self.plot = plot.PlotWidget(dim)
 
         self.plot.lx = self.plot.ax.axhline(c="#888888", ls=":")  # horiz line
         self.plot.ly = self.plot.ax.axvline(c="#888888", ls=":")  # vert line
@@ -91,7 +92,7 @@ class PlotMEoS(QtWidgets.QWidget):
         self.plot.ly.set_visible(False)
 
         layout.addWidget(self.plot)
-        self.toolbar = plot.NavigationToolbar2QT(self.plot, self.plot)
+        self.toolbar = NavigationToolbar2QT(self.plot, self.plot)
         self.toolbar.setVisible(toolbar)
         layout.addWidget(self.toolbar)
 

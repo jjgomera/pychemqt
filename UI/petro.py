@@ -35,7 +35,7 @@ from scipy import arange
 from lib.config import IMAGE_PATH, Preferences
 from lib.crude import Crudo
 from lib import sql
-from lib.plot import Plot
+from lib.plot import PlotDialog
 from lib.petro import Petroleo, curve_Predicted, _Tb_Predicted
 from lib import unidades
 from lib.unidades import Temperature, Pressure, Diffusivity
@@ -527,7 +527,7 @@ class Definicion_Petro(newComponent):
         self.finishButton.setEnabled(defined or regresion)
 
     def regresionCurve(self):
-        dlg = Plot(accept=True)
+        dlg = PlotDialog(accept=True)
         x = self.curvaDestilacion.column(0)
         T = self.curvaDestilacion.column(1, Temperature)
         dlg.addData(x, T, color="black", ls="None", marker="s", mfc="red")

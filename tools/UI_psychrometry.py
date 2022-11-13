@@ -45,7 +45,7 @@ from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib.psycrometry import PsyState, PsychroState, _Pbar, _height
 from lib.config import conf_dir
-from lib.plot import mpl
+from lib.plot import PlotWidget
 from lib.unidades import (Temperature, Pressure, Length, Mass,
                           SpecificVolume, Enthalpy)
 from lib.utilities import formatLine
@@ -53,14 +53,14 @@ from UI.prefMEOS import Isolinea
 from UI.widgets import Entrada_con_unidades, LineConfig
 
 
-class PsychroPlot(mpl):
+class PsychroPlot(PlotWidget):
     """
     Plot widget for psychrometric chart
         Add custom margins
         Define a point for text state properties, to easy remove and redraw
     """
     def __init__(self, *args, **kwargs):
-        mpl.__init__(self, *args, **kwargs)
+        PlotWidget.__init__(self, *args, **kwargs)
         self.state = None
 
     def config(self, config):
