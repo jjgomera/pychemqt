@@ -58,9 +58,6 @@ from .library import calcPoint, getLimit, getClassFluid, getMethod
 from .chooseFluid import Dialog_InfoFluid
 
 
-# FIXME: Plot3D save/load support
-
-
 class PlotMEoS(QtWidgets.QWidget):
     """Plot widget to show meos plot data, add context menu options"""
 
@@ -137,8 +134,6 @@ class PlotMEoS(QtWidgets.QWidget):
             self.plot.fig.canvas.mpl_connect('button_press_event', self.click)
             self.plot.fig.canvas.mpl_connect(
                 'motion_notify_event', self.updatePosition)
-        else:
-            self.editMarginAction.setEnabled(False)
 
     def showFluid(self):
         """Show dialog with properties of selected fluid"""
@@ -399,6 +394,10 @@ class PlotMEoS(QtWidgets.QWidget):
             zmin, zmax = self.plot.ax.get_zlim()
             data["zmin"] = zmin
             data["zmax"] = zmax
+            data["zscale"] = self.plot.ax.get_zscale()
+            data["azim"] = self.plot.ax.azim
+            data["elev"] = self.plot.ax.elev
+            data["roll"] = self.plot.ax.roll
         else:
             data["zmin"] = None
             data["zmax"] = None
@@ -426,8 +425,16 @@ class PlotMEoS(QtWidgets.QWidget):
         lines = {}
         for line in self.plot.ax.lines[2:]:
             dat = {}
-            dat["x"] = line.get_xdata().tolist()
-            dat["y"] = line.get_ydata().tolist()
+            if self.z:
+                x, y, z = line.get_data_3d()
+                dat["x"] = x.tolist()
+                dat["y"] = y.tolist()
+                dat["z"] = z.tolist()
+
+            else:
+                dat["x"] = line.get_xdata().tolist()
+                dat["y"] = line.get_ydata().tolist()
+
             dat["label"] = line.get_label()
 
             # line style
@@ -534,12 +541,15 @@ class PlotMEoS(QtWidgets.QWidget):
         grafico.plot.ax.set_ylim(data["ymin"], data["ymax"])
         if z:
             grafico.plot.ax.set_zlim(data["zmin"], data["zmax"])
+            kw = {k: data[k] for k in ("azim", "elev", "roll")}
+            grafico.plot.ax.view_init(**kw)
 
         for label, line in data["lines"].items():
-            x = line["x"]
-            y = line["y"]
+            xdata = line["x"]
+            ydata = line["y"]
 
             fmt = {}
+            fmt["label"] = label
             fmt["lw"] = line["lw"]
             fmt["ls"] = line["ls"]
             fmt["marker"] = line["marker"]
@@ -549,9 +559,16 @@ class PlotMEoS(QtWidgets.QWidget):
             fmt["mew"] = line["mew"]
             fmt["mec"] = line["mec"]
 
-            ln, = grafico.plot.ax.plot(x, y, label=label, **fmt)
+            if z:
+                zdata = line["z"]
+                ln, = grafico.plot.ax.plot(xdata, ydata, zdata, **fmt)
+            else:
+                ln, = grafico.plot.ax.plot(xdata, ydata, **fmt)
             ln.set_visible(line["visible"])
             ln.set_antialiased(line["antialiased"])
+
+            if dim == 3:
+                continue
 
             txt = line["annotation"]["txt"]
             rot = line["annotation"]["rot"]
@@ -559,6 +576,7 @@ class PlotMEoS(QtWidgets.QWidget):
             i = int(len(x)*pos/100)
             kw = {}
             kw["ha"] = "center"
+            kw["rotation"] = rot
             kw["rotation_mode"] = "anchor"
             for key in ("va", "visible", "family", "style", "weight",
                         "stretch", "size"):
@@ -566,12 +584,13 @@ class PlotMEoS(QtWidgets.QWidget):
 
             if i >= len(x):
                 i = len(x)-1
-            text = grafico.plot.ax.text(x[i], y[i], txt, rotation=rot, **kw)
+            if txt:
+                text = grafico.plot.ax.text(x[i], y[i], txt, **kw)
 
-            # We creating a link between line and its annotation text
-            ln.text = text
-            # We save position value in % unit to avoid index find
-            ln.text.pos = pos
+                # We creating a link between line and its annotation text
+                ln.text = text
+                # We save position value in % unit to avoid index find
+                ln.text.pos = pos
 
         grafico.plot.ax.set_xscale(data["xscale"])
         grafico.plot.ax.set_yscale(data["yscale"])
