@@ -1530,11 +1530,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def changeWindow(self, window):
         """Update status info when change subwindow"""
+        # Avoid remove message for updated widget when calculation is going on
+        if self.statusBar().currentMessage():
+            return
+
         try:
             wdgs = window.widget().statusWidget
         except AttributeError:
             return
-
         self.clearWindow()
 
         self.wdg = wdgs
