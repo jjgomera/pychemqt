@@ -80,7 +80,7 @@ class PlotMEoS(QtWidgets.QWidget):
         self.notes = []
 
         layout = QtWidgets.QVBoxLayout(self)
-        self.plot = plot.PlotWidget(dim)
+        self.plot = plot.PlotWidget(dim=dim, parent=self)
 
         self.plot.lx = self.plot.ax.axhline(c="#888888", ls=":")  # horiz line
         self.plot.ly = self.plot.ax.axvline(c="#888888", ls=":")  # vert line

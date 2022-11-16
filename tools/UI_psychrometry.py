@@ -286,7 +286,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.showMaximized()
 
         layout = QtWidgets.QGridLayout(self)
-        self.plt = PsychroPlot(self, width=100, height=1, dpi=90)
+        self.plt = PsychroPlot(parent=self, width=100, height=1, dpi=90)
         self.plt.fig.canvas.mpl_connect('button_press_event', self.click)
         layout.addWidget(self.plt, 1, 3, 2, 2)
 

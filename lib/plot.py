@@ -35,8 +35,8 @@ rcParams['font.size'] = '9'
 
 class PlotWidget(backend_qtagg.FigureCanvasQTAgg):
     """QWidget with matplotlib integration"""
-    def __init__(self, dim=2, width=15, height=5, parent=None):
-        self.fig = Figure(figsize=(width, height), dpi=100)
+    def __init__(self, dim=2, width=15, height=5, dpi=100, parent=None):
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
         super().__init__(self.fig)
 
         self.dim = dim
@@ -47,8 +47,6 @@ class PlotWidget(backend_qtagg.FigureCanvasQTAgg):
 
         if dim == 2:
             self.ax = self.fig.add_subplot(111)
-            self.ax.figure.subplots_adjust(
-                left=0.08, right=0.98, bottom=0.08, top=0.92)
 
         else:
             self.ax = self.fig.add_subplot(projection="3d")

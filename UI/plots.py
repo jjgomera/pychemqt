@@ -53,7 +53,7 @@ class Binary_distillation(QtWidgets.QDialog):
         self.Comp2.setCurrentIndex(1)
         tab=QtWidgets.QTabWidget()
         layout.addWidget(tab,2,1,1,5)
-        self.plot=PlotWidget()
+        self.plot=PlotWidget(parent=self)
         tab.addTab(self.plot, QtWidgets.QApplication.translate("equipment", "Plot"))
         self.tabla=Tabla(2, horizontalHeader=["x", "y"], stretch=False, readOnly=True)
         tab.addTab(self.tabla, QtWidgets.QApplication.translate("equipment", "Table"))

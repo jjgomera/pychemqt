@@ -43,7 +43,7 @@ class Chart(QtWidgets.QDialog):
         layout.setColumnStretch(3, 1)
         self.plotWidget = QtWidgets.QWidget(self)
         lyt = QtWidgets.QGridLayout(self.plotWidget)
-        self.plt = PlotWidget(self)
+        self.plt = PlotWidget(parent=self)
         self.plt.fig.canvas.mpl_connect('button_press_event', self.click)
         lyt.addWidget(self.plt, 1, 1)
         layout.addWidget(self.plotWidget, 2, 1, 1, 4)
