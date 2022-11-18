@@ -44,7 +44,7 @@ class Isolinea(QtWidgets.QDialog):
             ConfSection: title of isoline
             config: config of pychemqt project
         """
-        super(Isolinea, self).__init__(parent)
+        super().__init__(parent)
         self.ConfSection = ConfSection
         self.magnitud = unit.__name__
         self.unidad = unit
@@ -77,16 +77,16 @@ class Isolinea(QtWidgets.QDialog):
         self.Personalizar.toggled.connect(self.intervalo.setDisabled)
         self.Personalizar.toggled.connect(self.Lista.setEnabled)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            6, 1, 1, 4)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 6, 1, 1, 4)
         if unit.__name__ != "float" and section != "Psychr":
             self.Critica = QtWidgets.QCheckBox(
                 QtWidgets.QApplication.translate(
                     "pychemqt", "Include critic point line"))
             layout.addWidget(self.Critica, 7, 1, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            8, 1, 1, 4)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 8, 1, 1, 4)
 
         self.lineconfig = LineConfig(
             ConfSection,
@@ -94,8 +94,8 @@ class Isolinea(QtWidgets.QDialog):
         layout.addWidget(self.lineconfig, 9, 1, 1, 4)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            10, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 10, 1)
         self.label = QtWidgets.QCheckBox(
             QtWidgets.QApplication.translate("pychemqt", "Label"))
         layout.addWidget(self.label, 11, 1)
@@ -107,8 +107,8 @@ class Isolinea(QtWidgets.QDialog):
         layout.addWidget(self.unit, 13, 1, 1, 4)
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Position")), 14, 1)
-        self.label5 = Entrada_con_unidades(int, value=0, width=25, frame=False,
-                                           readOnly=True)
+        self.label5 = Entrada_con_unidades(
+            int, value=0, width=25, frame=False, readOnly=True)
         self.label5.setFixedWidth(30)
         layout.addWidget(self.label5, 14, 2)
         self.Posicion = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
@@ -151,6 +151,7 @@ class Isolinea(QtWidgets.QDialog):
             self.lineconfig.setConfig(config, section)
 
     def value(self, config):
+        """Update ConfigParser instance with the config"""
         config.set(self.section, self.ConfSection+"Start",
                    str(self.inicio.value))
         config.set(self.section, self.ConfSection+"End", str(self.fin.value))
@@ -201,7 +202,7 @@ class Widget(QtWidgets.QDialog):
 
     def __init__(self, config, parent=None):
         """constructor, config optional parameter to input project config"""
-        super(Widget, self).__init__(parent)
+        super().__init__(parent)
 
         lyt = QtWidgets.QGridLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
@@ -293,14 +294,15 @@ class Widget(QtWidgets.QDialog):
 class Dialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
-        super(Dialog, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(QtWidgets.QApplication.translate(
             "pychemqt", "Multiparameter equation of state configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
@@ -317,9 +319,9 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     conf_dir = os.path.expanduser('~') + "/.pychemqt/"
-    config = ConfigParser()
-    config.read(conf_dir+"pychemqtrc")
+    conf = ConfigParser()
+    conf.read(conf_dir+"pychemqtrc")
 
-    Dialog = Dialog(config)
+    Dialog = Dialog(conf)
     Dialog.show()
     sys.exit(app.exec())

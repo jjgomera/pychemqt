@@ -44,7 +44,8 @@ from tools.firstrun import which
 from tools.qt import QtCore, QtGui, QtWidgets
 from tools.qtelemental import Config as ConfigElemental
 from tools.UI_psychrometry import Config as ConfigPsychrometry
-from UI import prefMEOS, prefPFD, prefPetro
+from tools.UI_Tables import prefMEOS
+from UI import prefPFD, prefPetro
 from UI.delegate import CheckEditor
 from UI.widgets import ColorSelector, NumericFactor, PathConfig
 

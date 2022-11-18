@@ -91,18 +91,18 @@ from scipy.optimize import fsolve
 
 from lib import config, meos, mEoS, unidades
 from lib.thermo import ThermoAdvanced
-from tools.qt import QtGui, QtWidgets
-from UI.prefMEOS import Dialog as ConfDialog
 from UI.widgets import createAction
+from tools.qt import QtGui, QtWidgets
 
 from tools.UI_Tables.chooseFluid import Ui_ChooseFluid
-from tools.UI_Tables.reference import Ui_ReferenceState, Ui_Properties
-from tools.UI_Tables.plot import (PlotMEoS, Plot2D, Plot3D, calcIsoline,
-                                  get_points, plot2D3D)
-from tools.UI_Tables.table import Ui_Saturation, Ui_Isoproperty, createTabla
 from tools.UI_Tables.library import N_PROP, KEYS, UNITS
 from tools.UI_Tables.library import (getClassFluid, getMethod, calcPoint,
                                      saveProperties)
+from tools.UI_Tables.plot import (PlotMEoS, Plot2D, Plot3D, calcIsoline,
+                                  get_points, plot2D3D, calcMesh)
+from tools.UI_Tables.prefMEOS import Dialog as ConfDialog
+from tools.UI_Tables.reference import Ui_ReferenceState, Ui_Properties
+from tools.UI_Tables.table import Ui_Saturation, Ui_Isoproperty, createTabla
 
 
 class plugin():

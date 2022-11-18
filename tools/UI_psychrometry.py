@@ -35,21 +35,21 @@ and its configuration
 
 from configparser import ConfigParser
 from functools import partial
+import json
 import logging
 from math import pi
 import os
-import json
 
 from numpy import arctan
-from tools.qt import QtCore, QtGui, QtWidgets
 
-from lib.psycrometry import PsyState, PsychroState, _Pbar, _height
 from lib.config import conf_dir
 from lib.plot import PlotWidget
+from lib.psycrometry import PsyState, PsychroState, _Pbar, _height
 from lib.unidades import (Temperature, Pressure, Length, Mass,
                           SpecificVolume, Enthalpy)
 from lib.utilities import formatLine
-from UI.prefMEOS import Isolinea
+from tools.qt import QtCore, QtGui, QtWidgets
+from tools.UI_Tables.prefMEOS import Isolinea
 from UI.widgets import Entrada_con_unidades, LineConfig
 
 
