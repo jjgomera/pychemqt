@@ -29,6 +29,11 @@ Dialogs for configuration:
     * :class:`reference.Ui_ReferenceState`: Dialog to select reference state
     * :class:`reference.Ui_Properties`: Dialog for select and sort shown \
     properties in tables
+    * :class:`prefMEOS.ColorMapCombo`: Custom QComboBox to choose a \
+    matplotlib colormap
+    * :class:`prefMEOS.Isolinea`: Widget to configure isolines for mEoS
+    * :class:`prefMEOS.Widget`: mEoS parameter configuration dialog
+    * :class:`prefMEOS.Dialog`: Dialog tool for standalone use
 
 Dialogs for fluid selection:
     * :class:`chooseFluid.Ui_ChooseFluid`: Dialog to choose fluid for \

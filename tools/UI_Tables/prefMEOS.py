@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 # Library to configure MEOS tool
 #
+#   - ColorMapCombo: Custom QComboBox to choose a matplotlib colormap
 #   - Isolinea: widget to configure isolines for mEoS
 #   - Widget: mEoS parameter configuration dialog
 #   - Dialog: Dialog tool for standalone use
@@ -29,11 +30,86 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from tools.qt import QtCore, QtWidgets
+from matplotlib import colormaps
+from numpy import arange
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib import unidades
 from lib.utilities import representacion
 from UI.widgets import Entrada_con_unidades, LineConfig
+
+
+class ColorMapCombo(QtWidgets.QComboBox):
+    """Custom QComboBox to choose a matplotlib colormap"""
+
+    COLORMAP = [
+        # Perceptually Uniform Sequential
+        'viridis', 'plasma', 'inferno', 'magma', 'cividis',
+        # Sequential
+        'Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+        'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+        'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn',
+        # Sequential (2)
+        'binary', 'gist_yarg', 'gist_gray', 'gray', 'bone', 'pink',
+        'spring', 'summer', 'autumn', 'winter', 'cool', 'Wistia',
+        'hot', 'afmhot', 'gist_heat', 'copper',
+        # Diverging
+        'PiYG', 'PRGn', 'BrBG', 'PuOr', 'RdGy', 'RdBu',
+        'RdYlBu', 'RdYlGn', 'Spectral', 'coolwarm', 'bwr', 'seismic',
+        # Miscellaneous
+        'ocean', 'gist_earth', 'terrain', 'gist_stern',
+        'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
+        'gist_rainbow', 'rainbow', 'jet', 'turbo']
+
+    def __init__(self, *args, **kwargs):
+        """Autofill of widget with accepted values"""
+        super().__init__(*args, **kwargs)
+
+        for cm in self.COLORMAP:
+            maps = colormaps.get(cm)
+
+            gradient = QtGui.QLinearGradient(0, 0, 50, 0)
+            for value in arange(0, 1, 0.01):
+                r, g, b, a = maps(value)
+                gradient.setColorAt(
+                    value, QtGui.QColor(int(r*255), int(g*255), int(b*255)))
+
+            pix = QtGui.QPixmap(50, 50)
+            pix.fill(QtGui.QColorConstants.White)
+
+            painter = QtGui.QPainter()
+            painter.begin(pix)
+            brush = QtGui.QBrush(gradient)
+            painter.setBrush(brush)
+            painter.drawRect(0, 0, 50, 50)
+            icon = QtGui.QIcon(pix)
+            painter.end()
+            self.addItem(icon, cm)
+
+    def paintEvent(self, event):
+        """Paint the widget with a image with the selected colormap"""
+        # Paint default element
+        painter = QtWidgets.QStylePainter(self)
+        opt = QtWidgets.QStyleOptionComboBox()
+        self.initStyleOption(opt)
+        painter.drawComplexControl(
+            QtWidgets.QStyle.ComplexControl.CC_ComboBox, opt)
+
+        # Apply selected brush
+        maps = colormaps.get(self.COLORMAP[self.currentIndex()])
+        gradient = QtGui.QLinearGradient(0, 0, event.rect().right()-24, 0)
+        for value in arange(0, 1, 0.01):
+            r, g, b, a = maps(value)
+            gradient.setColorAt(
+                value, QtGui.QColor(int(r*255), int(g*255), int(b*255)))
+
+        brush = QtGui.QBrush(gradient)
+        painter.setBrush(brush)
+
+        # Don't paint the arrow region in QComboBox
+        rect = event.rect()
+        rect.setRight(rect.right()-24)
+        painter.drawRect(rect)
 
 
 class Isolinea(QtWidgets.QDialog):
