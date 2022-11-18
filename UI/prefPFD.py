@@ -56,19 +56,6 @@ class Widget(QtWidgets.QDialog):
             QtWidgets.QApplication.translate("pychemqt", "Brush style")), 2, 1)
         self.brush = BrushCombo()
         layout.addWidget(self.brush, 2, 2)
-        for style in self.brush.BRUSH:
-            pix = QtGui.QPixmap(50, 50)
-            pix.fill(QtGui.QColorConstants.White)
-
-            painter = QtGui.QPainter()
-            painter.begin(pix)
-            brush = QtGui.QBrush(style)
-            painter.setBrush(brush)
-            painter.drawRect(0, 0, 50, 50)
-            icon = QtGui.QIcon(pix)
-            painter.end()
-            self.brush.addItem(icon, str(style).split(".")[-1])
-
         layout.addWidget(QtWidgets.QLabel(
             QtWidgets.QApplication.translate("pychemqt", "Input color")), 4, 1)
         self.ColorButtonEntrada = ColorSelector()
@@ -184,6 +171,23 @@ class BrushCombo(QtWidgets.QComboBox):
         QtCore.Qt.BrushStyle.BDiagPattern,
         QtCore.Qt.BrushStyle.FDiagPattern,
         QtCore.Qt.BrushStyle.DiagCrossPattern]
+
+    def __init__(self, *args, **kwargs):
+        """Autofill of widget with accepted values"""
+        super().__init__(*args, **kwargs)
+
+        for style in self.BRUSH:
+            pix = QtGui.QPixmap(50, 50)
+            pix.fill(QtGui.QColorConstants.White)
+
+            painter = QtGui.QPainter()
+            painter.begin(pix)
+            brush = QtGui.QBrush(style)
+            painter.setBrush(brush)
+            painter.drawRect(0, 0, 50, 50)
+            icon = QtGui.QIcon(pix)
+            painter.end()
+            self.addItem(icon, str(style).split(".")[-1])
 
     def paintEvent(self, event):
         """Paint the widget with the selected QBrush"""
