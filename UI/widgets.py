@@ -935,30 +935,32 @@ class LineConfig(QtWidgets.QGroupBox):
         self.Color.setColor(config.get(section, self.conf+'Color'), alfa)
         self.Width.setValue(config.getfloat(section, self.conf+'lineWidth'))
         self.Style.setCurrentValue(config.get(section, self.conf+'lineStyle'))
-        self.Marker.setCurrentValue(config.get(section, self.conf+'marker'))
-        self.MarkerSize.setValue(
-            config.getfloat(section, self.conf+'markersize'))
-        self.MarkerColor.setColor(
-            config.get(section, self.conf+'markerfacecolor'), alfa)
-        self.EdgeSize.setValue(
-            config.getfloat(section, self.conf+'markeredgewidth'))
-        self.EdgeColor.setColor(
-            config.get(section, self.conf+'markeredgecolor'), alfa)
+        if self.Marker.isVisible():
+            self.Marker.setCurrentValue(config.get(section, self.conf+'marker'))
+            self.MarkerSize.setValue(
+                config.getfloat(section, self.conf+'markersize'))
+            self.MarkerColor.setColor(
+                config.get(section, self.conf+'markerfacecolor'), alfa)
+            self.EdgeSize.setValue(
+                config.getfloat(section, self.conf+'markeredgewidth'))
+            self.EdgeColor.setColor(
+                config.get(section, self.conf+'markeredgecolor'), alfa)
 
     def value(self, config, section="MEOS"):
         config.set(section, self.conf+"Color", self.Color.color.name())
         config.set(section, self.conf+"alpha", str(self.Color.color.alpha()))
         config.set(section, self.conf+"lineWidth", str(self.Width.value()))
         config.set(section, self.conf+"lineStyle", self.Style.currentValue())
-        config.set(section, self.conf+"marker", self.Marker.currentValue())
-        config.set(section, self.conf+"markersize",
-                   str(self.MarkerSize.value()))
-        config.set(section, self.conf+"markerfacecolor",
-                   self.MarkerColor.color.name())
-        config.set(section, self.conf+"markeredgewidth",
-                   str(self.EdgeSize.value()))
-        config.set(section, self.conf+"markeredgecolor",
-                   self.EdgeColor.color.name())
+        if self.Marker.isVisible():
+            config.set(section, self.conf+"marker", self.Marker.currentValue())
+            config.set(section, self.conf+"markersize",
+                       str(self.MarkerSize.value()))
+            config.set(section, self.conf+"markerfacecolor",
+                       self.MarkerColor.color.name())
+            config.set(section, self.conf+"markeredgewidth",
+                       str(self.EdgeSize.value()))
+            config.set(section, self.conf+"markeredgecolor",
+                       self.EdgeColor.color.name())
 
         return config
 
