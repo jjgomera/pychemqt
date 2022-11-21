@@ -242,9 +242,9 @@ class PlotMEoS(QtWidgets.QWidget):
 
     def _getData(self):
         """Get data from file"""
-        filenameHard = os.environ["pychemqt"]+"dat"+os.sep+"mEoS" + \
-            os.sep + self.filename+".gz"
-        filenameSoft = config.conf_dir+self.filename
+        filenameHard = os.path.join(os.environ["pychemqt"], "dat", "mEoS",
+                                    self.filename+".gz")
+        filenameSoft = os.path.join(config.conf_dir, self.filename)
         if os.path.isfile(filenameSoft):
             print(filenameSoft)
             with open(filenameSoft, "rb") as archivo:
@@ -254,11 +254,13 @@ class PlotMEoS(QtWidgets.QWidget):
             with gzip.GzipFile(filenameHard, 'rb') as archivo:
                 data = json.load(archivo)
             self._saveData(data)
+        else:
+            data = None
         return data
 
     def _saveData(self, data):
         """Save changes in data to file"""
-        with open(config.conf_dir+self.filename, 'w') as file:
+        with open(os.path.join(config.conf_dir, self.filename), 'w') as file:
             json.dump(data, file)
 
     def click(self, event):
@@ -403,7 +405,6 @@ class PlotMEoS(QtWidgets.QWidget):
             # Save mesh data if exist
             mesh = {}
             if self.plot.ax.collections:
-                polyline = self.plot.ax.collections[0]
                 mesh["data"] = self.plot.ax.data3D
                 mesh["type"] = self.plot.ax.meshtype
 
@@ -496,6 +497,7 @@ class PlotMEoS(QtWidgets.QWidget):
 
     @classmethod
     def readFromJSON(cls, data, parent):
+        """Read window data from file"""
         filename = data["filename"]
         title = data["windowTitle"]
         x = data["x"]
@@ -898,7 +900,8 @@ class EditPlot(QtWidgets.QDialog):
             showNull=True)
         self.labelAnnotationPos.setFixedWidth(40)
         lytPosition.addWidget(self.labelAnnotationPos)
-        self.annotationPos = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
+        self.annotationPos = QtWidgets.QSlider(
+            QtCore.Qt.Orientation.Horizontal)
         self.annotationPos.setRange(0, 100)
         self.annotationPos.setValue(50)
         self.annotationPos.valueChanged.connect(
@@ -914,7 +917,8 @@ class EditPlot(QtWidgets.QDialog):
             showNull=True)
         self.labelAnnotationRot.setFixedWidth(40)
         lytAngle.addWidget(self.labelAnnotationRot)
-        self.annotationRot = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
+        self.annotationRot = QtWidgets.QSlider(
+            QtCore.Qt.Orientation.Horizontal)
         self.annotationRot.setRange(0, 360)
         self.annotationRot.setValue(0)
         self.annotationRot.valueChanged.connect(
@@ -1604,6 +1608,7 @@ def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
 
 
 def calcMesh(f, conf, Ti, Pi):
+    """Calculate mesh data for a 3D plot"""
     fluids = []
     for T in Ti:
         fluids_i = []
