@@ -31,6 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from ast import literal_eval
 from configparser import ConfigParser
 
+from numpy import nan
+
 from lib import mEoS, coolProp, refProp, config, unidades
 from lib.thermo import ThermoAdvanced
 
@@ -239,10 +241,25 @@ def saveProperties(fluids):
     for key in ThermoAdvanced.propertiesKey():
         prop = []
         for fluid in fluids:
-            if fluid is not None and fluid.status in [1, 3]:
-                p = fluid.__getattribute__(key)
-                if key in ["fi", "f"]:
-                    p = p[0]
-                prop.append(p)
+            if isinstance(fluid, list):
+                # Special case when the fluids is a 2D array
+                prop_i = []
+                for fluidi in fluid:
+                    if fluidi is not None and fluidi.status in [1, 3]:
+                        p = fluidi.__getattribute__(key)
+                        if key in ["fi", "f"]:
+                            p = p[0]
+                        prop_i.append(p)
+                    else:
+                        prop_i.append(nan)
+
+                prop.append(prop_i)
+
+            else:
+                if fluid is not None and fluid.status in [1, 3]:
+                    p = fluid.__getattribute__(key)
+                    if key in ["fi", "f"]:
+                        p = p[0]
+                    prop.append(p)
         dat[key] = prop
     return dat

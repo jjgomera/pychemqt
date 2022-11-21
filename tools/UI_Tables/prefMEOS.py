@@ -333,8 +333,45 @@ class Widget(QtWidgets.QDialog):
         layout.addWidget(self.grid, 9, 1, 1, 2)
 
         layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 10, 2)
+        group2 = QtWidgets.QGroupBox(
+            QtWidgets.QApplication.translate("pychemqt", "3D plot"))
+        layout.addWidget(group2, 11, 1, 1, 2)
+        layoutgroup2 = QtWidgets.QGridLayout(group2)
+        self.checkMesh = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "Draw 3D mesh"))
+        layoutgroup2.addWidget(self.checkMesh, 1, 1, 1, 2)
+        layoutgroup2.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Mesh type")), 2, 1)
+        self.typeMesh = QtWidgets.QComboBox()
+        self.typeMesh.addItem("Surface")
+        self.typeMesh.addItem("Wireframe")
+        layoutgroup2.addWidget(self.typeMesh, 2, 2)
+
+        self.widgetSurface = QtWidgets.QWidget()
+        layoutgroup2.addWidget(self.widgetSurface, 3, 1, 1, 2)
+
+        lytSurface = QtWidgets.QGridLayout(self.widgetSurface)
+        lytSurface.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Colormap")), 1, 1)
+        self.colormapMesh = ColorMapCombo()
+        lytSurface.addWidget(self.colormapMesh, 1, 2)
+        lytSurface.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Alpha")), 2, 1)
+        self.alphaSurface = QtWidgets.QSpinBox()
+        self.alphaSurface.setRange(0, 255)
+        lytSurface.addWidget(self.alphaSurface, 2, 2)
+
+        self.wireframeConfig = LineConfig(
+            "3D", QtWidgets.QApplication.translate(
+                "pychemqt", "Wireframe line configuration"))
+        self.wireframeConfig.Marker.setVisible(False)
+        layoutgroup2.addWidget(self.wireframeConfig, 4, 1, 1, 2)
+
+        layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 10, 2)
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 2)
 
         scroll.setWidget(dlg)
 
@@ -346,10 +383,16 @@ class Widget(QtWidgets.QDialog):
         if config.has_section("MEOS"):
             self.coolProp.setChecked(config.getboolean("MEOS", 'coolprop'))
             self.refprop.setChecked(config.getboolean("MEOS", 'refprop'))
-            self.grid.setChecked(config.getboolean("MEOS", 'grid'))
+            self.lineconfig.setConfig(config)
             self.definition.setCurrentIndex(
                 config.getint("MEOS", 'definition'))
-            self.lineconfig.setConfig(config)
+            self.grid.setChecked(config.getboolean("MEOS", 'grid'))
+
+            self.checkMesh.setChecked(config.getboolean("MEOS", '3Dmesh'))
+            self.typeMesh.setCurrentIndex(config.getint("MEOS", '3Dtype'))
+            self.colormapMesh.setCurrentText(config.get("MEOS", '3Dcolormap'))
+            self.alphaSurface.setValue(config.getint("MEOS", '3Dalphasurface'))
+            self.wireframeConfig.setConfig(config)
 
     def value(self, config):
         """Return value for main dialog"""
@@ -359,11 +402,18 @@ class Widget(QtWidgets.QDialog):
         config.set("MEOS", "coolprop", str(self.coolProp.isChecked()))
         config.set("MEOS", "refprop", str(self.refprop.isChecked()))
         config = self.lineconfig.value(config)
-        config.set("MEOS", "grid", str(self.grid.isChecked()))
-        config.set("MEOS", "definition", str(self.definition.currentIndex()))
 
         for indice in range(self.Isolineas.count()):
             config = self.Isolineas.widget(indice).value(config)
+
+        config.set("MEOS", "definition", str(self.definition.currentIndex()))
+        config.set("MEOS", "grid", str(self.grid.isChecked()))
+
+        config.set("MEOS", "3Dmesh", str(self.checkMesh.isChecked()))
+        config.set("MEOS", "3Dtype", str(self.typeMesh.currentIndex()))
+        config.set("MEOS", "3Dcolormap", self.colormapMesh.currentText())
+        config.set("MEOS", "3Dalphasurface", str(self.alphaSurface.value()))
+        config = self.wireframeConfig.value(config)
         return config
 
 

@@ -43,9 +43,10 @@ import json
 from math import log10, atan, pi
 import os
 
-from numpy import concatenate, linspace, logspace, transpose, log, nan
-from matplotlib.font_manager import FontProperties
+from numpy import concatenate, linspace, logspace, transpose, log, nan, array
+from matplotlib import colormaps as cm
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
+from matplotlib.font_manager import FontProperties
 from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib import meos, unidades, plot, config
@@ -398,6 +399,26 @@ class PlotMEoS(QtWidgets.QWidget):
             data["azim"] = self.plot.ax.azim
             data["elev"] = self.plot.ax.elev
             data["roll"] = self.plot.ax.roll
+
+            # Save mesh data if exist
+            mesh = {}
+            if self.plot.ax.collections:
+                polyline = self.plot.ax.collections[0]
+                mesh["data"] = self.plot.ax.data3D
+                mesh["type"] = self.plot.ax.meshtype
+
+                if mesh["type"]:
+                    # Wireframe specific kw
+                    color = self.plot.ax.collections[0].get_color().tolist()
+                    mesh["color"] = color
+                    mesh["lw"] = self.plot.ax.collections[0].get_lw()[0]
+                    mesh["ls"] = self.plot.ax.collections[0].get_ls()[0]
+                else:
+                    # Surface specific kw
+                    mesh["colormap"] = self.plot.ax.collections[0].cmap.name
+                    mesh["alpha"] = self.plot.ax.collections[0].get_alpha()
+            data["mesh"] = mesh
+
         else:
             data["zmin"] = None
             data["zmax"] = None
@@ -543,6 +564,25 @@ class PlotMEoS(QtWidgets.QWidget):
             grafico.plot.ax.set_zlim(data["zmin"], data["zmax"])
             kw = {k: data[k] for k in ("azim", "elev", "roll")}
             grafico.plot.ax.view_init(**kw)
+
+            if data["mesh"]:
+                xi, yi, zi = data["mesh"]["data"]
+                kw = {}
+                meshtype = data["mesh"]["type"]
+                if meshtype:
+                    # Wireframe specific kw
+                    kw["color"] = data["mesh"]["color"]
+                    kw["linewidths"] = data["mesh"]["lw"]
+                    kw["ls"] = tuple(data["mesh"]["ls"])
+                    grafico.plot.ax.plot_wireframe(xi, yi, array(zi), **kw)
+                else:
+                    # Surface specific kw
+                    kw["cmap"] = cm.get(data["mesh"]["colormap"])
+                    kw["alpha"] = data["mesh"]["alpha"]
+                    grafico.plot.ax.plot_surface(xi, yi, array(zi), **kw)
+
+                grafico.plot.ax.data3D = (xi, yi, zi)
+                grafico.plot.ax.meshtype = meshtype
 
         for label, line in data["lines"].items():
             xdata = line["x"]
@@ -1563,6 +1603,23 @@ def calcIsoline(f, conf, var, fix, vvar, vfix, ini, step, end, total, bar):
     return fluidos
 
 
+def calcMesh(f, conf, Ti, Pi):
+    fluids = []
+    for T in Ti:
+        fluids_i = []
+        for P in Pi:
+            kwargs = {"T": T, "P": P}
+            print(kwargs)
+            QtWidgets.QApplication.processEvents()
+            fluid = calcPoint(f, conf, **kwargs)
+            if fluid and fluid.status:
+                fluids_i.append(fluid)
+            else:
+                fluids_i.append(None)
+        fluids.append(fluids_i)
+    return fluids
+
+
 def get_points(Preferences):
     """Get point number to plot lines from Preferences"""
     definition = Preferences.getint("MEOS", "definition")
@@ -1767,15 +1824,41 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
         plotIsoline(data["s"], (x, y, z), "s", unidades.SpecificHeat, grafico,
                     transform, **fmt)
 
+    # Plot 3D mesh
+    if Preferences.getboolean("MEOS", "3Dmesh"):
+        xdata = data["mesh"][x]
+        ydata = data["mesh"][y]
+        zdata = data["mesh"][z]
+
+        fx, fy, fz = transform
+        xi = array(list(map(lambda w: list(map(fx, w)), xdata)))
+        yi = array(list(map(lambda w: list(map(fy, w)), ydata)))
+        zi = array(list(map(lambda w: list(map(fz, w)), zdata)))
+
+        kw = {}
+        if Preferences.getboolean("MEOS", "3DType"):
+            kw["color"] = Preferences.get("MEOS", "3Dcolor")
+            kw["alpha"] = Preferences.getint("MEOS", "3Dalpha")/255
+            kw["lw"] = Preferences.getfloat("MEOS", "3Dlinewidth")
+            kw["ls"] = Preferences.get("MEOS", "3Dlinestyle")
+            grafico.plot.ax.plot_wireframe(xi, yi, zi, **kw)
+        else:
+            kw["cmap"] = Preferences.get("MEOS", "3Dcolormap")
+            kw["alpha"] = Preferences.getintt ("MEOS", "3Dalphasurface")/255
+            grafico.plot.ax.plot_surface(xi, yi, zi, **kw)
+        grafico.plot.ax.data3D = (xi.tolist(), yi.tolist(), zi.tolist())
+        grafico.plot.ax.meshtype = Preferences.getboolean("MEOS", "3DType")
+
 
 def _getunitTransform(eje):
     """Return the axis unit transform function to map data to configurated unit
         Parameters:
-            seq: list with axis property keys
+            eje: list with axis property keys
     """
     if not eje:
         return None
-    elif eje == "T":
+
+    if eje == "T":
         index = config.getMainWindowConfig().getint("Units", "Temperature")
         func = [float, unidades.K2C, unidades.K2R, unidades.K2F, unidades.K2Re]
         return func[index]
@@ -1789,7 +1872,6 @@ def _getunitTransform(eje):
         return nan
 
     return f
-    # return lambda val: val*factor if val is not None else nan
 
 
 if __name__ == "__main__":

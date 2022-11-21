@@ -236,6 +236,15 @@ def Preferences():
         conf.set("MEOS", linea+"Units", "False")
         conf.set("MEOS", linea+"Position", "50")
 
+    conf.set("MEOS", "3Dmesh", "False")
+    conf.set("MEOS", "3Dtype", "0")
+    conf.set("MEOS", "3Dcolormap", "viridis")
+    conf.set("MEOS", "3Dalphasurface", "150")
+    conf.set("MEOS", "3Dcolor", "#000000")
+    conf.set("MEOS", "3Dalpha", "150")
+    conf.set("MEOS", "3Dlinewidth", "0.5")
+    conf.set("MEOS", "3Dlinestyle", "-")
+
     # Psychr
     conf.add_section("Psychr")
     conf.set("Psychr", "chart", "True")

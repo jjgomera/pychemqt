@@ -748,6 +748,7 @@ class plugin():
         data["T"] = {}
         self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isotherm lines..."))
+        QtWidgets.QApplication.processEvents()
         values = self.LineList("Isotherm", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
@@ -760,6 +761,7 @@ class plugin():
         data["P"] = {}
         self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isobar lines..."))
+        QtWidgets.QApplication.processEvents()
         values = self.LineList("Isobar", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
@@ -771,6 +773,7 @@ class plugin():
         data["v"] = {}
         self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isochor lines..."))
+        QtWidgets.QApplication.processEvents()
         values = self.LineList("Isochor", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
@@ -782,6 +785,7 @@ class plugin():
         data["h"] = {}
         self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoenthalpic lines..."))
+        QtWidgets.QApplication.processEvents()
         vals = self.LineList("Isoenthalpic", config.Preferences, fluid)
         for i, value in enumerate(vals):
             fluidos = calcIsoline(fluid, self.config,
@@ -793,12 +797,21 @@ class plugin():
         data["s"] = {}
         self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
             "pychemqt", "Calculating isoentropic lines..."))
+        QtWidgets.QApplication.processEvents()
         values = self.LineList("Isoentropic", config.Preferences, fluid)
         for i, value in enumerate(values):
             fluidos = calcIsoline(fluid, self.config,
                                   "P", "s", P, value, 80, i, 20,
                                   len(values), self.parent().progressBar)
             data["s"][value] = saveProperties(fluidos)
+
+        # Calculate 3D mesh
+        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+            "pychemqt", "Calculating 3D mesh data..."))
+        QtWidgets.QApplication.processEvents()
+        fluidos = calcMesh(fluid, self.config, T, P)
+        print(len(fluidos), len(fluidos[0]))
+        data["mesh"] = saveProperties(fluidos)
 
         return data
 
