@@ -503,9 +503,13 @@ class plugin():
             x = prop[i]
             y = prop[j]
             z = prop[k]
-            self.plot(x, y, z=z)
+            mesh = dlg.checkMesh.isChecked()
+            typeMesh = dlg.typeMesh.currentIndex()
 
-    def plot(self, x, y, xscale=None, yscale=None, z=""):
+            self.plot(x, y, z=z, mesh=mesh, typemesh=typeMesh)
+
+    def plot(self, x, y, xscale=None, yscale=None, z="", mesh=False,
+             typemesh=0):
         """Create a plot
         x: property for axes x
         y: property for axes y
@@ -586,7 +590,10 @@ class plugin():
         grafico.changeStatusThermo(data["config"])
 
         if z:
-            plot2D3D(grafico, data, config.Preferences, x, y, z)
+            kw = {"z": z,
+                  "mesh": mesh,
+                  "typemesh": typemesh}
+            plot2D3D(grafico, data, config.Preferences, x, y, **kw)
         else:
             plot2D3D(grafico, data, config.Preferences, x, y)
 

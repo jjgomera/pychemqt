@@ -1334,10 +1334,29 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
                 PFD = {}
                 win = self.centralWidget().currentWidget().subWindowList()[0]
-                PFD["x"] = win.pos().x()
-                PFD["y"] = win.pos().y()
-                PFD["height"] = win.size().height()
-                PFD["width"] = win.size().width()
+
+                PFD["minimized"] = win.isMinimized()
+                PFD["maximized"] = win.isMaximized()
+                if win.isMinimized():
+                    win.showNormal()
+                    PFD["x"] = win.pos().x()
+                    PFD["y"] = win.pos().y()
+                    PFD["height"] = win.size().height()
+                    PFD["width"] = win.size().width()
+                    win.showMinimized()
+                elif win.isMaximized():
+                    win.showNormal()
+                    PFD["x"] = win.pos().x()
+                    PFD["y"] = win.pos().y()
+                    PFD["height"] = win.size().height()
+                    PFD["width"] = win.size().width()
+                    win.showMaximized()
+                else:
+                    PFD["x"] = win.pos().x()
+                    PFD["y"] = win.pos().y()
+                    PFD["height"] = win.size().height()
+                    PFD["width"] = win.size().width()
+
                 self.currentScene.writeToJSON(PFD)
                 data["PFD"] = PFD
 
@@ -1348,8 +1367,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     ventana["class"] = win.widget().__class__.__name__
                     ventana["minimized"] = win.isMinimized()
                     ventana["maximized"] = win.isMaximized()
-                    print(ventana["minimized"])
-                    print(ventana["maximized"])
                     if win.isMinimized():
                         win.showNormal()
                         ventana["x"] = win.pos().x()
@@ -1497,6 +1514,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             mdiArea.subWindowList()[0].move(pos)
             mdiArea.subWindowList()[0].resize(size)
 
+            if "maximized" in data["PFD"]:
+                if data["PFD"]["maximized"]:
+                    mdiArea.subWindowList()[-1].showMaximized()
+                elif data["PFD"]["minimized"]:
+                    mdiArea.subWindowList()[-1].showMinimized()
+
             mdiArea.subWindowList()[0].widget().scene().readFromJSON(data)
             self.list.updateList(
                 mdiArea.subWindowList()[0].widget().scene().objects)
@@ -1517,7 +1540,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 mdiArea.subWindowList()[-1].resize(size)
 
                 # FIXME: This line raise error in matplotlib as plot has no
-                # window yet
+                # window yet, disabled minimized and maximized state at start
+                # meanwhile
                 # if "maximized" in ventana:
                     # if ventana["maximized"]:
                         # mdiArea.subWindowList()[-1].showMaximized()

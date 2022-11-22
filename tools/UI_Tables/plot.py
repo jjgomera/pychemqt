@@ -574,7 +574,7 @@ class PlotMEoS(QtWidgets.QWidget):
                 if meshtype:
                     # Wireframe specific kw
                     kw["color"] = data["mesh"]["color"]
-                    kw["linewidths"] = data["mesh"]["lw"]
+                    kw["lw"] = data["mesh"]["lw"]
                     kw["ls"] = tuple(data["mesh"]["ls"])
                     grafico.plot.ax.plot_wireframe(xi, yi, array(zi), **kw)
                 else:
@@ -634,15 +634,17 @@ class PlotMEoS(QtWidgets.QWidget):
                 # We save position value in % unit to avoid index find
                 ln.text.pos = pos
 
-        grafico.plot.ax.set_xscale(data["xscale"])
-        grafico.plot.ax.set_yscale(data["yscale"])
+        if dim == 2:
+            grafico.plot.ax.set_xscale(data["xscale"])
+            grafico.plot.ax.set_yscale(data["yscale"])
 
         # Load margins
-        left = data["marginleft"]
-        bottom = data["marginbottom"]
-        right = data["marginright"]
-        top = data["margintop"]
-        grafico.plot.fig.subplots_adjust(left, bottom, right, top)
+        kw = {}
+        kw["left"] = data["marginleft"]
+        kw["bottom"] = data["marginbottom"]
+        kw["right"] = data["marginright"]
+        kw["top"] = data["margintop"]
+        grafico.plot.fig.subplots_adjust(**kw)
 
         # Load config
         conf = {}
@@ -748,13 +750,39 @@ class Plot3D(QtWidgets.QDialog):
         self.ejeZ = QtWidgets.QComboBox()
         layout.addWidget(self.ejeZ, 3, 2)
 
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 3)
+        self.checkMesh = QtWidgets.QCheckBox(
+            QtWidgets.QApplication.translate("pychemqt", "Draw 3D mesh"))
+        layout.addWidget(self.checkMesh, 5, 1, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(
+            QtWidgets.QApplication.translate("pychemqt", "Mesh type")), 6, 1)
+        self.typeMesh = QtWidgets.QComboBox()
+        self.typeMesh.addItem("Surface")
+        self.typeMesh.addItem("Wireframe")
+        layout.addWidget(self.typeMesh, 6, 2)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 7, 3)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok
             | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 4, 1, 1, 2)
+        layout.addWidget(self.buttonBox, 10, 1, 1, 3)
 
+        # Initialize widget with global preferences values
+        self.checkMesh.setChecked(
+            config.Preferences.getboolean("MEOS", "3DMesh"))
+        self.typeMesh.setEnabled(
+            config.Preferences.getboolean("MEOS", "3DMesh"))
+        self.typeMesh.setCurrentIndex(
+            config.Preferences.getint("MEOS", "3Dtype"))
+
+        self.checkMesh.stateChanged.connect(self.typeMesh.setEnabled)
         self.ejeX.currentIndexChanged.connect(self.ejeXChanged)
         self.ejeY.currentIndexChanged.connect(self.ejeYChanged)
         self.ejeXChanged(0)
@@ -1733,7 +1761,7 @@ def plotIsoline(data, axis, title, unidad, grafico, transform, **fmt):
                 text.set_visible(False)
 
 
-def plot2D3D(grafico, data, Preferences, x, y, z=None):
+def plot2D3D(grafico, data, Preferences, x, y, z=None, mesh=False, typemesh=0):
     """Plot procedure
     Parameters:
         grafico: plot
@@ -1830,7 +1858,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
                     transform, **fmt)
 
     # Plot 3D mesh
-    if Preferences.getboolean("MEOS", "3Dmesh"):
+    if mesh:
         xdata = data["mesh"][x]
         ydata = data["mesh"][y]
         zdata = data["mesh"][z]
@@ -1841,7 +1869,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
         zi = array(list(map(lambda w: list(map(fz, w)), zdata)))
 
         kw = {}
-        if Preferences.getboolean("MEOS", "3DType"):
+        if typemesh:
             kw["color"] = Preferences.get("MEOS", "3Dcolor")
             kw["alpha"] = Preferences.getint("MEOS", "3Dalpha")/255
             kw["lw"] = Preferences.getfloat("MEOS", "3Dlinewidth")
@@ -1849,10 +1877,10 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None):
             grafico.plot.ax.plot_wireframe(xi, yi, zi, **kw)
         else:
             kw["cmap"] = Preferences.get("MEOS", "3Dcolormap")
-            kw["alpha"] = Preferences.getintt ("MEOS", "3Dalphasurface")/255
+            kw["alpha"] = Preferences.getint("MEOS", "3Dalphasurface")/255
             grafico.plot.ax.plot_surface(xi, yi, zi, **kw)
         grafico.plot.ax.data3D = (xi.tolist(), yi.tolist(), zi.tolist())
-        grafico.plot.ax.meshtype = Preferences.getboolean("MEOS", "3DType")
+        grafico.plot.ax.meshtype = typemesh
 
 
 def _getunitTransform(eje):
