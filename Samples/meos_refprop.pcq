@@ -142,6 +142,8 @@
         "x": 0,
         "y": 0,
         "height": 463,
+        "minimized": false,
+        "maximized": false,
         "width": 776,
         "txt": {},
         "square": {},
@@ -157,6 +159,8 @@
             "x": 0,
             "y": 0,
             "height": 463,
+            "minimized": false,
+            "maximized": false,
             "width": 871,
             "window": {
                 "filename": "refprop-WATER.json",

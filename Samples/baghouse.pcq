@@ -112,6 +112,8 @@
         "width": 661,
         "x": 0,
         "height": 462,
+        "minimized": false,
+        "maximized": false,
         "out": {
             "1": {
                 "angle": 0,

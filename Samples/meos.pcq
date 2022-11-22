@@ -137,10 +137,12 @@
     "stream": {},
     "external_dependences": [],
     "PFD": {
-        "x": 1,
-        "y": 0,
-        "height": 313,
-        "width": 742,
+        "minimized": true,
+        "maximized": false,
+        "x": 41,
+        "y": 154,
+        "height": 773,
+        "width": 1117,
         "txt": {},
         "square": {},
         "ellipse": {},
@@ -152,9 +154,11 @@
     "other": {
         "0": {
             "class": "TablaMEoS",
-            "x": 0,
-            "y": 714,
-            "height": 223,
+            "minimized": false,
+            "maximized": false,
+            "x": 1,
+            "y": 715,
+            "height": 183,
             "width": 1487,
             "window": {
                 "column": 15,
@@ -383,6 +387,8 @@
         },
         "1": {
             "class": "PlotMEoS",
+            "minimized": false,
+            "maximized": false,
             "x": 745,
             "y": 0,
             "height": 706,
@@ -1062,15 +1068,13 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
-                            "rot": 0.0,
                             "pos": 50,
-                            "family": [
-                                "sans-serif"
-                            ],
+                            "rot": 0,
+                            "family": "sans-serif",
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": 7.497,
+                            "size": "small",
                             "va": "center"
                         }
                     },
@@ -1687,15 +1691,13 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
-                            "rot": 0.0,
                             "pos": 50,
-                            "family": [
-                                "sans-serif"
-                            ],
+                            "rot": 0,
+                            "family": "sans-serif",
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": 7.497,
+                            "size": "small",
                             "va": "center"
                         }
                     },
@@ -32940,7 +32942,9 @@
         },
         "2": {
             "class": "PlotMEoS",
-            "x": 0,
+            "minimized": false,
+            "maximized": false,
+            "x": 3,
             "y": 0,
             "height": 707,
             "width": 745,
@@ -33619,15 +33623,13 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
-                            "rot": 0.0,
                             "pos": 50,
-                            "family": [
-                                "sans-serif"
-                            ],
+                            "rot": 0,
+                            "family": "sans-serif",
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": 7.497,
+                            "size": "small",
                             "va": "center"
                         }
                     },
@@ -34244,15 +34246,13 @@
                         "annotation": {
                             "visible": false,
                             "txt": "",
-                            "rot": 0.0,
                             "pos": 50,
-                            "family": [
-                                "sans-serif"
-                            ],
+                            "rot": 0,
+                            "family": "sans-serif",
                             "style": "normal",
                             "weight": "normal",
                             "stretch": "normal",
-                            "size": 7.497,
+                            "size": "small",
                             "va": "center"
                         }
                     },

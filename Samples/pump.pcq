@@ -475,6 +475,8 @@
         }
     },
     "PFD": {
+        "minimized": false,
+        "maximized": false,
         "height": 463,
         "stream": {
             "1": {

@@ -64,6 +64,8 @@
                 "output_angle": 0
             }
         },
+        "minimized": false,
+        "maximized": false,
         "height": 463,
         "ellipse": {},
         "equip": {

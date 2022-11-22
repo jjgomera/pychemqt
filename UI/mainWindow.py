@@ -1346,10 +1346,29 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 for ind, win in enumerate(ventanas[1:]):
                     ventana = {}
                     ventana["class"] = win.widget().__class__.__name__
-                    ventana["x"] = win.pos().x()
-                    ventana["y"] = win.pos().y()
-                    ventana["height"] = win.size().height()
-                    ventana["width"] = win.size().width()
+                    ventana["minimized"] = win.isMinimized()
+                    ventana["maximized"] = win.isMaximized()
+                    print(ventana["minimized"])
+                    print(ventana["maximized"])
+                    if win.isMinimized():
+                        win.showNormal()
+                        ventana["x"] = win.pos().x()
+                        ventana["y"] = win.pos().y()
+                        ventana["height"] = win.size().height()
+                        ventana["width"] = win.size().width()
+                        win.showMinimized()
+                    elif win.isMaximized():
+                        win.showNormal()
+                        ventana["x"] = win.pos().x()
+                        ventana["y"] = win.pos().y()
+                        ventana["height"] = win.size().height()
+                        ventana["width"] = win.size().width()
+                        win.showMaximized()
+                    else:
+                        ventana["x"] = win.pos().x()
+                        ventana["y"] = win.pos().y()
+                        ventana["height"] = win.size().height()
+                        ventana["width"] = win.size().width()
 
                     widget = {}
                     win.widget().writeToJSON(widget)
@@ -1496,6 +1515,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 size = QtCore.QSize(w, h)
                 mdiArea.subWindowList()[-1].move(pos)
                 mdiArea.subWindowList()[-1].resize(size)
+
+                # FIXME: This line raise error in matplotlib as plot has no
+                # window yet
+                # if "maximized" in ventana:
+                    # if ventana["maximized"]:
+                        # mdiArea.subWindowList()[-1].showMaximized()
+                    # elif ventana["minimized"]:
+                        # mdiArea.subWindowList()[-1].showMinimized()
 
             self.centralWidget().addTab(
                 mdiArea, os.path.splitext(os.path.basename(str(fname)))[0])

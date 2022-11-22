@@ -579,6 +579,8 @@
             }
         },
         "y": 0,
+        "minimized": false,
+        "maximized": false,
         "height": 463,
         "equip": {
             "1": {

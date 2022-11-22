@@ -798,6 +798,8 @@
         },
         "x": 0,
         "txt": {},
+        "minimized": false,
+        "maximized": false,
         "height": 463,
         "out": {
             "1": {

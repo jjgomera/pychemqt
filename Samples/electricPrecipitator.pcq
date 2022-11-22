@@ -168,6 +168,8 @@
             }
         },
         "txt": {},
+        "minimized": false,
+        "maximized": false,
         "height": 462,
         "x": 0,
         "width": 661,

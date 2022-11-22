@@ -1,6 +1,8 @@
 {
     "PFD": {
         "width": 726,
+        "minimized": false,
+        "maximized": false,
         "height": 667,
         "equip": {},
         "txt": {

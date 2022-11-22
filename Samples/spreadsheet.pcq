@@ -65,6 +65,8 @@
                 "label_y": 302.0
             }
         },
+        "minimized": false,
+        "maximized": false,
         "height": 463,
         "in": {
             "1": {

@@ -324,6 +324,8 @@
     },
     "PFD": {
         "width": 661,
+        "minimized": false,
+        "maximized": false,
         "height": 462,
         "out": {
             "1": {
