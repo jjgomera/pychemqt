@@ -1420,7 +1420,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self,
             QtWidgets.QApplication.translate("pychemqt", "Save project"),
             dir, "pychemqt project file (*.pcq)")
-        if fname:
+        if fname[0]:
             name = fname[0]
             if name.split(".")[-1] != "pcq":
                 name += ".pcq"
