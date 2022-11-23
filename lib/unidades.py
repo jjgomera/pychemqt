@@ -5,7 +5,7 @@
 # The unidad sublasses are autodocumented
 
 '''Pychemqt, Chemical Engineering Process simulator
-Copyright (C) 2009-2022, Juan José Gómez Romera <jjgomera@gmail.com>
+Copyright (C) 2009-2023, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
