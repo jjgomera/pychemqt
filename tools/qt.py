@@ -32,7 +32,7 @@ try:
     except ImportError:
         Qsci = False
 
-    # Define qt version, unused nowday but defined if it's necessary
+    # Define qt version, for check version if it's necessary different code
     __qt__ = 6
 
 except ImportError:

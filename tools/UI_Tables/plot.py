@@ -47,7 +47,7 @@ from numpy import concatenate, linspace, logspace, transpose, log, nan, array
 from matplotlib import colormaps as cm
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.font_manager import FontProperties
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, __qt__
 
 from lib import meos, unidades, plot, config
 from lib.thermo import ThermoAdvanced
@@ -146,7 +146,10 @@ class PlotMEoS(QtWidgets.QWidget):
 
     def mouseMoveEvent(self, event):
         QtWidgets.QWidget.mouseMoveEvent(self, event)
-        self.mouseMove.emit(event.globalPosition())
+        if __qt__ == 5:
+            self.mouseMove.emit(event.globalPos())
+        else:
+            self.mouseMove.emit(event.globalPosition())
 
     def closeEvent(self, event):
         self.parent.dirty[self.parent.idTab] = True
