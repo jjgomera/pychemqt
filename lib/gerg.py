@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # TODO: Not implemented gas-liquid equilibrium yet
 
 import os
-import pickle
+import json
 
 from scipy import exp, log, zeros, r_
 from scipy.constants import R
@@ -47,7 +47,7 @@ Pref = 101325.
 # ho=0
 
 
-class GERG(object):
+class GERG():
     """Multiparameter equation of state GERG 2008
     ref http://dx.doi.org/10.1021/je300655b"""
     kwargs = {"componente": [],
@@ -67,14 +67,17 @@ class GERG(object):
                    mEoS.H2, mEoS.O2, mEoS.CO, mEoS.H2O, mEoS.He, mEoS.Ar,
                    mEoS.H2S, mEoS.nC9, mEoS.nC10]
 
-    Fij = pickle.load(open(os.path.join(os.environ["pychemqt"], "dat",
-                                        "mEoS_Fij.pkl"), "rb"))
-    Prop_c = pickle.load(open(os.path.join(os.environ["pychemqt"], "dat",
-                                           "mEoS_Tc.pkl"), "rb"))
+    fname_Fij = os.path.join(os.environ["pychemqt"], "dat", "mEoS_Fij.json")
+    with open(fname_Fij, encoding="utf-8") as file:
+        Fij = json.load(file)
+
+    fname_Prop = os.path.join(os.environ["pychemqt"], "dat", "mEoS_Tc.json")
+    with open(fname_Prop, encoding="utf-8") as file:
+        Prop_c = json.load(file)
 
     fir_ij = {
         "0-1": {
-            "nr1":  [-0.98038985517335e-2, 0.42487270143005e-3],
+            "nr1": [-0.98038985517335e-2, 0.42487270143005e-3],
             "d1": [1, 4],
             "t1": [0.000, 1.850],
 
