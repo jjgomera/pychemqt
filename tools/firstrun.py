@@ -439,6 +439,7 @@ def Preferences():
     conf.set("Openbabel", "AtomsIndex", "False")
     conf.set("Openbabel", "TighBond", "False")
     conf.set("Openbabel", "AsymetricDouble", "True")
+    conf.set("Openbabel", "AtomIndex", "False")
 
     return conf
 
