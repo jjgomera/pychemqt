@@ -4871,7 +4871,7 @@ class Componente(object):
     >>> "%0.2f %0.2f" % (cmp1.Tension(303).dyncm, cmp2.Tension(303).dyncm)
     '22.23 22.41'
     >>> "%0.2f %0.2f" % (cmp3.Tension(303).dyncm, cmp4.Tension(303).dyncm)
-    '23.45 22.60'
+    '23.45 22.65'
     >>> "%0.2f %0.2f" % (cmp5.Tension(303).dyncm, cmp6.Tension(303).dyncm)
     '21.94 22.29'
 

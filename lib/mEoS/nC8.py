@@ -32,18 +32,21 @@ class nC8(MEoS):
     synonym = ""
     _refPropName = "OCTANE"
     _coolPropName = "n-Octane"
-    rhoc = unidades.Density(234.9)
-    Tc = unidades.Temperature(569.32)
-    Pc = unidades.Pressure(2497.0, "kPa")
+    rhoc = unidades.Density(231.9980835)
+    Tc = unidades.Temperature(568.74)
+    Pc = unidades.Pressure(2483.59, "kPa")
     M = 114.2285  # g/mol
     Tt = unidades.Temperature(216.37)
-    Tb = unidades.Temperature(398.77)
+    Tb = unidades.Temperature(398.794)
     f_acent = 0.395
     momentoDipolar = unidades.DipoleMoment(0.07, "Debye")
     id = 12
     _Tr = unidades.Temperature(565.427917)
     _rhor = unidades.Density(234.605116)
     _w = 0.402698435
+
+    CP0 = {"ao": 4,
+           "ao_exp": [17.47, 33.25, 15.63], "exp": [380, 1724, 3881]}
 
     CP1 = {"ao": 4,
            "ao_sinh": [15.6865, 48.1731], "sinh": [158.9220, 1693.07],
@@ -55,13 +58,50 @@ class nC8(MEoS):
            "ao_cosh": [33.8029], "cosh": [815.064/Tc]}
 
     CP3 = {"ao": 3.018753,
-           "an": [0.07297005, -0.14171168e-4, -0.1225317e-7,  0.12912645e-11],
+           "an": [0.07297005, -0.14171168e-4, -0.1225317e-7, 0.12912645e-11],
            "pow": [1, 2, 3, 4]}
 
     f = 8.3159524/4.184
     CP4 = {"ao": 34.0847*f,
            "ao_sinh": [2.603664e8*f], "sinh": [1.6115500e3],
            "ao_cosh": [4.1241363e7*f], "cosh": [7.6884700e2]}
+
+    beckmuller = {
+        "__type__": "Helmholtz",
+        "__name__": "Fundamental Helmholtz equation of state for octane of "
+                    "Beckmüller et al. (2022)",
+        "__doi__": {"autor": "Beckmüller, R., Span, R., Lemmon, E.W.",
+                    "title": "A Fundamental Equation of State for the "
+                             "Calculation of Themodynamic Properties of "
+                             "n-Octane",
+                    "ref": "J. Phys. Chem. Ref. Data 51 (2022) 043103",
+                    "doi": "10.1063/5.0104661"},
+
+        # Using several constants rounded as in fld supplementary data.
+        "R": 8.3144598, "M": 114.229, "rhoc": 2.031,
+
+        "cp": CP0,
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 6.69,
+
+        "nr1": [0.042240369, 1.4800888, -2.0975357, -0.72303256, 0.26084383],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.243, 0.856, 1.07, 0.52],
+
+        "nr2": [-1.6713762, -1.3023632, 0.67710461, -1.1644509, -0.030939987],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.3, 2.55, 1.075, 2.24, 0.951],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [3.1437871, -0.011637891, -0.95649696, -0.36897912],
+        "d3": [1, 1, 3, 2],
+        "t3": [0.59, 0.917, 1.05, 1.634],
+        "alfa3": [0.985, 13.6, 1.03, 1.084],
+        "beta3": [1.52, 998, 1.57, 1.44],
+        "gamma3": [1.448, 1.08, 1.185, 1.3],
+        "epsilon3": [0.989, 0.986, 0.532, 1.16]}
 
     shortSpan = {
         "__type__": "Helmholtz",
@@ -211,7 +251,7 @@ class nC8(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = shortSpan, GERG, polt, starling, sun
+    eq = beckmuller, shortSpan, GERG, polt, starling, sun
     _PR = [0.0526, -21.0808]
 
     _surface = {
@@ -228,16 +268,16 @@ class nC8(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.79713e1, 0.17915e1, -0.34540e1, -0.82509e1, 0.53357e1],
-        "t": [1.0, 1.5, 2.64, 5.5, 6.0]}
+        "n": [-8.09474, 2.6247, -2.3855, -4.42236, -2.8186],
+        "t": [1, 1.5, 1.99, 3.95, 15.5]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.56814e1, 0.38908e2, -0.75923e2, 0.59548e2, -0.19651e2],
-        "t": [0.1, 0.75, 0.9, 1.1, 1.25]}
+        "n": [2.2946, 2.6596, -8.4135, 14.251, -11.59, 4.0217],
+        "t": [0.358, 1.568, 2.3, 3.02, 3.815, 4.78]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.16556, -5.9337, -18.915, -0.36484e3, 0.72686e3, -0.50392e3],
-        "t": [0.09, 0.59, 2.4, 7.0, 8.0, 9.0]}
+        "n": [-3.18016, -7.70809, -24.2673, -59.814, -138.757, -487.182],
+        "t": [0.394, 1.249, 3.32, 6.715, 14.2, 31.1]}
 
     visco0 = {"__name__": "Huber (2004)",
               "__doi__": {
@@ -270,7 +310,7 @@ class nC8(MEoS):
               "CPgi": [3.07843/2.0651, -0.879088/2.0651],
               "CPti": [-0.5, -1]}
 
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco1 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -323,6 +363,32 @@ class nC8(MEoS):
 
 class Test(TestCase):
 
+    def test_beckmuller(self):
+        # Table 17, Pag 39
+        st = nC8(T=500, rhom=0.2)
+        self.assertEqual(round(st.P.MPa, 9), 0.679567285)
+        self.assertEqual(round(st.cpM.JmolK, 7), 308.0591118)
+        self.assertEqual(round(st.w, 7), 158.7971365)
+        self.assertEqual(round(st.hM.Jmol, 5), 59003.95193)
+        self.assertEqual(round(st.sM.JmolK, 7), 127.0152476)
+        self.assertEqual(round(st.aM.Jmol, 6), -7901.508319)
+
+        st = nC8(T=500, rhom=5)
+        self.assertEqual(round(st.P.MPa, 8), 22.12393515)
+        self.assertEqual(round(st.cpM.JmolK, 7), 337.6029454)
+        self.assertEqual(round(st.w, 7), 741.4733129)
+        self.assertEqual(round(st.hM.Jmol, 5), 33933.78761)
+        self.assertEqual(round(st.sM.JmolK, 8), 66.14973635)
+        self.assertEqual(round(st.aM.Jmol, 6), -3565.867594)
+
+        st = nC8(T=700, rhom=2)
+        self.assertEqual(round(st.P.MPa, 9), 7.191953009)
+        self.assertEqual(round(st.cpM.JmolK, 7), 434.3588772)
+        self.assertEqual(round(st.w, 7), 184.5490128)
+        self.assertEqual(round(st.hM.Jmol, 3), 114104.516)
+        self.assertEqual(round(st.sM.JmolK, 7), 206.0345238)
+        self.assertEqual(round(st.aM.Jmol, 5), -33715.62722)
+
     def test_shortSpan(self):
         # Table III, Pag 46
         st = nC8(T=700, rho=200, eq="shortSpan")
@@ -336,8 +402,10 @@ class Test(TestCase):
 
     def test_viscoHuber(self):
         # Section 3.1 pag 265
-        self.assertEqual(round(nC8(T=300, P=1e7).mu.muPas, 2), 553.60)
+        self.assertEqual(round(
+            nC8(T=300, P=1e7, eq="shortSpan").mu.muPas, 2), 553.60)
 
     def test_thermoHuber(self):
-        # Section 3.1 pag 04
-        self.assertEqual(round(nC8(T=300, P=1e7).k.mWmK, 2), 128.36)
+        # Section 3.1 pag 50
+        self.assertEqual(round(
+            nC8(T=300, P=1e7, eq="shortSpan").k.mWmK, 2), 128.36)
