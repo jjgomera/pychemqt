@@ -52,7 +52,7 @@ class RE143a(MEoS):
                              "trifluoromethyl methyl ether (HFE-143m) and its "
                              "application to refrigeration cycle analysis",
                     "ref": "Int. J. Refrig., 35(4) (2012) 1003-1013",
-                    "doi":  "10.1016/j.ijrefrig.2012.01.003"},
+                    "doi": "10.1016/j.ijrefrig.2012.01.003"},
 
         "R": 8.314472,
         "cp": CP1,

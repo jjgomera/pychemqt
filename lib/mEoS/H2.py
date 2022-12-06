@@ -178,11 +178,11 @@ class H2(MEoS):
     _melting = {
         "eq": 1,
         "__doi__": {
-              "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
-              "title": "Extended and accuracy determination of the melting "
-                       "curves of argon, helium, ice (H2O), and hydrogen (H2)",
-              "ref": "Physical Review B, 61(10) (2000) 6535-6546",
-              "doi": "10.1103/PhysRevB.61.6535"},
+            "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
+            "title": "Extended and accuracy determination of the melting "
+                     "curves of argon, helium, ice (H2O), and hydrogen (H2)",
+            "ref": "Physical Review B, 61(10) (2000) 6535-6546",
+            "doi": "10.1103/PhysRevB.61.6535"},
 
         # It used the Eq. 9 in paper, the Eq. 10 is only prefered at very high
         # pressure, solved only iteratively, out of interest range in pychemqt
@@ -243,12 +243,20 @@ class H2(MEoS):
 
     def _mur(self, rho, T, fase):
         # Simbolic Regression, Eq. 9
-        rhor = rho/90.5
+
+        # Update scale factor for density and add test from erratum paper
+        # Muzny, C.D., Huber, M.L., Kazakov, A.F.
+        # Erratum: Correlation for the Viscosity of Normal Hydrogen Obtained
+        # from Symbolic Regression
+        # J. Chem. Eng. Data 67(9) (2022) 2855
+        # doi: 10.1021/acs.jced.2c00523
+
+        rhor = rho/90.909090909
         Tr = T/self.Tc
         c = [6.43449673, 4.56334068e-2, 2.32797868e-1, 9.5832612e-1,
              1.27941189e-1, 3.63576595e-1]
-        nr = c[0]*rhor**2*exp(c[1]*Tr + c[2]/Tr + c[3]*rhor**2/(c[4]+Tr) +
-                              c[5]*rhor**6)
+        nr = c[0]*rhor**2*exp(c[1]*Tr + c[2]/Tr + c[3]*rhor**2/(c[4]+Tr)
+                              + c[5]*rhor**6)
 
         return nr
 
@@ -433,3 +441,9 @@ class Test(TestCase):
         # self.assertEqual(round(H2(T=35, rho=30).k.mWmK, 3), 75.594)
         self.assertEqual(round(H2(T=18, rho=0).k.mWmK, 3), 13.875)
         self.assertEqual(round(H2(T=18, rho=75).k.mWmK, 2), 104.48)
+
+    def test_Muzny(self):
+        # Table 1 from erratum article
+        self.assertEqual(round(H2(T=40, rho=0).mu.muPas, 4), 1.9772)
+        self.assertEqual(round(H2(T=40, rho=50).mu.muPas, 4), 5.9905)
+        self.assertEqual(round(H2(T=40, rho=100).mu.muPas, 3), 49.034)

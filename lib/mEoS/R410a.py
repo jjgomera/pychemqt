@@ -90,7 +90,7 @@ class R410a(MEoSBlend):
             "autor": "Okada, M., Shibata, T., Sato. Y., Higashi, Y.",
             "title": "Surface Tension of HFC Refrigerant Mixtures",
             "ref": "Int. J. Thermophysics 20(1) (1999) 119-127",
-            "doi": "10.1023/a:1021482231102"},
+            "doi": "10.1023/A:1021482231102"},
         "sigma": [0.06238], "exp": [1.246]}
 
     _liquid_Density = {
@@ -109,7 +109,7 @@ class R410a(MEoSBlend):
                    "autor": "Geller, V.Z., Nemzer, B.V., Cheremnykh, U.V.",
                    "title": "Thermal  Conductivity of the Refrigerant "
                             "Mixtures R404A, R407C, R410A and R507A",
-                   "ref": "Int. J. Termophysics 22(4) (2001) 1035-1043",
+                   "ref": "Int. J. Thermophysics 22(4) (2001) 1035-1043",
                    "doi": "10.1023/a_1010691504352"},
 
                "eq": 1,
