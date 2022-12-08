@@ -43,6 +43,12 @@ class R1243zf(MEoS):
            "pow": [0, 1], "ao_pow": [-12.06546081, 8.207216743],
            "ao_exp": [11.247, 8.1391], "titao": [789/Tc, 2196/Tc]}
 
+    # Cp expression, Eq 8, without R in denominator, add factor to coefficient
+    R = 8.3144621
+    CP1 = {"ao": -9.03/R,
+           "an": [0.43/R, -3.833e-4/R, 1.306e-7/R],
+           "pow": [1, 2, 3]}
+
     akasaka = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1243zf of Akasaka "
@@ -58,7 +64,7 @@ class R1243zf(MEoS):
         "cp": Fi1,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 420.0, "Pmax": 20000.0, "rhomax": 13.26,
+        "Tmin": 234, "Tmax": 430, "Pmax": 35000.0,
 
         "nr1": [.0383741, 1.551307798, -1.918093187, -.536888401, .116850286],
         "d1": [4, 1, 1, 2, 3],
@@ -80,7 +86,38 @@ class R1243zf(MEoS):
         "gamma3": [1.35, 1.2, 1.286, 1.18, 1],
         "epsilon3": [0.998, 1.06, 0.655, 0.861, 0.61]}
 
-    eq = (akasaka,)
+    akasaka2016 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1243zf of Akasaka "
+                    "(2016)",
+        "__doi__": {"autor": "Akasaka, R.",
+                    "title": "Recent trends in the development of Helmholtz "
+                             "energy equations of state and their application "
+                             "to 3,3,3-trifluoroprop-1-ene (R-1243zf)",
+                    "ref": "Sci. Tech. Built Env. 22(8) (2016) 1136-1144",
+                    "doi": "10.1080/23744731.2016.1208000"},
+
+        "R": 8.3144621,
+        "cp": CP1,
+        "ref": "IIR",
+
+        "Tmin": 234, "Tmax": 376, "Pmax": 35000.0,
+        "rhoc": 4.313,
+
+        "nr1": [7.778443271, -8.690330704, -0.2796711221, 0.1454690442,
+                0.008976776111],
+        "d1": [1, 1, 1, 2, 5],
+        "t1": [0.6754, 0.835, 2.72, 2.57, 0.24],
+
+        "nr2": [-0.05379340327, 0.07406747105, 0.02278681805, -0.01253992688,
+                -0.07234529504, 0.3463328155, -0.2649827224, -0.09976284113,
+                0.09606394666, 0.01900375798, -0.01509419097, 0.002709528238],
+        "d2": [1, 3, 5, 7, 1, 2, 2, 3, 4, 2, 3, 5],
+        "t2": [5.77, 0.642, 0, 1.353, 4.08, 4.17, 6.02, 8.4, 8.1, 3, 7, 1],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
+        "gamma2": [1]*12}
+
+    eq = akasaka, akasaka2016
 
     _vapor_Pressure = {
         "eq": 3,
@@ -136,3 +173,29 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJmolK, 6), 0.129027)
         self.assertEqual(round(st.cpM.kJmolK, 4), 89.7236)
         self.assertEqual(round(st.w, 4), 88.6451)
+
+    def test_akasaka2016(self):
+        """Table 4, pag 1143"""
+        st = R1243zf(T=250, rhom=12, eq=1)
+        self.assertEqual(round(st.P.MPa, 5), 20.79095)
+        self.assertEqual(round(st.cvM.JmolK, 4), 81.4603)
+        self.assertEqual(round(st.cpM.JmolK, 3), 114.052)
+        self.assertEqual(round(st.w, 3), 848.109)
+
+        st = R1243zf(T=250, rhom=0, eq=1)
+        self.assertEqual(round(st.P.MPa, 6), 0.0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 68.2399)
+        self.assertEqual(round(st.cpM.JmolK, 4), 76.5544)
+        self.assertEqual(round(st.w, 3), 155.812)
+
+        st = R1243zf(T=350, rhom=9, eq=1)
+        self.assertEqual(round(st.P.MPa, 6), 7.690727)
+        self.assertEqual(round(st.cvM.JmolK, 3), 103.673)
+        self.assertEqual(round(st.cpM.JmolK, 3), 153.996)
+        self.assertEqual(round(st.w, 3), 390.988)
+
+        st = R1243zf(T=350, rhom=1, eq=1)
+        self.assertEqual(round(st.P.MPa, 6), 1.938399)
+        self.assertEqual(round(st.cvM.JmolK, 3), 104.900)
+        self.assertEqual(round(st.cpM.JmolK, 3), 161.146)
+        self.assertEqual(round(st.w, 3), 130.608)
