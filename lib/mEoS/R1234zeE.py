@@ -24,8 +24,8 @@ from lib import unidades
 from lib.meos import MEoS
 
 
-class R1234ze(MEoS):
-    """Multiparameter equation of state for R1234ze"""
+class R1234zeE(MEoS):
+    """Multiparameter equation of state for R1234ze(E)"""
     name = "trans-1,3,3,3-tetrafluoropropene"
     CASNumber = "29118-24-9"
     formula = "CHF=CHCF3"
@@ -54,10 +54,11 @@ class R1234ze(MEoS):
 
     thol = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234ze of Thol (2016)",
+        "__name__": "Helmholtz equation of state for R1234ze(E) of Thol "
+                    "(2016)",
         "__doi__": {"autor": "Thol, M., Lemmon, E.W.",
                     "title": "Equation of State for the Thermodynamic"
-                             "Properties of trans-1,3,3,3-Tetrafluoroporpene"
+                             "Properties of trans-1,3,3,3-Tetrafluoropropene"
                              "[R-1234ze(E)]",
                     "ref": "Int. J. Thermophys. 37(3) (2016) 28",
                     "doi": "10.1007/s10765-016-2040-6"},
@@ -90,7 +91,7 @@ class R1234ze(MEoS):
 
     mclinden = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1234ze of McLinden "
+        "__name__": "Helmholtz equation of state for R1234ze(E) of McLinden "
                     "(2010)",
         "__doi__": {"autor": "McLinden, M.O., Thol, M., Lemmon, E.W.",
                     "title": "Thermodynamic Properties of trans-1,3,3,3-"
@@ -252,37 +253,37 @@ class Test(TestCase):
 
     def test_thol(self):
         # Table 3, pag 15
-        st = R1234ze(T=200, rhom=12.6)
+        st = R1234zeE(T=200, rhom=12.6)
         self.assertEqual(round(st.P.MPa, 6), 2.161400)
         self.assertEqual(round(st.cvM.JmolK, 4), 94.9481)
         self.assertEqual(round(st.cpM.JmolK, 3), 139.161)
         self.assertEqual(round(st.w, 3), 982.461)
 
-        st = R1234ze(T=350, rhom=11.4)
+        st = R1234zeE(T=350, rhom=11.4)
         self.assertEqual(round(st.P.MPa, 5), 95.04156)
         self.assertEqual(round(st.cvM.JmolK, 3), 112.495)
         self.assertEqual(round(st.cpM.JmolK, 3), 144.400)
         self.assertEqual(round(st.w, 3), 902.540)
 
-        st = R1234ze(T=383, rhom=4.29)
+        st = R1234zeE(T=383, rhom=4.29)
         self.assertEqual(round(st.P.MPa, 6), 3.670105)
         self.assertEqual(round(st.cvM.JmolK, 3), 151.107)
         self.assertEqual(round(st.cpM.JmolK, 1), 17431.1)
         self.assertEqual(round(st.w, 4), 79.9438)
 
-        st = R1234ze(T=200, rhom=0)
+        st = R1234zeE(T=200, rhom=0)
         self.assertEqual(round(st.P.MPa, 6), 0)
         self.assertEqual(round(st.cvM.JmolK, 4), 71.6045)
         self.assertEqual(round(st.cpM.JmolK, 4), 79.9190)
         self.assertEqual(round(st.w, 3), 127.572)
 
-        st = R1234ze(T=360, rhom=1)
+        st = R1234zeE(T=360, rhom=1)
         self.assertEqual(round(st.P.MPa, 6), 2.039103)
         self.assertEqual(round(st.cvM.JmolK, 3), 113.342)
         self.assertEqual(round(st.cpM.JmolK, 3), 161.395)
         self.assertEqual(round(st.w, 3), 122.236)
 
-        st = R1234ze(T=420, rhom=8)
+        st = R1234zeE(T=420, rhom=8)
         self.assertEqual(round(st.P.MPa, 5), 19.95447)
         self.assertEqual(round(st.cvM.JmolK, 3), 120.029)
         self.assertEqual(round(st.cpM.JmolK, 3), 169.513)
@@ -291,25 +292,26 @@ class Test(TestCase):
     def test_Perkins(self):
         # Table 2, Pag 4872
         # The used EoS is other version of mclinden referenced in REFPROP
-        st = R1234ze(T=250, P=5e4, eq="mclinden")
+        st = R1234zeE(T=250, P=5e4, eq="mclinden")
         # self.assertEqual(round(st.rho, 5), 2.80451)
         self.assertEqual(round(st.k, 7), 0.0098506)
 
-        st = R1234ze(T=300, P=1e5, eq="mclinden")
+        st = R1234zeE(T=300, P=1e5, eq="mclinden")
         # self.assertEqual(round(st.rho, 5), 4.67948)
         self.assertEqual(round(st.k, 6), 0.013934)
 
-        st = R1234ze(T=250, P=2e7, eq="mclinden")
+        st = R1234zeE(T=250, P=2e7, eq="mclinden")
         # self.assertEqual(round(st.rho, 2), 1349.37)
         self.assertEqual(round(st.k, 5), 0.10066)
 
-        st = R1234ze(T=300, P=2e7, eq="mclinden")
+        st = R1234zeE(T=300, P=2e7, eq="mclinden")
         # self.assertEqual(round(st.rho, 2), 1233.82)
         self.assertEqual(round(st.k, 6), 0.085550)
 
     def test_Huber(self):
         # Section 2.4
-        self.assertEqual(round(R1234ze(T=300, rhom=0).mu.muPas, 3), 11.777)
-        self.assertEqual(round(R1234ze(T=300, rhom=0.044).mu.muPas, 3), 12.041)
+        self.assertEqual(round(R1234zeE(T=300, rhom=0).mu.muPas, 3), 11.777)
         self.assertEqual(round(
-            R1234ze(T=300, rhom=10.522).mu.muPas, 2), 217.89)
+            R1234zeE(T=300, rhom=0.044).mu.muPas, 3), 12.041)
+        self.assertEqual(round(
+            R1234zeE(T=300, rhom=10.522).mu.muPas, 2), 217.89)
