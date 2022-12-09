@@ -80,6 +80,15 @@ class R1234zeZ(MEoS):
 
     eq = (akasaka,)
 
+    _surface = {
+        "__doi__": {
+            "autor": "Kondou, C., Nagata, R., Nii, N., Koyama, S., Higashi, Y",
+            "title": "Surface Tension of low GWP refrigerants R1243zf, R1234ze"
+                     "(Z) and R1233zd(E)",
+            "ref": "Int. J. Refrigeration 53 (2015) 80-89",
+            "doi": "10.1016/j.ijrefrig.2015.01.005"},
+        "sigma": [0.05657], "exp": [1.220]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.7093, 2.3374, -2.1124, -3.1074],

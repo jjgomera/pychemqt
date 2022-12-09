@@ -177,7 +177,7 @@ class R1233zd(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.213e-9,
                "gam0": 0.059, "qd": 0.598e-9, "Tcref": 1.5*439.6}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
