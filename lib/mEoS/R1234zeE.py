@@ -52,6 +52,11 @@ class R1234zeE(MEoS):
            "pow": [0, 1], "ao_pow": [-10.8724711, -30.1326538],
            "ao_exp": [6.07536, 9.95795], "titao": [289/Tc, 1303/Tc]}
 
+    Fi4 = {"ao_log": [1, 1],
+           "pow": [0, 1], "ao_pow": [-5.9472607, 8.9615296],
+           "ao_exp": [0.38949999, 2.1661999, 4.9593000],
+           "titao": [7.7326340/Tc, 7.4102623/Tc, 6.7620840/Tc]}
+
     thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze(E) of Thol "
@@ -86,8 +91,7 @@ class R1234zeE(MEoS):
         "alfa3": [1.0, 1.61, 1.24, 9.34, 5.78, 3.08],
         "beta3": [1.21, 1.37, 0.98, 171, 47.4, 15.4],
         "gamma3": [0.943, 0.642, 0.59, 1.2, 1.33, 0.64],
-        "epsilon3": [0.728, 0.87, 0.855, 0.79, 1.3, 0.71],
-        "nr4": []}
+        "epsilon3": [0.728, 0.87, 0.855, 0.79, 1.3, 0.71]}
 
     mclinden = {
         "__type__": "Helmholtz",
@@ -158,7 +162,44 @@ class R1234zeE(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = thol, mclinden, akasaka
+    astina = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1234ze(E) of Astina "
+                    "et al.(2021)",
+        "__doi__": {"autor": "Astina, I.M., Budiarso, G., Harrison, R.",
+                    "title": "New Helmholtz Equation of State for "
+                             "HFO-1234ze(E) with Comprehensive Assessment",
+                    "ref": "Fluid Phase Equilibria 531 (2021) 112921",
+                    "doi": "10.1016/j.fluid.2020.112921"},
+
+        "R": 8.314462618,
+        "cp": Fi4,
+        "ref": "IIR",
+        "M": 114.04, "Tt": 168.8, "Tc": 382.51, "Pc": 3632, "rhoc": 486/114.04,
+
+        "Tmin": 168.8, "Tmax": 420.0, "Pmax": 20000.0,
+
+        "nr1": [0.65061869, -0.55932404, 10.064775, -12.457731, 1.8911764,
+                0.055592277, -0.0072430133, 0.0014796176],
+        "d1": [1, 1, 2, 2, 2, 4, 4, 4],
+        "t1": [0.223, 0.755, 0.85, 0.95, 1.24, 1.1, 1.75, 2.535],
+
+        "nr2": [-1.2013428, -0.20040287, -0.14457318, 0.10934001, -.018087592],
+        "d2": [1, 1, 2, 3, 6],
+        "t2": [2.06, 1.95, 7.45, 2.97, 2.3],
+        "c2": [1, 2, 2, 1, 1],
+        "gamma2": [1]*5,
+
+        # Be careful, coefficients names from bell-shaped term differ of normal
+        "nr3": [0.016187241, -0.069932775, 0.0035073320, -0.09157621],
+        "d3": [1, 1, 1, 2],
+        "t3": [1.13, 1.35, 1.75, 1.5],
+        "alfa3": [1.5, 1, 1.61, 0.75],
+        "beta3": [1.25, 1.5, 1.37, 0.75],
+        "gamma3": [0.5, 0.5, 0.642, 0.75],
+        "epsilon3": [0.35, 0.5, 0.87, 0.75]}
+
+    eq = thol, mclinden, akasaka, astina
 
     _surface = {
         "__doi__": {
@@ -216,7 +257,7 @@ class R1234zeE(MEoS):
               "tr_den": [-1],
               "dr_den": [0]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Perkins (2011)",
                "__doi__": {
@@ -246,7 +287,7 @@ class R1234zeE(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
                "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 573.78}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
