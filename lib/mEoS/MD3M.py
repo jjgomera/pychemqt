@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
 
@@ -30,19 +32,62 @@ class MD3M(MEoS):
     synonym = "MD3M"
     _refPropName = "MD3M"
     _coolPropName = "MD3M"
-    rhoc = unidades.Density(263.9218791237794)
-    Tc = unidades.Temperature(628.36)
-    Pc = unidades.Pressure(945.0, "kPa")
+    rhoc = unidades.Density(269.3873)
+    Tc = unidades.Temperature(628)
+    Pc = unidades.Pressure(953.95, "kPa")
     M = 384.839  # g/mol
     Tt = unidades.Temperature(192.0)
-    Tb = unidades.Temperature(503.03)
-    f_acent = 0.722
+    Tb = unidades.Temperature(503.02)
+    f_acent = 0.73
     momentoDipolar = unidades.DipoleMoment(1.223, "Debye")
+
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [68.1167204166, -29.8091965426],
+           "ao_exp": [81.2386, 61.191, 51.1798],
+           "titao": [610/Tc, 2500/Tc, 7500/Tc]}
 
     f = 8.314472
     CP1 = {"ao": 463.2/f,
            "ao_sinh": [957.2/f, ], "sinh": [2117.1],
            "ao_cosh": [738.3/f], "cosh": [908.5]}
+
+    thol = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for "
+                    "decamethylcyclopentasiloxane of Thol (2019).",
+        "__doi__": {
+            "autor": "Thol, M., Javed, M.A., Baumhögger, E., Span, R., "
+                     "Vrabec, J.",
+            "title": "Thermodynamic Properties of Dodecamethylpentasiloxane, "
+                     "Tetradecamethylhexasiloxane, and "
+                     "Decamethylcyclopentasiloxane",
+            "ref": "Ind. Eng. Chem. Res. 58(22) (2019) 9617-9635",
+            "doi": "10.1021/acs.iecr.9b00608"},
+
+        "R": 8.3144598,
+        "cp": Fi1,
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 630, "Pmax": 125000,
+
+        "nr1": [0.040674325, 4.4936509, -6.0327468, -1.0842396, 0.65985153],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.37, 0.718, 0.79, 0.59],
+
+        "nr2": [-2.3011802, -1.5022099, 0.5051725, -2.2363839, -0.071582853],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.38, 3.14, 0.62, 2.08, 1.042],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [4.7053488, -0.774783117, -0.68302991, 0.41657104, -1.1441135],
+        "d3": [1, 1, 3, 2, 2],
+        "t3": [0.9, 0.86, 2.06, 0.55, 0.69],
+        "alfa3": [1.043, 20, 1.08, 0.47, 1.085],
+        "beta3": [0.86, 1099, 0.95, 0.1, 1.85],
+        "gamma3": [1.357, 1.097, 1.030, 1.020, 0.800],
+        "epsilon3": [0.725, 0.940, 0.546, 0.680, 0.495]}
 
     colonna = {
         "__type__": "Helmholtz",
@@ -52,11 +97,12 @@ class MD3M(MEoS):
                              " [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and "
                              "[O-Si-(CH3)2]6",
                     "ref": "Fluid Phase Equilibria 263:115-130, 2008",
-                    "doi":  "10.1016/j.fluid.2007.10.001"},
+                    "doi": "10.1016/j.fluid.2007.10.001"},
 
         "R": 8.314472,
         "cp": CP1,
         "ref": "NBP",
+        "Tc": 628, "Pc": 945, "rhoc": 0.685798,
 
         "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.54,
 
@@ -72,7 +118,7 @@ class MD3M(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = colonna,
+    eq = thol, colonna
 
     _surface = {
         "__doi__": {
@@ -85,14 +131,53 @@ class MD3M(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.92608e1, 0.15861e1, -0.32859e1, -0.75194e1, -0.34883e1],
-        "t": [1.0, 1.5, 2.46, 3.7, 10.0]}
+        "n": [-9.6774, 3.973, -3.701, -9.1232, -5.467],
+        "t": [1.0, 1.5, 1.83, 3.54, 11.9]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.74156, 0.21723e1, 0.66412e2, -0.17125e3, 0.10848e3],
-        "t": [0.22, 0.51, 5.5, 6.0, 6.4]}
+        "n": [3.326, 3.889, -2.363, -2.709, 1.325],
+        "t": [0.42, 1.46, 0.9, 2.15, 3.15]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.19054e1, -0.74526e1, -0.10520e3, 0.24548e3, -0.23783e3,
-              -0.21226e3],
-        "t": [0.332, 0.88, 3.25, 4.0, 4.6, 12.0]}
+        "n": [-4.0084, -7.913, -79.392, -28.572, -211.86, -1800],
+        "t": [0.441, 1.244, 5.88, 3.03, 12.7, 32]}
+
+
+class Test(TestCase):
+
+    def test_thol(self):
+        # Table 6, Pag. 9621
+        st = MD3M(T=300, rhom=2.4)
+        self.assertEqual(round(st.P.MPa, 7), 56.5643398)
+        self.assertEqual(round(st.hM.Jmol, 3), -133761.828)
+        self.assertEqual(round(st.sM.JmolK, 6), -403.543152)
+        self.assertEqual(round(st.w, 5), 1241.26649)
+        self.assertEqual(round(st.aM.Jmol, 4), -36267.3571)
+
+        st = MD3M(T=390, rhom=0.0005)
+        self.assertEqual(round(st.P.MPa, 10), 0.0016139843)
+        self.assertEqual(round(st.hM.Jmol, 4), -31595.5295)
+        self.assertEqual(round(st.sM.JmolK, 7), -48.7220551)
+        self.assertEqual(round(st.w, 7), 92.0127172)
+        self.assertEqual(round(st.aM.Jmol, 4), -15821.8965)
+
+        st = MD3M(T=450, rhom=0.003)
+        self.assertEqual(round(st.P.MPa, 10), 0.0110320958)
+        self.assertEqual(round(st.hM.Jmol, 5), 7104.19531)
+        self.assertEqual(round(st.sM.JmolK, 7), 27.6618505)
+        self.assertEqual(round(st.w, 7), 97.5667091)
+        self.assertEqual(round(st.aM.Jmol, 5), -9021.00267)
+
+        st = MD3M(T=450, rhom=2)
+        self.assertEqual(round(st.P.MPa, 7), 18.3032601)
+        self.assertEqual(round(st.hM.Jmol, 4), -38524.8786)
+        self.assertEqual(round(st.sM.JmolK, 6), -101.224710)
+        self.assertEqual(round(st.w, 6), 728.435652)
+        self.assertEqual(round(st.aM.Jmol, 5), -2125.38904)
+
+        st = MD3M(T=600, rhom=2)
+        self.assertEqual(round(st.P.MPa, 7), 70.6395352)
+        self.assertEqual(round(st.hM.Jmol, 3), 100062.177)
+        self.assertEqual(round(st.sM.JmolK, 6), 113.577309)
+        self.assertEqual(round(st.w, 6), 902.133167)
+        self.assertEqual(round(st.aM.Jmol, 5), -3403.97539)

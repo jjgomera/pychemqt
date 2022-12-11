@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
 
@@ -30,33 +32,77 @@ class MD4M(MEoS):
     synonym = "MD4M"
     _refPropName = "MD4M"
     _coolPropName = "MD4M"
-    rhoc = unidades.Density(285.6576532213632)
+    rhoc = unidades.Density(261.6261696)
     Tc = unidades.Temperature(653.2)
-    Pc = unidades.Pressure(877.47, "kPa")
+    Pc = unidades.Pressure(828.56, "kPa")
     M = 458.99328  # g/mol
     Tt = unidades.Temperature(214.15)
-    Tb = unidades.Temperature(532.723)
-    f_acent = 0.825
+    Tb = unidades.Temperature(532.845)
+    f_acent = 0.8
     momentoDipolar = unidades.DipoleMoment(1.308, "Debye")
+
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [88.1018724545, -39.5537611892],
+           "ao_exp": [97.16, 69.73, 38.43],
+           "titao": [610/Tc, 2480/Tc, 6400/Tc]}
 
     f = 8.314472
     CP1 = {"ao": -20.071/f,
            "an": [2228.5e-3/f, -1311.4e-6/f, 286.2e-9/f],
            "pow": [1, 2, 3]}
 
+    thol = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for "
+                    "decamethylcyclopentasiloxane of Thol (2019).",
+        "__doi__": {
+            "autor": "Thol, M., Javed, M.A., Baumhögger, E., Span, R., "
+                     "Vrabec, J.",
+            "title": "Thermodynamic Properties of Dodecamethylpentasiloxane, "
+                     "Tetradecamethylhexasiloxane, and "
+                     "Decamethylcyclopentasiloxane",
+            "ref": "Ind. Eng. Chem. Res. 58(22) (2019) 9617-9635",
+            "doi": "10.1021/acs.iecr.9b00608"},
+
+        "R": 8.3144598,
+        "cp": Fi1,
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 655, "Pmax": 125000,
+
+        "nr1": [0.053362183, 2.8527871, -3.8108356, -0.95254215, 0.44739021],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.3, 0.68, 0.913, 0.434],
+
+        "nr2": [-2.5194015, -1.2945338, 0.43538523, -0.92015738, -0.054299195],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.33, 2.7, 0.61, 2.12, 1.121],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [4.6112643, -0.58630821, -0.7391977, -0.14001997, -1.8085327],
+        "d3": [1, 1, 3, 2, 2],
+        "t3": [1.13, 0.7, 2.55, 2.59, 1.07],
+        "alfa3": [0.81, 17.3, 0.892, 0.82, 0.847],
+        "beta3": [0.526, 700, 0.72, 0.056, 1.3],
+        "gamma3": [1.34, 1.108, 1.19, 1.68, 0.86],
+        "epsilon3": [0.977, 0.92, 0.65, 1.06, 0.659]}
+
     colonna = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for MD4M of Colonna  (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., "
-                             "Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected "
-                             "Siloxanes",
-                    "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
-                    "doi":  "10.1016/j.fluid.2006.04.015"},
+        "__doi__": {
+            "autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
+            "title": "Multiparameter Equations of State for Selected "
+                     "Siloxanes",
+            "ref": "Fluid Phase Equilibria, 244 (2006) 193-211",
+            "doi": "10.1016/j.fluid.2006.04.015"},
 
         "R": 8.314472,
         "cp": CP1,
         "ref": "NBP",
+        "Tc": 653.2, "Pc": 877, "rhoc": 1/1.65,
 
         "Tmin": Tt, "Tmax": 673.0, "Pmax": 30000.0, "rhomax": 2.09,
 
@@ -72,7 +118,7 @@ class MD4M(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = colonna,
+    eq = thol, colonna
 
     _surface = {
         "__doi__": {
@@ -85,14 +131,53 @@ class MD4M(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.10532e2, 0.33939e1, -0.89744e1, -0.56150e1],
-        "t": [1.0, 1.5, 2.75, 5.1]}
+        "n": [-9.6745, 1.3742, 0.71467, -12.967, -7.201],
+        "t": [1.0, 1.5, 2.2, 3.2, 11.4]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.10453e1, 0.55476, 0.44536e1, -0.76179e1, 0.46237e1],
-        "t": [0.235, 0.6, 0.95, 1.35, 1.7]}
+        "n": [-0.034315, 4.0324, -2.7980, 2.2450, 0.41085],
+        "t": [0.14, 0.45, 0.84, 1.28, 7.92]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.10890e1, -0.84374e1, -0.35615e2, -0.73478e3, 0.19915e4,
-              -0.16317e4],
-        "t": [0.231, 0.8, 2.9, 7.7, 9.0, 10.0]}
+        "n": [-3.316, -8.324, -184.27, 350.11, -287.08, -267.25],
+        "t": [0.432, 1.085, 3.78, 4.42, 5.1, 13]}
+
+
+class Test(TestCase):
+
+    def test_thol(self):
+        # Table 6, Pag. 9621
+        st = MD4M(T=280, rhom=2.1)
+        self.assertEqual(round(st.P.MPa, 7), 70.8719158)
+        self.assertEqual(round(st.hM.Jmol, 3), -199382.667)
+        self.assertEqual(round(st.sM.JmolK, 6), -595.997052)
+        self.assertEqual(round(st.w, 5), 1346.73495)
+        self.assertEqual(round(st.aM.Jmol, 4), -66252.0236)
+
+        st = MD4M(T=420, rhom=0.0005)
+        self.assertEqual(round(st.P.MPa, 10), 0.0017375886)
+        self.assertEqual(round(st.hM.Jmol, 4), -46438.0435)
+        self.assertEqual(round(st.sM.JmolK, 7), -75.4013910)
+        self.assertEqual(round(st.w, 7), 87.2885442)
+        self.assertEqual(round(st.aM.Jmol, 4), -18244.6365)
+
+        st = MD4M(T=500, rhom=0.01)
+        self.assertEqual(round(st.P.MPa, 10), 0.0391881825)
+        self.assertEqual(round(st.hM.Jmol, 4), 17451.7844)
+        self.assertEqual(round(st.sM.JmolK, 7), 38.3367562)
+        self.assertEqual(round(st.w, 7), 90.1871428)
+        self.assertEqual(round(st.aM.Jmol, 5), -5635.41188)
+
+        st = MD4M(T=500, rhom=1.8)
+        self.assertEqual(round(st.P.MPa, 6), 67.169626)
+        self.assertEqual(round(st.hM.Jmol, 4), -10913.2743)
+        self.assertEqual(round(st.sM.JmolK, 7), -99.7222037)
+        self.assertEqual(round(st.w, 6), 982.279594)
+        self.assertEqual(round(st.aM.Jmol, 5), 1631.36868)
+
+        st = MD4M(T=650, rhom=1.5)
+        self.assertEqual(round(st.P.MPa, 7), 31.6991170)
+        self.assertEqual(round(st.hM.Jmol, 3), 127131.508)
+        self.assertEqual(round(st.sM.JmolK, 6), 178.458722)
+        self.assertEqual(round(st.w, 6), 637.354433)
+        self.assertEqual(round(st.aM.Jmol, 5), -9999.40628)
