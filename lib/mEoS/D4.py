@@ -42,16 +42,15 @@ class D4(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.090, "Debye")
     # id=1430
 
-    Fi1 = {"ao_log": [1, 3],
-           "pow": [0, 1],
+    # Integration constant given in paper don't return good values, using Cp
+    # Fi1 = {"ao_log": [1, 3],
+    #        "pow": [0, 1], "ao_pow": [71.163605, -21.674365],
+    #        "ao_exp": [0.292757, 38.2456, 58.975],
+    #        "titao": [40/Tc, 200/Tc, 1800/Tc]}
 
-           # The paper parameter are incorrect, using alternate parameter
-           # to meet reference state OTO
-           # "ao_pow": [71.1636049792958, -21.6743650975623],
-           "ao_pow": [44.72889170669655, -4.9687471148991968],
-
+    CP2 = {"ao": 4,
            "ao_exp": [0.292757, 38.2456, 58.975],
-           "titao": [40/Tc, 200/Tc, 1800/Tc]}
+           "exp": [40, 200, 1800]}
 
     f = 8.314472
     CP1 = {"ao": -18.256/f,
@@ -59,49 +58,49 @@ class D4(MEoS):
 
     thol = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for D4 of Thol (2006).",
-        "__doi__": {"autor": "Thol, M.",
-                    "title": "Empirical Multiparameter Equations of State "
-                             "Based on Molecular Simulation and Hybrid Data "
-                             "Sets",
-                    "ref": "PhD thesis, Ruhr-Universität Bochum, 2015.",
-                    "doi":  ""},
+        "__name__": "Helmholtz equation of state for D4 of Thol (2016).",
+        "__doi__": {
+            "autor": "Thol, M., Rutkai, G., Köster, A., Dubberke, F.H., "
+                     "Windmann, T., Span, R., Vrabec, J.",
+            "title": "Thermodynamic Properties of "
+                     "Octamiethylciyclotetrasilosane",
+            "ref": "J. Chem. Eng. Data 61(7) (2016) 2580-2595",
+            "doi": "10.1021/acs.jced.6b00261"},
 
         "R": 8.3144621,
-        "Tc": 586.5, "rhoc": 1.043, "Pc": 1347,
-        "cp": Fi1,
-        "ref": "OTO",
+        "Tc": 586.5, "rhoc": 1.043, "Pc": 1347.2,
+        "cp": CP2,
+        "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 1200.0, "Pmax": 520000.0, "rhomax": 5.266,
+        "Tmin": Tt, "Tmax": 1200.0, "Pmax": 520000.0,
 
-        "nr1": [5.273743e-2, 4.176401, -4.737070, -1.289588, 5.272749e-1],
+        "nr1": [0.05273743, 4.176401, -4.73707, -1.289588, 0.5272749],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1, 0.27, 0.51, 0.998, 0.56],
 
-        "nr2": [-2.558391, -0.9726737, 0.7208209, -4.789456e-1, -5.563239e-2],
+        "nr2": [-2.558391, -0.9726737, 0.7208209, -0.4789456, -0.05563239],
         "d2": [1, 3, 2, 2, 7],
         "t2": [1.75, 3.09, 0.79, 2.71, 0.998],
         "c2": [2, 2, 1, 2, 1],
         "gamma2": [1]*5,
 
-        "nr3": [3.766589, 8.786997e-2, -1.267646e-1, -1.004246, -1.641887],
+        "nr3": [3.766589, 0.08786997, -0.1267646, -1.004246, -1.641887],
         "d3": [1, 1, 3, 2, 2],
         "t3": [0.93, 3.17, 1.08, 1.41, 0.89],
         "alfa3": [0.861, 1.114, 1.01, 1.11, 1.032],
         "beta3": [0.75, 0.55, 1.0, 0.47, 1.36],
         "gamma3": [1.124, 1.388, 1.148, 1.197, 0.817],
-        "epsilon3": [0.926, 1.3, 1.114, 0.996, 0.483],
-        "nr4": []}
+        "epsilon3": [0.926, 1.3, 1.114, 0.996, 0.483]}
 
     colonna = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for D4 of Colonna (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., "
-                             "Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected "
-                             "Siloxanes",
-                    "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
-                    "doi":  "10.1016/j.fluid.2006.04.015"},
+        "__doi__": {
+            "autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
+            "title": "Multiparameter Equations of State for Selected "
+                     "Siloxanes",
+            "ref": "Fluid Phase Equilibria, 244 (2006) 193-211",
+            "doi": "10.1016/j.fluid.2006.04.015"},
 
         "R": 8.314472,
         "cp": CP1,
@@ -134,52 +133,59 @@ class D4(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.87935e1, 0.27204e1, -0.48174e1, -0.69086e1],
-        "t": [1.0, 1.5, 2.2, 4.4]}
+        "n": [-9.2842, 3.8173, -4.4415, -7.7628, -6.9289],
+        "t": [1.0, 1.5, 2.1, 15, 3.9]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.14563e1, -0.94215, 0.45065e1, -0.27688e1, 0.8745],
-        "t": [0.24, 0.5, 0.75, 1.0, 2.0]}
+        "n": [2.7216, -1.5754, 3.9887, -3.7683, 1.9445],
+        "t": [0.38, 0.89, 1.44, 2.06, 2.78]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.16204e1, -0.57888e1, -0.24291e2, 0.53567e2, -0.12135e3,
-              -0.10976e4],
-        "t": [0.31, 0.78, 2.5, 4.4, 5.0, 15.0]}
+        "n": [-3.745, -9.2075, -71.786, 108.85, -141.61, -227.19],
+        "t": [0.416, 1.35, 3.8, 4.8, 5.8, 14]}
 
 
 class Test(TestCase):
 
     def test_thol(self):
-        # Appendix A, Pag 259
-
-        # The values in table are not good, the entropy and enthalpy reference
-        # state don't is OTO, using the custom integration parameters check
-        # reference state values.
-        st = D4(T=298.15, P=101325, eq="thol")
-        self.assertEqual(round(st.h, 9), 0)
-        self.assertEqual(round(st.s, 9), 0)
+        # Table S7, Pag 3
 
         st = D4(T=350, rhom=0.001, eq="thol")
-        self.assertEqual(round(st.P.MPa, 10), 2.8952836e-3)
-        self.assertEqual(round(st.cpM.JmolK, 2), 422.18)
-        self.assertEqual(round(st.w, 4), 99.5573)
+        self.assertEqual(round(st.P.MPa, 10), 0.0028952836)
+        self.assertEqual(round(st.cpM.JmolK, 9), 422.187662524)
+        self.assertEqual(round(st.w, 6), 99.557286)
+        self.assertEqual(round(st.hM.Jmol, 4), -5606.6834)
+        self.assertEqual(round(st.sM.JmolK, 7), 3.7361111)
+        self.assertEqual(round(st.aM.Jmol, 4), -9809.6059)
 
         st = D4(T=350, rhom=3.2, eq="thol")
         self.assertEqual(round(st.P.MPa, 6), 38.313384)
-        self.assertEqual(round(st.cpM.JmolK, 2), 515.36)
-        self.assertEqual(round(st.w, 4), 1003.2309)
+        self.assertEqual(round(st.cpM.JmolK, 9), 515.367386403)
+        self.assertEqual(round(st.w, 4), 1003.2303)
+        self.assertEqual(round(st.hM.Jmol, 3), -47367.713)
+        self.assertEqual(round(st.sM.JmolK, 5), -151.31880)
+        self.assertEqual(round(st.aM.Jmol, 4), -6379.0666)
 
         st = D4(T=500, rhom=0.08, eq="thol")
         self.assertEqual(round(st.P.MPa, 8), 0.28137478)
-        self.assertEqual(round(st.cpM.JmolK, 2), 549.71)
-        self.assertEqual(round(st.w, 4), 100.549)
+        self.assertEqual(round(st.cpM.JmolK, 9), 549.715457833)
+        self.assertEqual(round(st.w, 5), 100.54897)
+        self.assertEqual(round(st.hM.Jmol, 3), 63803.842)
+        self.assertEqual(round(st.sM.JmolK, 5), 131.62219)
+        self.assertEqual(round(st.aM.Jmol, 4), -5524.4399)
 
         st = D4(T=500, rhom=2.5, eq="thol")
         self.assertEqual(round(st.P.MPa, 7), 8.0209605)
-        self.assertEqual(round(st.cpM.JmolK, 1), 612.9)
-        self.assertEqual(round(st.w, 3), 475.065)
+        self.assertEqual(round(st.cpM.JmolK, 8), 612.92148189)
+        self.assertEqual(round(st.w, 5), 475.06521)
+        self.assertEqual(round(st.hM.Jmol, 3), 31400.054)
+        self.assertEqual(round(st.sM.JmolK, 6), 59.639266)
+        self.assertEqual(round(st.aM.Jmol, 4), -1627.9631)
 
         st = D4(T=600, rhom=3, eq="thol")
         self.assertEqual(round(st.P.MPa, 5), 126.85572)
-        self.assertEqual(round(st.cpM.JmolK, 2), 650.74)
-        self.assertEqual(round(st.w, 3), 1071.662)
+        self.assertEqual(round(st.cpM.JmolK, 9), 650.740004998)
+        self.assertEqual(round(st.w, 4), 1071.6620)
+        self.assertEqual(round(st.hM.Jmol, 2), 118708.24)
+        self.assertEqual(round(st.sM.JmolK, 5), 141.34253)
+        self.assertEqual(round(st.aM.Jmol, 4), -8382.5142)
