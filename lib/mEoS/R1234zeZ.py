@@ -43,6 +43,10 @@ class R1234zeZ(MEoS):
            "pow": [0, 1], "ao_pow": [-2.422442259, 8.1190539844],
            "ao_exp": [4.2365, 13.063], "titao": [20/Tc, 1335/Tc]}
 
+    CP1 = {"ao": -1.6994,
+           "an": [24.527/Tc, -9.9249/Tc**2, -1.5158/Tc**3],
+           "pow": [1, 2, 3]}
+
     akasaka = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234ze(Z) of Akasaka "
@@ -78,7 +82,36 @@ class R1234zeZ(MEoS):
         "gamma3": [1.246, 1.05, 1, 0.677, 1.302, 1.274],
         "epsilon3": [0.933, 0.786, 0.496, 0.327, 0.523, 0.308]}
 
-    eq = (akasaka,)
+    akasaka2014 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1234ze(Z) of Akasaka "
+                    "(2014)",
+        "__doi__": {
+            "autor": "Akasaka, R., Higashi, Y., Miyara, A., Koyama, S.",
+            "title": "A fundamental equation of state for cis-1,3,3,3-"
+                     "tetrafluoropropene (R-1234ze(Z))",
+            "ref": "Int. J. Refrig. 44 (2014) 168-176",
+            "doi": "10.1016/j.ijrefrig.2013.12.018"},
+
+        "R": 8.314472,
+        "cp": CP1,
+        "ref": "IIR",
+
+        "Tmin": 273, "Tmax": 430, "Pmax": 6000,
+
+        "nr1": [7.7652368, -8.7025756, -0.28352251, 0.14534501, 0.0092092105],
+        "d1": [4, 1, 1, 2, 5],
+        "t1": [0.685, 0.8494, 1.87, 2, 0.142],
+
+        "nr2": [-0.24997382, 0.096674360, 0.024685924, -0.013255083,
+                -0.064231330, 0.36638206, -0.25548847, -0.095592361,
+                0.086271444, 0.015997412, -0.013127234, 0.0042293990],
+        "d2": [1, 3, 5, 7, 1, 2, 2, 3, 4, 2, 3, 5],
+        "t2": [4.2, 0.08, 0, 1.1, 5.5, 6.6, 8.4, 7.2, 7.6, 8.5, 23, 18],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
+        "gamma2": [1]*12}
+
+    eq = (akasaka, akasaka2014)
 
     _surface = {
         "__doi__": {
