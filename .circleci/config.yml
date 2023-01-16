@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Run tests
           # This assumes coverage is installed via the install-package step above
-          command: coverage3 run test.py
+          command: coverage3 run tests/
 #      - run:
 #          name: Export data to coveralls 
 #          # This assumes coverage is installed via the install-package step above
