@@ -38,6 +38,10 @@ jobs:
           # This assumes coverage is installed via the install-package step above
           command: coverage3 run tests/
       - run:
+          name: Add project folder to pythonpath
+          # This assumes coverage is installed via the install-package step above
+          command: export PYTHONPATH=$PYTHONPATH:$(pwd)
+      - run:
           name: Initialization
           # This assumes coverage is installed via the install-package step above
           command: python3 tests/initialization.py
