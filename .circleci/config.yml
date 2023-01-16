@@ -33,14 +33,13 @@ jobs:
           pkg-manager: pip
           app-dir: ~/project/.circleci  # If you're requirements.txt isn't in the root directory.
           pip-dependency-file: requirements_test.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
-      - run:
-          name: Add project folder to pythonpath
-          # This assumes coverage is installed via the install-package step above
-          command: export PYTHONPATH=$PYTHONPATH:$(pwd)
-      - run:
-          name: Add project folder to pythonpath
-          # This assumes coverage is installed via the install-package step above
-          command: echo $PYTHONPATH
+
+      - run: echo 'export PYTHONPATH="${PYTHONPATH}:${HOME}/myproject/"' >> $BASH_ENV
+      - run: echo $PYTHONPATH
+#      - run:
+#          name: Add project folder to pythonpath
+#          # This assumes coverage is installed via the install-package step above
+#          command: export PYTHONPATH=$PYTHONPATH:$(pwd)
       - run:
           name: Initialization
           # This assumes coverage is installed via the install-package step above
