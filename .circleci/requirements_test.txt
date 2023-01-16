@@ -1,0 +1,7 @@
+scipy
+matplotlib
+PyQt6
+iapws
+coverage
+coveralls
+codecov
