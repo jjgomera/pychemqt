@@ -36,7 +36,6 @@ jobs:
 
       - run: echo 'export PYTHONPATH="${PYTHONPATH}:${HOME}/myproject/"' >> $BASH_ENV
       - run: echo $PYTHONPATH
-      - run: python3 tests/initialization.py
       - run:
           name: Run tests
           # This assumes coverage is installed via the install-package step above
