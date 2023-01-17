@@ -1,5 +1,5 @@
-.. image:: https://dl.circleci.com/status-badge/img/gh/jjgomera/pychemqt/tree/master.svg?style=svg
-    :target: https://dl.circleci.com/status-badge/redirect/gh/jjgomera/pychemqt/tree/master
+.. image:: https://travis-ci.org/jjgomera/pychemqt.svg?branch=master
+    :target: https://travis-ci.org/jjgomera/pychemqt
     :alt: Build Status
 
 .. image:: https://coveralls.io/repos/github/jjgomera/pychemqt/badge.svg?branch=master
