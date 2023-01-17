@@ -25,8 +25,6 @@ from unittest import TestLoader, TestSuite
 import lib
 from lib import EoS
 
-print(os.environ["pychemqt"])
-
 TestLib = TestSuite()
 for mname in lib.__all__:
     __import__("lib." + mname)

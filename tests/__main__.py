@@ -27,7 +27,6 @@ from unittest import TestSuite, TextTestRunner
 
 import numpy as np
 
-from test_lib import TestLib
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('.')
@@ -42,6 +41,7 @@ os.environ["icu"] = "False"
 os.environ["reportlab"] = "False"
 os.environ["Qsci"] = "False"
 
+from test_lib import TestLib
 
 # Don't print the numpy RuntimeWarning
 np.seterr("ignore")
