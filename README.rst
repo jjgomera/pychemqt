@@ -10,6 +10,10 @@
     :target: https://codecov.io/gh/jjgomera/pychemqt
     :alt: codecov.io analysis
 
+.. image:: https://app.codacy.com/project/badge/Grade/457297f080904ae5aa2ae52a4c1e7f9d
+    :target: https://www.codacy.com/gh/jjgomera/pychemqt/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jjgomera/pychemqt&amp;utm_campaign=Badge_Grade
+    :alt: Code Quality
+
 .. image:: https://readthedocs.org/projects/pychemqt/badge/?version=latest
     :target: http://pychemqt.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
