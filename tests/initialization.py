@@ -29,6 +29,7 @@ sys.path.insert(0, os.path.abspath('.'))
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('.')
+print(os.environ["pychemqt"])
 
 conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 
