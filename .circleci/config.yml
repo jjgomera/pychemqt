@@ -36,23 +36,19 @@ jobs:
 
       - run: echo 'export PYTHONPATH="${PYTHONPATH}:${HOME}/myproject/"' >> $BASH_ENV
       - run: echo $PYTHONPATH
-#      - run:
-#          name: Add project folder to pythonpath
-#          # This assumes coverage is installed via the install-package step above
-#          command: export PYTHONPATH=$PYTHONPATH:$(pwd)
       - run: python3 tests/initialization.py
       - run:
           name: Run tests
           # This assumes coverage is installed via the install-package step above
           command: coverage3 run tests/
-#      - run:
-#          name: Export data to coveralls 
-#          # This assumes coverage is installed via the install-package step above
-#          command: coveralls
-#      - run:
-#          name: Export data to codecov
-#          # This assumes codecov is installed via the install-package step above
-#          command: codecov
+      - run:
+          name: Export data to coveralls
+          # This assumes coverage is installed via the install-package step above
+          command: coveralls
+      - run:
+          name: Export data to codecov
+          # This assumes codecov is installed via the install-package step above
+          command: codecov
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
