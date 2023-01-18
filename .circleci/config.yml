@@ -50,9 +50,9 @@ jobs:
           name: Export data to codecov
           # This assumes codecov is installed via the install-package step above
           command: codecov
-      - run:
-          name: Export data to codacy
-          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+#      - run:
+#          name: Export data to codacy
+#          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
 
   codacy-coverage-report:
     docker:
