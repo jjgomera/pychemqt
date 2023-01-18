@@ -62,7 +62,7 @@ jobs:
 #      - run commands to generate the coverage result
       - coverage-reporter/send_report:
           coverage-reports: 'report.xml,coverage.info'
-          project-token: 3a9a29ed2313477a83c7fd3a9faa6e53
+          project-token: $CODACY_PROJECT_TOKEN
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -71,5 +71,7 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
-      - codacy-coverage-report
+      - codacy-coverage-report:
+        requires:
+          - build-and-test
 
