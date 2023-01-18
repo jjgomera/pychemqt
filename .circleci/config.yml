@@ -51,7 +51,7 @@ jobs:
           command: codecov
       - run:
           name: Export data to codacy
-          command: bash <(curl -Ls https://coverage.codacy.com/get.sh)
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
