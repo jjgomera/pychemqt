@@ -10,6 +10,7 @@ orbs:
   # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@1.5.0
+  coverage-reporter: codacy/coverage-reporter@13.11.16
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
@@ -53,7 +54,6 @@ jobs:
           name: Export data to codacy
           command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
 
-jobs:
   codacy-coverage-report:
     docker:
       - image: 'circleci/openjdk:8-jdk'
@@ -63,9 +63,6 @@ jobs:
       - coverage-reporter/send_report:
           coverage-reports: 'report.xml,coverage.info'
           project-token: 3a9a29ed2313477a83c7fd3a9faa6e53
-orbs:
-  coverage-reporter: codacy/coverage-reporter@13.11.16
-version: 2.1
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
