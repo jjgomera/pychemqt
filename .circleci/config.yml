@@ -59,7 +59,7 @@ jobs:
       - image: 'circleci/openjdk:8-jdk'
     steps:
       - checkout
-      - run commands to generate the coverage result
+#      - run commands to generate the coverage result
       - coverage-reporter/send_report:
           coverage-reports: 'report.xml,coverage.info'
           project-token: 3a9a29ed2313477a83c7fd3a9faa6e53
