@@ -53,6 +53,19 @@ jobs:
           name: Export data to codacy
           command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
 
+jobs:
+  codacy-coverage-report:
+    docker:
+      - image: 'circleci/openjdk:8-jdk'
+    steps:
+      - checkout
+      - run commands to generate the coverage result
+      - coverage-reporter/send_report:
+          coverage-reports: 'report.xml,coverage.info'
+          project-token: 3a9a29ed2313477a83c7fd3a9faa6e53
+orbs:
+  coverage-reporter: codacy/coverage-reporter@13.11.16
+
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -60,4 +73,5 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
+      - codacy-coverage-report
 
