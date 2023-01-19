@@ -61,7 +61,7 @@ jobs:
       - checkout
 #      - run commands to generate the coverage result
       - coverage-reporter/send_report:
-          coverage-reports: 'report.xml,coverage.info'
+          coverage-reports: '.coverage'
           project-token: $CODACY_PROJECT_TOKEN
 
 # Invoke jobs via workflows
