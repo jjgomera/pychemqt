@@ -10,7 +10,7 @@ orbs:
   # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
   python: circleci/python@1.5.0
-  coverage-reporter: codacy/coverage-reporter@13.11.16
+#  coverage-reporter: codacy/coverage-reporter@13.11.16
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
@@ -54,33 +54,36 @@ jobs:
           name: Export data to codecov
           # This assumes codecov is installed via the install-package step above
           command: codecov
-      - persist_to_workspace:
-          root: /home/circleci/project
-          paths: coverage.xml
+#      - persist_to_workspace:
+#          root: /home/circleci/project
+#          paths: coverage.xml
 
-#      - run:
-#          name: Export data to codacy
-#          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report
+      - run:
+          name: Export data to codacy
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
+      - run:
+          name: Export data to codacy
+          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) final
 
-  codacy-coverage-report:
-    docker:
-      - image: 'circleci/openjdk:8-jdk'
-    steps:
-      - checkout
-#      - run commands to generate the coverage result
-      - coverage-reporter/send_report:
-          coverage-reports: '/tmp/coverage.xml'
-          project-token: $CODACY_PROJECT_TOKEN
+#  codacy-coverage-report:
+#    docker:
+#      - image: 'circleci/openjdk:8-jdk'
+#    steps:
+#      - checkout
+##      - run commands to generate the coverage result
+#      - coverage-reporter/send_report:
+#          coverage-reports: '/tmp/coverage.xml'
+#          project-token: $CODACY_PROJECT_TOKEN
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  version: 2
+#  version: 2
   sample: # This is the name of the workflow, feel free to change it to better match your workflow.
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - build-and-test
-      - codacy-coverage-report:
-          requires:
-            - build-and-test
+#      - codacy-coverage-report:
+#          requires:
+#            - build-and-test
 
