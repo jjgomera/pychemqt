@@ -43,6 +43,10 @@ jobs:
           # This assumes coverage is installed via the install-package step above
           command: coverage3 run tests/
       - run:
+          name: Get coverage data en xml format
+          # This assumes coverage is installed via the install-package step above
+          command: coverage3 xml
+      - run:
           name: Export data to coveralls
           # This assumes coverage is installed via the install-package step above
           command: coveralls
@@ -51,7 +55,7 @@ jobs:
           # This assumes codecov is installed via the install-package step above
           command: codecov
       - store_artifacts:
-          path: .coverage
+          path: coverage.xml
 
 #      - run:
 #          name: Export data to codacy
@@ -64,7 +68,7 @@ jobs:
       - checkout
 #      - run commands to generate the coverage result
       - coverage-reporter/send_report:
-          coverage-reports: '.coverage'
+          coverage-reports: 'coverage.xml'
           project-token: $CODACY_PROJECT_TOKEN
 
 # Invoke jobs via workflows
