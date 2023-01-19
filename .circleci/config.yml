@@ -60,6 +60,7 @@ jobs:
     steps:
       - checkout
 #      - run commands to generate the coverage result
+      - coverage3 run tests/
       - coverage-reporter/send_report:
           coverage-reports: '.coverage'
           project-token: $CODACY_PROJECT_TOKEN
