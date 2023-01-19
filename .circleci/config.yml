@@ -54,8 +54,9 @@ jobs:
           name: Export data to codecov
           # This assumes codecov is installed via the install-package step above
           command: codecov
-      - store_artifacts:
-          path: coverage.xml
+      - persist_to_workspace:
+          root: /home/circleci/project
+          paths: coverage.xml
 
 #      - run:
 #          name: Export data to codacy
@@ -68,7 +69,7 @@ jobs:
       - checkout
 #      - run commands to generate the coverage result
       - coverage-reporter/send_report:
-          coverage-reports: 'coverage.xml'
+          coverage-reports: '/tmp/coverage.xml'
           project-token: $CODACY_PROJECT_TOKEN
 
 # Invoke jobs via workflows
