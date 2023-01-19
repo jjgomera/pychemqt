@@ -9,7 +9,7 @@ orbs:
   # Orb commands and jobs help you with common scripting around a language/tool
   # so you dont have to copy and paste it everywhere.
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/python
-  python: cimg/python@1.5.0
+  python: circleci/python@1.5.0
   coverage-reporter: codacy/coverage-reporter@13.11.16
 
 # Define a job to be invoked later in a workflow.
