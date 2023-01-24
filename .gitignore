@@ -58,8 +58,12 @@ docs/_build/
 .eric4project/
 .eric5project/
 .eric6project/
+.eric7project/
 *.e4p
 *.epj
+
+# jedi files
+.jedi/
 
 # vimspector files
 .vimspector*
