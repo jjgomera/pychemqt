@@ -31,6 +31,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # This library implement an old unnofficial library wrapper compatible
 # with Refprop v.9
 
+__doi__ = {
+    1:
+        {"autor": "Lemmon, E.W., Huber, M.L., McLinden, M.O.",
+         "title": "NIST Standard Reference Database 23:  Reference Fluid"
+                  "Thermodynamic and Transport Properties-REFPROP, Version"
+                  "9.1, National Institute of Standards and Technology,"
+                  "Standard Reference Data Program, Gaithersburg, 2013.",
+         "ref": "",
+         "doi": ""},
+    2:
+        {"autor": "Thelen, B.",
+         "title": "Python refprop wrapper, "
+                  "https://github.com/BenThelen/python-refprop",
+         "ref": "",
+         "doi": ""},
+    3:
+        {"autor": "Huber, M.L., Lemmon, E.W., Bell, I.H., McLinden, M.O.",
+         "title": "The NIST REFPROP Database for Highly Accurate Properties "
+                  "of Industrially Importants Fluids",
+         "ref": "Ind. Eng. Chem. Res. 61(42) (2022) 15449-15472",
+         "doi": "10.1021/acs.iecr.2c01427"}}
+
 
 import sys
 
@@ -200,15 +222,6 @@ class RefProp(ThermoRefProp):
               "hcomp": "",
               # setktv don't implemented
               }
-
-    __doi__ = [
-        {"autor": "Lemmon, E.W., Huber, M.L., McLinden, M.O.",
-         "title": "NIST Standard Reference Database 23:  Reference Fluid"
-                  "Thermodynamic and Transport Properties-REFPROP, Version"
-                  "9.1, National Institute of Standards and Technology,"
-                  "Standard Reference Data Program, Gaithersburg, 2013.",
-         "ref": "",
-         "doi": ""}]
 
     @property
     def calculable(self):
@@ -801,7 +814,7 @@ if __name__ == '__main__':
     # fluido = RefProp(ids=[47], T=100, P=6e4, htype="EOS", hcomp="BWR")
     # print(fluido.rho, fluido.cpM.JmolK)
 
-    
+
 
     # See fortran/Manual.txt and fortran/Prop_sub.for file for explanation of refprop functionality
 
