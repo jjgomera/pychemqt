@@ -321,8 +321,15 @@ __doi__ = {
                   "Natural Gas Mixtures ",
          "ref": "Int. J. Thermophys. 26(1) (2005) 31-46",
          "doi": "10.1007/s10765-005-2351-5"},
-
     25:
+        {"autor": "Bhattacharjee, J.K., Ferrell, R.A., Basu, R.S., Sengers, "
+                  "J.V.",
+         "title": "Crossover function for the critical viscosity of a "
+                  "classical fluid",
+         "ref": "Physical Review A 24(3) (1981) 1469-1475",
+         "doi": "10.1103/PhysRevA.24.1469"},
+
+    26:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -2607,8 +2614,8 @@ class MEoS(ThermoAdvanced):
         fase.firtt = firtt
         fase.firdt = firdt
 
-        h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird) + \
-            self.href-self.hoffset
+        h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird) \
+            + self.href-self.hoffset
         s = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)+self.sref-self.soffset
         cv = -self.R.kJkgK*tau**2*(fiott+firtt)
         cp = self.R.kJkgK*(
@@ -2734,6 +2741,7 @@ class MEoS(ThermoAdvanced):
             self._Dielectric(fase.rho, self.T))
         fase.fraccion = [1]
         fase.fraccion_masica = [1]
+
 
 #        dbt=-phi11/rho/t
 #        propiedades["cps"] = propiedades["cv"]-self.R*(1+delta*fird-delta*tau
@@ -4558,6 +4566,10 @@ class MEoS(ThermoAdvanced):
 
                 mu = muo+mud+mur+muCP+mue
 
+                if rho and "critical" in coef:
+                    muc = self. _ViscoCritical(rho, T, fase, coef)
+                    mu *= muc
+
             elif coef["eq"] == 2:
                 # Younglove form
                 f = coef["F"]
@@ -4887,6 +4899,134 @@ class MEoS(ThermoAdvanced):
             omega = Collision_Neufeld(T_)
 
         return omega
+
+    @refDoc(__doi__, [25], tab=8)
+    def _ViscoCritical(self, rho, T, fase, coef=False):
+        r"""Critical Enhancement viscosity calculation
+
+        In general the critical enhancement for viscosity correlation only are
+        significative in a narrow region near the critical region. Implemented
+        only for very few compounds as water or xenon
+
+        The model is defined in _visco["critical"]. The defined models are:
+            * 0 : No critical enhancement
+            * 1 : Bhattacharjee-Ferrell
+
+        **Bhattacharjee-Ferrell**
+
+             Method defined in [25]_
+
+            .. math::
+                \Delta\eta_c = \exp\left(x_{\mu}Y\right)
+
+            where :math:`x_\mu` is the critical exponent and the function *Y*
+            is defined for two ranges of correlation length ξ.
+
+            .. math::
+                Y = \frac{1}{5}q_C\xi (q_D\xi)^5 \left(1-q_C\xi
+                +(q_C\xi)^2-\frac{765}{504}\left(q_D\xi\right)^2\right)
+
+            .. math::
+                \begin{array}[t]{c}
+                Y = \frac{1}{12}\sin \left(3\psi_D\right) - \frac{1}{4q_C\xi}
+                \sin \left(2\psi_D\right) + \frac{1}{\left(q_C\xi\right)^2}
+                \left[1-\frac{5}{4} \left(q_C\xi\right)^2\right]\sin(\psi_D)\\
+                -\frac{1}{\left(q_C\xi\right)^3} \left\{\left[1-\frac{3}{2}
+                \left(q_C\xi\right)^2\right]\psi_D - \left| \left(q_c\xi\right)
+                ^2-1\right|^{3/2} L(w)\right\}
+                \end{array}
+
+            with:
+
+            .. math::
+                \begin{array}[t]{l}
+                \Phi_D = \arccos\left(\left(1+q_D^2\xi^2\right)^{-1/2}\right)\\
+                L\left(w\right)=\begin{cases}\begin{array}{ll}
+                    ln\frac{1+w}{1-w}, & q_{C}\xi>1\\
+                    2\arctan|w|, & q_{C}\xi\leq1\\
+                \end{array}\end{cases}\\
+                \xi = \xi_0\left(\frac{\Delta\tilde{\chi}}{\Gamma}\right)
+                ^{v/\gamma}\\
+                \Delta\tilde{\chi} = \tilde{\chi}(T,\rho) - \tilde{\chi}
+                (T_R,\rho)\frac{T_R}{T}\\
+                \tilde{\chi}(T,\rho) = \frac{P_c\rho}{\rho_c^2}\left(\frac
+                {\partial\rho}{\partial P}\right)_T\\
+                \end{array}
+
+            The derived class must define the variables:
+
+                * Tcref: Reference temperature far above the Tc, [K]
+                * gnu: critical exponent parameter, [-]
+                * gam0: critical exponent parameter, [-]
+                * Xio: Amplitude of the asymptotic power laws for ξ, [m]
+                * Xic: Critical value for ξ to use the Y correlation, [m]
+                * gamma: Amplitude of the asymptotic power laws for χ, [-]
+                * qd : finite wave-number cutoff, [m]
+                * qc : finite upper cutoff, [m]
+                * xu: Critical exponent, [-]
+
+        Water and heavy water has the Bhattacharjee-Ferrell method hardcoded
+        in iapws library.
+        """
+
+        if coef is False:
+            coef = self._viscosity
+
+        if coef["critical"] == 0:
+            # No critical enhancement
+            muc = 1
+        elif coef["critical"] == 1:
+            # Bhattacharjee-Ferrell
+            qd = 1/coef["qd"]
+            qc = 1/coef["qc"]
+            Tref = coef["Tcref"]
+            Xio = coef["Xio"]
+            Xic = coef["Xic"]
+            gam0 = coef["gam0"]
+            gnu = coef["gnu"]
+            gamma = coef["gamma"]
+            xu = coef["xu"]
+
+            # Optional critical parameters
+            Pc = coef.get("Pc", self.Pc)
+            rhoc = coef.get("rhoc", self.rhoc)
+
+            Xi = Pc*rho/rhoc**2*fase.drhodP_T
+
+            st = self._eq(rho, Tref)
+            delta = st["delta"]
+            fird = st["fird"]
+            firdd = st["firdd"]
+            dpdrho = self.R*Tref*(1+2*delta*fird+delta**2*firdd)
+            drho = 1/dpdrho
+
+            Xi_Tr = Pc*rho/rhoc**2*drho
+
+            DeltaX = Xi-Xi_Tr*Tref/T
+            DeltaX = max(DeltaX, 0)
+
+            X = Xio*(DeltaX/gam0)**(gnu/gamma)                        # Eq 4.1
+
+            if X < Xic:
+                Y = qc/5*X*(qd*X)**5*(1-qc*X+(qc*X)**2-765/504*(qd*X)**2)
+            else:
+                Fid = arccos((1+qd**2*X**2)**-0.5)                    # Eq 2.17
+                w = abs((qc*X-1)/(qc*X+1))**0.5*tan(Fid/2)            # Eq 2.20
+
+                # Eq 2.19
+                if qc*X > 1:
+                    Lw = log((1+w)/(1-w))
+                else:
+                    Lw = 2*arctan(abs(w))
+
+                # Eq 2.18
+                Y = sin(3*Fid)/12 - sin(2*Fid)/4/qc/X \
+                  + (1-5/4*(qc*X)**2)/(qc*X)**2*sin(Fid) \
+                  - ((1-3/2*(qc*X)**2)*Fid-abs((qc*X)**2-1)**1.5*Lw)/(qc*X)**3
+
+            muc = exp(xu*Y)                                           # Eq 3.2
+        return muc
+
 
     # Thermal conductivity methods
     @refDoc(__doi__, [6, 4, 5, 17, 18, 20, 22], tab=8)
