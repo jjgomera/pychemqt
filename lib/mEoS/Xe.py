@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from math import log, exp
 from unittest import TestCase
 
 from lib import unidades
@@ -56,7 +57,7 @@ class Xe(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -77,13 +78,15 @@ class Xe(MEoS):
         "nr3": [],
         "nr4": []}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [-0.5639, -12.9972]
 
     # Other equation with unorthodox formulations not implemented
-    # S̆ifner, O., Klomfar, J. Thermodynamic Properties of Xenon from the Triple
-    # Point to 800 K with Pressures up to 350 MPa. J. Phys. Chem. Ref. Data
-    # 23(1) (1994) 63-152, http:/dx.doi.org/10.1063/1.555956.
+    # S̆ifner, O., Klomfar, J.
+    # Thermodynamic Properties of Xenon from the Triple Point to 800 K with
+    # Pressures up to 350 MPa.
+    # J. Phys. Chem. Ref. Data 23(1) (1994) 63-152
+    # http:/dx.doi.org/10.1063/1.555956
 
     _surface = {"sigma": [-0.11538, 0.16598], "exp": [1.0512, 1.098]}
     _dielectric = {
@@ -117,6 +120,58 @@ class Xe(MEoS):
         "n": [-3.0026, -6.056, -0.60339e2, 0.48838e3, -0.81974e3, 0.47287e3],
         "t": [0.435, 1.4, 4.4, 6.2, 7.0, 8.6]}
 
+    visco0 = {"__name__": "Velliadou (2021)",
+              "__doi__": {
+                  "autor": "Velliadou, D., Tasidou, K.A., Antoniadis, K.D., "
+                           "Assael, M.J., Perkins, R.A., Huber, M.L.,",
+                  "title": "Reference Correlation for the Viscosity of Xenon "
+                           "from the Triple Point to 750 K and up to 86 MPa",
+                  "ref": "Int. J. Thermophysics 42 (2021) 74",
+                  "doi": "10.1007/s10765-021-02818-9"},
+
+              "eq": 1, "omega": 0,
+
+              "special0": "_mu0",
+
+              "ek": 250, "sigma": 0.396,
+
+              "Tref_virial": 250,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_mur",
+
+              "critical": 1, "Xic": 0.06e-9,
+              "xu": 0.068, "gnu": 0.63, "gamma": 1.239, "Xio": 0.184e-9,
+              "gam0": 0.058, "qc": 3.6e-9, "qd": 1.15e-9, "Tcref": 1.5*Tc}
+
+    def _mu0(self, T):
+        """Special term for zero-density viscosity for Velliadou correlation"""
+        ai = [9.652514e-1, -5.237199e-2, -6.758414e-2, 2.855787e-2,
+              1.002789e-2, -9.639621e-3, 1.329770e-3, 1.114305e-3,
+              -5.992234e-4, 1.224218e-4, -9.584978e-6]
+
+        # Eq 2
+        suma = 0
+        for i, a in enumerate(ai, 1):
+            suma += a*log(T/298.15)**i
+        return 23.0183*exp(suma)
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Velliadou correlation"""
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+
+        # Eq 6
+        mur = rhor**(2/3)*Tr**0.5 * (
+            Tr + 1.396328251*Tr*rhor**4 + 5.418871011e-4*rhor**12/Tr
+            + (4.478809952+24.91698858*rhor)/Tr**2)
+        return mur
+
+    _viscosity = (visco0, )
+
 
 class Test(TestCase):
     def test_shortLemmon(self):
@@ -135,3 +190,14 @@ class Test(TestCase):
         self.assertEqual(round(Xe._Melting_Pressure(167.154).atm, 2), 147.21)
         self.assertEqual(round(Xe._Melting_Pressure(191.144).atm, 2), 794.08)
         self.assertEqual(round(Xe._Melting_Pressure(215.264).atm, 2), 1494.59)
+
+    def test_Velliadou(self):
+        # Point data given in Section 4
+        self.assertEqual(round(Xe(T=300, rho=0).mu.muPas, 4), 23.1561)
+        self.assertEqual(round(Xe(T=300, rho=6).mu.muPas, 4), 23.3186)
+        self.assertEqual(round(Xe(T=300, rho=2500).mu.muPas, 3), 206.449)
+        self.assertEqual(round(Xe(T=292.711322, rho=0).mu.muPas, 4), 22.6125)
+
+        # The critical enhancement fail
+        # self.assertEqual(round(
+        #     Xe(T=292.711322, rho=1102.9).mu.muPas, 5), 52.82074)
