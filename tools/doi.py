@@ -29,8 +29,12 @@ from equipment import equipments
 
 
 class ShowReference(QtWidgets.QDialog):
+    """Dialog to show the references used in the program"""
+
+    searchIndex = -1
+    searchResults = []
     def __init__(self, parent=None):
-        super(ShowReference, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/help.png")))
         self.setWindowTitle(QtWidgets.QApplication.translate(
@@ -68,17 +72,19 @@ class ShowReference(QtWidgets.QDialog):
         self.btnNext.clicked.connect(self.searchNext)
         searchlayout.addWidget(self.btnNext)
         self.searchWidget.hide()
-        layout.addWidget(self.searchWidget, 2, 2)
+        layout.addWidget(self.searchWidget, 3, 1)
 
-        bttBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        bttBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         bttBox.rejected.connect(self.reject)
-        layout.addWidget(bttBox, 3, 1, 1, 2)
+        layout.addWidget(bttBox, 3, 2)
 
         shSearch = QtGui.QShortcut(QtGui.QKeySequence.StandardKey.Find, self)
         shSearch.activated.connect(self.enableSearch)
         shHide = QtGui.QShortcut(QtGui.QKeySequence.StandardKey.Cancel, self)
         shHide.activated.connect(self.disableSearch)
-        self.shNext = QtGui.QShortcut(QtGui.QKeySequence.StandardKey.FindNext, self)
+        self.shNext = QtGui.QShortcut(
+            QtGui.QKeySequence.StandardKey.FindNext, self)
         self.shNext.activated.connect(self.searchNext)
         self.shNext.setEnabled(False)
         self.shPrevious = QtGui.QShortcut(
@@ -112,9 +118,10 @@ class ShowReference(QtWidgets.QDialog):
         """Search txt in tree widget contents"""
         self.searchIndex = -1
         self.searchResults = []
-        for col in range(3):
-            self.searchResults += self.tree.findItems(
-                txt, QtCore.Qt.MatchFlag.MatchContains | QtCore.Qt.MatchFlag.MatchRecursive, col)
+        for col in range(4):
+            flags = (QtCore.Qt.MatchFlag.MatchContains |
+                QtCore.Qt.MatchFlag.MatchRecursive)
+            self.searchResults += self.tree.findItems(txt, flags, col)
 
         # Enable navitation in search results if search if successful
         if self.searchResults:
@@ -150,7 +157,7 @@ class ShowReference(QtWidgets.QDialog):
         """Fill tree with documentation entries"""
         # General population Library
         for library in lib.__all__:
-            __import__("lib.%s" % library)
+            __import__(f"lib.{library}")
             module = lib.__getattribute__(library)
             if hasattr(module, "__doi__") and module.__doi__:
                 itemModule = QtWidgets.QTreeWidgetItem(["lib/"+library])
@@ -214,7 +221,8 @@ class ShowReference(QtWidgets.QDialog):
 
                 # Show item sorted by autor in libraries
                 if "EoS" not in library:
-                    itemModule.sortChildren(1, QtCore.Qt.SortOrder.AscendingOrder)
+                    itemModule.sortChildren(
+                        1, QtCore.Qt.SortOrder.AscendingOrder)
 
         # Equipment
         itemEquipment = QtWidgets.QTreeWidgetItem(
@@ -235,7 +243,7 @@ class ShowReference(QtWidgets.QDialog):
 
                 itemequip.addChild(item)
 
-    def open(self, item, int):
+    def open(self, item):
         """Open file if exist in doc/doi folder or open a browser with link"""
         if item.parent() and not item.icon(0).isNull():
             title = item.text(2)
@@ -248,7 +256,7 @@ class ShowReference(QtWidgets.QDialog):
             elif os.path.isfile(file2):
                 subprocess.Popen(['atril', file2])
         elif item.parent():
-            url = QtCore.QUrl("http://dx.doi.org/%s" % item.text(4))
+            url = QtCore.QUrl(f"http://dx.doi.org/{item.text(4)}")
             QtGui.QDesktopServices.openUrl(url)
 
 
