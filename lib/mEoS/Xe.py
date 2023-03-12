@@ -172,10 +172,49 @@ class Xe(MEoS):
 
     _viscosity = (visco0, )
 
+    thermo0 = {"__name__": "Velliadou (2021)",
+               "__doi__": {
+                   "autor": "Velliadou, D., Assael, M.J., Antoniadis, K.D., "
+                            "Huber, M.L.",
+                   "title": "Reference Correlations for the Thermal "
+                            "Conductivity of Xenon from the Triple Point to "
+                            "606 K and Pressures up to 400 MPa",
+                   "ref": "Int. J. Thermophysics 42 (2021) 51",
+                   "doi": "10.1007/s10765-021-02803-2"},
+
+               "eq": 1,
+
+               "special": "_thermo0",
+
+               "Tref_res": Tc, "rhoref_res": rhoc, "kref_res": 1,
+               "nr": [0.694552e-2, -0.732747e-4, 0.876111e-2, -0.268366e-2,
+                      -0.119900e-1, 0.563598e-2, 0.684476e-2, -0.314076e-2,
+                      -0.102229e-2, 0.605394e-3],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.182e-9, "gam0": 0.058, "qd": 0.479e-9, "Tcref": 434.6}
+
+    _thermal = (thermo0, )
+
+    def _thermo0(self, rho, T, fase):
+        """Custom dilute-gas limit thermal conductivity for Velliadou method"""
+        Tr = T/298.15
+        bi = [9.65520e-1, -5.12353e-2, -6.70913e-2, 2.88938e-2, 9.25546e-3,
+              -9.72175e-3, 1.69364e-3, 9.96803e-4, -6.10466e-4, 1.33327e-4,
+              -1.09858e-5]
+
+        # Eq 2
+        ko = 5.4666*exp(sum(b*log(Tr)**(i+1) for i, b in enumerate(bi)))
+
+        return ko*1e-3
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = Xe(T=291, rhom=8)
         self.assertEqual(round(st.P.kPa, 3), 5986.014)
         self.assertEqual(round(st.hM.kJkmol, 3), 9193.668)
