@@ -4969,6 +4969,11 @@ class MEoS(ThermoAdvanced):
         in iapws library.
         """
 
+        # Optional parameter to disable in kwargs the critical enhancement
+        if "viscocritical" in self.kwargs \
+                and self.kwargs["viscocritical"] == False:
+            return 1
+
         if coef is False:
             coef = self._viscosity
 
@@ -5006,6 +5011,10 @@ class MEoS(ThermoAdvanced):
             DeltaX = max(DeltaX, 0)
 
             X = Xio*(DeltaX/gam0)**(gnu/gamma)                        # Eq 4.1
+
+            # Optional parameter to use the powr law expression
+            if "viscocriticallineal" in self.kwargs:
+                X = Xio*((T-self.Tc)/self.Tc)**-gnu
 
             if X < Xic:
                 Y = qc/5*X*(qd*X)**5*(1-qc*X+(qc*X)**2-765/504*(qd*X)**2)

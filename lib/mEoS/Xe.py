@@ -143,7 +143,7 @@ class Xe(MEoS):
 
               "special": "_mur",
 
-              "critical": 1, "Xic": 0.06e-9,
+              "critical": 0, "Xic": 0.06e-9,
               "xu": 0.068, "gnu": 0.63, "gamma": 1.239, "Xio": 0.184e-9,
               "gam0": 0.058, "qc": 3.6e-9, "qd": 1.15e-9, "Tcref": 1.5*Tc}
 
@@ -185,19 +185,73 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 125.648)
 
     def test_Michels(self):
-        # Table I, pag 105
+        """Table I, pag 105"""
         self.assertEqual(round(Xe._Melting_Pressure(161.554).atm, 2), 3.66)
         self.assertEqual(round(Xe._Melting_Pressure(167.154).atm, 2), 147.21)
         self.assertEqual(round(Xe._Melting_Pressure(191.144).atm, 2), 794.08)
         self.assertEqual(round(Xe._Melting_Pressure(215.264).atm, 2), 1494.59)
 
-    def test_Velliadou(self):
-        # Point data given in Section 4
+    def test_VelliadouVisco(self):
+        """Point data given in Section 4"""
         self.assertEqual(round(Xe(T=300, rho=0).mu.muPas, 4), 23.1561)
         self.assertEqual(round(Xe(T=300, rho=6).mu.muPas, 4), 23.3186)
         self.assertEqual(round(Xe(T=300, rho=2500).mu.muPas, 3), 206.449)
         self.assertEqual(round(Xe(T=292.711322, rho=0).mu.muPas, 4), 22.6125)
 
         # The critical enhancement fail
-        # self.assertEqual(round(
-        #     Xe(T=292.711322, rho=1102.9).mu.muPas, 5), 52.82074)
+#         self.assertEqual(round(
+#             Xe(T=292.711322, rho=1102.9).mu.muPas, 5), 52.82074)
+
+    def test_VelliadouThermo(self):
+        """Point data given in Section 4"""
+        self.assertEqual(round(Xe(T=300, rho=0).k.mWmK, 4), 5.4993)
+        self.assertEqual(round(Xe(T=300, rho=1200).k.mWmK, 4), 22.7675)
+
+
+if __name__ == "__main__":
+    # Generate Fig. 6 of viscosity paper
+    # To get work, you must enable viscosity critical enhancement parameter for
+    # Xenon, change 0 by 1 in critical viscosity parameters
+    from numpy import logspace, r_
+    import matplotlib.pyplot as plt
+
+    t = logspace(-4.8, -1.2, 50)
+    Ti = t*Xe.Tc+Xe.Tc
+
+    mu = []
+    mu1 = []
+    mu2 = []
+    for ti in Ti:
+        st = Xe(T=ti, rho=Xe.rhoc)
+        mu.append(st.mu.muPas)
+        st = Xe(T=ti, rho=Xe.rhoc, viscocriticallineal=True)
+        mu1.append(st.mu.muPas)
+        st = Xe(T=ti, rho=Xe.rhoc, viscocritical=False)
+        mu2.append(st.mu.muPas)
+
+    plt.plot(t, mu, color="k", ls="-")
+    plt.plot(t, mu1, color="k", ls="--")
+    plt.plot(t, mu2, color="k", ls=":")
+
+    # Experimental data from
+    # Berg, R.F., Moldover, M.R., Zimmerli, G.A.
+    # Frequency-dependent viscosity of xenon near the critical point
+    # Physycal Review E. 60(4) (1999) 4079-4098
+    # doi: 10.1103/physreve.60.4079
+    t3 = r_[1029.0, 344.3, 104.1, 100.0, 96.35, 65.51, 59.60, 43.36, 35.89,
+            35.48, 34.76, 29.69, 21.18, 20.76, 17.07, 14.93, 11.73, 11.03,
+            8.645, 8.620, 6.808, 5.886, 4.978, 4.381, 3.142, 2.960, 2.211]*1e-5
+    mu3 = [52.241, 53.009, 54.509, 54.585, 54.576, 55.213, 55.275, 55.923,
+           56.305, 56.339, 56.349, 56.709, 57.359, 57.389, 57.824, 58.080,
+           58.658, 58.784, 59.291, 59.351, 59.876, 60.246, 60.610, 60.937,
+           61.765, 61.930, 62.713]
+    plt.plot(t3, mu3, ls="None", marker="^", mec="k", mfc="k")
+
+    t4 = r_[5527, 3976, 2420, 1730, 1729, 1729, 1729, 1729, 1039, 1034, 354.2,
+            338.0, 220.9, 140.9, 105.6, 105.4]*1e-5
+    mu4 = [52.623, 52.316, 52.073, 52.047, 52.048, 52.048, 52.047, 52.053,
+           52.178, 52.162, 52.928, 52.974, 53.446, 54.011, 54.375, 54.360]
+    plt.plot(t4, mu4, ls="None", marker="o", mec="k", mfc="None")
+
+    plt.xscale("log")
+    plt.show()
