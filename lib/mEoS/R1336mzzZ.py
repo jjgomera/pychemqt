@@ -102,6 +102,41 @@ class R1336mzzZ(MEoS):
         "n": [-2.5907, -6.55386, -82.16925, -22.4756],
         "t": [0.3608, 1.0607, 6.9789, 3.00187]}
 
+    thermo0 = {"__name__": "Perkins (2020)",
+               "__doi__": {
+                   "autor": "Perkins, R.A., Huber, M.L.",
+                   "title": "Measurement and Correlation of the Thermal "
+                            "Conductivity of cis-1,1,1,4,4,4-hexafluoro-2-"
+                            "butene",
+                   "ref": "Int. J. Thermophysics 41 (2020) 103",
+                   "doi": "10.1007/s10765-020-02681-0"},
+
+               "eq": 1,
+
+               "special": "_thermo0",
+
+               "Tref_res": Tc, "rhoref_res": rhoc, "kref_res": 1,
+               "nr": [0.0182670, 0.105672, -0.119719, 0.0431845, -0.00497023,
+                      -0.0138014, -0.0756253, .0919892, -0.0327931, .00384035],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 0,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.182e-9, "gam0": 0.058, "qd": 0.479e-9, "Tcref": 434.6
+               }
+
+    _thermal = (thermo0, )
+
+    def _thermo0(self, rho, T, fase):
+        """Custom dilute-gas limit thermal conductivity for Perkins method"""
+        Tr = T/self.Tc
+        ai = [0.033207, -0.089513, 0.101275]
+
+        # Eq 4
+        ko = Tr**0.5/(sum(a/Tr**(0.5*j) for j, a in enumerate(ai)))
+        return ko*1e-3
+
 
 class Test(TestCase):
     """Test class"""
@@ -143,3 +178,13 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJmolK, 6), 0.219506)
         self.assertEqual(round(st.cpM.kJmolK, 4), 19.8479)
         self.assertEqual(round(st.w, 4), 60.4525)
+
+    def test_Perkins(self):
+        """Table 3, pag 103"""
+        # TODO: Uncomment when add viscosity ecs correlation and enable
+        # critical enhancement
+        self.assertEqual(round(R1336mzzZ(T=300, rho=0).k.WmK, 6), 0.011056)
+#         self.assertEqual(round(R1336mzzZ(T=300, rho=1363).k.WmK, 6), 0.078701)
+        self.assertEqual(round(R1336mzzZ(T=450, rho=0).k.WmK, 6), 0.022723)
+#         self.assertEqual(round(R1336mzzZ(T=450, rho=500).k.WmK, 6), 0.053990)
+        self.assertEqual(round(R1336mzzZ(T=450, rho=500).k.WmK, 6), 0.038462)
