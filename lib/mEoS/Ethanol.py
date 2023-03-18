@@ -93,8 +93,7 @@ class Ethanol(MEoS):
         "beta3": [1.207, .0895, .581, .947, 2.356, 27.01, 4.542, 1.287, 3.09],
         "gamma3": [1.194, 1.986, 1.583, 0.756, 0.495, 1.002, 1.077, 1.493,
                    1.542],
-        "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313],
-        "nr4": []}
+        "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313]}
 
     dillon = {
         "__type__": "Helmholtz",
@@ -152,8 +151,8 @@ class Ethanol(MEoS):
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.6,
 
-        "nr1":  [-2.95455387, 1.95055493, -1.31612955, -1.47547651e-2,
-                 1.39251945e-4, 5.04178939e-1],
+        "nr1": [-2.95455387, 1.95055493, -1.31612955, -1.47547651e-2,
+                1.39251945e-4, 5.04178939e-1],
         "d1": [1, 1, 1, 3, 7, 2],
         "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
 
@@ -169,18 +168,18 @@ class Ethanol(MEoS):
     _surface = {"sigma": [0.05], "exp": [0.952]}
 
     _melting = {
-            "eq": 1,
-            "__doi__": {
-                "autor": "Sun, T.F., Schouten, J.A., Trappeniers, N.J., "
-                         "Biswas, S.N.",
-                "title": "Accurate Measurement of the Melting Line of Methanol"
-                         " and Ethanol at Pressures up to 270 MPa",
-                "ref": "Ber. Bunsenges. Phys. Chem. 92 (1988) 652-655",
-                "doi": "10.1002/bbpc.198800153"},
+        "eq": 1,
+        "__doi__": {
+            "autor": "Sun, T.F., Schouten, J.A., Trappeniers, N.J., "
+                     "Biswas, S.N.",
+            "title": "Accurate Measurement of the Melting Line of Methanol "
+                     "and Ethanol at Pressures up to 270 MPa",
+            "ref": "Ber. Bunsenges. Phys. Chem. 92 (1988) 652-655",
+            "doi": "10.1002/bbpc.198800153"},
 
-            "Tmin": Tt, "Tmax": 650,
-            "Tref": 158.37, "Pref": 1e6,
-            "a2": [436.9], "exp2": [2.6432]}
+        "Tmin": Tt, "Tmax": 650,
+        "Tref": 158.37, "Pref": 1e6,
+        "a2": [436.9], "exp2": [2.6432]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -197,7 +196,55 @@ class Ethanol(MEoS):
               -0.10732e3],
         "t": [0.18, 0.44, 0.68, 0.95, 4.0, 10.0]}
 
-    visco0 = {"__name__": "Kiselev (2005)",
+    visco0 = {"__name__": "Sotiriadou (2023)",
+              "__doi__": {
+                  "autor": "Sotiriadou, S., Ntonti, E., Velliadou, D., "
+                           "Antoniadis, K.D., Assael, M.J., Huber, M.L.,",
+                  "title": "Reference Correlation for the Viscosity of "
+                           "Ethanol from the Triple Point to 620 K and "
+                           "Pressures up to 102 MPa",
+                  "ref": "Int. J. Thermophysics 44 (2023) 40",
+                  "doi": "10.1007/s10765-022-03149-z"},
+
+              "eq": 1, "omega": 0,
+
+              "Toref": Tc,
+              "no_num": [0.422373, -3.78868, 23.8708, -7.89204, 2.09783,
+                         -0.247702],
+              "to_num": [0, 1, 2, 3, 4, 5],
+              "no_den": [-0.0281703, 1],
+              "to_den": [0, 1],
+
+              "ek": 265, "sigma": 0.479,
+
+              "Tref_virial": 265,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Sotiriadou correlation"""
+        # Corrected equation from
+        # Sotiriadou, S., Ntonti, E., Velliadou, D., Antoniadis, K.D., Assael,
+        # M.J., Huber, M.L.,",
+        # Correction to: Reference Correlation for the Viscosity of Ethanol
+        # from the Triple Point to 620 K and Pressures up to 102 MPa
+        # Int. J. Thermophysics 44 (2023) 46
+        # doi: 10.1007/s10765-023-03160-y
+
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+
+        # Eq 6
+        mur = rhor**(2/3)*Tr**0.5 * (
+            8.32575272*rhor**2
+            + 9.66535242e-2*rhor**8/(Tr**4*(1+rhor**2)-Tr**2))
+        return mur
+
+    visco1 = {"__name__": "Kiselev (2005)",
               "__doi__": {
                   "autor": "Kiselev, S. B., Ely, J. F., Abdulagatov, I. M., "
                            "Huber, M. L.",
@@ -231,7 +278,7 @@ class Ethanol(MEoS):
               "CPgi": [12.7568864/-3.38264465],
               "CPti": [-0.5]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, visco1)
 
     thermo0 = {"__name__": "Assael (2013)",
                "__doi__": {
@@ -259,7 +306,7 @@ class Ethanol(MEoS):
                "tr": [0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1],
                "dr": [1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 5, 6],
 
-               "critical": 3,
+               "critical": 3, "viscoC": visco1,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.164296e-9,
                "gam0": 0.05885, "qd": 0.53e-9, "Tcref": 770.85}
 
@@ -399,7 +446,21 @@ class Test(TestCase):
 
     def test_assael(self):
         # Table 4, Pag 8
-        self.assertEqual(round(Ethanol(T=300, rho=850).k.mWmK, 2), 209.68)
-        self.assertEqual(round(Ethanol(T=400, rho=2).k.mWmK, 3), 26.108)
-        self.assertEqual(round(Ethanol(T=400, rho=690).k.mWmK, 2), 149.21)
-        self.assertEqual(round(Ethanol(T=500, rho=10).k.mWmK, 3), 39.594)
+        self.assertEqual(round(
+            Ethanol(T=300, rho=850, visco=1).k.mWmK, 2), 209.68)
+        self.assertEqual(round(
+            Ethanol(T=400, rho=2, visco=1).k.mWmK, 3), 26.108)
+        self.assertEqual(round(
+            Ethanol(T=400, rho=690, visco=1).k.mWmK, 2), 149.21)
+        self.assertEqual(round(
+            Ethanol(T=500, rho=10, visco=1).k.mWmK, 3), 39.594)
+
+    def test_sotiriadou(self):
+        """Test values from section 3, pag 33"""
+        self.assertEqual(round(Ethanol(T=300, rho=0).mu.muPas, 4), 8.9893)
+
+        # Two phase state, the calculation must be done directly
+        st = Ethanol()
+        self.assertEqual(round(st._Viscosity(10, 300, None).muPas, 4), 8.9382)
+
+        self.assertEqual(round(Ethanol(T=300, rho=850).mu.muPas, 2), 1682.72)
