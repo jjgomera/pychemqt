@@ -155,6 +155,7 @@ from lib.mEoS.RE245cb2 import RE245cb2
 from lib.mEoS.RE245fa2 import RE245fa2
 from lib.mEoS.RE347mcc import RE347mcc
 from lib.mEoS.Novec649 import Novec649
+from lib.mEoS.VinylCl import VinylCl
 
 # Siloxanes
 from lib.mEoS.D4 import D4
@@ -196,7 +197,7 @@ CFCs = [R13I1, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41, R113, R114,
         R115, R116, R123, R124, R125, R134a, R141b, R142b, R143a, R152a, R161,
         R218, R227ea, R236ea, R236fa, R245ca, R245fa, R365mfc, RC318, R1123,
         R1234yf, R1234zeE, R1234zeZ, R1243zf, R1216, R1233zd, R1336mzzZ,
-        RE143a, RE245cb2, RE245fa2, RE347mcc, Novec649]
+        RE143a, RE245cb2, RE245fa2, RE347mcc, Novec649, VinylCl]
 Siloxanes = [D4, D5, D6, MDM, MD2M, MD3M, MD4M, MM]
 PseudoCompounds = [Air, R404a, R407c, R410a, R507a]
 Others = [LJ]
