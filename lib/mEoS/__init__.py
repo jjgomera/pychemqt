@@ -35,6 +35,7 @@ from lib.mEoS.oH2 import oH2
 from lib.mEoS.N2 import N2
 from lib.mEoS.O2 import O2
 from lib.mEoS.F2 import F2
+from lib.mEoS.Cl2 import Cl2
 from lib.mEoS.H2O import H2O
 from lib.mEoS.D2O import D2O
 from lib.mEoS.CO2 import CO2
@@ -180,8 +181,8 @@ from lib.mEoS.LJ import LJ
 
 # Component grouping by chemical class
 Nobles = [He, Ne, Ar, Kr, Xe]
-Gases = [H2, D2, pD2, oD2, pH2, oH2, N2, O2, F2, H2O, D2O, CO2, CO, N2O, SO2,
-         COS, NH3, H2S]
+Gases = [H2, D2, pD2, oD2, pH2, oH2, N2, O2, F2, Cl2, H2O, D2O, CO2, CO, N2O,
+         SO2, COS, NH3, H2S]
 Alkanes = [CH4, C2, C3, nC4, iC4, nC5, neoC5, iC5, nC6, iC6, nC7, nC8, iC8,
            nC9, nC10, nC11, nC12, nC16, nC22, C3_pentane, C22_butane,
            C23_butane]
