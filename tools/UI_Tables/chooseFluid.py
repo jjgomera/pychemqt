@@ -181,7 +181,7 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
 
     def info(self):
         """Show info dialog for fluid"""
-        dialog = Dialog_InfoFluid(mEoS.__all__[self.lista.currentRow()])
+        dialog = Dialog_InfoFluid(mEoS.__all__[self.id()])
         dialog.exec()
 
     def update(self, indice):
