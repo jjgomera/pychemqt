@@ -78,7 +78,7 @@ class nC11(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = aleksandrov,
+    eq = (aleksandrov, )
     _PR = [0.1099, -26.8035]
 
     _surface = {
@@ -127,7 +127,7 @@ class nC11(MEoS):
               "tr_den": [0, -1, 0, -2, -1, 0],
               "dr_den": [0, 0, 2, 0, 1, 1]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Assael (2017)",
                "__doi__": {
@@ -156,7 +156,7 @@ class nC11(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.267e-9, "gam0": 0.059, "qd": 8.66e-10, "Tcref": 958.2}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):

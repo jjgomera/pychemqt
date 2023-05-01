@@ -195,7 +195,7 @@ class Toluene(MEoS):
 
     thermo0 = {"__name__": "Assael (2012)",
                "__doi__": {
-                   "autor": "Assael, M.J., Milona, S.K., Huber, M.L., "
+                   "autor": "Assael, M.J., Mylona, S.K., Huber, M.L., "
                             "Perkins, R.A.",
                    "title": "Reference Correlation of the Thermal "
                             "Conductivity of Toluene from the Triple Point to "

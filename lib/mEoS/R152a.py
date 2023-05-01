@@ -42,8 +42,7 @@ class R152a(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.262, "Debye")
     id = 245
 
-    CP1 = {
-           # Cp/R relation in paper
+    CP1 = {# Cp/R relation in paper
            # Tr terms in polynomial, so the resulting terms are:
            # a0 = c0
            # a1 = c1/Tc

@@ -62,7 +62,7 @@ class R41(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 51(3) (2006) 785-850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -88,7 +88,7 @@ class R41(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 51(3) (2006) 785-850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": CP1,

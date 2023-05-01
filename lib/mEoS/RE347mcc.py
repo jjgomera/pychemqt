@@ -49,7 +49,7 @@ class RE347mcc(MEoS):
                     "title": "Equations of state for RE245cb2, RE347mcc, "
                              "RE245fa2 and R1216",
                     "ref": "Preliminary equation",
-                    "doi":  ""},
+                    "doi": ""},
 
         "R": 8.314472,
         "cp": CP1,
@@ -77,7 +77,7 @@ class RE347mcc(MEoS):
         "gamma3": [1.06, 1.22, 0.92, 1.08, 1.21, 0.85, 1.12],
         "epsilon3": [1.12, 0.79, 1.055, 0.5, 0.84, 0.85, 0.91]}
 
-    eq = zhou,
+    eq = (zhou, )
 
     _surface = {
         "__doi__": {

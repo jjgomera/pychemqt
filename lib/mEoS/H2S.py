@@ -77,7 +77,7 @@ class H2S(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -196,7 +196,7 @@ class H2S(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -204,7 +204,7 @@ class H2S(MEoS):
 
         "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12,
 
-        "nr1":  [0.87641, -2.0367, 0.21634, -0.050199, 0.066994, 0.19076e-3],
+        "nr1": [0.87641, -2.0367, 0.21634, -0.050199, 0.066994, 0.19076e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 

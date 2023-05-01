@@ -82,7 +82,7 @@ class Cyclopentane(MEoS):
         "gamma3": [1.22, 0.32, 0.22, 1.94, 1.21],
         "epsilon3": [0.684, 0.7, 0.77, 0.625, 0.42]}
 
-    eq = gedanitz,
+    eq = (gedanitz, )
     _PR = [-0.1387, -16.9135]
 
     _surface = {
@@ -142,11 +142,11 @@ class Cyclopentane(MEoS):
 
         # Eq 8
         mur = (rhor**(2/3)*Tr**0.5)*(
-                c[0] + c[1]*rhor+c[2]*rhor/Tr**3 + c[3]*rhor/(rhor+c[4]-Tr) +
-                (c[5] + c[6]*Tr)/(rhor+c[7]) + (c[8]+c[9]*rhor**2)/Tr**2)
+            c[0] + c[1]*rhor+c[2]*rhor/Tr**3 + c[3]*rhor/(rhor+c[4]-Tr)
+            + (c[5] + c[6]*Tr)/(rhor+c[7]) + (c[8]+c[9]*rhor**2)/Tr**2)
         return mur
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Vassiliou (2015)",
                "__doi__": {
@@ -175,7 +175,7 @@ class Cyclopentane(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.216e-9, "gam0": 0.058, "qd": 0.624e-9, "Tcref": 767.58}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):

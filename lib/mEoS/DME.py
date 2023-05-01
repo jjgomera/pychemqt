@@ -59,7 +59,7 @@ class DME(MEoS):
                     "title": "An Equation of State for the Thermodynamic "
                              "Properties of Dimethyl Ether",
                     "ref": "J. Phys. Chem. Ref. Data 40(2) (2011) 023104",
-                    "doi":  "10.1063/1.3582533"},
+                    "doi": "10.1063/1.3582533"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -67,8 +67,8 @@ class DME(MEoS):
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 40000.0, "rhomax": 19.15,
 
-        "nr1":  [0.29814139e-1, 0.14351700e1, -0.26496400e1, -0.29515532,
-                 0.17035607],
+        "nr1": [0.29814139e-1, 0.14351700e1, -0.26496400e1, -0.29515532,
+                0.17035607],
         "d1": [4, 1, 1, 2, 3],
         "t1": [1.0, 0.4366, 1.011, 1.137, 0.45],
 
@@ -97,7 +97,7 @@ class DME(MEoS):
                      "point, and a fundamental equation of state for dimethyl "
                      "ether",
             "ref": "Fluid Phase Equilibria 260(1) (2007) 36-48",
-            "doi":  "10.1016/j.fluid.2006.09.016"},
+            "doi": "10.1016/j.fluid.2006.09.016"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -105,7 +105,7 @@ class DME(MEoS):
 
         "Tmin": Tt, "Tmax": 1350.0, "Pmax": 1000000.0, "rhomax": 73.96,
 
-        "nr1":  [1.22690, -2.47245, 0.119889, 0.0000354],
+        "nr1": [1.22690, -2.47245, 0.119889, 0.0000354],
         "d1": [1, 1, 3, 8],
         "t1": [0.21, 1.0, 0.5, 1.0],
 
@@ -154,4 +154,4 @@ class DME(MEoS):
               "gr": [0, 0, 1, 1, 1, 1, 1, 0, 1, 0],
               "cr": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )

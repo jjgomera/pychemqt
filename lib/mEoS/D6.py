@@ -56,7 +56,7 @@ class D6(MEoS):
                              " [(CH3)3-Si-O1/2]2-[O-Si-(CH3)2]i=1,…,3, and "
                              "[O-Si-(CH3)2]6",
                     "ref": "Fluid Phase Equilibria 263:115-130, 2008",
-                    "doi":  "10.1016/j.fluid.2007.10.001"},
+                    "doi": "10.1016/j.fluid.2007.10.001"},
 
         "R": 8.314472,
         "cp": CP1,

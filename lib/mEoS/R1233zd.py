@@ -93,7 +93,7 @@ class R1233zd(MEoS):
     mondejar = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1233zd(E) of Mondejar "
-                    "(2013).",
+                    "(2015).",
         "__doi__": {"autor": "Mondejar, M.E., McLinden, M.O., Lemmon, E.W.",
                     "title": "Thermodynamic Properties of trans-1-Chloro-3,3,3"
                              "-trifluoropropene (R1233zd(E)): Vapor Pressure, "

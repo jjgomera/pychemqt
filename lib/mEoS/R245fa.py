@@ -96,7 +96,7 @@ class R245fa(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -124,7 +124,7 @@ class R245fa(MEoS):
     # Section 4 in Akasaka
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-7.8353, 1.7746, -3.1305,  -3.4216],
+        "n": [-7.8353, 1.7746, -3.1305, -3.4216],
         "t": [1, 1.5, 2.5, 5]}
     _liquid_Density = {
         "eq": 1,
@@ -215,7 +215,7 @@ class R245fa(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 2.04e-10, "gam0": 0.06, "qd": 6.26e-10, "Tcref": 640.515}
 
-    _viscosity = visco0, trnECS,
+    _viscosity = visco0, trnECS
     _thermal = thermo0, trnECS
 
 

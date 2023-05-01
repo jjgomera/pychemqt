@@ -52,7 +52,7 @@ class R1243zf(MEoS):
     akasaka = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1243zf of Akasaka "
-                    "(2016)",
+                    "(2019)",
         "__doi__": {"autor": "Akasaka, R., Lemmon, E.W.",
                     "title": "Fundamental Equations of State for cis-1,3,3,3-"
                              "Tetrafluoropropene [R-1234ze(Z)] and 3,3,3-"

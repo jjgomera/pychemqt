@@ -76,7 +76,7 @@ class R40(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3],
         "gamma2": [1]*9}
 
-    eq = thol,
+    eq = (thol, )
 
     _surface = {
         "__doi__": {

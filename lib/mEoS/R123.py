@@ -60,7 +60,7 @@ class R123(MEoS):
                              "the Thermodynamic Properties of Refrigerant 123 "
                              "(2,2-Dichloro-1,1,1-trifluoroethane)",
                     "ref": "J. Phys. Chem. Ref. Data, 23(5) (1994) 731-779",
-                    "doi":  "10.1063/1.555950"},
+                    "doi": "10.1063/1.555950"},
 
         "R": 8.31451,
         "cp": CP1,
@@ -191,7 +191,7 @@ class R123(MEoS):
                   "title": "Thermal Conductivity and Viscosity of 2,2-"
                            "Dichioro-1,1,1-Trifluoroethane (HCFC-123)",
                   "ref": "Int. J. Thermophys. 17(2) (1996) 293-328",
-                  "doi":  "10.1007/BF01443394"},
+                  "doi": "10.1007/BF01443394"},
 
               "eq": 1, "omega": 0,
 
@@ -211,7 +211,7 @@ class R123(MEoS):
               "tr_den": [0, 0],
               "dr_den": [1, 0]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Laesecke (1996)",
                "__doi__": {
@@ -220,7 +220,7 @@ class R123(MEoS):
                             "conductivity of HCFC123 (2,2-dichloro-1,1,1-"
                             "trifluoroethane)",
                    "ref": "Int. J. Refrigeration 19(4) (1996) 231-238",
-                   "doi":  "10.1016/0140-7007(96)00019-9"},
+                   "doi": "10.1016/0140-7007(96)00019-9"},
 
                "eq": 1,
 
@@ -249,7 +249,7 @@ class R123(MEoS):
                    "title": "Thermal Conductivity and Viscosity of 2,2-"
                             "Dichioro-1,1,1-Trifluoroethane (HCFC-123)",
                    "ref": "Int. J. Thermophys. 17(2) (1996) 293-328",
-                   "doi":  "10.1007/BF01443394"},
+                   "doi": "10.1007/BF01443394"},
 
                "eq": 1,
 

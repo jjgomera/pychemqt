@@ -60,7 +60,7 @@ class R116(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "rhoc": 4.444,
@@ -88,7 +88,7 @@ class R116(MEoS):
                              "Center for Standartization Information and "
                              "Certification of Materials",
                     "ref": "",
-                    "doi":  ""},
+                    "doi": ""},
 
         "R": 8.31451,
         "cp": CP2,

@@ -84,7 +84,7 @@ class EthylBenzene(MEoS):
         "gamma3": [1.2667, 0.4237, 0.8573, 1.15],
         "epsilon3": [0.5494, 0.7235, 0.493, 0.8566]}
 
-    eq = zhou,
+    eq = (zhou, )
     _PR = [0.0092, -19.9297]
 
     _surface = {
@@ -158,7 +158,7 @@ class EthylBenzene(MEoS):
 
         return muB*rho/self.M + mur
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Mylona (2014)",
                "__doi__": {
@@ -189,7 +189,7 @@ class EthylBenzene(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.235e-9,
                "gam0": 0.056, "qd": 0.706e-9, "Tcref": 925.7}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):

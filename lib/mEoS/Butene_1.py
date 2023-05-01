@@ -56,7 +56,7 @@ class Butene_1(MEoS):
                     "title": "Thermodynamic properties of the butenes: Part "
                              "II. Short fundamental equations of state",
                     "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
-                    "doi":  "10.1016/j.fluid.2004.09.004"},
+                    "doi": "10.1016/j.fluid.2004.09.004"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -74,7 +74,7 @@ class Butene_1(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [-0.2050, -16.0087]
 
     _surface = {"sigma": [0.05644], "exp": [1.248]}

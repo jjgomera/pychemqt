@@ -57,7 +57,7 @@ class He(MEoS):
             "autor": "Ortiz-Vega, D.O.",
             "title": "A New Wide Range Equation of State for Helium-4",
             "ref": "Doctoral Dissertation, Texas A&M University (2013)",
-            "doi":  "1969.1/151301"},
+            "doi": "1969.1/151301"},
 
         "R": 8.314472,
         "cp": CP1,
@@ -205,19 +205,18 @@ class He(MEoS):
         "Au": 0, "D": 2}
 
     _melting = {
-            "eq": 1,
-            "__doi__": {
-                  "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
-                  "title": "Extended and accuracy determination of the "
-                           "melting curves of argon, helium, ice (H2O), and "
-                           "hydrogen (H2)",
-                  "ref": "Physical Review B, 61(10) (2000) 6535-6546",
-                  "doi": "10.1103/PhysRevB.61.6535"},
+        "eq": 1,
+        "__doi__": {
+              "autor": "Datchi, F., Loubeyre, P., LeToullec, R.",
+              "title": "Extended and accuracy determination of the melting "
+                       "curves of argon, helium, ice (H2O), and hydrogen (H2)",
+              "ref": "Physical Review B, 61(10) (2000) 6535-6546",
+              "doi": "10.1103/PhysRevB.61.6535"},
 
-            "Tmin": Tt, "Tmax": 1500,
-            "Tref": 1, "Pref": 1e9,
+        "Tmin": Tt, "Tmax": 1500,
+        "Tref": 1, "Pref": 1e9,
 
-            "a1": [1.6067e-3], "exp1": [1.565]}
+        "a1": [1.6067e-3], "exp1": [1.565]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -287,18 +286,18 @@ class He(MEoS):
 
         return unidades.Viscosity(mu, "microP")
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
-    thermo0 = {"__name__": "Hands (1981)",
-               "__doi__": {
-                   "autor": "Hands, B.A., Arp, V.D.",
-                   "title": "A Correlation of Thermal Conductivity Data for "
-                            "Helium",
-                   "ref": "Cryogenics, 21(12) (1981) 697-703",
-                   "doi": "10.1016/0011-2275(81)90211-3"},
+    thermo0 = {
+        "__name__": "Hands (1981)",
+        "__doi__": {
+            "autor": "Hands, B.A., Arp, V.D.",
+            "title": "A Correlation of Thermal Conductivity Data for Helium",
+            "ref": "Cryogenics, 21(12) (1981) 697-703",
+            "doi": "10.1016/0011-2275(81)90211-3"},
 
-               "eq": 0,
-               "method": "_thermo0"}
+        "eq": 0,
+        "method": "_thermo0"}
 
     def _thermo0(self, rho, T, fase=None):
         """Hardcoded method for Hands thermal conductivity correlation"""

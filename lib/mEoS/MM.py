@@ -63,7 +63,7 @@ class MM(MEoS):
                              "hexamethyldisiloxane based on experimental and "
                              "molecular simulation data",
                     "ref": "Fluid Phase Equilibria 418 (2016) 133-151",
-                    "doi":  "10.1016/j.fluid.2015.09.047"},
+                    "doi": "10.1016/j.fluid.2015.09.047"},
 
         "R": 8.3144621,
         "cp": Fi1,
@@ -89,19 +89,18 @@ class MM(MEoS):
         "alfa3": [1.0334, 1.544, 1.113, 1.113, 1.11, 7.2, 1.45, 4.73],
         "beta3": [0.4707, 0.32, 0.404, 0.517, 0.432, 7.2, 1.2, 35.8],
         "gamma3": [1.7754, 0.692, 1.242, 0.421, 0.406, 0.163, 0.795, 0.88],
-        "epsilon3": [0.8927, 0.5957, 0.559, 1.056, 1.3, 0.106, 0.181, 0.525],
-        "nr4": []}
+        "epsilon3": [0.8927, 0.5957, 0.559, 1.056, 1.3, 0.106, 0.181, 0.525]}
 
     colonna = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for hexamethyldisiloxane of "
                     "Colonna (2006).",
-        "__doi__": {"autor": "Colonna, P., Nannan, N.R., Guardone, A., "
-                             "Lemmon, E.W.",
-                    "title": "Multiparameter Equations of State for Selected "
-                             "Siloxanes",
-                    "ref": "Fluid Phase Equilibria, 244:193-211, 2006.",
-                    "doi":  "10.1016/j.fluid.2006.04.015"},
+        "__doi__": {
+            "autor": "Colonna, P., Nannan, N.R., Guardone, A., Lemmon, E.W.",
+            "title": "Multiparameter Equations of State for Selected "
+                     "Siloxanes",
+            "ref": "Fluid Phase Equilibria, 244 (2006) 193-211",
+            "doi": "10.1016/j.fluid.2006.04.015"},
 
         "R": 8.314472,
         "cp": CP1,

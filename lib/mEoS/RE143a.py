@@ -74,7 +74,7 @@ class RE143a(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = akasaka,
+    eq = (akasaka, )
 
     _vapor_Pressure = {
         "eq": 3,

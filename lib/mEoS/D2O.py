@@ -251,7 +251,7 @@ class D2O(MEoS):
         k = _D2O_ThCond(rho, T, fase=fase, drho=drho)
         return unidades.ThermalConductivity(k)
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
     def _Surface(self, T):
         """Equation for the surface tension"""

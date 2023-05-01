@@ -41,6 +41,9 @@ class R236ea(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.129, "Debye")
     # id = 1873
 
+    # Using the integration constants from the corrigendum file
+    # Fluid Phase Equilibria 348 (2013) 83",
+    # doi: 10.1016/j.fluid.2012.12.026
     Fi1 = {"ao_log": [1, 2.762],
            "pow": [0, 1],
            "ao_pow": [-14.121424135, 10.2355589225],
@@ -85,7 +88,7 @@ class R236ea(MEoS):
         "gamma3": [1.13, 0.6691, 0.465, 1.28, 0.8781],
         "epsilon3": [0.7119, 0.9102, 0.678, 0.7091, 1.727]}
 
-    eq = rui,
+    eq = (rui, )
     _PR = [-0.1998, -19.0730]
 
     _surface = {"sigma": [0.306974, -0.247277], "exp": [1.12614, 1.09899]}
@@ -128,5 +131,5 @@ class R236ea(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )

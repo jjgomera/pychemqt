@@ -56,7 +56,7 @@ class COS(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -74,7 +74,7 @@ class COS(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {"sigma": [0.07246], "exp": [1.407]}
     _vapor_Pressure = {

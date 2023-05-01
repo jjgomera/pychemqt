@@ -469,7 +469,7 @@ class CO2(MEoS):
 
                "eq": 1,
 
-               "special": "_Thermo0",
+               "special": "_thermo0",
 
                "Tref_res": 304.1282, "rhoref_res": 467.6, "kref_res": 1,
                "nr": [1.00128e-2, 5.60488e-2, -8.11620e-2, 6.24337e-2,
@@ -482,7 +482,7 @@ class CO2(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 456.19}
 
-    def _Thermo0(self, rho, T, fase):
+    def _thermo0(self, rho, T, fase):
         """Special zero density thermal conductivity for Huber correlation"""
         Tr = T/304.1282
         no = [1.51874307e-2, 2.80674040e-2, 2.28564190e-2, -7.41624210e-3]

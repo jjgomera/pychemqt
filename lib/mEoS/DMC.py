@@ -52,7 +52,7 @@ class DMC(MEoS):
         "__doi__": {"autor": "Zhou, Y., Wu, J., Lemmon, E.W.",
                     "title": "Thermodynamic Properties of Dimethyl Carbonate",
                     "ref": "J. Phys. Chem. Ref. Data, Vol. 40, No. 4 2011",
-                    "doi":  "10.1063/1.3664084"},
+                    "doi": "10.1063/1.3664084"},
         "R": 8.314472,
         "cp": Fi1,
         "ref": {"Tref": 298.15, "Pref": 1.0, "ho": 26712.371, "so": 109.66202},
@@ -79,7 +79,7 @@ class DMC(MEoS):
         "epsilon3": [0.6734, 0.9239, 0.8636, 1.0507, 0.8482, 0.7522],
         "nr4": []}
 
-    eq = zhou,
+    eq = (zhou, )
 
     _surface = {
         "__doi__": {

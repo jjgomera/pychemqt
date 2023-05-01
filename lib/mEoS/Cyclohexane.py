@@ -253,13 +253,13 @@ class Cyclohexane(MEoS):
 
     thermo0 = {"__name__": "Koutian (2017)",
                "__doi__": {
-                  "autor": "Koutian, A., Assael, M.J., Huber, M.L., "
-                           "Perkins, R.A.",
-                  "title": "Reference Correlation of the Thermal Conductivity "
-                           "of Cyclohexane from the Triple Point to 640 K "
-                           "and up to 175 MPa",
-                  "ref": "J. Phys. Chem. Ref. Data 46(1) (2017) 013102",
-                  "doi": "10.1063/1.4974325"},
+                   "autor": "Koutian, A., Assael, M.J., Huber, M.L., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal Conductivity"
+                            " of Cyclohexane from the Triple Point to 640 K "
+                            "and up to 175 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 46(1) (2017) 013102",
+                   "doi": "10.1063/1.4974325"},
 
                "eq": 1,
 
@@ -279,7 +279,7 @@ class Cyclohexane(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 2.3e-10, "gam0": 0.058, "qd": 6.68e-10, "Tcref": 830.4}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
