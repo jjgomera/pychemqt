@@ -26,9 +26,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from matplotlib import rcParams
 from matplotlib.backends import backend_qtagg
 from matplotlib.figure import Figure
+from matplotlib import style
 
 from tools.qt import QtWidgets
+from lib.config import Preferences
 
+# Load style defined in preferences
+sty = Preferences.getint("Plot", 'style')
+if sty == 0:
+    style.use("default")
+else:
+    style.use(style.available[Preferences.getint("Plot", 'style')-1])
 
 rcParams['font.size'] = '9'
 

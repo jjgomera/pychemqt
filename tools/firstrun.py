@@ -196,6 +196,10 @@ def Preferences():
     conf.set("Applications", "elementalDefinition", "10")
     conf.set("Applications", "elementalLog", "False")
 
+    # Plotting
+    conf.add_section("Plot")
+    conf.set("Plot", "style", "0")
+
     # mEoS
     conf.add_section("MEOS")
     conf.set("MEOS", "coolprop", "False")
