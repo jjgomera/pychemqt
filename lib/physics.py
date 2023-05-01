@@ -191,7 +191,7 @@ def Cunningham(l, Kn, method=0):
 
 
 @refDoc(__doi__, [1])
-def Collision_Neufeld(T, l=2, s=2):
+def Collision_Neufeld(T, l=2, s=2, simple=False):
     r"""Calculate the collision integral using the Neufeld correlation
 
     .. math::
@@ -208,6 +208,8 @@ def Collision_Neufeld(T, l=2, s=2):
         Collision integral first term order, default 2
     s : int, optional
         Collision integral second term order, default 2
+    simple : boolean, optional
+        Calculate a short formulation without the last sin term
 
     Returns
     -------
@@ -249,11 +251,14 @@ def Collision_Neufeld(T, l=2, s=2):
         (4, 4): (1.12007, 0.14578, 0.53347, 1.11986, 2.28803, 3.27567, 0, 0,
                  7.427, 21.0480, -0.28759, 6.69149)}
 
-    A, B, C, D, E, F, G, H, R, S, W, P = dat[(l, s)]
+    A, B, C, D, E, F, G, H, R_, S, W, P = dat[(l, s)]
 
     # Eq 2
-    omega = A/T**B + C/exp(D*T) + E/exp(F*T) + G/exp(G*T) + \
-        R*1e-4*T**B*sin(S*T**W-P)
+    omega = A/T**B + C/exp(D*T) + E/exp(F*T) + G/exp(H*T)
+
+    if not simple:
+        omega += R_*1e-4*T**B*sin(S*T**W-P)
+
     return omega
 
 

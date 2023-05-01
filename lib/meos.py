@@ -4898,6 +4898,11 @@ class MEoS(ThermoAdvanced):
             T_ = T/coef["ek"]
             omega = Collision_Neufeld(T_)
 
+        elif coef["omega"] == 6:
+            # Simple version of neufeld
+            T_ = T/coef["ek"]
+            omega = Collision_Neufeld(T_, simple=True)
+
         return omega
 
     @refDoc(__doi__, [25], tab=8)
