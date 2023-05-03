@@ -35,11 +35,10 @@ from math import pi
 import os
 import sys
 
-from matplotlib import style
-
 from equipment import equipments
 from lib import unidades, corriente
 from lib.openbabel import ConfBabel
+from lib.plot import ConfPlot
 from lib.utilities import representacion
 import plots
 from tools.firstrun import which
@@ -488,38 +487,6 @@ class ConfApplications(QtWidgets.QDialog):
                    self.ForegroundColor.color.name())
         config.set("Applications", "backgroundColor",
                    self.BackgroundColor.color.name())
-        return config
-
-
-class ConfPlot(QtWidgets.QDialog):
-    """Matplotlib configuration"""
-    def __init__(self, config=None, parent=None):
-        super().__init__(parent)
-
-        # TODO: Add support for custom Rcparams
-
-        layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Matplotlib Style:")), 1, 1)
-        self.style = QtWidgets.QComboBox()
-        layout.addWidget(self.style, 1, 2)
-        self.style.addItem("default")
-        for sty in style.available:
-            self.style.addItem(sty)
-
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 3)
-
-        if config.has_section("Plot"):
-            self.style.setCurrentIndex(config.getint("Plot", 'style'))
-
-    def value(self, config):
-        """Update ConfigParser instance with the config"""
-        if not config.has_section("Plot"):
-            config.add_section("Plot")
-        config.set("Plot", "style", str(self.style.currentIndex()))
-
         return config
 
 

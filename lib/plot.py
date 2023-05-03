@@ -27,6 +27,7 @@ from matplotlib import rcParams
 from matplotlib.backends import backend_qtagg
 from matplotlib.figure import Figure
 from matplotlib import style
+from numpy import arange
 
 from tools.qt import QtWidgets
 from lib.config import Preferences
@@ -120,6 +121,54 @@ class PlotDialog(QtWidgets.QDialog):
     def addData(self, *args, **kwargs):
         """Direct access to ax plot procedure"""
         self.plot.ax.plot(*args, **kwargs)
+
+
+class ConfPlot(QtWidgets.QDialog):
+    """Matplotlib configuration"""
+    def __init__(self, config=None, parent=None):
+        super().__init__(parent)
+
+        # TODO: Add support for custom Rcparams
+
+        layout = QtWidgets.QGridLayout(self)
+        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            "pychemqt", "Matplotlib Style:")), 1, 1)
+        self.style = QtWidgets.QComboBox()
+        layout.addWidget(self.style, 1, 2)
+        self.style.addItem("default")
+        for sty in style.available:
+            self.style.addItem(sty)
+        self.style.currentTextChanged.connect(self.updatePlot)
+
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 3)
+
+        if config.has_section("Plot"):
+            self.style.setCurrentIndex(config.getint("Plot", 'style'))
+
+        self.updatePlot()
+
+    def updatePlot(self, textStyle=None):
+        """Update style of example plot"""
+        if textStyle is None:
+            textStyle = self.style.currentText()
+
+        x = arange(-2, 8, .1)
+        y = .1 * x ** 3 - x ** 2 + 3 * x + 2
+
+        with style.context(textStyle):
+            self.plot = PlotWidget(width=2, height=1)
+            self.plot.plot(x, y)
+            self.layout().addWidget(self.plot, 9, 1, 1, 3)
+
+    def value(self, config):
+        """Update ConfigParser instance with the config"""
+        if not config.has_section("Plot"):
+            config.add_section("Plot")
+        config.set("Plot", "style", str(self.style.currentIndex()))
+
+        return config
 
 
 if __name__ == '__main__':
