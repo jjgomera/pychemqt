@@ -29,7 +29,7 @@ class VinylCl(MEoS):
     name = "vinyl chloride"
     CASNumber = "75-01-4"
     formula = "CH2CHCl"
-    synonym = "chloroethene"
+    synonym = "R-1140"
     _refPropName = ""
     _coolPropName = ""
     rhoc = unidades.Density(353.114943)
@@ -87,6 +87,16 @@ class VinylCl(MEoS):
 
     eq = (thol,)
 
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "Tc": 424.964,
+        "sigma": [0.0655789], "exp": [1.16473]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-6.945, 1.7737, -2.0553, -2.813, -2.756],
@@ -115,8 +125,6 @@ class Test(TestCase):
         self.assertEqual(round(st.sM.JmolK, 7), 88.2755532)
         self.assertEqual(round(st.aM.Jmol, 5), -2276.50376)
 
-
-
         st = VinylCl(T=250, rhom=16)
         self.assertEqual(round(st.P.MPa, 7), 10.5895545)
         self.assertEqual(round(st.w, 5), 1155.49169)
@@ -124,7 +132,6 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 6), -477.949658)
         self.assertEqual(round(st.sM.JmolK, 8), -4.48949199)
         self.assertEqual(round(st.aM.Jmol, 7), -17.4238160)
-
 
         st = VinylCl(T=300, rhom=0.18)
         self.assertEqual(round(st.P.MPa, 10), 0.413797863)
@@ -142,7 +149,6 @@ class Test(TestCase):
         self.assertEqual(round(st.sM.JmolK, 7), 10.8027936)
         self.assertEqual(round(st.aM.Jmol, 6), -257.931823)
 
-
         st = VinylCl(T=430, rhom=14)
         self.assertEqual(round(st.P.MPa, 7), 88.2661442)
         self.assertEqual(round(st.w, 6), 982.983659)
@@ -150,3 +156,7 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 4), 18735.1820)
         self.assertEqual(round(st.sM.JmolK, 7), 37.6281054)
         self.assertEqual(round(st.aM.Jmol, 5), -3749.62785)
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(VinylCl(T=382.5, x=0.5).sigma, 7), 0.0044838)

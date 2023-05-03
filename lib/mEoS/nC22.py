@@ -80,7 +80,7 @@ class nC22(MEoS):
         "gamma3": [1.335, 1.187, 1.39, 1.23, 0.763],
         "epsilon3": [0.75, 1.616, 0.47, 1.306, 0.46]}
 
-    eq = romeo,
+    eq = (romeo, )
 
     _surface = {
         "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
@@ -89,6 +89,7 @@ class nC22(MEoS):
                     "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023104",
                     "doi": "10.1063/5.0048675"},
         "sigma": [0.0522], "exp": [1.25]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-12.3834, 2.8818, -11.6292, -2.7357, -7.3103, 1188.9117],

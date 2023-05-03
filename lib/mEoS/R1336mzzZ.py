@@ -89,6 +89,15 @@ class R1336mzzZ(MEoS):
 
     eq = (mclinden, )
 
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "sigma": [0.06], "exp": [1.22]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.9009, 1.5186, -2.5303, -1.5139],
@@ -188,3 +197,12 @@ class Test(TestCase):
         self.assertEqual(round(R1336mzzZ(T=450, rho=0).k.WmK, 6), 0.022723)
 #         self.assertEqual(round(R1336mzzZ(T=450, rho=500).k.WmK, 6), 0.053990)
         self.assertEqual(round(R1336mzzZ(T=450, rho=500).k.WmK, 6), 0.038462)
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(R1336mzzZ(T=400, x=0.5).sigma, 7), 0.0036203)
+
+if __name__ == "__main__":
+    st = R1336mzzZ(T=400, rhom=6.422)
+    print(round(st.mu.muPas, 4), 121.0332)
+    print(13.79768, 107.2355)

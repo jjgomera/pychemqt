@@ -87,6 +87,15 @@ class C22_butane(MEoS):
 
     eq = gao,
 
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "sigma": [0.0504886], "exp": [1.24897]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.4088, 2.5218, -1.5652, -3.4318, -1.221],
@@ -151,3 +160,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 4), 162.7817)
         self.assertEqual(round(st.hM.kJmol, 5), 47.55079)
         self.assertEqual(round(st.sM.JmolK, 4), 112.0508)
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(C22_butane(T=441, x=0.5).sigma, 7), 0.0028459)

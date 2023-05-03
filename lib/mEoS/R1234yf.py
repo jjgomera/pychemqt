@@ -121,6 +121,12 @@ class R1234yf(MEoS):
 
     eq = richter, akasaka
 
+    # Unorthodox formulation
+    # Rykov, V.A., Rykov, S.V., Sverdlov, A.V.
+    # Fundamental Equation of State for R1234yf
+    # J. Phys.: Conf. Ser. 1385 (2019) 012013
+    # doi: 10.1088/1742-6596/1385/1/012013
+
     _surface = {"sigma": [0.06274], "exp": [1.394]}
     _vapor_Pressure = {
         "eq": 3,

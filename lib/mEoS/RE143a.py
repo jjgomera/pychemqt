@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
 
@@ -76,6 +78,15 @@ class RE143a(MEoS):
 
     eq = (akasaka, )
 
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "sigma": [0.0371], "exp": [0.98412]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.44314, 1.69164, -2.27778, -4.094],
@@ -88,3 +99,11 @@ class RE143a(MEoS):
         "eq": 2,
         "n": [-3.02576, -6.97239, -20.2601, -53.4441],
         "t": [0.38, 1.24, 3.2, 6.9]}
+
+
+class Test(TestCase):
+    """Test class"""
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(RE143a(T=340.1, x=0.5).sigma, 7), 0.0038511)

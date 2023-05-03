@@ -86,6 +86,15 @@ class R1123(MEoS):
 
     eq = (akasaka, )
 
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "sigma": [0.0612], "exp": [1.26]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.416, 3.349, -2.855, -4.101, -4.173],
@@ -140,3 +149,7 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 4), 87.7735)
         self.assertEqual(round(st.cpM.JmolK, 1), 17935.9)
         self.assertEqual(round(st.w, 3), 112.642)
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(R1123(T=298.6, x=0.5).sigma, 7), 0.0033577)

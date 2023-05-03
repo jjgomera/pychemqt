@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
 
@@ -80,6 +82,15 @@ class R1224ydZ(MEoS):
 
     eq = (akasaka, )
 
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "sigma": [0.06195], "exp": [1.277]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.5822, 1.6998, -2.6426, -3.5124],
@@ -92,6 +103,14 @@ class R1224ydZ(MEoS):
         "eq": 2,
         "n": [-1.7785, -7.1173, -19.416, -43.38],
         "t": [0.284, 1, 3, 6]}
+
+
+class Test(TestCase):
+    """Test class"""
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(R1224ydZ(T=385.8, x=0.5).sigma, 7), 0.0032758)
 
 
 if __name__ == "__main__":

@@ -55,7 +55,7 @@ class Cl2(MEoS):
             "autor": "Thol, M., Herrig, S., Span, R., Lemmon, E.W.",
             "title": "A fundamental equation of state for the calculation of "
                      "thermodynamic proeprties of chlorine",
-            "ref": "AIChE J. 67(9) (2017) 2633-2648",
+            "ref": "AIChE J. 67(9) (2021) 2633-2648",
             "doi": "10.1002/aic.17326"},
 
         "R": 8.314462618,
@@ -83,6 +83,15 @@ class Cl2(MEoS):
         "epsilon3": [0.88, 0.73, 0.28, 0.863, 0.554]}
 
     eq = (thol,)
+
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "sigma": [0.0783601], "exp": [1.28083]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -143,3 +152,7 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 4), 17158.3805)
         self.assertEqual(round(st.sM.JmolK, 6), 47.843764)
         self.assertEqual(round(st.aM.Jmol, 5), -5633.20516)
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(Cl2(T=375.2, x=0.5).sigma, 7), 0.0041019)

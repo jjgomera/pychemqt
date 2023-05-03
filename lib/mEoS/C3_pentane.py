@@ -86,7 +86,16 @@ class C3_pentane(MEoS):
         "gamma3": [1.2603, 1.207, 1.045, 1.069, 0.923, 1.109],
         "epsilon3": [0.7065, 2.19, 0.244, 1.014, 0.689, 0.905]}
 
-    eq = gao,
+    eq = (gao, )
+
+    _surface = {
+        "__doi__": {"autor": "Huber, M.L.",
+                    "title": "Models for Viscosity, Thermal Conductivity, and "
+                             "Surface Tension of Selected Pure Fluids as "
+                             "Implemented in REFPROP v10.0",
+                    "ref": "NISTIR 8209",
+                    "doi": "10.6028/NIST.IR.8209"},
+        "sigma": [0.052645], "exp": [1.232]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -103,9 +112,10 @@ class C3_pentane(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Gao(self):
-        # Table 13, pag 22
+        """Table 13, pag 22"""
         st = C3_pentane(T=265, rhom=8.3)
         self.assertEqual(round(st.P.MPa, 5), 34.55032)
         self.assertEqual(round(st.cvM.JmolK, 4), 137.1533)
@@ -152,3 +162,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 4), 165.7838)
         self.assertEqual(round(st.hM.kJmol, 5), 49.29010)
         self.assertEqual(round(st.sM.JmolK, 4), 112.3864)
+
+    def test_Surface(self):
+        """Table 10, pag 271"""
+        self.assertEqual(round(C3_pentane(T=455.4, x=0.5).sigma, 7), 0.0030857)
