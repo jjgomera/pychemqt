@@ -28,6 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from configparser import ConfigParser
 import tempfile
+import os
 
 from tools.qt import QtCore, QtWidgets, QtSvg, QtSvgWidgets, QtGui
 
@@ -177,7 +178,12 @@ class ConfBabel(QtWidgets.QDialog):
         self.checkIndex.stateChanged.connect(self.updateImage)
         layout.addWidget(self.checkIndex, 9, 1, 1, 2)
 
-        self.example = QtSvgWidgets.QSvgWidget()
+        if os.environ["openbabel"] == "False":
+            self.example = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+                "pychemqt", "Openbabel library don´t found"))
+            self.example.setStyleSheet("color: red")
+        else:
+            self.example = QtSvgWidgets.QSvgWidget()
         layout.addWidget(self.example, 13, 1, 1, 2,
                          QtCore.Qt.AlignmentFlag.AlignCenter)
 
@@ -209,6 +215,9 @@ class ConfBabel(QtWidgets.QDialog):
             self.updateImage(config)
 
     def updateImage(self, config=None):
+        if os.environ["openbabel"] == "False":
+            return
+
         if not isinstance(config, ConfigParser):
             config = ConfigParser()
             config = self.value(config)
