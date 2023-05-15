@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 import os
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 
 from tools.UI_databank import UI_databank_widget
@@ -45,7 +45,7 @@ class UI_confComponents_widget(QtWidgets.QWidget):
 
         layout.addItem(QtWidgets.QSpacerItem(30, 30, QtWidgets.QSizePolicy.Policy.Expanding,
                                          QtWidgets.QSizePolicy.Policy.Fixed), 1, 2, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Components list")), 2, 3)
         self.DeleteComponente = QtWidgets.QToolButton()
         self.DeleteComponente.setIcon(QtGui.QIcon(QtGui.QPixmap(
@@ -97,7 +97,7 @@ class UI_confComponents_widget(QtWidgets.QWidget):
 
         layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
                                          QtWidgets.QSizePolicy.Policy.Expanding), 10, 4, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Solids", None)), 11, 3)
         self.ListaSolidos = QtWidgets.QListWidget()
         self.ListaSolidos.setFixedHeight(100)
@@ -249,7 +249,7 @@ class Dialog(QtWidgets.QDialog):
     """Component list config dialog"""
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Define project Components"))
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confComponents_widget(config)

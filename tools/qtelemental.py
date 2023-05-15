@@ -36,7 +36,7 @@ from configparser import ConfigParser
 import logging
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 from UI.widgets import Entrada_con_unidades, Tabla
 from lib import unidades
@@ -67,7 +67,7 @@ class qtelemental(QtWidgets.QDialog):
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/PeriodicTableIcon.png")))
         self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Periodic Table"))
+            tr("pychemqt", "Periodic Table"))
 
         self.Preferences = ConfigParser()
         self.Preferences.read(conf_dir+"pychemqtrc")
@@ -118,11 +118,11 @@ class qtelemental(QtWidgets.QDialog):
         self.Info.setPalette(palette)
         self.numero_atomico = QtWidgets.QLabel()
         self.numero_atomico.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "Atomic number"))
+            tr("pychemqt", "Atomic number"))
         layoutInfo.addWidget(self.numero_atomico, 1, 1)
         self.simbolo = QtWidgets.QLabel()
         self.simbolo.setAlignment(alignment)
-        self.simbolo.setToolTip(QtWidgets.QApplication.translate(
+        self.simbolo.setToolTip(tr(
             "pychemqt", "Symbol"))
         self.simbolo.setFont(font11)
         layoutInfo.addWidget(self.simbolo, 1, 3)
@@ -134,36 +134,36 @@ class qtelemental(QtWidgets.QDialog):
         font8.setPointSize(8)
         self.peso_atomico = QtWidgets.QLabel()
         self.peso_atomico.setFont(font8)
-        self.peso_atomico.setToolTip(QtWidgets.QApplication.translate(
+        self.peso_atomico.setToolTip(tr(
             "pychemqt", "Atomic mass, g/mol"))
         layoutInfo.addWidget(self.peso_atomico, 3, 1)
         self.densidad = QtWidgets.QLabel()
         self.densidad.setFont(font8)
         self.densidad.setAlignment(alignment)
-        self.densidad.setToolTip(QtWidgets.QApplication.translate(
+        self.densidad.setToolTip(tr(
             "pychemqt",
             "Density:\nBrown: Solid, kg/l\nBlue: Liquid, kg/l\n"
             "Green: Gas, g/l"))
         layoutInfo.addWidget(self.densidad, 3, 3)
         self.Tf = QtWidgets.QLabel()
         self.Tf.setFont(font8)
-        self.Tf.setToolTip(QtWidgets.QApplication.translate(
+        self.Tf.setToolTip(tr(
             "pychemqt", "Melting Point, K"))
         layoutInfo.addWidget(self.Tf, 4, 1)
         self.Heat_f = QtWidgets.QLabel()
         self.Heat_f.setFont(font8)
-        self.Heat_f.setToolTip(QtWidgets.QApplication.translate(
+        self.Heat_f.setToolTip(tr(
             "pychemqt", "Heat of fusion, kJmol"))
         self.Heat_f.setAlignment(alignment)
         layoutInfo.addWidget(self.Heat_f, 4, 3)
         self.Tb = QtWidgets.QLabel()
         self.Tb.setFont(font8)
-        self.Tb.setToolTip(QtWidgets.QApplication.translate(
+        self.Tb.setToolTip(tr(
             "pychemqt", "Boiling Point, K"))
         layoutInfo.addWidget(self.Tb, 5, 1)
         self.Heat_b = QtWidgets.QLabel()
         self.Heat_b.setFont(font8)
-        self.Heat_b.setToolTip(QtWidgets.QApplication.translate(
+        self.Heat_b.setToolTip(tr(
             "pychemqt", "Heat of vaporization, kJmol"))
         self.Heat_b.setAlignment(alignment)
         layoutInfo.addWidget(self.Heat_b, 5, 3)
@@ -171,7 +171,7 @@ class qtelemental(QtWidgets.QDialog):
         self.configuracion = QtWidgets.QLabel()
         self.configuracion.setFont(font7)
         self.configuracion.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.configuracion.setToolTip(QtWidgets.QApplication.translate(
+        self.configuracion.setToolTip(tr(
             "pychemqt", "Electronic configuration"))
         layoutInfo.addWidget(self.configuracion, 6, 1, 1, 3)
 
@@ -186,51 +186,51 @@ class qtelemental(QtWidgets.QDialog):
         self.Info2.setPalette(palette)
         self.atomic_volume = QtWidgets.QLabel()
         self.atomic_volume.setFont(font8)
-        self.atomic_volume.setToolTip(QtWidgets.QApplication.translate(
+        self.atomic_volume.setToolTip(tr(
             "pychemqt", "Atomic volume")+", cm³/mol")
         layoutInfo2.addWidget(self.atomic_volume, 1, 1)
         self.atomic_radius = QtWidgets.QLabel()
         self.atomic_radius.setFont(font8)
-        self.atomic_radius.setToolTip(QtWidgets.QApplication.translate(
+        self.atomic_radius.setToolTip(tr(
             "pychemqt", "Atomic radius") + ", pm")
         layoutInfo2.addWidget(self.atomic_radius, 2, 1)
         self.covalent_radius = QtWidgets.QLabel()
         self.covalent_radius.setFont(font8)
-        self.covalent_radius.setToolTip(QtWidgets.QApplication.translate(
+        self.covalent_radius.setToolTip(tr(
             "pychemqt", "Covalent radius") + ", pm")
         layoutInfo2.addWidget(self.covalent_radius, 3, 1)
         self.vanderWaals_radius = QtWidgets.QLabel()
         self.vanderWaals_radius.setFont(font8)
-        self.vanderWaals_radius.setToolTip(QtWidgets.QApplication.translate(
+        self.vanderWaals_radius.setToolTip(tr(
             "pychemqt", "Van der Waals radius")+", pm")
         layoutInfo2.addWidget(self.vanderWaals_radius, 4, 1)
         self.ionic_radii = QtWidgets.QLabel()
         self.ionic_radii.setFont(font7)
-        self.ionic_radii.setToolTip(QtWidgets.QApplication.translate(
+        self.ionic_radii.setToolTip(tr(
             "pychemqt", "Ionic radii")+", pm")
         layoutInfo2.addWidget(self.ionic_radii, 5, 1, 1, 3)
         self.electronegativity = QtWidgets.QLabel()
         self.electronegativity.setFont(font8)
-        self.electronegativity.setToolTip(QtWidgets.QApplication.translate(
+        self.electronegativity.setToolTip(tr(
             "pychemqt", "Electronegativity, Pauling scale"))
         self.electronegativity.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         layoutInfo2.addWidget(self.electronegativity, 1, 3)
         self.Cp = QtWidgets.QLabel()
         self.Cp.setFont(font8)
-        self.Cp.setToolTip(QtWidgets.QApplication.translate(
+        self.Cp.setToolTip(tr(
             "pychemqt", "Specific heat capacitiy") + ", kJ/kgK")
         self.Cp.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         layoutInfo2.addWidget(self.Cp, 2, 3)
         self.k = QtWidgets.QLabel()
         self.k.setFont(font8)
-        self.k.setToolTip(QtWidgets.QApplication.translate(
+        self.k.setToolTip(tr(
             "pychemqt", "Thermal conductivity") + ", W/mK")
         self.k.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         layoutInfo2.addWidget(self.k, 3, 3)
         self.first_ionization = QtWidgets.QLabel()
         self.first_ionization.setFont(font8)
-        self.first_ionization.setToolTip(QtWidgets.QApplication.translate(
+        self.first_ionization.setToolTip(tr(
             "pychemqt", "First ionization energy") + ", kJ/mol")
         self.first_ionization.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -238,7 +238,7 @@ class qtelemental(QtWidgets.QDialog):
 
         self.oxidation = QtWidgets.QLabel()
         self.oxidation.setFont(font8)
-        self.oxidation.setToolTip(QtWidgets.QApplication.translate(
+        self.oxidation.setToolTip(tr(
             "pychemqt", "Oxidation states"))
         self.oxidation.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignCenter | QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -246,7 +246,7 @@ class qtelemental(QtWidgets.QDialog):
 
         elemento = Elemental(1)
         self.actualizar(elemento)
-        logging.info(QtWidgets.QApplication.translate(
+        logging.info(tr(
             "pychemqt", "Starting periodic table tool"))
 
     def populate(self):
@@ -325,7 +325,7 @@ class boton(QtWidgets.QPushButton):
         """
         super(boton, self).__init__(parent)
         self.setFixedSize(40, 35)
-        self.setToolTip(QtWidgets.QApplication.translate(
+        self.setToolTip(tr(
             "pychemqt", "Click for view properties"))
         self.parent = parent
         self.Element = element
@@ -372,7 +372,7 @@ class ElementDialog(QtWidgets.QDialog):
     """Dialog to show all element properties"""
     def __init__(self, elemento, parent=None):
         super(ElementDialog, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Properties of "+elemento.name))
         lyt = QtWidgets.QVBoxLayout(self)
         tabWidget = QtWidgets.QTabWidget()
@@ -384,37 +384,37 @@ class ElementDialog(QtWidgets.QDialog):
         tabGeneral = QtWidgets.QWidget()
         layoutGeneral = QtWidgets.QGridLayout(tabGeneral)
         layoutGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Name:")), 1, 1)
+            tr("pychemqt", "Name:")), 1, 1)
         layoutGeneral.addWidget(QtWidgets.QLabel(elemento.name), 1, 2)
         layoutGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Serie:")), 2, 1)
+            tr("pychemqt", "Serie:")), 2, 1)
         layoutGeneral.addWidget(QtWidgets.QLabel(elemento.serie), 2, 2)
         layoutGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Group")), 3, 1)
+            tr("pychemqt", "Group")), 3, 1)
         layoutGeneral.addWidget(QtWidgets.QLabel(str(elemento.group)), 3, 2)
         layoutGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Period")), 4, 1)
+            tr("pychemqt", "Period")), 4, 1)
         layoutGeneral.addWidget(QtWidgets.QLabel(str(elemento.period)), 4, 2)
         layoutGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Block")), 5, 1)
+            tr("pychemqt", "Block")), 5, 1)
         layoutGeneral.addWidget(QtWidgets.QLabel(elemento.block), 5, 2)
 
         layoutGeneral.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1)
         label = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "History"))
+            tr("pychemqt", "History"))
         font = QtGui.QFont()
         font.setWeight(75)
         font.setBold(True)
         label.setFont(font)
         layoutGeneral.addWidget(label, 7, 1, 1, 3)
         label_8 = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Discovery") + ": " +
+            tr("pychemqt", "Discovery") + ": " +
             elemento.country + "(" + elemento.country + ")" + os.linesep +
-            QtWidgets.QApplication.translate("pychemqt", "Discovered by ") +
+            tr("pychemqt", "Discovered by ") +
             elemento.discover + os.linesep +
-            QtWidgets.QApplication.translate("pychemqt", "Etymology") + ": " +
+            tr("pychemqt", "Etymology") + ": " +
             elemento.etymology)
         label_8.setMargin(5)
         label_8.setWordWrap(True)
@@ -437,78 +437,78 @@ class ElementDialog(QtWidgets.QDialog):
         layoutGeneral.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 9, 3)
-        tabWidget.addTab(tabGeneral, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tabGeneral, tr(
             "pychemqt", "General"))
 
         tabFisica = QtWidgets.QWidget()
         lytphy = QtWidgets.QGridLayout(tabFisica)
         lytphy.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Fase:")), 1, 1)
+            tr("pychemqt", "Fase:")), 1, 1)
         lytphy.addWidget(QtWidgets.QLabel(elemento.phase + " a 0ºC"),
                          1, 2, 1, 1)
         if elemento.density_Solid:
-            lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            lytphy.addWidget(QtWidgets.QLabel(tr(
                 "pychemqt", "Solid Density:")), 2, 1)
             lytphy.addWidget(self.drawData(
                 unidades.Density, elemento.density_Solid,
                 "gcc", txt=" @ 20ºC"), 2, 2)
         if elemento.density_Liq:
-            lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            lytphy.addWidget(QtWidgets.QLabel(tr(
                 "pychemqt", "Liquid Density:")), 3, 1)
             lytphy.addWidget(self.drawData(
                 unidades.Density, elemento.density_Liq, "gcc", txt=" " +
-                QtWidgets.QApplication.translate(
+                tr(
                     "pychemqt", "at melting point")), 3, 2)
         if elemento.density_Gas:
-            lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            lytphy.addWidget(QtWidgets.QLabel(tr(
                 "pychemqt", "Gas Density:")), 4, 1)
             lytphy.addWidget(self.drawData(
                 unidades.Density, elemento.density_Gas, "gl", txt=" @ 0ºC"),
                 4, 2)
         lytphy.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Appearance:")), 5, 1)
+            tr("pychemqt", "Appearance:")), 5, 1)
         label = QtWidgets.QLabel(elemento.appearance)
         label.setWordWrap(True)
         lytphy.addWidget(label, 5, 2)
         lytphy.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 3)
-        label = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        label = QtWidgets.QLabel(tr(
             "pychemqt", "Thermal properties"))
         label.setFont(font)
         lytphy.addWidget(label, 7, 1)
-        lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytphy.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Melting point:")), 8, 1)
         self.punto_fusion = self.drawData(
             unidades.Temperature, elemento.Tf)
         lytphy.addWidget(self.punto_fusion, 8, 2)
-        lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytphy.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Boiling point:")), 9, 1)
         self.punto_ebullicion = self.drawData(
             unidades.Temperature, elemento.Tb)
         lytphy.addWidget(self.punto_ebullicion, 9, 2)
-        lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytphy.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Heat of fusion:")), 10, 1)
         self.calor_fusion = self.drawData(
             unidades.MolarEnthalpy, elemento.Heat_f, "kJkmol")
         lytphy.addWidget(self.calor_fusion, 10, 2)
-        lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytphy.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Heat of vaporization:")), 11, 1)
         self.calor_vaporizacion = self.drawData(
             unidades.MolarEnthalpy, elemento.Heat_b, "kJkmol")
         lytphy.addWidget(self.calor_vaporizacion, 11, 2)
-        lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytphy.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Specific heat capacity:")), 12, 1)
         self.capacidad_calorifica = self.drawData(
             unidades.SpecificHeat, elemento.Cp, "JgK")
         lytphy.addWidget(self.capacidad_calorifica, 12, 2)
-        lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytphy.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Thermal conductivity:")), 13, 1)
         self.conductividad_termica = self.drawData(
             unidades.ThermalConductivity, elemento.k,
             txt=" @ 300K")
         lytphy.addWidget(self.conductividad_termica, 13, 2)
-        lytphy.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytphy.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Debye Temperature:")), 14, 1)
         self.temperatura_debye = self.drawData(
             unidades.Temperature, elemento.T_debye)
@@ -516,12 +516,12 @@ class ElementDialog(QtWidgets.QDialog):
         lytphy.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 15, 1, 1, 3)
-        tabWidget.addTab(tabFisica, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tabFisica, tr(
             "pychemqt", "Physical properties"))
 
         tabAtom = QtWidgets.QWidget()
         lyt_A = QtWidgets.QGridLayout(tabAtom)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Atomic mass:")), 1, 1)
         if elemento.atomic_mass:
             self.masa_atomica = QtWidgets.QLabel(
@@ -529,12 +529,12 @@ class ElementDialog(QtWidgets.QDialog):
         else:
             self.masa_atomica = QtWidgets.QLabel(elemento.atomic_mass)
         lyt_A.addWidget(self.masa_atomica, 1, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Atomic Volume:")), 2, 1)
         self.volumen_atomico = self.drawData(unidades.MolarVolume,
                                              elemento.atomic_volume)
         lyt_A.addWidget(self.volumen_atomico, 2, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Atomic radius:")), 3, 1)
         if elemento.atomic_radius:
             self.radio_atomico = QtWidgets.QLabel(
@@ -542,7 +542,7 @@ class ElementDialog(QtWidgets.QDialog):
         else:
             self.radio_atomico = QtWidgets.QLabel(str(elemento.atomic_radius))
         lyt_A.addWidget(self.radio_atomico, 3, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Covalent radius:")), 4, 1)
         if elemento.covalent_radius:
             self.radio_covalente = QtWidgets.QLabel(
@@ -551,7 +551,7 @@ class ElementDialog(QtWidgets.QDialog):
             self.radio_covalente = QtWidgets.QLabel(
                 str(elemento.covalent_radius))
         lyt_A.addWidget(self.radio_covalente, 4, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Van der Waals radius:")), 5, 1)
         if elemento.vanderWaals_radius:
             self.radio_waals = QtWidgets.QLabel(
@@ -560,7 +560,7 @@ class ElementDialog(QtWidgets.QDialog):
             self.radio_waals = QtWidgets.QLabel(
                 str(elemento.vanderWaals_radius))
         lyt_A.addWidget(self.radio_waals, 5, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Ionic radii:")), 6, 1)
         if elemento.ionic_radii:
             self.radio_ionico = QtWidgets.QLabel(
@@ -571,28 +571,28 @@ class ElementDialog(QtWidgets.QDialog):
         lyt_A.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             7, 1, 1, 3)
-        label = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        label = QtWidgets.QLabel(tr(
             "pychemqt", "Electronic properties"))
         label.setFont(font)
         lyt_A.addWidget(label, 8, 1)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Electronic configuration:")), 9, 1)
         lyt_A.addWidget(QtWidgets.QLabel(
             elemento.electron_configuration), 9, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Oxidation states:")), 10, 1)
         lyt_A.addWidget(QtWidgets.QLabel(
             elemento.oxidation), 10, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Electronegativity:")), 11, 1)
         lyt_A.addWidget(QtWidgets.QLabel(
             str(elemento.electronegativity)), 11, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Electron affinity:")), 12, 1)
         self.afinidad_electronica = self.drawData(
             unidades.MolarEnthalpy, elemento.electron_affinity, "kJkmol")
         lyt_A.addWidget(self.afinidad_electronica, 12, 2)
-        lyt_A.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_A.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "1st ionization energy:")), 13, 1)
         self.energia_ionizacion = self.drawData(
             unidades.MolarEnthalpy, elemento.first_ionization, "kJkmol")
@@ -600,21 +600,21 @@ class ElementDialog(QtWidgets.QDialog):
         lyt_A.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 14, 1, 1, 3)
-        tabWidget.addTab(tabAtom, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tabAtom, tr(
             "pychemqt", "Atomic properties"))
 
         tabCristal = QtWidgets.QWidget()
         lyt_C = QtWidgets.QGridLayout(tabCristal)
-        lyt_C.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_C.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Lattice type:")), 1, 1)
         lyt_C.addWidget(QtWidgets.QLabel(
             elemento.lattice_type), 1, 2)
-        lyt_C.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_C.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Space group:")), 2, 1)
         lyt_C.addWidget(QtWidgets.QLabel(
             elemento.space_group), 2, 2)
         lyt_C.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Lattice edge lengths:")), 3, 1)
         self.lados = QtWidgets.QLabel()
         if elemento.lattice_edges:
@@ -624,7 +624,7 @@ class ElementDialog(QtWidgets.QDialog):
         else:
             self.lados.setText(elemento.lattice_edges)
         lyt_C.addWidget(self.lados, 3, 2)
-        lyt_C.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_C.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Lattice angles:")), 4, 1)
         self.angulos = QtWidgets.QLabel()
         if elemento.lattice_angles:
@@ -634,7 +634,7 @@ class ElementDialog(QtWidgets.QDialog):
         else:
             self.angulos.setText(elemento.lattice_angles)
         lyt_C.addWidget(self.angulos, 4, 2)
-        lyt_C.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_C.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Lattice unit volume:")), 5, 1)
         self.volumen_celda = QtWidgets.QLabel()
         if elemento.lattice_angles:
@@ -647,13 +647,13 @@ class ElementDialog(QtWidgets.QDialog):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 6, 1, 1, 3)
 
-        label = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        label = QtWidgets.QLabel(tr(
             "pychemqt", "Isotopes"))
         label.setFont(font)
         lyt_C.addWidget(label, 8, 1)
-        title = [QtWidgets.QApplication.translate("pychemqt", "Mass Number"),
-                 QtWidgets.QApplication.translate("pychemqt", "Mass"),
-                 QtWidgets.QApplication.translate("pychemqt", "Abundance")]
+        title = [tr("pychemqt", "Mass Number"),
+                 tr("pychemqt", "Mass"),
+                 tr("pychemqt", "Abundance")]
         self.isotopes = Tabla(3, horizontalHeader=title, readOnly=True,
                               stretch=True, verticalHeader=False)
         self.isotopes.setSelectionBehavior(
@@ -671,7 +671,7 @@ class ElementDialog(QtWidgets.QDialog):
 
         tabWidget.addTab(
             tabCristal,
-            QtWidgets.QApplication.translate("pychemqt", "Crystallographic"))
+            tr("pychemqt", "Crystallographic"))
 
     def drawData(self, unit, data, unidad="", txt=""):
         """Return a widget with the data inprint
@@ -698,7 +698,7 @@ class Config(QtWidgets.QWidget):
         layout = QtWidgets.QGridLayout(self)
 
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Color by element:")),
+            tr("pychemqt", "Color by element:")),
             1, 1)
         colorby = ["Element", "serie", "group_element", "period", "block", "phase",
                    "lattice_type", "space_group", "density_Solid",
@@ -712,14 +712,14 @@ class Config(QtWidgets.QWidget):
             self.ElementalColorby.addItem(c)
         layout.addWidget(self.ElementalColorby, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Color definition")),
+            tr("pychemqt", "Color definition")),
             2, 1)
         self.ElementalDefinition = QtWidgets.QSpinBox()
         self.ElementalDefinition.setMaximumWidth(50)
         self.ElementalDefinition.setMinimum(5)
         layout.addWidget(self.ElementalDefinition, 2, 2)
         self.ElementalLog = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
+            tr("pychemqt", "Logarithmic scale"))
         layout.addWidget(self.ElementalLog, 3, 1, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
@@ -750,7 +750,7 @@ class ConfigDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Qtelemental configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Config(config)

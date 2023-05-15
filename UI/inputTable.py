@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from functools import partial
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 from numpy import loadtxt
 
 from lib.unidades import Temperature
@@ -42,7 +42,7 @@ class eqDIPPR(QtWidgets.QWidget):
         super(eqDIPPR, self).__init__(parent)
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Eq DIPPR") + " "))
         self.eqDIPPR = QtWidgets.QSpinBox()
         self.eqDIPPR.setValue(value)
@@ -50,7 +50,7 @@ class eqDIPPR(QtWidgets.QWidget):
         self.eqDIPPR.setAlignment(
             QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.eqDIPPR.setFixedWidth(50)
-        txt = QtWidgets.QApplication.translate("pychemqt", "Equation") + "\n"
+        txt = tr("pychemqt", "Equation") + "\n"
         txt += "\t1:\tY = A+B*T+C*T²+D*T³+E*T⁴\n"
         txt += "\t2:\tY = exp(A+B*T+C*ln(T)+D*T^E)\n"
         txt += "\t3:\tY = A*T^(B/(1+C*T+D*T^2))\n"
@@ -60,14 +60,14 @@ class eqDIPPR(QtWidgets.QWidget):
         txt += "\t7:\tY = A*(1-Tr)^(B+C*Tr+D*Tr²+E*Tr³)\n"
         txt += "\t8:\tY = A+ B*((C/T)/sinh(C/T))² + D*((E/T)/cosh(E/T))²\n"
         txt += "\t9:\tY = A²/Tr+B-2ACTr-ADTr²-C²Tr³/3-CDTr⁴/2-D²Tr⁵/5\n"
-        txt += QtWidgets.QApplication.translate("pychemqt", "where") + ":\n"
-        txt += "\t" + QtWidgets.QApplication.translate(
+        txt += tr("pychemqt", "where") + ":\n"
+        txt += "\t" + tr(
             "pychemqt", "Y Property to fit") + "\n"
-        txt += "\t" + QtWidgets.QApplication.translate(
+        txt += "\t" + tr(
             "pychemqt", "T temperature in Kelvin") + "\n"
-        txt += "\t" + QtWidgets.QApplication.translate(
+        txt += "\t" + tr(
             "pychemqt", "Tr: reduced temperature T/Tc") + "\n"
-        txt += "\t" + QtWidgets.QApplication.translate(
+        txt += "\t" + tr(
             "pychemqt", "A,B,C,D,E parameters")
         self.eqDIPPR.setToolTip(txt)
         layout.addWidget(self.eqDIPPR)
@@ -108,19 +108,19 @@ class InputTableWidget(QtWidgets.QWidget):
         gridLayout.setContentsMargins(0, 0, 0, 0)
         openButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileOpen.png")), "")
-        openButton.setToolTip(QtWidgets.QApplication.translate(
+        openButton.setToolTip(tr(
             "pychemqt", "Load data from a file"))
         openButton.clicked.connect(self.open)
         gridLayout.addWidget(openButton, 1, 1)
         saveButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileSave.png")), "")
-        saveButton.setToolTip(QtWidgets.QApplication.translate(
+        saveButton.setToolTip(tr(
             "pychemqt", "Save data to a file"))
         saveButton.clicked.connect(self.save)
         gridLayout.addWidget(saveButton, 1, 2)
         clearButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/clear.png")), "")
-        clearButton.setToolTip(QtWidgets.QApplication.translate(
+        clearButton.setToolTip(tr(
             "pychemqt", "Clear data"))
         clearButton.clicked.connect(self.delete)
         gridLayout.addWidget(clearButton, 1, 3)
@@ -166,7 +166,7 @@ class InputTableWidget(QtWidgets.QWidget):
         """Load data from a test file"""
         fname, ext = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            QtWidgets.QApplication.translate("pychemqt", "Open text file"),
+            tr("pychemqt", "Open text file"),
             "./")
         if fname:
             try:
@@ -179,7 +179,7 @@ class InputTableWidget(QtWidgets.QWidget):
             except ValueError as er:
                 # Raise a error msg if the file can load by loadtxt, the user
                 # can select any type of file and the input error is possible
-                title = QtWidgets.QApplication.translate(
+                title = tr(
                     "pychemqt", "Failed to load file")
                 msg = fname + "\n" + er.args[0]
                 QtWidgets.QMessageBox.critical(self, title, msg)
@@ -188,7 +188,7 @@ class InputTableWidget(QtWidgets.QWidget):
         """Save currend data of table to a file"""
         fname, ext = QtWidgets.QFileDialog.getSaveFileName(
             self,
-            QtWidgets.QApplication.translate("pychemqt", "Save data to file"),
+            tr("pychemqt", "Save data to file"),
             "./")
         if fname:
             with open(fname, 'w') as file:

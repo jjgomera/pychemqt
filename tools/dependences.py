@@ -24,30 +24,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from tools.qt import QtGui, QtWidgets
+from tools.qt import QtGui, QtWidgets, tr
 
 
 optional_modules = (
-    ("freesteam", QtWidgets.QApplication.translate(
+    ("freesteam", tr(
         "pychemqt", "freesteam thermal option disabled")),
-    ("CoolProp", QtWidgets.QApplication.translate(
+    ("CoolProp", tr(
         "pychemqt", "coolprop thermal option disabled")),
-    ("refprop", QtWidgets.QApplication.translate(
+    ("refprop", tr(
         "pychemqt", "refprop thermal option disabled")),
-    ("openbabel", QtWidgets.QApplication.translate(
+    ("openbabel", tr(
         "pychemqt", "graphic formula disabled")),
-    ("ezodf", QtWidgets.QApplication.translate(
+    ("ezodf", tr(
         "pychemqt", "openoffice/libreoffice interaction disabled")),
-    ("openpyxl", QtWidgets.QApplication.translate(
+    ("openpyxl", tr(
         "pychemqt", "Microsoft Excel 2007/2010 interaction disabled")),
-    ("xlwt", QtWidgets.QApplication.translate(
+    ("xlwt", tr(
         "pychemqt", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
-    ("icu", QtWidgets.QApplication.translate(
+    ("icu", tr(
         "pychemqt",
         "Unicode collation algorithm for improved string sorting disabled")),
-    ("reportlab", QtWidgets.QApplication.translate(
+    ("reportlab", tr(
         "pychemqt", "Pdf report exporting disabled")),
-    ("Qsci", QtWidgets.QApplication.translate(
+    ("Qsci", tr(
         "pychemqt", "Qscintilla custom module editor disabled")))
 
 
@@ -58,12 +58,12 @@ class ShowDependences(QtWidgets.QDialog):
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
             os.environ["pychemqt"], "images", "button", "showPrograms.png"))))
         self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "External program"))
+            tr("pychemqt", "External program"))
         layout = QtWidgets.QVBoxLayout(self)
         self.tree = QtWidgets.QTreeWidget()
         header = QtWidgets.QTreeWidgetItem(
-            [QtWidgets.QApplication.translate("pychemqt", "Module"),
-             QtWidgets.QApplication.translate("pychemqt", "Status")])
+            [tr("pychemqt", "Module"),
+             tr("pychemqt", "Status")])
         self.tree.setHeaderItem(header)
 
         for module, txt in optional_modules:
@@ -77,7 +77,7 @@ class ShowDependences(QtWidgets.QDialog):
                 icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
                     os.environ["pychemqt"], "images", "button", "ok.png")))
             else:
-                st = QtWidgets.QApplication.translate(
+                st = tr(
                     "pychemqt", "Module not found")
                 st += ", " + txt
                 icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(

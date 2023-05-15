@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 from lib.EoS import K, H, alfa, mix, cp_ideal, K_name, H_name, K_status
 from lib.bip import EoSBIP
@@ -40,7 +40,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         """Constructor, opcional config parameter with proyect configuration"""
         super(UI_confThermo_widget, self).__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        title = QtWidgets.QApplication.translate("pychemqt", "K values:")
+        title = tr("pychemqt", "K values:")
         layout.addWidget(QtWidgets.QLabel(title), 0, 0, 1, 2)
         self.K = QtWidgets.QComboBox()
         for eq in K:
@@ -48,17 +48,17 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         self.K.currentIndexChanged.connect(self.updateBIP)
         layout.addWidget(self.K, 0, 2)
         self.bipButton = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "BIP"))
+            tr("pychemqt", "BIP"))
         self.bipButton.clicked.connect(self.showBIP)
         layout.addWidget(self.bipButton, 0, 3)
 
-        text = QtWidgets.QApplication.translate("pychemqt", "Alfa function:")
+        text = tr("pychemqt", "Alfa function:")
         layout.addWidget(QtWidgets.QLabel(text), 1, 0, 1, 2)
         self.alfa = QtWidgets.QComboBox()
         for a in alfa:
             self.alfa.addItem(a)
         layout.addWidget(self.alfa, 1, 2, 1, 2)
-        text = QtWidgets.QApplication.translate("pychemqt", "Mix rules:")
+        text = tr("pychemqt", "Mix rules:")
         layout.addWidget(QtWidgets.QLabel(text), 2, 0, 1, 2)
         self.mixing_rule = QtWidgets.QComboBox()
         for m in mix:
@@ -67,13 +67,13 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 0, 1, 4)
-        text = QtWidgets.QApplication.translate("pychemqt", "Enthalpy:")
+        text = tr("pychemqt", "Enthalpy:")
         layout.addWidget(QtWidgets.QLabel(text), 4, 0, 1, 2)
         self.H = QtWidgets.QComboBox()
         for h in H:
             self.H.addItem(h.__title__)
         layout.addWidget(self.H, 4, 2, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Ideal heat capacity:")), 5, 0, 1, 2)
         self.Cp_ideal = QtWidgets.QComboBox()
         for cp in cp_ideal:
@@ -82,26 +82,26 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 0, 1, 4)
-        self.MEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.MEoS = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use MEoS for single compounds if it's available"))
         layout.addWidget(self.MEoS, 7, 0, 1, 4)
-        self.coolProp = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.coolProp = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
         layout.addWidget(self.coolProp, 8, 1, 1, 3)
-        self.refprop = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.refprop = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use external library refprop (fastest)"))
         self.refprop.setEnabled(False)
         layout.addWidget(self.refprop, 9, 1, 1, 3)
 
-        self.iapws = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.iapws = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use IAPWS97 for water"))
         layout.addWidget(self.iapws, 10, 0, 1, 4)
-        self.freesteam = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.freesteam = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use freesteam library (faster)"))
         self.freesteam.setEnabled(False)
         layout.addWidget(self.freesteam, 11, 1, 1, 3)
-        self.GERG = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.GERG = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use GERG EoS for mix if it's posible"))
         layout.addWidget(self.GERG, 12, 0, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
@@ -227,7 +227,7 @@ class Dialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Define project thermodynamic methods"))
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confThermo_widget(config)

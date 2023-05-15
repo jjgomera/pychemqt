@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 from lib.unidades import (Temperature, Pressure, DeltaP, Power, Length, Area,
                           ThermalConductivity, HeatTransfCoef, Currency)
@@ -48,41 +48,41 @@ class UI_equipment(UI_equip):
         super().__init__(Hairpin, parent=parent)
 
         # Input tab
-        self.addEntrada(QtWidgets.QApplication.translate(
+        self.addEntrada(tr(
             "pychemqt", "Tube"), "entradaTubo")
-        self.addEntrada(QtWidgets.QApplication.translate(
+        self.addEntrada(tr(
             "pychemqt", "Annulli"), "entradaExterior")
 
         # Pipe catalog tab
         tabCatalogo = QtWidgets.QWidget()
         self.tabWidget.insertTab(
             1, tabCatalogo,
-            QtWidgets.QApplication.translate("pychemqt", "Catalog"))
+            tr("pychemqt", "Catalog"))
         lyt = QtWidgets.QGridLayout(tabCatalogo)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Tube length")), 4, 1)
+            tr("pychemqt", "Tube length")), 4, 1)
         self.LTube = Entrada_con_unidades(Length)
         self.LTube.valueChanged.connect(partial(self.changeParams, "LTube"))
         lyt.addWidget(self.LTube, 4, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 5, 1)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Tube internal diameter")), 6, 1)
         self.DiTube = Entrada_con_unidades(Length, "pipeDiameter")
         self.DiTube.valueChanged.connect(partial(self.changeParams, "DiTube"))
         lyt.addWidget(self.DiTube, 6, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Tube external diameter")), 7, 1)
         self.DeTube = Entrada_con_unidades(Length, "pipeDiameter")
         self.DeTube.valueChanged.connect(partial(self.changeParams, "DeTube"))
         lyt.addWidget(self.DeTube, 7, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Tube thickness")), 8, 1)
         self.wTube = Entrada_con_unidades(Length, "Thickness")
         self.wTube.valueChanged.connect(partial(self.changeParams, "wTube"))
         lyt.addWidget(self.wTube, 8, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Tube roughness")), 9, 1)
         self.rTube = Entrada_con_unidades(Length, "Thickness")
         self.rTube.valueChanged.connect(partial(self.changeParams, "rTube"))
@@ -90,35 +90,35 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 10, 1)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Annulli external diameter")), 11, 1)
         self.DeeTube = Entrada_con_unidades(Length, "pipeDiameter")
         self.DeeTube.valueChanged.connect(
             partial(self.changeParams, "DeeTube"))
         lyt.addWidget(self.DeeTube, 11, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Thermal conductivity")), 12, 1)
         self.kTube = Entrada_con_unidades(ThermalConductivity)
         self.kTube.valueChanged.connect(partial(self.changeParams, "kTube"))
         lyt.addWidget(self.kTube, 12, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Tube Count")), 13, 1)
+            tr("pychemqt", "Tube Count")), 13, 1)
         self.nTube = Entrada_con_unidades(int)
         self.nTube.valueChanged.connect(partial(self.changeParams, "nTube"))
         lyt.addWidget(self.nTube, 13, 2)
 
         buttonPipe = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "Pipe Database"))
+            tr("pychemqt", "Pipe Database"))
         buttonPipe.clicked.connect(self.showMaterial)
         lyt.addWidget(buttonPipe, 6, 3, 4, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 14, 1)
         self.tubeFinned = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Finned Tube"))
+            tr("pychemqt", "Finned Tube"))
         lyt.addWidget(self.tubeFinned, 15, 1, 1, 4)
         self.buttonFin = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Finned Pipe Database"))
         self.buttonFin.setEnabled(False)
         self.buttonFin.clicked.connect(self.showFinTube)
@@ -126,13 +126,13 @@ class UI_equipment(UI_equip):
         self.tubeFinned.toggled.connect(
             partial(self.changeParams, "tubeFinned"))
         self.tubeFinned.toggled.connect(self.buttonFin.setEnabled)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Inside Fouling")), 16, 1)
         self.tubeFouling = FoulingWidget()
         self.tubeFouling.valueChanged.connect(
             partial(self.changeParams, "tubeFouling"))
         lyt.addWidget(self.tubeFouling, 16, 2, 1, 5)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Outside Fouling")), 17, 1)
         self.annulliFouling = FoulingWidget()
         self.annulliFouling.valueChanged.connect(
@@ -145,7 +145,7 @@ class UI_equipment(UI_equip):
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Mode")), 1, 1)
+            tr("pychemqt", "Mode")), 1, 1)
         self.modo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODO:
             self.modo.addItem(txt)
@@ -153,7 +153,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "modo"))
         lyt.addWidget(self.modo, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Flujo")), 2, 1)
+            tr("pychemqt", "Flujo")), 2, 1)
         self.flujo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_FLUJO:
             self.flujo.addItem(txt)
@@ -161,7 +161,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "flujo"))
         lyt.addWidget(self.flujo, 2, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Layout")), 3, 1)
+            tr("pychemqt", "Layout")), 3, 1)
         self.orientacion = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_ORIENTACION:
             self.orientacion.addItem(txt)
@@ -173,25 +173,25 @@ class UI_equipment(UI_equip):
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
 
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Output inside temperature")), 5, 1)
         self.tubeTout = Entrada_con_unidades(Temperature)
         self.tubeTout.valueChanged.connect(
             partial(self.changeParams, "tubeTout"))
         lyt.addWidget(self.tubeTout, 5, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Output annulli temperature")), 6, 1)
         self.annulliTout = Entrada_con_unidades(Temperature)
         self.annulliTout.valueChanged.connect(
             partial(self.changeParams, "annulliTout"))
         lyt.addWidget(self.annulliTout, 6, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Output inside quality")), 5, 4)
         self.tubeXout = Entrada_con_unidades(float)
         self.tubeXout.valueChanged.connect(
             partial(self.changeParams, "tubeXout"))
         lyt.addWidget(self.tubeXout, 5, 5)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Output annulli quality")), 6, 4)
         self.annulliXout = Entrada_con_unidades(float)
         self.annulliXout.valueChanged.connect(
@@ -203,48 +203,48 @@ class UI_equipment(UI_equip):
             QtWidgets.QSizePolicy.Policy.Expanding), 15, 1, 1, 6)
 
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Results"))
+            tr("pychemqt", "Results"))
         lyt.addWidget(group, 16, 1, 1, 6)
         layout = QtWidgets.QGridLayout(group)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Heat Duty")), 0, 1)
+            tr("pychemqt", "Heat Duty")), 0, 1)
         self.Q = Entrada_con_unidades(Power, retornar=False, readOnly=True)
         layout.addWidget(self.Q, 0, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Tout Tube")), 1, 1)
+            tr("pychemqt", "Tout Tube")), 1, 1)
         self.ToutTube = Entrada_con_unidades(Temperature, retornar=False)
         self.ToutTube.setReadOnly(True)
         layout.addWidget(self.ToutTube, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Tout Tube")), 2, 1)
+            tr("pychemqt", "Tout Tube")), 2, 1)
         self.ToutAnnulli = Entrada_con_unidades(Temperature, retornar=False)
         self.ToutAnnulli.setReadOnly(True)
         layout.addWidget(self.ToutAnnulli, 2, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "U")), 0, 4)
+            tr("pychemqt", "U")), 0, 4)
         self.U = Entrada_con_unidades(HeatTransfCoef, retornar=False)
         self.U.setReadOnly(True)
         layout.addWidget(self.U, 0, 5)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Area")), 1, 4)
+            tr("pychemqt", "Area")), 1, 4)
         self.A = Entrada_con_unidades(Area, retornar=False, readOnly=True)
         layout.addWidget(self.A, 1, 5)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Lenght")), 2, 4)
+            tr("pychemqt", "Lenght")), 2, 4)
         self.L = Entrada_con_unidades(Length, retornar=False, readOnly=True)
         layout.addWidget(self.L, 2, 5)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "DeltaP Tube")), 0, 7)
+            tr("pychemqt", "DeltaP Tube")), 0, 7)
         self.deltaPTube = Entrada_con_unidades(DeltaP, retornar=False)
         self.deltaPTube.setReadOnly(True)
         layout.addWidget(self.deltaPTube, 0, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "DeltaP Annulli")), 1, 7)
         self.deltaPAnnulli = Entrada_con_unidades(DeltaP, retornar=False)
         self.deltaPAnnulli.setReadOnly(True)
         layout.addWidget(self.deltaPAnnulli, 1, 8)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "CF")), 2, 7)
+            tr("pychemqt", "CF")), 2, 7)
         self.CF = Entrada_con_unidades(float, retornar=False, readOnly=True)
         layout.addWidget(self.CF, 2, 8)
 
@@ -255,7 +255,7 @@ class UI_equipment(UI_equip):
         # Cost tab
         lyt = QtWidgets.QGridLayout(self.tabCostos)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Material")), 2, 1)
+            tr("pychemqt", "Material")), 2, 1)
         self.material = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MATERIAL:
             self.material.addItem(txt)
@@ -265,7 +265,7 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 3, 0, 1, 6)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Design Pressure")), 4, 1)
         self.P_dis = Entrada_con_unidades(Pressure)
         self.P_dis.valueChanged.connect(
@@ -286,15 +286,15 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 10, 0, 1, 6)
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
+            tr("pychemqt", "Stimated Costs"))
         lyt.addWidget(group, 9, 1, 1, 5)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Purchase Cost")), 0, 1)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False)
         self.C_adq.setReadOnly(True)
         layout.addWidget(self.C_adq, 0, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Installed Cost")), 1, 1)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False)
         self.C_inst.setReadOnly(True)
@@ -302,8 +302,8 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.C_inst, 1, 2)
 
         # Output Tab
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Tube"))
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Annulli"))
+        self.addSalida(tr("pychemqt", "Tube"))
+        self.addSalida(tr("pychemqt", "Annulli"))
 
         if equipment:
             self.setEquipment(equipment)

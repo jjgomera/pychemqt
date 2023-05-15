@@ -22,16 +22,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Module to define plots tools
 ###############################################################################
 
-from tools.qt import QtWidgets as Q
+from tools.qt import tr
 
 from plots import drag, moody, standing
 from plots.heatTransfer import chartHE
 
 
 _all = {
-    Q.QApplication.translate("pychemqt", "Petro"): (standing.Standing_Katz, ),
-    Q.QApplication.translate("pychemqt", "Fluid Flow"): (moody.Moody, drag.Drag),
-    Q.QApplication.translate("pychemqt", "Heat Exchanger"): chartHE}
+    tr("pychemqt", "Petro"): (standing.Standing_Katz, ),
+    tr("pychemqt", "Fluid Flow"): (moody.Moody, drag.Drag),
+    tr("pychemqt", "Heat Exchanger"): chartHE}
 
 __all__ = ["moody", "drag", "standing", "chartHE"]
 

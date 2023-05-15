@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import subprocess
 
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 import lib
 from lib.config import IMAGE_PATH
@@ -37,17 +37,17 @@ class ShowReference(QtWidgets.QDialog):
         super().__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/help.png")))
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Reference Paper Show Dialog"))
         layout = QtWidgets.QGridLayout(self)
 
         self.tree = QtWidgets.QTreeWidget()
         header = QtWidgets.QTreeWidgetItem(
             ["id",
-             QtWidgets.QApplication.translate("pychemqt", "Autor"),
-             QtWidgets.QApplication.translate("pychemqt", "Title"),
-             QtWidgets.QApplication.translate("pychemqt", "Reference"),
-             QtWidgets.QApplication.translate("pychemqt", "doi")])
+             tr("pychemqt", "Autor"),
+             tr("pychemqt", "Title"),
+             tr("pychemqt", "Reference"),
+             tr("pychemqt", "doi")])
         self.tree.setHeaderItem(header)
         layout.addWidget(self.tree, 1, 1, 2, 2)
 
@@ -226,7 +226,7 @@ class ShowReference(QtWidgets.QDialog):
 
         # Equipment
         itemEquipment = QtWidgets.QTreeWidgetItem(
-            [QtWidgets.QApplication.translate("pychemqt", "Equipments")])
+            [tr("pychemqt", "Equipments")])
         self.tree.addTopLevelItem(itemEquipment)
         for equip in equipments:
             itemequip = QtWidgets.QTreeWidgetItem([equip.__name__])

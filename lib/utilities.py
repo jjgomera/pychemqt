@@ -32,7 +32,7 @@ import os
 import random
 from math import exp
 
-from tools.qt import QtWidgets
+from tools.qt import tr
 
 
 def representacion(number, fmt=0, total=0, decimales=4, eng=False, tol=5,
@@ -153,7 +153,7 @@ def exportTable(matrix, fname, ext, title=None):
     title : list, optional
         list with column title
     """
-    sheetTitle = QtWidgets.QApplication.translate("pychemqt", "Table")
+    sheetTitle = tr("pychemqt", "Table")
     if fname.split(".")[-1] != ext:
         fname += ".%s" % ext
 
@@ -239,7 +239,7 @@ def exportTable(matrix, fname, ext, title=None):
         spreadsheet.save(filename=fname)
 
     else:
-        raise ValueError(QtWidgets.QApplication.translate(
+        raise ValueError(tr(
             "pychemqt", "Unsopported format") + " " + ext)
 
 

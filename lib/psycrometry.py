@@ -71,7 +71,7 @@ from iapws.iapws97 import _PSat_T, _Region1, prop0
 
 from numpy import exp, roots, linspace, arange, concatenate
 from numpy.lib.scimath import log
-from tools.qt import QtWidgets
+from tools.qt import tr
 from scipy.optimize import fsolve
 
 # Avoid raise error at import this module if the the optional dependence isn't
@@ -586,12 +586,12 @@ class PsyState(object):
     msg = "Unknown variables"
 
     TEXT_MODE = [
-        QtWidgets.QApplication.translate("pychemqt", "T dry bulb, Humidity Ratio"),
-        QtWidgets.QApplication.translate("pychemqt", "T dry bulb, Relative humidity"),
-        QtWidgets.QApplication.translate("pychemqt", "T dry bulb, T wet bulb"),
-        QtWidgets.QApplication.translate("pychemqt", "T dry bulb, T dew point"),
-        QtWidgets.QApplication.translate("pychemqt", "T dew point, Relative humidity"),
-        QtWidgets.QApplication.translate("pychemqt", "T wet bulb, Relative humidity")
+        tr("pychemqt", "T dry bulb, Humidity Ratio"),
+        tr("pychemqt", "T dry bulb, Relative humidity"),
+        tr("pychemqt", "T dry bulb, T wet bulb"),
+        tr("pychemqt", "T dry bulb, T dew point"),
+        tr("pychemqt", "T dew point, Relative humidity"),
+        tr("pychemqt", "T wet bulb, Relative humidity")
         ]
     VAR_NAME = [
         ("tdb", "w"),
@@ -602,18 +602,18 @@ class PsyState(object):
         ("twb", "HR")
         ]
 
-#        QtWidgets.QApplication.translate("pychemqt", "T dry bulb, Enthalpy"))
-#        QtWidgets.QApplication.translate("pychemqt", "Tª bulbo seco, Densidad"))
-#        QtWidgets.QApplication.translate("pychemqt", "Tª bulbo húmedo, H absoluta"))
-#        QtWidgets.QApplication.translate("pychemqt", "Tª bulbo húmedo, Entalpia"))
-#        QtWidgets.QApplication.translate("pychemqt", "Tª bulbo húmedo, Densidad"))
-#        QtWidgets.QApplication.translate("pychemqt", "Tª bulbo húmedo, Tª rocio"))
-#        QtWidgets.QApplication.translate("pychemqt", "H absoluta, entalpía"))
-#        QtWidgets.QApplication.translate("pychemqt", "H relativa, entalpía"))
-#        QtWidgets.QApplication.translate("pychemqt", "H absoluta, densidad"))
-#        QtWidgets.QApplication.translate("pychemqt", "H relativa, densidad"))
-#        QtWidgets.QApplication.translate("pychemqt", "Tª rocio, entalpía"))
-#        QtWidgets.QApplication.translate("pychemqt", "Tª rocio, densidad"))
+#        tr("pychemqt", "T dry bulb, Enthalpy"))
+#        tr("pychemqt", "Tª bulbo seco, Densidad"))
+#        tr("pychemqt", "Tª bulbo húmedo, H absoluta"))
+#        tr("pychemqt", "Tª bulbo húmedo, Entalpia"))
+#        tr("pychemqt", "Tª bulbo húmedo, Densidad"))
+#        tr("pychemqt", "Tª bulbo húmedo, Tª rocio"))
+#        tr("pychemqt", "H absoluta, entalpía"))
+#        tr("pychemqt", "H relativa, entalpía"))
+#        tr("pychemqt", "H absoluta, densidad"))
+#        tr("pychemqt", "H relativa, densidad"))
+#        tr("pychemqt", "Tª rocio, entalpía"))
+#        tr("pychemqt", "Tª rocio, densidad"))
 
     def __init__(self, **kwargs):
         self.kwargs = self.__class__.kwargs.copy()
@@ -625,7 +625,7 @@ class PsyState(object):
         if self.calculable:
             self.status = 1
             self.calculo()
-            logging.debug(QtWidgets.QApplication.translate(
+            logging.debug(tr(
                 "pychemqt", "Calculate psychrometric point"))
             logging.debug(self.kwargs)
             self.msg = "Solved"

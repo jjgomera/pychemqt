@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 from lib.unidades import Temperature, Pressure, Power, VolFlow, Currency
 from tools.costIndex import CostData
@@ -47,7 +47,7 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         layout = QtWidgets.QGridLayout(self.tabCalculo)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Output Temperature")), 1, 1)
         self.Tout = Entrada_con_unidades(Temperature, resaltado=True)
         self.Tout.valueChanged.connect(partial(self.changeParams, "Tout"))
@@ -55,23 +55,23 @@ class UI_equipment(UI_equip):
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy. Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 0, 1, 6)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Pressure drop")), 3, 1)
         self.deltaP = Entrada_con_unidades(Pressure)
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
         layout.addWidget(self.deltaP, 3, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Maximum heat flux")), 4, 1)
         self.Hmax = Entrada_con_unidades(Power)
         self.Hmax.valueChanged.connect(partial(self.changeParams, "Hmax"))
         layout.addWidget(self.Hmax, 4, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Fuel calorific value")), 5, 1)
         self.poderCalorifico = Entrada_con_unidades(float)
         self.poderCalorifico.valueChanged.connect(
             partial(self.changeParams, "poderCalorifico"))
         layout.addWidget(self.poderCalorifico, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Efficiency")), 6, 1)
         self.eficiencia = Entrada_con_unidades(float, spinbox=True)
         self.eficiencia.valueChanged.connect(
@@ -82,15 +82,15 @@ class UI_equipment(UI_equip):
             QtWidgets.QSizePolicy.Policy.Expanding), 7, 0, 1, 6)
 
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Results"))
+            tr("pychemqt", "Results"))
         layout.addWidget(group, 8, 1, 1, 5)
         lyt = QtWidgets.QGridLayout(group)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Heat")), 0, 1)
+            tr("pychemqt", "Heat")), 0, 1)
         self.Heat = Entrada_con_unidades(Power, retornar=False, readOnly=True)
         lyt.addWidget(self.Heat, 0, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Fuel")), 1, 1)
+            tr("pychemqt", "Fuel")), 1, 1)
         self.CombustibleRequerido = Entrada_con_unidades(
             VolFlow, "QLiq", retornar=False, readOnly=True)
         lyt.addWidget(self.CombustibleRequerido, 1, 2)
@@ -101,7 +101,7 @@ class UI_equipment(UI_equip):
         # Cost tab
         lyt_Cost = QtWidgets.QGridLayout(self.tabCostos)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Type")), 1, 1)
+            tr("pychemqt", "Type")), 1, 1)
         self.tipo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TIPO:
             self.tipo.addItem(txt)
@@ -122,14 +122,14 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "subtipoCylindrical"))
         lyt_Cost.addWidget(self.subtipoCylindrical, 2, 2)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Material")), 3, 1)
+            tr("pychemqt", "Material")), 3, 1)
         self.material = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MATERIAL:
             self.material.addItem(txt)
         self.material.currentIndexChanged.connect(
             partial(self.changeParamsCoste, "material"))
         lyt_Cost.addWidget(self.material, 3, 2)
-        lyt_Cost.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Cost.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Design pressure")), 4, 1)
         self.P_dis = Entrada_con_unidades(Pressure)
         self.P_dis.valueChanged.connect(
@@ -147,15 +147,15 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 8, 1, 1, 6)
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
+            tr("pychemqt", "Stimated Costs"))
         lyt_Cost.addWidget(group, 9, 1, 1, 6)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Purchase costs")), 0, 1)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False)
         self.C_adq.setReadOnly(True)
         layout.addWidget(self.C_adq, 0, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Installed costs")), 1, 1)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False)
         self.C_inst.setReadOnly(True)
@@ -170,10 +170,10 @@ class UI_equipment(UI_equip):
 
     def mostrarSubclasificacion(self, ind):
         if ind:
-            txt = QtWidgets.QApplication.translate(
+            txt = tr(
                 "pychemqt", "Cylindrical heater type")
         else:
-            txt = QtWidgets.QApplication.translate(
+            txt = tr(
                 "pychemqt", "Box heater type")
         self.label.setText(txt)
         self.subtipoBox.setVisible(not ind)

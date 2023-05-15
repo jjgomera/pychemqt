@@ -30,7 +30,7 @@ from configparser import ConfigParser
 import tempfile
 import os
 
-from tools.qt import QtCore, QtWidgets, QtSvg, QtSvgWidgets, QtGui
+from tools.qt import QtCore, QtWidgets, QtSvg, QtSvgWidgets, QtGui, tr
 
 try:
     from openbabel.pybel import readstring
@@ -126,17 +126,17 @@ class ConfBabel(QtWidgets.QDialog):
         super().__init__(parent)
 
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Bond color:")), 1, 1)
         self.BondColor = ColorSelector()
         self.BondColor.valueChanged.connect(self.updateImage)
         layout.addWidget(self.BondColor, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Background color:")), 2, 1)
         self.BackColor = ColorSelector(isAlpha=True)
         self.BackColor.valueChanged.connect(self.updateImage)
         layout.addWidget(self.BackColor, 2, 2)
-        self.checkColor = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.checkColor = QtWidgets.QCheckBox(tr(
             "pychemqt", "Heteroatom in color"))
         self.checkColor.stateChanged.connect(self.updateImage)
         layout.addWidget(self.checkColor, 3, 1, 1, 2)
@@ -145,41 +145,41 @@ class ConfBabel(QtWidgets.QDialog):
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
 
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Atom details"))
+            tr("pychemqt", "Atom details"))
         layout.addWidget(group, 5, 1, 1, 2)
         lyt = QtWidgets.QVBoxLayout(group)
         self.radioAll = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate("pychemqt", "Show all atoms"))
+            tr("pychemqt", "Show all atoms"))
         self.radioAll.clicked.connect(self.updateImage)
         lyt.addWidget(self.radioAll)
         self.radioEnd = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Show only terminal atoms"))
         self.radioEnd.clicked.connect(self.updateImage)
         lyt.addWidget(self.radioEnd)
         self.radioNone = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate("pychemqt", "Do not show atoms"))
+            tr("pychemqt", "Do not show atoms"))
         self.radioNone.clicked.connect(self.updateImage)
         lyt.addWidget(self.radioNone)
         layout.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 6, 1, 1, 2)
         self.checkTighBond = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Thicker bond lines"))
+            tr("pychemqt", "Thicker bond lines"))
         self.checkTighBond.stateChanged.connect(self.updateImage)
         layout.addWidget(self.checkTighBond, 7, 1, 1, 2)
         self.checkAsym = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Asymetric double bond"))
         self.checkAsym.stateChanged.connect(self.updateImage)
         layout.addWidget(self.checkAsym, 8, 1, 1, 2)
         self.checkIndex = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Show atoms index"))
+            tr("pychemqt", "Show atoms index"))
         self.checkIndex.stateChanged.connect(self.updateImage)
         layout.addWidget(self.checkIndex, 9, 1, 1, 2)
 
         if os.environ["openbabel"] == "False":
-            self.example = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            self.example = QtWidgets.QLabel(tr(
                 "pychemqt", "Openbabel library don´t found"))
             self.example.setStyleSheet("color: red")
         else:

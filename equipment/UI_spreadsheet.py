@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 try:
     import ezodf
@@ -98,29 +98,29 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         layout = QtWidgets.QGridLayout(self.Entrada)
-        label = QtWidgets.QApplication.translate(
+        label = tr(
             "pychemqt", "Spreadsheet path")+":"
-        msg = QtWidgets.QApplication.translate(
+        msg = tr(
             "pychemqt", "Select Spreadsheet")
         patrones = []
         if os.environ["ezodf"]:
-            patrones.append(QtWidgets.QApplication.translate(
+            patrones.append(tr(
                 "pychemqt", "Libreoffice spreadsheet files")+" (*.ods)")
         if os.environ["xlwt"]:
-            patrones.append(QtWidgets.QApplication.translate(
+            patrones.append(tr(
                 "pychemqt", "Microsoft Excel 97/2000/XP/2003 XML")+" (*.xls)")
         if os.environ["openpyxl"]:
-            patrones.append(QtWidgets.QApplication.translate(
+            patrones.append(tr(
                 "pychemqt", "Microsoft Excel 2007/2010 XML")+" (*.xlsx)")
         patron = ";;".join(patrones)
         self.filename = PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeSpreadsheet)
         layout.addWidget(self.filename, 1, 1)
-        header = [QtWidgets.QApplication.translate("pychemqt", "Entity"),
-                  QtWidgets.QApplication.translate("pychemqt", "Variable"),
-                  QtWidgets.QApplication.translate("pychemqt", "Unit value"),
-                  QtWidgets.QApplication.translate("pychemqt", "Sheet"),
-                  QtWidgets.QApplication.translate("pychemqt", "Cell")]
+        header = [tr("pychemqt", "Entity"),
+                  tr("pychemqt", "Variable"),
+                  tr("pychemqt", "Unit value"),
+                  tr("pychemqt", "Sheet"),
+                  tr("pychemqt", "Cell")]
         self.datamap = Tabla(
             5, filas=1, dinamica=True, horizontalHeader=header,
             verticalHeader=False, orientacion=QtCore.Qt.AlignmentFlag.AlignLeft,

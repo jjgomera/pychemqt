@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from functools import partial
 
-from tools.qt import QtGui, QtWidgets
+from tools.qt import QtGui, QtWidgets, tr
 from scipy import arange
 
 
@@ -50,61 +50,61 @@ class View_Petro(QtWidgets.QDialog):
 
     def __init__(self, petroleo=None, parent=None):
         super(View_Petro, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Petrol assay characteristics"))
         layout = QtWidgets.QGridLayout(self)
         self.nombre = QtWidgets.QLabel()
         layout.addWidget(self.nombre, 1, 1, 1, 5)
         label = QtWidgets.QLabel("M")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Molecular Weight"))
         layout.addWidget(label, 2, 1)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
         layout.addWidget(self.M, 2, 2)
         label = QtWidgets.QLabel("Tb")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Boiling Temperature"))
         layout.addWidget(label, 3, 1)
         self.Tb = Entrada_con_unidades(unidades.Temperature)
         layout.addWidget(self.Tb, 3, 2)
         label = QtWidgets.QLabel("SG")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Specific gravity at 60ºF"))
         layout.addWidget(label, 4, 1)
         self.gravity = Entrada_con_unidades(float)
         layout.addWidget(self.gravity, 4, 2)
         label = QtWidgets.QLabel("API")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "API Specific gravity"))
         layout.addWidget(label, 5, 1)
         self.API = Entrada_con_unidades(float)
         layout.addWidget(self.API, 5, 2)
         label = QtWidgets.QLabel("Kw")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Watson characterization factor"))
         layout.addWidget(label, 6, 1)
         self.watson = Entrada_con_unidades(float)
         layout.addWidget(self.watson, 6, 2)
         label = QtWidgets.QLabel("n")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Refractive Index"))
         layout.addWidget(label, 7, 1)
         self.n = Entrada_con_unidades(float)
         layout.addWidget(self.n, 7, 2)
         label = QtWidgets.QLabel("I")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Huang parameter"))
         layout.addWidget(label, 8, 1)
         self.I = Entrada_con_unidades(float)
         layout.addWidget(self.I, 8, 2)
         label = QtWidgets.QLabel("ν<sub>100F</sub>")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Kinematic viscosity at 100ºF"))
         layout.addWidget(label, 9, 1)
         self.v100 = Entrada_con_unidades(unidades.Diffusivity)
         layout.addWidget(self.v100, 9, 2)
         label = QtWidgets.QLabel("ν<sub>210F</sub>")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Kinematic viscosity at 210ºF"))
         layout.addWidget(label, 10, 1)
         self.v210 = Entrada_con_unidades(unidades.Diffusivity)
@@ -123,13 +123,13 @@ class View_Petro(QtWidgets.QDialog):
         self.Zc = Entrada_con_unidades(float)
         layout.addWidget(self.Zc, 5, 5)
         label = QtWidgets.QLabel("ω")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Acentric factor"))
         layout.addWidget(label, 6, 4)
         self.f_acent = Entrada_con_unidades(float)
         layout.addWidget(self.f_acent, 6, 5)
         label = QtWidgets.QLabel("m")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Refractivity Intercept"))
         layout.addWidget(label, 7, 4)
         self.refractivity = Entrada_con_unidades(float)
@@ -144,39 +144,39 @@ class View_Petro(QtWidgets.QDialog):
         self.H = Entrada_con_unidades(float)
         layout.addWidget(self.H, 10, 5)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "VGC")), 2, 7)
         self.VGC = Entrada_con_unidades(float)
         layout.addWidget(self.VGC, 2, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Cetane index")), 3, 7)
         self.cetane = Entrada_con_unidades(float)
         layout.addWidget(self.cetane, 3, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Pour point")), 4, 7)
         self.pour = Entrada_con_unidades(unidades.Temperature)
         layout.addWidget(self.pour, 4, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Aniline point")), 5, 7)
         self.aniline = Entrada_con_unidades(unidades.Temperature)
         layout.addWidget(self.aniline, 5, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Freezing point")), 6, 7)
         self.freezing = Entrada_con_unidades(unidades.Temperature)
         layout.addWidget(self.freezing, 6, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Cloud point")), 7, 7)
         self.cloud = Entrada_con_unidades(unidades.Temperature)
         layout.addWidget(self.cloud, 7, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Smoke point")), 8, 7)
         self.smoke = Entrada_con_unidades(unidades.Length)
         layout.addWidget(self.smoke, 8, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Flash point (open)")), 9, 7)
         self.flashOpen = Entrada_con_unidades(unidades.Temperature)
         layout.addWidget(self.flashOpen, 9, 8)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Flash point (closed)")), 10, 7)
         self.flashClosed = Entrada_con_unidades(unidades.Temperature)
         layout.addWidget(self.flashClosed, 10, 8)
@@ -263,7 +263,7 @@ class Definicion_Petro(newComponent):
 
     def __init__(self, parent=None):
         super(Definicion_Petro, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Petrol component definition"))
 
         layout = QtWidgets.QVBoxLayout(self)
@@ -275,7 +275,7 @@ class Definicion_Petro(newComponent):
         distilationPage = QtWidgets.QWidget()
         self.toolBox.addTab(
             distilationPage,
-            QtWidgets.QApplication.translate("pychemqt", "Distillation data"))
+            tr("pychemqt", "Distillation data"))
         lyt = QtWidgets.QGridLayout(distilationPage)
 
         # Widget with curve functionality
@@ -293,18 +293,18 @@ class Definicion_Petro(newComponent):
         lytcurve.addWidget(self.curvaDestilacion, 2, 1, 3, 3)
         self.regresionButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "fit.png"))),
-            QtWidgets.QApplication.translate("pychemqt", "Regression"))
-        self.regresionButton.setToolTip(QtWidgets.QApplication.translate(
+            tr("pychemqt", "Regression"))
+        self.regresionButton.setToolTip(tr(
             "pychemqt", "Calculate missing required values from a curve fit"))
         self.regresionButton.clicked.connect(self.regresionCurve)
         lytcurve.addWidget(self.regresionButton, 2, 3)
         self.finishButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "arrow-right.png"))),
-            QtWidgets.QApplication.translate("pychemqt", "Finish"))
+            tr("pychemqt", "Finish"))
         self.finishButton.clicked.connect(self.finishCurva)
         lytcurve.addWidget(self.finishButton, 5, 3)
         lytcurve.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Pressure")), 5, 1)
+            tr("pychemqt", "Pressure")), 5, 1)
         self.presion = Entrada_con_unidades(Pressure, value=101325.)
         self.presion.valueChanged.connect(partial(
             self.changeParams, "P_curve"))
@@ -332,7 +332,7 @@ class Definicion_Petro(newComponent):
         lytcrude.addWidget(self.Cplus, 2, 2)
 
         self.checkCurva = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Define destillation curve"))
         self.checkCurva.toggled.connect(curveWidget.setEnabled)
         curveWidget.setEnabled(False)
@@ -342,7 +342,7 @@ class Definicion_Petro(newComponent):
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1)
         self.checkCrudo = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Use petrol fraction from list"))
         self.checkCrudo.toggled.connect(self.changeUnknown)
         self.checkCrudo.toggled.connect(crudeWidget.setEnabled)
@@ -352,11 +352,11 @@ class Definicion_Petro(newComponent):
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             6, 1, 1, 2)
-        self.checkBlend = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.checkBlend = QtWidgets.QCheckBox(tr(
             "pychemqt", "Blend if its necessary"))
         lyt.addWidget(self.checkBlend, 7, 1, 1, 2)
         self.cutButton = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "Define cut ranges"))
+            tr("pychemqt", "Define cut ranges"))
         self.cutButton.setEnabled(False)
         self.cutButton.clicked.connect(self.showCutRange)
         lyt.addWidget(self.cutButton, 7, 2)
@@ -369,39 +369,39 @@ class Definicion_Petro(newComponent):
         definitionPage = QtWidgets.QWidget()
         self.toolBox.addTab(
             definitionPage,
-            QtWidgets.QApplication.translate("pychemqt", "Bulk Definition"))
+            tr("pychemqt", "Bulk Definition"))
 
         lyt = QtWidgets.QGridLayout(definitionPage)
         txt = QtWidgets.QLabel("Tb")
         txt.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "Boiling point"))
+            tr("pychemqt", "Boiling point"))
         lyt.addWidget(txt, 1, 1)
         self.Tb = Entrada_con_unidades(Temperature)
         self.Tb.valueChanged.connect(partial(self.changeParams, "Tb"))
         lyt.addWidget(self.Tb, 1, 2)
         txt = QtWidgets.QLabel("M")
         txt.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "Molecular weight"))
+            tr("pychemqt", "Molecular weight"))
         lyt.addWidget(txt, 2, 1)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
         self.M.valueChanged.connect(partial(self.changeParams, "M"))
         lyt.addWidget(self.M, 2, 2)
         txt = QtWidgets.QLabel("SG")
         txt.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "Specific Gravity"))
+            tr("pychemqt", "Specific Gravity"))
         lyt.addWidget(txt, 3, 1)
         self.SG = Entrada_con_unidades(float)
         self.SG.valueChanged.connect(partial(self.changeParams, "SG"))
         lyt.addWidget(self.SG, 3, 2)
         txt = QtWidgets.QLabel("API")
         txt.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "API Gravity"))
+            tr("pychemqt", "API Gravity"))
         lyt.addWidget(txt, 4, 1)
         self.API = Entrada_con_unidades(float)
         self.API.valueChanged.connect(partial(self.changeParams, "API"))
         lyt.addWidget(self.API, 4, 2)
         txt = QtWidgets.QLabel("Kw")
-        txt.setToolTip(QtWidgets.QApplication.translate(
+        txt.setToolTip(tr(
             "pychemqt", "Watson characterization factor"))
         lyt.addWidget(txt, 5, 1)
         self.Kw = Entrada_con_unidades(float)
@@ -412,28 +412,28 @@ class Definicion_Petro(newComponent):
         self.CH.valueChanged.connect(partial(self.changeParams, "CH"))
         lyt.addWidget(self.CH, 6, 2)
         txt = QtWidgets.QLabel("ν<sub>100F</sub>")
-        txt.setToolTip(QtWidgets.QApplication.translate(
+        txt.setToolTip(tr(
             "pychemqt", "Kinematic viscosity at 100ºF"))
         lyt.addWidget(txt, 7, 1)
         self.v100 = Entrada_con_unidades(Diffusivity)
         self.v100.valueChanged.connect(partial(self.changeParams, "v100"))
         lyt.addWidget(self.v100, 7, 2)
         txt = QtWidgets.QLabel("ν<sub>210F</sub>")
-        txt.setToolTip(QtWidgets.QApplication.translate(
+        txt.setToolTip(tr(
             "pychemqt", "Kinematic viscosity at 210ºF"))
         lyt.addWidget(txt, 8, 1)
         self.v210 = Entrada_con_unidades(Diffusivity)
         self.v210.valueChanged.connect(partial(self.changeParams, "v210"))
         lyt.addWidget(self.v210, 8, 2)
         txt = QtWidgets.QLabel("n")
-        txt.setToolTip(QtWidgets.QApplication.translate(
+        txt.setToolTip(tr(
             "pychemqt", "Refractive index"))
         lyt.addWidget(txt, 9, 1)
         self.n = Entrada_con_unidades(float)
         self.n.valueChanged.connect(partial(self.changeParams, "n"))
         lyt.addWidget(self.n, 9, 2)
         txt = QtWidgets.QLabel("I")
-        txt.setToolTip(QtWidgets.QApplication.translate(
+        txt.setToolTip(tr(
             "pychemqt", "Huang Parameter"))
         lyt.addWidget(txt, 10, 1)
         self.I = Entrada_con_unidades(float)
@@ -455,10 +455,10 @@ class Definicion_Petro(newComponent):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             14, 1, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Alternate definition, poor accuracy")), 15, 1, 1, 2)
         txt = QtWidgets.QLabel("Nc")
-        txt.setToolTip(QtWidgets.QApplication.translate(
+        txt.setToolTip(tr(
             "pychemqt", "Carbon number"))
         lyt.addWidget(txt, 16, 1)
         self.Nc = Entrada_con_unidades(int, width=50)
@@ -470,7 +470,7 @@ class Definicion_Petro(newComponent):
         self.toolBox.addTab(
             configPage,
             QtGui.QIcon(IMAGE_PATH + "button/configure.png"),
-            QtWidgets.QApplication.translate("pychemqt", "Configuration"))
+            tr("pychemqt", "Configuration"))
 
         # Initialization section
         newComponent.loadUI(self)

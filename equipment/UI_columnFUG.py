@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from functools import partial
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 
 from lib.config import getComponents
@@ -51,7 +51,7 @@ class UI_equipment(UI_equip):
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Feed tray")), 2, 0)
+            tr("pychemqt", "Feed tray")), 2, 0)
         self.feed = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_FEED:
             self.feed.addItem(txt)
@@ -60,7 +60,7 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.feed, 2, 1)
 
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Condenser")), 3, 0)
+            tr("pychemqt", "Condenser")), 3, 0)
         self.condenser = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_CONDENSER:
             self.condenser.addItem(txt)
@@ -71,15 +71,15 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 0, 1, 5)
 
-        group = QtWidgets.QGroupBox(QtWidgets.QApplication.translate(
+        group = QtWidgets.QGroupBox(tr(
             "pychemqt", "Key Components specification"))
         lyt.addWidget(group, 5, 0, 1, 5)
         layout = QtWidgets.QGridLayout(group)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Light")), 1, 1)
+            tr("pychemqt", "Light")), 1, 1)
         self.LK = QtWidgets.QComboBox()
         layout.addWidget(self.LK, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Split in destilate")), 1, 4)
         self.LKsplit = Entrada_con_unidades(float, spinbox=True, max=1.)
         self.LKsplit.valueChanged.connect(
@@ -87,13 +87,13 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.LKsplit, 1, 5)
 
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Heavy")), 2, 1)
+            tr("pychemqt", "Heavy")), 2, 1)
         self.HK = QtWidgets.QComboBox()
         layout.addWidget(self.HK, 2, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             40, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed), 2, 3)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Spit in residue")), 2, 4)
+            tr("pychemqt", "Spit in residue")), 2, 4)
         self.HKsplit = Entrada_con_unidades(float, spinbox=True, max=1.)
         self.HKsplit.valueChanged.connect(
             partial(self.changeParams, "HKsplit"))
@@ -112,7 +112,7 @@ class UI_equipment(UI_equip):
             6, 0, 1, 5)
 
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Reflux ratio")), 7, 0)
+            tr("pychemqt", "Reflux ratio")), 7, 0)
         self.R = Entrada_con_unidades(float)
         self.R.valueChanged.connect(partial(self.changeParams, "R"))
         lyt.addWidget(self.R, 7, 1)
@@ -122,12 +122,12 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.R_Rmin, 8, 1)
 
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Design Pressure")), 7, 3)
+            tr("pychemqt", "Design Pressure")), 7, 3)
         self.Pd = Entrada_con_unidades(Pressure)
         self.Pd.valueChanged.connect(partial(self.changeParams, "Pd"))
         lyt.addWidget(self.Pd, 7, 4)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Pressure loss")), 8, 3)
+            tr("pychemqt", "Pressure loss")), 8, 3)
         self.DeltaP = Entrada_con_unidades(Pressure)
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
         lyt.addWidget(self.DeltaP, 8, 4)
@@ -135,21 +135,21 @@ class UI_equipment(UI_equip):
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             9, 0, 1, 5)
         self.buttonMcCabe = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "McCabe-Thiele"))
+            tr("pychemqt", "McCabe-Thiele"))
         self.buttonMcCabe.clicked.connect(self.mcCabe)
         lyt.addWidget(self.buttonMcCabe, 10, 0)
 
         groupBox_Calculo = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Results"))
+            tr("pychemqt", "Results"))
         lyt.addWidget(groupBox_Calculo, 11, 0, 1, 5)
         layout = QtWidgets.QGridLayout(groupBox_Calculo)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Condenser Duty")), 0, 1)
+            tr("pychemqt", "Condenser Duty")), 0, 1)
         self.DutyCondenser = Entrada_con_unidades(Power, retornar=False)
         self.DutyCondenser.setReadOnly(True)
         layout.addWidget(self.DutyCondenser, 0, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Reboiler Duty")), 1, 1)
+            tr("pychemqt", "Reboiler Duty")), 1, 1)
         self.DutyReboiler = Entrada_con_unidades(Power, retornar=False)
         self.DutyReboiler.setReadOnly(True)
         layout.addWidget(self.DutyReboiler, 1, 2)
@@ -157,7 +157,7 @@ class UI_equipment(UI_equip):
         self.Rmin = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.Rmin, 2, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Reflux ratio")), 3, 1)
+            tr("pychemqt", "Reflux ratio")), 3, 1)
         self.RCalculada = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.RCalculada, 3, 2)
 
@@ -165,18 +165,18 @@ class UI_equipment(UI_equip):
         self.Nmin = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.Nmin, 0, 5)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Stages")), 1, 4)
+            tr("pychemqt", "Stages")), 1, 4)
         self.NTray = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.NTray, 1, 5)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Feed stage")), 2, 4)
+            tr("pychemqt", "Feed stage")), 2, 4)
         self.N_feed = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.N_feed, 2, 5)
 
         # Cost tab
         lyt = QtWidgets.QGridLayout(self.tabCostos)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Process")), 1, 1)
+            tr("pychemqt", "Process")), 1, 1)
         self.proceso = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_PROCESS:
             self.proceso.addItem(txt)
@@ -184,14 +184,14 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "proceso"))
         lyt.addWidget(self.proceso, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Column tipe")), 2, 1)
+            tr("pychemqt", "Column tipe")), 2, 1)
         self.tipo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_COLUMN:
             self.tipo.addItem(txt)
         self.tipo.currentIndexChanged.connect(self.mostrarSubclasificacion)
         lyt.addWidget(self.tipo, 2, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Material")), 3, 1)
+            tr("pychemqt", "Material")), 3, 1)
         self.material = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MATERIAL:
             self.material.addItem(txt)
@@ -204,11 +204,11 @@ class UI_equipment(UI_equip):
             1, 3, 5, 1)
 
         self.groupBox_Pisos = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Tray column"))
+            tr("pychemqt", "Tray column"))
         lyt.addWidget(self.groupBox_Pisos, 1, 4, 4, 2)
         layout = QtWidgets.QGridLayout(self.groupBox_Pisos)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Tray type")), 1, 1)
+            tr("pychemqt", "Tray type")), 1, 1)
         self.tipoPisos = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TRAY:
             self.tipoPisos.addItem(txt)
@@ -216,7 +216,7 @@ class UI_equipment(UI_equip):
             partial(self.changeParamsCoste, "tipo_pisos"))
         layout.addWidget(self.tipoPisos, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Material")), 2, 1)
+            tr("pychemqt", "Material")), 2, 1)
         self.materialPisos = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MATERIAL:
             self.materialPisos.addItem(txt)
@@ -227,11 +227,11 @@ class UI_equipment(UI_equip):
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             3, 1, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Diameter")), 4, 1)
+            tr("pychemqt", "Diameter")), 4, 1)
         self.diametroPisos = Entrada_con_unidades(Length)
         layout.addWidget(self.diametroPisos, 4, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Stages")), 5, 1)
+            tr("pychemqt", "Stages")), 5, 1)
         self.NumeroPisos = Entrada_con_unidades(int, spinbox=True, min=1,
                                                 step=1, width=50)
         layout.addWidget(self.NumeroPisos, 5, 2)
@@ -240,15 +240,15 @@ class UI_equipment(UI_equip):
             6, 1, 1, 2)
 
         self.groupBox_relleno = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Packed column"))
+            tr("pychemqt", "Packed column"))
         lyt.addWidget(self.groupBox_relleno, 1, 4, 4, 2)
         layout = QtWidgets.QGridLayout(self.groupBox_relleno)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Volume")), 1, 1)
+            tr("pychemqt", "Volume")), 1, 1)
         self.VolumenRelleno = Entrada_con_unidades(Volume, "VolLiq")
         layout.addWidget(self.VolumenRelleno, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Unit Cost")), 2, 1)
+            tr("pychemqt", "Unit Cost")), 2, 1)
         texto = "%s / %s" % (Currency(None).text(), Volume(None).text("VolLiq"))
         self.C_unit_relleno = Entrada_con_unidades(Currency, retornar=False,
                                                    textounidad=texto)
@@ -258,23 +258,23 @@ class UI_equipment(UI_equip):
             3, 1, 1, 2)
 
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Diameter")), 5, 1)
+            tr("pychemqt", "Diameter")), 5, 1)
         self.Dc = Entrada_con_unidades(Length)
         lyt.addWidget(self.Dc, 5, 2, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Height")), 6, 1)
+            tr("pychemqt", "Height")), 6, 1)
         self.Hc = Entrada_con_unidades(Length)
         lyt.addWidget(self.Hc, 6, 2, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Thickness (top)")), 6, 4)
+            tr("pychemqt", "Thickness (top)")), 6, 4)
         self.EspesorSuperior = Entrada_con_unidades(Length, "Thickness")
         lyt.addWidget(self.EspesorSuperior, 6, 5, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Thickness (bottom)")), 7, 4)
         self.EspesorInferior = Entrada_con_unidades(Length, "Thickness")
         lyt.addWidget(self.EspesorInferior, 7, 5, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Density")), 7, 1)
+            tr("pychemqt", "Density")), 7, 1)
         self.EspesorInferior = Entrada_con_unidades(Density, "DenLiq")
         lyt.addWidget(self.EspesorInferior, 7, 2, 1, 2)
 
@@ -287,43 +287,43 @@ class UI_equipment(UI_equip):
             12, 1, 1, 6)
 
         self.groupBox_Costos = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Stimated costs"))
+            tr("pychemqt", "Stimated costs"))
         lyt.addWidget(self.groupBox_Costos, 13, 1, 1, 5)
         layout = QtWidgets.QGridLayout(self.groupBox_Costos)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Tray cost")), 0, 1)
+            tr("pychemqt", "Tray cost")), 0, 1)
         self.C_pisos = Entrada_con_unidades(Currency, retornar=False)
         self.C_pisos.setReadOnly(True)
         layout.addWidget(self.C_pisos, 0, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Shell cost")), 1, 1)
+            tr("pychemqt", "Shell cost")), 1, 1)
         self.C_carcasa = Entrada_con_unidades(Currency, retornar=False)
         self.C_carcasa.setReadOnly(True)
         layout.addWidget(self.C_carcasa, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Platform and ladder")), 2, 1)
         self.C_accesorios = Entrada_con_unidades(Currency, retornar=False)
         self.C_accesorios.setReadOnly(True)
         layout.addWidget(self.C_accesorios, 2, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Column cost")), 0, 4)
+            tr("pychemqt", "Column cost")), 0, 4)
         self.C_columna = Entrada_con_unidades(Currency, retornar=False)
         self.C_columna.setReadOnly(True)
         layout.addWidget(self.C_columna, 0, 5)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Purchase costs")), 1, 4)
+            tr("pychemqt", "Purchase costs")), 1, 4)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False)
         self.C_adq.setReadOnly(True)
         layout.addWidget(self.C_adq, 1, 5)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Installed costs")), 2, 4)
+            tr("pychemqt", "Installed costs")), 2, 4)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False)
         self.C_inst.setReadOnly(True)
         layout.addWidget(self.C_inst, 2, 5)
 
         # Output tab
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Destilate"))
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Residue"))
+        self.addSalida(tr("pychemqt", "Destilate"))
+        self.addSalida(tr("pychemqt", "Residue"))
 
         self.mostrarSubclasificacion(0)
         if equipment:

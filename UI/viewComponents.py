@@ -22,7 +22,7 @@ from functools import partial
 import os
 import tempfile
 
-from tools.qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets, tr
 
 from scipy import array, optimize, linspace
 
@@ -113,7 +113,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
 
         lyt = QtWidgets.QGridLayout(self)
         self.btnFit = QtWidgets.QToolButton()
-        self.btnFit.setToolTip(QtWidgets.QApplication.translate(
+        self.btnFit.setToolTip(tr(
             "pychemqt", "Fit parameters from experimental data"))
         self.btnFit.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "fit.png"))))
@@ -122,7 +122,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         self.btnFit.clicked.connect(self.fit)
         lyt.addWidget(self.btnFit, 1, 1, 2, 1)
         self.btnPlot = QtWidgets.QToolButton()
-        self.btnPlot.setToolTip(QtWidgets.QApplication.translate(
+        self.btnPlot.setToolTip(tr(
             "pychemqt", "Plot equation vs temperature"))
         self.btnPlot.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "plot.png"))))
@@ -410,8 +410,8 @@ class DIPPR_widget(QtWidgets.QGroupBox):
                 self.plot(r)
                 self.valueChanged.emit()
             else:
-                title = QtWidgets.QApplication.translate("pychemqt", "Warning")
-                msg = QtWidgets.QApplication.translate(
+                title = tr("pychemqt", "Warning")
+                msg = tr(
                         "pychemqt", "Fit unsuccessfully")
                 QtWidgets.QMessageBox.warning(self, title, msg)
 
@@ -472,7 +472,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.formula = QLabelMath(self.latex)
         layout.addWidget(self.formula, 0, 1, 1, 5)
         self.btnFit = QtWidgets.QToolButton()
-        self.btnFit.setToolTip(QtWidgets.QApplication.translate(
+        self.btnFit.setToolTip(tr(
             "pychemqt", "Fit parameters from experimental data"))
         self.btnFit.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "fit.png"))))
@@ -481,7 +481,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         self.btnFit.clicked.connect(self.fit)
         layout.addWidget(self.btnFit, 1, 1, 2, 1)
         self.btnPlot = QtWidgets.QToolButton()
-        self.btnPlot.setToolTip(QtWidgets.QApplication.translate(
+        self.btnPlot.setToolTip(tr(
             "pychemqt", "Plot equation vs temperature"))
         self.btnPlot.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "plot.png"))))
@@ -750,9 +750,9 @@ class Parametric_widget(QtWidgets.QGroupBox):
                     kw["Tc"] = self.parent.Tc.value
                     kw["Pc"] = self.parent.Pc.value
                 else:
-                    title = QtWidgets.QApplication.translate(
+                    title = tr(
                             "pychemqt", "Warning")
-                    msg = QtWidgets.QApplication.translate(
+                    msg = tr(
                             "pychemqt",
                             "Tc and Pc necessary for wagner correlation")
                     QtWidgets.QMessageBox.warning(self, title, msg)
@@ -761,9 +761,9 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 if self.parent.Tc.value and self.parent.Pc.value:
                     kw["Tc"] = self.parent.Tc.value
                 else:
-                    title = QtWidgets.QApplication.translate(
+                    title = tr(
                             "pychemqt", "Warning")
-                    msg = QtWidgets.QApplication.translate(
+                    msg = tr(
                             "pychemqt",
                             "Tc necessary for tension correlation")
                     QtWidgets.QMessageBox.warning(self, title, msg)
@@ -788,8 +788,8 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 self.plot(r)
                 self.valueChanged.emit()
             else:
-                title = QtWidgets.QApplication.translate("pychemqt", "Warning")
-                msg = QtWidgets.QApplication.translate(
+                title = tr("pychemqt", "Warning")
+                msg = tr(
                         "pychemqt", "Fit unsuccessfully")
                 QtWidgets.QMessageBox.warning(self, title, msg)
 
@@ -816,9 +816,9 @@ class View_Component(QtWidgets.QDialog):
         lytTitle.setSpacing(0)
         if index == 0:
             # Add a QLineEdit to let the user to set the name of compound
-            self.setWindowTitle(QtWidgets.QApplication.translate(
+            self.setWindowTitle(tr(
                 "pychemqt", "Define New Component"))
-            labelName = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            labelName = QtWidgets.QLabel(tr(
                 "pychemqt", "Name")+": ", self)
             lytTitle.addWidget(labelName)
             self.name = QtWidgets.QLineEdit(self)
@@ -828,20 +828,20 @@ class View_Component(QtWidgets.QDialog):
         else:
             # Add a "titlebar" with navigation options
             if index > 10000:
-                self.setWindowTitle(QtWidgets.QApplication.translate(
+                self.setWindowTitle(tr(
                     "pychemqt", "Custom Component Properties"))
             else:
-                self.setWindowTitle(QtWidgets.QApplication.translate(
+                self.setWindowTitle(tr(
                     "pychemqt", "Component Properties"))
             self.btnFirst = QtWidgets.QToolButton(self)
-            self.btnFirst.setToolTip(QtWidgets.QApplication.translate(
+            self.btnFirst.setToolTip(tr(
                 "pychemqt", "Go to first element"))
             self.btnFirst.setIcon(QtGui.QIcon(QtGui.QPixmap(
                 os.path.join(IMAGE_PATH, "button", "arrow-left-double.png"))))
             self.btnFirst.clicked.connect(partial(self.change, 1))
             lytTitle.addWidget(self.btnFirst)
             self.btnPrev = QtWidgets.QToolButton(self)
-            self.btnPrev.setToolTip(QtWidgets.QApplication.translate(
+            self.btnPrev.setToolTip(tr(
                 "pychemqt", "Go to previous element"))
             self.btnPrev.setIcon(QtGui.QIcon(QtGui.QPixmap(
                 os.path.join(IMAGE_PATH, "button", "arrow-left.png"))))
@@ -850,14 +850,14 @@ class View_Component(QtWidgets.QDialog):
             self.name = QtWidgets.QLabel(self)
             lytTitle.addWidget(self.name)
             self.btnNext = QtWidgets.QToolButton(self)
-            self.btnNext.setToolTip(QtWidgets.QApplication.translate(
+            self.btnNext.setToolTip(tr(
                 "pychemqt", "Go to next element"))
             self.btnNext.setIcon(QtGui.QIcon(QtGui.QPixmap(
                 os.path.join(IMAGE_PATH, "button", "arrow-right.png"))))
             self.btnNext.clicked.connect(partial(self.change, "+1"))
             lytTitle.addWidget(self.btnNext)
             self.btnLast = QtWidgets.QToolButton(self)
-            self.btnLast.setToolTip(QtWidgets.QApplication.translate(
+            self.btnLast.setToolTip(tr(
                 "pychemqt", "Go to last element"))
             self.btnLast.setIcon(QtGui.QIcon(QtGui.QPixmap(
                 os.path.join(IMAGE_PATH, "button", "arrow-right-double.png"))))
@@ -878,34 +878,34 @@ class View_Component(QtWidgets.QDialog):
 
         # General tab
         tab1 = QtWidgets.QWidget()
-        tabWidget.addTab(tab1, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab1, tr(
             "pychemqt", "&General"))
         lytGeneral = QtWidgets.QGridLayout(tab1)
         lytGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Formula")), 1, 1)
+            tr("pychemqt", "Formula")), 1, 1)
         self.formula1 = QtWidgets.QLineEdit()
         self.formula1.editingFinished.connect(self.setDirty)
         lytGeneral.addWidget(self.formula1, 1, 2)
         lytGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "CAS Number")), 2, 1)
+            tr("pychemqt", "CAS Number")), 2, 1)
         self.CAS = QtWidgets.QLineEdit()
         self.CAS.editingFinished.connect(self.setDirty)
         lytGeneral.addWidget(self.CAS, 2, 2)
         lytGeneral.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Alternative Name")),
+            tr("pychemqt", "Alternative Name")),
             3, 1)
         self.alternateName = QtWidgets.QLineEdit()
         self.alternateName.editingFinished.connect(self.setDirty)
         lytGeneral.addWidget(self.alternateName, 3, 2)
 
         labelSmile = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Smile Code"))
+            tr("pychemqt", "Smile Code"))
         lytGeneral.addWidget(labelSmile, 4, 1)
         self.smile = QtWidgets.QLineEdit()
         self.smile.editingFinished.connect(self.setDirty)
         lytGeneral.addWidget(self.smile, 4, 2)
 
-        labelFormula2 = QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        labelFormula2 = QtWidgets.QLabel(tr(
             "pychemqt", "Expanded Formula"))
         lytGeneral.addWidget(labelFormula2, 5, 1)
         self.formula2 = QtSvgWidgets.QSvgWidget()
@@ -932,7 +932,7 @@ class View_Component(QtWidgets.QDialog):
         self.Vc.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.Vc, 4, 5)
         labelw = QtWidgets.QLabel("ω")
-        labelw.setToolTip(QtWidgets.QApplication.translate(
+        labelw.setToolTip(tr(
             "pychemqt", "Acentric factor"))
         lytGeneral.addWidget(labelw, 5, 4)
         self.w = Entrada_con_unidades(float)
@@ -943,14 +943,14 @@ class View_Component(QtWidgets.QDialog):
         self.SG.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.SG, 6, 5)
         labelTm = QtWidgets.QLabel("T<sub>m</sub>")
-        labelTm.setToolTip(QtWidgets.QApplication.translate(
+        labelTm.setToolTip(tr(
             "pychemqt", "Melting Point")),
         lytGeneral.addWidget(labelTm, 7, 4)
         self.Tm = Entrada_con_unidades(unidades.Temperature)
         self.Tm.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.Tm, 7, 5)
         labelTb = QtWidgets.QLabel("T<sub>b</sub>")
-        labelTb.setToolTip(QtWidgets.QApplication.translate(
+        labelTb.setToolTip(tr(
             "pychemqt", "Boiling Point")),
         lytGeneral.addWidget(labelTb, 8, 4)
         self.Tb = Entrada_con_unidades(unidades.Temperature)
@@ -973,13 +973,13 @@ class View_Component(QtWidgets.QDialog):
 
         # Cp tab
         tab2 = QtWidgets.QWidget()
-        tabWidget.addTab(tab2, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab2, tr(
             "pychemqt", "&Cp"))
         lytCp = QtWidgets.QGridLayout(tab2)
         lytCp.setSpacing(25)
 
         grpCpIdeal = QtWidgets.QGroupBox(
-                QtWidgets.QApplication.translate("pychemqt", "Cp ideal gas") +
+                tr("pychemqt", "Cp ideal gas") +
                 ", cal/mol·K")
         lytCp.addWidget(grpCpIdeal, 1, 1, 1, 1)
         lytCpIdeal = QtWidgets.QGridLayout(grpCpIdeal)
@@ -1014,17 +1014,17 @@ class View_Component(QtWidgets.QDialog):
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 4, 1, 1, 4)
 
-        self.cpGasDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.cpGasDIPPR = DIPPR_widget(tr(
             "pychemqt", "Cp ideal gas DIPPR"), unidades.MolarSpecificHeat,
             index, "cpG", parent=self)
         self.cpGasDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpGasDIPPR, 1, 2)
-        self.cpLiquidDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.cpLiquidDIPPR = DIPPR_widget(tr(
             "pychemqt", "Cp liquid DIPPR"), unidades.MolarSpecificHeat, index,
             "cpL", parent=self)
         self.cpLiquidDIPPR.valueChanged.connect(self.setDirty)
         lytCp.addWidget(self.cpLiquidDIPPR, 2, 1)
-        self.cpSolidDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.cpSolidDIPPR = DIPPR_widget(tr(
             "pychemqt", "Cp solid DIPPR"), unidades.MolarSpecificHeat, index,
             "cpS", parent=self)
         self.cpSolidDIPPR.valueChanged.connect(self.setDirty)
@@ -1035,17 +1035,17 @@ class View_Component(QtWidgets.QDialog):
 
         # Density tab
         tab3 = QtWidgets.QWidget()
-        tabWidget.addTab(tab3, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab3, tr(
             "pychemqt", "&Density"))
         lytRho = QtWidgets.QGridLayout(tab3)
         lytRho.setSpacing(25)
 
-        self.RhoSolid = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.RhoSolid = DIPPR_widget(tr(
             "pychemqt", "Solid Density DIPPR"), unidades.MolarDensity, index,
             "rhoS", parent=self)
         self.RhoSolid.valueChanged.connect(self.setDirty)
         lytRho.addWidget(self.RhoSolid, 1, 1)
-        self.RhoLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.RhoLiquid = DIPPR_widget(tr(
             "pychemqt", "Liquid Density DIPPR"), unidades.MolarDensity, index,
             "rhoL", parent=self)
         self.RhoLiquid.valueChanged.connect(self.setDirty)
@@ -1056,23 +1056,23 @@ class View_Component(QtWidgets.QDialog):
 
         # Viscosity tab
         tab4 = QtWidgets.QWidget()
-        tabWidget.addTab(tab4, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab4, tr(
             "pychemqt", "&Viscosity"))
         lytMu = QtWidgets.QGridLayout(tab4)
         lytMu.setSpacing(25)
 
-        self.muLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.muLiquid = DIPPR_widget(tr(
             "pychemqt", "Liquid Viscosity DIPPR"), unidades.Viscosity, index,
             "muL", parent=self)
         self.muLiquid.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muLiquid, 1, 1)
-        self.muGas = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.muGas = DIPPR_widget(tr(
             "pychemqt", "Gas Viscosity DIPPR"), unidades.Viscosity, index,
             "muG", parent=self)
         self.muGas.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muGas, 1, 2)
         self.muParametric = Parametric_widget(
-                QtWidgets.QApplication.translate("pychemqt", "Viscosity"),
+                tr("pychemqt", "Viscosity"),
                 unidades.Viscosity, index, "viscosity", parent=self)
         self.muParametric.valueChanged.connect(self.setDirty)
         lytMu.addWidget(self.muParametric, 2, 1)
@@ -1082,27 +1082,27 @@ class View_Component(QtWidgets.QDialog):
 
         # Pressure vapor and vaporization heat tab
         tab5 = QtWidgets.QWidget()
-        tabWidget.addTab(tab5, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab5, tr(
             "pychemqt", "P&v && Hv"))
         lytVapor = QtWidgets.QGridLayout(tab5)
         lytVapor.setSpacing(25)
 
-        self.Hv = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.Hv = DIPPR_widget(tr(
             "pychemqt", "Heat of vaporization DIPPR"), unidades.MolarEnthalpy,
             index, "Hv", parent=self)
         self.Hv.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.Hv, 1, 1)
-        self.PvDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.PvDIPPR = DIPPR_widget(tr(
             "pychemqt", "Vapor Pressure DIPPR"), unidades.Pressure, index,
             "Pv", parent=self)
         self.PvDIPPR.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.PvDIPPR, 1, 2)
-        self.PvAntoine = Parametric_widget(QtWidgets.QApplication.translate(
+        self.PvAntoine = Parametric_widget(tr(
             "pychemqt", "Antoine Vapor Pressure"), unidades.Pressure, index,
             "antoine", parent=self)
         self.PvAntoine.valueChanged.connect(self.setDirty)
         lytVapor.addWidget(self.PvAntoine, 2, 1)
-        self.PvWagner = Parametric_widget(QtWidgets.QApplication.translate(
+        self.PvWagner = Parametric_widget(tr(
             "pychemqt", "Wagner Vapor Pressure"), unidades.Pressure, index,
             "wagner", parent=self)
         self.PvWagner.valueChanged.connect(self.setDirty)
@@ -1113,28 +1113,28 @@ class View_Component(QtWidgets.QDialog):
 
         # Thermal conductiity and surface tension tab
         tab6 = QtWidgets.QWidget()
-        tabWidget.addTab(tab6, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab6, tr(
             "pychemqt", "&Tension && Conductivity"))
         lytThermal = QtWidgets.QGridLayout(tab6)
         lytThermal.setSpacing(25)
 
-        self.ThermalLiquid = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.ThermalLiquid = DIPPR_widget(tr(
             "pychemqt", "Liquid Thermal Conductivity DIPPR"),
             unidades.ThermalConductivity, index, "kL", parent=self)
         self.ThermalLiquid.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.ThermalLiquid, 1, 1)
-        self.ThermalGas = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.ThermalGas = DIPPR_widget(tr(
             "pychemqt", "Gas Thermal Conductivity DIPPR"),
             unidades.ThermalConductivity, index, "kG", parent=self)
         self.ThermalGas.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.ThermalGas, 1, 2)
-        self.SigmaDIPPR = DIPPR_widget(QtWidgets.QApplication.translate(
+        self.SigmaDIPPR = DIPPR_widget(tr(
             "pychemqt", "Surface Tension DIPPR"), unidades.Tension, index,
             "sigma", parent=self)
         self.SigmaDIPPR.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.SigmaDIPPR, 2, 1)
         self.SigmaParametric = Parametric_widget(
-            QtWidgets.QApplication.translate("pychemqt", "Surface Tension"),
+            tr("pychemqt", "Surface Tension"),
             unidades.Tension, index, "tension", parent=self)
         self.SigmaParametric.valueChanged.connect(self.setDirty)
         lytThermal.addWidget(self.SigmaParametric, 2, 2)
@@ -1145,13 +1145,13 @@ class View_Component(QtWidgets.QDialog):
         # EOS tab
         # Add here other EOS parameter when add to database
         tab7 = QtWidgets.QWidget()
-        tabWidget.addTab(tab7, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab7, tr(
             "pychemqt", "&EoS"))
         lytEOS = QtWidgets.QGridLayout(tab7)
         lytEOS.setSpacing(25)
 
         self.Henry = Parametric_widget(
-            QtWidgets.QApplication.translate("pychemqt", "Henry Costant"),
+            tr("pychemqt", "Henry Costant"),
             unidades.Pressure, index, "henry", parent=self)
         self.Henry.valueChanged.connect(self.setDirty)
         lytEOS.addWidget(self.Henry, 1, 1, 2, 1)
@@ -1459,47 +1459,47 @@ class View_Component(QtWidgets.QDialog):
 
         # Others tab
         tab8 = QtWidgets.QWidget()
-        tabWidget.addTab(tab8, QtWidgets.QApplication.translate(
+        tabWidget.addTab(tab8, tr(
             "pychemqt", "&Others"))
         lytOthers = QtWidgets.QGridLayout(tab8)
 
         lytOthers.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Solubility Parameter")), 1, 1)
         self.SolubilityPar = Entrada_con_unidades(unidades.SolubilityParameter)
         self.SolubilityPar.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.SolubilityPar, 1, 2)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Dipole Moment")), 2, 1)
         self.Dipole = Entrada_con_unidades(unidades.DipoleMoment)
         self.Dipole.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.Dipole, 2, 2)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Molecular Diameter")), 3, 1)
         self.MolecularDiameter = Entrada_con_unidades(float, textounidad="Å")
         self.MolecularDiameter.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.MolecularDiameter, 3, 2)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Net calorific value")), 4, 1)
         self.NetHeat = Entrada_con_unidades(unidades.MolarEnthalpy)
         self.NetHeat.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.NetHeat, 4, 2)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Gross calorific value")), 5, 1)
         self.GrossHeat = Entrada_con_unidades(unidades.MolarEnthalpy)
         self.GrossHeat.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.GrossHeat, 5, 2)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Liquid Volume Costant")), 6, 1)
         self.VolLiqConstant = Entrada_con_unidades(unidades.MolarVolume)
         self.VolLiqConstant.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.VolLiqConstant, 6, 2)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "API Gravity")), 7, 1)
         self.API = Entrada_con_unidades(float)
         self.API.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.API, 7, 2)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Modified acentric factor")), 8, 1)
         self.wMod = Entrada_con_unidades(float)
         self.wMod.valueChanged.connect(self.setDirty)
@@ -1507,33 +1507,33 @@ class View_Component(QtWidgets.QDialog):
         lytOthers.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "UNIQUAC area")), 1, 4)
         self.UNIQUACArea = Entrada_con_unidades(float)
         self.UNIQUACArea.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.UNIQUACArea, 1, 5)
         lytOthers.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "UNIQUAC volume")),
+            tr("pychemqt", "UNIQUAC volume")),
             2, 4)
         self.UNIQUACVolume = Entrada_con_unidades(float)
         self.UNIQUACVolume.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.UNIQUACVolume, 2, 5)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Wilson volume")), 3, 4)
         self.wilson = Entrada_con_unidades(unidades.MolarVolume)
         self.wilson.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.wilson, 3, 5)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Stiehl polar factor")), 4, 4)
         self.stiel = Entrada_con_unidades(float)
         self.stiel.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.stiel, 4, 5)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Rackett constant")), 5, 4)
         self.rackett = Entrada_con_unidades(float)
         self.rackett.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.rackett, 5, 5)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Polar parameter")), 6, 4)
         self.PolarParameter = Entrada_con_unidades(float)
         self.PolarParameter.valueChanged.connect(self.setDirty)
@@ -1542,7 +1542,7 @@ class View_Component(QtWidgets.QDialog):
         self.EpsK = Entrada_con_unidades(float)
         self.EpsK.valueChanged.connect(self.setDirty)
         lytOthers.addWidget(self.EpsK, 7, 5)
-        lytOthers.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lytOthers.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Watson factor")), 8, 4)
         self.watson = Entrada_con_unidades(float)
         self.watson.valueChanged.connect(self.setDirty)
@@ -1553,12 +1553,12 @@ class View_Component(QtWidgets.QDialog):
             QtWidgets.QSizePolicy.Policy.Fixed), 9, 1)
 
         label_UNIFAC = QtWidgets.QLabel(
-                QtWidgets.QApplication.translate("pychemqt", "UNIFAC Groups"))
+                tr("pychemqt", "UNIFAC Groups"))
         label_UNIFAC.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop)
         lytOthers.addWidget(label_UNIFAC, 10, 1)
         HHeader = [
-            QtWidgets.QApplication.translate("pychemqt", "Group"),
-            QtWidgets.QApplication.translate("pychemqt", "Contribution")]
+            tr("pychemqt", "Group"),
+            tr("pychemqt", "Contribution")]
         self.UNIFAC = Tabla(2, filas=1, horizontalHeader=HHeader,
                             verticalHeader=False, readOnly=index)
         self.UNIFAC.setItemDelegateForColumn(0, SpinEditor(self))

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 import os
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 from UI.widgets import createAction
 
 
@@ -38,7 +38,7 @@ class TextEditor(QtWidgets.QWidget):
         super().__init__(parent)
         self.texto = texto
         self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Notes"))
+            tr("pychemqt", "Notes"))
         gridLayout = QtWidgets.QVBoxLayout(self)
 
         toolbar = QtWidgets.QToolBar()
@@ -46,73 +46,73 @@ class TextEditor(QtWidgets.QWidget):
         gridLayout.addWidget(toolbar)
         self.fontComboBox = QtWidgets.QFontComboBox()
         self.fontComboBox.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "Font name"))
+            tr("pychemqt", "Font name"))
         self.fontComboBox.textActivated.connect(self.font)
         toolbar.addWidget(self.fontComboBox)
         self.FontColor = QtWidgets.QPushButton()
         self.FontColor.setFixedSize(22, 22)
         self.FontColor.setPalette(QtGui.QPalette(QtGui.QColor("black")))
         self.FontColor.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "Font color"))
+            tr("pychemqt", "Font color"))
         self.FontColor.clicked.connect(self.colordialog)
         toolbar.addWidget(self.FontColor)
         self.FontSize = QtWidgets.QComboBox()
         for i in QtGui.QFontDatabase.standardSizes():
             self.FontSize.addItem(str(i))
         self.FontSize.setToolTip(
-            QtWidgets.QApplication.translate("pychemqt", "Font size"))
+            tr("pychemqt", "Font size"))
         self.FontSize.textActivated.connect(self.PointSize)
         toolbar.addWidget(self.FontSize)
 
         self.actionNegrita = createAction(
             icon=os.path.join("button", "format-text-bold.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Bold"),
+            text=tr("pychemqt", "Bold"),
             slot=self.Negrita, checkable=True)
         toolbar.addAction(self.actionNegrita)
         self.actionCursiva = createAction(
             icon=os.path.join("button", "format-text-italic.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Italic"),
+            text=tr("pychemqt", "Italic"),
             slot=self.Cursiva, checkable=True)
         toolbar.addAction(self.actionCursiva)
         self.actionSubrayado = createAction(
             icon=os.path.join("button", "format-text-underline.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Underline"),
+            text=tr("pychemqt", "Underline"),
             slot=self.Subrayado, checkable=True)
         toolbar.addAction(self.actionSubrayado)
         self.actionTachado = createAction(
             icon=os.path.join("button", "format-text-strikethrough.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Strike through"),
+            text=tr("pychemqt", "Strike through"),
             slot=self.Tachado, checkable=True)
         toolbar.addAction(self.actionTachado)
         self.actionSuperScript = createAction(
             icon=os.path.join("button", "font-superscript.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Superscript"),
+            text=tr("pychemqt", "Superscript"),
             slot=self.Superindice, checkable=True)
         toolbar.addAction(self.actionSuperScript)
         self.actionSubScript = createAction(
             icon=os.path.join("button", "font-subscript.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Subscript"),
+            text=tr("pychemqt", "Subscript"),
             slot=self.Subindice, checkable=True)
         toolbar.addAction(self.actionSubScript)
         toolbar.addSeparator()
         self.actionAlinearIzquierda = createAction(
             icon=os.path.join("button", "format-justify-left.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Align left"),
+            text=tr("pychemqt", "Align left"),
             slot=self.izquierda, checkable=True)
         toolbar.addAction(self.actionAlinearIzquierda)
         self.actionCentrar = createAction(
             icon=os.path.join("button", "format-justify-center.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Center"),
+            text=tr("pychemqt", "Center"),
             slot=self.centrar, checkable=True)
         toolbar.addAction(self.actionCentrar)
         self.actionJustificar = createAction(
             icon=os.path.join("button", "format-justify-fill.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Justify"),
+            text=tr("pychemqt", "Justify"),
             slot=self.justificar, checkable=True)
         toolbar.addAction(self.actionJustificar)
         self.actionAlinearDerecha = createAction(
             icon=os.path.join("button", "format-justify-right.png"),
-            text=QtWidgets.QApplication.translate("pychemqt", "Align right"),
+            text=tr("pychemqt", "Align right"),
             slot=self.derecha, checkable=True)
         toolbar.addAction(self.actionAlinearDerecha)
 

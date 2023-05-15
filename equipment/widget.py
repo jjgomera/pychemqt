@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 #   * Dialog_Finned: Finned tube definition
 ###############################################################################
 
-from tools.qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets, tr
 
 
 from lib.unidades import Fouling, Length, ThermalConductivity
@@ -261,7 +261,7 @@ class Dialog_Finned(QtWidgets.QDialog):
     """Dialog to define finned tube properties"""
     def __init__(self, kwarg=None, parent=None):
         super(Dialog_Finned, self).__init__(parent=parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Specify tube finned characteristics"))
         layout = QtWidgets.QGridLayout(self)
         self.listTube = QtWidgets.QComboBox()
@@ -270,37 +270,37 @@ class Dialog_Finned(QtWidgets.QDialog):
 
         layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
                                          QtWidgets.QSizePolicy.Policy.Fixed), 1, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Material")), 2, 1)
         self.listMaterial = QtWidgets.QComboBox()
         self.listMaterial.addItem("")
-        self.listMaterial.addItem(QtWidgets.QApplication.translate(
+        self.listMaterial.addItem(tr(
             "pychemqt", "Carbon Steel"))
         layout.addWidget(self.listMaterial, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Thermal Conductivity")), 3, 1)
         self.kFin = Entrada_con_unidades(ThermalConductivity)
         layout.addWidget(self.kFin, 3, 2)
         layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
                                          QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Root diameter")), 5, 1)
         self.RootD = Entrada_con_unidades(Length, "PipeDiameter")
         layout.addWidget(self.RootD, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Fin Height")), 6, 1)
         self.hFin = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.hFin, 6, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Base Fin Thickness")), 7, 1)
         self.BaseThickness = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.BaseThickness, 7, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Top Fin Thickness")), 8, 1)
         self.TopThickness = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.TopThickness, 8, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Number of fins")), 9, 1)
         self.Nfin = Entrada_con_unidades(float, textounidad="fins/m")
         layout.addWidget(self.Nfin, 9, 2)

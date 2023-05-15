@@ -92,7 +92,6 @@ PNA decomposition procedures:
 
 from configparser import ConfigParser
 
-from tools.qt import QtWidgets
 from numpy import array
 from numpy.lib.scimath import log, log10
 from numpy.linalg import solve
@@ -100,6 +99,7 @@ from scipy import exp, sqrt
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, leastsq, newton
 
+from tools.qt import tr
 from lib import unidades
 from lib.physics import R_atml, R_Btu
 from lib.newComponent import newComponente
@@ -594,13 +594,13 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
         val1, val2 = val2, val1
 
     if tita1 not in p1 or tita2 not in p2:
-        raise NotImplementedError(QtWidgets.QApplication.translate(
+        raise NotImplementedError(tr(
             "pychemqt", "Undefined input pair"))
     elif tita1 == "M" and (val1 < 70 or val1 > 300):
-        raise NotImplementedError(QtWidgets.QApplication.translate(
+        raise NotImplementedError(tr(
             "pychemqt", "Molecular weight input out of bounds"))
     elif tita1 == "Tb" and (val1 < 300 or val1 > 620):
-        raise NotImplementedError(QtWidgets.QApplication.translate(
+        raise NotImplementedError(tr(
             "pychemqt", "Boiling temperature input out of bounds"))
 
     # Convert input Tb in Kelvin to Rankine to use in the correlation
@@ -1435,7 +1435,7 @@ def prop_Riazi(SG, tita, val):
     """
 
     if tita not in ["M", "Tb"]:
-        raise NotImplementedError(QtWidgets.QApplication.translate(
+        raise NotImplementedError(tr(
             "pychemqt", "Undefined input pair"))
 
     # Convert input Tb in Kelvin to Rankine to use in the correlation
@@ -3504,7 +3504,7 @@ class Petroleo(newComponente):
         9   -   curva de destilación
         """
         self.status = 0
-        self.msg = QtWidgets.QApplication.translate("pychemqt", "Insufficient input")
+        self.msg = tr("pychemqt", "Insufficient input")
 
         self.hasSG = self.kwargs["SG"] or self.kwargs["API"] or \
             (self.kwargs["Kw"] and self.kwargs["Tb"])

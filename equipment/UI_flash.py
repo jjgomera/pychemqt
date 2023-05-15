@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from functools import partial
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 
 from lib.unidades import Length, Mass, Volume, Density, Currency
@@ -48,7 +48,7 @@ class UI_equipment (UI_equip):
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
         lyt_Calc.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Method")), 0, 1)
+            tr("pychemqt", "Method")), 0, 1)
         self.flash = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_FLASH:
             self.flash.addItem(txt)
@@ -62,7 +62,7 @@ class UI_equipment (UI_equip):
         # Cost tab
         lyt_Cost = QtWidgets.QGridLayout(self.tabCostos)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Orientation")), 0, 1)
+            tr("pychemqt", "Orientation")), 0, 1)
         self.orientacion = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_ORIENTATION:
             self.orientacion.addItem(txt)
@@ -70,7 +70,7 @@ class UI_equipment (UI_equip):
             partial(self.changeParamsCoste, "orientacion"))
         lyt_Cost.addWidget(self.orientacion, 0, 2)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Material")), 1, 1)
+            tr("pychemqt", "Material")), 1, 1)
         self.material = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MATERIAL:
             self.material.addItem(txt)
@@ -78,31 +78,31 @@ class UI_equipment (UI_equip):
             partial(self.changeParamsCoste, "material"))
         lyt_Cost.addWidget(self.material, 1, 2, 1, 4)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Density")), 2, 4)
+            tr("pychemqt", "Density")), 2, 4)
         self.Densidad = Entrada_con_unidades(Density, "DenLiq")
         self.Densidad.valueChanged.connect(
             partial(self.changeParamsCoste, "densidad"))
         lyt_Cost.addWidget(self.Densidad, 2, 5)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Diameter")), 2, 1)
+            tr("pychemqt", "Diameter")), 2, 1)
         self.diametro = Entrada_con_unidades(Length)
         self.diametro.valueChanged.connect(
             partial(self.changeParamsCoste, "diametro"))
         lyt_Cost.addWidget(self.diametro, 2, 2)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Length")), 3, 1)
+            tr("pychemqt", "Length")), 3, 1)
         self.longitud = Entrada_con_unidades(Length)
         self.longitud.valueChanged.connect(
             partial(self.changeParamsCoste, "longitud"))
         lyt_Cost.addWidget(self.longitud, 3, 2)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Thickness")), 4, 1)
+            tr("pychemqt", "Thickness")), 4, 1)
         self.espesor = Entrada_con_unidades(Length, "Thickness")
         self.espesor.valueChanged.connect(
             partial(self.changeParamsCoste, "espesor"))
         lyt_Cost.addWidget(self.espesor, 4, 2)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Head type")), 5, 1)
+            tr("pychemqt", "Head type")), 5, 1)
         self.cabeza = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_HEAD:
             self.cabeza.addItem(txt)
@@ -110,24 +110,24 @@ class UI_equipment (UI_equip):
             partial(self.changeParamsCoste, "cabeza"))
         lyt_Cost.addWidget(self.cabeza, 5, 2)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Head Thickness")), 6, 1)
+            tr("pychemqt", "Head Thickness")), 6, 1)
         self.espesor_cabeza = Entrada_con_unidades(Length, "Thickness")
         self.espesor_cabeza.valueChanged.connect(
             partial(self.changeParamsCoste, "espesor_cabeza"))
         lyt_Cost.addWidget(self.espesor_cabeza, 6, 2)
-        lyt_Cost.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Cost.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Straight flange length")), 7, 1)
         self.reborde = Entrada_con_unidades(Length)
         self.reborde.valueChanged.connect(
             partial(self.changeParamsCoste, "reborde"))
         lyt_Cost.addWidget(self.reborde, 7, 2)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Volume")), 6, 4)
+            tr("pychemqt", "Volume")), 6, 4)
         self.Volumen = Entrada_con_unidades(Volume, "VolLiq", retornar=False)
         self.Volumen.setReadOnly(True)
         lyt_Cost.addWidget(self.Volumen, 6, 5)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Weight")), 7, 4)
+            tr("pychemqt", "Weight")), 7, 4)
         self.Peso = Entrada_con_unidades(Mass, readOnly=True)
         lyt_Cost.addWidget(self.Peso, 7, 5)
         lyt_Cost.addItem(QtWidgets.QSpacerItem(
@@ -145,17 +145,17 @@ class UI_equipment (UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
             11, 0, 1, 6)
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
+            tr("pychemqt", "Stimated Costs"))
         lyt_Cost.addWidget(group, 12, 1, 1, 5)
         layout = QtWidgets.QGridLayout(group)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Purchase costs")), 0, 1)
+            tr("pychemqt", "Purchase costs")), 0, 1)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False,
                                           tolerancia=8, decimales=2)
         self.C_adq.setReadOnly(True)
         layout.addWidget(self.C_adq, 0, 2)
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Installed costs")), 1, 1)
+            tr("pychemqt", "Installed costs")), 1, 1)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False,
                                            tolerancia=8, decimales=2)
         self.C_inst.setReadOnly(True)
@@ -165,8 +165,8 @@ class UI_equipment (UI_equip):
             13, 0, 1, 6)
 
         # Output tab
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Destilate"))
-        self.addSalida(QtWidgets.QApplication.translate("pychemqt", "Residue"))
+        self.addSalida(tr("pychemqt", "Destilate"))
+        self.addSalida(tr("pychemqt", "Residue"))
 
         if equipment:
             self.setEquipment(equipment)

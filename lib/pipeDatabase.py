@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import sqlite3
 
-from tools.qt import QtWidgets
+from tools.qt import tr
 
 
 # Standard pipe database
@@ -48,17 +48,17 @@ databank = sqlite3.connect(path).cursor()
 databank.execute("select * from Materials")
 CATALOG = databank.fetchall()
 CATALOG_TRANSLATE = {
-    "Cast Iron (Asphalt Dipped)": QtWidgets.QApplication.translate("pychemqt", 'Cast Iron (Asphalt Dipped)'),
-    "Cast Iron": QtWidgets.QApplication.translate("pychemqt", "Cast Iron"),
-    "Copper": QtWidgets.QApplication.translate("pychemqt", "Copper"),
-    "Drains, Waste, Vents": QtWidgets.QApplication.translate("pychemqt", "Drains, Waste, Vents"),
-    "Refrigeration Service": QtWidgets.QApplication.translate("pychemqt", "Refrigeration Service"),
-    "Copper Tube": QtWidgets.QApplication.translate("pychemqt", "Copper Tube"),
-    "PVC (Iron pipe size)": QtWidgets.QApplication.translate("pychemqt", "PVC (Iron pipe size"),
-    "PVC (Sewer pipe)": QtWidgets.QApplication.translate("pychemqt", "PVC (Sewer pipe"),
-    "Steel (ANSI)": QtWidgets.QApplication.translate("pychemqt", "Steel (ANSI)"),
-    "Steel Galvanised (ANSI)": QtWidgets.QApplication.translate("pychemqt", "Steel Galvanised (ANSI)"),
-    "Stainless Steel (ANSI)": QtWidgets.QApplication.translate("pychemqt", "Stainless Steel (ANSI)")}
+    "Cast Iron (Asphalt Dipped)": tr("pychemqt", 'Cast Iron (Asphalt Dipped)'),
+    "Cast Iron": tr("pychemqt", "Cast Iron"),
+    "Copper": tr("pychemqt", "Copper"),
+    "Drains, Waste, Vents": tr("pychemqt", "Drains, Waste, Vents"),
+    "Refrigeration Service": tr("pychemqt", "Refrigeration Service"),
+    "Copper Tube": tr("pychemqt", "Copper Tube"),
+    "PVC (Iron pipe size)": tr("pychemqt", "PVC (Iron pipe size"),
+    "PVC (Sewer pipe)": tr("pychemqt", "PVC (Sewer pipe"),
+    "Steel (ANSI)": tr("pychemqt", "Steel (ANSI)"),
+    "Steel Galvanised (ANSI)": tr("pychemqt", "Steel Galvanised (ANSI)"),
+    "Stainless Steel (ANSI)": tr("pychemqt", "Stainless Steel (ANSI)")}
 
 
 # Pipe fitting K values
@@ -75,34 +75,34 @@ path = os.environ["pychemqt"]+"dat/pipeDatabase.db"
 databank.execute("select * from Fitting")
 FITTING = databank.fetchall()
 FITTING_DESC = {
-    "SB": QtWidgets.QApplication.translate("pychemqt", 'Standard Bend'),
-    "LB": QtWidgets.QApplication.translate("pychemqt", 'Long Bend'),
-    "PB": QtWidgets.QApplication.translate("pychemqt", 'Pipe Bend'),
-    'MB90': QtWidgets.QApplication.translate("pychemqt", "Mitre bend") + " 90\xb0",
-    "E45": QtWidgets.QApplication.translate("pychemqt", 'Elbow') + " 90\xb0",
-    'MB45': QtWidgets.QApplication.translate("pychemqt", "Mitre bend")+" 45\xb0",
-    'RB': QtWidgets.QApplication.translate("pychemqt", "Return bend"),
-    'TT': QtWidgets.QApplication.translate("pychemqt", "Through Tee"),
-    'BT': QtWidgets.QApplication.translate("pychemqt", "Branch Tee"),
-    'St': QtWidgets.QApplication.translate("pychemqt", "Strainer"),
-    'Open': QtWidgets.QApplication.translate("pychemqt", "Open pipe Exit"),
-    'ExitCon': QtWidgets.QApplication.translate("pychemqt", "Pipe Exit to Container"),
-    'EntSharp': QtWidgets.QApplication.translate("pychemqt", "Pipe Entry Sharp Edged"),
-    'EntProj': QtWidgets.QApplication.translate("pychemqt", "Pipe Entry Projecting"),
-    'Plug': QtWidgets.QApplication.translate("pychemqt", "Plug Valve Straightway"),
-    'Globe': QtWidgets.QApplication.translate("pychemqt", "Globe Valve"),
-    'Gate': QtWidgets.QApplication.translate("pychemqt", "Gate Valve"),
-    'Bfly': QtWidgets.QApplication.translate("pychemqt", "Butterfly Valve"),
-    'BallRB': QtWidgets.QApplication.translate("pychemqt", "Ball Valve Reduced Bore"),
-    'BallFB': QtWidgets.QApplication.translate("pychemqt", "Ball Valve Full Bore"),
-    'Foot': QtWidgets.QApplication.translate("pychemqt", "Foot Valve with Strainer"),
-    'Hinged': QtWidgets.QApplication.translate("pychemqt", "Hinged Foot Valve with Strainer"),
-    'ChWaf': QtWidgets.QApplication.translate("pychemqt", "Wafer Check Valve"),
-    'ChSw': QtWidgets.QApplication.translate("pychemqt", "Check Swing Valve"),
-    'TiltCh': QtWidgets.QApplication.translate("pychemqt", "Tilting Disk Check"),
-    'LiftCh': QtWidgets.QApplication.translate("pychemqt", "Lift Check Valve"),
-    'Angle': QtWidgets.QApplication.translate("pychemqt", "Globe Valve Angled"),
-    'AngCh': QtWidgets.QApplication.translate("pychemqt", "Lift Check Angled")}
+    "SB": tr("pychemqt", 'Standard Bend'),
+    "LB": tr("pychemqt", 'Long Bend'),
+    "PB": tr("pychemqt", 'Pipe Bend'),
+    'MB90': tr("pychemqt", "Mitre bend") + " 90\xb0",
+    "E45": tr("pychemqt", 'Elbow') + " 90\xb0",
+    'MB45': tr("pychemqt", "Mitre bend")+" 45\xb0",
+    'RB': tr("pychemqt", "Return bend"),
+    'TT': tr("pychemqt", "Through Tee"),
+    'BT': tr("pychemqt", "Branch Tee"),
+    'St': tr("pychemqt", "Strainer"),
+    'Open': tr("pychemqt", "Open pipe Exit"),
+    'ExitCon': tr("pychemqt", "Pipe Exit to Container"),
+    'EntSharp': tr("pychemqt", "Pipe Entry Sharp Edged"),
+    'EntProj': tr("pychemqt", "Pipe Entry Projecting"),
+    'Plug': tr("pychemqt", "Plug Valve Straightway"),
+    'Globe': tr("pychemqt", "Globe Valve"),
+    'Gate': tr("pychemqt", "Gate Valve"),
+    'Bfly': tr("pychemqt", "Butterfly Valve"),
+    'BallRB': tr("pychemqt", "Ball Valve Reduced Bore"),
+    'BallFB': tr("pychemqt", "Ball Valve Full Bore"),
+    'Foot': tr("pychemqt", "Foot Valve with Strainer"),
+    'Hinged': tr("pychemqt", "Hinged Foot Valve with Strainer"),
+    'ChWaf': tr("pychemqt", "Wafer Check Valve"),
+    'ChSw': tr("pychemqt", "Check Swing Valve"),
+    'TiltCh': tr("pychemqt", "Tilting Disk Check"),
+    'LiftCh': tr("pychemqt", "Lift Check Valve"),
+    'Angle': tr("pychemqt", "Globe Valve Angled"),
+    'AngCh': tr("pychemqt", "Lift Check Angled")}
 
 
 # Thermal Conductivity of material, W/mK a 0ºC

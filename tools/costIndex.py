@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from functools import partial
 import os
 
-from tools.qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets, tr
 
 from UI.widgets import Entrada_con_unidades
 from lib.config import conf_dir
@@ -53,62 +53,62 @@ class Ui_CostIndex(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Cost Index"))
+            tr("pychemqt", "Cost Index"))
         self.custom = True
         layout = QtWidgets.QGridLayout(self)
         self.fecha = QtWidgets.QComboBox()
         layout.addWidget(self.fecha, 1, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "CE INDEX")), 2, 1, 1, 2)
         self.index = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.index, 2, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Equipments")), 3, 1, 1, 2)
         self.equipos = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.equipos, 3, 3, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
             30, 0, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 1, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Heat exchangers & Tanks")), 4, 2, 1, 1)
         self.cambiadores_calor = Entrada_con_unidades(
             float, width=70, decimales=1)
         layout.addWidget(self.cambiadores_calor, 4, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Process machinery")), 5, 2, 1, 1)
         self.maquinaria = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.maquinaria, 5, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Pipe, valves & fittings")), 6, 2, 1, 1)
         self.tuberias = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.tuberias, 6, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Process instruments")), 7, 2, 1, 1)
         self.instrumentos = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.instrumentos, 7, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Pumps & compressors")), 8, 2, 1, 1)
         self.bombas = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.bombas, 8, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Electrical equipments")), 9, 2, 1, 1)
         self.equipos_electricos = Entrada_con_unidades(
             float, width=70, decimales=1)
         layout.addWidget(self.equipos_electricos, 9, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Structural supports & misc")), 10, 2, 1, 1)
         self.soportes = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.soportes, 10, 3, 1, 1)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Construction labor")), 11, 1, 1, 2)
         self.construccion = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.construccion, 11, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Buildings")), 12, 1, 1, 2)
         self.edificios = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.edificios, 12, 3, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Engineering & supervision")), 13, 1, 1, 2)
         self.ingenieria = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.ingenieria, 13, 3, 1, 1)
@@ -173,8 +173,8 @@ class Ui_CostIndex(QtWidgets.QDialog):
         """Override close event to ask data changes"""
         dialog = QtWidgets.QMessageBox.question(
             self,
-            QtWidgets.QApplication.translate("pychemqt", "Unsaved changes"),
-            QtWidgets.QApplication.translate("pychemqt",
+            tr("pychemqt", "Unsaved changes"),
+            tr("pychemqt",
                                              "Save unsaved changes?"),
             QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
             QtWidgets.QMessageBox.StandardButton.Yes)
@@ -229,7 +229,7 @@ class CostData(QtWidgets.QWidget):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 1, 0, 1, 7)
         gridLayout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Instalation factor:")), 2, 0)
         self.factorInstalacion = Entrada_con_unidades(
             float, spinbox=True, decimales=1, step=0.1, width=50, value=factor)
@@ -237,12 +237,12 @@ class CostData(QtWidgets.QWidget):
             self.valueChanged.emit, "f_install"))
         gridLayout.addWidget(self.factorInstalacion, 2, 1)
         gridLayout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Base index:")), 2, 4)
+            tr("pychemqt", "Base index:")), 2, 4)
         self.indiceBase = Entrada_con_unidades(
             float, readOnly=True, value=indiceBase[self.indice], decimales=1)
         gridLayout.addWidget(self.indiceBase, 2, 5)
         gridLayout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Current index:")), 3, 4)
         self.indiceActual = Entrada_con_unidades(
             float, readOnly=True, colorReadOnly="white",

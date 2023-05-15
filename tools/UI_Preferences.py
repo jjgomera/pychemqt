@@ -42,7 +42,7 @@ from lib.plot import ConfPlot
 from lib.utilities import representacion
 import plots
 from tools.firstrun import which
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 from tools.qtelemental import Config as ConfigElemental
 from tools.UI_psychrometry import Config as ConfigPsychrometry
 from tools.UI_Tables import prefMEOS
@@ -57,11 +57,11 @@ class ConfGeneral(QtWidgets.QDialog):
         super().__init__(parent)
 
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Highlight color:")), 1, 1)
         self.ColorButtonResaltado = ColorSelector()
         layout.addWidget(self.ColorButtonResaltado, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Readonly color:")), 2, 1)
         self.ColorButtonReadOnly = ColorSelector()
         layout.addWidget(self.ColorButtonReadOnly, 2, 2)
@@ -69,10 +69,10 @@ class ConfGeneral(QtWidgets.QDialog):
             10, 0, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 3, 1)
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Recent Files"))
+            tr("pychemqt", "Recent Files"))
         layout.addWidget(group, 4, 1, 1, 4)
         lyt = QtWidgets.QHBoxLayout(group)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Number of recent files:")))
         self.recentFiles = QtWidgets.QSpinBox()
         self.recentFiles.setRange(1, 20)
@@ -81,11 +81,11 @@ class ConfGeneral(QtWidgets.QDialog):
             10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed))
         self.loadLastProject = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Load last session project"))
         layout.addWidget(self.loadLastProject, 5, 1)
         self.showTrayIcon = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Show tray icon"))
+            tr("pychemqt", "Show tray icon"))
         layout.addWidget(self.showTrayIcon, 6, 1)
 
         layout.addItem(QtWidgets.QSpacerItem(
@@ -124,33 +124,33 @@ class ConfTooltipUnit(QtWidgets.QDialog):
 
         layout = QtWidgets.QVBoxLayout(self)
         self.checkShow = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Show Tool Tips"))
+            tr("pychemqt", "Show Tool Tips"))
         self.checkShow.toggled.connect(self.checkShow_Toggled)
         layout.addWidget(self.checkShow)
 
         self.groupsystems = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate(
+            tr(
                 "pychemqt", "Systems of measurement"))
         layout.addWidget(self.groupsystems)
         lytSystems = QtWidgets.QHBoxLayout(self.groupsystems)
         self.SI = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "SI"))
+            tr("pychemqt", "SI"))
         self.SI.toggled.connect(partial(self.systems, "si"))
         lytSystems.addWidget(self.SI)
         self.AltSI = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Alt SI"))
+            tr("pychemqt", "Alt SI"))
         self.AltSI.toggled.connect(partial(self.systems, "altsi"))
         lytSystems.addWidget(self.AltSI)
         self.English = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "English"))
+            tr("pychemqt", "English"))
         self.English.toggled.connect(partial(self.systems, "english"))
         lytSystems.addWidget(self.English)
         self.Metric = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Metric"))
+            tr("pychemqt", "Metric"))
         self.Metric.toggled.connect(partial(self.systems, "metric"))
         lytSystems.addWidget(self.Metric)
         self.CGS = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "CGS"))
+            tr("pychemqt", "CGS"))
         self.CGS.toggled.connect(partial(self.systems, "cgs"))
         lytSystems.addWidget(self.CGS)
         layout.addItem(QtWidgets.QSpacerItem(
@@ -270,7 +270,7 @@ class ConfTooltipEntity(QtWidgets.QDialog):
         self.tabla[0].horizontalHeader().setVisible(False)
         self.stacked.addWidget(self.tabla[0])
         self.eleccion.addItem(
-            QtWidgets.QApplication.translate("pychemqt", "Stream"))
+            tr("pychemqt", "Stream"))
 
         for i, propiedad in enumerate(corriente.Corriente.propertiesNames()):
             item = QtWidgets.QTableWidgetItem(propiedad[0])
@@ -342,8 +342,8 @@ class ConfFormat(QtWidgets.QTableWidget):
         super().__init__(parent)
         self.setColumnCount(2)
         self.setRowCount(len(unidades.MAGNITUDES))
-        labels = [QtWidgets.QApplication.translate("pychemqt", "Format"),
-                  QtWidgets.QApplication.translate("pychemqt", "Sample")]
+        labels = [tr("pychemqt", "Format"),
+                  tr("pychemqt", "Sample")]
         self.setHorizontalHeaderLabels(labels)
         self.config = []
         for i in range(self.rowCount()):
@@ -410,13 +410,13 @@ class ConfApplications(QtWidgets.QDialog):
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        t = QtWidgets.QApplication.translate("pychemqt", "External Calculator")
-        msg = QtWidgets.QApplication.translate(
+        t = tr("pychemqt", "External Calculator")
+        msg = tr(
             "pychemqt", "Select External Calculator Application")
         self.calculadora = PathConfig(t + ":", msg=msg, patron="exe")
         layout.addWidget(self.calculadora, 1, 1)
-        t = QtWidgets.QApplication.translate("pychemqt", "Text viewer")
-        msg = QtWidgets.QApplication.translate(
+        t = tr("pychemqt", "Text viewer")
+        msg = tr(
             "pychemqt", "Select External Text Viewer Application")
         self.textViewer = PathConfig(t + ":", msg=msg, patron="exe")
         layout.addWidget(self.textViewer, 2, 1)
@@ -424,34 +424,34 @@ class ConfApplications(QtWidgets.QDialog):
         terminal = QtWidgets.QGroupBox()
         layout.addWidget(terminal, 3, 1)
         layoutTerminal = QtWidgets.QGridLayout(terminal)
-        msg = QtWidgets.QApplication.translate(
+        msg = tr(
             "pychemqt", "Select External shell")
         self.terminal = PathConfig("", msg=msg, patron="exe")
         layoutTerminal.addWidget(self.terminal, 1, 1, 1, 3)
         layoutTerminal.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Foreground color:")),
+            tr("pychemqt", "Foreground color:")),
             2, 1)
         self.ForegroundColor = ColorSelector()
         layoutTerminal.addWidget(self.ForegroundColor, 2, 2, 1, 2)
         layoutTerminal.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Background color:")),
+            tr("pychemqt", "Background color:")),
             3, 1)
         self.BackgroundColor = ColorSelector()
         layoutTerminal.addWidget(self.BackgroundColor, 3, 2, 1, 2)
-        self.ipython = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.ipython = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use ipython if its available"))
         layoutTerminal.addWidget(self.ipython, 4, 1, 1, 3)
         self.maximized = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Show maximized"))
+            tr("pychemqt", "Show maximized"))
         layoutTerminal.addWidget(self.maximized, 5, 1, 1, 3)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 10, 1)
 
-        terminalTitle = QtWidgets.QApplication.translate("pychemqt", "Shell")
+        terminalTitle = tr("pychemqt", "Shell")
         if sys.platform == "win32":
             terminal.setEnabled(False)
-            terminalTitle += " (" + QtWidgets.QApplication.translate(
+            terminalTitle += " (" + tr(
                 "pychemqt", "Only Available on linux") + ")"
         terminal.setTitle(terminalTitle)
 
@@ -494,33 +494,33 @@ class Preferences(QtWidgets.QDialog):
     """Preferences main dialog"""
     classes = [
         ("pychemqt.png", ConfGeneral,
-         QtWidgets.QApplication.translate("pychemqt", "General")),
+         tr("pychemqt", "General")),
         ("button/PFD.png", prefPFD.Widget,
-         QtWidgets.QApplication.translate("pychemqt", "PFD")),
+         tr("pychemqt", "PFD")),
         ("button/tooltip.png", ConfTooltipEntity,
-         QtWidgets.QApplication.translate("pychemqt", "Tooltips in PFD")),
+         tr("pychemqt", "Tooltips in PFD")),
         ("button/tooltip.png", ConfTooltipUnit,
-         QtWidgets.QApplication.translate("pychemqt", "Tooltips in units")),
+         tr("pychemqt", "Tooltips in units")),
         ("button/format_numeric.png", ConfFormat,
-         QtWidgets.QApplication.translate("pychemqt", "Numeric format")),
+         tr("pychemqt", "Numeric format")),
         ("button/oil.png", prefPetro.Widget,
-         QtWidgets.QApplication.translate("pychemqt", "Pseudocomponents")),
+         tr("pychemqt", "Pseudocomponents")),
         ("button/applications.png", ConfApplications,
-         QtWidgets.QApplication.translate("pychemqt", "Applications")),
+         tr("pychemqt", "Applications")),
         ("button/plot.png", ConfPlot,
-         QtWidgets.QApplication.translate("pychemqt", "Plotting")),
+         tr("pychemqt", "Plotting")),
         ("button/periodicTable.png", ConfigElemental,
-         QtWidgets.QApplication.translate("pychemqt", "Elemental table")),
+         tr("pychemqt", "Elemental table")),
         ("button/tables.png", prefMEOS.Widget,
-         QtWidgets.QApplication.translate("pychemqt", "mEoS")),
+         tr("pychemqt", "mEoS")),
         ("button/psychrometric.png", ConfigPsychrometry,
-         QtWidgets.QApplication.translate("pychemqt", "Psychrometric chart")),
+         tr("pychemqt", "Psychrometric chart")),
 
         ("button/moody.png", plots.Pref,
-         QtWidgets.QApplication.translate("pychemqt", "Chart")),
+         tr("pychemqt", "Chart")),
 
         ("chemistry/grupo18.png", ConfBabel,
-         QtWidgets.QApplication.translate("pychemqt", "Openbabel"))]
+         tr("pychemqt", "Openbabel"))]
 
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter to input project config"""
@@ -531,7 +531,7 @@ class Preferences(QtWidgets.QDialog):
         self.config = config
 
         self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Preferences"))
+            tr("pychemqt", "Preferences"))
 
         layout = QtWidgets.QGridLayout(self)
         self.lista = QtWidgets.QTreeWidget()

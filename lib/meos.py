@@ -159,7 +159,7 @@ import json
 import logging
 import os
 
-from tools.qt import QtWidgets
+from tools.qt import tr
 from scipy import sinh, cosh, tanh, arctan, exp, log
 from scipy.constants import Boltzmann, pi, Avogadro, R, u
 from scipy.optimize import fsolve
@@ -1040,7 +1040,7 @@ class MEoS(ThermoAdvanced):
               "rho0": 0,
               "T0": 0}
     status = 0
-    msg = QtWidgets.QApplication.translate("pychemqt", "Unknown Variables")
+    msg = tr("pychemqt", "Unknown Variables")
 
     def __init__(self, **kwargs):
         """
@@ -1300,7 +1300,7 @@ class MEoS(ThermoAdvanced):
 
                 if not converge:
                     self.status = 5
-                    self.msg = QtWidgets.QApplication.translate(
+                    self.msg = tr(
                             "pychemqt", "Solution don´t converge")
                     err = self.kwargs[input]-self.__getattribute__(input)._data
                     msg = "%s state don't converge for %s by %g" % (
@@ -2315,7 +2315,7 @@ class MEoS(ThermoAdvanced):
 
         if self._mode == "T-rho" and self.kwargs["rho"] == 0:
             self.status = 3
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                 "pychemqt", "Ideal condition at zero pressure")
         elif self._constants["Tmin"] <= T <= self._constants["Tmax"] and \
                 0 < rho:  # <= self._constants["rhomax"]*self.M:
@@ -2323,7 +2323,7 @@ class MEoS(ThermoAdvanced):
             self.msg = ""
         else:
             self.status = 5
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                 "pychemqt", "input out of range")
             return
 

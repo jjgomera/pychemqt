@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from math import pi, exp, log, sin
 import warnings
 
-from tools.qt import QtWidgets
+from tools.qt import tr
 from numpy.lib.scimath import log10
 from scipy.optimize import fsolve
 
@@ -1113,7 +1113,7 @@ class Crudo(Petroleo):
             return True
         else:
             self.status = 0
-            self.msg = QtWidgets.QApplication.translate("pychemqt", "Undefined petrol")
+            self.msg = tr("pychemqt", "Undefined petrol")
 
     def calculo(self):
         id = self.kwargs["index"]

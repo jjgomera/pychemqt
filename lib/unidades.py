@@ -102,7 +102,7 @@ import json
 import logging
 import os
 
-from tools.qt import QtWidgets, QtCore
+from tools.qt import QtCore, tr
 import scipy.constants as k
 
 from lib.config import conf_dir, getMainWindowConfig
@@ -274,7 +274,7 @@ class unidad(float):
             conversion = cls.rates[unit]
         except KeyError:
             raise ValueError(
-                QtWidgets.QApplication.translate("pychemqt", "Wrong input code"))
+                tr("pychemqt", "Wrong input code"))
 
         data *= conversion
         return data
@@ -350,7 +350,7 @@ class unidad(float):
 class Dimensionless(float):
     """Dummy class to integrate dimensionless magnitudes
 with support for class unidad operations: txt, config. func."""
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Dimensionless")
+    __title__ = tr("pychemqt", "Dimensionless")
     __text__ = []
     _magnitudes = []
 
@@ -399,7 +399,7 @@ with support for class unidad operations: txt, config. func."""
 
 
 class Temperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Temperature")
+    __title__ = tr("pychemqt", "Temperature")
     __text__ = ['K', 'ºC', 'ºR', 'ºF', 'ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
     __tooltip__ = ['Kelvin', 'Celsius', 'Rankine', 'Fahrenheit', 'Reaumur']
@@ -437,7 +437,7 @@ class Temperature(unidad):
             self._data = Re2K(data)
         else:
             raise ValueError(
-                QtWidgets.QApplication.translate("pychemqt", "Wrong input code"))
+                tr("pychemqt", "Wrong input code"))
 
         self.K = self._data
         self.C = K2C(self._data)
@@ -469,13 +469,13 @@ class Temperature(unidad):
             data = Re2K(data)
         elif unit != "K":
             raise ValueError(
-                QtWidgets.QApplication.translate("pychemqt", "Wrong input code"))
+                tr("pychemqt", "Wrong input code"))
 
         return data
 
 
 class DeltaT(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Temperature increase")
+    __title__ = tr("pychemqt", "Temperature increase")
     rates = {"K": 1.,
              "C": 1.,
              "F": k.Rankine,
@@ -491,7 +491,7 @@ class DeltaT(unidad):
 
 
 class Angle(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Angle")
+    __title__ = tr("pychemqt", "Angle")
     rates = {"rad": 1.,
              "deg": 2*k.pi/360,
              "min": 2*k.pi/360/60,
@@ -499,11 +499,11 @@ class Angle(unidad):
              "grad": 2*k.pi/400}
     __text__ = ["rad", "º deg", "'", '"', "grad"]
     __units__ = ["rad", "deg", "min", "sec", "grad"]
-    __tooltip__ = [QtWidgets.QApplication.translate("pychemqt", "Radian"),
-                   QtWidgets.QApplication.translate("pychemqt", "Degree"),
-                   QtWidgets.QApplication.translate("pychemqt", "Arcminute"),
-                   QtWidgets.QApplication.translate("pychemqt", "Arcsecond"),
-                   QtWidgets.QApplication.translate("pychemqt", "Gradian")]
+    __tooltip__ = [tr("pychemqt", "Radian"),
+                   tr("pychemqt", "Degree"),
+                   tr("pychemqt", "Arcminute"),
+                   tr("pychemqt", "Arcsecond"),
+                   tr("pychemqt", "Gradian")]
     __units_set__ = {"altsi": "rad", "si": "rad", "metric": "rad",
                      "cgs": "rad", "english": "rad"}
     __test__ = [{"input": {"value": 25, "unit": "deg"},
@@ -511,7 +511,7 @@ class Angle(unidad):
 
 
 class Length(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Length")
+    __title__ = tr("pychemqt", "Length")
     rates = {"m": 1.,
              "cm": k.centi,
              "mm": k.milli,
@@ -528,25 +528,25 @@ class Length(unidad):
                 "M", "pm", "Å"]
     __units__ = ['m', 'cm', 'mm', 'micra', 'km', 'inch', 'ft', 'yd', 'milla',
                  "milla_nau", "pm", "A"]
-    __tooltip__ = [QtWidgets.QApplication.translate("pychemqt", "meter"),
-                   QtWidgets.QApplication.translate("pychemqt", "centimeter"),
-                   QtWidgets.QApplication.translate("pychemqt", "milimeter"),
-                   QtWidgets.QApplication.translate("pychemqt", "micra"),
-                   QtWidgets.QApplication.translate("pychemqt", "kilometer"),
-                   QtWidgets.QApplication.translate("pychemqt", "inch"),
-                   QtWidgets.QApplication.translate("pychemqt", "foot"),
-                   QtWidgets.QApplication.translate("pychemqt", "yard"),
-                   QtWidgets.QApplication.translate("pychemqt", "mile"),
-                   QtWidgets.QApplication.translate("pychemqt", "nautical mile"),
-                   QtWidgets.QApplication.translate("pychemqt", "picometer"),
+    __tooltip__ = [tr("pychemqt", "meter"),
+                   tr("pychemqt", "centimeter"),
+                   tr("pychemqt", "milimeter"),
+                   tr("pychemqt", "micra"),
+                   tr("pychemqt", "kilometer"),
+                   tr("pychemqt", "inch"),
+                   tr("pychemqt", "foot"),
+                   tr("pychemqt", "yard"),
+                   tr("pychemqt", "mile"),
+                   tr("pychemqt", "nautical mile"),
+                   tr("pychemqt", "picometer"),
                    "Ångström"]
     _magnitudes = [
-        ("Length", QtWidgets.QApplication.translate("pychemqt", "Length")),
-        ("ParticleDiameter", QtWidgets.QApplication.translate("pychemqt",
+        ("Length", tr("pychemqt", "Length")),
+        ("ParticleDiameter", tr("pychemqt",
                                                     "Particle Diameter")),
-        ("Thickness", QtWidgets.QApplication.translate("pychemqt", "Thickness")),
-        ("PipeDiameter", QtWidgets.QApplication.translate("pychemqt", "Pipe Diameter")),
-        ("Head", QtWidgets.QApplication.translate("pychemqt", "Head"))]
+        ("Thickness", tr("pychemqt", "Thickness")),
+        ("PipeDiameter", tr("pychemqt", "Pipe Diameter")),
+        ("Head", tr("pychemqt", "Head"))]
     __units_set__ = {
         "Length": {"altsi": "m", "si": "m", "metric": "m", "cgs": "cm",
                    "english": "ft"},
@@ -563,7 +563,7 @@ class Length(unidad):
 
 
 class Area(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Area")
+    __title__ = tr("pychemqt", "Area")
     rates = {"m2": 1.,
              "cm2": k.centi**2,
              "mm2": k.milli**2,
@@ -577,15 +577,15 @@ class Area(unidad):
                 'ha', 'acre']
     __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha',
                  "acre"]
-    __tooltip__ = [QtWidgets.QApplication.translate("pychemqt", "square meter"),
-                   QtWidgets.QApplication.translate("pychemqt", "square centimeter"),
-                   QtWidgets.QApplication.translate("pychemqt", "square milimeter"),
-                   QtWidgets.QApplication.translate("pychemqt", "square kilometer"),
-                   QtWidgets.QApplication.translate("pychemqt", "square inch"),
-                   QtWidgets.QApplication.translate("pychemqt", "square foot"),
-                   QtWidgets.QApplication.translate("pychemqt", "square yard"),
-                   QtWidgets.QApplication.translate("pychemqt", "hectarea"),
-                   QtWidgets.QApplication.translate("pychemqt", "acre")]
+    __tooltip__ = [tr("pychemqt", "square meter"),
+                   tr("pychemqt", "square centimeter"),
+                   tr("pychemqt", "square milimeter"),
+                   tr("pychemqt", "square kilometer"),
+                   tr("pychemqt", "square inch"),
+                   tr("pychemqt", "square foot"),
+                   tr("pychemqt", "square yard"),
+                   tr("pychemqt", "hectarea"),
+                   tr("pychemqt", "acre")]
     __units_set__ = {"altsi": "m2", "si": "m2", "metric": "m2", "cgs": "cm2",
                      "english": "ft2"}
     __test__ = [{"input": {"value": 1, "unit": "ft2"},
@@ -593,7 +593,7 @@ class Area(unidad):
 
 
 class Volume(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Volume")
+    __title__ = tr("pychemqt", "Volume")
     rates = {"m3": 1.,
              "cc": k.centi**3,
              "l": k.deci**3,
@@ -618,19 +618,19 @@ class Volume(unidad):
                  'bbl', 'bblUS', "bblUK", 'onz', 'onzUK']
     __tooltip__ = [
         'm³', 'cm³',
-        QtWidgets.QApplication.translate("pychemqt", "liter"),
+        tr("pychemqt", "liter"),
         'yd³', 'ft³', 'inch³',
-        QtWidgets.QApplication.translate("pychemqt", "US liquid gallon"),
-        QtWidgets.QApplication.translate("pychemqt", "Imperial gallon"),
-        QtWidgets.QApplication.translate("pychemqt", "US fluid barrel"),
-        QtWidgets.QApplication.translate("pychemqt", "UK fluid barrel"),
-        QtWidgets.QApplication.translate("pychemqt", "Oil barrel"),
-        QtWidgets.QApplication.translate("pychemqt", "US customary fluid ounce"),
-        QtWidgets.QApplication.translate("pychemqt", "Imperial fluid ounce")]
+        tr("pychemqt", "US liquid gallon"),
+        tr("pychemqt", "Imperial gallon"),
+        tr("pychemqt", "US fluid barrel"),
+        tr("pychemqt", "UK fluid barrel"),
+        tr("pychemqt", "Oil barrel"),
+        tr("pychemqt", "US customary fluid ounce"),
+        tr("pychemqt", "Imperial fluid ounce")]
     _magnitudes = [
-        ("Volume", QtWidgets.QApplication.translate("pychemqt", "Volume")),
-        ("VolLiq", QtWidgets.QApplication.translate("pychemqt", "Liquid Volume")),
-        ("VolGas", QtWidgets.QApplication.translate("pychemqt", "Gas Volume"))]
+        ("Volume", tr("pychemqt", "Volume")),
+        ("VolLiq", tr("pychemqt", "Liquid Volume")),
+        ("VolGas", tr("pychemqt", "Gas Volume"))]
     __units_set__ = {
         "Volume": {"altsi": "m3", "si": "m3", "metric": "m3", "cgs": "cc",
                    "english": "ft3"},
@@ -644,7 +644,7 @@ class Volume(unidad):
 
 
 class Time(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Time")
+    __title__ = tr("pychemqt", "Time")
     rates = {"s": 1.,
              "min": k.minute,
              "h": k.hour,
@@ -652,11 +652,11 @@ class Time(unidad):
              "year": k.year}
     __text__ = ['s', 'min', 'h', 'day', 'year']
     __units__ = ['s', 'min', 'h', 'day', 'year']
-    __tooltip__ = [QtWidgets.QApplication.translate("pychemqt", "second"),
-                   QtWidgets.QApplication.translate("pychemqt", "minute"),
-                   QtWidgets.QApplication.translate("pychemqt", "hour"),
-                   QtWidgets.QApplication.translate("pychemqt", "day"),
-                   QtWidgets.QApplication.translate("pychemqt", "year")]
+    __tooltip__ = [tr("pychemqt", "second"),
+                   tr("pychemqt", "minute"),
+                   tr("pychemqt", "hour"),
+                   tr("pychemqt", "day"),
+                   tr("pychemqt", "year")]
     __units_set__ = {"altsi": "h", "si": "h", "metric": "h", "cgs": "s",
                      "english": "h"}
     __test__ = [{"input": {"value": 1, "unit": "day"},
@@ -664,7 +664,7 @@ class Time(unidad):
 
 
 class Frequency(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Frequency")
+    __title__ = tr("pychemqt", "Frequency")
     rates = {"rpm": 1.,
              "rph": 1./60,
              "rps": 60.,
@@ -681,7 +681,7 @@ class Frequency(unidad):
 
 
 class Speed(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Speed")
+    __title__ = tr("pychemqt", "Speed")
     rates = {"ms": 1.,
              "cms": k.centi,
              "mms": k.milli,
@@ -705,7 +705,7 @@ class Speed(unidad):
                  'kmh', 'kmday', 'mph', 'kt']
     __tooltip__ = ['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min', 'm/min',
                    'km/min', 'km/h', 'km/day', 'mph',
-                   QtWidgets.QApplication.translate("pychemqt", "Knot")]
+                   tr("pychemqt", "Knot")]
     __units_set__ = {"altsi": "ms", "si": "ms", "metric": "ms", "cgs": "cms",
                      "english": "fts"}
     __test__ = [{"input": {"value": 1, "unit": "ms"},
@@ -713,7 +713,7 @@ class Speed(unidad):
 
 
 class Acceleration(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Acceleration")
+    __title__ = tr("pychemqt", "Acceleration")
     rates = {"ms2": 1.,
              "cms2": k.centi,
              "fts2": k.foot,
@@ -735,7 +735,7 @@ class Acceleration(unidad):
 
 
 class Mass(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Mass")
+    __title__ = tr("pychemqt", "Mass")
     rates = {"kg": 1.,
              "g": 1./k.kilo,
              "mg": 1./k.mega,
@@ -752,16 +752,16 @@ class Mass(unidad):
                 'TonUS']
     __units__ = ['kg', 'g', 'mg', 'Ton', 'lb', 'grain', 'oz', 'slug', 'TonUK',
                  'TonUS']
-    __tooltip__ = [QtWidgets.QApplication.translate("pychemqt", "kilogram"),
-                   QtWidgets.QApplication.translate("pychemqt", "gram"),
-                   QtWidgets.QApplication.translate("pychemqt", "miligram"),
-                   QtWidgets.QApplication.translate("pychemqt", "ton"),
-                   QtWidgets.QApplication.translate("pychemqt", "pound"),
-                   QtWidgets.QApplication.translate("pychemqt", "grain"),
-                   QtWidgets.QApplication.translate("pychemqt", "ounce"),
-                   QtWidgets.QApplication.translate("pychemqt", "slug"),
-                   QtWidgets.QApplication.translate("pychemqt", "long ton (UK)"),
-                   QtWidgets.QApplication.translate("pychemqt", "short ton (US)")]
+    __tooltip__ = [tr("pychemqt", "kilogram"),
+                   tr("pychemqt", "gram"),
+                   tr("pychemqt", "miligram"),
+                   tr("pychemqt", "ton"),
+                   tr("pychemqt", "pound"),
+                   tr("pychemqt", "grain"),
+                   tr("pychemqt", "ounce"),
+                   tr("pychemqt", "slug"),
+                   tr("pychemqt", "long ton (UK)"),
+                   tr("pychemqt", "short ton (US)")]
     __units_set__ = {"altsi": "kg", "si": "kg", "metric": "kg", "cgs": "g",
                      "english": "lb"}
     __test__ = [{"input": {"value": 1, "unit": "lb"},
@@ -769,7 +769,7 @@ class Mass(unidad):
 
 
 class Mol(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Mol")
+    __title__ = tr("pychemqt", "Mol")
     rates = {"kmol": 1.,
              "mol": 1./k.kilo,
              "milimol": 1./k.mega,
@@ -783,7 +783,7 @@ class Mol(unidad):
 
 
 class SpecificVolume(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Specific Volume")
+    __title__ = tr("pychemqt", "Specific Volume")
     rates = {"m3kg": 1.,
              "lg": 1.,
              "lkg": k.liter,
@@ -817,7 +817,7 @@ class SpecificVolume(unidad):
 
 
 class SpecificVolume_square(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Third virial coefficient")
+    __title__ = tr("pychemqt", "Third virial coefficient")
     rates = {"m3kg": 1.,
              "lg": 1.,
              "lkg": k.liter**2,
@@ -854,7 +854,7 @@ class SpecificVolume_square(unidad):
 
 
 class MolarVolume(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Molar Volume")
+    __title__ = tr("pychemqt", "Molar Volume")
     rates = {"m3kmol": 1.,
              "lmol": 1.,
              "lkmol": k.liter,
@@ -875,7 +875,7 @@ class MolarVolume(unidad):
 
 
 class Density(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Density")
+    __title__ = tr("pychemqt", "Density")
     rates = {"kgm3": 1.,
              "gl": 1.,
              "kgl": 1./k.liter,
@@ -903,9 +903,9 @@ class Density(unidad):
                  'lbgalUS', 'lbbbl', 'tonUKft3', 'tonUSft3', 'slugft3',
                  'ozft3', 'ozin3', 'ozgalUK', 'ozgalUS']
     _magnitudes = [
-        ("Density", QtWidgets.QApplication.translate("pychemqt", "Density")),
-        ("DenLiq", QtWidgets.QApplication.translate("pychemqt", "Liquid Density")),
-        ("DenGas", QtWidgets.QApplication.translate("pychemqt", "Gas Density"))]
+        ("Density", tr("pychemqt", "Density")),
+        ("DenLiq", tr("pychemqt", "Liquid Density")),
+        ("DenGas", tr("pychemqt", "Gas Density"))]
     __units_set__ = {
         "Density": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3",
                     "cgs": "gcc", "english": "lbft3"},
@@ -918,7 +918,7 @@ class Density(unidad):
 
 
 class MolarDensity(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Molar Density")
+    __title__ = tr("pychemqt", "Molar Density")
     rates = {"kmolm3": 1.,
              "moll": 1.,
              "molcc": 1./k.liter,
@@ -937,7 +937,7 @@ class MolarDensity(unidad):
 
 
 class Force(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Force")
+    __title__ = tr("pychemqt", "Force")
     rates = {"N": 1.,
              "kN": k.kilo,
              "dyn": k.dyn,
@@ -953,10 +953,10 @@ class Force(unidad):
     __units__ = ["N", "kN", "dyn", "kgf", "gf", "lbf", "ozf", "pdl", "TonfUK",
                  "TonfUS"]
     __tooltip__ = ["Newton", "Kilonewton", "Dyna",
-                   QtWidgets.QApplication.translate("pychemqt", "Kilogram force"),
-                   QtWidgets.QApplication.translate("pychemqt", "Gram force"),
-                   QtWidgets.QApplication.translate("pychemqt", "Pound force"),
-                   QtWidgets.QApplication.translate("pychemqt", "Ounze force"),
+                   tr("pychemqt", "Kilogram force"),
+                   tr("pychemqt", "Gram force"),
+                   tr("pychemqt", "Pound force"),
+                   tr("pychemqt", "Ounze force"),
                    "Poundal", "TonfUK", "TonfUS"]
     __units_set__ = {"altsi": "kN", "si": "N", "metric": "N", "cgs": "dyn",
                      "english": "lbf"}
@@ -966,7 +966,7 @@ class Force(unidad):
 
 
 class Pressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Pressure")
+    __title__ = tr("pychemqt", "Pressure")
     rates = {"Pa": 1.,
              "MPa": k.mega,
              "hPa": k.hecto,
@@ -999,35 +999,35 @@ class Pressure(unidad):
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
     __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
-                   QtWidgets.QApplication.translate("pychemqt", "Bar gauge"),
+                   tr("pychemqt", "Bar gauge"),
                    "Milibar",
-                   QtWidgets.QApplication.translate("pychemqt", "Pound per square inch"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Pound per square inch"),
+                   tr(
                        "pychemqt", "Pound per square inch gauge"),
-                   QtWidgets.QApplication.translate("pychemqt", "Atmosphere"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Atmosphere"),
+                   tr(
                        "pychemqt", "Atmosphere technical, kg/cm²"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Atmosphere technical gauge, kg/cm²g"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Milimeter of water column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Centimeter of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Meter of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Inch of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Foot of water column"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Meter of water column"),
+                   tr("pychemqt", "Inch of water column"),
+                   tr("pychemqt", "Foot of water column"),
+                   tr(
                        "pychemqt", "Milimeter of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Centimeter of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Inch of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Foot of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Pound per square centimeter"),
-                   QtWidgets.QApplication.translate("pychemqt", "Pound per square foot"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Pound per square foot"),
+                   tr(
                        "pychemqt", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
@@ -1092,13 +1092,13 @@ class Pressure(unidad):
             data = data * cls.rates[unit]
         else:
             raise ValueError(
-                QtWidgets.QApplication.translate("pychemqt", "Wrong input code"))
+                tr("pychemqt", "Wrong input code"))
 
         return data
 
 
 class DeltaP(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Pressure increase")
+    __title__ = tr("pychemqt", "Pressure increase")
     rates = {"Pa": 1.,
              "MPa": k.mega,
              "hPa": k.hecto,
@@ -1134,35 +1134,35 @@ class DeltaP(unidad):
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
     __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
-                   QtWidgets.QApplication.translate("pychemqt", "Bar gauge"),
+                   tr("pychemqt", "Bar gauge"),
                    "Milibar",
-                   QtWidgets.QApplication.translate("pychemqt", "Pound per square inch"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Pound per square inch"),
+                   tr(
                        "pychemqt", "Pound per square inch gauge"),
-                   QtWidgets.QApplication.translate("pychemqt", "Atmosphere"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Atmosphere"),
+                   tr(
                        "pychemqt", "Atmosphere technical, kg/cm²"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Atmosphere technical gauge, kg/cm²g"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Milimeter of water column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Centimeter of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Meter of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Inch of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Foot of water column"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Meter of water column"),
+                   tr("pychemqt", "Inch of water column"),
+                   tr("pychemqt", "Foot of water column"),
+                   tr(
                        "pychemqt", "Milimeter of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Centimeter of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Inch of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Foot of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Pound per square centimeter"),
-                   QtWidgets.QApplication.translate("pychemqt", "Pound per square foot"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Pound per square foot"),
+                   tr(
                        "pychemqt", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
@@ -1172,7 +1172,7 @@ class DeltaP(unidad):
 
 
 class Energy(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Energy")
+    __title__ = tr("pychemqt", "Energy")
     rates = {"J": 1.,
              "kJ": k.kilo,
              "MJ": k.mega,
@@ -1202,30 +1202,30 @@ class Energy(unidad):
                  'MBtu', 'Wh', 'kWh', 'MWh', 'HPh', 'kgfm', 'lbfft',
                  'TNT', 'CVh', 'GeV', 'oil', 'toe', 'tce']
     _magnitudes = [
-        ("Energy", QtWidgets.QApplication.translate("pychemqt", "Energy")),
-        ("Work", QtWidgets.QApplication.translate("pychemqt", "Work"))]
+        ("Energy", tr("pychemqt", "Energy")),
+        ("Work", tr("pychemqt", "Work"))]
     __tooltip__ = [
-        QtWidgets.QApplication.translate("pychemqt", "Joule"),
-        QtWidgets.QApplication.translate("pychemqt", "Kilojoule"),
-        QtWidgets.QApplication.translate("pychemqt", "Megajoule"),
-        QtWidgets.QApplication.translate("pychemqt", "Calorie"),
-        QtWidgets.QApplication.translate("pychemqt", "Kilocalorie"),
-        QtWidgets.QApplication.translate("pychemqt", "Calorie international"),
-        QtWidgets.QApplication.translate("pychemqt", "Erg"),
-        QtWidgets.QApplication.translate("pychemqt", "Btu"),
-        QtWidgets.QApplication.translate("pychemqt", "KiloBtu"),
-        QtWidgets.QApplication.translate("pychemqt", "MegaBtu"),
-        QtWidgets.QApplication.translate("pychemqt", "Watt-hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Kilowatt-hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Megawatt-hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Horsepower-hour"),
+        tr("pychemqt", "Joule"),
+        tr("pychemqt", "Kilojoule"),
+        tr("pychemqt", "Megajoule"),
+        tr("pychemqt", "Calorie"),
+        tr("pychemqt", "Kilocalorie"),
+        tr("pychemqt", "Calorie international"),
+        tr("pychemqt", "Erg"),
+        tr("pychemqt", "Btu"),
+        tr("pychemqt", "KiloBtu"),
+        tr("pychemqt", "MegaBtu"),
+        tr("pychemqt", "Watt-hour"),
+        tr("pychemqt", "Kilowatt-hour"),
+        tr("pychemqt", "Megawatt-hour"),
+        tr("pychemqt", "Horsepower-hour"),
         'kgf/m', 'lbf/ft',
-        QtWidgets.QApplication.translate("pychemqt", "Ton TNT equivalent"),
-        QtWidgets.QApplication.translate("pychemqt", "Metric horsepower-hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Gigaelectronvolt"),
-        QtWidgets.QApplication.translate("pychemqt", "Barrel petrol"),
-        QtWidgets.QApplication.translate("pychemqt", "Tonne of oil equivalent"),
-        QtWidgets.QApplication.translate("pychemqt", "Tonne of coal equivalent")]
+        tr("pychemqt", "Ton TNT equivalent"),
+        tr("pychemqt", "Metric horsepower-hour"),
+        tr("pychemqt", "Gigaelectronvolt"),
+        tr("pychemqt", "Barrel petrol"),
+        tr("pychemqt", "Tonne of oil equivalent"),
+        tr("pychemqt", "Tonne of coal equivalent")]
     __units_set__ = {
         "Energy": {"altsi": "MJ", "si": "MJ", "metric": "J", "cgs": "erg",
                    "english": "MBtu"},
@@ -1236,7 +1236,7 @@ class Energy(unidad):
 
 
 class Enthalpy(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Enthalpy")
+    __title__ = tr("pychemqt", "Enthalpy")
     rates = {"Jkg": 1.,
              "kJkg": k.kilo,
              "Jg": k.kilo,
@@ -1260,7 +1260,7 @@ class Enthalpy(unidad):
 
 
 class MolarEnthalpy(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Molar Enthalpy")
+    __title__ = tr("pychemqt", "Molar Enthalpy")
     rates = {"Jkmol": 1.,
              "kJkmol": k.kilo,
              "Jmol": k.kilo,
@@ -1284,7 +1284,7 @@ class MolarEnthalpy(unidad):
 
 
 class Entropy(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Entropy")
+    __title__ = tr("pychemqt", "Entropy")
     rates = {"JK": 1.,
              "kJK": k.kilo,
              "MJK": k.mega,
@@ -1309,7 +1309,7 @@ class Entropy(unidad):
 
 
 class SpecificHeat(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Specific Heat")
+    __title__ = tr("pychemqt", "Specific Heat")
     rates = {"JkgK": 1.,
              "kJkgK": k.kilo,
              "JgK": k.kilo,
@@ -1319,8 +1319,8 @@ class SpecificHeat(unidad):
              "kWhkgK": k.kilo*k.hour,
              "BtulbF": k.Btu/k.lb/k.Rankine}
     _magnitudes = [
-        ("SpecificHeat", QtWidgets.QApplication.translate("pychemqt", "Specific Heat")),
-        ("SpecificEntropy", QtWidgets.QApplication.translate(
+        ("SpecificHeat", tr("pychemqt", "Specific Heat")),
+        ("SpecificEntropy", tr(
             "pychemqt", "Specific Entropy"))]
     __text__ = ['J/kg·K', 'kJ/kg·K', 'kcal/kg·K', 'cal/g·K', 'kcal/g·K',
                 'kWh/kg·K', 'Btu/lb·F']
@@ -1336,7 +1336,7 @@ class SpecificHeat(unidad):
 
 
 class MolarSpecificHeat(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Molar Specific Heat")
+    __title__ = tr("pychemqt", "Molar Specific Heat")
     rates = {"JkmolK": 1.,
              "kJkmolK": k.kilo,
              "kJmolK": k.kilo*k.kilo,
@@ -1357,7 +1357,7 @@ class MolarSpecificHeat(unidad):
 
 
 class Power(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Power")
+    __title__ = tr("pychemqt", "Power")
     rates = {"W": 1.,
              "kW": k.kilo,
              "MW": k.mega,
@@ -1383,25 +1383,25 @@ class Power(unidad):
                  'MJh', 'ergs', 'Btus', 'Btumin', 'Btuh', 'MBtuh', 'ftlbfs',
                  'ftlbfmin', 'ftlbfh']
     __tooltip__ = [
-        QtWidgets.QApplication.translate("pychemqt", "Watt"),
-        QtWidgets.QApplication.translate("pychemqt", "Kilowatt"),
-        QtWidgets.QApplication.translate("pychemqt", "Megawatt"),
-        QtWidgets.QApplication.translate("pychemqt", "Horsepower"),
-        QtWidgets.QApplication.translate("pychemqt", "Metric horsepower"),
-        QtWidgets.QApplication.translate("pychemqt", "Calorie per second"),
-        QtWidgets.QApplication.translate("pychemqt", "Kilocalorie per hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Joule per hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Kilojoule per hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Megajoule per hour"),
-        QtWidgets.QApplication.translate("pychemqt", "Erg per second"),
-        QtWidgets.QApplication.translate("pychemqt", "Btu per second"),
-        QtWidgets.QApplication.translate("pychemqt", "Btu per minute"),
-        QtWidgets.QApplication.translate("pychemqt", "Btu per hour"),
-        QtWidgets.QApplication.translate("pychemqt", "MegaBtu per hour"),
+        tr("pychemqt", "Watt"),
+        tr("pychemqt", "Kilowatt"),
+        tr("pychemqt", "Megawatt"),
+        tr("pychemqt", "Horsepower"),
+        tr("pychemqt", "Metric horsepower"),
+        tr("pychemqt", "Calorie per second"),
+        tr("pychemqt", "Kilocalorie per hour"),
+        tr("pychemqt", "Joule per hour"),
+        tr("pychemqt", "Kilojoule per hour"),
+        tr("pychemqt", "Megajoule per hour"),
+        tr("pychemqt", "Erg per second"),
+        tr("pychemqt", "Btu per second"),
+        tr("pychemqt", "Btu per minute"),
+        tr("pychemqt", "Btu per hour"),
+        tr("pychemqt", "MegaBtu per hour"),
         'ft/lbf·s', 'ft/lbf·min', 'ft/lbf·h']
     _magnitudes = [
-        ("EnergyFlow", QtWidgets.QApplication.translate("pychemqt", "Energy Flow")),
-        ("Power", QtWidgets.QApplication.translate("pychemqt", "Power"))]
+        ("EnergyFlow", tr("pychemqt", "Energy Flow")),
+        ("Power", tr("pychemqt", "Power"))]
     __units_set__ = {
         "EnergyFlow": {"altsi": "MJh", "si": "kJh", "metric": "Jh",
                        "cgs": "ergs", "english": "MBtuh"},
@@ -1413,7 +1413,7 @@ class Power(unidad):
 
 
 class MassFlow(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Mass Flow")
+    __title__ = tr("pychemqt", "Mass Flow")
     rates = {"kgs": 1.,
              "kgmin": 1./k.minute,
              "kgh": 1./k.hour,
@@ -1447,7 +1447,7 @@ class MassFlow(unidad):
 
 
 class MolarFlow(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Molar Flow")
+    __title__ = tr("pychemqt", "Molar Flow")
     rates = {"kmols": 1.,
              "kmolmin": 1./k.minute,
              "kmolh": 1./k.hour,
@@ -1469,7 +1469,7 @@ class MolarFlow(unidad):
 
 
 class VolFlow(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Volumetric Flow")
+    __title__ = tr("pychemqt", "Volumetric Flow")
     rates = {"m3s": 1.,
              "m3min": 1./k.minute,
              "m3h": 1./k.hour,
@@ -1505,9 +1505,9 @@ class VolFlow(unidad):
                  'galUKh', 'galUSh', 'galUKmin', 'galUSmin', 'galUKs',
                  'galUSs', 'bbls', 'bblmin', 'bblh', 'bblday']
     _magnitudes = [
-        ("VolFlow", QtWidgets.QApplication.translate("pychemqt", "Volumetric Flow")),
-        ("QLiq", QtWidgets.QApplication.translate("pychemqt", "Liquid Flow")),
-        ("QGas", QtWidgets.QApplication.translate("pychemqt", "Gas Flow"))]
+        ("VolFlow", tr("pychemqt", "Volumetric Flow")),
+        ("QLiq", tr("pychemqt", "Liquid Flow")),
+        ("QGas", tr("pychemqt", "Gas Flow"))]
     __units_set__ = {
         "VolFlow": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs",
                     "english": "ft3h"},
@@ -1521,7 +1521,7 @@ class VolFlow(unidad):
 
 
 class Diffusivity(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Diffusivity")
+    __title__ = tr("pychemqt", "Diffusivity")
     rates = {"m2s": 1.,
              "cm2s": k.centi**2,
              "mm2s": k.milli**2,
@@ -1537,8 +1537,8 @@ class Diffusivity(unidad):
     __units__ = ["m2s", "cm2s", "mm2s", "ft2s", "inch2s", "m2h", "ft2h",
                  "inch2h", "St", "cSt"]
     _magnitudes = [
-        ("Diffusivity", QtWidgets.QApplication.translate("pychemqt", "Diffusivity")),
-        ("KViscosity", QtWidgets.QApplication.translate(
+        ("Diffusivity", tr("pychemqt", "Diffusivity")),
+        ("KViscosity", tr(
             "pychemqt", "Kinematic viscosity"))]
     __tooltip__ = ["m²/s", "cm²/s", "mm²/s", "ft²/s", "inch²/s", "m²/h",
                    "ft²/h", "inch²/h", "Stokes", "Centistokes"]
@@ -1552,7 +1552,7 @@ class Diffusivity(unidad):
 
 
 class HeatFlux(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Heat Flux")
+    __title__ = tr("pychemqt", "Heat Flux")
     rates = {"Wm2": 1.,
              "kWm2": k.kilo,
              "calhm2": k.calorie/k.hour,
@@ -1571,7 +1571,7 @@ class HeatFlux(unidad):
 
 
 class ThermalConductivity(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Thermal Conductivity")
+    __title__ = tr("pychemqt", "Thermal Conductivity")
     rates = {"WmK": 1.,
              "mWmK": 1./k.kilo,
              "kWmK": k.kilo,
@@ -1596,7 +1596,7 @@ class ThermalConductivity(unidad):
 
 
 class UA(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "UA")
+    __title__ = tr("pychemqt", "UA")
     rates = {"WK": 1.,
              "kWK": k.kilo,
              "mWK": k.milli,
@@ -1619,7 +1619,7 @@ class UA(unidad):
 
 
 class HeatTransfCoef(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Heat Transfer Coefficient")
+    __title__ = tr("pychemqt", "Heat Transfer Coefficient")
     rates = {"Wm2K": 1.,
              "kWm2K": k.kilo,
              "Jhm2K": 1./k.hour,
@@ -1645,7 +1645,7 @@ class HeatTransfCoef(unidad):
 
 
 class Fouling(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Fouling Factor")
+    __title__ = tr("pychemqt", "Fouling Factor")
     rates = {"m2KW": 1.,
              "m2KkW": 1./k.kilo,
              "hm2KJ": k.hour,
@@ -1671,7 +1671,7 @@ class Fouling(unidad):
 
 
 class Tension(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Surface Tension")
+    __title__ = tr("pychemqt", "Surface Tension")
     rates = {"Nm": 1.,
              "mNm": k.milli,
              "dyncm": k.dyn/k.centi,
@@ -1685,7 +1685,7 @@ class Tension(unidad):
 
 
 class Viscosity(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Viscosity")
+    __title__ = tr("pychemqt", "Viscosity")
     rates = {"Pas": 1.,
              "mPas": k.milli,
              "muPas": k.micro,
@@ -1702,9 +1702,9 @@ class Viscosity(unidad):
                 'reyn', 'lb/ft·s', 'lbf/ft²', 'lbf/in²', 'lb/ft·h']
     __units__ = ['Pas', 'mPas', 'muPas', 'P', 'cP', 'dynscm2', 'microP',
                  'reyn', 'lbfts', 'lbfft2', 'lbfinch2', 'lbfth']
-    __tooltip__ = [QtWidgets.QApplication.translate("pychemqt", "Pascal per second"),
-                   QtWidgets.QApplication.translate("pychemqt", "Milipascal per second"),
-                   QtWidgets.QApplication.translate(
+    __tooltip__ = [tr("pychemqt", "Pascal per second"),
+                   tr("pychemqt", "Milipascal per second"),
+                   tr(
                        "pychemqt", "Micropascal per second"),
                    "Poise", "Centipoise", 'dyn/s·cm²', 'microPoise',
                    "Reyn", 'lb/ft·s', 'lbf/ft²', 'lbf/in²', 'lb/ft·h']
@@ -1715,7 +1715,7 @@ class Viscosity(unidad):
 
 
 class SolubilityParameter(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Solubility Parameter")
+    __title__ = tr("pychemqt", "Solubility Parameter")
     rates = {"Jm3": 1.,
              "calcc": (k.calorie*k.mega)**0.5,
              "Btuft3": (k.Btu*k.foot**-3)**0.5}
@@ -1728,7 +1728,7 @@ class SolubilityParameter(unidad):
 
 
 class PotencialElectric(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Electric Potencial")
+    __title__ = tr("pychemqt", "Electric Potencial")
     rates = {"Vm": 1.,
              "kVm": k.kilo,
              "MVm": k.mega,
@@ -1748,12 +1748,12 @@ class PotencialElectric(unidad):
 
 
 class DipoleMoment(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Dipole Moment")
+    __title__ = tr("pychemqt", "Dipole Moment")
     rates = {"Cm": 1.,
              "Debye": k.debye}
     __text__ = ['C·m', 'Debye']
     __units__ = ['Cm', 'Debye']
-    __tooltip__ = [QtWidgets.QApplication.translate("pychemqt", "Coulomb per meter"),
+    __tooltip__ = [tr("pychemqt", "Coulomb per meter"),
                    "Debye"]
     __units_set__ = {"altsi": "Cm", "si": "Cm", "metric": "Cm", "cgs": "Cm",
                      "english": "Debye"}
@@ -1762,7 +1762,7 @@ class DipoleMoment(unidad):
 
 
 class CakeResistance(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Cake Resistance")
+    __title__ = tr("pychemqt", "Cake Resistance")
     rates = {"mkg": 1.,
              "cmg": k.centi/k.kilo,
              "ftlb": k.foot/k.pound}
@@ -1775,7 +1775,7 @@ class CakeResistance(unidad):
 
 
 class PackingDP(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Packing Pressure drop")
+    __title__ = tr("pychemqt", "Packing Pressure drop")
     rates = {"mmH2Om": 1.,
              "inH2Oft": k.inch/k.milli/k.foot}
     __text__ = ['mmH2O/m', 'inH2O/ft']
@@ -1787,7 +1787,7 @@ class PackingDP(unidad):
 
 
 class V2V(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Gas-Oil ratio")
+    __title__ = tr("pychemqt", "Gas-Oil ratio")
     rates = {"m3m3": 1.,
              "ft3ft3": 1.,
              "ll": 1.,
@@ -1802,7 +1802,7 @@ class V2V(unidad):
 
 
 class InvTemperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Temperature inverse")
+    __title__ = tr("pychemqt", "Temperature inverse")
     rates = {"K": 1.,
              "C": 1.,
              "F": 1./k.Rankine,
@@ -1819,7 +1819,7 @@ class InvTemperature(unidad):
 
 
 class InvPressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Pressure inverse")
+    __title__ = tr("pychemqt", "Pressure inverse")
     rates = {"Pa": 1.,
              "MPa": 1./k.mega,
              "hPa": 1./k.hecto,
@@ -1856,35 +1856,35 @@ class InvPressure(unidad):
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
     __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
-                   QtWidgets.QApplication.translate("pychemqt", "Bar gauge"),
+                   tr("pychemqt", "Bar gauge"),
                    "Milibar",
-                   QtWidgets.QApplication.translate("pychemqt", "Pound per square inch"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Pound per square inch"),
+                   tr(
                        "pychemqt", "Pound per square inch gauge"),
-                   QtWidgets.QApplication.translate("pychemqt", "Atmosphere"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Atmosphere"),
+                   tr(
                        "pychemqt", "Atmosphere technical, kg/cm²"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Atmosphere technical gauge, kg/cm²g"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Milimeter of water column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Centimeter of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Meter of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Inch of water column"),
-                   QtWidgets.QApplication.translate("pychemqt", "Foot of water column"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Meter of water column"),
+                   tr("pychemqt", "Inch of water column"),
+                   tr("pychemqt", "Foot of water column"),
+                   tr(
                        "pychemqt", "Milimeter of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Centimeter of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Inch of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Foot of mercury column"),
-                   QtWidgets.QApplication.translate(
+                   tr(
                        "pychemqt", "Pound per square centimeter"),
-                   QtWidgets.QApplication.translate("pychemqt", "Pound per square foot"),
-                   QtWidgets.QApplication.translate(
+                   tr("pychemqt", "Pound per square foot"),
+                   tr(
                        "pychemqt", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
@@ -1893,7 +1893,7 @@ class InvPressure(unidad):
 
 
 class EnthalpyPressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Enthalpy per pressure")
+    __title__ = tr("pychemqt", "Enthalpy per pressure")
     rates = {"JkgPa": 1.,
              "kJkgkPa": 1.,
              "kJkgMPa": k.milli,
@@ -1911,7 +1911,7 @@ class EnthalpyPressure(unidad):
 
 
 class EnthalpyDensity(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Enthalpy per density")
+    __title__ = tr("pychemqt", "Enthalpy per density")
     rates = {"Jkgkgm3": 1.,
              "kJkgkgm3": k.kilo,
              "Btulb2ft3": k.Btu/k.pound**2*k.foot**3}
@@ -1924,7 +1924,7 @@ class EnthalpyDensity(unidad):
 
 
 class TemperaturePressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Temperature per pressure")
+    __title__ = tr("pychemqt", "Temperature per pressure")
     rates = {"KPa": 1.,
              "KkPa": k.milli,
              "Kbar": 1e-5,
@@ -1940,7 +1940,7 @@ class TemperaturePressure(unidad):
 
 
 class PressureTemperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Pressure per Temperature")
+    __title__ = tr("pychemqt", "Pressure per Temperature")
     rates = {"PaK": 1.,
              "kPaK": k.kilo,
              "barK": 1e5,
@@ -1956,7 +1956,7 @@ class PressureTemperature(unidad):
 
 
 class PressureDensity(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Pressure per density")
+    __title__ = tr("pychemqt", "Pressure per density")
     rates = {"Pakgm3": 1.,
              "kPakgm3": k.kilo,
              "barkgm3": 1e5,
@@ -1975,7 +1975,7 @@ class PressureDensity(unidad):
 
 
 class DensityPressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Density per pressure")
+    __title__ = tr("pychemqt", "Density per pressure")
     rates = {"kgm3Pa": 1.,
              "kgm3kPa": k.milli,
              "kgm3bar": 1/1e5,
@@ -1995,7 +1995,7 @@ class DensityPressure(unidad):
 
 
 class DensityTemperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Density per temperature")
+    __title__ = tr("pychemqt", "Density per temperature")
     rates = {"kgm3K": 1.,
              "gccK": 1./k.liter,
              "lbft3F": k.pound/k.foot**3/k.Rankine}
@@ -2024,205 +2024,205 @@ class Currency(unidad):
         rates = json.load(archivo)
     archivo.close
     date = rates.pop("date")
-    __title__ = QtWidgets.QApplication.translate("pychemqt", "Currency")
+    __title__ = tr("pychemqt", "Currency")
 
     # Main currencies
     _uMain = [
-      ("usd", QtWidgets.QApplication.translate("pychemqt", "United States dollar"), "$"),
-      ("eur", QtWidgets.QApplication.translate("pychemqt", "Euro"), "€"),
-      ("gbp", QtWidgets.QApplication.translate("pychemqt", "Pound sterling"), "£"),
-      ("jpy", QtWidgets.QApplication.translate("pychemqt", "Japanese yen"), "¥"),
-      ("cny", QtWidgets.QApplication.translate("pychemqt", "Chinese yuan"), "¥"),
-      ("rub", QtWidgets.QApplication.translate("pychemqt", "Russian rouble"), "руб"),
-      ("aud", QtWidgets.QApplication.translate("pychemqt", "Australian dollar"), "A$"),
-      ("brl", QtWidgets.QApplication.translate("pychemqt", "Brazilian real"), "R$"),
-      ("cad", QtWidgets.QApplication.translate("pychemqt", "Canadian dollar"), "C$"),
-      ("chf", QtWidgets.QApplication.translate("pychemqt", "Swiss franc"), "Fr.")]
+      ("usd", tr("pychemqt", "United States dollar"), "$"),
+      ("eur", tr("pychemqt", "Euro"), "€"),
+      ("gbp", tr("pychemqt", "Pound sterling"), "£"),
+      ("jpy", tr("pychemqt", "Japanese yen"), "¥"),
+      ("cny", tr("pychemqt", "Chinese yuan"), "¥"),
+      ("rub", tr("pychemqt", "Russian rouble"), "руб"),
+      ("aud", tr("pychemqt", "Australian dollar"), "A$"),
+      ("brl", tr("pychemqt", "Brazilian real"), "R$"),
+      ("cad", tr("pychemqt", "Canadian dollar"), "C$"),
+      ("chf", tr("pychemqt", "Swiss franc"), "Fr.")]
 
     # Europe
     _uEurope = [
-      ("dkk", QtWidgets.QApplication.translate("pychemqt", "Danish krone"), "kr"),
-      ("isk", QtWidgets.QApplication.translate("pychemqt", "Icelandic króna"), "Íkr"),
-      ("nok", QtWidgets.QApplication.translate("pychemqt", "Norwegian krone"), "kr"),
-      ("sek", QtWidgets.QApplication.translate("pychemqt", "Swedish krona"), "kr"),
-      ("all", QtWidgets.QApplication.translate("pychemqt", "Albanian lek"), "L"),
-      ("bgn", QtWidgets.QApplication.translate("pychemqt", "Bulgarian lev"), "лв"),
-      ("czk", QtWidgets.QApplication.translate("pychemqt", "Czech koruna"), "Kč"),
-      ("huf", QtWidgets.QApplication.translate("pychemqt", "Hungarian forint"), "Ft"),
-      ("pln", QtWidgets.QApplication.translate("pychemqt", "Polish złoty"), "zł"),
-      ("ron", QtWidgets.QApplication.translate("pychemqt", "Romanian new leu"), "RON"),
-      ("bam", QtWidgets.QApplication.translate(
+      ("dkk", tr("pychemqt", "Danish krone"), "kr"),
+      ("isk", tr("pychemqt", "Icelandic króna"), "Íkr"),
+      ("nok", tr("pychemqt", "Norwegian krone"), "kr"),
+      ("sek", tr("pychemqt", "Swedish krona"), "kr"),
+      ("all", tr("pychemqt", "Albanian lek"), "L"),
+      ("bgn", tr("pychemqt", "Bulgarian lev"), "лв"),
+      ("czk", tr("pychemqt", "Czech koruna"), "Kč"),
+      ("huf", tr("pychemqt", "Hungarian forint"), "Ft"),
+      ("pln", tr("pychemqt", "Polish złoty"), "zł"),
+      ("ron", tr("pychemqt", "Romanian new leu"), "RON"),
+      ("bam", tr(
           "pychemqt", "Bosnia and Herzebgovina convertible mark"), "KM"),
-      ("hrk", QtWidgets.QApplication.translate("pychemqt", "Croatian kuna"), "kn"),
-      ("mkd", QtWidgets.QApplication.translate("pychemqt", "Macedonian denar"), "ден"),
-      ("mdl", QtWidgets.QApplication.translate("pychemqt", "Moldovan leu"), "lei"),
-      ("rsd", QtWidgets.QApplication.translate("pychemqt", "Serbian dinar"), "дин."),
-      ("byn", QtWidgets.QApplication.translate("pychemqt", "Belarusian ruble"), "p."),
-      ("uah", QtWidgets.QApplication.translate("pychemqt", "Ukrainian hryvnia"), "₴"),
-      ("try", QtWidgets.QApplication.translate("pychemqt", "Turkish lira"), "TL")]
+      ("hrk", tr("pychemqt", "Croatian kuna"), "kn"),
+      ("mkd", tr("pychemqt", "Macedonian denar"), "ден"),
+      ("mdl", tr("pychemqt", "Moldovan leu"), "lei"),
+      ("rsd", tr("pychemqt", "Serbian dinar"), "дин."),
+      ("byn", tr("pychemqt", "Belarusian ruble"), "p."),
+      ("uah", tr("pychemqt", "Ukrainian hryvnia"), "₴"),
+      ("try", tr("pychemqt", "Turkish lira"), "TL")]
 
     # America
     _uAmerica = [
-      ("ars", QtWidgets.QApplication.translate("pychemqt", "Argentine peso"), "$"),
-      ("bob", QtWidgets.QApplication.translate("pychemqt", "Bolivian boliviano"), "Bs"),
-      ("clf", QtWidgets.QApplication.translate("pychemqt", "Chilean Unit of Account"),
+      ("ars", tr("pychemqt", "Argentine peso"), "$"),
+      ("bob", tr("pychemqt", "Bolivian boliviano"), "Bs"),
+      ("clf", tr("pychemqt", "Chilean Unit of Account"),
          "UF"),
-      ("clp", QtWidgets.QApplication.translate("pychemqt", "Chilean peso"), "$"),
-      ("cop", QtWidgets.QApplication.translate("pychemqt", "Colombian peso"), "$"),
-      ("crc", QtWidgets.QApplication.translate("pychemqt", "Costa Rican colon"), "₡"),
-      ("cuc", QtWidgets.QApplication.translate("pychemqt", "Cuban convertible peso"),
+      ("clp", tr("pychemqt", "Chilean peso"), "$"),
+      ("cop", tr("pychemqt", "Colombian peso"), "$"),
+      ("crc", tr("pychemqt", "Costa Rican colon"), "₡"),
+      ("cuc", tr("pychemqt", "Cuban convertible peso"),
        "CUC$"),
-      ("cup", QtWidgets.QApplication.translate("pychemqt", "Cuban peso"), "₱"),
-      ("dop", QtWidgets.QApplication.translate("pychemqt", "Dominican peso"), "RD$"),
-      ("gtq", QtWidgets.QApplication.translate("pychemqt", "Guatemalan quetzal"), "Q"),
-      ("hnl", QtWidgets.QApplication.translate("pychemqt", "Honduran lempira"), "L"),
-      ("mxn", QtWidgets.QApplication.translate("pychemqt", "Mexican peso"), "$"),
-      ("mxv", QtWidgets.QApplication.translate("pychemqt", "Mexican UDI"), "$"),
-      ("nio", QtWidgets.QApplication.translate("pychemqt", "Nicaraguan córdoba"), "C$"),
-      ("pab", QtWidgets.QApplication.translate("pychemqt", "Panamanian balboa"), "฿"),
-      ("pyg", QtWidgets.QApplication.translate("pychemqt", "Paraguayan guaraní"), "₲"),
-      ("pen", QtWidgets.QApplication.translate("pychemqt", "Peruvian nuevo sol"), "S/."),
-      ("svc", QtWidgets.QApplication.translate("pychemqt", "Salvadoran colón"), "₡"),
-      ("uyu", QtWidgets.QApplication.translate("pychemqt", "Uruguayan peso"), "$U"),
-      # ("vef", QtWidgets.QApplication.translate("pychemqt", "Venezuelan bolívar"), "Bs"),
-      ("ved", QtWidgets.QApplication.translate("pychemqt", "Venezuelan digital bolívar"),
+      ("cup", tr("pychemqt", "Cuban peso"), "₱"),
+      ("dop", tr("pychemqt", "Dominican peso"), "RD$"),
+      ("gtq", tr("pychemqt", "Guatemalan quetzal"), "Q"),
+      ("hnl", tr("pychemqt", "Honduran lempira"), "L"),
+      ("mxn", tr("pychemqt", "Mexican peso"), "$"),
+      ("mxv", tr("pychemqt", "Mexican UDI"), "$"),
+      ("nio", tr("pychemqt", "Nicaraguan córdoba"), "C$"),
+      ("pab", tr("pychemqt", "Panamanian balboa"), "฿"),
+      ("pyg", tr("pychemqt", "Paraguayan guaraní"), "₲"),
+      ("pen", tr("pychemqt", "Peruvian nuevo sol"), "S/."),
+      ("svc", tr("pychemqt", "Salvadoran colón"), "₡"),
+      ("uyu", tr("pychemqt", "Uruguayan peso"), "$U"),
+      # ("vef", tr("pychemqt", "Venezuelan bolívar"), "Bs"),
+      ("ved", tr("pychemqt", "Venezuelan digital bolívar"),
           "Bs.D"),
-      ("ves", QtWidgets.QApplication.translate(
+      ("ves", tr(
           "pychemqt", "Venezuelan sovereign bolívar"), "Bs.S"),
 
-      ("awg", QtWidgets.QApplication.translate("pychemqt", "Aruban florin"), "Afl."),
-      ("bsd", QtWidgets.QApplication.translate("pychemqt", "Bahamian dollar"), "B$"),
-      ("bbd", QtWidgets.QApplication.translate("pychemqt", "Barbados dollar"), "Bds$"),
-      ("bzd", QtWidgets.QApplication.translate("pychemqt", "Belize dollar"), "BZ$"),
-      ("bmd", QtWidgets.QApplication.translate("pychemqt", "Bermudean dollar"), "BD$"),
-      ("kyd", QtWidgets.QApplication.translate("pychemqt", "Cayman Islands dollar"),
+      ("awg", tr("pychemqt", "Aruban florin"), "Afl."),
+      ("bsd", tr("pychemqt", "Bahamian dollar"), "B$"),
+      ("bbd", tr("pychemqt", "Barbados dollar"), "Bds$"),
+      ("bzd", tr("pychemqt", "Belize dollar"), "BZ$"),
+      ("bmd", tr("pychemqt", "Bermudean dollar"), "BD$"),
+      ("kyd", tr("pychemqt", "Cayman Islands dollar"),
           "CI$"),
-      ("xcd", QtWidgets.QApplication.translate("pychemqt", "East Caribbean dollar"),
+      ("xcd", tr("pychemqt", "East Caribbean dollar"),
           "EC$"),
-      ("gyd", QtWidgets.QApplication.translate("pychemqt", "Guyanese dollar"), "GY$"),
-      ("htg", QtWidgets.QApplication.translate("pychemqt", "Haitian gourde"), "G"),
-      ("jmd", QtWidgets.QApplication.translate("pychemqt", "Jamaican dollar"), "J$"),
-      ("ang", QtWidgets.QApplication.translate(
+      ("gyd", tr("pychemqt", "Guyanese dollar"), "GY$"),
+      ("htg", tr("pychemqt", "Haitian gourde"), "G"),
+      ("jmd", tr("pychemqt", "Jamaican dollar"), "J$"),
+      ("ang", tr(
           "pychemqt", "Netherlands Antillean guilder"), "f"),
-      ("srd", QtWidgets.QApplication.translate("pychemqt", "Surinamese dollar"), "$"),
-      ("ttd", QtWidgets.QApplication.translate("pychemqt", "Trinidad and Tobago dollar"),
+      ("srd", tr("pychemqt", "Surinamese dollar"), "$"),
+      ("ttd", tr("pychemqt", "Trinidad and Tobago dollar"),
           "TT$")]
 
     # Asia
     _uAsia = [
-      ("afn", QtWidgets.QApplication.translate("pychemqt", "Afghan afghani"), "Af"),
-      ("bhd", QtWidgets.QApplication.translate("pychemqt", "Bahraini dinar"), "BD"),
-      ("bnd", QtWidgets.QApplication.translate("pychemqt", "Brunei dollar"), "B$"),
-      ("ils", QtWidgets.QApplication.translate("pychemqt", "Israeli new shekel"), "₪"),
-      ("iqd", QtWidgets.QApplication.translate("pychemqt", "Iraqi dinar"), "د.ع"),
-      ("irr", QtWidgets.QApplication.translate("pychemqt", "Iranian rial"), "﷼"),
-      ("jod", QtWidgets.QApplication.translate("pychemqt", "Jordanian dinar"), "JD"),
-      ("kwd", QtWidgets.QApplication.translate("pychemqt", "Kuwaiti dinar"), "د.ك"),
-      ("lbp", QtWidgets.QApplication.translate("pychemqt", "Lebanese pound"), "ل.ل."),
-      ("omr", QtWidgets.QApplication.translate("pychemqt", "Omani rial"), "﷼"),
-      ("pkr", QtWidgets.QApplication.translate("pychemqt", "Pakistani rupee"), "Rs"),
-      ("qar", QtWidgets.QApplication.translate("pychemqt", "Qatari riyal"), "QR"),
-      ("sar", QtWidgets.QApplication.translate("pychemqt", "Saudi riyal"), "ر.س"),
-      ("syp", QtWidgets.QApplication.translate("pychemqt", "Syrian pound"), "£S"),
-      ("aed", QtWidgets.QApplication.translate(
+      ("afn", tr("pychemqt", "Afghan afghani"), "Af"),
+      ("bhd", tr("pychemqt", "Bahraini dinar"), "BD"),
+      ("bnd", tr("pychemqt", "Brunei dollar"), "B$"),
+      ("ils", tr("pychemqt", "Israeli new shekel"), "₪"),
+      ("iqd", tr("pychemqt", "Iraqi dinar"), "د.ع"),
+      ("irr", tr("pychemqt", "Iranian rial"), "﷼"),
+      ("jod", tr("pychemqt", "Jordanian dinar"), "JD"),
+      ("kwd", tr("pychemqt", "Kuwaiti dinar"), "د.ك"),
+      ("lbp", tr("pychemqt", "Lebanese pound"), "ل.ل."),
+      ("omr", tr("pychemqt", "Omani rial"), "﷼"),
+      ("pkr", tr("pychemqt", "Pakistani rupee"), "Rs"),
+      ("qar", tr("pychemqt", "Qatari riyal"), "QR"),
+      ("sar", tr("pychemqt", "Saudi riyal"), "ر.س"),
+      ("syp", tr("pychemqt", "Syrian pound"), "£S"),
+      ("aed", tr(
           "pychemqt", "United Arab Emirates dirham"), "إ.د"),
-      ("yer", QtWidgets.QApplication.translate("pychemqt", "Yemeni rial"), "﷼"),
+      ("yer", tr("pychemqt", "Yemeni rial"), "﷼"),
 
-      ("amd", QtWidgets.QApplication.translate("pychemqt", "Armenian dram"), "֏"),
-      ("azn", QtWidgets.QApplication.translate("pychemqt", "Azerbaijan manat"), "₼"),
-      ("gel", QtWidgets.QApplication.translate("pychemqt", "Georgian lari"), "ლ"),
-      ("kzt", QtWidgets.QApplication.translate("pychemqt", "Kazakhstani tenge"), "₸"),
-      ("kgs", QtWidgets.QApplication.translate("pychemqt", "Kyrgyzstani som"), "som"),
-      ("tjs", QtWidgets.QApplication.translate("pychemqt", "Tajikistani somoni"), "som"),
-      ("tmt", QtWidgets.QApplication.translate("pychemqt", "Turkmenistan manat"), "T"),
-      ("uzs", QtWidgets.QApplication.translate("pychemqt", "Uzbekistan som"), "som"),
+      ("amd", tr("pychemqt", "Armenian dram"), "֏"),
+      ("azn", tr("pychemqt", "Azerbaijan manat"), "₼"),
+      ("gel", tr("pychemqt", "Georgian lari"), "ლ"),
+      ("kzt", tr("pychemqt", "Kazakhstani tenge"), "₸"),
+      ("kgs", tr("pychemqt", "Kyrgyzstani som"), "som"),
+      ("tjs", tr("pychemqt", "Tajikistani somoni"), "som"),
+      ("tmt", tr("pychemqt", "Turkmenistan manat"), "T"),
+      ("uzs", tr("pychemqt", "Uzbekistan som"), "som"),
 
       # Disabling bangladeshi taka symbol becaus raise opentype warning
-      # ("bdt", QtWidgets.QApplication.translate("pychemqt", "Bangladeshi taka"), "৳"),
-      ("bdt", QtWidgets.QApplication.translate("pychemqt", "Bangladeshi taka"), ""),
-      ("btn", QtWidgets.QApplication.translate("pychemqt", "Bhutanese ngultrum"), "Nu."),
-      ("cnh", QtWidgets.QApplication.translate("pychemqt", "Renminbi"), "¥"),
-      ("khr", QtWidgets.QApplication.translate("pychemqt", "Cambodian riel"), "៛"),
-      ("kpw", QtWidgets.QApplication.translate("pychemqt", "North Korean won"), "₩"),
-      ("hkd", QtWidgets.QApplication.translate("pychemqt", "Hong Kong dollar"), "HK$"),
-      ("inr", QtWidgets.QApplication.translate("pychemqt", "Indian rupee"), "₨"),
-      ("idr", QtWidgets.QApplication.translate("pychemqt", "Indonesian rupiah"), "Rp"),
-      ("lak", QtWidgets.QApplication.translate("pychemqt", "Lao kip"), "₭"),
-      ("mop", QtWidgets.QApplication.translate("pychemqt", "Macanese pataca"), "MOP$"),
-      ("myr", QtWidgets.QApplication.translate("pychemqt", "Malaysian ringgit"), "RM"),
-      ("mnt", QtWidgets.QApplication.translate("pychemqt", "Mongolian tögrög"), "₮"),
-      ("mmk", QtWidgets.QApplication.translate("pychemqt", "Myanmar kyat"), "K"),
-      ("npr", QtWidgets.QApplication.translate("pychemqt", "Nepalese rupee"), "रु"),
-      ("twd", QtWidgets.QApplication.translate("pychemqt", "New Taiwan dollar"), "NT$"),
-      ("php", QtWidgets.QApplication.translate("pychemqt", "Philippine peso"), "PhP"),
-      ("sgd", QtWidgets.QApplication.translate("pychemqt", "Singapore dollar"), "S$"),
-      ("krw", QtWidgets.QApplication.translate("pychemqt", "South Korean won"), "₩"),
-      ("lkr", QtWidgets.QApplication.translate("pychemqt", "Sri Lankan rupee"), "₨"),
-      ("thb", QtWidgets.QApplication.translate("pychemqt", "Thai baht"), "฿"),
-      ("vnd", QtWidgets.QApplication.translate("pychemqt", "Vietnamese dong"), "₫")]
+      # ("bdt", tr("pychemqt", "Bangladeshi taka"), "৳"),
+      ("bdt", tr("pychemqt", "Bangladeshi taka"), ""),
+      ("btn", tr("pychemqt", "Bhutanese ngultrum"), "Nu."),
+      ("cnh", tr("pychemqt", "Renminbi"), "¥"),
+      ("khr", tr("pychemqt", "Cambodian riel"), "៛"),
+      ("kpw", tr("pychemqt", "North Korean won"), "₩"),
+      ("hkd", tr("pychemqt", "Hong Kong dollar"), "HK$"),
+      ("inr", tr("pychemqt", "Indian rupee"), "₨"),
+      ("idr", tr("pychemqt", "Indonesian rupiah"), "Rp"),
+      ("lak", tr("pychemqt", "Lao kip"), "₭"),
+      ("mop", tr("pychemqt", "Macanese pataca"), "MOP$"),
+      ("myr", tr("pychemqt", "Malaysian ringgit"), "RM"),
+      ("mnt", tr("pychemqt", "Mongolian tögrög"), "₮"),
+      ("mmk", tr("pychemqt", "Myanmar kyat"), "K"),
+      ("npr", tr("pychemqt", "Nepalese rupee"), "रु"),
+      ("twd", tr("pychemqt", "New Taiwan dollar"), "NT$"),
+      ("php", tr("pychemqt", "Philippine peso"), "PhP"),
+      ("sgd", tr("pychemqt", "Singapore dollar"), "S$"),
+      ("krw", tr("pychemqt", "South Korean won"), "₩"),
+      ("lkr", tr("pychemqt", "Sri Lankan rupee"), "₨"),
+      ("thb", tr("pychemqt", "Thai baht"), "฿"),
+      ("vnd", tr("pychemqt", "Vietnamese dong"), "₫")]
 
     # Africa
     _uAfrica = [
-      ("dzd", QtWidgets.QApplication.translate("pychemqt", "Algerian dinar"), "دج"),
-      ("aoa", QtWidgets.QApplication.translate("pychemqt", "Angolan kwanza"), "Kz"),
-      ("bwp", QtWidgets.QApplication.translate("pychemqt", "Botswana pula"), "P"),
-      ("bif", QtWidgets.QApplication.translate("pychemqt", "Burundian franc"), "FBu"),
-      ("cve", QtWidgets.QApplication.translate("pychemqt", "Cape Verde escudo"), "$"),
-      ("kmf", QtWidgets.QApplication.translate("pychemqt", "Comoro franc"), "CF"),
-      ("cdf", QtWidgets.QApplication.translate("pychemqt", "Congolese franc"), "FC"),
-      ("djf", QtWidgets.QApplication.translate("pychemqt", "Djiboutian franc"), "Fdj"),
-      ("egp", QtWidgets.QApplication.translate("pychemqt", "Egyptian pound"), "E£"),
-      ("ern", QtWidgets.QApplication.translate("pychemqt", "Eritrean nakfa"), "Nfk"),
-      ("etb", QtWidgets.QApplication.translate("pychemqt", "Ethiopian birr"), "Br"),
-      ("gmd", QtWidgets.QApplication.translate("pychemqt", "Ghambian dalasi"), "D"),
-      ("ghs", QtWidgets.QApplication.translate("pychemqt", "Ghanaian cedi"), "GH₵"),
-      ("gnf", QtWidgets.QApplication.translate("pychemqt", "Guinean franc"), "GFr"),
-      ("kes", QtWidgets.QApplication.translate("pychemqt", "Kenyan shilling"), "KSh"),
-      ("lsl", QtWidgets.QApplication.translate("pychemqt", "Lesotho loti"), "L"),
-      ("lrd", QtWidgets.QApplication.translate("pychemqt", "Liberian dollar"), "L$"),
-      ("lyd", QtWidgets.QApplication.translate("pychemqt", "Libyan dinar"), "ل.د"),
-      ("mru", QtWidgets.QApplication.translate("pychemqt", "Mauritanian ouguiya"), "UM"),
-      ("mur", QtWidgets.QApplication.translate("pychemqt", "Mauritian rupee"), "₨"),
-      ("mga", QtWidgets.QApplication.translate("pychemqt", "Malagasy ariary"), "Ar"),
-      ("mwk", QtWidgets.QApplication.translate("pychemqt", "Malawian kwacha"), "MK"),
-      ("mvr", QtWidgets.QApplication.translate("pychemqt", "Maldivian rufiyaa"), "MRf"),
-      ("mad", QtWidgets.QApplication.translate("pychemqt", "Moroccan dirham"), "درهم"),
-      ("mzn", QtWidgets.QApplication.translate("pychemqt", "Mozambican metical"), "MT"),
-      ("nad", QtWidgets.QApplication.translate("pychemqt", "Namibian dollar"), "N$"),
-      ("ngn", QtWidgets.QApplication.translate("pychemqt", "Nigerian naira"), "₦"),
-      ("rwf", QtWidgets.QApplication.translate("pychemqt", "Rwandan franc"), "FRw"),
-      ("stn", QtWidgets.QApplication.translate(
+      ("dzd", tr("pychemqt", "Algerian dinar"), "دج"),
+      ("aoa", tr("pychemqt", "Angolan kwanza"), "Kz"),
+      ("bwp", tr("pychemqt", "Botswana pula"), "P"),
+      ("bif", tr("pychemqt", "Burundian franc"), "FBu"),
+      ("cve", tr("pychemqt", "Cape Verde escudo"), "$"),
+      ("kmf", tr("pychemqt", "Comoro franc"), "CF"),
+      ("cdf", tr("pychemqt", "Congolese franc"), "FC"),
+      ("djf", tr("pychemqt", "Djiboutian franc"), "Fdj"),
+      ("egp", tr("pychemqt", "Egyptian pound"), "E£"),
+      ("ern", tr("pychemqt", "Eritrean nakfa"), "Nfk"),
+      ("etb", tr("pychemqt", "Ethiopian birr"), "Br"),
+      ("gmd", tr("pychemqt", "Ghambian dalasi"), "D"),
+      ("ghs", tr("pychemqt", "Ghanaian cedi"), "GH₵"),
+      ("gnf", tr("pychemqt", "Guinean franc"), "GFr"),
+      ("kes", tr("pychemqt", "Kenyan shilling"), "KSh"),
+      ("lsl", tr("pychemqt", "Lesotho loti"), "L"),
+      ("lrd", tr("pychemqt", "Liberian dollar"), "L$"),
+      ("lyd", tr("pychemqt", "Libyan dinar"), "ل.د"),
+      ("mru", tr("pychemqt", "Mauritanian ouguiya"), "UM"),
+      ("mur", tr("pychemqt", "Mauritian rupee"), "₨"),
+      ("mga", tr("pychemqt", "Malagasy ariary"), "Ar"),
+      ("mwk", tr("pychemqt", "Malawian kwacha"), "MK"),
+      ("mvr", tr("pychemqt", "Maldivian rufiyaa"), "MRf"),
+      ("mad", tr("pychemqt", "Moroccan dirham"), "درهم"),
+      ("mzn", tr("pychemqt", "Mozambican metical"), "MT"),
+      ("nad", tr("pychemqt", "Namibian dollar"), "N$"),
+      ("ngn", tr("pychemqt", "Nigerian naira"), "₦"),
+      ("rwf", tr("pychemqt", "Rwandan franc"), "FRw"),
+      ("stn", tr(
           "pychemqt", "São Tomé and Príncipe dobra"), "Db"),
-      ("scr", QtWidgets.QApplication.translate("pychemqt", "Seychelles rupee"), "SR"),
-      ("sll", QtWidgets.QApplication.translate(
+      ("scr", tr("pychemqt", "Seychelles rupee"), "SR"),
+      ("sll", tr(
           "pychemqt", "Sierra Leonean leone"), "Le"),
-      ("sos", QtWidgets.QApplication.translate("pychemqt", "Somali shilling"), "Sh.So."),
-      ("zar", QtWidgets.QApplication.translate("pychemqt", "South African rand"), "R"),
-      ("sdg", QtWidgets.QApplication.translate("pychemqt", "Sudanese pound"), "ج.س"),
-      ("szl", QtWidgets.QApplication.translate("pychemqt", "Swazi lilangeni"), "L"),
-      ("tzs", QtWidgets.QApplication.translate("pychemqt", "Tanzanian shilling"), "TSh"),
-      ("tnd", QtWidgets.QApplication.translate("pychemqt", "Tunisian dinar"), "د.ت"),
-      ("ugx", QtWidgets.QApplication.translate("pychemqt", "Ugandan shilling"), "USh"),
-      ("zmw", QtWidgets.QApplication.translate("pychemqt", "Zambian kwacha"), "ZK"),
-      ("zwl", QtWidgets.QApplication.translate("pychemqt", "Zimbabwean dollar"), "Z$"),
-      ("xaf", QtWidgets.QApplication.translate(
+      ("sos", tr("pychemqt", "Somali shilling"), "Sh.So."),
+      ("zar", tr("pychemqt", "South African rand"), "R"),
+      ("sdg", tr("pychemqt", "Sudanese pound"), "ج.س"),
+      ("szl", tr("pychemqt", "Swazi lilangeni"), "L"),
+      ("tzs", tr("pychemqt", "Tanzanian shilling"), "TSh"),
+      ("tnd", tr("pychemqt", "Tunisian dinar"), "د.ت"),
+      ("ugx", tr("pychemqt", "Ugandan shilling"), "USh"),
+      ("zmw", tr("pychemqt", "Zambian kwacha"), "ZK"),
+      ("zwl", tr("pychemqt", "Zimbabwean dollar"), "Z$"),
+      ("xaf", tr(
           "pychemqt", "Central AFrican CFA franc"), "FCFA"),
-      ("xof", QtWidgets.QApplication.translate(
+      ("xof", tr(
           "pychemqt", "West African CFA franc"), "CFA")]
 
     # Oceania
     _uOceania = [
-      ("fjd", QtWidgets.QApplication.translate("pychemqt", "Fiji dollar"), "FJ$"),
-      ("nzd", QtWidgets.QApplication.translate("pychemqt", "New Zealand dollar"), "NZ$"),
-      ("pgk", QtWidgets.QApplication.translate("pychemqt", "Papua New Guinean kina"),
+      ("fjd", tr("pychemqt", "Fiji dollar"), "FJ$"),
+      ("nzd", tr("pychemqt", "New Zealand dollar"), "NZ$"),
+      ("pgk", tr("pychemqt", "Papua New Guinean kina"),
           "K"),
-      ("sbd", QtWidgets.QApplication.translate("pychemqt", "Salomon Islands dollar"),
+      ("sbd", tr("pychemqt", "Salomon Islands dollar"),
           "SI$"),
-      ("wst", QtWidgets.QApplication.translate("pychemqt", "Samoan tala"), "WS$"),
-      ("top", QtWidgets.QApplication.translate("pychemqt", "Tongan pa'anga"), "T$"),
-      ("tvd", QtWidgets.QApplication.translate("pychemqt", "Tuvalu dollar"), "TV$"),
-      ("vuv", QtWidgets.QApplication.translate("pychemqt", "Vanuatu vatu"), "VT"),
-      ("xpf", QtWidgets.QApplication.translate("pychemqt", "CFP franc"), "F")]
+      ("wst", tr("pychemqt", "Samoan tala"), "WS$"),
+      ("top", tr("pychemqt", "Tongan pa'anga"), "T$"),
+      ("tvd", tr("pychemqt", "Tuvalu dollar"), "TV$"),
+      ("vuv", tr("pychemqt", "Vanuatu vatu"), "VT"),
+      ("xpf", tr("pychemqt", "CFP franc"), "F")]
 
     # Crypto
     _uCrypto = [
@@ -2338,10 +2338,10 @@ else:
 for _clas in _all:
     if _clas.__doc__:
         continue
-    doc = QtWidgets.QApplication.translate(
+    doc = tr(
         "pychemqt", "Class to model a %s measure" % _clas.__title__)
     doc += os.linesep + os.linesep
-    doc += QtWidgets.QApplication.translate("pychemqt", "Supported units") + "::"
+    doc += tr("pychemqt", "Supported units") + "::"
     doc += os.linesep
     default = True
     for i, key in enumerate(_clas.__units__):
@@ -2354,7 +2354,7 @@ for _clas in _all:
 
         # Mark the default unit
         if default:
-            doc += " (%s)" % QtWidgets.QApplication.translate("pychemqt", "default")
+            doc += " (%s)" % tr("pychemqt", "default")
             default = False
         doc += os.linesep + os.linesep
 
@@ -2387,7 +2387,7 @@ for unit in _all:
     for magnitud in unit.magnitudes():
         MAGNITUDES.append(magnitud+(unit, ))
 MAGNITUDES.append(("Dimensionless",
-                    QtWidgets.QApplication.translate("pychemqt", "Dimensionless"),
+                    tr("pychemqt", "Dimensionless"),
                     Dimensionless))
 
 unit_set = {}

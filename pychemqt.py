@@ -59,7 +59,7 @@ conf_dir = os.path.expanduser("~") + os.sep + ".pychemqt" + os.sep
 # Check mandatory external dependences
 # qt
 try:
-    from tools.qt import QtCore, QtGui, QtWidgets
+    from tools.qt import QtCore, QtGui, QtWidgets, tr
 except ImportError as err:
     print("PyQt could not be found, you must install it" + os.linesep)
     print("PyQt5 and PyQt6 are supported")
@@ -108,14 +108,14 @@ if qtTranslator.load("qt_" + locale, path):
 try:
     import scipy
 except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
+    msg = tr(
         "pychemqt", "scipy could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor = map(int, scipy.version.version.split(".")[:2])
     if mayor == 0 and minor < 14:
-        msg = QtWidgets.QApplication.translate(
+        msg = tr(
             "pychemqt",
             "Your version of scipy is too old, you must update it.")
         raise ImportError(msg)
@@ -124,14 +124,14 @@ else:
 try:
     import numpy as np
 except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
+    msg = tr(
         "pychemqt", "numpy could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor = map(int, np.version.version.split(".")[:2])
     if mayor < 1 or minor < 8:
-        msg = QtWidgets.QApplication.translate(
+        msg = tr(
             "pychemqt",
             "Your version of numpy is too old, you must update it.")
         raise ImportError(msg)
@@ -140,14 +140,14 @@ else:
 try:
     import matplotlib
 except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
+    msg = tr(
         "pychemqt", "matplotlib could not be found, you must install it.")
     print(msg)
     raise err
 else:
     mayor, minor = map(int, matplotlib.__version__.split(".")[:2])
     if mayor < 1 or (mayor == 1 and minor < 4):
-        msg = QtWidgets.QApplication.translate(
+        msg = tr(
             "pychemqt",
             "Your version of matplotlib is too old, you must update it.")
         raise ImportError(msg)
@@ -157,13 +157,13 @@ else:
 try:
     import iapws
 except ImportError as err:
-    msg = QtWidgets.QApplication.translate(
+    msg = tr(
         "pychemqt", "iapws could not be found, you must install it.")
     print(msg)
     raise err
 else:
     if iapws.__version__ < "1.5.3":
-        msg = QtWidgets.QApplication.translate(
+        msg = tr(
             "pychemqt",
             "Your version of iapws is too old, you must update it.")
         raise ImportError(msg)
@@ -176,7 +176,7 @@ else:
     # from pygraph.classes.graph import graph
     # from pygraph.algorithms.cycles import find_cycle
 # except ImportError as err:
-    # msg = QtWidgets.QApplication.translate(
+    # msg = tr(
     #     "pychemqt", "Python-graph don't found, you need install it")
     # print(msg)
     # raise err
@@ -231,7 +231,7 @@ fmt = "[%(asctime)s.%(msecs)d] %(levelname)s: %(message)s"
 logging.basicConfig(filename=conf_dir + "pychemqt.log", filemode="w",
                     level=loglevel, datefmt="%d-%b-%Y %H:%M:%S", format=fmt)
 logging.info(
-    QtWidgets.QApplication.translate("pychemqt", "Starting pychemqt"))
+    tr("pychemqt", "Starting pychemqt"))
 
 
 # Derive numpy error log to pychemqt log
@@ -279,7 +279,7 @@ if not args.nosplash:
 
 # Checking config files
 from tools import firstrun  # noqa
-splash.showMessage(QtWidgets.QApplication.translate(
+splash.showMessage(tr(
     "pychemqt", "Checking config files..."))
 
 # Checking config file
@@ -315,7 +315,7 @@ if not os.path.isfile(conf_dir + "pychemqtrc_temporal"):
     Config.write(open(conf_dir + "pychemqtrc_temporal", "w"))
 
 # Checking costindex
-splash.showMessage(QtWidgets.QApplication.translate(
+splash.showMessage(tr(
     "pychemqt", "Checking cost index..."))
 if not os.path.isfile(conf_dir + "CostIndex.dat"):
     orig = os.path.join(os.environ["pychemqt"], "dat", "costindex.dat")
@@ -326,7 +326,7 @@ if not os.path.isfile(conf_dir + "CostIndex.dat"):
                 archivo.write(data.replace(os.linesep, "") + os.linesep)
 
 # Checking currency rates
-splash.showMessage(QtWidgets.QApplication.translate(
+splash.showMessage(tr(
     "pychemqt", "Checking currency data"))
 if not os.path.isfile(conf_dir + "moneda.dat"):
     # Exchange rates file don't available
@@ -339,17 +339,17 @@ if not os.path.isfile(conf_dir + "moneda.dat"):
         logging.error(err)
         origen = os.path.join(os.environ["pychemqt"], "dat", "moneda.dat")
         shutil.copy(origen, conf_dir + "moneda.dat")
-        print(QtWidgets.QApplication.translate("pychemqt",
+        print(tr("pychemqt",
               "Internet connection error, using archived currency rates"))
 
 # Checking database with custom components
-splash.showMessage(QtWidgets.QApplication.translate(
+splash.showMessage(tr(
     "pychemqt", "Checking custom database..."))
 if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
 
 # Import internal libraries
-splash.showMessage(QtWidgets.QApplication.translate(
+splash.showMessage(tr(
     "pychemqt", "Importing libraries..."))
 import lib  # noqa
 import UI  # noqa
@@ -358,14 +358,14 @@ import tools  # noqa
 import plots  # noqa
 
 # Load main program UI
-splash.showMessage(QtWidgets.QApplication.translate(
+splash.showMessage(tr(
     "pychemqt", "Loading main window..."))
 from UI.mainWindow import UI_pychemqt  # noqa
 pychemqt = UI_pychemqt()
 
 # Load project files, opened in last pychemqt session and/or specified in
 # command line
-txt = QtWidgets.QApplication.translate("pychemqt", "Loading project files")
+txt = tr("pychemqt", "Loading project files")
 splash.showMessage(txt + "...")
 logging.info(txt)
 

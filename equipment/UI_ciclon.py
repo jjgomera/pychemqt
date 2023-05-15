@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from functools import partial
 import os
 
-from tools.qt import QtGui, QtWidgets
+from tools.qt import QtGui, QtWidgets, tr
 
 
 from lib.unidades import Length, Pressure, DeltaP, Speed, VolFlow, Currency
@@ -48,7 +48,7 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Mode")), 0, 1, 1, 2)
         self.tipo_calculo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TIPO:
@@ -56,7 +56,7 @@ class UI_equipment(UI_equip):
         self.tipo_calculo.currentIndexChanged.connect(
             self.on_tipoCalculo_currentIndexChanged)
         lyt_Calc.addWidget(self.tipo_calculo, 0, 3, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Method")), 1, 1, 1, 2)
         self.modelo_rendimiento = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODEL:
@@ -64,7 +64,7 @@ class UI_equipment(UI_equip):
         self.modelo_rendimiento.currentIndexChanged.connect(
             partial(self.changeParams, "modelo_rendimiento"))
         lyt_Calc.addWidget(self.modelo_rendimiento, 1, 3, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "ΔP method", None)),
             2, 1, 1, 2)
         self.modelo_DeltaP = QtWidgets.QComboBox()
@@ -73,7 +73,7 @@ class UI_equipment(UI_equip):
         self.modelo_DeltaP.currentIndexChanged.connect(
             partial(self.changeParams, "modelo_DeltaP"))
         lyt_Calc.addWidget(self.modelo_DeltaP, 2, 3, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Design model")), 3, 1, 1, 2)
         self.modelo_ciclon = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODEL_CICLON:
@@ -85,31 +85,31 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             4, 0, 1, 5)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Diameter")), 5, 1)
         self.Dc = Entrada_con_unidades(Length)
         self.Dc.valueChanged.connect(partial(self.changeParams, "Dc"))
         lyt_Calc.addWidget(self.Dc, 5, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Efficiency")), 6, 1)
         self.rendimientoAdmisible = Entrada_con_unidades(float, spinbox=True)
         self.rendimientoAdmisible.valueChanged.connect(
             partial(self.changeParams, "rendimientoAdmisible"))
         lyt_Calc.addWidget(self.rendimientoAdmisible, 6, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Allowable ΔP", None)),
             7, 1)
         self.DeltaPAdmisible = Entrada_con_unidades(Pressure)
         self.DeltaPAdmisible.valueChanged.connect(
             partial(self.changeParams, "DeltaPAdmisible"))
         lyt_Calc.addWidget(self.DeltaPAdmisible, 7, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Allowable speed")), 8, 1)
         self.velocidadAdmisible = Entrada_con_unidades(Speed)
         self.velocidadAdmisible.valueChanged.connect(
             partial(self.changeParams, "velocidadAdmisible"))
         lyt_Calc.addWidget(self.velocidadAdmisible, 8, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "No. of ciclones")), 9, 1)
         self.num_ciclones = Entrada_con_unidades(int, spinbox=True, step=1,
                                                  decimales=0, min=1)
@@ -121,18 +121,18 @@ class UI_equipment(UI_equip):
             10, 0, 1, 4)
 
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Results"))
+            tr("pychemqt", "Results"))
         lyt_Calc.addWidget(group, 11, 1, 1, 3)
         lyt = QtWidgets.QGridLayout(group)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Efficiency")), 1, 1)
         self.rendimiento = Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.rendimiento, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Pressure drop:")), 2, 1)
         self.deltaP = Entrada_con_unidades(DeltaP, readOnly=True)
         lyt.addWidget(self.deltaP, 2, 2)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Admission speed")), 3, 1)
         self.V = Entrada_con_unidades(Speed, readOnly=True)
         lyt.addWidget(self.V, 3, 2)
@@ -141,7 +141,7 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             5, 4, 7, 1)
         group2 = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Geometry"))
+            tr("pychemqt", "Geometry"))
         lyt_Calc.addWidget(group2, 5, 5, 7, 1)
         lyt = QtWidgets.QGridLayout(group2)
         lyt.addWidget(QtWidgets.QLabel("D<sub>C</sub>"), 1, 1)
@@ -190,7 +190,7 @@ class UI_equipment(UI_equip):
         # Cost tab
         lyt_Cost = QtWidgets.QGridLayout(self.tabCostos)
         lyt_Cost.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Model")), 1, 1)
+            tr("pychemqt", "Model")), 1, 1)
         self.tipo_costo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_COST:
             self.tipo_costo.addItem(txt)
@@ -209,24 +209,24 @@ class UI_equipment(UI_equip):
             QtWidgets.QSizePolicy.Policy.Expanding), 4, 1, 1, 3)
 
         group = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Stimated Costs"))
+            tr("pychemqt", "Stimated Costs"))
         lyt_Cost.addWidget(group, 5, 1, 1, 3)
         lyt = QtWidgets.QGridLayout(group)
         lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Number")), 0, 0)
+            tr("pychemqt", "Number")), 0, 0)
         self.num_ciclonesCoste = Entrada_con_unidades(int, readOnly=True)
         lyt.addWidget(self.num_ciclonesCoste, 0, 1, 1, 3)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Volumetric Flow")), 1, 0)
         self.Q = Entrada_con_unidades(VolFlow, "QGas", retornar=False)
         self.Q.setReadOnly(True)
         lyt.addWidget(self.Q, 1, 1)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Purchase cost")), 0, 3)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False)
         self.C_adq.setReadOnly(True)
         lyt.addWidget(self.C_adq, 0, 4)
-        lyt.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Installed cost")), 1, 3)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False)
         self.C_inst.setReadOnly(True)
@@ -234,9 +234,9 @@ class UI_equipment(UI_equip):
 
         # Output tab
         self.addSalida(
-            QtWidgets.QApplication.translate("pychemqt", "Filtered gas"))
+            tr("pychemqt", "Filtered gas"))
         self.addSalida(
-            QtWidgets.QApplication.translate("pychemqt", "Collected solids"))
+            tr("pychemqt", "Collected solids"))
 
         self.on_tipoCalculo_currentIndexChanged(0)
         self.modeloEficiencia_Changed(0)
@@ -249,7 +249,7 @@ class UI_equipment(UI_equip):
             self.modelo_ciclon.removeItem(8)
         elif not int and self.modelo_ciclon.count() == 8:
             self.modelo_ciclon.addItem(
-                QtWidgets.QApplication.translate("pychemqt", "Custom"))
+                tr("pychemqt", "Custom"))
 
         self.Dc.setReadOnly(int)
         self.Dc.setResaltado(not int)

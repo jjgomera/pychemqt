@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from functools import partial
 
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 from lib import sql
 from lib.config import IMAGE_PATH
@@ -50,7 +50,7 @@ class newComponent(QtWidgets.QDialog):
         self.status = Status()
         layoutBottom.addWidget(self.status)
         self.buttonShowDetails = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "Show Details"))
+            tr("pychemqt", "Show Details"))
         self.buttonShowDetails.clicked.connect(self.showDetails)
         self.buttonShowDetails.setEnabled(False)
         layoutBottom.addWidget(self.buttonShowDetails)
@@ -94,26 +94,26 @@ class View_Contribution(QtWidgets.QDialog):
         """Constructor
         cmp: optional new component to show the properties"""
         super(View_Contribution, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Group Contribution new component"))
         layout = QtWidgets.QGridLayout(self)
 
         self.nombre = QtWidgets.QLabel()
         layout.addWidget(self.nombre, 1, 1, 1, 5)
         label = QtWidgets.QLabel("M")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Molecular Weight"))
         layout.addWidget(label, 2, 1)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
         layout.addWidget(self.M, 2, 2)
         label = QtWidgets.QLabel("Tb")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Boiling Temperature"))
         layout.addWidget(label, 3, 1)
         self.Tb = Entrada_con_unidades(Temperature)
         layout.addWidget(self.Tb, 3, 2)
         label = QtWidgets.QLabel("Tm")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Melting Temperature"))
         layout.addWidget(label, 4, 1)
         self.Tf = Entrada_con_unidades(Temperature)
@@ -129,26 +129,26 @@ class View_Contribution(QtWidgets.QDialog):
         layout.addWidget(self.Vc, 7, 2)
 
         label = QtWidgets.QLabel("ΔHf")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Enthalpy of formation of ideal gas"))
         layout.addWidget(label, 8, 1)
         self.Hf = Entrada_con_unidades(Enthalpy)
         layout.addWidget(self.Hf, 8, 2)
         label = QtWidgets.QLabel("ΔGf")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Gibbs free energy of formation of ideal gas"))
         layout.addWidget(label, 9, 1)
         self.Gf = Entrada_con_unidades(Enthalpy)
         layout.addWidget(self.Gf, 9, 2)
 
         label = QtWidgets.QLabel("ΔHf")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Enthalpy of fusion"))
         layout.addWidget(label, 2, 4)
         self.Hm = Entrada_con_unidades(Enthalpy)
         layout.addWidget(self.Hm, 2, 5)
         label = QtWidgets.QLabel("ΔHv")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Enthalpy of vaporization"))
         layout.addWidget(label, 3, 4)
         self.Hv = Entrada_con_unidades(Enthalpy)
@@ -173,44 +173,44 @@ class View_Contribution(QtWidgets.QDialog):
         layout.addWidget(self.mub, 9, 5)
 
         label = QtWidgets.QLabel("SG")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Specific gravity at 60ºF"))
         layout.addWidget(label, 2, 7)
         self.gravity = Entrada_con_unidades(float)
         layout.addWidget(self.gravity, 2, 8)
         label = QtWidgets.QLabel("API")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "API Specific gravity"))
         layout.addWidget(label, 3, 7)
         self.API = Entrada_con_unidades(float)
         layout.addWidget(self.API, 3, 8)
         label = QtWidgets.QLabel("Kw")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Watson characterization factor"))
         layout.addWidget(label, 4, 7)
         self.watson = Entrada_con_unidades(float)
         layout.addWidget(self.watson, 4, 8)
 
         label = QtWidgets.QLabel("w")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Acentric factor"))
         layout.addWidget(label, 5, 7)
         self.f_acent = Entrada_con_unidades(float)
         layout.addWidget(self.f_acent, 5, 8)
         label = QtWidgets.QLabel("Ra")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Rackett constant"))
         layout.addWidget(label, 6, 7)
         self.rackett = Entrada_con_unidades(float)
         layout.addWidget(self.rackett, 6, 8)
         label = QtWidgets.QLabel("Vliq")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Volume Liquid Constant"))
         layout.addWidget(label, 7, 7)
         self.Vliq = Entrada_con_unidades(float)
         layout.addWidget(self.Vliq, 7, 8)
         label = QtWidgets.QLabel("Sol")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Solubility Parameter"))
         layout.addWidget(label, 8, 7)
         self.Parametro_solubilidad = Entrada_con_unidades(SolubilityParameter)
@@ -303,7 +303,7 @@ class Ui_Contribution(newComponent):
         self.unknown = func[metodo]()
 
         title = self.unknown.__title__
-        title += " " + QtWidgets.QApplication.translate(
+        title += " " + tr(
                 "pychemqt", "new component definition")
         self.setWindowTitle(title)
 
@@ -312,7 +312,7 @@ class Ui_Contribution(newComponent):
         layout = QtWidgets.QGridLayout(widget)
 
         layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Name")), 1, 0)
+            tr("pychemqt", "Name")), 1, 0)
         self.nombre = QtWidgets.QLineEdit()
         self.nombre.textChanged.connect(partial(self.changeParams, "name"))
         layout.addWidget(self.nombre, 1, 1, 1, 3)
@@ -323,7 +323,7 @@ class Ui_Contribution(newComponent):
         self.Group.setColumnCount(2)
         self.Group.setHorizontalHeaderItem(0, QtWidgets.QTableWidgetItem("Nk"))
         self.Group.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
-            QtWidgets.QApplication.translate("pychemqt", "Group")))
+            tr("pychemqt", "Group")))
         self.Group.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.Group.setSortingEnabled(True)
         self.Group.horizontalHeader().setStretchLastSection(True)
@@ -343,12 +343,12 @@ class Ui_Contribution(newComponent):
         layout.addWidget(self.Formula, 2, 3)
         self.btnDelete = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "editDelete.png"))),
-            QtWidgets.QApplication.translate("pychemqt", "Delete"))
+            tr("pychemqt", "Delete"))
         self.btnDelete.clicked.connect(self.borrar)
         layout.addWidget(self.btnDelete, 3, 3)
         self.btnClear = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "clear.png"))),
-            QtWidgets.QApplication.translate("pychemqt", "Clear"))
+            tr("pychemqt", "Clear"))
         self.btnClear.clicked.connect(self.clear)
         layout.addWidget(self.btnClear, 4, 3)
 
@@ -363,7 +363,7 @@ class Ui_Contribution(newComponent):
         layout.addWidget(self.groupContributions, 6, 0, 6, 3)
         self.btnAdd = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "add.png"))),
-            QtWidgets.QApplication.translate("pychemqt", "Add"))
+            tr("pychemqt", "Add"))
         self.btnAdd.setDisabled(True)
         self.btnAdd.clicked.connect(self.add)
         layout.addWidget(self.btnAdd, 6, 3)
@@ -374,18 +374,18 @@ class Ui_Contribution(newComponent):
         # Show selection for method with several order contributions
         if self.unknown.SecondOrder:
             self.Order1 = QtWidgets.QRadioButton(
-                QtWidgets.QApplication.translate("pychemqt", "1st order"))
+                tr("pychemqt", "1st order"))
             self.Order1.setChecked(True)
             self.Order1.toggled.connect(self.Order)
             layout.addWidget(self.Order1, 9, 3)
             self.Order2 = QtWidgets.QRadioButton(
-                QtWidgets.QApplication.translate("pychemqt", "2nd order"))
+                tr("pychemqt", "2nd order"))
             self.Order2.toggled.connect(self.Order)
             layout.addWidget(self.Order2, 10, 3)
 
             if self.unknown.ThirdOrder:
                 self.Order3 = QtWidgets.QRadioButton(
-                    QtWidgets.QApplication.translate("pychemqt", "3rd order"))
+                    tr("pychemqt", "3rd order"))
                 layout.addWidget(self.Order3, 11, 3)
                 self.Order3.toggled.connect(self.Order)
 
@@ -393,21 +393,21 @@ class Ui_Contribution(newComponent):
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             12, 1)
         labelTb = QtWidgets.QLabel("Tb")
-        labelTb.setToolTip(QtWidgets.QApplication.translate(
+        labelTb.setToolTip(tr(
             "pychemqt", "Experimental Boiling Temperature"))
         layout.addWidget(labelTb, 13, 0)
         self.Tb = Entrada_con_unidades(Temperature)
         self.Tb.valueChanged.connect(partial(self.changeParams, "Tb"))
         layout.addWidget(self.Tb, 13, 1)
         labelM = QtWidgets.QLabel("M")
-        labelM.setToolTip(QtWidgets.QApplication.translate(
+        labelM.setToolTip(tr(
             "pychemqt", "Molecular Weight"))
         layout.addWidget(labelM, 14, 0)
         self.M = Entrada_con_unidades(float, textounidad="g/mol")
         self.M.valueChanged.connect(partial(self.changeParams, "M"))
         layout.addWidget(self.M, 14, 1)
         label = QtWidgets.QLabel("SG")
-        label.setToolTip(QtWidgets.QApplication.translate(
+        label.setToolTip(tr(
             "pychemqt", "Experimental Specific Gravity at 60ºF"))
         layout.addWidget(label, 15, 0)
         self.SG = Entrada_con_unidades(float)
@@ -424,7 +424,7 @@ class Ui_Contribution(newComponent):
         elif metodo == "Wilson":
             self.Tb.setResaltado(True)
             layout.addWidget(QtWidgets.QLabel(
-                QtWidgets.QApplication.translate("pychemqt", "Rings")), 16, 0)
+                tr("pychemqt", "Rings")), 16, 0)
             self.ring = QtWidgets.QSpinBox()
             self.ring.setFixedWidth(80)
             self.ring.valueChanged.connect(partial(self.changeParams, "ring"))
@@ -435,7 +435,7 @@ class Ui_Contribution(newComponent):
 
         elif metodo == "Ambrose":
             self.Tb.setResaltado(True)
-            layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+            layout.addWidget(QtWidgets.QLabel(tr(
                 "pychemqt", "Platt number")), 16, 0)
             self.plat = QtWidgets.QSpinBox()
             self.plat.setFixedWidth(80)
@@ -444,7 +444,7 @@ class Ui_Contribution(newComponent):
             tr += "indicator of the degree of branching in the molecule. The "
             tr += "Platt number of an n-alkane is equal to the number of "
             tr += "carbons minus three"
-            self.plat.setToolTip(QtWidgets.QApplication.translate(
+            self.plat.setToolTip(tr(
                 "pychemqt", tr))
             self.plat.valueChanged.connect(partial(self.changeParams, "platt"))
             layout.addWidget(self.plat, 16, 1)
@@ -453,13 +453,13 @@ class Ui_Contribution(newComponent):
             self.Tb.setResaltado(True)
 
             self.nogroupKlincewicz = QtWidgets.QCheckBox(
-                    QtWidgets.QApplication.translate(
+                    tr(
                         "pychemqt",
                         "Use the simple no group contribution method"))
             self.nogroupKlincewicz.toggled.connect(self.nogroupCheckToggled)
             layout.addWidget(self.nogroupKlincewicz, 16, 0, 1, 4)
             layout.addWidget(QtWidgets.QLabel(
-                QtWidgets.QApplication.translate("pychemqt", "Atoms")), 17, 0)
+                tr("pychemqt", "Atoms")), 17, 0)
             self.atoms = QtWidgets.QSpinBox()
             self.atoms.setFixedWidth(80)
             self.atoms.valueChanged.connect(

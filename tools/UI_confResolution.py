@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from configparser import ConfigParser
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 
 from UI.widgets import Entrada_con_unidades
@@ -40,7 +40,7 @@ class UI_confResolution_widget(QtWidgets.QWidget):
                           (1700, 1250), (1900, 1425), (2400, 1800), (4000, 3000)]
         super(UI_confResolution_widget, self).__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Use default resolution:")), 0, 0)
         self.standard = QtWidgets.QComboBox()
         self.standard.addItem("")
@@ -49,15 +49,15 @@ class UI_confResolution_widget(QtWidgets.QWidget):
         self.standard.currentIndexChanged.connect(self.changeResolution)
         layout.addWidget(self.standard, 0, 1)
 
-        self.checkCustom = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.checkCustom = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use Custom resolution"))
         layout.addWidget(self.checkCustom, 1, 0, 1, 2)
-        label = QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Width:"))
+        label = QtWidgets.QLabel(tr("pychemqt", "Width:"))
         label.setIndent(50)
         layout.addWidget(label, 2, 0)
         self.x = Entrada_con_unidades(int, width=60, spinbox=True, step=1)
         layout.addWidget(self.x, 2, 1)
-        label = QtWidgets.QLabel(QtWidgets.QApplication.translate("pychemqt", "Height:"))
+        label = QtWidgets.QLabel(tr("pychemqt", "Height:"))
         label.setIndent(50)
         layout.addWidget(label, 3, 0)
         self.y = Entrada_con_unidades(int, width=60, spinbox=True, step=1)
@@ -109,7 +109,7 @@ class Dialog(QtWidgets.QDialog):
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
         self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Define PFD resolution"))
+            tr("pychemqt", "Define PFD resolution"))
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confResolution_widget(config)
         layout.addWidget(self.datos)

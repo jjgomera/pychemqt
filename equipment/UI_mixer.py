@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 from lib.unidades import Pressure
 from equipment.parents import UI_equip
@@ -53,7 +53,7 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Output Pressure Method")), 1, 1)
         self.criterio = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METODO:
@@ -64,7 +64,7 @@ class UI_equipment(UI_equip):
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
             2, 1, 1, 3)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Output Pressure")), 3, 1)
         self.Pout = Entrada_con_unidades(Pressure)
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))

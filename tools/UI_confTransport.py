@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from tools.qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets, tr
 
 from lib.compuestos import Componente
 from lib.mezcla import Mezcla
@@ -46,52 +46,52 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(line, 3, 1, 1, 7)
         lbl_Pure = QtWidgets.QLabel()
         lbl_Pure.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        lbl_Pure.setText(QtWidgets.QApplication.translate(
+        lbl_Pure.setText(tr(
             "pychemqt", "Pure Fluid Correlations"))
         layout.addWidget(lbl_Pure, 0, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Liquid Density:")), 4, 0)
         self.RhoL = QtWidgets.QComboBox()
         for method in Componente.METHODS_RhoL:
             self.RhoL.addItem(method)
         layout.addWidget(self.RhoL, 4, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Liquid Viscosity:")), 5, 0)
         self.MuL = QtWidgets.QComboBox()
         for method in Componente.METHODS_MuL:
             self.MuL.addItem(method)
         layout.addWidget(self.MuL, 5, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Gas Viscosity:")), 6, 0)
         self.MuG = QtWidgets.QComboBox()
         for method in Componente.METHODS_MuG:
             self.MuG.addItem(method)
         layout.addWidget(self.MuG, 6, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Surface Tension:")), 7, 0)
         self.Tension = QtWidgets.QComboBox()
         for method in Componente.METHODS_Tension:
             self.Tension.addItem(method)
         layout.addWidget(self.Tension, 7, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Liquid Thermal Conductivity:")), 8, 0)
         self.ThCondL = QtWidgets.QComboBox()
         for method in Componente.METHODS_ThL:
             self.ThCondL.addItem(method)
         layout.addWidget(self.ThCondL, 8, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Gas Thermal Conductivity:")), 9, 0)
         self.ThCondG = QtWidgets.QComboBox()
         for method in Componente.METHODS_ThG:
             self.ThCondG.addItem(method)
         layout.addWidget(self.ThCondG, 9, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Vapor Pressure:")), 10, 0)
         self.Pv = QtWidgets.QComboBox()
         for method in Componente.METHODS_Pv:
             self.Pv.addItem(method)
         layout.addWidget(self.Pv, 10, 1)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Acentric factor:")), 11, 0)
         self.w = QtWidgets.QComboBox()
         for method in Componente.METHODS_facent:
@@ -104,7 +104,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(line, 1, 2, 11, 1)
         lbl_hP = QtWidgets.QLabel()
         lbl_hP.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        lbl_hP.setText(QtWidgets.QApplication.translate(
+        lbl_hP.setText(tr(
             "pychemqt", "High Pressure Corrections"))
         layout.addWidget(lbl_hP, 2, 3)
         self.Corr_RhoL = QtWidgets.QComboBox()
@@ -134,7 +134,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(line, 0, 4, 12, 1)
         lbl_Mix = QtWidgets.QLabel()
         lbl_Mix.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        lbl_Mix.setText(QtWidgets.QApplication.translate(
+        lbl_Mix.setText(tr(
             "pychemqt", "Mixture Fluid Correlations"))
         layout.addWidget(lbl_Mix, 0, 5, 1, 3)
         self.RhoLMix = QtWidgets.QComboBox()
@@ -164,7 +164,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addWidget(line, 1, 6, 11, 1)
         lbl_hPMix = QtWidgets.QLabel()
         lbl_hPMix.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        lbl_hPMix.setText(QtWidgets.QApplication.translate(
+        lbl_hPMix.setText(tr(
             "pychemqt", "High Pressure Corrections"))
         layout.addWidget(lbl_hPMix, 2, 7)
         self.Corr_RhoLMix = QtWidgets.QComboBox()
@@ -183,7 +183,7 @@ class UI_confTransport_widget(QtWidgets.QWidget):
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 12, 0)
-        self.rhoLEoS = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.rhoLEoS = QtWidgets.QCheckBox(tr(
             "pychemqt", "Use liquid density from EoS if available"))
         layout.addWidget(self.rhoLEoS, 13, 0, 1, 8)
 
@@ -292,7 +292,7 @@ class Dialog(QtWidgets.QDialog):
     """Transport properties dialog"""
     def __init__(self, config=None, parent=None):
         super(Dialog, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Transport Properties Methods"))
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confTransport_widget(config)

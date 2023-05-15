@@ -27,10 +27,10 @@ from configparser import ConfigParser
 import os
 
 from matplotlib import image
-from tools.qt import QtGui, QtWidgets
 
 from lib.config import conf_dir, IMAGE_PATH
 from lib.plot import PlotWidget
+from tools.qt import QtGui, QtWidgets, tr
 
 
 class Chart(QtWidgets.QDialog):
@@ -52,15 +52,15 @@ class Chart(QtWidgets.QDialog):
             QtWidgets.QDialogButtonBox.StandardButton.Close, self)
         self.butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "image.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Save as PNG"))
+            tr("pychemqt", "Save as PNG"))
         self.butonPNG.clicked.connect(self.plt.savePNG)
         self.butonConf = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "configure.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Configure"))
+            tr("pychemqt", "Configure"))
         self.butonConf.clicked.connect(self.configure)
         self.butonCalc = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "calculator.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Calculate point"))
+            tr("pychemqt", "Calculate point"))
         self.butonCalc.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
         btBox.addButton(

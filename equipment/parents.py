@@ -29,7 +29,7 @@ from functools import partial
 import logging
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 from lib.config import Entity, IMAGE_PATH
 from lib.thread import Evaluate
@@ -167,7 +167,7 @@ class equipment(Entity):
         """Return plain text to report with input properties of equipment"""
         txt = str(self.notasPlain)+os.linesep+os.linesep
         txt += "#---------------"
-        txt += QtWidgets.QApplication.translate("pychemqt", "Input properties")
+        txt += tr("pychemqt", "Input properties")
         txt += "-----------------#"+os.linesep
         mask = "%s-%is%ss" % ("%", self.TEXT_FORMATING_LENG + 1, "%")
         for key, val in list(self.kwargs.items()):
@@ -185,9 +185,9 @@ class equipment(Entity):
     @classmethod
     def propertiesNames(cls):
         p = cls.propertiesEquipment()
-        p.append((QtWidgets.QApplication.translate("pychemqt", "Notes"),
+        p.append((tr("pychemqt", "Notes"),
                   "notasPlain", str))
-        p.append((QtWidgets.QApplication.translate("pychemqt", "Object Type"),
+        p.append((tr("pychemqt", "Object Type"),
                   "className", str))
         return p
 
@@ -230,7 +230,7 @@ class UI_equip(QtWidgets.QDialog):
         layout.addWidget(self.status, 1, 0, 1, 1)
         self.checkIgnorar = QtWidgets.QCheckBox()
         self.checkIgnorar.setText(
-            QtWidgets.QApplication.translate("pychemqt", "Ignore"))
+            tr("pychemqt", "Ignore"))
         self.checkIgnorar.toggled.connect(self.ignorar)
         layout.addWidget(self.checkIgnorar, 1, 1, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(
@@ -251,7 +251,7 @@ class UI_equip(QtWidgets.QDialog):
             self.tabWidget.addTab(
                 self.Entrada,
                 QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "in.svg")),
-                QtWidgets.QApplication.translate("pychemqt", "Input"))
+                tr("pychemqt", "Input"))
         elif entrada is None:
             pass
         else:
@@ -260,7 +260,7 @@ class UI_equip(QtWidgets.QDialog):
             self.tabWidget.addTab(
                 self.Entrada,
                 QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "in.svg")),
-                QtWidgets.QApplication.translate("pychemqt", "Input"))
+                tr("pychemqt", "Input"))
 
         # Calcule tab
         if calculo:
@@ -269,7 +269,7 @@ class UI_equip(QtWidgets.QDialog):
                 self.tabCalculo,
                 QtGui.QIcon(os.path.join(
                     IMAGE_PATH, "button", "calculator.png")),
-                QtWidgets.QApplication.translate("pychemqt", "Calculation"))
+                tr("pychemqt", "Calculation"))
 
         # Cost tab
         if equipment.indiceCostos is not None:
@@ -278,7 +278,7 @@ class UI_equip(QtWidgets.QDialog):
                 self.tabCostos,
                 QtGui.QIcon(os.path.join(
                     IMAGE_PATH, "button", "currency.png")),
-                QtWidgets.QApplication.translate("pychemqt", "Cost"))
+                tr("pychemqt", "Cost"))
 
         # Output tab
         if salida:
@@ -286,7 +286,7 @@ class UI_equip(QtWidgets.QDialog):
             self.tabWidget.addTab(
                 self.Salida,
                 QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "out.svg")),
-                QtWidgets.QApplication.translate("pychemqt", "Output"))
+                tr("pychemqt", "Output"))
         elif salida is None:
             pass
         else:
@@ -294,14 +294,14 @@ class UI_equip(QtWidgets.QDialog):
             self.tabWidget.addTab(
                 self.Salida,
                 QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "out.svg")),
-                QtWidgets.QApplication.translate("pychemqt", "Output"))
+                tr("pychemqt", "Output"))
 
         # Notes tab
         self.tabNotas = TextEditor()
         self.tabWidget.addTab(
             self.tabNotas,
             QtGui.QIcon(os.path.join(IMAGE_PATH, "button", "editor.png")),
-            QtWidgets.QApplication.translate("pychemqt", "Notes"))
+            tr("pychemqt", "Notes"))
         self.tabNotas.notas.textChanged.connect(self.cambiar_notas)
 
     def addSalida(self, title, **kw):

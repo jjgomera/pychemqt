@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets, tr
 
 from lib.unidades import Pressure, MassFlow
 from equipment.parents import UI_equip
@@ -48,7 +48,7 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Separation")), 1, 1, 1, 1)
         self.criterio = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_CRITERIO:
@@ -60,7 +60,7 @@ class UI_equipment(UI_equip):
         self.fracciones.setItemDelegateForColumn(0, CellEditor(self))
         lyt_Calc.addWidget(self.fracciones, 2, 1, 1, 2)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Pressure lost")), 3, 1, 1, 1)
         self.deltaP = Entrada_con_unidades(Pressure, value=0)
         self.deltaP.valueChanged.connect(partial(self.changeParams, "deltaP"))
@@ -89,14 +89,14 @@ class UI_equipment(UI_equip):
 
     def criterio_Changed(self, int):
         if int:
-            item = QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate(
+            item = QtWidgets.QTableWidgetItem(tr(
                 "pychemqt", "Flow")+", "+MassFlow.text())
             self.fracciones.setHorizontalHeaderItem(0, item)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
                 QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled |
                 QtCore.Qt.ItemFlag.ItemIsSelectable)
         else:
-            item = QtWidgets.QTableWidgetItem(QtWidgets.QApplication.translate(
+            item = QtWidgets.QTableWidgetItem(tr(
                 "pychemqt", "Flow")+", "+MassFlow.text())
             self.fracciones.setHorizontalHeaderItem(0, item)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(

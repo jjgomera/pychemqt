@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 from lib.unidades import Length, DeltaP
 from UI import UI_corriente
@@ -49,18 +49,18 @@ class UI_equipment(UI_equip):
             partial(self.changeParams, "entradaGas"))
         self.Entrada.addTab(
             self.entradaGas,
-            QtWidgets.QApplication.translate("equipment", "Gas"))
+            tr("equipment", "Gas"))
         self.entradaLiquido = UI_corriente.Ui_corriente()
         self.entradaLiquido.Changed.connect(
             partial(self.changeParams, "entradaLiquido"))
         self.Entrada.addTab(
             self.entradaLiquido,
-            QtWidgets.QApplication.translate("pychemqt", "Liquid"))
+            tr("pychemqt", "Liquid"))
 
         # Calculate tab
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Mode")), 1, 1)
+            tr("pychemqt", "Mode")), 1, 1)
         self.tipo_calculo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TIPO:
             self.tipo_calculo.addItem(txt)
@@ -68,7 +68,7 @@ class UI_equipment(UI_equip):
             self.on_tipoCalculo_currentIndexChanged)
         gridLayout_Calculo.addWidget(self.tipo_calculo, 1, 2, 1, 5)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Method")), 2, 1)
+            tr("pychemqt", "Method")), 2, 1)
         self.modelo_rendimiento = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODEL:
             self.modelo_rendimiento.addItem(txt)
@@ -76,7 +76,7 @@ class UI_equipment(UI_equip):
             self.on_modeloRendimiento_currentIndexChanged)
         gridLayout_Calculo.addWidget(self.modelo_rendimiento, 2, 2, 1, 5)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "ΔP method")), 3, 1)
+            tr("pychemqt", "ΔP method")), 3, 1)
         self.modelo_DeltaP = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODEL_DELTAP:
             self.modelo_DeltaP.addItem(txt)
@@ -88,13 +88,13 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 6)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Diameter")), 5, 1)
+            tr("pychemqt", "Diameter")), 5, 1)
         self.diametro = Entrada_con_unidades(Length)
         self.diametro.valueChanged.connect(
             partial(self.changeParams, "diametro"))
         gridLayout_Calculo.addWidget(self.diametro, 5, 2)
         gridLayout_Calculo.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Efficiency")), 6, 1)
+            tr("pychemqt", "Efficiency")), 6, 1)
         self.rendimientoAdmisible = Entrada_con_unidades(float, spinbox=True)
         self.rendimientoAdmisible.valueChanged.connect(
             partial(self.changeParams, "rendimientoAdmisible"))
@@ -105,7 +105,7 @@ class UI_equipment(UI_equip):
         JohnstoneLayout = QtWidgets.QHBoxLayout(self.groupJohnstone)
         JohnstoneLayout.setSpacing(0)
         JohnstoneLayout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Ventury Constant")))
+            tr("pychemqt", "Ventury Constant")))
         self.k = Entrada_con_unidades(float, spinbox=True)
         self.k.valueChanged.connect(partial(self.changeParams, "k"))
         JohnstoneLayout.addWidget(self.k)
@@ -115,7 +115,7 @@ class UI_equipment(UI_equip):
         CalvertLayout = QtWidgets.QHBoxLayout(self.groupCalvert)
         CalvertLayout.setSpacing(0)
         CalvertLayout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "f parameter")))
+            tr("pychemqt", "f parameter")))
         self.f = Entrada_con_unidades(float, spinbox=True)
         self.f.valueChanged.connect(partial(self.changeParams, "f"))
         CalvertLayout.addWidget(self.f)
@@ -125,7 +125,7 @@ class UI_equipment(UI_equip):
         LtLayout = QtWidgets.QHBoxLayout(self.groupLt)
         LtLayout.setSpacing(0)
         LtLayout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Length throat")))
+            tr("pychemqt", "Length throat")))
         self.Lt = Entrada_con_unidades(Length)
         self.Lt.valueChanged.connect(partial(self.changeParams, "Lt"))
         LtLayout.addWidget(self.Lt)
@@ -134,16 +134,16 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 8, 1, 1, 6)
         self.groupBox_Calculo = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Results"))
+            tr("pychemqt", "Results"))
         gridLayout_Calculo.addWidget(self.groupBox_Calculo, 9, 1, 1, 5)
         gridLayout_1 = QtWidgets.QGridLayout(self.groupBox_Calculo)
         gridLayout_1.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Efficiency")), 1, 1)
+            tr("pychemqt", "Efficiency")), 1, 1)
         self.rendimiento = Entrada_con_unidades(
             float, retornar=False, readOnly=True)
         gridLayout_1.addWidget(self.rendimiento, 1, 2)
         gridLayout_1.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "DeltaP")), 2, 1)
+            tr("pychemqt", "DeltaP")), 2, 1)
         self.deltaP = Entrada_con_unidades(
             DeltaP, retornar=False, readOnly=True)
         gridLayout_1.addWidget(self.deltaP, 2, 2)
@@ -156,11 +156,11 @@ class UI_equipment(UI_equip):
         self.SalidaGas = UI_corriente.Ui_corriente(readOnly=True, psychro=True)
         self.Salida.addTab(
             self.SalidaGas,
-            QtWidgets.QApplication.translate("pychemqt", "Clean Gas"))
+            tr("pychemqt", "Clean Gas"))
         self.SalidaLiquido = UI_corriente.Ui_corriente(readOnly=True)
         self.Salida.addTab(
             self.SalidaLiquido,
-            QtWidgets.QApplication.translate("pychemqt", "Liquid"))
+            tr("pychemqt", "Liquid"))
 
         self.on_tipoCalculo_currentIndexChanged(0)
         self.on_modeloRendimiento_currentIndexChanged(0)

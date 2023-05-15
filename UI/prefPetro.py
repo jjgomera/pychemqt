@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 from lib.petro import Petroleo
 
@@ -37,25 +37,25 @@ class Widget(QtWidgets.QWidget):
         super(Widget, self).__init__(parent)
 
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Molecular weight")), 1, 1)
         self.M = QtWidgets.QComboBox()
         for p in Petroleo.METHODS_M:
             self.M.addItem(p)
         layout.addWidget(self.M, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Critic properties")), 2, 1)
         self.critical = QtWidgets.QComboBox()
         for c in Petroleo.METHODS_crit:
             self.critical.addItem(c)
         layout.addWidget(self.critical, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Critic volume")), 3, 1)
         self.vc = QtWidgets.QComboBox()
         for v in Petroleo.METHODS_Vc:
             self.vc.addItem(v)
         layout.addWidget(self.vc, 3, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Acentric factor")), 4, 1)
         self.f_acent = QtWidgets.QComboBox()
         for w in Petroleo.METHODS_w:
@@ -66,38 +66,38 @@ class Widget(QtWidgets.QWidget):
         for method in Petroleo.METHODS_Zc:
             self.Zc.addItem(method)
         layout.addWidget(self.Zc, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Boiling Temperature")), 6, 1)
         self.Tb = QtWidgets.QComboBox()
         for tb in Petroleo.METHODS_Tb:
             self.Tb.addItem(tb)
         layout.addWidget(self.Tb, 6, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Specific Gravity")), 7, 1)
         self.SG = QtWidgets.QComboBox()
         for sg in Petroleo.METHODS_SG:
             self.SG.addItem(sg)
         layout.addWidget(self.SG, 7, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Refractive Index")), 8, 1)
         self.n = QtWidgets.QComboBox()
         for n in Petroleo.METHODS_n:
             self.n.addItem(n)
         layout.addWidget(self.n, 8, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "PNA composition")), 9, 1)
         self.PNA = QtWidgets.QComboBox()
         for method in Petroleo.METHODS_PNA:
             self.PNA.addItem(method)
         layout.addWidget(self.PNA, 9, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Destilate curve conversion")), 10, 1)
         self.curves = QtWidgets.QComboBox()
         self.curves.addItem("Riazi")
         self.curves.addItem("Daubert")
         layout.addWidget(self.curves, 10, 2)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Hydrogen %")), 11, 1)
         self.H = QtWidgets.QComboBox()
         for method in Petroleo.METHODS_H:
@@ -145,13 +145,14 @@ class ConfigDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         super(ConfigDialog, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Widget(config)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

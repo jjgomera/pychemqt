@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
-from tools.qt import QtWidgets
+from tools.qt import tr
 from iapws._utils import getphase
 from lib import unidades
 
@@ -137,21 +137,21 @@ class Thermo(object):
             phase: direct msg
             Tc, Pc, T, P, x, region: to calculate by iapws"""
         data = {
-            "Supercritical fluid": QtWidgets.QApplication.translate(
+            "Supercritical fluid": tr(
                 "pychemqt", "Supercritical fluid"),
-            "Gas": QtWidgets.QApplication.translate("pychemqt", "Gas"),
-            "Compressible liquid": QtWidgets.QApplication.translate(
+            "Gas": tr("pychemqt", "Gas"),
+            "Compressible liquid": tr(
                 "pychemqt", "Compressible liquid"),
-            "Critical point": QtWidgets.QApplication.translate(
+            "Critical point": tr(
                 "pychemqt", "Critical point"),
-            "Saturated vapor": QtWidgets.QApplication.translate(
+            "Saturated vapor": tr(
                 "pychemqt", "Saturated vapor"),
-            "Saturated liquid": QtWidgets.QApplication.translate(
+            "Saturated liquid": tr(
                 "pychemqt", "Saturated liquid"),
-            "Two phases": QtWidgets.QApplication.translate("pychemqt", "Two phases"),
-            "Vapour": QtWidgets.QApplication.translate("pychemqt", "Vapour"),
-            "Liquid": QtWidgets.QApplication.translate("pychemqt", "Liquid"),
-            "Unknown": QtWidgets.QApplication.translate("pychemqt", "Unknown")}
+            "Two phases": tr("pychemqt", "Two phases"),
+            "Vapour": tr("pychemqt", "Vapour"),
+            "Liquid": tr("pychemqt", "Liquid"),
+            "Unknown": tr("pychemqt", "Unknown")}
 
         if "phase" in kwargs:
             phase = kwargs["phase"]
@@ -162,126 +162,126 @@ class Thermo(object):
     @classmethod
     def properties(cls):
         l = [
-            (QtWidgets.QApplication.translate("pychemqt", "Temperature"), "T",
+            (tr("pychemqt", "Temperature"), "T",
              unidades.Temperature),
-            (QtWidgets.QApplication.translate("pychemqt", "Reduced temperature"), "Tr",
+            (tr("pychemqt", "Reduced temperature"), "Tr",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Pressure"), "P",
+            (tr("pychemqt", "Pressure"), "P",
              unidades.Pressure),
-            (QtWidgets.QApplication.translate("pychemqt", "Reduced Pressure"), "Pr",
+            (tr("pychemqt", "Reduced Pressure"), "Pr",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Quality"), "x",
+            (tr("pychemqt", "Quality"), "x",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Density"), "rho",
+            (tr("pychemqt", "Density"), "rho",
              unidades.Density),
-            (QtWidgets.QApplication.translate("pychemqt", "Molar Density"), "rhoM",
+            (tr("pychemqt", "Molar Density"), "rhoM",
              unidades.MolarDensity),
-            (QtWidgets.QApplication.translate("pychemqt", "Volume"), "v",
+            (tr("pychemqt", "Volume"), "v",
              unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("pychemqt", "Enthalpy"), "h",
+            (tr("pychemqt", "Enthalpy"), "h",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Molar Enthalpy"), "hM",
+            (tr("pychemqt", "Molar Enthalpy"), "hM",
              unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Entropy"), "s",
+            (tr("pychemqt", "Entropy"), "s",
              unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Molar Entropy"), "sM",
+            (tr("pychemqt", "Molar Entropy"), "sM",
              unidades.MolarSpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Internal Energy"), "u",
+            (tr("pychemqt", "Internal Energy"), "u",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Molar Internal Energy"), "uM",
+            (tr("pychemqt", "Molar Internal Energy"), "uM",
              unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Helmholtz Free Energy"), "a",
+            (tr("pychemqt", "Helmholtz Free Energy"), "a",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Molar Helmholtz Free Energy"),
+            (tr("pychemqt", "Molar Helmholtz Free Energy"),
              "aM", unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Gibbs Free Energy"), "g",
+            (tr("pychemqt", "Gibbs Free Energy"), "g",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Molar Gibbs Free Energy"),
+            (tr("pychemqt", "Molar Gibbs Free Energy"),
              "gM", unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Specific isochoric heat capacity"), "cv",
                 unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Molar Specific isochoric heat capacity"), "cvM",
                 unidades.MolarSpecificHeat),
-            (QtWidgets.QApplication.translate
+            (tr
              ("pychemqt", "Specific isobaric heat capacity"), "cp",
              unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Molar Specific isobaric heat capacity"), "cpM",
                 unidades.MolarSpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Heat capacities ratio"),
+            (tr("pychemqt", "Heat capacities ratio"),
              "cp_cv", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Speed sound"), "w",
+            (tr("pychemqt", "Speed sound"), "w",
              unidades.Speed),
-            (QtWidgets.QApplication.translate("pychemqt", "Compresibility"), "Z",
+            (tr("pychemqt", "Compresibility"), "Z",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Fugacity coefficient"), "fi",
+            (tr("pychemqt", "Fugacity coefficient"), "fi",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Fugacity"), "f",
+            (tr("pychemqt", "Fugacity"), "f",
              unidades.Pressure),
-            (QtWidgets.QApplication.translate("pychemqt", "Isoentropic exponent"),
+            (tr("pychemqt", "Isoentropic exponent"),
              "gamma", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Volume Expansivity"), "alfav",
+            (tr("pychemqt", "Volume Expansivity"), "alfav",
              unidades.InvTemperature),  # 1/V dV/dt = -1/D dD/dt
-            (QtWidgets.QApplication.translate("pychemqt", "Isothermal compresibility"),
+            (tr("pychemqt", "Isothermal compresibility"),
              "kappa", unidades.InvPressure),  # -1/V (dV/dP)T = 1/D (dD/dP)T
-            (QtWidgets.QApplication.translate("pychemqt", "Adiabatic compresibility"),
+            (tr("pychemqt", "Adiabatic compresibility"),
              "kappas", unidades.InvPressure),  # -1/V (dV/dP)s = 1/D (dD/dP)s
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Relative pressure coefficient"), "alfap",
                 unidades.InvTemperature),  # 1/P (dP/dT)v
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Isothermal stress coefficient"), "betap",
                 unidades.Density),  # -1/P (dP/dv)T = 1/P (dP/dD)T
-            (QtWidgets.QApplication.translate("pychemqt", "Joule-Thomson coefficient"),
+            (tr("pychemqt", "Joule-Thomson coefficient"),
              "joule", unidades.TemperaturePressure),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Isothermal throttling coefficient"), "deltat",
                 unidades.EnthalpyPressure),
-            (QtWidgets.QApplication.translate("pychemqt", "Vaporization heat"), "Hvap",
+            (tr("pychemqt", "Vaporization heat"), "Hvap",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Vaporization entropy"),
+            (tr("pychemqt", "Vaporization entropy"),
              "Svap", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Viscosity"), "mu",
+            (tr("pychemqt", "Viscosity"), "mu",
              unidades.Viscosity),
-            (QtWidgets.QApplication.translate("pychemqt", "Thermal conductivity"), "k",
+            (tr("pychemqt", "Thermal conductivity"), "k",
              unidades.ThermalConductivity),
-            (QtWidgets.QApplication.translate("pychemqt", "Kinematic viscosity"), "nu",
+            (tr("pychemqt", "Kinematic viscosity"), "nu",
              unidades.Diffusivity),
-            (QtWidgets.QApplication.translate("pychemqt", "Thermal diffusivity"), "alfa",
+            (tr("pychemqt", "Thermal diffusivity"), "alfa",
              unidades.Diffusivity),
-            (QtWidgets.QApplication.translate("pychemqt", "Surface tension"), "sigma",
+            (tr("pychemqt", "Surface tension"), "sigma",
              unidades.Tension),
-            (QtWidgets.QApplication.translate("pychemqt", "Prandtl number"), "Prandt",
+            (tr("pychemqt", "Prandtl number"), "Prandt",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Ideal gas Specific volume"),
+            (tr("pychemqt", "Ideal gas Specific volume"),
              "v0", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("pychemqt", "Ideal gas Density"), "rho0",
+            (tr("pychemqt", "Ideal gas Density"), "rho0",
              unidades.Density),
-            (QtWidgets.QApplication.translate("pychemqt", "Ideal gas Specific enthalpy"),
+            (tr("pychemqt", "Ideal gas Specific enthalpy"),
              "h0", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Ideal gas Specific internal energy"), "u0",
                 unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Ideal gas Specific entropy"),
+            (tr("pychemqt", "Ideal gas Specific entropy"),
              "s0", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Ideal gas Specific Helmholtz free energy"),
                 "a0", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate
+            (tr
              ("pychemqt", "Ideal gas Specific Gibbs free energy"), "g0",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Ideal gas Specific isobaric heat capacity"),
                 "cp0", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Ideal gas Specific isochoric heat capacity"),
                 "cv0", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Ideal gas heat capacities ratio"), "cp0_cv",
                 unidades.Dimensionless),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Ideal gas Isoentropic exponent"), "gamma0",
                 unidades.Dimensionless)]
         return l
@@ -352,15 +352,15 @@ class Thermo(object):
         """Fill properties in null phase with a explicative msg"""
         fase._bool = False
         if self.x == 0:
-            txt = QtWidgets.QApplication.translate("pychemqt", "Subcooled")
+            txt = tr("pychemqt", "Subcooled")
         elif self.Tr < 1 and self.Pr < 1:
-            txt = QtWidgets.QApplication.translate("pychemqt", "Superheated")
+            txt = tr("pychemqt", "Superheated")
         elif self.Tr == 1 and self.Pr == 1:
-            txt = QtWidgets.QApplication.translate("pychemqt", "Critic point")
+            txt = tr("pychemqt", "Critic point")
         elif self.Tr > 1 and self.Pr > 1:
-            txt = QtWidgets.QApplication.translate("pychemqt", "Supercritical")
+            txt = tr("pychemqt", "Supercritical")
         else:
-            txt = QtWidgets.QApplication.translate("pychemqt", "Undefined")
+            txt = tr("pychemqt", "Undefined")
 
         for key in self.__class__.propertiesPhase():
             fase.__setattr__(key, txt)
@@ -487,9 +487,9 @@ class ThermoWater(Thermo):
     def properties(cls):
         prop = Thermo.properties()[:]
         l = [
-           (QtWidgets.QApplication.translate("pychemqt", "Dielectric constant"),
+           (tr("pychemqt", "Dielectric constant"),
             "epsilon", unidades.Dimensionless),
-           (QtWidgets.QApplication.translate("pychemqt", "Refractive index"),
+           (tr("pychemqt", "Refractive index"),
             "n", unidades.Dimensionless)]
         for p in l:
             prop.insert(-11, p)
@@ -516,14 +516,14 @@ class ThermoAdvanced(Thermo):
     def properties(cls):
         prop = Thermo.properties()[:]
         l = [
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Isentropic temperature-pressure"),
                 "betas", unidades.TemperaturePressure),
-            (QtWidgets.QApplication.translate("pychemqt", "Gruneisen parameter"),
+            (tr("pychemqt", "Gruneisen parameter"),
              "Gruneisen", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "2nd virial coefficient"),
+            (tr("pychemqt", "2nd virial coefficient"),
              "virialB", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("pychemqt", "3er virial coefficient"),
+            (tr("pychemqt", "3er virial coefficient"),
              "virialC", unidades.SpecificVolume_square),
             ("(dp/dT)_rho", "dpdT_rho", unidades.PressureTemperature),
             ("(dp/drho)_T", "dpdrho_T", unidades.PressureDensity),
@@ -534,25 +534,25 @@ class ThermoAdvanced(Thermo):
             ("(dh/dT)_P", "dhdT_P", unidades.SpecificHeat),
             ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
             ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Isothermal expansion coefficient"),
                 "kt", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Isentropic expansion coefficient"),
                 "ks", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Adiabatic bulk modulus"),
+            (tr("pychemqt", "Adiabatic bulk modulus"),
              "Ks", unidades.Pressure),
-            (QtWidgets.QApplication.translate("pychemqt", "Isothermal bulk modulus"),
+            (tr("pychemqt", "Isothermal bulk modulus"),
              "Kt", unidades.Pressure),
             #        Z_rho     -   (Z-1) over the density, m³/kg
-            (QtWidgets.QApplication.translate("pychemqt", "Internal pressure"),
+            (tr("pychemqt", "Internal pressure"),
              "IntP", unidades.Pressure),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Negative reciprocal temperature"),
                 "invT", unidades.InvTemperature),
-            (QtWidgets.QApplication.translate("pychemqt", "Specific heat input"),
+            (tr("pychemqt", "Specific heat input"),
              "hInput", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Dielectric constant"),
+            (tr("pychemqt", "Dielectric constant"),
              "epsilon", unidades.Dimensionless)]
 
         for p in l:
@@ -632,65 +632,65 @@ class ThermoRefProp(ThermoAdvanced):
     def properties(cls):
         prop = ThermoAdvanced.properties()[:]
         l = [
-            (QtWidgets.QApplication.translate("pychemqt", "Ideal Pressure"),
+            (tr("pychemqt", "Ideal Pressure"),
              "P0", unidades.Pressure),
-            (QtWidgets.QApplication.translate("pychemqt", "Residual Pressure"),
+            (tr("pychemqt", "Residual Pressure"),
              "P_Pideal", unidades.Pressure),
-            (QtWidgets.QApplication.translate("pychemqt", "K value"),
+            (tr("pychemqt", "K value"),
              "K", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Heat Capacity along the saturation line"),
                 "csat", unidades.SpecificHeat),
             ("dP/dT [sat]", "dpdt_sat", unidades.PressureTemperature),
-            (QtWidgets.QApplication.translate("pychemqt", "Cv two phases"),
+            (tr("pychemqt", "Cv two phases"),
              "cv2p", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Excess volume"),
+            (tr("pychemqt", "Excess volume"),
              "vE", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("pychemqt", "Excess internal energy"),
+            (tr("pychemqt", "Excess internal energy"),
              "uE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Excess enthalpy"),
+            (tr("pychemqt", "Excess enthalpy"),
              "hE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Excess entropy"),
+            (tr("pychemqt", "Excess entropy"),
              "sE", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Excess Helmholtz energy"),
+            (tr("pychemqt", "Excess Helmholtz energy"),
              "aE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Excess Gibbs energy"),
+            (tr("pychemqt", "Excess Gibbs energy"),
              "gE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Residual pressure"),
+            (tr("pychemqt", "Residual pressure"),
              "pr", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("pychemqt", "Residual internal energy"),
+            (tr("pychemqt", "Residual internal energy"),
              "ur", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Residual enthalpy"),
+            (tr("pychemqt", "Residual enthalpy"),
              "hr", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Residual entropy"),
+            (tr("pychemqt", "Residual entropy"),
              "sr", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Residual Helmholtz energy"),
+            (tr("pychemqt", "Residual Helmholtz energy"),
              "ar", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Residual Gibbs energy"),
+            (tr("pychemqt", "Residual Gibbs energy"),
              "gr", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Residual isobaric heat capacity"),
              "cpr", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Residual isochoric heat capacity"),
              "cvr", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("pychemqt", "Supercompressibility factor"),
+            (tr("pychemqt", "Supercompressibility factor"),
              "fpv", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("pychemqt", "Chemical potential"),
+            (tr("pychemqt", "Chemical potential"),
              "chempot", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("pychemqt", "Fourth virial coefficient"),
+            (tr("pychemqt", "Fourth virial coefficient"),
              "virialD", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Second acoustic virial coefficient"),
              "virialBa", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate(
+            (tr(
                 "pychemqt", "Third acoustic virial coefficient"),
              "virialCa", unidades.SpecificVolume_square),
             ("dC/dT", "dCdt", unidades.Dimensionless),
             ("d²C/dT²", "dCdt2", unidades.Dimensionless),
             ("dB/dT", "dBdt", unidades.Dimensionless),
             ("b12", "b12", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("pychemqt", "Critical flow factor"),
+            (tr("pychemqt", "Critical flow factor"),
              "cstar", unidades.Dimensionless)]
 
         for p in l:

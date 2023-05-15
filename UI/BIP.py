@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, tr
 
 from lib.bip import Kij, EoSBIP
 from lib.sql import databank
@@ -43,7 +43,7 @@ class Ui_BIP(QtWidgets.QDialog):
     def __init__(self, ids, EoSIndex=0, parent=None):
         """Constructor"""
         super(Ui_BIP, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "BIP (Binary interaction parameters)"))
 
         lyt = QtWidgets.QGridLayout(self)

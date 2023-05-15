@@ -45,7 +45,7 @@ from math import exp, log
 import time
 
 from scipy.constants import R
-from tools.qt import QtWidgets
+from tools.qt import tr
 
 from lib import unidades
 from lib.compuestos import atomic_decomposition, facent_LeeKesler, RhoL_Rackett
@@ -343,7 +343,7 @@ class GroupContribution(newComponente):
         """Procedure to define the status of input parameter"""
         self.group = self._group()
         if not self.kwargs["group"] or not self.kwargs["contribution"]:
-            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined group")
+            self.msg = tr("pychemqt", "undefined group")
             self.status = 0
         else:
             self.status = 1
@@ -1569,7 +1569,7 @@ class Wilson(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                     "pychemqt", "undefined boiling point")
             self.status = 0
         else:
@@ -1993,7 +1993,7 @@ class Marrero(GroupContribution):
             resto += r
 
         if resto:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                     "pychemqt",
                     "Bad definition, check input group and contribution")
             self.status = 0
@@ -2304,7 +2304,7 @@ class Elliott(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["M"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                     "pychemqt", "undefined molecular weight")
             self.status = 0
         else:
@@ -2520,7 +2520,7 @@ class Ambrose(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                     "pychemqt", "undefined boiling point")
             self.status = 0
         else:
@@ -2685,17 +2685,17 @@ class Klincewicz(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                     "pychemqt", "undefined boiling point")
             self.status = 0
         elif self.kwargs["nogroup"]:
             self.group = []
             if not self.kwargs["M"]:
-                self.msg = QtWidgets.QApplication.translate(
+                self.msg = tr(
                         "pychemqt", "undefined molecular weight")
                 self.status = 0
             elif not self.kwargs["atoms"]:
-                self.msg = QtWidgets.QApplication.translate(
+                self.msg = tr(
                         "pychemqt", "undefined atoms number of molecule")
                 self.status = 0
             else:
@@ -2863,7 +2863,7 @@ class Lydersen(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                     "pychemqt", "undefined boiling point")
             self.status = 0
         else:
@@ -4190,7 +4190,7 @@ class Li(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = tr(
                     "pychemqt", "undefined boiling point")
             self.status = 0
         else:

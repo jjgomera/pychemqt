@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import atexit
 
-from tools.qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets, tr
 
 from tools.firstrun import which
 
@@ -52,7 +52,7 @@ class XTerm(QtCore.QProcess):
             # blink cursor
             "-bc",
             # title
-            "-T", QtWidgets.QApplication.translate(
+            "-T", tr(
                 "pychemqt", "pychemqt python console")]
 
         if self.config.getboolean("Applications", "maximized"):

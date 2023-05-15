@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import log, exp
 import os
 
-from tools.qt import QtWidgets
+from tools.qt import tr
 from scipy.constants import R
 from scipy.optimize import fsolve
 
@@ -93,7 +93,7 @@ class Compressor(equipment):
     >>> print(compresor.C_inst)
     60464.196881
     """
-    title = QtWidgets.QApplication.translate("pychemqt", "Compressor")
+    title = tr("pychemqt", "Compressor")
     help = ""
     kwargs = {"entrada": None,
               "metodo": 0,
@@ -121,26 +121,26 @@ class Compressor(equipment):
     indiceCostos = 7
 
     TEXT_METODO = [
-        QtWidgets.QApplication.translate("pychemqt", "Specify out pressure and efficiency"),  # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Specify actual power and efficiency"),  # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Specify out pressure and actual power"),  # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Specify pressure ratio and actual power"),  # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Calculate input flowrate")]
-    TEXT_TERMODINAMICA = [QtWidgets.QApplication.translate("pychemqt", "Adiabatic"),
-                          QtWidgets.QApplication.translate("pychemqt", "Polytropic"),
-                          QtWidgets.QApplication.translate("pychemqt", "Isothermic")]
+        tr("pychemqt", "Specify out pressure and efficiency"),  # noqa
+        tr("pychemqt", "Specify actual power and efficiency"),  # noqa
+        tr("pychemqt", "Specify out pressure and actual power"),  # noqa
+        tr("pychemqt", "Specify pressure ratio and actual power"),  # noqa
+        tr("pychemqt", "Calculate input flowrate")]
+    TEXT_TERMODINAMICA = [tr("pychemqt", "Adiabatic"),
+                          tr("pychemqt", "Polytropic"),
+                          tr("pychemqt", "Isothermic")]
     TEXT_COMPRESOR = [
-        QtWidgets.QApplication.translate("pychemqt", "Centrifugal compressor"),
-        QtWidgets.QApplication.translate("pychemqt", "Reciprocating compressor"),
-        QtWidgets.QApplication.translate("pychemqt", "Screw compressor")]
+        tr("pychemqt", "Centrifugal compressor"),
+        tr("pychemqt", "Reciprocating compressor"),
+        tr("pychemqt", "Screw compressor")]
     TEXT_TRANSMISION = [
-        QtWidgets.QApplication.translate("pychemqt", "Belt drive coupling"),
-        QtWidgets.QApplication.translate("pychemqt", "Chain drive coupling"),
-        QtWidgets.QApplication.translate("pychemqt", "Variable speed drive coupling")]
+        tr("pychemqt", "Belt drive coupling"),
+        tr("pychemqt", "Chain drive coupling"),
+        tr("pychemqt", "Variable speed drive coupling")]
     TEXT_MOTOR = [
-        QtWidgets.QApplication.translate("pychemqt", "Open drip-proof"),
-        QtWidgets.QApplication.translate("pychemqt", "Totally enclosed, fan-cooled"),
-        QtWidgets.QApplication.translate("pychemqt", "Explosion-proof")]
+        tr("pychemqt", "Open drip-proof"),
+        tr("pychemqt", "Totally enclosed, fan-cooled"),
+        tr("pychemqt", "Explosion-proof")]
     TEXT_RPM = ["3600 RPM", "1800 RPM", "1200 RPM"]
 
     @property
@@ -152,7 +152,7 @@ class Compressor(equipment):
             self.statusCoste = False
 
         if not self.kwargs["etapas"]:
-            self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined variables")  # noqa
+            self.msg = tr("pychemqt", "undefined variables")  # noqa
             self.status = 0
         if not self.kwargs["entrada"]:
             if self.kwargs["metodo"] == 5:
@@ -162,10 +162,10 @@ class Compressor(equipment):
                     self.msg = ""
                     return True
                 else:
-                    self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined variables")  # noqa
+                    self.msg = tr("pychemqt", "undefined variables")  # noqa
                     self.status = 0
             else:
-                self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")  # noqa
+                self.msg = tr("pychemqt", "undefined input")  # noqa
                 self.status = 0
         else:
             if self.kwargs["metodo"] == 0:
@@ -186,7 +186,7 @@ class Compressor(equipment):
                 self.msg = ""
                 return True
             else:
-                self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined variables")  # noqa
+                self.msg = tr("pychemqt", "undefined variables")  # noqa
                 self.status = 0
 
     def calculo(self):
@@ -365,13 +365,13 @@ class Compressor(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
+        txt += tr("pychemqt", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(11))
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += QtWidgets.QApplication.translate(
+            txt += tr(
                 "pychemqt", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(11, 23))
@@ -379,50 +379,50 @@ class Compressor(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("pychemqt", "Input Temperature"), "Tin",
+        l = [(tr("pychemqt", "Input Temperature"), "Tin",
               Temperature),
-             (QtWidgets.QApplication.translate("pychemqt", "Input Pressure"), "Pin",
+             (tr("pychemqt", "Input Pressure"), "Pin",
               Pressure),
-             (QtWidgets.QApplication.translate("pychemqt", "Temperature increase"),
+             (tr("pychemqt", "Temperature increase"),
               "deltaT", DeltaT),
-             (QtWidgets.QApplication.translate("pychemqt", "Output Temperature"),
+             (tr("pychemqt", "Output Temperature"),
               "Tout", Temperature),
-             (QtWidgets.QApplication.translate("pychemqt", "Output Pressure"), "Pout",
+             (tr("pychemqt", "Output Pressure"), "Pout",
               Pressure),
-             (QtWidgets.QApplication.translate("pychemqt", "Pressure increase"),
+             (tr("pychemqt", "Pressure increase"),
               "deltaP", DeltaP),
-             (QtWidgets.QApplication.translate("pychemqt", "Pressure ratio"),
+             (tr("pychemqt", "Pressure ratio"),
               "razonCalculada", Dimensionless),
-             (QtWidgets.QApplication.translate("pychemqt", "Thermodinamic mode"),
+             (tr("pychemqt", "Thermodinamic mode"),
               ("TEXT_TERMODINAMICA", "termodinamica"),  str),
-             (QtWidgets.QApplication.translate("pychemqt", "Power"), "power", Power),
-             (QtWidgets.QApplication.translate("pychemqt", "Efficiency"),
+             (tr("pychemqt", "Power"), "power", Power),
+             (tr("pychemqt", "Efficiency"),
               "rendimientoCalculado", Dimensionless),
-             (QtWidgets.QApplication.translate("pychemqt", "Especific capacities ratio"),
+             (tr("pychemqt", "Especific capacities ratio"),
               "cp_cv", Dimensionless),
-             (QtWidgets.QApplication.translate("pychemqt", "Base index"),
+             (tr("pychemqt", "Base index"),
               "Base_index", float),
-             (QtWidgets.QApplication.translate("pychemqt", "Current index"),
+             (tr("pychemqt", "Current index"),
               "Current_index", float),
-             (QtWidgets.QApplication.translate("pychemqt", "Install factor"),
+             (tr("pychemqt", "Install factor"),
               "f_install", float),
-             (QtWidgets.QApplication.translate("pychemqt", "Compressor Type"),
+             (tr("pychemqt", "Compressor Type"),
               ("TEXT_COMPRESOR", "compresor"),  str),
-             (QtWidgets.QApplication.translate("pychemqt", "Transmission Type"),
+             (tr("pychemqt", "Transmission Type"),
               ("TEXT_TRANSMISION", "transmision"),  str),
-             (QtWidgets.QApplication.translate("pychemqt", "Motor Type"),
+             (tr("pychemqt", "Motor Type"),
               ("TEXT_MOTOR", "motor"),  str),
-             (QtWidgets.QApplication.translate("pychemqt", "Motor RPM"),
+             (tr("pychemqt", "Motor RPM"),
               ("TEXT_RPM", "rpm"),  str),
-             (QtWidgets.QApplication.translate("pychemqt", "Cost compressor"),
+             (tr("pychemqt", "Cost compressor"),
               "C_comp", Currency),
-             (QtWidgets.QApplication.translate("pychemqt", "Cost Transmission"),
+             (tr("pychemqt", "Cost Transmission"),
               "C_trans", Currency),
-             (QtWidgets.QApplication.translate("pychemqt", "Cost motor"), "C_motor",
+             (tr("pychemqt", "Cost motor"), "C_motor",
               Currency),
-             (QtWidgets.QApplication.translate("pychemqt", "Purchase Cost"), "C_adq",
+             (tr("pychemqt", "Purchase Cost"), "C_adq",
               Currency),
-             (QtWidgets.QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
+             (tr("pychemqt", "Installed Cost"), "C_inst",
               Currency)]
         return l
 
@@ -507,7 +507,7 @@ class Turbine(equipment):
     30713.7301133
     """
 
-    title = QtWidgets.QApplication.translate("pychemqt", "Turbine")
+    title = tr("pychemqt", "Turbine")
     help = ""
     kwargs = {
         "entrada": None,
@@ -530,15 +530,15 @@ class Turbine(equipment):
     indiceCostos = 2
 
     TEXT_METODO = [
-        QtWidgets.QApplication.translate("pychemqt", "Specify out pressure and efficiency"),   # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Specify pressure ratio and efficiency"),   # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Specify actual power and efficiency"),   # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Specify out pressure and actual power"),   # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Specify pressure ratio and actual power"),   # noqa
-        QtWidgets.QApplication.translate("pychemqt", "Calculate input flowrate")]
-    TEXT_TERMODINAMICA = [QtWidgets.QApplication.translate("pychemqt", "Adiabatic"),
-                          QtWidgets.QApplication.translate("pychemqt", "Polytropic"),
-                          QtWidgets.QApplication.translate("pychemqt", "Isotermic")]
+        tr("pychemqt", "Specify out pressure and efficiency"),   # noqa
+        tr("pychemqt", "Specify pressure ratio and efficiency"),   # noqa
+        tr("pychemqt", "Specify actual power and efficiency"),   # noqa
+        tr("pychemqt", "Specify out pressure and actual power"),   # noqa
+        tr("pychemqt", "Specify pressure ratio and actual power"),   # noqa
+        tr("pychemqt", "Calculate input flowrate")]
+    TEXT_TERMODINAMICA = [tr("pychemqt", "Adiabatic"),
+                          tr("pychemqt", "Polytropic"),
+                          tr("pychemqt", "Isotermic")]
 
     @property
     def isCalculable(self):
@@ -556,10 +556,10 @@ class Turbine(equipment):
                     self.msg = ""
                     return True
                 else:
-                    self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined variables")   # noqa
+                    self.msg = tr("pychemqt", "undefined variables")   # noqa
                     self.status = 0
             else:
-                self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined input")   # noqa
+                self.msg = tr("pychemqt", "undefined input")   # noqa
                 self.status = 0
         else:
             if self.kwargs["metodo"] == 0:
@@ -580,7 +580,7 @@ class Turbine(equipment):
                 self.msg = ""
                 return True
             else:
-                self.msg = QtWidgets.QApplication.translate("pychemqt", "undefined variables")   # noqa
+                self.msg = tr("pychemqt", "undefined variables")   # noqa
                 self.status = 0
 
     def calculo(self):
@@ -674,13 +674,13 @@ class Turbine(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate("pychemqt", "Calculate properties")
+        txt += tr("pychemqt", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(11))
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += QtWidgets.QApplication.translate(
+            txt += tr(
                 "pychemqt", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(11, 16))
@@ -688,35 +688,35 @@ class Turbine(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("pychemqt", "Input Temperature"),
+        l = [(tr("pychemqt", "Input Temperature"),
               "Tin", Temperature),
-             (QtWidgets.QApplication.translate("pychemqt", "Output Temperature"),
+             (tr("pychemqt", "Output Temperature"),
               "Tout", Temperature),
-             (QtWidgets.QApplication.translate("pychemqt", "Temperature increase"),
+             (tr("pychemqt", "Temperature increase"),
               "deltaT", DeltaT),
-             (QtWidgets.QApplication.translate("pychemqt", "Input Pressure"), "Pin",
+             (tr("pychemqt", "Input Pressure"), "Pin",
               Pressure),
-             (QtWidgets.QApplication.translate("pychemqt", "Output Pressure"), "Pout",
+             (tr("pychemqt", "Output Pressure"), "Pout",
               Pressure),
-             (QtWidgets.QApplication.translate("pychemqt", "Pressure increase"),
+             (tr("pychemqt", "Pressure increase"),
               "deltaP", DeltaP),
-             (QtWidgets.QApplication.translate("pychemqt", "Pressure ratio"),
+             (tr("pychemqt", "Pressure ratio"),
               "razonCalculada", Dimensionless),
-             (QtWidgets.QApplication.translate("pychemqt", "Thermodinamic mode"),
+             (tr("pychemqt", "Thermodinamic mode"),
               ("TEXT_TERMODINAMICA", "termodinamica"),  str),
-             (QtWidgets.QApplication.translate("pychemqt", "Power"), "power", Power),
-             (QtWidgets.QApplication.translate("pychemqt", "Efficiency"),
+             (tr("pychemqt", "Power"), "power", Power),
+             (tr("pychemqt", "Efficiency"),
               "rendimientoCalculado", Dimensionless),
              ("Cp/Cv", "cp_cv", Dimensionless),
-             (QtWidgets.QApplication.translate("pychemqt", "Base index"),
+             (tr("pychemqt", "Base index"),
               "Base_index", float),
-             (QtWidgets.QApplication.translate("pychemqt", "Current index"),
+             (tr("pychemqt", "Current index"),
               "Current_index", float),
-             (QtWidgets.QApplication.translate("pychemqt", "Install factor"),
+             (tr("pychemqt", "Install factor"),
               "f_install", float),
-             (QtWidgets.QApplication.translate("pychemqt", "Purchase Cost"), "C_adq",
+             (tr("pychemqt", "Purchase Cost"), "C_adq",
               Currency),
-             (QtWidgets.QApplication.translate("pychemqt", "Installed Cost"), "C_inst",
+             (tr("pychemqt", "Installed Cost"), "C_inst",
               Currency)]
         return l
 

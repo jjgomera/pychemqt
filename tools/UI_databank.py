@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from tools.qt import QtGui, QtWidgets
+from tools.qt import QtGui, QtWidgets, tr
 
 from lib import sql
 from UI import viewComponents
@@ -40,21 +40,21 @@ class UI_databank_widget(QtWidgets.QWidget):
         layoutTitle = QtWidgets.QHBoxLayout()
         layoutTitle.setSpacing(5)
         self.buttonNew = QtWidgets.QToolButton(self)
-        self.buttonNew.setToolTip(QtWidgets.QApplication.translate(
+        self.buttonNew.setToolTip(tr(
             "pychemqt", "Create new element"))
         self.buttonNew.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileNew.png")))
         self.buttonNew.clicked.connect(self.newComponent)
         layoutTitle.addWidget(self.buttonNew)
         self.buttonCopy = QtWidgets.QToolButton(self)
-        self.buttonCopy.setToolTip(QtWidgets.QApplication.translate(
+        self.buttonCopy.setToolTip(tr(
             "pychemqt", "Clone this element"))
         self.buttonCopy.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/editCopy.png")))
         self.buttonCopy.clicked.connect(self.copyComponent)
         layoutTitle.addWidget(self.buttonCopy)
         self.buttonDelete = QtWidgets.QToolButton(self)
-        self.buttonDelete.setToolTip(QtWidgets.QApplication.translate(
+        self.buttonDelete.setToolTip(tr(
             "pychemqt", "Delete element"))
         self.buttonDelete.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/editDelete.png")))
@@ -64,12 +64,12 @@ class UI_databank_widget(QtWidgets.QWidget):
         gridLayout.addItem(layoutTitle, 1, 1)
 
         gridLayout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Find")+": "), 1, 2)
+            tr("pychemqt", "Find")+": "), 1, 2)
         self.Busqueda = QtWidgets.QLineEdit()
         self.Busqueda.textChanged.connect(self.buscar)
         gridLayout.addWidget(self.Busqueda, 1, 3)
         self.siguiente = QtWidgets.QPushButton(
-            QtWidgets.QApplication.translate("pychemqt", "Next"))
+            tr("pychemqt", "Next"))
         self.siguiente.clicked.connect(self.Next)
         gridLayout.addWidget(self.siguiente, 1, 4)
 
@@ -84,9 +84,9 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.BaseDatos.setHorizontalHeaderItem(
             0, QtWidgets.QTableWidgetItem("Id"))
         self.BaseDatos.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
-            QtWidgets.QApplication.translate("pychemqt", "Name")))
+            tr("pychemqt", "Name")))
         self.BaseDatos.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem(
-            QtWidgets.QApplication.translate("pychemqt", "Formula")))
+            tr("pychemqt", "Formula")))
         self.BaseDatos.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.BaseDatos.horizontalHeader().setStretchLastSection(True)
@@ -181,7 +181,7 @@ class UI_databank(QtWidgets.QDialog):
     """Database dialog"""
     def __init__(self, parent=None):
         super(UI_databank, self).__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
+        self.setWindowTitle(tr(
             "pychemqt", "Components database"))
         layout = QtWidgets.QVBoxLayout(self)
         self.databank = UI_databank_widget()
