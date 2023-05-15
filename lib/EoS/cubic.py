@@ -271,15 +271,15 @@ class Cubic(EoS):
 
         self._cubicDefinition(T)
 
-        if self.mezcla.Tc < T:
-            self.x = 1
-            self.xi = self.zi
-            self.yi = self.zi
-            self.Zg = self._Z(self.zi, T, P)[-1]
-            self.Zl = None
+#         if self.mezcla.Tc < T:
+#             self.x = 1
+#             self.xi = self.zi
+#             self.yi = self.zi
+#             self.Zg = self._Z(self.zi, T, P)[-1]
+#             self.Zl = None
 
-        else:
-            self.x, self.Zl, self.Zg, self.xi, self.yi, self.Ki = self._Flash()
+#         else:
+        self.x, self.Zl, self.Zg, self.xi, self.yi, self.Ki = self._Flash()
             # print("q = ", self.x)
             # print("x = ", self.xi)
             # print("y = ", self.yi)

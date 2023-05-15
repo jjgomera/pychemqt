@@ -379,13 +379,28 @@ if __name__ == "__main__":
     # print(eq.Ki)
 
     # Example 6.6 wallas
-    P = unidades.Pressure(20, "atm")
-    mix = Mezcla(5, ids=[23, 5], caudalMolar=1, fraccionMolar=[0.607, 0.393])
-    eq1 = SRK(300, P, mix)
-    eq2 = SRK(400, P, mix)
-    print(eq1._Dew_T(P))
-    print(eq2._Dew_T(P))
+#     P = unidades.Pressure(20, "atm")
+#     mix = Mezcla(5, ids=[23, 5], caudalMolar=1, fraccionMolar=[0.607, 0.393])
+#     eq1 = SRK(300, P, mix)
+#     eq2 = SRK(400, P, mix)
+#     print(eq1._Dew_T(P))
+#     print(eq2._Dew_T(P))
 
     # eq = SRK(500, P, mezcla)
     # print(eq._Dew_T(P))
+
+    # Example 2.3, pag 27 Separation Process Principles, Seader, Henley
+    import numpy as np
+    from lib.EoS.Cubic.PR import PR
+    T = unidades.Temperature(120, "F")
+    P = unidades.Pressure(485, "psi")
+    mix = Mezcla(5, caudalMolar=5597, ids=[1, 2, 40, 41],
+                 fraccionMolar=[0.3177, 0.5894, 0.0715, 0.0214])
+    st = SRK(T, P, mix, alpha=1)
+    st2 = PR(T, P, mix, alpha=1)
+    print(st.x*5597, st2.x*5597)
+    print(np.r_[st.yi]*st.x*5597)
+    print(np.r_[st.xi]*(1-st.x)*5597)
+    print(st.Ki, st2.Ki)
+
 
