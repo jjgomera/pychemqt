@@ -253,8 +253,8 @@ class SplashScreen(QtWidgets.QSplashScreen):
     def __init__(self):
         QtWidgets.QSplashScreen.__init__(
             self,
-            QtGui.QPixmap(os.environ["pychemqt"] + "/images/splash.jpg"))
-        # QtWidgets.QApplication.flush()
+            QtGui.QPixmap(os.path.join(
+                os.environ["pychemqt"], "images", "splash.jpg")))
         QtWidgets.QApplication.processEvents()
 
     def showMessage(self, message):
