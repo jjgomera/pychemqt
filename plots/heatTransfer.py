@@ -49,8 +49,7 @@ class ChartHeat(Chart):
         self.butonCalc.setEnabled(False)
 
         lyt = QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Flow Arrangement")))
+        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "Flow Arrangement")))
         self.flow = QtWidgets.QComboBox()
         for text in self.flujo:
             self.flow.addItem(text[0])
@@ -80,19 +79,14 @@ class ChartHeat(Chart):
 
 class Efectividad(ChartHeat):
     """Heat Exchanger effectiveness plot"""
-    title = tr(
-        "pychemqt", "Heat Exchanger effectiveness")
+    title = tr("pychemqt", "Heat Exchanger effectiveness")
     flujo = [
         (tr("pychemqt", "Counterflow"), "CF"),
         (tr("pychemqt", "Parallelflow"), "PF"),
-        (tr(
-            "pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        (tr(
-            "pychemqt", "Crossflow, one fluid mixed"), "CrFSMix"),
-        (tr(
-            "pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-        (tr(
-            "pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+        (tr("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        (tr("pychemqt", "Crossflow, one fluid mixed"), "CrFSMix"),
+        (tr("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
+        (tr("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     locImage = (0.7, 0.15, 0.2, 0.2)
     locLogo = (0.13, 0.77, 0.1, 0.1)
@@ -101,8 +95,7 @@ class Efectividad(ChartHeat):
         self.plt.ax.clear()
         self.plt.ax.set_xlim(0, 6)
         self.plt.ax.set_ylim(0, 1)
-        title = tr(
-            "pychemqt", "Heat Transfer effectiveness")
+        title = tr("pychemqt", "Heat Transfer effectiveness")
         self.plt.ax.set_title(title, size='12')
         self.plt.ax.set_xlabel("NTU", size='12')
         self.plt.ax.set_ylabel("ε", size='14')
@@ -125,7 +118,7 @@ class Efectividad(ChartHeat):
             self.plt.plot(NTU, e, "k")
 
             fraccionx = (NTU[40]-NTU[30])/6
-            fracciony = (e[40]-e[30])
+            fracciony = e[40]-e[30]
             try:
                 angle = arctan(fracciony/fraccionx)*360/2/pi
             except ZeroDivisionError:
@@ -141,39 +134,24 @@ class Efectividad(ChartHeat):
 class TemperatureEfectividad(ChartHeat):
     """Heat exchanger temperature-effectiveness plot"""
 
-    title = tr(
-        "pychemqt", "Heat Exchanger temperature effectiveness")
+    title = tr("pychemqt", "Heat Exchanger temperature effectiveness")
     flujo = [
         (tr("pychemqt", "Counterflow"), "CF"),
         (tr("pychemqt", "Parallelflow"), "PF"),
-        (tr(
-            "pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        (tr(
-            "pychemqt", "Crossflow, one fluid mixed"), "CrFSMix"),
-        (tr(
-            "pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-        (tr(
-            "pychemqt", "1-2 TEMA E"), "1-2TEMAE"),
-        (tr(
-            "pychemqt", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"),
-        (tr(
-            "pychemqt", "1-3 TEMA E"), "1-3TEMAE"),
-        (tr(
-            "pychemqt", "1-4 TEMA E"), "1-4TEMAE"),
-        (tr(
-            "pychemqt", "1-1 TEMA G"), "1-1TEMAG"),
-        (tr(
-            "pychemqt", "1-2 TEMA G"), "1-2TEMAG"),
-        (tr(
-            "pychemqt", "1-1 TEMA H"), "1-1TEMAH"),
-        (tr(
-            "pychemqt", "1-2 TEMA H"), "1-2TEMAH"),
-        (tr(
-            "pychemqt", "1-1 TEMA J"), "1-1TEMAJ"),
-        (tr(
-            "pychemqt", "1-2 TEMA J"), "1-2TEMAJ"),
-        (tr(
-            "pychemqt", "1-4 TEMA J"), "1-4TEMAJ")]
+        (tr("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        (tr("pychemqt", "Crossflow, one fluid mixed"), "CrFSMix"),
+        (tr("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
+        (tr("pychemqt", "1-2 TEMA E"), "1-2TEMAE"),
+        (tr("pychemqt", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"),
+        (tr("pychemqt", "1-3 TEMA E"), "1-3TEMAE"),
+        (tr("pychemqt", "1-4 TEMA E"), "1-4TEMAE"),
+        (tr("pychemqt", "1-1 TEMA G"), "1-1TEMAG"),
+        (tr("pychemqt", "1-2 TEMA G"), "1-2TEMAG"),
+        (tr("pychemqt", "1-1 TEMA H"), "1-1TEMAH"),
+        (tr("pychemqt", "1-2 TEMA H"), "1-2TEMAH"),
+        (tr("pychemqt", "1-1 TEMA J"), "1-1TEMAJ"),
+        (tr("pychemqt", "1-2 TEMA J"), "1-2TEMAJ"),
+        (tr("pychemqt", "1-4 TEMA J"), "1-4TEMAJ")]
 
     locImage = (0.13, 0.6, 0.15, 0.15)
     locLogo = (0.13, 0.77, 0.1, 0.1)
@@ -210,7 +188,7 @@ class TemperatureEfectividad(ChartHeat):
             for N in NTU[1:]:
                 e.append(TemperatureEffectiveness(N, ri, flujo, **kwargs))
             self.plt.plot(NTU, e, "k")
-            self.plt.ax.annotate(" R=%0.1f" % ri, (NTU[-1], e[-1]),
+            self.plt.ax.annotate("R=%0.1f" % ri, (NTU[-1], e[-1]),
                                  size="medium", ha="left", va="center")
 
         self.plt.draw()
@@ -218,18 +196,13 @@ class TemperatureEfectividad(ChartHeat):
 
 class F(ChartHeat):
     """Heat Exchanger correction factor plot"""
-    title = tr(
-        "pychemqt", "ΔT Correction Factor")
+    title = tr("pychemqt", "ΔT Correction Factor")
 
     flujo = [
-        (tr(
-            "pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        (tr(
-            "pychemqt", "Crossflow, one fluid mixed"), "CrFSMix"),
-        (tr(
-            "pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
-        (tr(
-            "pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+        (tr("pychemqt", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        (tr("pychemqt", "Crossflow, one fluid mixed"), "CrFSMix"),
+        (tr("pychemqt", "Crossflow, both fluids mixed"), "CrFMix"),
+        (tr("pychemqt", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     locImage = (0.13, 0.6, 0.15, 0.15)
     locLogo = (0.13, 0.77, 0.1, 0.1)
@@ -238,8 +211,7 @@ class F(ChartHeat):
         self.plt.ax.clear()
         self.plt.ax.set_xlim(0, 1)
         self.plt.ax.set_ylim(0, 1)
-        title = r"$\Delta T_{ml}$ " + \
-            tr("pychemqt", "Correction Factor")
+        title = r"$\Delta T_{ml}$ " + tr("pychemqt", "Correction Factor")
         self.plt.ax.set_title(title, size='12')
         xlabel = "$P=\\frac{T_{1o}-T_{1i}}{T_{2i}-T_{1i}}$"
         self.plt.ax.set_xlabel(xlabel, size='12')
@@ -291,8 +263,7 @@ class Phi(ChartHeat):
         self.plt.ax.clear()
         self.plt.ax.set_xlim(0, 1)
         self.plt.ax.set_ylim(0, 1)
-        title = r"$\Delta T_{ml}$ " + \
-            tr("pychemqt", " Correction Factor")
+        title = r"$\Delta T_{ml}$ " + tr("pychemqt", " Correction Factor")
         self.plt.ax.set_title(title, size='12')
         self.plt.ax.set_xlabel(
             "$P=\\frac{T_{1o}-T_{1i}}{T_{2i}-T_{1i}}$", size='12')

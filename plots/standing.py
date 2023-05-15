@@ -128,18 +128,15 @@ class Config(QtWidgets.QWidget):
         self.Tr = QtWidgets.QLineEdit()
         layout.addWidget(self.Tr, 4, 2, 1, 2)
         self.lineconfig = LineConfig(
-            "line", tr(
-                "pychemqt", "Reduced temperature style line"))
+            "line", tr("pychemqt", "Reduced temperature style line"))
         layout.addWidget(self.lineconfig, 5, 1, 1, 3)
 
         self.cruxconfig = LineConfig(
-            "crux", tr(
-                "pychemqt", "Crux style line"))
+            "crux", tr("pychemqt", "Crux style line"))
         layout.addWidget(self.cruxconfig, 6, 1, 1, 3)
 
         self.gridconfig = GridConfig(
-            "grid", tr(
-                "pychemqt", "Grid style line"))
+            "grid", tr("pychemqt", "Grid style line"))
         layout.addWidget(self.gridconfig, 7, 1, 1, 3)
 
         layout.addItem(QtWidgets.QSpacerItem(
@@ -170,8 +167,7 @@ class ConfigDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Moody diagram configuration"))
+        self.setWindowTitle(tr("pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Config(config)
         layout.addWidget(self.widget)
@@ -190,9 +186,8 @@ class ConfigDialog(QtWidgets.QDialog):
 
 class Standing_Katz(Chart):
     """Standing-Katz chart dialog"""
-    title = tr(
-        "pychemqt",
-        "Standing and Katz compressivitity factors chart for natural gas")
+    title = tr("pychemqt", "Standing and Katz compressivitity factors chart "
+               "for natural gas")
     configDialog = ConfigDialog
     locLogo = (0.8, 0.12, 0.1, 0.1)
     note = None
@@ -437,8 +432,7 @@ class CalculateDialog(QtWidgets.QDialog):
             "pychemqt", "Calculate compressibility factor of natural gas")
         self.setWindowTitle(title)
         layout = QtWidgets.QGridLayout(self)
-        label = QtWidgets.QLabel(
-            tr("pychemqt", "Method:"))
+        label = QtWidgets.QLabel(tr("pychemqt", "Method:"))
         layout.addWidget(label, 1, 0)
         self.method = QtWidgets.QComboBox()
         for Z in Z_list:
@@ -462,12 +456,16 @@ class CalculateDialog(QtWidgets.QDialog):
         self.Z = Entrada_con_unidades(float, readOnly=True, decimales=8)
         layout.addWidget(self.Z, 4, 2)
 
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 9, 1, 1, 3)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok
             | QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 10, 1, 1, 2)
+        layout.addWidget(self.buttonBox, 10, 1, 1, 3)
 
     def calculate(self):
         """Calculate point procedure"""

@@ -93,8 +93,7 @@ class Config(QtWidgets.QWidget):
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Method:")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Method:")), 1, 1)
         self.metodos = QtWidgets.QComboBox()
         for f in f_list:
             line = f.__doc__.split("\n")[0]
@@ -114,17 +113,14 @@ class Config(QtWidgets.QWidget):
         self.ed = QtWidgets.QLineEdit()
         layout.addWidget(self.ed, 3, 2, 1, 2)
         self.lineconfig = LineConfig(
-            "line", tr(
-                "pychemqt", "Relative roughtness style line"))
+            "line", tr("pychemqt", "Relative roughtness style line"))
         layout.addWidget(self.lineconfig, 4, 1, 1, 3)
         self.cruxconfig = LineConfig(
-            "crux", tr(
-                "pychemqt", "Crux style line"))
+            "crux", tr("pychemqt", "Crux style line"))
         layout.addWidget(self.cruxconfig, 5, 1, 1, 3)
 
         self.gridconfig = GridConfig(
-            "grid", tr(
-                "pychemqt", "Grid style line"))
+            "grid", tr("pychemqt", "Grid style line"))
         layout.addWidget(self.gridconfig, 6, 1, 1, 3)
 
         layout.addItem(QtWidgets.QSpacerItem(
@@ -156,8 +152,7 @@ class ConfigDialog(QtWidgets.QDialog):
     """Dialog to configure moody chart"""
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Moody diagram configuration"))
+        self.setWindowTitle(tr("pychemqt", "Moody diagram configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Config(config)
         layout.addWidget(self.widget)
@@ -184,8 +179,8 @@ class Moody(Chart):
     def config(self):
         """Initialization action in plot don't neccesary to update in plot"""
 
-        txt = tr(
-            "pychemqt", "Relative roughness") + ", "+r"$r=\frac{\epsilon}{D}$"
+        txt = tr("pychemqt", "Relative roughness") + ", " + \
+            r"$r=\frac{\epsilon}{D}$"
         self.plt.fig.text(0.97, 0.5, txt, rotation=90, size='10',
                           va="center", ha="center")
         self.plt.fig.subplots_adjust(
@@ -273,16 +268,14 @@ class Moody(Chart):
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
 
-        xlabel = tr(
-            "pychemqt", "Reynolds number") + ", " + r"$Re=\frac{V\rho D}{\mu}$"
+        xlabel = tr("pychemqt", "Reynolds number") + ", " + \
+            r"$Re=\frac{V\rho D}{\mu}$"
         self.plt.ax.set_xlabel(xlabel, ha='center', size='10')
         if fanning:
-            ylabel = tr(
-                "pychemqt", "Fanning Friction factor")
+            ylabel = tr("pychemqt", "Fanning Friction factor")
             formula = r"$f_f=\frac{2hDg}{LV^2}$"
         else:
-            ylabel = tr(
-                "pychemqt", "Darcy Friction factor")
+            ylabel = tr("pychemqt", "Darcy Friction factor")
             formula = r"$f_d=\frac{2hDg}{LV^2}$"
         self.plt.ax.set_ylabel(ylabel+",  " + formula, size='10')
 
@@ -377,8 +370,7 @@ class Moody(Chart):
         self.plt.ax.add_artist(
             ConnectionPatch((40000, 0.095/x), (9.9e7, 0.095/x), "data", "data",
                             arrowstyle="<|-|>", mutation_scale=15, fc="w"))
-        txt = tr(
-            "pychemqt", "Turbulent flux fully developed")
+        txt = tr("pychemqt", "Turbulent flux fully developed")
         self.plt.ax.text(1e6, 0.098/x, txt, size="small", va="bottom",
                          ha="center", backgroundcolor="#ffffff")
 
@@ -414,12 +406,10 @@ class CalculateDialog(QtWidgets.QDialog):
     """Dialog to calculate a specified point"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        title = tr(
-            "pychemqt", "Calculate friction factor")
+        title = tr("pychemqt", "Calculate friction factor")
         self.setWindowTitle(title)
         layout = QtWidgets.QGridLayout(self)
-        label = QtWidgets.QLabel(
-            tr("pychemqt", "Method:"))
+        label = QtWidgets.QLabel(tr("pychemqt", "Method:"))
         layout.addWidget(label, 1, 0)
         self.metodos = QtWidgets.QComboBox()
         for f in f_list:
@@ -447,12 +437,16 @@ class CalculateDialog(QtWidgets.QDialog):
         self.f = Entrada_con_unidades(float, readOnly=True, decimales=8)
         layout.addWidget(self.f, 5, 2)
 
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 9, 1, 1, 3)
+
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok
             | QtWidgets.QDialogButtonBox.StandardButton.Close)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 10, 1, 1, 2)
+        layout.addWidget(self.buttonBox, 10, 1, 1, 3)
 
     def calculate(self):
         """Calculate point procedure"""
