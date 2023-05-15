@@ -813,7 +813,7 @@ class ConfPlot(QtWidgets.QDialog):
             y = .1 * x ** 3 - x ** 2 + 3 * x + 2
             z = .01 * x ** 3 + x ** 2 - 3 * x - 2
 
-            plot = PlotWidget()
+            plot = PlotWidget(width=1, height=1)
             plot.plot(x, y, label="f(x)")
             plot.plot(x, z, label="g(x)")
             plot.ax.set_title("Function representation")
