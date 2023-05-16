@@ -159,10 +159,10 @@ import json
 import logging
 import os
 
-from tools.qt import tr
-from scipy import sinh, cosh, tanh, arctan, exp, log
+from scipy import sin, tan, arctan, sinh, cosh, tanh, arctan, arccos, exp, log
 from scipy.constants import Boltzmann, pi, Avogadro, R, u
 from scipy.optimize import fsolve
+from tools.qt import tr
 
 from lib import unidades
 from lib.config import conf_dir
@@ -1421,7 +1421,7 @@ class MEoS(ThermoAdvanced):
                 else:
                     rhoo.append(self._Liquid_Density(self.Tc))
 
-                rhoo.append(self._constants["rhomax"]*self.M)
+#                 rhoo.append(self._constants["rhomax"]*self.M)
                 rhoo.append(self.rhoc)
                 rhoo.append(P/T/self.R)
 
@@ -2474,7 +2474,7 @@ class MEoS(ThermoAdvanced):
         if "rho" not in kwargs:
             rhov = self._Vapor_Density(self.Tt)
             rhol = self._Liquid_Density(self.Tt)
-            ro = [rhov, rhol, self.rhoc, self._constants["rhomax"]*self.M]
+            ro = [rhov, rhol, self.rhoc]
 
             if "rho0" in kwargs and kwargs["rho0"]:
                 if isinstance(kwargs["rho0"], list):
@@ -2498,7 +2498,7 @@ class MEoS(ThermoAdvanced):
                 else:
                     f1 = sum(abs(rinput[1]["fvec"]))
                     idx = rinput[2]
-                    if 0 < rho < self._constants["rhomax"]*self.M and \
+                    if 0 < rho and \
                             f1 < 1e-5 and idx == 1:
                         converge = True
                         break
@@ -2538,7 +2538,7 @@ class MEoS(ThermoAdvanced):
                     else:
                         twophases = False
                     if (rho != r or T != t) and \
-                            0 < rho < self._constants["rhomax"]*self.M and \
+                            0 < rho and \
                             f1 < 1e-5 and not twophases:
                         converge = True
                         break
@@ -3969,10 +3969,12 @@ class MEoS(ThermoAdvanced):
 
             * sigma: Coefficient of polynomial term
             * exp: Exponential of polynomial term
+            * Tc: Optional to define a different reducing parameter than Tc
         """
         if self.Tt <= self.T <= self.Tc:
             if self._surface:
-                tau = 1-T/self.Tc
+                Tc = self._surface.get("Tc", self.Tc)
+                tau = 1-T/Tc
                 tension = 0
                 for sigma, n in zip(self._surface["sigma"],
                                     self._surface["exp"]):
@@ -5659,7 +5661,6 @@ class MEoS(ThermoAdvanced):
                * tc: τ exponent
                * betac: δ term translation
                * dc: δ exponent
-
         """
         if self._thermal["critical"] == 0:
             # No critical enhancement

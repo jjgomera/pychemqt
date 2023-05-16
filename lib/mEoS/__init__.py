@@ -243,6 +243,47 @@ for obj in __all__:
 # TODO: Add 2-propanol from 10.1063/1.3112608
 # TODO: Add 1,2-dichloroethane from Thol thesis
 
+# Fluid in REFPROP 10 missing
+
+# Gao, K. H.; Wu, J. T.; Lemmon, E. W. Unpublished Helmholtz Equation of State
+# 1,3-butadiene
+# 1-Butyne
+# 1-Pentene
+# Acetylene
+# Cyclobutene
+# Propadiene
+# Propylene oxide
+
+# Gao, K. H.; Wu, J. T.; Bell, I. H.; Harvey, A. H.; Lemmon, E. W.
+# Ammonia
+
+# Thol, M.; Alexandrov, I. S.; Lemmon, E. W.
+# Chlorobenzene
+
+# Herrig, S.; Thol, M.; Kortmann, M.; Lemmon, E. W.; Span, R.
+# Diethanolamine, DEA
+
+# Zhou, Y.; Lemmon, E. W.
+# Ethylene Glycol
+
+# Herrig, S.; Thol, M.; Span, R
+# Monoethanolamine, MEA
+
+# Missing references
+
+# R1132
+# R. Low
+# Proceedings of the 1st IIR International Conference on the Application of HFO
+# Refrigerants, Paper 1183 (2018).
+# https://doi.org/10.18462/iir.hfo.2018.1183
+
+# R1224yd(Z)
+# R. Akasaka, M. Fukushima, and E. W. Lemmon
+# A Helmholtz Energy Equation of State for
+# Cis-1-chloro-2,3,3,3-tetrafluoropropene (R-1224yd(Z))
+# Proceedings of the 21st European Conference
+# on Thermophysical Properties, Paper 192 (2017)
+
 
 class Test(TestCase):
     def test_meos(self):

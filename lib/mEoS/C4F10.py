@@ -56,6 +56,7 @@ class C4F10(MEoS):
                      "n-Perfluerohexane",
             "ref": "Ind. Eng. Chem. Res. 60(47) (2021) 17207-17227",
             "doi": "10.1021/acs.iecr.1c02969"},
+        # Find published paper
 
         "R": 8.314462618,
         "cp": CP1,
