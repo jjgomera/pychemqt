@@ -67,8 +67,8 @@ class Ui_CostIndex(QtWidgets.QDialog):
         self.equipos = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.equipos, 3, 3, 1, 1)
         layout.addItem(QtWidgets.QSpacerItem(
-            30, 0, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            4, 1, 1, 1)
+            30, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 1)
         layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Heat exchangers & Tanks")), 4, 2, 1, 1)
         self.cambiadores_calor = Entrada_con_unidades(
@@ -113,7 +113,8 @@ class Ui_CostIndex(QtWidgets.QDialog):
         self.ingenieria = Entrada_con_unidades(float, width=70, decimales=1)
         layout.addWidget(self.ingenieria, 13, 3, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 14, 1, 1, 3)
@@ -125,8 +126,8 @@ class Ui_CostIndex(QtWidgets.QDialog):
             texto = archivo.readlines()
             for txt in texto:
                 dato = txt.split()
-                self.fecha.addItem(dato[0])
-                self.indices.append(dato[1:])
+                self.fecha.insertItem(0, dato[0])
+                self.indices.insert(0, dato[1:])
 
         fecha = indiceActual[0]
         self.index.setValue(indiceActual[1])
@@ -174,9 +175,9 @@ class Ui_CostIndex(QtWidgets.QDialog):
         dialog = QtWidgets.QMessageBox.question(
             self,
             tr("pychemqt", "Unsaved changes"),
-            tr("pychemqt",
-                                             "Save unsaved changes?"),
-            QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No,
+            tr("pychemqt", "Save unsaved changes?"),
+            QtWidgets.QMessageBox.StandardButton.Yes |
+            QtWidgets.QMessageBox.StandardButton.No,
             QtWidgets.QMessageBox.StandardButton.Yes)
         if dialog == QtWidgets.QMessageBox.StandardButton.Yes:
             self.accept()
