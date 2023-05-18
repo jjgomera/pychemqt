@@ -47,13 +47,13 @@ from math import pi
 import os
 import sys
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 
 from lib.config import conf_dir, IMAGE_PATH
 from lib.corriente import Corriente
 from lib.utilities import representacion
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 from tools.UI_unitConverter import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
 
@@ -861,7 +861,7 @@ class LineConfig(QtWidgets.QGroupBox):
         confSection: Name key to identify the line
         title: Title to use in QGroupbox
         """
-        super(LineConfig, self).__init__(title, parent)
+        super().__init__(title, parent)
         self.conf = confSection
 
         layout = QtWidgets.QVBoxLayout(self)
@@ -872,20 +872,16 @@ class LineConfig(QtWidgets.QGroupBox):
         self.Width.setRange(0.1, 5)
         self.Width.setDecimals(1)
         self.Width.setSingleStep(0.1)
-        self.Width.setToolTip(
-            tr("pychemqt", "Line width"))
+        self.Width.setToolTip(tr("pychemqt", "Line width"))
         lyt1.addWidget(self.Width)
         self.Style = LineStyleCombo()
-        self.Style.setToolTip(
-            tr("pychemqt", "Line style"))
+        self.Style.setToolTip(tr("pychemqt", "Line style"))
         lyt1.addWidget(self.Style)
         self.Color = ColorSelector(isAlpha=True)
-        self.Color.setToolTip(
-            tr("pychemqt", "Line color"))
+        self.Color.setToolTip(tr("pychemqt", "Line color"))
         lyt1.addWidget(self.Color)
         self.Marker = MarkerCombo()
-        self.Marker.setToolTip(
-            tr("pychemqt", "Line marker"))
+        self.Marker.setToolTip(tr("pychemqt", "Line marker"))
         self.Marker.currentIndexChanged.connect(self.changeMarker)
         lyt1.addWidget(self.Marker)
         lyt1.addItem(QtWidgets.QSpacerItem(
@@ -900,12 +896,10 @@ class LineConfig(QtWidgets.QGroupBox):
         self.MarkerSize.setRange(0.1, 5)
         self.MarkerSize.setDecimals(1)
         self.MarkerSize.setSingleStep(0.1)
-        self.MarkerSize.setToolTip(
-            tr("pychemqt", "Marker size"))
+        self.MarkerSize.setToolTip(tr("pychemqt", "Marker size"))
         lyt2.addWidget(self.MarkerSize)
         self.MarkerColor = ColorSelector()
-        self.MarkerColor.setToolTip(
-            tr("pychemqt", "Marker face color"))
+        self.MarkerColor.setToolTip(tr("pychemqt", "Marker face color"))
         lyt2.addWidget(self.MarkerColor)
         self.EdgeSize = QtWidgets.QDoubleSpinBox()
         self.EdgeSize.setFixedWidth(60)
@@ -913,12 +907,10 @@ class LineConfig(QtWidgets.QGroupBox):
         self.EdgeSize.setRange(0.1, 5)
         self.EdgeSize.setDecimals(1)
         self.EdgeSize.setSingleStep(0.1)
-        self.EdgeSize.setToolTip(
-            tr("pychemqt", "Marker edge width"))
+        self.EdgeSize.setToolTip(tr("pychemqt", "Marker edge width"))
         lyt2.addWidget(self.EdgeSize)
         self.EdgeColor = ColorSelector()
-        self.EdgeColor.setToolTip(
-            tr("pychemqt", "Marker edge color"))
+        self.EdgeColor.setToolTip(tr("pychemqt", "Marker edge color"))
         lyt2.addWidget(self.EdgeColor)
         layout.addLayout(lyt2)
 
@@ -935,7 +927,7 @@ class LineConfig(QtWidgets.QGroupBox):
         self.Color.setColor(config.get(section, self.conf+'Color'), alfa)
         self.Width.setValue(config.getfloat(section, self.conf+'lineWidth'))
         self.Style.setCurrentValue(config.get(section, self.conf+'lineStyle'))
-        if self.Marker.isVisible():
+        if self.Marker.isEnabled():
             self.Marker.setCurrentValue(config.get(section, self.conf+'marker'))
             self.MarkerSize.setValue(
                 config.getfloat(section, self.conf+'markersize'))
@@ -951,7 +943,7 @@ class LineConfig(QtWidgets.QGroupBox):
         config.set(section, self.conf+"alpha", str(self.Color.color.alpha()))
         config.set(section, self.conf+"lineWidth", str(self.Width.value()))
         config.set(section, self.conf+"lineStyle", self.Style.currentValue())
-        if self.Marker.isVisible():
+        if self.Marker.isEnabled():
             config.set(section, self.conf+"marker", self.Marker.currentValue())
             config.set(section, self.conf+"markersize",
                        str(self.MarkerSize.value()))
@@ -981,7 +973,7 @@ class GridConfig(LineConfig):
         # Disable marker functionality for grid line
         # Raise a error by duplicate marker kwarg in plot, anyway marker in
         # grid line are useless
-        self.Marker.setVisible(False)
+        self.Marker.setEnabled(False)
 
         self.grid = QtWidgets.QCheckBox(tr(
             "pychemqt", "Show grid"))
