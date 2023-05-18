@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Heat Transfer chart
 ###############################################################################
 
+
 import os
 from math import pi
 
@@ -125,7 +126,7 @@ class Efectividad(ChartHeat):
                 angle = 90
 
             self.plt.ax.annotate(
-                "C*=%0.1f" % ci, (NTU[29], e[30]), rotation=angle,
+                f"C*={ci:0.1f}", (NTU[29], e[30]), rotation=angle,
                 size="medium", ha="left", va="bottom")
 
         self.plt.draw()
@@ -188,7 +189,7 @@ class TemperatureEfectividad(ChartHeat):
             for N in NTU[1:]:
                 e.append(TemperatureEffectiveness(N, ri, flujo, **kwargs))
             self.plt.plot(NTU, e, "k")
-            self.plt.ax.annotate("R=%0.1f" % ri, (NTU[-1], e[-1]),
+            self.plt.ax.annotate(f"R={ri:0.1f}", (NTU[-1], e[-1]),
                                  size="medium", ha="left", va="center")
 
         self.plt.draw()

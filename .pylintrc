@@ -10,3 +10,7 @@ disable = invalid-name, too-many-instance-attributes, too-many-statements, too-m
 # for classes with dynamically set attributes). This supports the use of
 # qualified names.
 ignored-classes=Temperature, DeltaT, Angle, Length, Area, Volume, Time, Frequency, Speed, Acceleration, Mass, Mol, SpecificVolume, SpecificVolume_square, MolarVolume, Density, MolarDensity, Force, Pressure, DeltaP, Energy, Enthalpy, MolarEnthalpy, Entropy, SpecificHeat, MolarSpecificHeat, Power, MassFlow, MolarFlow, VolFlow, Diffusivity, HeatFlux, ThermalConductivity, UA, HeatTransfCoef, Fouling, Tension, Viscosity, SolubilityParameter, PotencialElectric, DipoleMoment, CakeResistance, PackingDP, V2V, InvTemperature, InvPressure, EnthalpyPressure, EnthalpyDensity, TemperaturePressure, PressureTemperature, PressureDensity, DensityPressure, DensityTemperature, Currency
+
+[design]
+max-locals = 20
+max-branches = 20

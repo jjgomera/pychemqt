@@ -28,8 +28,6 @@ The module include all related moody chart functionality
 and its configuration
 
     * :class:`Config`: Drag sphere chart configuration
-    * :class:`ConfigDialog`: Dialog tool for standalone use
-
 '''
 
 
@@ -37,6 +35,7 @@ from numpy import logspace
 from tools.qt import QtWidgets, tr
 
 from lib import drag
+from lib.config import Preferences
 from lib.utilities import formatLine
 from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
@@ -46,6 +45,7 @@ from plots.ui import Chart
 class Config(QtWidgets.QWidget):
     """Drag sphere chart configuration"""
     TITLE = tr("pychemqt", "Drag Sphere chart")
+    TITLECONFIG = tr("pychemqt", "Drag sphere diagram configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -91,32 +91,10 @@ class Config(QtWidgets.QWidget):
         return config
 
 
-class ConfigDialog(QtWidgets.QDialog):
-    """Dialog to configure moody chart"""
-    def __init__(self, config=None, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Drag sphere diagram configuration"))
-        layout = QtWidgets.QVBoxLayout(self)
-        self.widget = Config(config)
-        layout.addWidget(self.widget)
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel
-            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
-
-    def value(self, config):
-        """Function result for wizard"""
-        config = self.widget.value(config)
-        return config
-
-
 class Drag(Chart):
     """Drag sphere chart dialog"""
     title = tr("pychemqt", "Drag Sphere")
-    configDialog = ConfigDialog
+    widgetConfig = Config
     locLogo = (0.8, 0.85, 0.1, 0.1)
     note = None
 
@@ -138,14 +116,14 @@ class Drag(Chart):
             return
 
         Cd = None
-        method = self.Preferences.getint("drag", "method")
+        method = Preferences.getint("drag", "method")
         F = drag.f_list[method]
         Cd = F(Re)
         self.createCrux(Re, Cd)
 
     @staticmethod
     def _txt(Re, Cd):
-        txt = "Re: %0.4g\nCd: %0.4g" % (Re, Cd)
+        txt = f"Re: {Re:0.4g}\n$C_d$: {Cd:0.4g}"
         return txt
 
     def clearCrux(self):
@@ -166,12 +144,12 @@ class Drag(Chart):
         self.plt.lx.set_ydata(Cd)
         self.plt.ly.set_xdata(Re)
 
-        self.note = self.plt.fig.text(0.92, 0.05, txt, size="6", va="top")
+        self.note = self.plt.fig.text(0.92, 0.05, txt, size="8", va="top")
         self.plt.draw()
 
     def plot(self):
         """Plot the drag chart using the indicate method """
-        method = self.Preferences.getint("drag", "method")
+        method = Preferences.getint("drag", "method")
         f = drag.f_list[method]
 
         self.plt.ax.set_autoscale_on(False)
@@ -186,20 +164,20 @@ class Drag(Chart):
                 v = None
             Cd.append(v)
 
-        kw = formatLine(self.Preferences, "drag", "line")
+        kw = formatLine(Preferences, "drag", "line")
         self.plt.ax.plot(Re, Cd, **kw)
 
-        kw = formatLine(self.Preferences, "drag", "crux")
+        kw = formatLine(Preferences, "drag", "crux")
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
 
         xlabel = tr("pychemqt", "Reynolds number") + ", " + \
-                r"$Re=\frac{V\rho D}{\mu}$"
+            r"$Re=\frac{V\rho D}{\mu}$"
         self.plt.ax.set_xlabel(xlabel, ha='center', size='10')
         self.plt.ax.set_ylabel("Drag coefficient, $C_d$, [-]", size='10')
 
-        grid = self.Preferences.getboolean("drag", "grid")
-        kw = formatLine(self.Preferences, "drag", "grid")
+        grid = Preferences.getboolean("drag", "grid")
+        kw = formatLine(Preferences, "drag", "grid")
         del kw["marker"]
         if grid:
             self.plt.ax.grid(grid, **kw)

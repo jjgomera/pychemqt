@@ -29,7 +29,6 @@ The module include all related moody chart functionality
 and its configuration
 
     * :class:`Config`: Moody chart configuration
-    * :class:`ConfigDialog`: Dialog tool for standalone use
 '''
 
 
@@ -40,7 +39,7 @@ from numpy import logspace
 from numpy.lib.scimath import log10
 from matplotlib.patches import ConnectionPatch
 
-from lib.config import conf_dir
+from lib.config import conf_dir, Preferences
 from lib.friction import f_list, eD
 from lib.utilities import formatLine, representacion
 from tools.qt import QtWidgets, tr
@@ -82,13 +81,14 @@ def calculate(config):
     dat["fully"] = [(1/(1.14-2*log10(3500/R)))**2/x for R in Re_fully]
 
     # Save to file
-    with open(conf_dir+"moody.dat", "w") as file:
+    with open(conf_dir+"moody.dat", "w", encoding="utf-8") as file:
         json.dump(dat, file, indent=4)
 
 
 class Config(QtWidgets.QWidget):
     """Moody chart configuration"""
     TITLE = tr("pychemqt", "Moody chart")
+    TITLECONFIG = tr("pychemqt", "Moody diagram configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -148,31 +148,10 @@ class Config(QtWidgets.QWidget):
         return config
 
 
-class ConfigDialog(QtWidgets.QDialog):
-    """Dialog to configure moody chart"""
-    def __init__(self, config=None, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle(tr("pychemqt", "Moody diagram configuration"))
-        layout = QtWidgets.QVBoxLayout(self)
-        self.widget = Config(config)
-        layout.addWidget(self.widget)
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel
-            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
-
-    def value(self, config):
-        """Function result for wizard"""
-        config = self.widget.value(config)
-        return config
-
-
 class Moody(Chart):
     """Moody chart dialog"""
     title = tr("pychemqt", "Moody Diagram")
-    configDialog = ConfigDialog
+    widgetConfig = Config
     locLogo = (0.3, 0.15, 0.1, 0.1)
     note = None
 
@@ -197,8 +176,8 @@ class Moody(Chart):
             return
 
         ed = None
-        method = self.Preferences.getint("Moody", "method")
-        fanning = self.Preferences.getboolean("Moody", "fanning")
+        method = Preferences.getint("Moody", "method")
+        fanning = Preferences.getboolean("Moody", "fanning")
         F = f_list[method]
 
         if Re < 2400:
@@ -218,9 +197,9 @@ class Moody(Chart):
     @staticmethod
     def _txt(Re, f, ed):
         if ed is None:
-            txt = "Re: %0.4g\nf: %0.4g" % (Re, f)
+            txt = f"Re: {Re:0.4g}\nf: {f:0.4g}"
         else:
-            txt = "Re: %0.4g\ne/D: %0.4g\nf: %0.4g" % (Re, ed, f)
+            txt = f"Re: {Re:0.4g}\nε/D: {ed:0.4g}\nf: {f:0.4g}"
         return txt
 
     def createCrux(self, Re, f, ed):
@@ -235,13 +214,13 @@ class Moody(Chart):
             self.note.remove()
             self.note = None
         if f and Re:
-            self.note = self.plt.fig.text(0.92, 0.05, txt, size="6", va="bottom")
+            self.note = self.plt.fig.text(0.92, 0.10, txt, size="8", va="top")
         self.plt.draw()
 
     def plot(self):
         """Plot the Moody chart using the indicate method """
-        fanning = self.Preferences.getboolean("Moody", "fanning")
-        method = self.Preferences.getint("Moody", "method")
+        fanning = Preferences.getboolean("Moody", "fanning")
+        method = Preferences.getint("Moody", "method")
 
         if fanning:
             x = 4
@@ -251,8 +230,8 @@ class Moody(Chart):
         self.plt.ax.set_autoscale_on(False)
         self.plt.ax.clear()
 
-        grid = self.Preferences.getboolean("Moody", "grid")
-        kw = formatLine(self.Preferences, "Moody", "grid")
+        grid = Preferences.getboolean("Moody", "grid")
+        kw = formatLine(Preferences, "Moody", "grid")
         del kw["marker"]
         if grid:
             self.plt.ax.grid(grid, **kw)
@@ -264,7 +243,7 @@ class Moody(Chart):
         self.plt.ax.set_xscale("log")
         self.plt.ax.set_yscale("log")
 
-        kw = formatLine(self.Preferences, "Moody", "crux")
+        kw = formatLine(Preferences, "Moody", "crux")
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
 
@@ -310,27 +289,27 @@ class Moody(Chart):
         self.plt.ax.set_yticklabels(ytickslabel)
 
         if not os.path.isfile(conf_dir+"moody.dat"):
-            calculate(self.Preferences)
+            calculate(Preferences)
 
         load = False
-        with open(conf_dir+"moody.dat", "r") as file:
+        with open(conf_dir+"moody.dat", "r", encoding="utf-8") as file:
             try:
                 dat = json.load(file)
             except ValueError:
-                calculate(self.Preferences)
+                calculate(Preferences)
                 load = True
 
             if dat["fanning"] != fanning or dat["method"] != method:
-                calculate(self.Preferences)
+                calculate(Preferences)
                 load = True
 
         # Reload file if it's created in last with statement
         if load:
-            with open(conf_dir+"moody.dat", "r") as file:
+            with open(conf_dir+"moody.dat", "r", encoding="utf-8") as file:
                 dat = json.load(file)
 
         # Plot data
-        kw = formatLine(self.Preferences, "Moody", "line")
+        kw = formatLine(Preferences, "Moody", "line")
         self.plt.ax.plot(Re_laminar, dat["laminar"], **kw)
         for ed, f in dat["turbulent"].items():
             self.plt.ax.plot(Re_turbulent, f, **kw)

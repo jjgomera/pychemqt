@@ -29,7 +29,6 @@ The module include all related moody chart functionality
 and its configuration
 
     * :class:`Config`: Standing-Katz chart configuration
-    * :class:`ConfigDialog`: Dialog tool for standalone use
 '''
 
 
@@ -40,7 +39,7 @@ import re
 from numpy import arange
 from scipy.optimize import fsolve
 
-from lib.config import conf_dir
+from lib.config import conf_dir, Preferences
 from lib.crude import Z_list
 from lib.plot import PlotWidget
 from lib.utilities import formatLine
@@ -100,13 +99,14 @@ def calculate(config, dat=None):
     dat[method] = lines
 
     # Save to file
-    with open(conf_dir+"standing_katz.dat", "w") as file:
+    with open(conf_dir+"standing_katz.dat", "w", encoding="utf-8") as file:
         json.dump(dat, file, indent=4)
 
 
 class Config(QtWidgets.QWidget):
     """Standing-Katz chart configuration"""
     TITLE = tr("pychemqt", "Standing-Katz chart")
+    TITLECONFIG = tr("pychemqt", "Standing-Katz chart configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -117,7 +117,7 @@ class Config(QtWidgets.QWidget):
         for Z in Z_list:
             name = Z.__name__[2:].replace("_", "-")
             year = re.search(r"((\d+))", Z.__doc__).group(0)
-            doc = "%s (%s)" % (name, year)
+            doc = f"{name} ({year})"
             self.method.addItem(doc)
         layout.addWidget(self.method, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
@@ -163,32 +163,11 @@ class Config(QtWidgets.QWidget):
         return config
 
 
-class ConfigDialog(QtWidgets.QDialog):
-    """Dialog to config thermal method calculations"""
-    def __init__(self, config=None, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle(tr("pychemqt", "Moody diagram configuration"))
-        layout = QtWidgets.QVBoxLayout(self)
-        self.widget = Config(config)
-        layout.addWidget(self.widget)
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel
-            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
-
-    def value(self, config):
-        """Function result for wizard"""
-        config = self.widget.value(config)
-        return config
-
-
 class Standing_Katz(Chart):
     """Standing-Katz chart dialog"""
     title = tr("pychemqt", "Standing and Katz compressivitity factors chart "
                "for natural gas")
-    configDialog = ConfigDialog
+    widgetConfig = Config
     locLogo = (0.8, 0.12, 0.1, 0.1)
     note = None
 
@@ -269,7 +248,7 @@ class Standing_Katz(Chart):
             self.clearCrux()
             return
 
-        method = self.Preferences.getint("Standing_Katz", "method")
+        method = Preferences.getint("Standing_Katz", "method")
         f_Z = Z_list[method]
 
         def f(Tr):
@@ -280,7 +259,7 @@ class Standing_Katz(Chart):
             try:
                 rinput = fsolve(f, to, full_output=True)
                 if rinput[2] == 1:
-                    Tr = rinput[0]
+                    Tr = rinput[0][0]
                     break
             except ValueError:
                 continue
@@ -289,7 +268,7 @@ class Standing_Katz(Chart):
 
     def plot(self):
         """Plot the Standing-Katz chart using the indicate method """
-        method = self.Preferences.get("Standing_Katz", "method")
+        method = Preferences.get("Standing_Katz", "method")
 
         self.plt.ax.clear()
         self.plt.ax.set_xlim(0, 8)
@@ -302,8 +281,8 @@ class Standing_Katz(Chart):
         self.plt2.ax.set_ylim(0.9, 2)
         self.plt2.ax.set_xlabel(r"$P_r=\frac{P}{P_c}$", ha='center', size='14')
 
-        grid = self.Preferences.getboolean("Standing_Katz", "grid")
-        kw = formatLine(self.Preferences, "Standing_Katz", "grid")
+        grid = Preferences.getboolean("Standing_Katz", "grid")
+        kw = formatLine(Preferences, "Standing_Katz", "grid")
         del kw["marker"]
         if grid:
             self.plt.ax.grid(grid, **kw)
@@ -313,27 +292,28 @@ class Standing_Katz(Chart):
             self.plt2.ax.grid(grid)
 
         if not os.path.isfile(conf_dir+"standing_katz.dat"):
-            calculate(self.Preferences)
+            calculate(Preferences)
 
         load = False
-        with open(conf_dir+"standing_katz.dat", "r") as file:
+        with open(conf_dir+"standing_katz.dat", "r", encoding="utf-8") as file:
             try:
                 dat = json.load(file)
             except ValueError:
-                calculate(self.Preferences)
+                calculate(Preferences)
                 load = True
 
             if method not in dat:
-                calculate(self.Preferences, dat)
+                calculate(Preferences, dat)
                 load = True
 
         # Reload file if it's created in last with statement
         if load:
-            with open(conf_dir+"standing_katz.dat", "r") as file:
+            fname = conf_dir+"standing_katz.dat"
+            with open(fname, "r", encoding="utf-8") as file:
                 dat = json.load(file)
 
         # Define Crux
-        kw = formatLine(self.Preferences, "Standing_Katz", "crux")
+        kw = formatLine(Preferences, "Standing_Katz", "crux")
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
         self.plt.lx.set_visible(False)
@@ -347,7 +327,7 @@ class Standing_Katz(Chart):
         self.note = None
 
         # Plot data
-        kw = formatLine(self.Preferences, "Standing_Katz", "line")
+        kw = formatLine(Preferences, "Standing_Katz", "line")
         pzmin = 4
         for Tr in sorted(dat[str(method)].keys()):
             line = dat[str(method)][Tr]
@@ -414,11 +394,11 @@ class Standing_Katz(Chart):
             self.plt2.lx.set_ydata(Z)
 
         if Tr:
-            txt = "Tr: %0.4g\nPr: %0.4g\nZ: %0.4g" % (Tr, Pr, Z)
+            txt = f"$T_r$: {Tr:0.4g}\n$P_r$: {Pr:0.4g}\nZ: {Z:0.4g}"
         else:
             Tr = tr("pychemqt", "Not converged")
-            txt = "Tr: %s\nPr: %0.4g\nZ: %0.4g" % (Tr, Pr, Z)
-        self.note = self.plt2.fig.text(0.92, 0.05, txt, size="6")
+            txt = f"$T_r$: {Tr}\n$P_r$: {Pr:0.4g}\nZ: {Z:0.4g}"
+        self.note = self.plt2.fig.text(0.92, 0.05, txt, size="8", ha="right")
 
         self.plt.draw()
         self.plt2.draw()
@@ -438,7 +418,7 @@ class CalculateDialog(QtWidgets.QDialog):
         for Z in Z_list:
             name = Z.__name__[2:].replace("_", "-")
             year = re.search(r"((\d+))", Z.__doc__).group(0)
-            doc = "%s (%s)" % (name, year)
+            doc = f"{name} ({year})"
             self.method.addItem(doc)
 
         self.method.currentIndexChanged.connect(self.calculate)

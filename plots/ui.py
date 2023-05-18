@@ -20,15 +20,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###############################################################################
 # Common graphycal functionality for plots
+
+#     * :class:`Chart`: Generic chart dialog
+#     * :class:`ConfigDialog`: Dialog tool for standalone use
 ###############################################################################
 
 
-from configparser import ConfigParser
 import os
 
 from matplotlib import image
 
-from lib.config import conf_dir, IMAGE_PATH
+from lib.config import conf_dir, IMAGE_PATH, Preferences
 from lib.plot import PlotWidget
 from tools.qt import QtGui, QtWidgets, tr
 
@@ -63,18 +65,16 @@ class Chart(QtWidgets.QDialog):
             tr("pychemqt", "Calculate point"))
         self.butonCalc.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
-        btBox.addButton(
-            self.butonConf, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-        btBox.addButton(
-            self.butonCalc, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-        btBox.addButton(
-            self.butonPNG, QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(self.butonConf,
+                        QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(self.butonCalc,
+                        QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
+        btBox.addButton(self.butonPNG,
+                        QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
         layout.addWidget(btBox, 3, 1, 1, 4)
 
         self.customUI()
 
-        self.Preferences = ConfigParser()
-        self.Preferences.read(conf_dir+"pychemqtrc")
         self.config()
         self.plot()
         self.set_logo(self.plt)
@@ -88,10 +88,11 @@ class Chart(QtWidgets.QDialog):
 
     def configure(self):
         """Show configure dialog and save changes"""
-        dlg = self.configDialog(self.Preferences)
+        dlg = ConfigDialog(self.widgetConfig, Preferences)
         if dlg.exec():
-            self.Preferences = dlg.value(self.Preferences)
-            self.Preferences.write(open(conf_dir+"pychemqtrc", "w"))
+            Pref = dlg.value(Preferences)
+            with open(conf_dir+"pychemqtrc", "w", encoding="utf-8") as file:
+                Pref.write(file)
             self.plot()
 
     def customUI(self):
@@ -108,3 +109,24 @@ class Chart(QtWidgets.QDialog):
 
     def calculate(self):
         """Define the functionality when click the calculate point button"""
+
+
+class ConfigDialog(QtWidgets.QDialog):
+    """Dialog to configure a chart"""
+    def __init__(self, widget, config=None, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(widget.TITLECONFIG)
+        layout = QtWidgets.QVBoxLayout(self)
+        self.widget = widget(config)
+        layout.addWidget(self.widget)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+    def value(self, config):
+        """Function result for wizard"""
+        config = self.widget.value(config)
+        return config
