@@ -388,13 +388,13 @@ class Corriente(config.Entity):
                 compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P, x=x)
         elif self._thermo == "eos":
             if self.kwargs["K"]:
-                index = K_name.index(self.kwargs["K"])
+                index = EoS.K_name.index(self.kwargs["K"])
                 K = EoS.K[index]
                 print(K)
             else:
                 K = EoS.K[Config.getint("Thermo","K")]
             if self.kwargs["H"]:
-                index = H_name.index(self.kwargs["H"])
+                index = EoS.H_name.index(self.kwargs["H"])
                 H = EoS.H[index]
                 print(H)
             else:
@@ -428,8 +428,8 @@ class Corriente(config.Entity):
             else:
                 self.Liquido = Mezcla()
                 self.Gas = self.mezcla
-            self.Gas.Z = unidades.Dimensionless(float(eos.Z[0]))
-            self.Liquido.Z = unidades.Dimensionless(float(eos.Z[1]))
+            self.Gas.Z = unidades.Dimensionless(eos.Zg)
+            self.Liquido.Z = unidades.Dimensionless(eos.Zl)
 
             if H == K:
                 eosH = eos
@@ -1237,11 +1237,16 @@ if __name__ == '__main__':
 
 #    aire=PsyStream(caudal=5, tdb=300, HR=50)
 
-    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], MEoS=True)
-    agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], iapws=True)
-    from pprint import pprint
-    pprint(agua.__dict__)
-    pprint(agua2.__dict__)
-    print(agua.rho, agua2.rho)
+#     agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], MEoS=True)
+#     agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], iapws=True)
+#     from pprint import pprint
+#     pprint(agua.__dict__)
+#     pprint(agua2.__dict__)
+#     print(agua.rho, agua2.rho)
 
+    T = unidades.Temperature(120, "F")
+    P = unidades.Pressure(485, "psi")
+    stream = Corriente(T=T, P=P, caudalMolar=5.597, ids=[1, 2, 40, 41],
+                       fraccionMolar=[0.3177, 0.5894, 0.0715, 0.0214],
+                       K="Peng-Robinson", H="Benedict-Webb-Rubin-Starling")
 
