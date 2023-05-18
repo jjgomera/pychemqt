@@ -24,31 +24,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from tools.qt import QtGui, QtWidgets, tr
+from tools.qt import QtGui, QtWidgets, tr, __qt__
 
 
 optional_modules = (
-    ("freesteam", tr(
-        "pychemqt", "freesteam thermal option disabled")),
-    ("CoolProp", tr(
-        "pychemqt", "coolprop thermal option disabled")),
-    ("refprop", tr(
-        "pychemqt", "refprop thermal option disabled")),
-    ("openbabel", tr(
-        "pychemqt", "graphic formula disabled")),
-    ("ezodf", tr(
-        "pychemqt", "openoffice/libreoffice interaction disabled")),
+    ("freesteam", tr("pychemqt", "freesteam thermal option disabled")),
+    ("CoolProp", tr("pychemqt", "coolprop thermal option disabled")),
+    ("refprop", tr("pychemqt", "refprop thermal option disabled")),
+    ("openbabel", tr("pychemqt", "graphic formula disabled")),
+    ("ezodf", tr("pychemqt", "openoffice/libreoffice interaction disabled")),
     ("openpyxl", tr(
         "pychemqt", "Microsoft Excel 2007/2010 interaction disabled")),
     ("xlwt", tr(
         "pychemqt", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
-    ("icu", tr(
-        "pychemqt",
-        "Unicode collation algorithm for improved string sorting disabled")),
-    ("reportlab", tr(
-        "pychemqt", "Pdf report exporting disabled")),
-    ("Qsci", tr(
-        "pychemqt", "Qscintilla custom module editor disabled")))
+    ("icu", tr("pychemqt", "Unicode collation algorithm for improved string "
+               "sorting disabled")),
+    ("reportlab", tr("pychemqt", "Pdf report exporting disabled")),
+    ("Qsci", tr("pychemqt", "Qscintilla custom module editor disabled")))
 
 
 class ShowDependences(QtWidgets.QDialog):
@@ -70,7 +62,10 @@ class ShowDependences(QtWidgets.QDialog):
             if os.environ[module] == "True":
                 if module == "Qsci":
                     # Special case for Qsci, a optional module from qt
-                    mod = __import__("qt").Qsci
+                    if __qt__ == 6:
+                        mod = __import__("PyQt6.Qsci")
+                    else:
+                        mod = __import__("PyQt5.Qsci")
                 else:
                     mod = __import__(module)
                 st = mod.__file__
