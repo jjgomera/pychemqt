@@ -112,10 +112,10 @@ class PlotMEoS(QtWidgets.QWidget):
             icon=os.path.join("button", "fileSave.png"), parent=self)
         self.toolbarVisibleAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Toggle &Toolbar"),
-            self.toolbar.setVisible, checkable=True, parent=self)
+            slot=self.toolbar.setVisible, checkable=True, parent=self)
         self.gridToggleAction = createAction(
             QtWidgets.QApplication.translate("pychemqt", "Toggle &Grid"),
-            self.grid, checkable=True, parent=self)
+            slot=self.grid, checkable=True, parent=self)
         grid = config.Preferences.getboolean("MEOS", "grid")
         self.gridToggleAction.setChecked(grid)
 

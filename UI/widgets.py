@@ -61,15 +61,12 @@ from UI.delegate import CellEditor
 class Status(QtWidgets.QLabel):
     """Widget with status of dialog, equipment, stream, project, ..."""
     status = (
-        (0, tr("pychemqt", "Underspecified"),
-         "yellow"),
+        (0, tr("pychemqt", "Underspecified"), "yellow"),
         (1, tr("pychemqt", "Solved"), "green"),
-        (2, tr("pychemqt", "Ignored"),
-         "Light gray"),
+        (2, tr("pychemqt", "Ignored"), "Light gray"),
         (3, tr("pychemqt", "Warning"), "green"),
-        (4, tr("pychemqt", "Calculating..."),
-         "Cyan"),
-        (5, tr("pychemqt", "Error"),  "red"))
+        (4, tr("pychemqt", "Calculating..."), "Cyan"),
+        (5, tr("pychemqt", "Error"), "red"))
 
     def __init__(self, state=0, text="", parent=None):
         """
@@ -81,13 +78,14 @@ class Status(QtWidgets.QLabel):
             4   -   Calculating
             5   -   Error
         """
-        super(Status, self).__init__(parent)
-        self.setState(state)
+        super().__init__(parent)
+        self.setState(state, text)
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         self.setFrameShape(QtWidgets.QFrame.Shape.Panel)
         self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
                            QtWidgets.QSizePolicy.Policy.Preferred)
+        self.state = 0
         self.oldState = 0
         self.oldText = ""
 
@@ -105,8 +103,9 @@ class Status(QtWidgets.QLabel):
             self.setText(self.status[state][1]+": "+text)
         else:
             self.setText(self.status[state][1])
-        self.setStyleSheet(
-            "QLabel { background-color: %s}" % self.status[state][2])
+
+        color = self.status[state][2]
+        self.setStyleSheet(f"QLabel {{background-color: {color}}}")
         QtWidgets.QApplication.processEvents()
         self.state = state
 
@@ -155,13 +154,13 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             start: initial value for spinbox mouse interaction
             step: value of step at mouse spingox interaction
         """
-        super(Entrada_con_unidades, self).__init__(parent)
+        super().__init__(parent)
         self.resize(self.minimumSize())
         self.unidad = unidad
 
         if title:
             self.unidad.__title__ = title
-        if unidad == float or unidad == int:
+        if unidad in (float, int):
             self.magnitud = None
         else:
             self.magnitud = unidad.__name__
@@ -205,7 +204,8 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.entrada.setFixedSize(width, 24)
         self.entrada.editingFinished.connect(self.entrada_editingFinished)
         self.entrada.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignVCenter)
         if unidad == int:
             if max == float("inf"):
                 max = 1000000000
@@ -234,8 +234,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
 
         if boton:
             self.botonClear = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-                os.environ["pychemqt"] +
-                os.path.join("images", "button", "editDelete.png"))), "")
+                os.path.join(IMAGE_PATH, "button", "editDelete.png"))), "")
             self.botonClear.setFixedSize(12, 24)
             self.botonClear.setVisible(False)
             self.botonClear.clicked.connect(self.clear)
@@ -301,20 +300,23 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.entrada.setText("")
         self.value = None
 
-    def setResaltado(self, bool):
-        self.resaltado = bool
+    def setResaltado(self, boolean):
+        """Set resalted background color for input widget"""
+        self.resaltado = boolean
         paleta = QtGui.QPalette()
-        if bool:
-            paleta.setColor(
-                QtGui.QPalette.ColorRole.Base, QtGui.QColor(self.colorResaltado))
+        if boolean:
+            paleta.setColor(QtGui.QPalette.ColorRole.Base,
+                            QtGui.QColor(self.colorResaltado))
         elif self.readOnly:
-            paleta.setColor(
-                QtGui.QPalette.ColorRole.Base, QtGui.QColor(self.colorReadOnly))
+            paleta.setColor(QtGui.QPalette.ColorRole.Base,
+                            QtGui.QColor(self.colorReadOnly))
         else:
-            paleta.setColor(QtGui.QPalette.ColorRole.Base, QtGui.QColor("white"))
+            paleta.setColor(QtGui.QPalette.ColorRole.Base,
+                            QtGui.QColor("white"))
         self.entrada.setPalette(paleta)
 
     def setReadOnly(self, readOnly):
+        """Set read only state for widget"""
         self.entrada.setReadOnly(readOnly)
         self.readOnly = readOnly
         self.setResaltado(self.resaltado)
@@ -352,10 +354,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         if Preferences.getboolean("Tooltip", "Show"):
             Config = ConfigParser()
             Config.read(conf_dir+"pychemqtrc")
-            try:
-                lst = map(int, Config.get("Tooltip", self.magnitud).split(","))
-            except:
-                lst = []
+            lst = map(int, Config.get("Tooltip", self.magnitud).split(","))
             if lst:
                 valores = []
                 for i in lst:
@@ -443,7 +442,7 @@ class Tabla(QtWidgets.QTableWidget):
             default CellEditor with float appropiate functionality
         delegateforRow: delegate with specific values for row
         """
-        super(Tabla, self).__init__(parent)
+        super().__init__(parent)
 
         # Dimensions
         self.columnas = columnas
@@ -468,9 +467,11 @@ class Tabla(QtWidgets.QTableWidget):
         # readOnly state
         self.readOnly = readOnly
         if readOnly:
-            self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+            self.setEditTriggers(
+                QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         else:
-            self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
+            self.setEditTriggers(
+                QtWidgets.QAbstractItemView.EditTrigger.AllEditTriggers)
         if columnReadOnly is None:
             self.columnReadOnly = [self.readOnly]*self.columnas
         else:
@@ -528,11 +529,13 @@ class Tabla(QtWidgets.QTableWidget):
                 self.orientacion | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
             if self.columnReadOnly[j]:
-                flags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
+                flags = QtCore.Qt.ItemFlag.ItemIsEnabled \
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
                 self.item(row, j).setBackground(inactivo)
             else:
-                flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | \
-                    QtCore.Qt.ItemFlag.ItemIsSelectable
+                flags = QtCore.Qt.ItemFlag.ItemIsEditable \
+                    | QtCore.Qt.ItemFlag.ItemIsEnabled \
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
             self.item(row, j).setFlags(flags)
 
         self.setVHeader(row)
@@ -554,7 +557,7 @@ class Tabla(QtWidgets.QTableWidget):
             self.setVerticalHeaderItem(row, QtWidgets.QTableWidgetItem(txt))
 
     def tabla_cellChanged(self, i, j):
-        """When edit a cell, check status tu add new row"""
+        """When edit a cell, check status to add new row"""
         new_line = True
         col = 0
         while col < self.columnas:
@@ -579,7 +582,7 @@ class Tabla(QtWidgets.QTableWidget):
 
     def setValue(self, row, column, value, **fmt):
         """Set value for cell in row and column with text formating"""
-        if isinstance(value, float) or isinstance(value, int):
+        if isinstance(value, (float, int)):
             value = representacion(value, **fmt)
         self.item(row, column).setText(value)
         self.item(row, column).setTextAlignment(
@@ -636,15 +639,17 @@ class Tabla(QtWidgets.QTableWidget):
             self.setRowCount(1+self.verticalOffset)
         for fila in range(self.rowCount()):
             for columna in range(self.columnas):
-                    self.item(fila+self.verticalOffset, columna).setText("")
+                self.item(fila+self.verticalOffset, columna).setText("")
 
-    def setColumnReadOnly(self, column, bool):
+    def setColumnReadOnly(self, column, boolean):
         """Set readonly estate per column"""
-        if bool:
-            flags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
+        if boolean:
+            flags = QtCore.Qt.ItemFlag.ItemIsEnabled \
+                | QtCore.Qt.ItemFlag.ItemIsSelectable
         else:
-            flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | \
-                QtCore.Qt.ItemFlag.ItemIsSelectable
+            flags = QtCore.Qt.ItemFlag.ItemIsEditable \
+                | QtCore.Qt.ItemFlag.ItemIsEnabled \
+                | QtCore.Qt.ItemFlag.ItemIsSelectable
 
         for row in range(self.rowCount()):
             self.item(row, column).setFlags(flags)
@@ -667,7 +672,7 @@ class ColorSelector(QtWidgets.QWidget):
     valueChanged = QtCore.pyqtSignal('QString')
 
     def __init__(self, color="#ffffff", alpha=255, isAlpha=False, parent=None):
-        super(ColorSelector, self).__init__(parent)
+        super().__init__(parent)
 
         lyt = QtWidgets.QHBoxLayout(self)
         lyt.setContentsMargins(0, 0, 0, 0)
@@ -700,18 +705,19 @@ class ColorSelector(QtWidgets.QWidget):
     def setColor(self, color, alpha=255):
         """Set new color value and update text and button color"""
         # Accept color args as a #rgb string too
-        if type(color) == str:
+        if isinstance(color, str):
             color = QtGui.QColor(color)
             color.setAlpha(alpha)
         self.color = color
-        self.button.setStyleSheet("background: %s;" % color.name(self.name))
+        self.button.setStyleSheet("background: {color.name(self.name)};")
         self.RGB.setText(color.name(self.name))
 
     def ColorButtonClicked(self):
         """Show the QColorDialog to let user choose new color"""
         dlg = QtWidgets.QColorDialog(self.color, self)
         if self.isAlpha:
-            dlg.setOption(QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel)
+            dlg.setOption(
+                QtWidgets.QColorDialog.ColorDialogOption.ShowAlphaChannel)
         if dlg.exec():
             self.setColor(dlg.currentColor())
             self.valueChanged.emit(dlg.currentColor().name())
@@ -748,7 +754,7 @@ class DragButton(QtWidgets.QToolButton):
     """Clase que define un botón especial que permite arrastrar"""
 
     def __init__(self, parent=None):
-        super(DragButton, self).__init__(parent)
+        super().__init__(parent)
 
     # def mouseMoveEvent(self, event):
         # self.startDrag()
@@ -782,7 +788,7 @@ class PathConfig(QtWidgets.QWidget):
         patron: File format to filter in file search dialog
         msg: Title of dialog file
         """
-        super(PathConfig, self).__init__(parent)
+        super().__init__(parent)
 
         self.folder = folder
         self.save = save
@@ -834,16 +840,16 @@ class PathConfig(QtWidgets.QWidget):
 
     def select(self):
         """Open the QFileDialog to select the file path"""
-        dir = os.path.dirname(str(self.path.text()))
+        folder = os.path.dirname(str(self.path.text()))
         if self.save:
             ruta = QtWidgets.QFileDialog.getSaveFileName(
-                self, self.msg, dir, self.patron)[0]
+                self, self.msg, folder, self.patron)[0]
         elif self.folder:
             ruta = QtWidgets.QFileDialog.getExistingDirectory(
-                self, self.msg, dir)
+                self, self.msg, folder)
         else:
             ruta = QtWidgets.QFileDialog.getOpenFileName(
-                self, self.msg, dir, self.patron)[0]
+                self, self.msg, folder, self.patron)[0]
         if ruta:
             self.path.setText(ruta)
             self.valueChanged.emit(ruta)
@@ -1025,19 +1031,22 @@ class CustomCombo(QtWidgets.QComboBox):
     valueChanged = QtCore.pyqtSignal("QString")
 
     def __init__(self, parent=None):
-        super(CustomCombo, self).__init__(parent)
+        super().__init__(parent)
         self.setIconSize(QtCore.QSize(35, 18))
         self.currentIndexChanged.connect(self.emit)
         self._populate()
 
     def setCurrentValue(self, value):
+        """Overload QComboBox setCurrentValue to let text input from keymap"""
         ind = self.key.index(value)
         self.setCurrentIndex(ind)
 
     def currentValue(self):
+        """Convert index in value from keymap"""
         return self.key[self.currentIndex()]
 
     def emit(self, ind):
+        """Emit signal change integer for keymap value"""
         self.valueChanged.emit(self.key[ind])
 
 
@@ -1045,7 +1054,7 @@ class LineStyleCombo(CustomCombo):
     """Custom QComboBox for select matplotlib line styles"""
     key = ["None", "-", "--", ":", "-."]
     image = {
-        "None":  "",
+        "None": "",
         "-": os.path.join("images", "button", "solid_line.png"),
         "--": os.path.join("images", "button", "dash_line.png"),
         ":": os.path.join("images", "button", "dot_line.png"),
@@ -1089,7 +1098,7 @@ class MarkerCombo(CustomCombo):
             txt = self.text[key]
             if txt:
                 image = os.environ["pychemqt"] + \
-                    os.path.join("images", "marker", "%s.png" % txt)
+                    os.path.join("images", "marker", f"{txt}.png")
                 self.addItem(QtGui.QIcon(QtGui.QPixmap(image)), self.text[key])
             else:
                 self.addItem(self.text[key])
@@ -1098,7 +1107,7 @@ class MarkerCombo(CustomCombo):
 class NumericFactor(QtWidgets.QDialog):
     """Numeric format configuration dialog"""
     def __init__(self, config, unit=None, order=0, parent=None):
-        super(NumericFactor, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(
             tr("pychemqt", "Format"))
         layout = QtWidgets.QGridLayout(self)
@@ -1230,20 +1239,23 @@ class NumericFactor(QtWidgets.QDialog):
             self.unit.setCurrentIndex(order)
             layout.addWidget(self.unit, 16, 2, 1, 2)
 
-    def ExpToggled(self, bool):
-        self.FiguresExponential.setNotReadOnly(bool)
-        self.checkExpVariable.setDisabled(bool)
+    def ExpToggled(self, boolean):
+        """Exponential checkbox toggled"""
+        self.FiguresExponential.setNotReadOnly(boolean)
+        self.checkExpVariable.setDisabled(boolean)
         if self.checkExpVariable.isChecked():
             self.labelTolerancia.setDisabled(False)
             self.Tolerance.setReadOnly(True)
 
     def updateMuestra(self):
+        """Update numeric sample"""
         kwargs = self.args()
         txt = tr("pychemqt", "Sample") + ": " + \
             representacion(pi*1e4, **kwargs)
         self.muestra.setText(txt)
 
     def args(self):
+        """Return a dict with the selected numeric representation parameters"""
         kwarg = {}
         if self.checkFixed.isChecked():
             kwarg["fmt"] = 0
@@ -1275,7 +1287,7 @@ class InputFont(QtWidgets.QWidget):
         font: QFont instance to initialize widget
         color: Inicial color to widget, in code #rrggbb
         """
-        super(InputFont, self).__init__(parent)
+        super().__init__(parent)
 
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -1298,11 +1310,13 @@ class InputFont(QtWidgets.QWidget):
         layout.addWidget(self.colorButton)
 
         self.font = font
+        self.color = color
         self.setRGB(color)
         self.setText(text)
         self.lineEdit.textChanged.connect(self.textChanged.emit)
 
     def setText(self, txt):
+        """Set text for QLineEdit"""
         self.txt = txt
         self.lineEdit.setText(txt)
 
@@ -1313,6 +1327,7 @@ class InputFont(QtWidgets.QWidget):
             self.setColor(color)
 
     def setColor(self, color):
+        """Set color for widget"""
         self.colorButton.setPalette(QtGui.QPalette(color))
         paleta = QtGui.QPalette()
         paleta.setColor(QtGui.QPalette.ColorRole.Text, color)
@@ -1321,6 +1336,7 @@ class InputFont(QtWidgets.QWidget):
         self.color = color
 
     def setFont(self, font):
+        """Set font for widget"""
         self.font = font
         self.lineEdit.setFont(font)
         self.fontChanged.emit(font)
@@ -1342,14 +1358,14 @@ class Table_Graphics(QtWidgets.QWidget):
     """Custom widget to implement as popup in PFD when mouse over stream and
     equipment graphic item, to show the status of entity and the properties
     desired if availables"""
-    def __init__(self, entity, id, preferences, parent=None):
-        super(Table_Graphics, self).__init__(parent)
+    def __init__(self, entity, idx, preferences, parent=None):
+        super().__init__(parent)
         self.setWindowFlags(QtCore.Qt.WindowType.Popup)
         layout = QtWidgets.QVBoxLayout(self)
         if isinstance(entity, Corriente):
-            title = "Stream %i" % id
+            title = f"Stream {idx}"
         else:
-            title = "Equipment %i" % id
+            title = f"Equipment {idx}"
         label = QtWidgets.QLabel(title)
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(label)
@@ -1373,10 +1389,39 @@ class Table_Graphics(QtWidgets.QWidget):
                 tr("pychemqt", "Undefined")))
 
 
-def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
-                 checkable=False, button=False, parent=None):
-    if not tip:
-        tip = text
+def createAction(text, **kw):
+    """Create a QAction and a QToolButton if its requested
+
+    Parameters
+    ----------
+    text : str
+        Text to define action
+    button : boolean
+        Return too a QToolButton with same properties
+    icon : str
+        Local path of icon in pychemqt images folder
+    slot : obj
+        Function to use as slot when action is triggered
+    shortcut : QtGui.QKeySequence
+        Shortcut keyboard to associate with action
+    tip : str
+        Text to use as tooltip
+    checkable : boolean
+        Set the created action checkable
+    parent : QtCore.QObject
+        Define object parent of created action and button
+    """
+    slot = kw.get("slot", None)
+    shortcut = kw.get("shortcut", None)
+    icon = kw.get("icon", None)
+    checkable = kw.get("checkable", False)
+    button = kw.get("button", False)
+    parent = kw.get("parent", None)
+
+    # Use text as default tip if no avialable
+    tip = kw.get("tip", text)
+
+    # Define action and its properties as requested
     action = QtGui.QAction(text, parent)
     if icon:
         action.setIcon(QtGui.QIcon(IMAGE_PATH + icon))
@@ -1389,6 +1434,7 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
     if checkable:
         action.setCheckable(True)
 
+    # Create too the button if its requested
     if button:
         boton = DragButton(parent)
 
@@ -1401,18 +1447,27 @@ def createAction(text, slot=None, shortcut=None, icon=None, tip=None,
         boton.setIconSize(QtCore.QSize(36, 36))
         boton.setFixedSize(QtCore.QSize(36, 36))
         return action, boton
-    else:
-        return action
+
+    return action
 
 
 def okToContinue(parent, dirty, func, parameters):
     """Function to ask user if any unsaved change
-        parent: widget to close
-        dirty: boolean to show any unsaved change
-        func: function to run if user want to save changes
-        parameters: parameter of func"""
+
+    Parameters
+    ----------
+    parent : QtWidgets.QWidget
+        Parent widget to dialog
+    dirty: boolean
+        Indicates if there are unsaved changes
+    func: object
+        function to run if user want to save changes
+    parameters: dict
+        parameter of func
+    """
     if not dirty:
         return True
+
     dialog = QtWidgets.QMessageBox.question(
         parent,
         tr("pychemqt", "Unsaved changes"),
@@ -1421,13 +1476,18 @@ def okToContinue(parent, dirty, func, parameters):
         | QtWidgets.QMessageBox.StandardButton.No
         | QtWidgets.QMessageBox.StandardButton.Cancel,
         QtWidgets.QMessageBox.StandardButton.Yes)
+
     if dialog == QtWidgets.QMessageBox.StandardButton.Cancel:
         return False
-    elif dialog == QtWidgets.QMessageBox.StandardButton.No:
+
+    if dialog == QtWidgets.QMessageBox.StandardButton.No:
         return True
-    elif dialog == QtWidgets.QMessageBox.StandardButton.Yes:
+
+    if dialog == QtWidgets.QMessageBox.StandardButton.Yes:
         func(*parameters)
         return True
+
+    return None
 
 
 def mathTex2QPixmap(mathTex, fs):
@@ -1472,7 +1532,8 @@ def mathTex2QPixmap(mathTex, fs):
 
     # convert mpl figure to QPixmap
     buf, size = fig.canvas.print_to_buffer()
-    qimage = QtGui.QImage(buf, size[0], size[1], QtGui.QImage.Format.Format_ARGB32)
+    qimage = QtGui.QImage(
+        buf, size[0], size[1], QtGui.QImage.Format.Format_ARGB32)
     qpixmap = QtGui.QPixmap(qimage)
 
     return qpixmap
@@ -1480,7 +1541,7 @@ def mathTex2QPixmap(mathTex, fs):
 
 class QLabelMath(QtWidgets.QLabel):
     """Customized QLabel to show a pixmap with a mathematical formulae"""
-    def __init__(self, tex, fs=12, *args, **kw):
+    def __init__(self, tex, *args, fs=12, **kw):
         """
         Parameters
         ----------
@@ -1489,7 +1550,7 @@ class QLabelMath(QtWidgets.QLabel):
         fs : int
             Font size used in image
         """
-        super(QLabelMath, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
         self.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.setFrameStyle(QtWidgets.QFrame.Shadow.Plain)
@@ -1499,11 +1560,13 @@ class QLabelMath(QtWidgets.QLabel):
             self.setPixmap(pixmap)
 
     def setTex(self, tex):
+        """Set the image to show from a latex text source"""
         pixmap = mathTex2QPixmap(tex, self.fs)
         self.setPixmap(pixmap)
 
 
-if __name__ == "__main__":
+def demo():
+
     from lib import unidades
 
     app = QtWidgets.QApplication(sys.argv)
@@ -1523,6 +1586,14 @@ if __name__ == "__main__":
     layout.addWidget(w5)
     w6 = Tabla(columnas=1, filas=1, verticalHeaderModel="C", dinamica=True)
     layout.addWidget(w6)
+    w7 = QLabelMath(r"$\frac{\pi r^2}{2\epsilon \mu}$", fs=15)
+    layout.addWidget(w7)
+    w8 = Status()
+    layout.addWidget(w8)
 
     ui.show()
     sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    demo()
