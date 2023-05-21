@@ -405,6 +405,21 @@ def _Helmholtz_phir(tau, delta, coef):
             Delta = Tita**2+B*((delta-1)**2)**a
             fir += n*Delta**b*delta*F
 
+        # Associative term from Gao correlation for ammonia
+        if "nr_ass" in coef:
+            nr_ass = coef.get("nr_ass", [])
+            d5 = coef.get("d_ass", [])
+            t5 = coef.get("t_ass", [])
+            a5 = coef.get("alfa_ass", [])
+            e5 = coef.get("epsilon_ass", [])
+            bt5 = coef.get("beta_ass", [])
+            g5 = coef.get("gamma_ass", [])
+            b5 = coef.get("b_ass", [])
+            for n, d, t, a, e, bt, g, b in zip(
+                    nr_ass, d5, t5, a5, e5, bt5, g5, b5):
+                expr = exp(-a*(delta-e)**2+1/(bt*(tau-g)**2+b))
+                fir += n*delta**d*tau**t * expr
+
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
             if delta < 0.2:
@@ -496,6 +511,22 @@ def _Helmholtz_phird(tau, delta, coef):
 
             fird += n*(Delta**b*(F+delta*Fd)+DeltaBd*delta*F)
 
+        # Associative term from Gao correlation for ammonia
+        if "nr_ass" in coef:
+            nr_ass = coef.get("nr_ass", [])
+            d5 = coef.get("d_ass", [])
+            t5 = coef.get("t_ass", [])
+            a5 = coef.get("alfa_ass", [])
+            e5 = coef.get("epsilon_ass", [])
+            bt5 = coef.get("beta_ass", [])
+            g5 = coef.get("gamma_ass", [])
+            b5 = coef.get("b_ass", [])
+            for n, d, t, a, e, bt, g, b in zip(
+                    nr_ass, d5, t5, a5, e5, bt5, g5, b5):
+                expr = exp(-a*(delta-e)**2+1/(bt*(tau-g)**2+b))
+                expr2 = d*delta**(d-1)-2*a*(delta-e)*delta**d
+                fird += n*tau**t * expr * expr2
+
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
             if delta < 0.2:
@@ -586,6 +617,22 @@ def _Helmholtz_phirt(tau, delta, coef):
             Delta = Tita**2+B*((delta-1)**2)**a
             DeltaBt = -2*Tita*b*Delta**(b-1)
             firt += n*delta*(DeltaBt*F+Delta**b*Ft)
+
+        # Associative term from Gao correlation for ammonia
+        if "nr_ass" in coef:
+            nr_ass = coef.get("nr_ass", [])
+            d5 = coef.get("d_ass", [])
+            t5 = coef.get("t_ass", [])
+            a5 = coef.get("alfa_ass", [])
+            e5 = coef.get("epsilon_ass", [])
+            bt5 = coef.get("beta_ass", [])
+            g5 = coef.get("gamma_ass", [])
+            b5 = coef.get("b_ass", [])
+            for n, d, t, a, e, bt, g, b in zip(
+                    nr_ass, d5, t5, a5, e5, bt5, g5, b5):
+                expr = exp(-a*(delta-e)**2+1/(bt*(tau-g)**2+b))
+                expr2 = t/tau - 2*bt*(tau-g)/(bt*(tau-g)**2+b)**2
+                firt += n*delta**d*tau**t * expr * expr2
 
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr5" in coef:
@@ -3541,8 +3588,45 @@ class MEoS(ThermoAdvanced):
                 Fdd_ = 2*C*F_*(2*C*(delta_0-1)**2-1)
 
                 B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
-                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ *
-                        (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
+                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ \
+                    * (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
+
+            # Associative term from Gao correlation for ammonia
+            if "nr_ass" in self._constants:
+                nr_ass = self._constants.get("nr_ass", [])
+                d5 = self._constants.get("d_ass", [])
+                t5 = self._constants.get("t_ass", [])
+                a5 = self._constants.get("alfa_ass", [])
+                e5 = self._constants.get("epsilon_ass", [])
+                bt5 = self._constants.get("beta_ass", [])
+                g5 = self._constants.get("gamma_ass", [])
+                b5 = self._constants.get("b_ass", [])
+                for n, d, t, a, e, bt, g, b in zip(
+                        nr_ass, d5, t5, a5, e5, bt5, g5, b5):
+
+                    expr = exp(-a*(delta-e)**2+1/(bt*(tau-g)**2+b))
+                    expr_d = d*delta**(d-1) - 2*a*(delta-e)*delta**d
+                    expr_dd = d*(d-1)*delta**(d-2) \
+                        - 4*a*(delta-e)*d*delta**(d-1) \
+                        - (2*a-4*a**2*(delta-e)**2)*delta**d
+                    expr_t = t/tau - 2*bt*(tau-g)/(bt*(tau-g)**2+b)**2
+                    expr_tt = expr_t**2 - t/tau**2 \
+                        - 2*bt/(bt*(tau-g)**2+b)**2 \
+                        + 8*bt**2*(tau-g)**2/(bt*(tau-g)**2+b)**3
+                    expr_dt = expr_t*(d*delta**(d-1) - 2*a*(delta-e)*delta**d)
+                    expr_d0 = d*delta_0**(d-1)-2*a*(delta_0-e)*delta_0**d
+                    expr_dd0 = d*(d-1)*delta_0**(d-2) \
+                        - 4*a*(delta_0-e)*d*delta_0**(d-1) \
+                        - (2*a-4*a**2*(delta_0-e)**2)*delta_0**d
+
+                    fir += n*delta**d*tau**t * expr
+                    fird += n*tau**t * expr * expr_d
+                    firdd += n*tau**t * expr * expr_dd
+                    firt += n*delta**d*tau**t * expr * expr_t
+                    firtt += n*delta**d*tau**t * expr * expr_tt
+                    firdt += n*tau**t * expr * expr_dt
+                    B += n*tau**t * expr * expr_d0
+                    C += n*tau**t * expr * expr_dd0
 
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr5" in self._constants:
