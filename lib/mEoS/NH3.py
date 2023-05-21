@@ -253,6 +253,15 @@ class NH3(MEoS):
         "Tref": Tt, "Pref": 101325,
         "a3": [2.5e4], "exp3": [1]}
 
+    _sublimation = {
+        "eq": 2,
+        "__doi__": gao["__doi__"],
+
+        "Tref": 1, "Pref": 1e6,
+        "Tmin": Tt, "Tmax": Tt,
+        "a1": [13.63932, -3537, -3.31e4, 1.742e6, -2.995e7],
+        "exp1": [0, -1, -2, -3, -4]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.3128, 3.8888, -2.9908, -2.8636],
@@ -797,7 +806,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.rhoM, 4), 19.1642)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 39.20)
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 # #     st = NH3(T=390, rho=415)
 # #     print(st.k.mWmK, 264.129743)
 
@@ -813,3 +822,69 @@ class Test(TestCase):
 #         print(f"{st.T:0.0f} {st.P.MPa:#10.5g} {st.Liquido.rho:#10.5g} "
 #               "{st.Gas.rho:#10.5g} {st.Liquido.k.mWmK:#10.5g} "
 #               "{st.Gas.k.mWmK:#10.5g}")
+
+    # Melting line
+    # Emulate Fig 5 in Gao paper
+
+    from matplotlib import pyplot as plt
+
+    # Experimental data from
+    # King, T.-V., Oi, T., Popowicz, A., Heinzinger, K., Ishida, T.
+    # Vapor Pressure Isotope Effects in Liquid and Solid Ammonia
+    # Z. Naturforsch 44a (1989) 359-370
+    # doi: 10.1515/zna-1989-0503
+    Tm = (195.36, 188.86, 180.02, 168.8)
+    Pm = (45.189, 23.362, 8.781, 2.196)  # in torr
+    r_king = []
+    for t, p in zip(Tm, Pm):
+        Ps = NH3._Sublimation_Pressure(t).torr
+        r_king.append(100*(p-Ps)/p)
+    plt.plot(Tm, r_king, ls="", marker="x", mec="k", label="King et al (1989)")
+
+    # Overstreet, R., Giauque, W.F.
+    # Ammonia. The Heat Capacity and Vapor Pressure of Solid and Liquid. Heat
+    # of Vaporization. The Entropy Values from Thermal and Spectroscopic Data
+    # J. American Chemical Society 59(2) (1937) 254-259
+    # doi: 10.1021/ja01281a008
+    Tm = (176.92, 181.13, 183.17, 186.0, 189.03, 191.85, 195.36)
+    Pm = (0.615, 1.01, 1.266, 1.735, 2.398, 3.206, 4.558)  # in cmHg
+    r_over = []
+    for t, p in zip(Tm, Pm):
+        Ps = NH3._Sublimation_Pressure(t).cmHg
+        r_over.append(100*(p-Ps)/p)
+    plt.plot(Tm, r_over, ls="", marker="s", mfc="#0000", mec="k",
+             label="Overstreet and Giauque (1937)")
+
+    # Karwat, E.
+    # Der Dampfdruck des festen Chlorwasserstoffs, Methans und Ammoniaks
+    # Zeitschrift Für Physikalische Chemie 112U(1) (1924) 486-490
+    # doi: 10.1515/zpch-1924-11230
+    Tm = (162.39, 169.49, 171.52, 173.61, 178.97, 183.79, 186.99, 193.45)
+    Pm = (0.95, 2.38, 3.09, 3.92, 7.84, 13.5, 19.13, 37.60)  # in mmHg
+    r_karw = []
+    for t, p in zip(Tm, Pm):
+        Ps = NH3._Sublimation_Pressure(t).mmHg
+        r_karw.append(100*(p-Ps)/p)
+    plt.plot(Tm, r_karw, ls="", marker="D", mfc="#0000", mec="k",
+             label="Karwat (1924)")
+
+    # Bergstrom, F.W.
+    # The Vapor Pressure of Sulfur Dioxide and Ammonia
+    # J. Physical Chemistry, 26(4), 358-376. doi:10.1021/j150220a005
+    Tm = (-79.9+273.15, -84.4+273.15, -77.9+273.15)  # in ºC
+    Pm = (37.2, 24.2, 45.5)  # in mmHg
+    r_berg = []
+    for t, p in zip(Tm, Pm):
+        Ps = NH3._Sublimation_Pressure(t).mmHg
+        r_berg.append(100*(p-Ps)/p)
+    plt.plot(Tm, r_berg, ls="", marker="o", mfc="#0000", mec="k",
+             label="Bergstrom (1922)")
+
+    plt.ylabel(r"$100\frac{P_{sub,exp}-P_{sub,calc}}{P_{sub,exp}}$",
+               fontsize="large")
+    plt.xlabel("T/K")
+    plt.xlim(160, 200)
+    plt.ylim(-6, 6)
+    plt.axhline(0, color="k")
+    plt.legend()
+    plt.show()
