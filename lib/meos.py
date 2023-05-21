@@ -159,7 +159,7 @@ import json
 import logging
 import os
 
-from scipy import sin, tan, arctan, sinh, cosh, tanh, arctan, arccos, exp, log
+from scipy import sin, tan, sinh, cosh, tanh, arctan, arccos, exp, log
 from scipy.constants import Boltzmann, pi, Avogadro, R, u
 from scipy.optimize import fsolve
 from tools.qt import tr
@@ -266,7 +266,7 @@ __doi__ = {
          "title": "An improved correlation for the thermal conductivity of "
                   "HCFC123 (2,2-dichloro-1,1,1-trifluoroethane)",
          "ref": "Int. J. Refrigeration 19(4) (1996) 231-238",
-         "doi":  "10.1016/0140-7007(96)00019-9"},
+         "doi": "10.1016/0140-7007(96)00019-9"},
     16:
         {"autor": "Olchowy, G.A., Sengers, J.V.",
          "title": "A Simplified Representation for the Thermal Conductivity "
@@ -334,8 +334,7 @@ __doi__ = {
          "title": "",
          "ref": "",
          "doi": ""},
-
-        }
+    }
 
 
 def _Helmholtz_phir(tau, delta, coef):
@@ -421,15 +420,15 @@ def _Helmholtz_phir(tau, delta, coef):
                 fir += n*delta**d*tau**t * expr
 
         # Special form from Saul-Wagner Water 58 coefficient equation
-        if "nr5" in coef:
+        if "nr_saul" in coef:
             if delta < 0.2:
                 factor = 1.6*delta**6*(1-1.2*delta**6)
             else:
                 factor = exp(-0.4*delta**6)-exp(-2*delta**6)
 
-            nr5 = coef.get("nr5", [])
-            d5 = coef.get("d5", [])
-            t5 = coef.get("t5", [])
+            nr5 = coef.get("nr_saul", [])
+            d5 = coef.get("d_saul", [])
+            t5 = coef.get("t_saul", [])
             fr = 0
             for n, d, t in zip(nr5, d5, t5):
                 fr += n*delta**d*tau**t
@@ -528,15 +527,15 @@ def _Helmholtz_phird(tau, delta, coef):
                 fird += n*tau**t * expr * expr2
 
         # Special form from Saul-Wagner Water 58 coefficient equation
-        if "nr5" in coef:
+        if "nr_saul" in coef:
             if delta < 0.2:
                 factor = 1.6*delta**6*(1-1.2*delta**6)
             else:
                 factor = exp(-0.4*delta**6)-exp(-2*delta**6)
 
-            nr5 = coef.get("nr5", [])
-            d5 = coef.get("d5", [])
-            t5 = coef.get("t5", [])
+            nr5 = coef.get("nr_saul", [])
+            d5 = coef.get("d_saul", [])
+            t5 = coef.get("t_saul", [])
             frd1, frd2 = 0, 0
             for n, d, t in zip(nr5, d5, t5):
                 frd1 += n*delta**(d+5)*tau**t
@@ -635,15 +634,15 @@ def _Helmholtz_phirt(tau, delta, coef):
                 firt += n*delta**d*tau**t * expr * expr2
 
         # Special form from Saul-Wagner Water 58 coefficient equation
-        if "nr5" in coef:
+        if "nr_saul" in coef:
             if delta < 0.2:
                 factor = 1.6*delta**6*(1-1.2*delta**6)
             else:
                 factor = exp(-0.4*delta**6)-exp(-2*delta**6)
 
-            nr5 = coef.get("nr5", [])
-            d5 = coef.get("d5", [])
-            t5 = coef.get("t5", [])
+            nr5 = coef.get("nr_saul", [])
+            d5 = coef.get("d_saul", [])
+            t5 = coef.get("t_saul", [])
             frt = 0
             for n, d, t in zip(nr5, d5, t5):
                 frt += n*delta**d*t*tau**(t-1)
@@ -3629,15 +3628,15 @@ class MEoS(ThermoAdvanced):
                     C += n*tau**t * expr * expr_dd0
 
             # Special form from Saul-Wagner Water 58 coefficient equation
-            if "nr5" in self._constants:
+            if "nr_saul" in self._constants:
                 if delta < 0.2:
                     factor = 1.6*delta**6*(1-1.2*delta**6)
                 else:
                     factor = exp(-0.4*delta**6)-exp(-2*delta**6)
 
-                nr5 = self._constants.get("nr5", [])
-                d5 = self._constants.get("d5", [])
-                t5 = self._constants.get("t5", [])
+                nr5 = self._constants.get("nr_saul", [])
+                d5 = self._constants.get("d_saul", [])
+                t5 = self._constants.get("t_saul", [])
                 fr, frt, frtt, frdtt1, frdtt2 = 0, 0, 0, 0, 0
                 frd1, frd2 = 0, 0
                 frdd1, frdd2, frdd3 = 0, 0, 0
