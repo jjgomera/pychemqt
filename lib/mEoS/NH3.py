@@ -41,7 +41,7 @@ class NH3(MEoS):
     M = 17.03026  # g/mol
     Tt = unidades.Temperature(195.495)
     Tb = unidades.Temperature(239.823)
-    f_acent = 0.25601
+    f_acent = 0.256
     momentoDipolar = unidades.DipoleMoment(1.470, "Debye")
     id = 63
 
@@ -50,10 +50,68 @@ class NH3(MEoS):
            "pow": [0, 1, 1/3, -1.5, -1.75],
            "ao_pow": [-15.81502, 4.255726, 11.47434, -1.296211, 0.5706757]}
 
+    Fi2 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-6.59406093943886, 5.60101151987913],
+           "ao_exp": [2.224, 3.148, 0.9579],
+           "titao": [1646/405.56, 3965/405.56, 7231/405.56]}
+
     CP2 = {"ao": 5.111814,
            "an": [-0.42966650e2, -0.10243792e-1, 0.38750775e-4, -0.46406097e-7,
                   0.20268561e-10],
            "pow": [-1, 1, 2, 3, 4]}
+
+    gao = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for ammonia of Gao (2023)",
+        "__doi__": {"autor": "Gao, K., Wu, J., Bell, I.H., Harvey, A.H., "
+                             "Lemmon E.W.",
+                    "title": "A Reference Equation of State with an "
+                             "Associating Term for the Thermodynamic "
+                             "Properties of Ammonia",
+                    "ref": "J. Phys. Chem. Ref. Data 52 (2023) 013102",
+                    "doi": "10.1063/5.0128269"},
+
+        "R": 8.314462618,
+        "M": 17.03052, "Tc": 405.56, "Pc": 11363.4, "rhoc": 13.696,
+        "cp": Fi2,
+        "ref": {"Tref": 300, "Pref": 1, "ho": 28989.81844833686,
+                "so": 159.53995277505977},
+
+        "Tmin": 195.49, "Tmax": 725, "Pmax": 1000000, "rhomax": 53.13,
+
+        "nr1": [0.006132232, 1.7395866, -2.2261792, -0.30127553, 0.08967023],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.382, 1, 1, 0.677],
+
+        "nr2": [-0.076387037, -0.84063963, -0.27026327],
+        "d2": [3, 2, 3],
+        "t2": [2.915, 3.51, 1.063],
+        "c2": [2, 2, 1],
+        "gamma2": [1]*3,
+
+        "nr3": [6.212578, -5.7844357, 2.4817542, -2.3739168, 0.01493697,
+                -3.7749264, 0.0006254348, -0.000017359, -0.13462033,
+                0.07749072839],
+        "d3": [1, 1, 1, 2, 2, 1, 3, 3, 1, 1],
+        "t3": [0.655, 1.3, 3.1, 1.4395, 1.623, 0.643, 1.13, 4.5, 1, 4],
+        "alfa3": [0.42776, 0.6424, 0.8175, 0.7995, 0.91, 0.3574, 1.21, 4.14,
+                  22.56, 22.68],
+        "beta3": [1.708, 1.4865, 2.0915, 2.43, 0.488, 1.1, 0.85, 1.14, 945.64,
+                  993.85],
+        "gamma3": [1.036, 1.2777, 1.083, 1.2906, 0.928, 0.934, 0.919, 1.852,
+                   1.05897, 1.05277],
+        "epsilon3": [-0.0726, -0.1274, 0.7527, 0.57, 2.2, -0.243, 2.96, 3.02,
+                     0.9574, 0.9576],
+
+        "nr_ass": [-1.6909858, 0.93739074],
+        "d_ass": [1, 1],
+        "t_ass": [4.3315, 4.015],
+        "alfa_ass": [2.8452, 2.8342],
+        "beta_ass": [0.3696, 0.2962],
+        "gamma_ass": [1.108, 1.313],
+        "epsilon_ass": [0.4478, 0.44689],
+        "b_ass": [1.244, 0.6826]}
 
     tillner = {
         "__type__": "Helmholtz",
@@ -179,7 +237,7 @@ class NH3(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = tillner, ahrendts, shortSpan, sun
+    eq = gao, tillner, ahrendts, shortSpan, sun
     _PR = [0.1491, -26.0703]
 
     _surface = {"sigma": [0.1028, -0.09453], "exp": [1.211, 5.585]}
@@ -197,16 +255,16 @@ class NH3(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.70993e1, -0.24330e1, 0.87591e1, -0.64091e1, -0.21185e1],
-        "t": [1., 1.5, 1.7, 1.95, 4.2]}
+        "n": [-7.3128, 3.8888, -2.9908, -2.8636],
+        "t": [1., 1.5, 1.6, 3.7]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.34488e2, -0.12849e3, 0.17382e3, -0.10699e3, 0.30339e2],
-        "t": [0.58, 0.75, 0.9, 1.1, 1.3]}
+        "n": [0.051236, 3.7925, -3.5929, 4.6409, -1.9893, 1.5978],
+        "t": [0.07, 0.46, 0.77, 1.05, 1.25, 8]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.38435, -4.0846, -6.6634, -31.881, 213.06, -246.48],
-        "t": [0.218, 0.55, 1.5, 3.7, 5.5, 5.8]}
+        "n": [-0.089966, -3.8722, -8.1183, -25.293, -54.279, -400.83],
+        "t": [0.112, 0.473, 1.5, 3.875, 8, 20]}
 
     visco0 = {"__name__": "Monogenidou (2018)",
               "__doi__": {
@@ -292,7 +350,7 @@ class NH3(MEoS):
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.14e-9,
-               "gam0": 0.053, "qd": 0.4e-9, "Tcref": 608.34}
+               "gam0": 0.053, "qd": 4e-10, "Tcref": 608.34}
 
     thermo1 = {"__name__": "Tufeu (1984)",
                "__doi__": {
@@ -348,10 +406,148 @@ class NH3(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
+
+    def test_gao(self):
+        """Table 7, pag 24"""
+        st = NH3(T=200, rhom=50)
+        self.assertEqual(round(st.P.MPa, 4), 555.5631)
+        self.assertEqual(round(st.cvM.JmolK, 5), 56.15976)
+        self.assertEqual(round(st.cpM.JmolK, 5), 74.22262)
+        self.assertEqual(round(st.w, 3), 2940.432)
+        self.assertEqual(round(st.hM.kJmol, 6), 9.541211)
+        self.assertEqual(round(st.sM.JmolK, 5), -11.61817)
+
+        st = NH3(T=250, rhom=42)
+        self.assertEqual(round(st.P.MPa, 4), 108.7263)
+        self.assertEqual(round(st.cvM.JmolK, 5), 50.25907)
+        self.assertEqual(round(st.cpM.JmolK, 5), 72.04765)
+        self.assertEqual(round(st.w, 3), 2049.168)
+        self.assertEqual(round(st.hM.kJmol, 6), 5.715934)
+        self.assertEqual(round(st.sM.JmolK, 5), 14.26145)
+
+        st = NH3(T=320, rhom=35)
+        self.assertEqual(round(st.P.MPa, 5), 27.63275)
+        self.assertEqual(round(st.cvM.JmolK, 5), 46.95882)
+        self.assertEqual(round(st.cpM.JmolK, 5), 78.92022)
+        self.assertEqual(round(st.w, 3), 1370.446)
+        self.assertEqual(round(st.hM.kJmol, 6), 9.831787)
+        self.assertEqual(round(st.sM.JmolK, 5), 36.06050)
+
+        st = NH3(T=380, rhom=26)
+        self.assertEqual(round(st.P.MPa, 6), 8.174128)
+        self.assertEqual(round(st.cvM.JmolK, 5), 47.82965)
+        self.assertEqual(round(st.cpM.JmolK, 4), 125.1971)
+        self.assertEqual(round(st.w, 4), 668.5456)
+        self.assertEqual(round(st.hM.kJmol, 5), 15.45317)
+        self.assertEqual(round(st.sM.JmolK, 5), 53.81385)
+
+        st = NH3(T=405, rhom=16.5)
+        self.assertEqual(round(st.P.MPa, 5), 11.25287)
+        self.assertEqual(round(st.cvM.JmolK, 5), 77.13442)
+        self.assertEqual(round(st.cpM.JmolK, 3), 4137.738)
+        self.assertEqual(round(st.w, 4), 247.2696)
+        self.assertEqual(round(st.hM.kJmol, 5), 20.13541)
+        self.assertEqual(round(st.sM.JmolK, 5), 65.30611)
+
+        st = NH3(T=406, rhom=13.696)
+        self.assertEqual(round(st.P.MPa, 5), 11.45246)
+        self.assertEqual(round(st.cvM.JmolK, 4), 103.0508)
+        self.assertEqual(round(st.cpM.JmolK, 2), 52943.69)
+        self.assertEqual(round(st.w, 4), 225.4458)
+        self.assertEqual(round(st.hM.kJmol, 5), 21.30410)
+        self.assertEqual(round(st.sM.JmolK, 5), 68.15535)
+
+        st = NH3(T=225, rhom=0)
+        self.assertEqual(round(st.P.MPa, 5), 0.0)
+        self.assertEqual(round(st.cvM.JmolK, 5), 25.60265)
+        self.assertEqual(round(st.cpM.JmolK, 5), 33.91711)
+        self.assertEqual(round(st.w, 4), 381.4709)
+        self.assertEqual(round(st.hM.kJmol, 5), 26.38996)
+
+        st = NH3(T=275, rhom=0.2)
+        self.assertEqual(round(st.P.MPa, 7), 0.4270652)
+        self.assertEqual(round(st.cvM.JmolK, 5), 32.60471)
+        self.assertEqual(round(st.cpM.JmolK, 5), 45.39676)
+        self.assertEqual(round(st.w, 4), 402.6253)
+        self.assertEqual(round(st.hM.kJmol, 5), 27.46383)
+        self.assertEqual(round(st.sM.JmolK, 4), 104.2956)
+
+        st = NH3(T=325, rhom=0.95)
+        self.assertEqual(round(st.P.MPa, 6), 2.093496)
+        self.assertEqual(round(st.cvM.JmolK, 5), 40.68660)
+        self.assertEqual(round(st.cpM.JmolK, 5), 65.25439)
+        self.assertEqual(round(st.w, 4), 402.2104)
+        self.assertEqual(round(st.hM.kJmol, 5), 27.92681)
+        self.assertEqual(round(st.sM.JmolK, 5), 94.19375)
+
+        st = NH3(T=375, rhom=3)
+        self.assertEqual(round(st.P.MPa, 6), 6.044096)
+        self.assertEqual(round(st.cvM.JmolK, 5), 48.91890)
+        self.assertEqual(round(st.cpM.JmolK, 4), 111.3738)
+        self.assertEqual(round(st.w, 4), 379.4300)
+        self.assertEqual(round(st.hM.kJmol, 5), 27.45404)
+        self.assertEqual(round(st.sM.JmolK, 5), 86.36105)
+
+        st = NH3(T=405, rhom=10)
+        self.assertEqual(round(st.P.MPa, 5), 11.22040)
+        self.assertEqual(round(st.cvM.JmolK, 5), 77.15007)
+        self.assertEqual(round(st.cpM.JmolK, 3), 2051.793)
+        self.assertEqual(round(st.w, 4), 286.2398)
+        self.assertEqual(round(st.hM.kJmol, 5), 23.20689)
+        self.assertEqual(round(st.sM.JmolK, 5), 72.89756)
+
+        st = NH3(T=520, rhom=1.5)
+        self.assertEqual(round(st.P.MPa, 6), 5.968880)
+        self.assertEqual(round(st.cvM.JmolK, 5), 36.52118)
+        self.assertEqual(round(st.cpM.JmolK, 5), 49.38647)
+        self.assertEqual(round(st.w, 4), 538.8044)
+        self.assertEqual(round(st.hM.kJmol, 5), 36.23166)
+        self.assertEqual(round(st.sM.JmolK, 4), 106.6103)
+
+        st = NH3(T=520, rhom=13.696)
+        self.assertEqual(round(st.P.MPa, 5), 35.83377)
+        self.assertEqual(round(st.cvM.JmolK, 5), 43.66588)
+        self.assertEqual(round(st.cpM.JmolK, 5), 98.36082)
+        self.assertEqual(round(st.w, 4), 555.4454)
+        self.assertEqual(round(st.hM.kJmol, 5), 28.71997)
+        self.assertEqual(round(st.sM.JmolK, 5), 80.49762)
+
+        st = NH3(T=520, rhom=20)
+        self.assertEqual(round(st.P.MPa, 5), 56.30750)
+        self.assertEqual(round(st.cvM.JmolK, 5), 43.81573)
+        self.assertEqual(round(st.cpM.JmolK, 5), 87.32996)
+        self.assertEqual(round(st.w, 4), 741.1842)
+        self.assertEqual(round(st.hM.kJmol, 5), 26.48937)
+        self.assertEqual(round(st.sM.JmolK, 5), 73.89537)
+
+        st = NH3(T=620, rhom=5.5)
+        self.assertEqual(round(st.P.MPa, 5), 24.38934)
+        self.assertEqual(round(st.cvM.JmolK, 5), 41.29819)
+        self.assertEqual(round(st.cpM.JmolK, 5), 61.81978)
+        self.assertEqual(round(st.w, 4), 588.0372)
+        self.assertEqual(round(st.hM.kJmol, 5), 38.40927)
+        self.assertEqual(round(st.sM.JmolK, 4), 100.0682)
+
+        st = NH3(T=620, rhom=14)
+        self.assertEqual(round(st.P.MPa, 5), 58.52754)
+        self.assertEqual(round(st.cvM.JmolK, 5), 43.50218)
+        self.assertEqual(round(st.cpM.JmolK, 5), 75.46188)
+        self.assertEqual(round(st.w, 4), 692.5867)
+        self.assertEqual(round(st.hM.kJmol, 5), 34.49909)
+        self.assertEqual(round(st.sM.JmolK, 5), 87.78122)
+
+        st = NH3(T=620, rhom=45)
+        self.assertEqual(round(st.P.MPa, 3), 1355.431)
+        self.assertEqual(round(st.cvM.JmolK, 5), 50.78124)
+        self.assertEqual(round(st.cpM.JmolK, 5), 64.36735)
+        self.assertEqual(round(st.w, 3), 3201.084)
+        self.assertEqual(round(st.hM.kJmol, 5), 50.78325)
+        self.assertEqual(round(st.sM.JmolK, 5), 54.81426)
 
     def test_tillner(self):
-        # Selected point from pag 42, saturation state
-        st = NH3(T=-77.65+273.15, x=0.5)
+        """Selected point from pag 42, saturation state"""
+        st = NH3(T=-77.65+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 0.00609)
         self.assertEqual(round(st.Liquido.rho, 2), 732.90)
         self.assertEqual(round(st.Gas.rho, 4), 0.0641)
@@ -362,7 +558,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 7.5927)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 7.1212)
 
-        st = NH3(T=-50+273.15, x=0.5)
+        st = NH3(T=-50+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 0.04084)
         self.assertEqual(round(st.Liquido.rho, 2), 702.09)
         self.assertEqual(round(st.Gas.rho, 4), 0.3806)
@@ -373,7 +569,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 6.3451)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 6.4396)
 
-        st = NH3(T=273.15, x=0.5)
+        st = NH3(T=273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 0.42938)
         self.assertEqual(round(st.Liquido.rho, 2), 638.57)
         self.assertEqual(round(st.Gas.rho, 4), 3.4567)
@@ -384,7 +580,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 4.6210)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 5.6210)
 
-        st = NH3(T=50+273.15, x=0.5)
+        st = NH3(T=50+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 2.03403)
         self.assertEqual(round(st.Liquido.rho, 2), 562.86)
         self.assertEqual(round(st.Gas.rho, 3), 15.785)
@@ -395,7 +591,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 3.2507)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 5.0497)
 
-        st = NH3(T=100+273.15, x=0.5)
+        st = NH3(T=100+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 6.25527)
         self.assertEqual(round(st.Liquido.rho, 2), 456.63)
         self.assertEqual(round(st.Gas.rho, 3), 56.117)
@@ -406,7 +602,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 1.9178)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 4.4975)
 
-        st = NH3(T=130+273.15, x=0.5)
+        st = NH3(T=130+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 10.89768)
         self.assertEqual(round(st.Liquido.rho, 2), 312.29)
         self.assertEqual(round(st.Gas.rho, 2), 156.77)
@@ -417,7 +613,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 0.6134)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.8571)
 
-        st = NH3(T=132+273.15, x=0.5)
+        st = NH3(T=132+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 11.28976)
         self.assertEqual(round(st.Liquido.rho, 2), 262.70)
         self.assertEqual(round(st.Gas.rho, 2), 193.88)
@@ -428,7 +624,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 0.2680)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 3.6840)
 
-        st = NH3(P=1e4, x=0.5)
+        st = NH3(P=1e4, x=0.5, eq="tillner")
         self.assertEqual(round(st.T.C, 2), -71.22)
         self.assertEqual(round(st.Liquido.rho, 2), 726.04)
         self.assertEqual(round(st.Gas.rho, 4), 0.1020)
@@ -439,7 +635,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 7.2762)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 6.9412)
 
-        st = NH3(P=1e5, x=0.5)
+        st = NH3(P=1e5, x=0.5, eq="tillner")
         self.assertEqual(round(st.T.C, 2), -33.59)
         self.assertEqual(round(st.Liquido.rho, 2), 682.29)
         self.assertEqual(round(st.Gas.rho, 4), 0.8787)
@@ -450,7 +646,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 5.7199)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 6.1267)
 
-        st = NH3(P=1e6, x=0.5)
+        st = NH3(P=1e6, x=0.5, eq="tillner")
         self.assertEqual(round(st.T.C, 2), 24.90)
         self.assertEqual(round(st.Liquido.rho, 2), 602.92)
         self.assertEqual(round(st.Gas.rho, 4), 7.7823)
@@ -461,7 +657,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Svap.kJkgK, 4), 3.9128)
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 5.3200)
 
-        st = NH3(P=1e7, x=0.5)
+        st = NH3(P=1e7, x=0.5, eq="tillner")
         self.assertEqual(round(st.T.C, 2), 125.17)
         self.assertEqual(round(st.Liquido.rho, 2), 356.70)
         self.assertEqual(round(st.Gas.rho, 2), 121.58)
@@ -473,57 +669,57 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.s.kJkgK, 4), 4.0434)
 
         # Selected point from Pag 51, single region states
-        st = NH3(T=-75+273.15, P=1e4)
+        st = NH3(T=-75+273.15, P=1e4, eq="tillner")
         self.assertEqual(round(st.rho, 2), 730.10)
         self.assertEqual(round(st.h.kJkg, 2), -131.97)
         self.assertEqual(round(st.s.kJkgK, 4), -0.4148)
 
-        st = NH3(T=273.15, P=2e4)
+        st = NH3(T=273.15, P=2e4, eq="tillner")
         self.assertEqual(round(st.rho, 4), 0.1504)
         self.assertEqual(round(st.h.kJkg, 1), 1499.2)
         self.assertEqual(round(st.s.kJkgK, 4), 7.2228)
 
-        st = NH3(T=125+273.15, P=3e4)
+        st = NH3(T=125+273.15, P=3e4, eq="tillner")
         self.assertEqual(round(st.rho, 4), 0.1545)
         self.assertEqual(round(st.h.kJkg, 1), 1769.3)
         self.assertEqual(round(st.s.kJkgK, 4), 7.8372)
 
-        st = NH3(T=-50+273.15, P=5e4)
+        st = NH3(T=-50+273.15, P=5e4, eq="tillner")
         self.assertEqual(round(st.rho, 2), 702.09)
         self.assertEqual(round(st.h.kJkg, 2), -24.72)
         self.assertEqual(round(st.s.kJkgK, 4), 0.0945)
 
-        st = NH3(T=25+273.15, P=1e5)
+        st = NH3(T=25+273.15, P=1e5, eq="tillner")
         self.assertEqual(round(st.rho, 4), 0.6942)
         self.assertEqual(round(st.h.kJkg, 1), 1546.7)
         self.assertEqual(round(st.s.kJkgK, 4), 6.6083)
 
-        st = NH3(T=175+273.15, P=2e5)
+        st = NH3(T=175+273.15, P=2e5, eq="tillner")
         self.assertEqual(round(st.rho, 4), 0.9183)
         self.assertEqual(round(st.h.kJkg, 1), 1882.1)
         self.assertEqual(round(st.s.kJkgK, 4), 7.1800)
 
-        st = NH3(T=-10+273.15, P=3e5)
+        st = NH3(T=-10+273.15, P=3e5, eq="tillner")
         self.assertEqual(round(st.rho, 2), 652.06)
         self.assertEqual(round(st.h.kJkg, 2), 154.02)
         self.assertEqual(round(st.s.kJkgK, 4), 0.8292)
 
-        st = NH3(T=273.15, P=5e5)
+        st = NH3(T=273.15, P=5e5, eq="tillner")
         self.assertEqual(round(st.rho, 2), 638.62)
         self.assertEqual(round(st.h.kJkg, 2), 200.05)
         self.assertEqual(round(st.s.kJkgK, 4), 0.9998)
 
-        st = NH3(T=25+273.15, P=1e6)
+        st = NH3(T=25+273.15, P=1e6, eq="tillner")
         self.assertEqual(round(st.rho, 4), 7.7778)
         self.assertEqual(round(st.h.kJkg, 1), 1483.7)
         self.assertEqual(round(st.s.kJkgK, 4), 5.3211)
 
-        st = NH3(T=50+273.15, P=2e6)
+        st = NH3(T=50+273.15, P=2e6, eq="tillner")
         self.assertEqual(round(st.rho, 3), 15.449)
         self.assertEqual(round(st.h.kJkg, 1), 1493.5)
         self.assertEqual(round(st.s.kJkgK, 4), 5.0641)
 
-        st = NH3(T=-50+273.15, P=3e6)
+        st = NH3(T=-50+273.15, P=3e6, eq="tillner")
         self.assertEqual(round(st.rho, 2), 703.33)
         self.assertEqual(round(st.h.kJkg, 2), -22.08)
         self.assertEqual(round(st.s.kJkgK, 4), 0.0875)
@@ -547,13 +743,12 @@ class Test(TestCase):
 
     def test_monogenidouThermo(self):
         # Values cited in section 3, pag 7
-        # The paper use a undocumented mEoS of Gao so the critical enhancement
-        # dont exactly work
         self.assertEqual(round(NH3(T=390, rho=0).k.mWmK, 6), 35.969501)
-        self.assertEqual(round(NH3(T=390, rho=415).k.mWmK, 6), 264.145394)
+        # Tiny error in point with high density > 700 kg/m³, maybe a typo
+        # self.assertEqual(round(NH3(T=390, rho=415).k.mWmK, 6), 264.129743)
 
     def test_fenghour(self):
-        kw = {"visco": 1}
+        kw = {"eq": "tillner", "visco": 1}
 
         # Appendix II, pag 1664
         self.assertEqual(round(NH3(T=200, P=1e5, **kw).mu.muPas, 2), 507.47)
@@ -601,3 +796,20 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.mu.muPas, 2), 19.69)
         self.assertEqual(round(st.Liquido.rhoM, 4), 19.1642)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 39.20)
+
+# if __name__ == "__main__":
+# #     st = NH3(T=390, rho=415)
+# #     print(st.k.mWmK, 264.129743)
+
+#     # Table 6
+#     for P in (1e5, 25e6, 50e6):
+#         for T in (200, 300, 400, 500, 600):
+#             st = NH3(T=T, P=P)
+#             print(f"{st.P.MPa:#10.2g} {st.T:0.0f} {st.rho:#10.5g} "
+#                   "{st.k.mWmK:#10.5g}")
+#     # Table 7
+#     for T in (200, 225, 250, 275, 300, 325, 350, 375, 400):
+#         st = NH3(T=T, x=0.5)
+#         print(f"{st.T:0.0f} {st.P.MPa:#10.5g} {st.Liquido.rho:#10.5g} "
+#               "{st.Gas.rho:#10.5g} {st.Liquido.k.mWmK:#10.5g} "
+#               "{st.Gas.k.mWmK:#10.5g}")
