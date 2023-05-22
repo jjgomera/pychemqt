@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=protected-access
 
 '''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2023, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -39,7 +40,7 @@ class NH3(MEoS):
     Tc = unidades.Temperature(405.40)
     Pc = unidades.Pressure(11333.0, "kPa")
     M = 17.03026  # g/mol
-    Tt = unidades.Temperature(195.495)
+    Tt = unidades.Temperature(195.49)
     Tb = unidades.Temperature(239.823)
     f_acent = 0.256
     momentoDipolar = unidades.DipoleMoment(1.470, "Debye")
@@ -241,17 +242,33 @@ class NH3(MEoS):
     _PR = [0.1491, -26.0703]
 
     _surface = {"sigma": [0.1028, -0.09453], "exp": [1.211, 5.585]}
+
+    @classmethod
+    def _Melting_Pressure(cls, T, melting=None):
+        """Customized method for calculate melting pressure implementing two
+        different region"""
+        if melting is not None:
+            return MEoS._Melting_Pressure(T, melting)
+
+        if T < 217.35:
+            return MEoS._Melting_Pressure(T, cls._melting1)
+        return MEoS._Melting_Pressure(T, cls._melting)
+
     _melting = {
         "eq": 1,
-        "__doi__": {
-            "autor": "Haar, L., Gallagher, J.S.",
-            "title": "Thermodynamic Properties of Ammonia",
-            "ref": "J. Phys. Chem. Ref. Data 7(3) (1978) 635-792",
-            "doi": "10.1063/1.555579"},
+        "__doi__": gao["__doi__"],
 
-        "Tmin": Tt, "Tmax": 700.0,
-        "Tref": Tt, "Pref": 101325,
-        "a3": [2.5e4], "exp3": [1]}
+        "Tmin": 217.35, "Tmax": 725,
+        "Tref": 217.35, "Pref": 1e6,
+        "a0": 307, "a2": [1135], "exp2": [1.51]}
+
+    _melting1 = {
+        "eq": 2,
+        "__doi__": gao["__doi__"],
+
+        "Tmin": Tt, "Tmax": 217.35,
+        "Tref": 195.49, "Pref": 6.05339e3,
+        "a2": [516.613763e6], "exp2": [4.4]}
 
     _sublimation = {
         "eq": 2,
@@ -734,7 +751,7 @@ class Test(TestCase):
         self.assertEqual(round(st.s.kJkgK, 4), 0.0875)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = NH3(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 2.4758)
         self.assertEqual(round(st.P.MPa, 3), 136.271)
@@ -745,18 +762,19 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 2.07031)
 
     def test_monogenidouVisco(self):
-        # Values cited in section 3, pag 7
+        """Values cited in section 3, pag 7"""
         self.assertEqual(round(NH3(T=300, rho=0).mu.muPas, 4), 10.1812)
         self.assertEqual(round(NH3(T=300, rho=8).mu.muPas, 4), 9.9219)
         self.assertEqual(round(NH3(T=300, rho=609).mu.muPas, 4), 133.3937)
 
     def test_monogenidouThermo(self):
-        # Values cited in section 3, pag 7
+        """Values cited in section 3, pag 7"""
         self.assertEqual(round(NH3(T=390, rho=0).k.mWmK, 6), 35.969501)
         # Tiny error in point with high density > 700 kg/m³, maybe a typo
         # self.assertEqual(round(NH3(T=390, rho=415).k.mWmK, 6), 264.129743)
 
     def test_fenghour(self):
+        """Selected values from tables in Appendix"""
         kw = {"eq": "tillner", "visco": 1}
 
         # Appendix II, pag 1664
@@ -806,54 +824,105 @@ class Test(TestCase):
         self.assertEqual(round(st.Liquido.rhoM, 4), 19.1642)
         self.assertEqual(round(st.Liquido.mu.muPas, 2), 39.20)
 
+
 if __name__ == "__main__":
-# #     st = NH3(T=390, rho=415)
-# #     print(st.k.mWmK, 264.129743)
-
-#     # Table 6
-#     for P in (1e5, 25e6, 50e6):
-#         for T in (200, 300, 400, 500, 600):
-#             st = NH3(T=T, P=P)
-#             print(f"{st.P.MPa:#10.2g} {st.T:0.0f} {st.rho:#10.5g} "
-#                   "{st.k.mWmK:#10.5g}")
-#     # Table 7
-#     for T in (200, 225, 250, 275, 300, 325, 350, 375, 400):
-#         st = NH3(T=T, x=0.5)
-#         print(f"{st.T:0.0f} {st.P.MPa:#10.5g} {st.Liquido.rho:#10.5g} "
-#               "{st.Gas.rho:#10.5g} {st.Liquido.k.mWmK:#10.5g} "
-#               "{st.Gas.k.mWmK:#10.5g}")
-
-    # Melting line
-    # Emulate Fig 5 in Gao paper
-
     from matplotlib import pyplot as plt
+    from matplotlib import rcParams
+    from numpy import linspace
+
+    rcParams["xtick.top"] = True
+    rcParams["ytick.right"] = True
+    rcParams["ytick.minor.visible"] = True
+
+    # Trying to emulate fig 4 in Gao paper
+
+    # Saturation line
+    Ts = linspace(NH3.Tt, NH3.Tc, 50)
+    Ps = []
+    for ts in Ts:
+        Ps.append(NH3(T=ts, x=0).P.MPa)
+    plt.plot(Ts, Ps, color="k", lw=0.8, label="Vapor Pressure Curve")
+
+    # Sublimation line
+    Ts = linspace(160, NH3.Tt, 10)
+    Ps = []
+    for ts in Ts:
+        Ps.append(NH3._Sublimation_Pressure(ts).MPa)
+    plt.plot(Ts, Ps, color="b", lw=0.8, label="Sublimation Curve")
+
+    # Melting line Phase I
+    Ts = linspace(NH3.Tt, 217.34, 50)
+    Ps = []
+    for ts in Ts:
+        Ps.append(NH3._Melting_Pressure(ts).MPa)
+    plt.plot(Ts, Ps, color="brown", lw=0.8, label="Melting Curve Solid I")
+
+    # Melting line Phase I
+    Ts = linspace(217.34, 750, 50)
+    Ps = []
+    for ts in Ts:
+        Ps.append(NH3._Melting_Pressure(ts).MPa)
+    plt.plot(Ts, Ps, color="r", lw=0.8, label="Melting Curve Solid II")
+
+    # Haar-Gallagher melting correlation
+    haar = {
+        "eq": 1,
+        "__doi__": {
+            "autor": "Haar, L., Gallagher, J.S.",
+            "title": "Thermodynamic Properties of Ammonia",
+            "ref": "J. Phys. Chem. Ref. Data 7(3) (1978) 635-792",
+            "doi": "10.1063/1.555579"},
+
+        "Tmin": NH3.Tt, "Tmax": 700.0,
+        "Tref": 195.48, "Pref": 101325,
+        "a3": [2.5e4], "exp3": [1]}
+
+    Ts = linspace(NH3.Tt, 217.34, 50)
+    Ps = []
+    for ts in Ts:
+        Ps.append(NH3._Melting_Pressure(ts, haar).MPa)
+    Ps[0] = NH3(T=NH3.Tt, x=0).P.MPa  # Fix initial value to fit triple point
+    plt.plot(Ts, Ps, color="k", lw=1, ls="-.")
+    Ts = linspace(217.34, 750, 20)
+    Ps = []
+    for ts in Ts:
+        Ps.append(NH3._Melting_Pressure(ts, haar).MPa)
+    plt.plot(Ts, Ps, color="k", lw=0.8, ls="-.",
+             label="Melting Curve Haar and Gallagher (1978)")
+
+    # Mills solid line transition
+    mills = {
+        "eq": 2,
+        "__doi__": {
+            "autor": "Mills, R.L., Liebenberg, D.H., Pruzan, P.",
+            "title": "Phase diagram and transition properties of condensed "
+                     "ammonia to 10 kbar",
+            "ref": "J. Physical Chemistry, 86(26) (1982) 5219-5222",
+            "doi": "10.1021/j100223a030 "},
+
+        "Tmin": 217.34, "Tmax": 700.0,
+        "Tref": 217.34, "Pref": 3.07e8,
+        "a2": [1.608e8], "exp2": [47.28]}
+
+    Ts = linspace(217.34, 300, 20)
+    Ps = []
+    for ts in Ts:
+        Ps.append(NH3._Melting_Pressure(ts, mills).MPa)
+    plt.plot(Ts, Ps, color="k", lw=1, ls=":",
+             label="Solid I-II transition Mills et al. (1982)")
 
     # Experimental data from
-    # King, T.-V., Oi, T., Popowicz, A., Heinzinger, K., Ishida, T.
-    # Vapor Pressure Isotope Effects in Liquid and Solid Ammonia
-    # Z. Naturforsch 44a (1989) 359-370
-    # doi: 10.1515/zna-1989-0503
-    Tm = (195.36, 188.86, 180.02, 168.8)
-    Pm = (45.189, 23.362, 8.781, 2.196)  # in torr
-    r_king = []
-    for t, p in zip(Tm, Pm):
-        Ps = NH3._Sublimation_Pressure(t).torr
-        r_king.append(100*(p-Ps)/p)
-    plt.plot(Tm, r_king, ls="", marker="x", mec="k", label="King et al (1989)")
-
-    # Overstreet, R., Giauque, W.F.
-    # Ammonia. The Heat Capacity and Vapor Pressure of Solid and Liquid. Heat
-    # of Vaporization. The Entropy Values from Thermal and Spectroscopic Data
-    # J. American Chemical Society 59(2) (1937) 254-259
-    # doi: 10.1021/ja01281a008
-    Tm = (176.92, 181.13, 183.17, 186.0, 189.03, 191.85, 195.36)
-    Pm = (0.615, 1.01, 1.266, 1.735, 2.398, 3.206, 4.558)  # in cmHg
-    r_over = []
-    for t, p in zip(Tm, Pm):
-        Ps = NH3._Sublimation_Pressure(t).cmHg
-        r_over.append(100*(p-Ps)/p)
-    plt.plot(Tm, r_over, ls="", marker="s", mfc="#0000", mec="k",
-             label="Overstreet and Giauque (1937)")
+    # Bergstrom, F.W.
+    # The Vapor Pressure of Sulfur Dioxide and Ammonia
+    # J. Physical Chemistry, 26(4), 358-376. doi:10.1021/j150220a005
+    Tm = (-30.2+273.15, -50.2+273.15, -67.3+273.15, -73.3+273.15, -76.5+273.15,
+          -79.9+273.15, -84.4+273.15, -77.9+273.15)  # in ºC
+    Pm = (891, 304.4, 101.2, 64.8, 50.6, 37.2, 24.2, 45.5)  # in mmHg
+    P = []
+    for p in Pm:
+        P.append(unidades.Pressure(p, "mmHg").MPa)
+    plt.plot(Tm, P, ls="", marker="o", mfc="#0000", mec="k",
+             label="Bergstrom (1922)")
 
     # Karwat, E.
     # Der Dampfdruck des festen Chlorwasserstoffs, Methans und Ammoniaks
@@ -861,30 +930,114 @@ if __name__ == "__main__":
     # doi: 10.1515/zpch-1924-11230
     Tm = (162.39, 169.49, 171.52, 173.61, 178.97, 183.79, 186.99, 193.45)
     Pm = (0.95, 2.38, 3.09, 3.92, 7.84, 13.5, 19.13, 37.60)  # in mmHg
-    r_karw = []
-    for t, p in zip(Tm, Pm):
-        Ps = NH3._Sublimation_Pressure(t).mmHg
-        r_karw.append(100*(p-Ps)/p)
-    plt.plot(Tm, r_karw, ls="", marker="D", mfc="#0000", mec="k",
-             label="Karwat (1924)")
+    P = []
+    for p in Pm:
+        P.append(unidades.Pressure(p, "mmHg").MPa)
+    plt.plot(Tm, P, ls="", marker="D", mfc="#0000", mec="k",
+             label="Karwat (1926)")
 
-    # Bergstrom, F.W.
-    # The Vapor Pressure of Sulfur Dioxide and Ammonia
-    # J. Physical Chemistry, 26(4), 358-376. doi:10.1021/j150220a005
-    Tm = (-79.9+273.15, -84.4+273.15, -77.9+273.15)  # in ºC
-    Pm = (37.2, 24.2, 45.5)  # in mmHg
-    r_berg = []
-    for t, p in zip(Tm, Pm):
-        Ps = NH3._Sublimation_Pressure(t).mmHg
-        r_berg.append(100*(p-Ps)/p)
-    plt.plot(Tm, r_berg, ls="", marker="o", mfc="#0000", mec="k",
-             label="Bergstrom (1922)")
+    # King, T.-V., Oi, T., Popowicz, A., Heinzinger, K., Ishida, T.
+    # Vapor Pressure Isotope Effects in Liquid and Solid Ammonia
+    # Z. Naturforsch 44a (1989) 359-370
+    # doi: 10.1515/zna-1989-0503
+    Tm = (243.01, 229.06, 219.54, 210.96, 200.40, 198.53, 195.36, 188.86,
+          180.02, 168.8)
+    Pm = (889.85, 431.14, 246.87, 142.37, 66.951, 58.058, 45.189, 23.362,
+          8.781, 2.196)  # in torr
+    P = []
+    for p in Pm:
+        P.append(unidades.Pressure(p, "torr").MPa)
+    plt.plot(Tm, P, ls="", marker="x", mec="k", label="King et al. (1989)")
 
-    plt.ylabel(r"$100\frac{P_{sub,exp}-P_{sub,calc}}{P_{sub,exp}}$",
-               fontsize="large")
+    # Overstreet, R., Giauque, W.F.
+    # Ammonia. The Heat Capacity and Vapor Pressure of Solid and Liquid. Heat
+    # of Vaporization. The Entropy Values from Thermal and Spectroscopic Data
+    # J. American Chemical Society 59(2) (1937) 254-259
+    # doi: 10.1021/ja01281a008
+    Tm = (176.92, 181.13, 183.17, 186.0, 189.03, 191.85, 195.36, 199.262,
+          203.114, 206.587, 210.811, 214.42, 218.354, 224.246, 229.205, 234.84,
+          241.58)
+    Pm = (0.615, 1.01, 1.266, 1.735, 2.398, 3.206, 4.558, 6.188, 8.261, 10.608,
+          14.181, 18.017, 23.126, 32.98, 43.725, 59.284, 83.535)  # in cmHg
+    P = []
+    for p in Pm:
+        P.append(unidades.Pressure(p, "cmHg").MPa)
+    plt.plot(Tm, P, ls="", marker="s", mfc="#0000", mec="k",
+             label="Overstreet and Giauque (1937)")
+
+    # Ninet, S., Datchi, F.
+    # High pressure-high temperature phase diagram of ammonia
+    # J. Chem. Phys. 128 (2008) 154508
+    # doi: 10.1063/1.2903491
+    Tm = (298.3, 322.0, 371.1, 372.0, 420.1, 473.1, 484.3, 492.8, 509.4, 529.9,
+          530.4, 553.8, 562.1, 580.8, 582.0, 586.3, 604.1, 616.8, 633.0, 643.1,
+          652.9, 665.8, 681.1, 671.7, 705.9, 723.4, 724.6, 740.1)
+    Pm = (1.01e3, 1.23e3, 1.66e3, 1.71e3, 2.21e3, 2.79e3, 2.93e3, 3.03e3,
+          3.22e3, 3.53e3, 3.57e3, 3.76e3, 3.90e3, 4.12e3, 4.15e3, 4.26e3,
+          4.48e3, 4.65e3, 4.94e3, 5.03e3, 5.24e3, 5.37e3, 5.50e3, 5.51e3,
+          6.04e3, 6.26e3, 6.30e3, 6.47e3)
+    plt.plot(Tm, Pm, ls="", marker="^", mfc="#0000", mec="k",
+             label="Ninet and Datchi (2008)")
+
+    # Grace, J.D., Kennedy, G.C.
+    # The melting curve of five gases to 30 kb
+    # J. Phys. Chem. Solids 28(6) (1967) 977-982
+    # doi: 10.1016/0022-3697(67)90214-4
+    Tm = (418.28571429, 397.71428571, 376.38095238, 361.9047619, 342.0952381,
+          321.52380952, 291.80952381, 268.19047619, 253.71428571, 227.04761905,
+          207.23809524)
+    # bar
+    Pm = (24.55919395, 22.29219144, 19.49622166, 17.83375315, 15.86901763,
+          13.45088161, 10.50377834, 8.61460957, 6.95214106, 5.06297229, 2.4937)
+    P = []
+    for p in Pm:
+        P.append(unidades.Pressure(p, "kbar").MPa)
+    plt.plot(Tm, P, ls="", marker="4", mfc="#0000", mec="k",
+             label="Grace and Kennedy (1967)")
+
+    # Hanson, R.C., Jordan, M.
+    # Ultrahigh-pressure studies of ammonia
+    # J. Phys. Chem. 84(10) (1980) 1173-1175
+    # doi: 10.1021/j100447a020
+    Pm = (579.22535211, 801.05633803, 887.32394366, 887.32394366, 1035.2112676,
+          948.94366197, 1294.0140845, 1417.2535211, 1491.197183, 1786.97183099)
+    Tm = (248.48076923, 261.46153846, 271.55769231, 279.25, 289.82692308,
+          298.48076923, 327.80769231, 346.07692308, 359.05769231, 371.55769231)
+    plt.plot(Tm, Pm, ls="", marker=r"$\sqcap$", mfc="#0000", mec="k",
+             label="Hanson and Jordan (1980)")
+
+    plt.ylabel("P/MPa")
     plt.xlabel("T/K")
-    plt.xlim(160, 200)
-    plt.ylim(-6, 6)
-    plt.axhline(0, color="k")
-    plt.legend()
+    plt.xlim(150, 800)
+    plt.ylim(1e-4, 1e5)
+    plt.yscale("log")
+    plt.vlines(NH3.Tc, NH3.Pc.MPa, NH3._Melting_Pressure(NH3.Tc).MPa,
+               ls="--", color="k")
+    plt.hlines(NH3.Pc.MPa, NH3.Tc, 800, ls="--", color="k")
+    plt.text(250, 10, "Liquid")
+    plt.text(550, 100, "Supercritical")
+    plt.text(450, 0.01, "Vapor")
+    plt.text(350, 10000, "Solid Phase II/III")
+    plt.text(170, 0.5, "Solid Phase I", rotation="vertical")
+
+    # Put a legend below current axis
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.20),
+               fancybox=True, shadow=True, ncol=2)
+    plt.tight_layout()
+
     plt.show()
+
+    # FIXME: Monogenidou thermal conductivity fail for values with density over
+    # 600 kg/m³
+    # Table 6
+    # for P in (1e5, 25e6, 50e6):
+    #     for T in (200, 300, 400, 500, 600):
+    #         st = NH3(T=T, P=P)
+    #         print(f"{st.P.MPa:#10.2g} {st.T:0.0f} {st.rho:#10.5g} "
+    #               "{st.k.mWmK:#10.5g}")
+    # Table 7
+    # for T in (200, 225, 250, 275, 300, 325, 350, 375, 400):
+    #     st = NH3(T=T, x=0.5)
+    #     print(f"{st.T:0.0f} {st.P.MPa:#10.5g} {st.Liquido.rho:#10.5g} "
+    #           "{st.Gas.rho:#10.5g} {st.Liquido.k.mWmK:#10.5g} "
+    #           "{st.Gas.k.mWmK:#10.5g}")

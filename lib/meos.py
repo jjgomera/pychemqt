@@ -4152,7 +4152,7 @@ class MEoS(ThermoAdvanced):
         return unidades.Dimensionless(e)
 
     @classmethod
-    def _Melting_Pressure(cls, T):
+    def _Melting_Pressure(cls, T, melting=None):
         r"""Calculate the melting pressure.
 
         .. math::
@@ -4200,40 +4200,44 @@ class MEoS(ThermoAdvanced):
         P : float
             Melting pressure, [K]
         """
-        if cls._melting:
-            Tref = cls._melting["Tref"]
-            Pref = cls._melting["Pref"]
-            Tita = T/Tref
-            suma = 0
-            if "a0" in cls._melting:
-                suma += cls._melting["a0"]
-
-            if "a1" in cls._melting:
-                for a, t in zip(cls._melting["a1"], cls._melting["exp1"]):
-                    suma += a*Tita**t
-
-            if "a2" in cls._melting:
-                for a, t in zip(cls._melting["a2"], cls._melting["exp2"]):
-                    suma += a*(Tita**t-1)
-
-            if "a3" in cls._melting:
-                for a, t in zip(cls._melting["a3"], cls._melting["exp3"]):
-                    suma += a*log(Tita)**t
-
-            if "a4" in cls._melting:
-                for a, t in zip(cls._melting["a4"], cls._melting["exp4"]):
-                    suma += a*(Tita-1)**t
-
-            if cls._melting["eq"] == 1:
-                P = suma*Pref
-            elif cls._melting["eq"] == 2:
-                # Simon formulation
-                P = suma+Pref
-            elif cls._melting["eq"] == 2:
-                P = exp(suma)*Pref
-            return unidades.Pressure(P)
-        else:
+        if melting is None and not cls._melting:
             return None
+
+        elif cls._melting:
+            melting = cls._melting
+
+        Tref = melting["Tref"]
+        Pref = melting["Pref"]
+        Tita = T/Tref
+        suma = 0
+        if "a0" in melting:
+            suma += melting["a0"]
+
+        if "a1" in melting:
+            for a, t in zip(melting["a1"], melting["exp1"]):
+                suma += a*Tita**t
+
+        if "a2" in melting:
+            for a, t in zip(melting["a2"], melting["exp2"]):
+                suma += a*(Tita**t-1)
+
+        if "a3" in melting:
+            for a, t in zip(melting["a3"], melting["exp3"]):
+                suma += a*log(Tita)**t
+
+        if "a4" in melting:
+            for a, t in zip(melting["a4"], melting["exp4"]):
+                suma += a*(Tita-1)**t
+
+        if melting["eq"] == 1:
+            P = suma*Pref
+        elif melting["eq"] == 2:
+            # Simon-Glatzel formulation
+            P = suma+Pref
+        elif melting["eq"] == 2:
+            P = exp(suma)*Pref
+
+        return unidades.Pressure(P)
 
     @classmethod
     def _Sublimation_Pressure(cls, T):
