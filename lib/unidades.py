@@ -974,6 +974,7 @@ class Pressure(unidad):
              "bar": k.bar,
              "baria": 0.1,
              "mbar": k.bar/k.kilo,
+             "kbar": k.bar*k.kilo,
              "psi": k.psi,
              "atm": k.atm,
              "kgcm2": k.g/k.centi**2,
@@ -990,17 +991,17 @@ class Pressure(unidad):
              "lbcm2": k.g*k.pound/k.centi**2,
              "lbft2": k.g*k.pound/k.foot**2,
              "dyncm2": k.dyn/k.centi**2}
-    __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'psi',
-                'psi g', 'atm', 'kg/cm²', 'kg/cm² g', 'mmH2O', 'cmH2O',
+    __text__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'bar g', 'mbar', 'kbar',
+                'psi', 'psi g', 'atm', 'kg/cm²', 'kg/cm² g', 'mmH2O', 'cmH2O',
                 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg',
                 'lb/cm²', 'lb/ft²', 'dyn/cm²']
-    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'psi',
-                 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O', 'mH2O',
-                 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
-                 'lbft2', 'dyncm2']
+    __units__ = ['Pa', 'hPa', 'kPa', 'MPa', 'bar', 'barg', 'mbar', 'kbar',
+                 'psi', 'psig', 'atm', 'kgcm2', 'kgcm2g', 'mmH2O', 'cmH2O',
+                 'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg',
+                 'lbcm2', 'lbft2', 'dyncm2']
     __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
                    tr("pychemqt", "Bar gauge"),
-                   "Milibar",
+                   "Milibar", "Kilobar",
                    tr("pychemqt", "Pound per square inch"),
                    tr(
                        "pychemqt", "Pound per square inch gauge"),
