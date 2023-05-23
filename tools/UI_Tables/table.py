@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-# pylint: disable=too-many-locals
+# pylint: disable=too-many-locals, protected-access
 
 '''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2023, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -35,7 +35,7 @@ from math import ceil, floor
 import os
 
 from numpy import delete, insert
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 from lib import meos, mEoS, coolProp, unidades, config
 from lib.thermo import ThermoAdvanced
@@ -77,9 +77,9 @@ def createTabla(conf, title, fluidos=None, parent=None):
         for i in range(len(propiedades)-1, -1, -1):
             if keys[i] in ThermoAdvanced.propertiesPhase():
                 txt = [propiedades[i]]
-                prefix = QtWidgets.QApplication.translate("pychemqt", "Liquid")
+                prefix = tr("pychemqt", "Liquid")
                 txt.append(prefix+os.linesep+propiedades[i])
-                prefix = QtWidgets.QApplication.translate("pychemqt", "Vapour")
+                prefix = tr("pychemqt", "Vapour")
                 txt.append(prefix+os.linesep+propiedades[i])
                 propiedades[i:i+1] = txt
                 units[i:i+1] = [units[i]]*3
@@ -124,7 +124,7 @@ def createTabla(conf, title, fluidos=None, parent=None):
 
         tabla = TablaMEoS(len(propiedades), filas=1, **kw)
 
-    prefix = QtWidgets.QApplication.translate("pychemqt", "Table")
+    prefix = tr("pychemqt", "Table")
     tabla.setWindowTitle(prefix+": "+title)
     tabla.resizeColumnsToContents()
 
@@ -208,7 +208,7 @@ class TablaMEoS(Tabla):
 
     def changeStatusThermo(self, conf):
         fluid = getClassFluid(conf["method"], conf["fluid"])
-        txt = "%s (%s)" % (fluid.name, conf["method"])
+        txt = f"{fluid.name} ({conf['method']})"
         self.statusThermo.setText(txt)
 
     def closeEvent(self, event):
@@ -267,7 +267,7 @@ class TablaMEoS(Tabla):
         rows.sort(reverse=True)
 
         actionCopy = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "&Copy"),
+            tr("pychemqt", "&Copy"),
             slot=self.copy, shortcut=QtGui.QKeySequence.StandardKey.Copy,
             icon=os.path.join("button", "editCopy.png"),
             parent=self)
@@ -275,14 +275,14 @@ class TablaMEoS(Tabla):
             actionCopy.setEnabled(False)
 
         actionDelete = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Delete Point"),
+            tr("pychemqt", "Delete Point"),
             icon=os.path.join("button", "editDelete.png"),
             slot=partial(self.delete, rows), parent=self)
         if not rows:
             actionDelete.setEnabled(False)
 
         actionInsert = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Insert Point"),
+            tr("pychemqt", "Insert Point"),
             icon=os.path.join("button", "add.png"),
             slot=partial(self.add, row), parent=self)
 
@@ -295,7 +295,7 @@ class TablaMEoS(Tabla):
 
     def delete(self, rows):
         """Delete rows from table and for saved data"""
-        self.parent.statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent.statusBar().showMessage(tr(
             "pychemqt", "Deleting point..."))
         QtWidgets.QApplication.processEvents()
 
@@ -312,25 +312,20 @@ class TablaMEoS(Tabla):
         plot = self._getPlot()
         if plot:
             data = plot._getData()
-            pref = QtWidgets.QApplication.translate("pychemqt", "Table from")
+            pref = tr("pychemqt", "Table from")
             title = self.windowTitle().split(pref)[1][1:]
             for row in rows:
-                if title == QtWidgets.QApplication.translate(
-                        "pychemqt", "Melting Line"):
+                if title == tr("pychemqt", "Melting Line"):
                     for x in ThermoAdvanced.propertiesKey():
                         del data["melting"][x][row]
-                elif title == QtWidgets.QApplication.translate(
-                        "pychemqt", "Sublimation Line"):
+                elif title == tr("pychemqt", "Sublimation Line"):
                     for x in ThermoAdvanced.propertiesKey():
                         del data["sublimation"][x][row]
-                elif title == QtWidgets.QApplication.translate(
-                        "pychemqt", "Saturation Line") or \
-                        title == QtWidgets.QApplication.translate(
-                            "pychemqt", "Liquid Saturation Line"):
+                elif title == tr("pychemqt", "Saturation Line") or \
+                        title == tr("pychemqt", "Liquid Saturation Line"):
                     for x in ThermoAdvanced.propertiesKey():
                         del data["saturation_0"][x][row]
-                elif title == QtWidgets.QApplication.translate(
-                        "pychemqt", "Vapor Saturation Line"):
+                elif title == tr("pychemqt", "Vapor Saturation Line"):
                     for x in ThermoAdvanced.propertiesKey():
                         del data["saturation_1"][x][row]
                 else:
@@ -365,11 +360,10 @@ class TablaMEoS(Tabla):
 
     def add(self, row):
         """Add point to a table and to saved file"""
-        pref = QtWidgets.QApplication.translate("pychemqt", "Table from ")
+        pref = tr("pychemqt", "Table from ")
         if pref in self.windowTitle():
             title = self.windowTitle().split(pref)[1]
-            melting = title == QtWidgets.QApplication.translate(
-                "pychemqt", "Melting Line")
+            melting = title == tr("pychemqt", "Melting Line")
         else:
             melting = False
 
@@ -412,25 +406,20 @@ class TablaMEoS(Tabla):
                 return
 
             data = plot._getData()
-            if title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Melting Line"):
+            if title == tr("pychemqt", "Melting Line"):
                 for x in ThermoAdvanced.propertiesKey():
                     data["melting"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
-            elif title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Sublimation Line"):
+            elif title == tr("pychemqt", "Sublimation Line"):
                 for x in ThermoAdvanced.propertiesKey():
                     data["sublimation"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
-            elif title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Saturation Line") or \
-                    title == QtWidgets.QApplication.translate(
-                        "pychemqt", "Liquid Saturation Line"):
+            elif title == tr("pychemqt", "Saturation Line") or \
+                    title == tr("pychemqt", "Liquid Saturation Line"):
                 for x in ThermoAdvanced.propertiesKey():
                     data["saturation_0"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
-            elif title == QtWidgets.QApplication.translate(
-                    "pychemqt", "Vapor Saturation Line"):
+            elif title == tr("pychemqt", "Vapor Saturation Line"):
                 for x in ThermoAdvanced.propertiesKey():
                     data["saturation_1"][x].insert(
                         row, dlg.fluid.__getattribute__(x))
@@ -473,8 +462,7 @@ class TablaMEoS(Tabla):
         if plot:
             # Remove old selected point if exist
             for i, line in enumerate(plot.plot.ax.lines):
-                if line.get_label() == QtWidgets.QApplication.translate(
-                        "pychemqt", "Selected Point"):
+                if line.get_label() == tr("pychemqt", "Selected Point"):
                     del line
                     del plot.plot.ax.lines[i]
 
@@ -486,8 +474,7 @@ class TablaMEoS(Tabla):
                     y.append(float(item.text()))
                 else:
                     x.append(float(item.text()))
-            label = QtWidgets.QApplication.translate(
-                "pychemqt", "Selected Point")
+            label = tr("pychemqt", "Selected Point")
             plot.plot.ax.plot(x, y, 'ro', label=label)
             plot.plot.draw()
 
@@ -550,11 +537,11 @@ class TablaMEoS(Tabla):
         """Add data to a row"""
         self.blockSignals(True)
         self.data.insert(row, data)
-        for column, data in enumerate(data):
-            if isinstance(data, str):
-                txt = data
+        for column, dat in enumerate(data):
+            if isinstance(dat, str):
+                txt = dat
             else:
-                txt = representacion(data, **self.format[column])
+                txt = representacion(dat, **self.format[column])
             self.setValue(row, column, txt)
         self.resizeColumnsToContents()
 
@@ -573,17 +560,16 @@ class TablaMEoS(Tabla):
         """Show context menu over cell"""
         menu = QtWidgets.QMenu()
         actionCopy = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "&Copy"),
+            tr("pychemqt", "&Copy"),
             slot=partial(self.copy, event),
             shortcut=QtGui.QKeySequence.StandardKey.Copy,
             icon=os.path.join("button", "editCopy.png"),
             parent=self)
         export = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "E&xport to csv"),
+            tr("pychemqt", "E&xport to csv"),
             self.exportCSV,
             icon=os.path.join("button", "export.png"),
-            tip=QtWidgets.QApplication.translate(
-                "pychemqt", "Export table to file"),
+            tip=tr("pychemqt", "Export table to file"),
             parent=self)
         menu.addAction(actionCopy)
         menu.addSeparator()
@@ -603,23 +589,21 @@ class TablaMEoS(Tabla):
             folder = "."
 
         pat = []
-        pat.append(QtWidgets.QApplication.translate(
-            "pychemqt", "CSV files") + " (*.csv)")
+        pat.append(tr("pychemqt", "CSV files") + " (*.csv)")
         if os.environ["ezodf"] == "True":
-            pat.append(QtWidgets.QApplication.translate(
+            pat.append(tr(
                 "pychemqt", "Libreoffice spreadsheet files") + " (*.ods)")
         if os.environ["xlwt"] == "True":
-            pat.append(QtWidgets.QApplication.translate(
+            pat.append(tr(
                 "pychemqt",
                 "Microsoft Excel 97/2000/XP/2003 XML") + " (*.xls)")
         if os.environ["openpyxl"] == "True":
-            pat.append(QtWidgets.QApplication.translate(
+            pat.append(tr(
                 "pychemqt", "Microsoft Excel 2007/2010 XML") + " (*.xlsx)")
         patron = ";;".join(pat)
 
         fname, ext = QtWidgets.QFileDialog.getSaveFileName(
-            self, QtWidgets.QApplication.translate(
-                "pychemqt", "Export table to file"), folder, patron)
+            self, tr("pychemqt", "Export table to file"), folder, patron)
         if fname and ext:
             ext = ext.split(".")[-1][:-1]
             exportTable(self.data, fname, ext, self.horizontalHeaderLabel)
@@ -718,44 +702,38 @@ class Ui_Saturation(QtWidgets.QDialog):
             Index of fluid in list
         """
         super().__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Saturation Table"))
+        self.setWindowTitle(tr("pychemqt", "Saturation Table"))
         layout = QtWidgets.QGridLayout(self)
 
-        gboxType = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Interphase"))
+        gboxType = QtWidgets.QGroupBox(tr("pychemqt", "Interphase"))
         layout.addWidget(gboxType, 1, 1, 1, 2)
         layoutg1 = QtWidgets.QGridLayout(gboxType)
-        self.VL = QtWidgets.QRadioButton(QtWidgets.QApplication.translate(
+        self.VL = QtWidgets.QRadioButton(tr(
             "pychemqt", "Vapor-Liquid (boiling line)"))
         layoutg1.addWidget(self.VL, 1, 1)
-        self.SL = QtWidgets.QRadioButton(QtWidgets.QApplication.translate(
+        self.SL = QtWidgets.QRadioButton(tr(
             "pychemqt", "Solid-Liquid (melting line"))
         layoutg1.addWidget(self.SL, 2, 1)
-        self.SV = QtWidgets.QRadioButton(QtWidgets.QApplication.translate(
+        self.SV = QtWidgets.QRadioButton(tr(
             "pychemqt", "Solid-Vapor (Sublimation line)"))
         layoutg1.addWidget(self.SV, 3, 1)
 
-        groupboxVariar = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Change"))
+        groupboxVariar = QtWidgets.QGroupBox(tr("pychemqt", "Change"))
         layout.addWidget(groupboxVariar, 1, 3, 1, 2)
         layoutg2 = QtWidgets.QGridLayout(groupboxVariar)
         self.VariarTemperatura = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate("pychemqt", "Temperature"))
+            tr("pychemqt", "Temperature"))
         self.VariarTemperatura.toggled.connect(self.updateVar)
         layoutg2.addWidget(self.VariarTemperatura, 1, 1)
-        self.VariarPresion = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate("pychemqt", "Pressure"))
+        self.VariarPresion = QtWidgets.QRadioButton(tr("pychemqt", "Pressure"))
         self.VariarPresion.toggled.connect(self.updateVar)
         layoutg2.addWidget(self.VariarPresion, 2, 1)
         self.VariarXconT = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Quality at fixed temperature"))
+            tr("pychemqt", "Quality at fixed temperature"))
         self.VariarXconT.toggled.connect(self.updateVar)
         layoutg2.addWidget(self.VariarXconT, 3, 1)
         self.VariarXconP = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Quality at fixed pressure"))
+            tr("pychemqt", "Quality at fixed pressure"))
         self.VariarXconP.toggled.connect(self.updateVar)
         layoutg2.addWidget(self.VariarXconP, 4, 1)
 
@@ -768,18 +746,15 @@ class Ui_Saturation(QtWidgets.QDialog):
         layout.addWidget(self.labelFix, 4, 3)
         self.variableFix = Entrada_con_unidades(float)
         layout.addWidget(self.variableFix, 4, 4)
-        self.labelinicial = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Initial"))
+        self.labelinicial = QtWidgets.QLabel(tr("pychemqt", "Initial"))
         layout.addWidget(self.labelinicial, 4, 1)
         self.Inicial = Entrada_con_unidades(float)
         layout.addWidget(self.Inicial, 4, 2)
-        self.labelfinal = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Final"))
+        self.labelfinal = QtWidgets.QLabel(tr("pychemqt", "Final"))
         layout.addWidget(self.labelfinal, 5, 1)
         self.Final = Entrada_con_unidades(float)
         layout.addWidget(self.Final, 5, 2)
-        self.labelincremento = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Increment"))
+        self.labelincremento = QtWidgets.QLabel(tr("pychemqt", "Increment"))
         layout.addWidget(self.labelincremento, 6, 1)
         self.Incremento = Entrada_con_unidades(float)
         layout.addWidget(self.Incremento, 6, 2)
@@ -851,10 +826,8 @@ class Ui_Saturation(QtWidgets.QDialog):
                     unidades.Temperature, value=fix)
                 self.layout().addWidget(self.variableFix, 4, 4)
                 unidadVariable = float
-                self.labelinicial.setText(QtWidgets.QApplication.translate(
-                    "pychemqt", "Initial quality"))
-                self.labelfinal.setText(QtWidgets.QApplication.translate(
-                    "pychemqt", "Final quality"))
+                self.labelinicial.setText(tr("pychemqt", "Initial quality"))
+                self.labelfinal.setText(tr("pychemqt", "Final quality"))
 
             elif self.sender() == self.VariarXconP:
                 self.labelFix.setVisible(True)
@@ -864,28 +837,23 @@ class Ui_Saturation(QtWidgets.QDialog):
                     unidades.Pressure, value=fix)
                 self.layout().addWidget(self.variableFix, 4, 4)
                 unidadVariable = float
-                self.labelinicial.setText(QtWidgets.QApplication.translate(
-                    "pychemqt", "Initial quality"))
-                self.labelfinal.setText(QtWidgets.QApplication.translate(
-                    "pychemqt", "Final quality"))
+                self.labelinicial.setText(tr("pychemqt", "Initial quality"))
+                self.labelfinal.setText(tr("pychemqt", "Final quality"))
 
             elif self.sender() == self.VariarTemperatura:
                 self.labelFix.setVisible(False)
                 self.variableFix.setVisible(False)
                 unidadVariable = unidades.Temperature
-                self.labelinicial.setText(QtWidgets.QApplication.translate(
+                self.labelinicial.setText(tr(
                     "pychemqt", "Initial temperature"))
-                self.labelfinal.setText(QtWidgets.QApplication.translate(
-                    "pychemqt", "Final temperature"))
+                self.labelfinal.setText(tr("pychemqt", "Final temperature"))
 
             else:
                 self.labelFix.setVisible(False)
                 self.variableFix.setVisible(False)
                 unidadVariable = unidades.Pressure
-                self.labelinicial.setText(QtWidgets.QApplication.translate(
-                    "pychemqt", "Initial pressure"))
-                self.labelfinal.setText(QtWidgets.QApplication.translate(
-                    "pychemqt", "Final pressure"))
+                self.labelinicial.setText(tr("pychemqt", "Initial pressure"))
+                self.labelfinal.setText(tr("pychemqt", "Final pressure"))
 
             self.Inicial = Entrada_con_unidades(unidadVariable, value=inicial)
             self.Final = Entrada_con_unidades(unidadVariable, value=final)
@@ -905,13 +873,13 @@ class Ui_Saturation(QtWidgets.QDialog):
 class Ui_Isoproperty(QtWidgets.QDialog):
     """Dialog to define input for isoproperty table calculations"""
     propiedades = [
-        QtWidgets.QApplication.translate("pychemqt", "Temperature"),
-        QtWidgets.QApplication.translate("pychemqt", "Pressure"),
-        QtWidgets.QApplication.translate("pychemqt", "Density"),
-        QtWidgets.QApplication.translate("pychemqt", "Volume"),
-        QtWidgets.QApplication.translate("pychemqt", "Enthalpy"),
-        QtWidgets.QApplication.translate("pychemqt", "Entropy"),
-        QtWidgets.QApplication.translate("pychemqt", "Internal Energy")]
+        tr("pychemqt", "Temperature"),
+        tr("pychemqt", "Pressure"),
+        tr("pychemqt", "Density"),
+        tr("pychemqt", "Volume"),
+        tr("pychemqt", "Enthalpy"),
+        tr("pychemqt", "Entropy"),
+        tr("pychemqt", "Internal Energy")]
     unidades = [unidades.Temperature, unidades.Pressure, unidades.Density,
                 unidades.SpecificVolume, unidades.Enthalpy,
                 unidades.SpecificHeat, unidades.Enthalpy, float]
@@ -919,19 +887,17 @@ class Ui_Isoproperty(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
-            "pychemqt", "Specify Isoproperty Table"))
+        self.setWindowTitle(tr("pychemqt", "Specify Isoproperty Table"))
         layout = QtWidgets.QGridLayout(self)
 
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Hold constant")), 1, 1)
         self.fix = QtWidgets.QComboBox()
         for propiedad in self.propiedades:
             self.fix.addItem(propiedad)
         self.fix.currentIndexChanged.connect(self.actualizarUI)
         layout.addWidget(self.fix, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
-            "pychemqt", "Vary")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Vary")), 2, 1)
         self.vary = QtWidgets.QComboBox()
         self.vary.currentIndexChanged.connect(self.actualizarVariable)
         layout.addWidget(self.vary, 2, 2)
@@ -945,18 +911,15 @@ class Ui_Isoproperty(QtWidgets.QDialog):
         layout.addWidget(self.labelFix, 4, 1)
         self.variableFix = Entrada_con_unidades(float)
         layout.addWidget(self.variableFix, 4, 2)
-        self.labelinicial = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Initial"))
+        self.labelinicial = QtWidgets.QLabel(tr("pychemqt", "Initial"))
         layout.addWidget(self.labelinicial, 5, 1)
         self.Inicial = Entrada_con_unidades(float)
         layout.addWidget(self.Inicial, 5, 2)
-        self.labelfinal = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Final"))
+        self.labelfinal = QtWidgets.QLabel(tr("pychemqt", "Final"))
         layout.addWidget(self.labelfinal, 6, 1)
         self.Final = Entrada_con_unidades(float)
         layout.addWidget(self.Final, 6, 2)
-        self.labelincremento = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Increment"))
+        self.labelincremento = QtWidgets.QLabel(tr("pychemqt", "Increment"))
         layout.addWidget(self.labelincremento, 7, 1)
         self.Incremento = Entrada_con_unidades(float)
         layout.addWidget(self.Incremento, 7, 2)
@@ -974,8 +937,7 @@ class Ui_Isoproperty(QtWidgets.QDialog):
         self.vary.clear()
         propiedades = self.propiedades[:]
         if indice <= 1:
-            propiedades.append(QtWidgets.QApplication.translate(
-                "pychemqt", "Quality"))
+            propiedades.append(tr("pychemqt", "Quality"))
         del propiedades[indice]
         for propiedad in propiedades:
             self.vary.addItem(propiedad)
@@ -1013,8 +975,7 @@ class AddPoint(QtWidgets.QDialog):
         melting: boolean to add melting line calculation
         """
         super().__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Add Point to line"))
+        self.setWindowTitle(tr("pychemqt", "Add Point to line"))
         layout = QtWidgets.QGridLayout(self)
         self.fluid = fluid
 
@@ -1035,22 +996,20 @@ class AddPoint(QtWidgets.QDialog):
 
         if isinstance(fluid, meos.MEoS) and fluid._melting:
             self.checkMelting = QtWidgets.QRadioButton(
-                QtWidgets.QApplication.translate("pychemqt", "Melting Point"))
+                tr("pychemqt", "Melting Point"))
             self.checkMelting.setChecked(melting)
             layout.addWidget(self.checkMelting, row+2, 1, 1, 2)
             row += 1
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "To")), row+2, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "To")), row+2, 1)
         self.To = Entrada_con_unidades(unidades.Temperature)
         self.To.valueChanged.connect(partial(self.update, "To"))
         layout.addWidget(self.To, row+2, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "rhoo")), row+3, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "rhoo")), row+3, 1)
         self.rhoo = Entrada_con_unidades(unidades.Density)
         self.rhoo.valueChanged.connect(partial(self.update, "rhoo"))
         layout.addWidget(self.rhoo, row+3, 2)
 
-        self.checkBelow = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.checkBelow = QtWidgets.QCheckBox(tr(
             "pychemqt", "Add below selected point"))
         layout.addWidget(self.checkBelow, row+4, 1, 1, 2)
 

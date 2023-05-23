@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from ast import literal_eval
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 
 from lib import unidades
 from lib.thermo import ThermoAdvanced
@@ -43,23 +43,21 @@ class Ui_ReferenceState(QtWidgets.QDialog):
     def __init__(self, config=None, parent=None):
         """config: instance with project config to set initial values"""
         super().__init__(parent)
-        self.setWindowTitle(QtWidgets.QApplication.translate(
-            "pychemqt", "Select reference state"))
+        self.setWindowTitle(tr("pychemqt", "Select reference state"))
         layout = QtWidgets.QGridLayout(self)
-        self.OTO = QtWidgets.QRadioButton(QtWidgets.QApplication.translate(
+        self.OTO = QtWidgets.QRadioButton(tr(
             "pychemqt", "OTO,  h,s=0 at 298K and 1 atm"))
         layout.addWidget(self.OTO, 0, 1, 1, 7)
-        self.NBP = QtWidgets.QRadioButton(QtWidgets.QApplication.translate(
+        self.NBP = QtWidgets.QRadioButton(tr(
             "pychemqt", "NBP,  h,s=0 saturated liquid at Tb"))
         layout.addWidget(self.NBP, 1, 1, 1, 7)
-        self.IIR = QtWidgets.QRadioButton(QtWidgets.QApplication.translate(
+        self.IIR = QtWidgets.QRadioButton(tr(
             "pychemqt", "IIR,  h=200,s=1 saturated liquid at 273K"))
         layout.addWidget(self.IIR, 2, 1, 1, 7)
-        self.ASHRAE = QtWidgets.QRadioButton(QtWidgets.QApplication.translate(
+        self.ASHRAE = QtWidgets.QRadioButton(tr(
             "pychemqt", "ASHRAE,  h,s=0 saturated liquid at 243K"))
         layout.addWidget(self.ASHRAE, 3, 1, 1, 7)
-        self.personalizado = QtWidgets.QRadioButton(
-            QtWidgets.QApplication.translate("pychemqt", "Custom"))
+        self.personalizado = QtWidgets.QRadioButton(tr("pychemqt", "Custom"))
         self.personalizado.toggled.connect(self.setEnabled)
         layout.addWidget(self.personalizado, 4, 1, 1, 7)
 
@@ -140,8 +138,7 @@ class Ui_Properties(QtWidgets.QDialog):
             fase = False
             self.order = list(range(N_PROP))
 
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Select Properties"))
+        self.setWindowTitle(tr("pychemqt", "Select Properties"))
         layout = QtWidgets.QGridLayout(self)
         self.prop = QtWidgets.QTableWidget(len(ThermoAdvanced.properties()), 2)
         self.prop.verticalHeader().hide()
@@ -181,7 +178,7 @@ class Ui_Properties(QtWidgets.QDialog):
         self.ButtonAbajo.clicked.connect(self.Down)
         layout.addWidget(self.ButtonAbajo, 4, 2, 1, 1)
 
-        self.checkFase = QtWidgets.QCheckBox(QtWidgets.QApplication.translate(
+        self.checkFase = QtWidgets.QCheckBox(tr(
             "pychemqt", "Show bulk, liquid and vapor properties"))
         self.checkFase.setChecked(fase)
         layout.addWidget(self.checkFase, 7, 1, 1, 2)
@@ -190,10 +187,9 @@ class Ui_Properties(QtWidgets.QDialog):
             | QtWidgets.QDialogButtonBox.StandardButton.Ok
             | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.addButton(
-            QtWidgets.QApplication.translate("pychemqt", "Mark all"),
+            tr("pychemqt", "Mark all"),
             QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-        self.buttonBox.addButton(
-            QtWidgets.QApplication.translate("pychemqt", "No Mark"),
+        self.buttonBox.addButton(tr("pychemqt", "No Mark"),
             QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
         self.btYes = QtWidgets.QPushButton
         self.buttonBox.clicked.connect(self.buttonClicked)
@@ -244,8 +240,7 @@ class Ui_Properties(QtWidgets.QDialog):
             if boton == self.buttonBox.button(
                     QtWidgets.QDialogButtonBox.StandardButton.Reset):
                 values = self._default
-            elif boton.text() == \
-                    QtWidgets.QApplication.translate("pychemqt", "No Mark"):
+            elif boton.text() == tr("pychemqt", "No Mark"):
                 values = [0]*N_PROP
             else:
                 values = [1]*N_PROP

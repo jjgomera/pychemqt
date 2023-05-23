@@ -47,7 +47,7 @@ from numpy import concatenate, linspace, logspace, transpose, log, nan, array
 from matplotlib import colormaps as cm
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.font_manager import FontProperties
-from tools.qt import QtCore, QtGui, QtWidgets, __qt__
+from tools.qt import QtCore, QtGui, QtWidgets, __qt__, tr
 
 from lib import meos, unidades, plot, config
 from lib.thermo import ThermoAdvanced
@@ -95,26 +95,25 @@ class PlotMEoS(QtWidgets.QWidget):
         layout.addWidget(self.toolbar)
 
         self.editAxesAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Edit &Axis"),
+            tr("pychemqt", "Edit &Axis"),
             icon=os.path.join("button", "editor.png"),
             slot=self.editAxis, parent=self)
         self.editAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Edit &Plot"),
+            tr("pychemqt", "Edit &Plot"),
             slot=self.edit,
             icon=os.path.join("button", "fit.png"),
             parent=self)
         self.editMarginAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Edit &Margins"),
+            tr("pychemqt", "Edit &Margins"),
             slot=self.toolbar.configure_subplots, parent=self)
         self.saveAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "&Save Plot"),
+            tr("pychemqt", "&Save Plot"),
             slot=self.toolbar.save_figure,
             icon=os.path.join("button", "fileSave.png"), parent=self)
         self.toolbarVisibleAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Toggle &Toolbar"),
+            tr("pychemqt", "Toggle &Toolbar"),
             slot=self.toolbar.setVisible, checkable=True, parent=self)
-        self.gridToggleAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Toggle &Grid"),
+        self.gridToggleAction = createAction(tr("pychemqt", "Toggle &Grid"),
             slot=self.grid, checkable=True, parent=self)
         grid = config.Preferences.getboolean("MEOS", "grid")
         self.gridToggleAction.setChecked(grid)
@@ -157,8 +156,7 @@ class PlotMEoS(QtWidgets.QWidget):
 
     def contextMenuEvent(self, event):
         """Create context menu"""
-        menuTable = QtWidgets.QMenu(
-            QtWidgets.QApplication.translate("pychemqt", "Tabulated data"))
+        menuTable = QtWidgets.QMenu(tr("pychemqt", "Tabulated data"))
         menuTable.setIcon(
             QtGui.QIcon(os.environ["pychemqt"]+"/images/button/table"))
         for linea in self.plot.ax.lines:
@@ -234,8 +232,7 @@ class PlotMEoS(QtWidgets.QWidget):
             QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
 
         self.parent.centralWidget().currentWidget().addSubWindow(tabla)
-        title = QtWidgets.QApplication.translate("pychemqt", "Table from") + \
-            " " + obj.get_label()
+        title = tr("pychemqt", "Table from") + " " + obj.get_label()
         tabla.setWindowTitle(title)
         wdg = self.parent.centralWidget().currentWidget().subWindowList()[-1]
         wdg.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(tabla.icon)))
@@ -671,29 +668,24 @@ class Plot2D(QtWidgets.QDialog):
     """Dialog for select a special 2D plot"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Setup 2D Plot"))
+        self.setWindowTitle(tr("pychemqt", "Setup 2D Plot"))
         layout = QtWidgets.QVBoxLayout(self)
-        group_Ejex = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Axis X"))
+        group_Ejex = QtWidgets.QGroupBox(tr("pychemqt", "Axis X"))
         layout.addWidget(group_Ejex)
         layout_GroupX = QtWidgets.QVBoxLayout(group_Ejex)
         self.ejeX = QtWidgets.QComboBox()
         layout_GroupX.addWidget(self.ejeX)
-        self.Xscale = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
+        self.Xscale = QtWidgets.QCheckBox(tr("pychemqt", "Logarithmic scale"))
         layout_GroupX.addWidget(self.Xscale)
         for prop in ThermoAdvanced.propertiesName():
             self.ejeX.addItem(prop)
 
-        group_Ejey = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Axis Y"))
+        group_Ejey = QtWidgets.QGroupBox(tr("pychemqt", "Axis Y"))
         layout.addWidget(group_Ejey)
         layout_GroupY = QtWidgets.QVBoxLayout(group_Ejey)
         self.ejeY = QtWidgets.QComboBox()
         layout_GroupY.addWidget(self.ejeY)
-        self.Yscale = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
+        self.Yscale = QtWidgets.QCheckBox(tr("pychemqt", "Logarithmic scale"))
         layout_GroupY.addWidget(self.Yscale)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
@@ -734,33 +726,27 @@ class Plot3D(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Setup 3D Plot"))
+        self.setWindowTitle(tr("pychemqt", "Setup 3D Plot"))
         layout = QtWidgets.QGridLayout(self)
 
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Axis X")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Axis X")), 1, 1)
         self.ejeX = QtWidgets.QComboBox()
         for prop in ThermoAdvanced.propertiesName():
             self.ejeX.addItem(prop)
         layout.addWidget(self.ejeX, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Axis Y")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Axis Y")), 2, 1)
         self.ejeY = QtWidgets.QComboBox()
         layout.addWidget(self.ejeY, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Axis Z")), 3, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Axis Z")), 3, 1)
         self.ejeZ = QtWidgets.QComboBox()
         layout.addWidget(self.ejeZ, 3, 2)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 3)
-        self.checkMesh = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Draw 3D mesh"))
+        self.checkMesh = QtWidgets.QCheckBox(tr("pychemqt", "Draw 3D mesh"))
         layout.addWidget(self.checkMesh, 5, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Mesh type")), 6, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Mesh type")), 6, 1)
         self.typeMesh = QtWidgets.QComboBox()
         self.typeMesh.addItem("Surface")
         self.typeMesh.addItem("Wireframe")
@@ -841,8 +827,7 @@ class EditPlot(QtWidgets.QDialog):
     """Dialog to edit plot. This dialog let user change plot properties"""
     def __init__(self, plotMEoS, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Edit Plot"))
+        self.setWindowTitle(tr("pychemqt", "Edit Plot"))
         layout = QtWidgets.QGridLayout(self)
         self.plotMEoS = plotMEoS
         self.fig = plotMEoS.plot
@@ -853,19 +838,15 @@ class EditPlot(QtWidgets.QDialog):
         layout.addWidget(self.lista, 0, 1, 1, 3)
 
         lytTitle = QtWidgets.QHBoxLayout()
-        label = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Label"))
+        label = QtWidgets.QLabel(tr("pychemqt", "Label"))
         lytTitle.addWidget(label)
         self.label = QtWidgets.QLineEdit()
         lytTitle.addWidget(self.label)
         layout.addLayout(lytTitle, 1, 1, 1, 3)
 
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Line Width")), 2, 1)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Line Style")), 2, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Color")), 2, 3)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Line Width")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Line Style")), 2, 2)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Color")), 2, 3)
         self.Grosor = QtWidgets.QDoubleSpinBox()
         self.Grosor.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.Grosor.setRange(0.1, 5)
@@ -877,11 +858,9 @@ class EditPlot(QtWidgets.QDialog):
         self.ColorButton = ColorSelector()
         layout.addWidget(self.ColorButton, 3, 3)
 
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Marker")), 4, 1)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Marker Size")), 4, 2)
-        layout.addWidget(QtWidgets.QLabel(QtWidgets.QApplication.translate(
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Marker")), 4, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Marker Size")), 4, 2)
+        layout.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Marker Color")), 4, 3)
         self.Marca = MarkerCombo()
         layout.addWidget(self.Marca, 5, 1)
@@ -893,12 +872,9 @@ class EditPlot(QtWidgets.QDialog):
         self.markerfacecolor = ColorSelector()
         layout.addWidget(self.markerfacecolor, 5, 3)
 
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Marker edge")), 7, 1)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Width")), 6, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Color")), 6, 3)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Marker edge")), 7, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Width")), 6, 2)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Color")), 6, 3)
         self.markerEdgeSize = QtWidgets.QDoubleSpinBox()
         self.markerEdgeSize.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.markerEdgeSize.setDecimals(1)
@@ -907,25 +883,21 @@ class EditPlot(QtWidgets.QDialog):
         self.markeredgecolor = ColorSelector()
         layout.addWidget(self.markeredgecolor, 7, 3)
 
-        grpAnnotate = QtWidgets.QGroupBox(
-            QtWidgets.QApplication.translate("pychemqt", "Annotation"))
+        grpAnnotate = QtWidgets.QGroupBox(tr("pychemqt", "Annotation"))
         layout.addWidget(grpAnnotate, 8, 1, 1, 3)
         lytAnnotation = QtWidgets.QGridLayout(grpAnnotate)
-        self.annotationVisible = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Visible"))
+        self.annotationVisible = QtWidgets.QCheckBox(tr("pychemqt", "Visible"))
         lytAnnotation.addWidget(self.annotationVisible, 1, 1, 1, 3)
 
         lytTitle = QtWidgets.QHBoxLayout()
-        label = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Label"))
+        label = QtWidgets.QLabel(tr("pychemqt", "Label"))
         lytTitle.addWidget(label)
         self.annotationLabel = InputFont()
         lytTitle.addWidget(self.annotationLabel)
         lytAnnotation.addLayout(lytTitle, 2, 1, 1, 3)
 
         lytPosition = QtWidgets.QHBoxLayout()
-        lytPosition.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Location")))
+        lytPosition.addWidget(QtWidgets.QLabel(tr("pychemqt", "Location")))
         self.labelAnnotationPos = Entrada_con_unidades(
             int, value=50, width=40, frame=False, readOnly=True, suffix="%",
             showNull=True)
@@ -941,8 +913,7 @@ class EditPlot(QtWidgets.QDialog):
         lytAnnotation.addLayout(lytPosition, 3, 1, 1, 3)
 
         lytAngle = QtWidgets.QHBoxLayout()
-        lytAngle.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Rotation")))
+        lytAngle.addWidget(QtWidgets.QLabel(tr("pychemqt", "Rotation")))
         self.labelAnnotationRot = Entrada_con_unidades(
             int, value=50, width=40, frame=False, readOnly=True, suffix="º",
             showNull=True)
@@ -958,15 +929,14 @@ class EditPlot(QtWidgets.QDialog):
         lytAnnotation.addLayout(lytAngle, 4, 1, 1, 3)
 
         lytVA = QtWidgets.QHBoxLayout()
-        lytVA.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Aligment")))
+        lytVA.addWidget(QtWidgets.QLabel(tr("pychemqt", "Aligment")))
         self.annotationVA = QtWidgets.QComboBox()
         alignment = [
-            QtWidgets.QApplication.translate("pychemqt", "Center"),
-            QtWidgets.QApplication.translate("pychemqt", "Top"),
-            QtWidgets.QApplication.translate("pychemqt", "Bottom"),
-            QtWidgets.QApplication.translate("pychemqt", "Baseline"),
-            QtWidgets.QApplication.translate("pychemqt", "Center baseline")]
+            tr("pychemqt", "Center"),
+            tr("pychemqt", "Top"),
+            tr("pychemqt", "Bottom"),
+            tr("pychemqt", "Baseline"),
+            tr("pychemqt", "Center baseline")]
         for alig in alignment:
             self.annotationVA.addItem(alig)
         lytVA.addWidget(self.annotationVA)
@@ -982,11 +952,9 @@ class EditPlot(QtWidgets.QDialog):
         self.annotationVisible.stateChanged.connect(
             self.annotationRot.setEnabled)
 
-        self.visible = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Visible"))
+        self.visible = QtWidgets.QCheckBox(tr("pychemqt", "Visible"))
         layout.addWidget(self.visible, 13, 1, 1, 3)
-        self.antialiases = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Antialiases"))
+        self.antialiases = QtWidgets.QCheckBox(tr("pychemqt", "Antialiases"))
         layout.addWidget(self.antialiases, 14, 1, 1, 3)
 
         layoutButton = QtWidgets.QHBoxLayout()
@@ -1164,8 +1132,7 @@ class EditPlot(QtWidgets.QDialog):
             if prop == 0:
                 # Calcualte isotherm line
                 self.parent.statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Adding isotherm line..."))
+                    tr("pychemqt", "Adding isotherm line..."))
                 fluidos = calcIsoline(
                     fluid, self.parent.currentConfig, "P", "T", P, value,
                     0, 0, 100, 1, self.parent.progressBar)
@@ -1175,8 +1142,7 @@ class EditPlot(QtWidgets.QDialog):
             elif prop == 1:
                 # Calculate isobar line
                 self.parent.statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Adding isobar line..."))
+                    tr("pychemqt", "Adding isobar line..."))
                 fluidos = calcIsoline(
                     fluid, self.parent.currentConfig, "T", "P", T, value,
                     0, 0, 100, 1, self.parent.progressBar)
@@ -1186,8 +1152,7 @@ class EditPlot(QtWidgets.QDialog):
             elif prop == 2:
                 # Calculate isoenthalpic line
                 self.parent.statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Adding isoenthalpic line..."))
+                    tr("pychemqt", "Adding isoenthalpic line..."))
                 fluidos = calcIsoline(
                     fluid, self.parent.currentConfig, "P", "h", P, value,
                     0, 0, 100, 1, self.parent.progressBar)
@@ -1197,8 +1162,7 @@ class EditPlot(QtWidgets.QDialog):
             elif prop == 3:
                 # Calculate isoentropic line
                 self.parent.statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Adding isoentropic line..."))
+                    tr("pychemqt", "Adding isoentropic line..."))
                 fluidos = calcIsoline(
                     fluid, self.parent.currentConfig, "T", "s", T, value,
                     0, 0, 100, 1, self.parent.progressBar)
@@ -1208,8 +1172,7 @@ class EditPlot(QtWidgets.QDialog):
             elif prop == 4:
                 # Calculate isochor line
                 self.parent.statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Adding isochor line..."))
+                    tr("pychemqt", "Adding isochor line..."))
                 fluidos = calcIsoline(
                     fluid, self.parent.currentConfig, "T", "v", T, value,
                     0, 0, 100, 1, self.parent.progressBar)
@@ -1219,8 +1182,7 @@ class EditPlot(QtWidgets.QDialog):
             elif prop == 5:
                 # Calculate isodensity line
                 self.parent.statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Adding isodensity line..."))
+                    tr("pychemqt", "Adding isodensity line..."))
                 fluidos = calcIsoline(
                     fluid, self.parent.currentConfig, "T", "rho", T, value,
                     0, 0, 100, 1, self.parent.progressBar)
@@ -1230,8 +1192,7 @@ class EditPlot(QtWidgets.QDialog):
             elif prop == 6:
                 # Calculate isoquality line
                 self.parent.statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Adding isoquality line..."))
+                    tr("pychemqt", "Adding isoquality line..."))
                 T = T[:3*points-2]
                 fluidos = calcIsoline(
                     fluid, self.parent.currentConfig, "T", "x", T, value,
@@ -1279,8 +1240,7 @@ class EditPlot(QtWidgets.QDialog):
 
     def remove(self):
         """Remove a line from plot"""
-        self.parent.statusBar().showMessage(QtWidgets.QApplication.translate(
-            "pychemqt", "Deleting line..."))
+        self.parent.statusBar().showMessage(tr("pychemqt", "Deleting line..."))
         QtWidgets.QApplication.processEvents()
 
         # Remove data from file
@@ -1319,31 +1279,23 @@ class EditPlot(QtWidgets.QDialog):
 
 class AddLine(QtWidgets.QDialog):
     """Dialog to add new isoline to plot"""
-    lineas = [(QtWidgets.QApplication.translate("pychemqt", "Isotherm"),
-               unidades.Temperature, None),
-              (QtWidgets.QApplication.translate("pychemqt", "Isobar"),
-               unidades.Pressure, None),
-              (QtWidgets.QApplication.translate("pychemqt", "Isoenthalpic"),
-               unidades.Enthalpy, None),
-              (QtWidgets.QApplication.translate("pychemqt", "Isoentropic"),
-              unidades.SpecificHeat, "SpecificEntropy"),
-              (QtWidgets.QApplication.translate("pychemqt", "Isochor"),
-              unidades.SpecificVolume, None),
-              (QtWidgets.QApplication.translate("pychemqt", "Isodensity"),
-              unidades.Density, None),
-              (QtWidgets.QApplication.translate("pychemqt", "Isoquality"),
-              float, None)]
+    lineas = [(tr("pychemqt", "Isotherm"), unidades.Temperature, None),
+              (tr("pychemqt", "Isobar"), unidades.Pressure, None),
+              (tr("pychemqt", "Isoenthalpic"), unidades.Enthalpy, None),
+              (tr("pychemqt", "Isoentropic"), unidades.SpecificHeat,
+               "SpecificEntropy"),
+              (tr("pychemqt", "Isochor"), unidades.SpecificVolume, None),
+              (tr("pychemqt", "Isodensity"), unidades.Density, None),
+              (tr("pychemqt", "Isoquality"), float, None)]
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Add Line to Plot"))
+        self.setWindowTitle(tr("pychemqt", "Add Line to Plot"))
         layout = QtWidgets.QGridLayout(self)
 
         self.tipo = QtWidgets.QComboBox()
         layout.addWidget(self.tipo, 1, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Value")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Value")), 2, 1)
 
         self.input = []
         for title, unidad, magnitud in self.lineas:
@@ -1372,14 +1324,12 @@ class EditAxis(QtWidgets.QDialog):
     """Dialog to configure axes plot properties, label, margins, scales"""
     def __init__(self, fig=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Edit Axis"))
+        self.setWindowTitle(tr("pychemqt", "Edit Axis"))
         layout = QtWidgets.QGridLayout(self)
         self.fig = fig
 
         lytTitle = QtWidgets.QHBoxLayout()
-        lb = QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Title"))
+        lb = QtWidgets.QLabel(tr("pychemqt", "Title"))
         lb.setSizePolicy(QtWidgets.QSizePolicy.Policy.Maximum,
                          QtWidgets.QSizePolicy.Policy.Maximum)
         lytTitle.addWidget(lb)
@@ -1399,8 +1349,7 @@ class EditAxis(QtWidgets.QDialog):
             self.axisY.scale.setEnabled(False)
             self.axisZ.scale.setEnabled(False)
 
-        self.gridCheckbox = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Show Grid"))
+        self.gridCheckbox = QtWidgets.QCheckBox(tr("pychemqt", "Show Grid"))
         layout.addWidget(self.gridCheckbox, 3, 1, 1, self.fig.dim)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
@@ -1562,22 +1511,18 @@ def convertFont(qfont):
 class AxisWidget(QtWidgets.QGroupBox):
     """Dialog to configure axes plot properties"""
     def __init__(self, name, parent=None):
-        title = name+" "+QtWidgets.QApplication.translate("pychemqt", "Axis")
+        title = name+" "+tr("pychemqt", "Axis")
         super().__init__(title, parent)
         lyt = QtWidgets.QGridLayout(self)
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "Label")), 1, 1)
+        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "Label")), 1, 1)
         self.label = InputFont()
         lyt.addWidget(self.label, 1, 2)
-        self.scale = QtWidgets.QCheckBox(
-            QtWidgets.QApplication.translate("pychemqt", "Logarithmic scale"))
+        self.scale = QtWidgets.QCheckBox(tr("pychemqt", "Logarithmic scale"))
         lyt.addWidget(self.scale, 2, 1, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "from")), 3, 1)
+        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "from")), 3, 1)
         self.min = Entrada_con_unidades(float, min=float("-inf"))
         lyt.addWidget(self.min, 3, 2)
-        lyt.addWidget(QtWidgets.QLabel(
-            QtWidgets.QApplication.translate("pychemqt", "to")), 4, 1)
+        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "to")), 4, 1)
         self.max = Entrada_con_unidades(float, min=float("-inf"))
         lyt.addWidget(self.max, 4, 2)
 
@@ -1782,14 +1727,11 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None, mesh=False, typemesh=0):
     # Plot saturation lines
     fmt = getLineFormat(Preferences, "saturation")
     if x == "P" and y == "T":
-        satLines = (QtWidgets.QApplication.translate(
-            "pychemqt", "Saturation Line"))
+        satLines = (tr("pychemqt", "Saturation Line"))
     else:
         satLines = [
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Liquid Saturation Line"),
-            QtWidgets.QApplication.translate(
-                "pychemqt", "Vapor Saturation Line")]
+            tr("pychemqt", "Liquid Saturation Line"),
+            tr("pychemqt", "Vapor Saturation Line")]
     for fase, label in enumerate(satLines):
         xsat = list(map(functionx, data["saturation_%i" % fase][x]))
         ysat = list(map(functiony, data["saturation_%i" % fase][y]))
@@ -1801,7 +1743,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None, mesh=False, typemesh=0):
 
     # Plot melting and sublimation lines
     if "melting" in data:
-        label = QtWidgets.QApplication.translate("pychemqt", "Melting Line")
+        label = tr("pychemqt", "Melting Line")
         xmel = list(map(functionx, data["melting"][x]))
         ymel = list(map(functiony, data["melting"][y]))
         if z:
@@ -1812,8 +1754,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None, mesh=False, typemesh=0):
     if "sublimation" in data:
         xsub = list(map(functionx, data["sublimation"][x]))
         ysub = list(map(functiony, data["sublimation"][y]))
-        label = QtWidgets.QApplication.translate(
-            "pychemqt", "Sublimation Line")
+        label = tr("pychemqt", "Sublimation Line")
         if z:
             zmel = list(map(functionz, data["melting"][z]))
             grafico.plot.ax.plot(xmel, ymel, zmel, label=label, **fmt)

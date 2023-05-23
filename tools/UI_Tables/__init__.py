@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=protected-access, not-callable
 
 '''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2023, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -97,7 +98,7 @@ from scipy.optimize import fsolve
 from lib import config, meos, mEoS, unidades
 from lib.thermo import ThermoAdvanced
 from UI.widgets import createAction
-from tools.qt import QtGui, QtWidgets
+from tools.qt import QtGui, QtWidgets, tr
 
 from tools.UI_Tables.chooseFluid import Ui_ChooseFluid
 from tools.UI_Tables.library import N_PROP, KEYS, UNITS
@@ -123,76 +124,71 @@ class plugin():
         if self.config.has_option("MEoS", "fluid"):
             fTxt = mEoS.__all__[self.config.getint("MEoS", "fluid")].name
         else:
-            fTxt = QtWidgets.QApplication.translate("pychemqt", "Fluid")
+            fTxt = tr("pychemqt", "Fluid")
         if self.config.has_option("MEoS", "reference"):
             refTxt = self.config.get("MEoS", "reference")
         else:
-            refTxt = QtWidgets.QApplication.translate(
-                "pychemqt", "Reference State")
-        propTxt = QtWidgets.QApplication.translate("pychemqt", "Properties")
-        confTxt = QtWidgets.QApplication.translate("pychemqt", "Configure")
+            refTxt = tr("pychemqt", "Reference State")
+        propTxt = tr("pychemqt", "Properties")
+        confTxt = tr("pychemqt", "Configure")
 
         return fTxt, refTxt, propTxt, confTxt
 
     def _menuCalculate(self):
         """QMenu for table actions"""
-        menu = QtWidgets.QMenu(QtWidgets.QApplication.translate(
-            "pychemqt", "Calculate"), parent=self)
+        menu = QtWidgets.QMenu(tr("pychemqt", "Calculate"), parent=self)
         saturationAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Saturation"),
+            tr("pychemqt", "Saturation"),
             slot=self.showSaturation, parent=self)
         menu.addAction(saturationAction)
         IsopropertyAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Isoproperty"),
+            tr("pychemqt", "Isoproperty"),
             slot=self.showIsoproperty, parent=self)
         menu.addAction(IsopropertyAction)
         menu.addSeparator()
         SpecifyAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Specified point"),
+            tr("pychemqt", "Specified point"),
             slot=self.addTableSpecified, parent=self)
         menu.addAction(SpecifyAction)
         return menu
 
     def _menuPlot(self):
         """QMenu for plot actions"""
-        menu = QtWidgets.QMenu(
-            QtWidgets.QApplication.translate("pychemqt", "Plot"), parent=self)
+        menu = QtWidgets.QMenu(tr("pychemqt", "Plot"), parent=self)
         Plot_T_s_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "T-s diagram"),
+            tr("pychemqt", "T-s diagram"),
             slot=partial(self.plot, "s", "T"), parent=self)
         menu.addAction(Plot_T_s_Action)
         Plot_T_rho_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "T-rho diagram"),
+            tr("pychemqt", "T-rho diagram"),
             slot=partial(self.plot, "rho", "T"), parent=self)
         menu.addAction(Plot_T_rho_Action)
         Plot_P_h_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-h diagram"),
+            tr("pychemqt", "P-h diagram"),
             slot=partial(self.plot, "h", "P"), parent=self)
         menu.addAction(Plot_P_h_Action)
         Plot_P_v_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-v diagram"),
+            tr("pychemqt", "P-v diagram"),
             slot=partial(self.plot, "v", "P"), parent=self)
         menu.addAction(Plot_P_v_Action)
         Plot_P_T_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "P-T diagram"),
+            tr("pychemqt", "P-T diagram"),
             slot=partial(self.plot, "T", "P"), parent=self)
         menu.addAction(Plot_P_T_Action)
         Plot_h_s_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "h-s diagram"),
+            tr("pychemqt", "h-s diagram"),
             slot=partial(self.plot, "s", "h"), parent=self)
         menu.addAction(Plot_h_s_Action)
         Plot_v_u_Action = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "v-u diagram"),
+            tr("pychemqt", "v-u diagram"),
             slot=partial(self.plot, "u", "v"), parent=self)
         menu.addAction(Plot_v_u_Action)
         Plot2DAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "Other Plots"),
-            slot=self.plot2D, parent=self)
+            tr("pychemqt", "Other Plots"), slot=self.plot2D, parent=self)
         menu.addAction(Plot2DAction)
         menu.addSeparator()
         Plot3DAction = createAction(
-            QtWidgets.QApplication.translate("pychemqt", "3D Plot"),
-            slot=self.plot3D, parent=self)
+            tr("pychemqt", "3D Plot"), slot=self.plot3D, parent=self)
         menu.addAction(Plot3DAction)
         return menu
 
@@ -236,7 +232,7 @@ class plugin():
             elif dlg.IIR.isChecked():
                 refName, refT, refP, refH, refS = "IIR", 273.15, 101325, 200, 1
             elif dlg.ASHRAE.isChecked():
-                refName, refT, refP, refH, refS = "ASHRAE", 233.15, 101325,
+                refName, refT, refP = "ASHRAE", 233.15, 101325,
                 refH, refS = 0, 0
             else:
                 refName = "Custom"
@@ -288,7 +284,8 @@ class plugin():
         dlg = ConfDialog(Config)
         if dlg.exec():
             Config = dlg.value(Config)
-            Config.write(open(config.conf_dir+"pychemqtrc", "w"))
+            with open(config.conf_dir+"pychemqtrc", "w") as file:
+                Config.write(file)
 
     def showSaturation(self):
         """Show dialog to define input for a two-phase saturation table"""
@@ -309,8 +306,7 @@ class plugin():
             fluidos = []
             if dlg.VL.isChecked():
                 # Liquid-Gas line
-                txt = QtWidgets.QApplication.translate(
-                    "pychemqt", "Liquid-Gas Line")
+                txt = tr("pychemqt", "Liquid-Gas Line")
                 if dlg.VariarTemperatura.isChecked():
                     # Changing temperature
                     for val in value:
@@ -351,12 +347,10 @@ class plugin():
                 # internal method
                 if dlg.SL.isChecked():
                     func = fluid._Melting_Pressure
-                    txt = QtWidgets.QApplication.translate(
-                        "pychemqt", "Melting Line")
+                    txt = tr("pychemqt", "Melting Line")
                 elif dlg.SV.isChecked():
                     func = fluid._Sublimation_Pressure
-                    txt = QtWidgets.QApplication.translate(
-                        "pychemqt", "Sublimation Line")
+                    txt = tr("pychemqt", "Sublimation Line")
 
                 if dlg.VariarTemperatura.isChecked():
                     for val in value:
@@ -373,8 +367,7 @@ class plugin():
                             "%s: %s=%0.2f, %s" % (fluid.name, "P", p, txt))
                         QtWidgets.QApplication.processEvents()
 
-            title = QtWidgets.QApplication.translate(
-                "pychemqt", "Table %s: %s changing %s (%s)" % (
+            title = tr("pychemqt", "Table %s: %s changing %s (%s)" % (
                     fluid.name, txt, "T", method))
             self.addTable(fluidos, title)
             self.parent().statusBar().clearMessage()
@@ -383,7 +376,7 @@ class plugin():
         """Show dialog to define input for isoproperty table calculations"""
         dlg = Ui_Isoproperty(self.parent())
         if dlg.exec():
-            self.parent().updateStatus(QtWidgets.QApplication.translate(
+            self.parent().updateStatus(tr(
                 "pychemqt", "Launch MEoS Isoproperty calculation..."))
 
             # Get data from dialog
@@ -427,8 +420,7 @@ class plugin():
                 QtWidgets.QApplication.processEvents()
                 fluidos.append(fluid._new(**kwarg))
             unitX = dlg.unidades[i].text()
-            title = QtWidgets.QApplication.translate(
-                "pychemqt", "%s: %s =%s %s changing %s (%s)" % (
+            title = tr("pychemqt", "%s: %s =%s %s changing %s (%s)" % (
                     fluid.name, X, v1conf, unitX, meos.propiedades[j],
                     method.upper()))
             self.addTable(fluidos, title)
@@ -454,7 +446,7 @@ class plugin():
         fluid = getClassFluid(method, index)
         name = fluid.name
         method = getMethod()
-        title = "%s: %s (%s)" % (name, QtWidgets.QApplication.translate(
+        title = "%s: %s (%s)" % (name, tr(
             "pychemqt", "Specified state points"), method.upper())
         tabla = createTabla(self.config, title, None, self.parent())
         tabla.Point = fluid
@@ -523,12 +515,11 @@ class plugin():
         filename = "%s-%s.json" % (method, fluid.name.lower())
 
         if z:
-            title = QtWidgets.QApplication.translate(
+            title = tr(
                 "pychemqt", "Plot %s: %s=f(%s,%s)" % (fluid.name, z, y, x))
             dim = 3
         else:
-            title = QtWidgets.QApplication.translate(
-                "pychemqt", "Plot %s: %s=f(%s)" % (fluid.name, y, x))
+            title = tr("pychemqt", "Plot %s: %s=f(%s)" % (fluid.name, y, x))
             dim = 2
         grafico = PlotMEoS(dim=dim, parent=self.parent(), filename=filename)
         grafico.setWindowTitle(title)
@@ -562,7 +553,7 @@ class plugin():
                 ztxt = "%s" % z
             grafico.plot.ax.set_zlabel(ztxt)
 
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Loading cached data..."))
         QtWidgets.QApplication.processEvents()
         data = grafico._getData()
@@ -570,8 +561,7 @@ class plugin():
             self.parent().progressBar.setValue(0)
             self.parent().progressBar.setVisible(True)
             self.parent().statusBar().showMessage(
-                QtWidgets.QApplication.translate(
-                    "pychemqt", "Calculating data, be patient..."))
+                tr("pychemqt", "Calculating data, be patient..."))
             QtWidgets.QApplication.processEvents()
             data = self.calculatePlot(fluid)
             conf = {}
@@ -583,8 +573,7 @@ class plugin():
             data["config"] = conf
             grafico._saveData(data)
             self.parent().progressBar.setVisible(False)
-        self.parent().statusBar().showMessage(
-            QtWidgets.QApplication.translate("pychemqt", "Plotting..."))
+        self.parent().statusBar().showMessage(tr("pychemqt", "Plotting..."))
         QtWidgets.QApplication.processEvents()
         grafico.config = data["config"]
         grafico.changeStatusThermo(data["config"])
@@ -633,8 +622,7 @@ class plugin():
             # Calculate melting line
             if fluid._melting:
                 self.parent().statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Calculating melting line..."))
+                    tr("pychemqt", "Calculating melting line..."))
                 T = linspace(fluid._melting["Tmin"], fluid._melting["Tmax"],
                              points)
                 fluidos = []
@@ -651,8 +639,7 @@ class plugin():
             # Calculate sublimation line
             if fluid._sublimation:
                 self.parent().statusBar().showMessage(
-                    QtWidgets.QApplication.translate(
-                        "pychemqt", "Calculating sublimation line..."))
+                    tr("pychemqt", "Calculating sublimation line..."))
                 T = linspace(fluid._sublimation["Tmin"],
                              fluid._sublimation["Tmax"], points)
                 fluidos = []
@@ -674,7 +661,7 @@ class plugin():
             del T[points*i]
 
         # Calculate saturation
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating Liquid-Vapour saturation line..."))
         for fase in [0, 1]:
             fluidos = []
@@ -692,7 +679,7 @@ class plugin():
 
         # Calculate isoquality lines
         data["x"] = {}
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating isoquality lines..."))
         values = self.LineList("Isoquality", config.Preferences)
         for i, value in enumerate(values):
@@ -753,7 +740,7 @@ class plugin():
 
         # Calculate isotherm lines
         data["T"] = {}
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating isotherm lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isotherm", config.Preferences, fluid)
@@ -766,7 +753,7 @@ class plugin():
 
         # Calculate isobar lines
         data["P"] = {}
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating isobar lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isobar", config.Preferences, fluid)
@@ -778,7 +765,7 @@ class plugin():
 
         # Calculate isochor lines
         data["v"] = {}
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating isochor lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isochor", config.Preferences, fluid)
@@ -790,7 +777,7 @@ class plugin():
 
         # Calculate isoenthalpic lines
         data["h"] = {}
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating isoenthalpic lines..."))
         QtWidgets.QApplication.processEvents()
         vals = self.LineList("Isoenthalpic", config.Preferences, fluid)
@@ -802,7 +789,7 @@ class plugin():
 
         # Calculate isoentropic lines
         data["s"] = {}
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating isoentropic lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isoentropic", config.Preferences, fluid)
@@ -813,7 +800,7 @@ class plugin():
             data["s"][value] = saveProperties(fluidos)
 
         # Calculate 3D mesh
-        self.parent().statusBar().showMessage(QtWidgets.QApplication.translate(
+        self.parent().statusBar().showMessage(tr(
             "pychemqt", "Calculating 3D mesh data..."))
         QtWidgets.QApplication.processEvents()
         fluidos = calcMesh(fluid, self.config, T, P)
@@ -858,8 +845,8 @@ class plugin():
 class Menu(QtWidgets.QMenu, plugin):
     """QMenu to import in mainwindow with all meos addon functionality"""
     def __init__(self, parent=None):
-        title = QtWidgets.QApplication.translate("pychemqt", "MEoS properties")
-        super(Menu, self).__init__(title, parent)
+        title = tr("pychemqt", "MEoS properties")
+        super().__init__(title, parent)
         self.setIcon(QtGui.QIcon(
             os.path.join(config.IMAGE_PATH, "button", "tables.png")))
         self.aboutToShow.connect(self.aboutToShow_menu)
@@ -897,12 +884,11 @@ class Menu(QtWidgets.QMenu, plugin):
 class Dialog(QtWidgets.QDialog, plugin):
     """Dialog to choose fluid for meos plugins calculations"""
     def __init__(self, config=None, parent=None):
-        super(Dialog, self).__init__(parent)
+        super().__init__(parent)
         if config is None:
             config = parent.currentConfig
         self.config = config
-        self.setWindowTitle(
-            QtWidgets.QApplication.translate("pychemqt", "Choose fluid"))
+        self.setWindowTitle(tr("pychemqt", "Choose fluid"))
         layout = QtWidgets.QGridLayout(self)
 
         fTxt, refTxt, propTxt, confTxt = self._txt()
@@ -950,7 +936,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    conf = config.getMainWindowConfig()
+#     confi = config.getMainWindowConfig()
 
     SteamTables = Plot3D()
 
