@@ -34,32 +34,25 @@ jobs:
           app-dir: ~/project/.circleci  # If you're requirements.txt isn't in the root directory.
           pip-dependency-file: requirements_test.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
 
-      - run: echo 'export PYTHONPATH="${PYTHONPATH}:${HOME}/myproject/"' >> $BASH_ENV
-      - run: echo $PYTHONPATH
-      - run: python3 tests/initialization.py
       - run:
           name: Run tests
           # This assumes coverage is installed via the install-package step above
-          command: | set -e
+          command: |
+            set -e
+            echo 'export PYTHONPATH="${PYTHONPATH}:${HOME}/myproject/"' >> $BASH_ENV
+            echo $PYTHONPATH
+            python3 tests/initialization.py
+            set -e
             coverage3 run tests/
       - run:
-          name: Get coverage data en xml format
+          name: Upload results
           # This assumes coverage is installed via the install-package step above
-          command: coverage3 xml
-      - run:
-          name: Export data to coveralls
-          # This assumes coverage is installed via the install-package step above
-          command: coveralls
-      - run:
-          name: Export data to codecov
-          # This assumes codecov is installed via the install-package step above
-          command: codecov
-      - run:
-          name: Upload data to codacy
-          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
-      - run:
-          name: Finish upload data to codacy
-          command: bash <(curl -Ls https://coverage.codacy.com/get.sh) final
+          command: |
+            coverage3 xml
+            coveralls
+            codecov
+            bash <(curl -Ls https://coverage.codacy.com/get.sh) report -r coverage.xml
+            bash <(curl -Ls https://coverage.codacy.com/get.sh) final
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
