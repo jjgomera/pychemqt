@@ -34,6 +34,7 @@ jobs:
           app-dir: ~/project/.circleci  # If you're requirements.txt isn't in the root directory.
           pip-dependency-file: requirements_test.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
 
+      - run: set -e
       - run: echo 'export PYTHONPATH="${PYTHONPATH}:${HOME}/myproject/"' >> $BASH_ENV
       - run: echo $PYTHONPATH
       - run: python3 tests/initialization.py
