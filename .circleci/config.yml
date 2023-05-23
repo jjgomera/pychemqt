@@ -40,8 +40,7 @@ jobs:
       - run:
           name: Run tests
           # This assumes coverage is installed via the install-package step above
-          command: |
-            set -e
+          command: | set -e
             coverage3 run tests/
       - run:
           name: Get coverage data en xml format
