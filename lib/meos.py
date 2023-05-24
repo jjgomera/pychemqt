@@ -51,7 +51,7 @@ The residual contribution is a combination of term
 
 .. math::
   \begin{array}[t]{l}
-  \phi^r = \phi^r_{Pol}+\phi^r_{Exp}+\phi^r_{GBS}+\phi^r_{NA}\\
+  \phi^r = \phi^r_{Pol}+\phi^r_{Exp}+\phi^r_{GBS}+\phi^r_{NA}+\phi^r_{ass}\\
   \phi^r_{Pol} = \sum_i n_i\delta^{d_i}\tau^{t_i}\\
   \phi^r_{Exp} = \sum_i n_i\delta^{d_i}\tau^{t_i} e^{-\gamma_i\delta^{c_i}}\\
   \phi^r_{GBS} = \sum_i n_i\delta^{d_i}\tau^{t_i} e^{-\alpha(\delta-
@@ -60,13 +60,17 @@ The residual contribution is a combination of term
   \left(\tau-1\right)^2}\\
   \Delta = \theta^2+B_i\left(\left(\delta-1\right)^2\right)^{a_i}\\
   \theta = (1-\tau)+A_i\left(\left(\delta-1\right)^2\right)^{1/2\beta_ i}\\
+  \phi^r_{ass} = \sum_i n_i\tau^{t_i}\delta^{d_i}e^{-\alpha_i\left(\delta-
+  \epsilon_i\right)^2+\frac{1}{\beta_i\left(\tau-\gamma_i\right)^2+b_i}}\\
   \end{array}
 
 The polynomial and exponential term are common to all equations, the Gaussian
 bell shaped are used to improved accuracy in critical region. The nonanalytic
 terms are used to represent the steep variation of icochoric heat capacity and
 speed of sound near the critical point. They are only used for water and carbon
-dioxide reference equation of state, they are very time computing.
+dioxide reference equation of state, they are very time computing. The
+associating term are used only for ammonia for a better representation of
+associating fluids.
 
 
 **MBWR (modified Benedict-Webb-Rubin)**

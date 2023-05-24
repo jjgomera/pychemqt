@@ -423,7 +423,7 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
 
         if eq["__type__"] == "Helmholtz":
             mathTex = r"$\alpha = \alpha^o+\alpha_{Pol}^r+\alpha_{Exp}^r+"
-            mathTex += r"\alpha_{GBS}^r+\alpha_{NA}^r$"
+            mathTex += r"\alpha_{GBS}^r+\alpha_{NA}^r+\alpha_{ass}^r$"
             label = QLabelMath(mathTex)
             gridLayout.addWidget(label, 2, 1)
 
@@ -484,6 +484,20 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
                 8, horizontalHeader=["n", "a", "b", "A", "B", "C", "D", "β"],
                 stretch=False, readOnly=True)
             gridLayout_NA.addWidget(self.Tabla_noanalytic, 3, 1)
+
+            # Non analytic tab
+            tab6 = QtWidgets.QWidget()
+            tabWidget.addTab(tab6, tr("pychemqt", "Associating"))
+            gridLayout_ass = QtWidgets.QGridLayout(tab6)
+            mathTex = r"$\alpha_{ass}^r=\sum_i n_i\tau^{t_i}\delta^{d_i}"
+            mathTex += r"e^{-\alpha_i\left(\delta-\epsilon_i\right)^2"
+            mathTex += r"+\frac{1}{\beta_i\left(\tau-\gamma_i\right)^2+b_i}}$"
+            label = QLabelMath(mathTex)
+            gridLayout_ass.addWidget(label, 1, 1)
+            self.Tabla_ass = Tabla(
+                8, horizontalHeader=["n", "t", "d", "α", "ε", "β", "γ", "b"],
+                stretch=False, readOnly=True)
+            gridLayout_ass.addWidget(self.Tabla_ass, 3, 1)
 
         elif eq["__type__"] == "MBWR":
             # Pestaña MBWR
@@ -595,10 +609,24 @@ class Widget_MEoS_Data(QtWidgets.QWidget):
             else:
                 self.Tabla_noanalytic.setEnabled(False)
 
+            if eq.get("nr_ass", []):
+                self.Tabla_ass.setColumn(0, eq["nr_ass"], **fmt)
+                self.Tabla_ass.setColumn(1, eq["t_ass"], **fmt)
+                self.Tabla_ass.setColumn(2, eq["d_ass"], **fmt)
+                self.Tabla_ass.setColumn(3, eq["alfa_ass"], **fmt)
+                self.Tabla_ass.setColumn(4, eq["beta_ass"], **fmt)
+                self.Tabla_ass.setColumn(5, eq["gamma_ass"], **fmt)
+                self.Tabla_ass.setColumn(6, eq["epsilon_ass"], **fmt)
+                self.Tabla_ass.setColumn(7, eq["b_ass"], **fmt)
+            else:
+                self.Tabla_ass.setEnabled(False)
+
+
             self.Tabla_lineal.resizeColumnsToContents()
             self.Tabla_exponential.resizeColumnsToContents()
             self.Tabla_gauss.resizeColumnsToContents()
             self.Tabla_noanalytic.resizeColumnsToContents()
+            self.Tabla_ass.resizeColumnsToContents()
 
         elif eq["__type__"] == "MBWR":
             self.Tabla_MBWR.setColumn(0, eq["b"][1:], **fmt)
@@ -1377,12 +1405,13 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
 
-    # SteamTables = Ui_ChooseFluid()
-    # SteamTables = Dialog_InfoFluid(mEoS.He)
+#     SteamTables = Ui_ChooseFluid()
+#     SteamTables = Dialog_InfoFluid(mEoS.NH3)
+    SteamTables = Widget_MEoS_Data(mEoS.NH3.gao)
 
     # for i, cmp in enumerate(mEoS.__all__):
         # print(i, cmp.__module__)
-    SteamTables = transportDialog(mEoS.__all__[16])
+#     SteamTables = transportDialog(mEoS.__all__[16])
 
     SteamTables.show()
     sys.exit(app.exec())

@@ -354,7 +354,10 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         if Preferences.getboolean("Tooltip", "Show"):
             Config = ConfigParser()
             Config.read(conf_dir+"pychemqtrc")
-            lst = map(int, Config.get("Tooltip", self.magnitud).split(","))
+            try:
+                lst = map(int, Config.get("Tooltip", self.magnitud).split(","))
+            except AttributeError:
+                lst = []
             if lst:
                 valores = []
                 for i in lst:
