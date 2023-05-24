@@ -328,8 +328,14 @@ __doi__ = {
                   "classical fluid",
          "ref": "Physical Review A 24(3) (1981) 1469-1475",
          "doi": "10.1103/PhysRevA.24.1469"},
-
     26:
+        {"autor": "Gao, K., Wu, J., Bell, I.H., Harvey, A.H., Lemmon E.W.",
+         "title": "A Reference Equation of State with an Associating Term for "
+                  "the Thermodynamic Properties of Ammonia",
+         "ref": "J. Phys. Chem. Ref. Data 52 (2023) 013102",
+         "doi": "10.1063/5.0128269"},
+
+    27:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1467,7 +1473,9 @@ class MEoS(ThermoAdvanced):
                 else:
                     rhoo.append(self._Liquid_Density(self.Tc))
 
-#                 rhoo.append(self._constants["rhomax"]*self.M)
+                if "rhomax" in self._constants:
+                    rhoo.append(self._constants["rhomax"]*self.M)
+
                 rhoo.append(self.rhoc)
                 rhoo.append(P/T/self.R)
 
@@ -2521,6 +2529,8 @@ class MEoS(ThermoAdvanced):
             rhov = self._Vapor_Density(self.Tt)
             rhol = self._Liquid_Density(self.Tt)
             ro = [rhov, rhol, self.rhoc]
+            if "rhomax" in self._constants:
+                ro.append(self._constants["rhomax"]*self.M)
 
             if "rho0" in kwargs and kwargs["rho0"]:
                 if isinstance(kwargs["rho0"], list):
@@ -2544,8 +2554,8 @@ class MEoS(ThermoAdvanced):
                 else:
                     f1 = sum(abs(rinput[1]["fvec"]))
                     idx = rinput[2]
-                    if 0 < rho and \
-                            f1 < 1e-5 and idx == 1:
+                    if 0 < rho <= self._constants.get("rhomax", 1e10)*self.M \
+                            and f1 < 1e-5 and idx == 1:
                         converge = True
                         break
         elif "rho" in kwargs:
@@ -2584,7 +2594,8 @@ class MEoS(ThermoAdvanced):
                     else:
                         twophases = False
                     if (rho != r or T != t) and \
-                            0 < rho and \
+                            0 < rho < self._constants.get(
+                                    "rhomax", 1e10)*self.M and \
                             f1 < 1e-5 and not twophases:
                         converge = True
                         break
@@ -3373,6 +3384,14 @@ class MEoS(ThermoAdvanced):
             * A: Nonanalytic term coefficient in θ expression
             * beta4: Nonanalytic term exponent in θ expression
 
+            * nr_ass: Association term coefficient
+            * d_ass: Association term delta exponent
+            * t_ass: Association term tau exponent
+            * epsilon_ass: Association term delta correction in exponential
+            * gamma_ass: Association term tau correction in exponential
+            * alfa_ass: Association term exponential tau term coefficient
+            * beta_ass: Association term exponential tau term coefficient
+            * b_ass: Association special last term
 
         Parameters
         ----------

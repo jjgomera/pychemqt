@@ -241,7 +241,6 @@ for obj in __all__:
 
 # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
-# TODO: Add 1,2-dichloroethane from Thol thesis
 
 # Fluid in REFPROP 10 missing
 
