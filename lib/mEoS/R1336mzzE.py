@@ -87,6 +87,16 @@ class R1336mzzE(MEoS):
 
     eq = (akasaka, )
 
+    _surface = {
+        "__doi__": {
+            "autor": "Iwasaki, S., Kondou, C., Higashi, Y.",
+            "title": "Correlation Assessment and Temperature Dependence Check "
+                     "of Surface Tension and Parachor for New Low-GWP Pure "
+                     "Refrigerants",
+            "ref": "Trans. JSRAE 37(1) (2020) 73-80",
+            "doi": "10.11322/tjsrae.19-36TG_EM_OA"},
+        "sigma": [0.05371], "exp": [1.27]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-8.2611, 3.9076, -3.9675, -6.1565],
