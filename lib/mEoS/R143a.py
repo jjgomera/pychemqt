@@ -201,10 +201,42 @@ class R143a(MEoS):
         "t": [0.384, 1.17, 3.0, 6.2, 7.0, 15.0]}
 
 
+
+    thermo0 = {"__name__": "Huber (2018)",
+
+               "__doi__": {
+                   "autor": "Huber, M.L.",
+                   "title": "Models for Viscosity, Thermal Conductivity, and "
+                            "Surface Tension of Selected Pure Fluids as "
+                            "Implemented in REFPROP v10.0",
+                   "ref": "NISTIR 8209",
+                   "doi": "10.6028/NIST.IR.8209"},
+
+               "eq": 1,
+
+               "Toref": 1, "koref": 1,
+               "no": [-7.00852e-3, 6.56307e-5, 2.62499e-8],
+               "to": [0, 1, 2],
+
+               "Tref_res": 345.857, "rhoref_res": 431.00006645, "kref_res": 1,
+               "nr": [-0.0812212, -0.0166652, 0.0874477, -0.0351468, 0.0039957,
+                      0.0762355, -0.0227662, -0.0175726, 0.00379467,
+                      0.000776919],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.227e-9, "gam0": 0.058, "qd": 0.668e-9, "Tcref": 704.55}
+
+    _thermal = (thermo0, )
+
+
 class Test(TestCase):
+    """Testing"""
 
     def test_lemmon(self):
-        # Selected points from Table, Pag 541, saturation state
+        """Selected points from Table, Pag 541, saturation state"""
         st = R143a(T=R143a.Tt, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.00107)
         self.assertEqual(round(st.Liquido.rho, 1), 1330.5)
@@ -411,10 +443,10 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 671.2)
 
     def test_shortSpan(self):
+        """Table III, Pag 117"""
         # The values don't work, I think paper problem
         pass
 
-        # Table III, Pag 117
         # st = R143a(T=500, rho=500, eq="shortSpan")
         # self.assertEqual(round(st.cp0.kJkgK, 4), 1.2785)
         # self.assertEqual(round(st.P.MPa, 3), 20.152)
@@ -423,3 +455,17 @@ class Test(TestCase):
         # st2 = R143a(T=600, rho=100, eq="shortSpan")
         # self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 201.13)
         # self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.47846)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+#         self.assertEqual(round(
+#             R143a(T=311.3, rhom=10.627).mu.muPas, 5), 103.2252)
+
+        # Table 9, pag 271
+        self.assertEqual(round(
+            R143a(T=311.27, rhom=10.6289).k.mWmK, 4), 65.5116)
+
+
+if __name__ == "__main__":
+    st = R143a(T=311.27, rhom=10.6289)
+    print(st.k.mWmK, 4)

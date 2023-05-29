@@ -100,3 +100,54 @@ class RE347mcc(MEoS):
         "eq": 2,
         "n": [-2.0640, -6.4226, -18.982, -58.689, -117.64, -253.93],
         "t": [0.321, 0.96, 2.75, 5.9, 12., 22.]}
+
+
+
+    thermo0 = {"__name__": "Huber (2018)",
+
+               "__doi__": {
+                   "autor": "Huber, M.L.",
+                   "title": "Models for Viscosity, Thermal Conductivity, and "
+                            "Surface Tension of Selected Pure Fluids as "
+                            "Implemented in REFPROP v10.0",
+                   "ref": "NISTIR 8209",
+                   "doi": "10.6028/NIST.IR.8209"},
+
+               "eq": 1,
+
+               "Toref": 437.7, "koref": 1,
+               "no": [-0.0239098, 0.0960335, -0.060505, 0.012299],
+               "to": [1, 2, 3, 4],
+
+               "Tref_res": 437.7, "rhoref_res": 528.144783936,
+               "kref_res": 1,
+               "nr": [-0.00842403, 0.0545889, -0.0530301, 0.0201447,
+                      -0.0025046, 0.00931228, -0.0367016, 0.0392477,
+                      -0.0155674, 0.00220816],
+               "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+               "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.231e-9, "gam0": .058, "qd": 0.5553e-9, "Tcref": 1.5*Tc}
+
+    _thermal = (thermo0, )
+
+
+class Test(TestCase):
+    """Testing"""
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+#         self.assertEqual(round(
+#             RE347mcc(T=393.9, rhom=5.48).mu.muPas, 5), 150.0694)
+
+        # Table 9, pag 271
+        self.assertEqual(round(
+            RE347mcc(T=393.93, rhom=5.4797).k.mWmK, 4), 49.3925)
+
+
+if __name__ == "__main__":
+    st = RE347mcc(T=393.93, rhom=5.4797)
+    print(st.k.mWmK, 49.3925)
+
