@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class COS(MEoS):
@@ -90,10 +91,39 @@ class COS(MEoS):
         "n": [-0.32494e1, -0.71460e1, 35.026, -34.039, -64.206, -152.25],
         "t": [0.423, 1.464, 5.3, 4.1, 7.0, 17.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 335, "sigma": 0.413, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1], "psi_d": [0],
+              "fint": [0.00125], "fint_t": [0],
+              "chi": [0.95], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.182e-9, "gam0": 0.056, "qd": 0.5e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = COS(T=380, rho=7*COS.M)
         self.assertEqual(round(st.P.kPa, 3), 6498.429)
         self.assertEqual(round(st.hM.kJkmol, 3), 16511.877)
@@ -101,3 +131,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 55.861)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 4139.577)
         self.assertEqual(round(st.w, 3), 161.717)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = COS(T=340.9, rhom=14.426)
+        # self.assertEqual(round(st.mu.muPas, 4), 104.7952)
+        self.assertEqual(round(st.mu.muPas, 4), 104.7940)
+        self.assertEqual(round(st.k.mWmK, 4), 72.6219)

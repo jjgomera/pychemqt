@@ -93,8 +93,8 @@ class Methanol(MEoS):
         "d2": [1, 1, 1, 1, 2, 2, 2, 2, 3, 4, 5, 5, 5, 5, 6, 9, 6, 6, 4],
         "t2": [1, 2, 3, 4, 1, 2, 3, 5, 1, 2, 1, 2, 4, 5, 2, 5, 9, 14, 19],
         "c2": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 4, 4, 6],
-        "gamma2": [1.01733510223052]*16 + [1.03497071023039]*2 +
-                  [1.05291203329783],
+        "gamma2": [1.01733510223052]*16 + [1.03497071023039]*2
+        + [1.05291203329783],
 
         "nr3": [-0.819291988442e1, 0.478601004557, -0.444161392885,
                 0.179621810410, -0.687602278259, 0.240459848295e1,
@@ -179,13 +179,13 @@ class Methanol(MEoS):
                 "exp": [1.3355, 1.677, 4.4402]}
 
     _melting = {
-            "eq": 1,
-            "__doi__": reuck["__doi__"],
+        "eq": 1,
+        "__doi__": reuck["__doi__"],
 
-            "Tmin": Tt, "Tmax": 650,
-            "Tref": Tt, "Pref": 0.187,
-            "a0": 1,
-            "a2": [5.320770e9, 4.524780e9, 3.888861e10], "exp2": [1, 1.5, 4]}
+        "Tmin": Tt, "Tmax": 650,
+        "Tref": Tt, "Pref": 0.187,
+        "a0": 1,
+        "a2": [5.320770e9, 4.524780e9, 3.888861e10], "exp2": [1, 1.5, 4]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -283,7 +283,7 @@ class Methanol(MEoS):
         mu = muo*1e-6 * (f*mug + (1-f)*mue)
         return unidades.Viscosity(mu, "Pas")
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Sykioti (2013)",
                "__doi__": {
@@ -315,14 +315,15 @@ class Methanol(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.1487e-9,
                "gam0": 0.05283, "qd": 7.2e-10, "Tcref": 768.9}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_xiang(self):
-        # Table 5, Pag 15, saturation state
-        # Include too  a basic test for Reuck mEoS
+        """Table 5, Pag 15, saturation state
+        Include too  a basic test for Reuck mEoS"""
 
         # Tiny desviation
         st = Methanol(T=175.63, x=0.5)
@@ -390,7 +391,7 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.mPas, 5), 0.01981)
 
     def test_Sykioti(self):
-        # Table 6, Pag 9
+        """Table 6, Pag 9"""
         self.assertEqual(round(Methanol(T=300, rho=850).k.mWmK, 2), 241.48)
         self.assertEqual(round(Methanol(T=400, rho=2).k.mWmK, 3), 25.803)
         self.assertEqual(round(Methanol(T=400, rho=690).k.mWmK, 2), 183.57)

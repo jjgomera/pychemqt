@@ -66,7 +66,7 @@ class Toluene(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -191,7 +191,7 @@ class Toluene(MEoS):
               "tr_den": [0, 0, -1],
               "dr_den": [2, 0, 0]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Assael (2012)",
                "__doi__": {
@@ -221,12 +221,14 @@ class Toluene(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.22e-9, "gam0": 0.05, "qd": 0.62e-9, "Tcref": 887.625}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
+
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = Toluene(T=593, rhom=3)
         self.assertEqual(round(st.P.kPa, 3), 4186.620)
         self.assertEqual(round(st.hM.kJkmol, 3), 52937.550)
@@ -236,7 +238,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 89.464)
 
     def test_Avgeri(self):
-        # Table 5, pag 11, Saturation state
+        """Table 5, pag 11, Saturation state"""
         st = Toluene(T=200, x=0.5)
         self.assertEqual(round(st.P.MPa, 10), 0.0000010833)
         self.assertEqual(round(st.Liquido.rho, 2), 953.54)
@@ -281,7 +283,7 @@ class Test(TestCase):
         self.assertEqual(round(Toluene(T=550, rho=550).mu.muPas, 3), 80.267)
 
     def test_Assael(self):
-        # Table 6, pag 11
+        """Table 6, pag 11"""
         # Tiny desviation in critical enchancement, the paper use a old
         # unreferenced viscosity correlation used in REFPROP
         self.assertEqual(round(Toluene(T=298.15, rho=0).k.mWmK, 3), 10.749)

@@ -18,11 +18,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from numpy.lib.scimath import log10
 from scipy.constants import pi, Avogadro
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class Ne(MEoS):
@@ -117,7 +120,7 @@ class Ne(MEoS):
         "n": [-0.23338e1, -0.36834e1, -0.85368e2, 0.22769e3, -0.17290e3],
         "t": [0.444, 0.95, 3.5, 4.1, 4.5]}
 
-    visco0 = {"__name__": "Rabinovich (1988)",
+    visco1 = {"__name__": "Rabinovich (1988)",
               "__doi__": {
                   "autor": "Rabinovich, V.A., Vasserman, A.A., Nedostup, V.I.,"
                            " Veksler, L.S.",
@@ -127,16 +130,41 @@ class Ne(MEoS):
                   "doi": ""},
 
               "eq": 0,
-              "method": "_visco0"}
+              "method": "_visco1"}
 
-    _viscosity = (visco0, )
+    trnECS = {"__name__": "Huber (2018)",
 
-    def _visco0(self, rho, T, fase=None):
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 45.58, "sigma": 0.2707, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.989544,
+
+              "psi": [1.12101, -0.0388911], "psi_d": [0, 1],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [0.83], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.131e-9, "gam0": 0.06, "qd": 0.331e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = trnECS, visco1
+    _thermal = (trnECS, )
+
+    def _visco1(self, rho, T, fase=None):
         a = [17.67484, -2.78751, 311498.7, -48826500, 3938774000, -1.654629e11,
              2.86561e12]
         Tr = T/0.29944
-        y = 0.68321*(a[0] + a[1]*log10(Tr) + a[2]/Tr**2 + a[3]/Tr**3 +
-                     a[4]/Tr**4 + a[5]/Tr**5 + a[6]/Tr**6)
+        y = 0.68321*(a[0] + a[1]*log10(Tr) + a[2]/Tr**2 + a[3]/Tr**3
+                     + a[4]/Tr**4 + a[5]/Tr**5 + a[6]/Tr**6)
         nt = 266.93*(T*self.M)**0.5/y
         om = rho/1673.0
         c = [1.03010, -0.99175, 2.47127, -3.11864, 1.57066]
@@ -149,3 +177,14 @@ class Ne(MEoS):
         d = [1, 0.27676, 0.014355, 2.6480, -1.9643, 0.89161]
         nd = sum([di*brho**i for i, di in enumerate(d)])
         return unidades.Viscosity(nd*nt/100, "muPas")
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = Ne(T=40, rhom=45.956)
+        # self.assertEqual(round(st.mu.muPas, 5), 46.73723)
+        # self.assertEqual(round(st.k.mWmK, 4), 59.3183)
+        self.assertEqual(round(st.mu.muPas, 5), 46.58067)
+        self.assertEqual(round(st.k.mWmK, 4), 59.2589)

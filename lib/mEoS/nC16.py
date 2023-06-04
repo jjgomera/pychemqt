@@ -82,7 +82,7 @@ class nC16(MEoS):
         "gamma3": [1.335, 1.187, 1.39, 1.23, 0.763],
         "epsilon3": [0.75, 1.616, 0.47, 1.306, 0.46]}
 
-    eq = romeo,
+    eq = (romeo, )
 
     _surface = {
         "__doi__": {"autor": "Mulero, A., Cachadiña, I., Bautista, D.",
@@ -141,7 +141,7 @@ class nC16(MEoS):
                 muB += n/T**i
         return muB*rho/self.M
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Monogenidou (2018)",
                "__doi__": {
@@ -174,13 +174,14 @@ class nC16(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.291e-9,
                "gam0": 0.063, "qd": 0.998e-9, "Tcref": 1083.2}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_meng(self):
-        # Table 5, saturation states, include basic test for Romeo EoS
+        """Table 5, saturation states, include basic test for Romeo EoS"""
         st = nC16(T=293.15, x=0.5)
         self.assertEqual(round(st.P.MPa, 10), 1.157e-7)
         self.assertEqual(round(st.Gas.rhoM, 11), 4.747e-8)
@@ -239,7 +240,7 @@ class Test(TestCase):
         self.assertEqual(round(nC16(T=700, rhom=3.4806).mu.muPas, 3), 949.425)
 
     def test_Monogenidou(self):
-        # Table 6, Pag 7, single phase states
+        """Table 6, Pag 7, single phase states"""
         st = nC16(T=300, P=1e5)
         self.assertEqual(round(st.rho, 2), 768.94)
         self.assertEqual(round(st.k.mWmK, 2), 143.52)

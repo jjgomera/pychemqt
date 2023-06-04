@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
-from scipy import arccosh, exp
+from numpy import arccosh, exp
 
 from lib import unidades
 from lib.meos import MEoS
@@ -156,7 +156,7 @@ class CO2(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -356,8 +356,8 @@ class CO2(MEoS):
              5.34368649509278]
 
         # Eq 4
-        muo = 1.0055*T**0.5/(a[0]+a[1]*T**(1/6)+a[2]*exp(a[3]*T**(1/3)) +
-                             (a[4]+a[5]*T**(1/3))/exp(T**(1/3))+a[6]*T**0.5)
+        muo = 1.0055*T**0.5/(a[0]+a[1]*T**(1/6)+a[2]*exp(a[3]*T**(1/3))
+                             + (a[4]+a[5]*T**(1/3))/exp(T**(1/3))+a[6]*T**0.5)
 
         # Value in mPas in eq, returned in μPas
         return muo*1e3
@@ -384,7 +384,7 @@ class CO2(MEoS):
               "gr": [0, 0, 0, 0, 0],
               "cr": [0, 0, 0, 0, 0]}
 
-    visco2 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco2 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -398,7 +398,7 @@ class CO2(MEoS):
               "no": [69.18424, -215.8618, 210.94362, -49.0494],
               "to": [0, 0.25, 0.5, 0.75],
 
-              "a": [1.19805e-4,  -1.25861e-4, 5.48871e-5],
+              "a": [1.19805e-4, -1.25861e-4, 5.48871e-5],
               "b": [3.15921e-5, -2.60469e-5, 7.09199e-6],
               "c": [1.80689e-5, -7.41742e-6, 0.0],
               "A": [-2.31066e-9, 0.0, 5.42486e-10],
@@ -459,13 +459,13 @@ class CO2(MEoS):
 
     thermo0 = {"__name__": "Huber (2016)",
                "__doi__": {
-                  "autor": "Huber, M.L., Sykioti, E.A., Assael, M.J., "
-                           "Perkins, R.A.",
-                  "title": "Reference Correlation of the Thermal Conductivity "
-                           "of Carbon Dioxide from the Triple Point to 1100 K "
-                           "and up to 200 MPa",
-                  "ref": "J. Phys. Chem. Ref. Data 45(1) (2016) 013102",
-                  "doi": "10.1063/1.4940892"},
+                   "autor": "Huber, M.L., Sykioti, E.A., Assael, M.J., "
+                            "Perkins, R.A.",
+                   "title": "Reference Correlation of the Thermal "
+                            "Conductivity of Carbon Dioxide from the Triple "
+                            "Point to 1100 K and up to 200 MPa",
+                   "ref": "J. Phys. Chem. Ref. Data 45(1) (2016) 013102",
+                   "doi": "10.1063/1.4940892"},
 
                "eq": 1,
 
@@ -488,18 +488,18 @@ class CO2(MEoS):
         no = [1.51874307e-2, 2.80674040e-2, 2.28564190e-2, -7.41624210e-3]
 
         # Eq 3
-        ko = Tr**0.5/sum([n/Tr**i for i, n in enumerate(no)])
+        ko = Tr**0.5/sum(n/Tr**i for i, n in enumerate(no))
 
         return ko*1e-3
 
     thermo1 = {"__name__": "Scalabrin (2006)",
                "__doi__": {
-                  "autor": "Scalabrin, G., Marchi, P., Finezzo, F.",
-                  "title": "A Reference Multiparameter Thermal Conductivity "
-                           "Equation for Carbon Dioxide with an Optimized "
-                           "Functional Form",
-                  "ref": "J. Phys. Chem. Ref. Data 35(4) (2006) 1549-1575",
-                  "doi": "10.1063/1.2213631"},
+                   "autor": "Scalabrin, G., Marchi, P., Finezzo, F.",
+                   "title": "A Reference Multiparameter Thermal Conductivity "
+                            "Equation for Carbon Dioxide with an Optimized "
+                            "Functional Form",
+                   "ref": "J. Phys. Chem. Ref. Data 35(4) (2006) 1549-1575",
+                   "doi": "10.1063/1.2213631"},
 
                "eq": 1,
 
@@ -539,11 +539,11 @@ class CO2(MEoS):
 
     thermo2 = {"__name__": "Vesovic (1990)",
                "__doi__": {
-                  "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
-                           "Sengers, J.V., Watson, J.T.R., Millat, J.",
-                  "title": "The Transport Properties of Carbon Dioxide",
-                  "ref": "J. Phys. Chem. Ref. Data 19(3) (1990) 763-808",
-                  "doi": "10.1063/1.555875"},
+                   "autor": "Vesovic, V., Wakeham, W.A., Olchowy, G.A., "
+                            "Sengers, J.V., Watson, J.T.R., Millat, J.",
+                   "title": "The Transport Properties of Carbon Dioxide",
+                   "ref": "J. Phys. Chem. Ref. Data 19(3) (1990) 763-808",
+                   "doi": "10.1063/1.555875"},
 
                "eq": 1,
 
@@ -586,9 +586,9 @@ class CO2(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_span(self):
-        # Selected point from Table 34, Pag 1560, saturation state
+        """Selected point from Table 34, Pag 1560, saturation state"""
         st = CO2(T=216.592, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.51796)
         self.assertEqual(round(st.Liquido.rho, 2), 1178.46)
@@ -762,7 +762,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 2052.8)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = CO2(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 1.0141)
         self.assertEqual(round(st.P.MPa, 3), 45.164)
@@ -773,7 +773,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60315)
 
     def test_fenghour(self):
-        # Table 13, Pag 44
+        """Table 13, Pag 44"""
         k = {"visco": 1}
         self.assertEqual(round(CO2(T=220, rho=2.440, **k).mu.muPas, 2), 11.06)
         self.assertEqual(round(CO2(T=300, rho=1.773, **k).mu.muPas, 2), 15.02)
@@ -787,7 +787,7 @@ class Test(TestCase):
             CO2(T=800, rho=407.828, **k).mu.muPas, 2), 48.74)
 
     def test_Huber(self):
-        # Table 7, Pag 15
+        """Table 7, Pag 15"""
         self.assertEqual(round(CO2(T=250, rho=0).k.mWmK, 2), 12.99)
         self.assertEqual(round(CO2(T=250, rho=2).k.mWmK, 2), 13.05)
         self.assertEqual(round(CO2(T=250, rho=1058).k.mWmK, 2), 140.00)
@@ -795,7 +795,7 @@ class Test(TestCase):
         self.assertEqual(round(CO2(T=310, rho=400, visco=1).k.mWmK, 2), 72.28)
 
     def test_Scalabrin(self):
-        # Selected values from Table 10, Pag 1568, saturation states
+        """Selected values from Table 10, Pag 1568, saturation states"""
         st = CO2(T=218, x=0.5, thermal=1)
         self.assertEqual(round(st.Liquido.k.mWmK, 2), 181.09)
         self.assertEqual(round(st.Gas.k.mWmK, 3), 10.837)
@@ -827,8 +827,8 @@ class Test(TestCase):
             CO2(T=1000, P=2e8, thermal=1).k.mWmK, 2), 116.65)
 
     def test_vesovic(self):
-        # Appendix IV, Pag 808
-        # Include basic testing for Ely mEoS
+        """Appendix IV, Pag 808
+        Include basic testing for Ely mEoS"""
         st = CO2(T=220, P=1e5, eq="ely", visco=3, thermal=2)
         self.assertEqual(round(st.rho, 3), 2.440)
         self.assertEqual(round(st.k.mWmK, 2), 10.90)
@@ -859,6 +859,7 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 2), 48.62)
 
     def test_Laesecke(self):
+        """Table 6, pag 25"""
         self.assertEqual(round(CO2(T=100, rho=0).mu.mPas, 7), 0.0053757)
 
         # States out of validity of mEoS, use this to bypass complete state

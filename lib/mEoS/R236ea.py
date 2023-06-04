@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
 from lib.mEoS import R134a
@@ -105,31 +107,39 @@ class R236ea(MEoS):
         "n": [-2.7426, -6.2268, -15.109, -49.524, -114.11],
         "t": [0.376, 1.1, 2.7, 5.5, 11]}
 
-    trnECS = {"__name__": "Huber (2003)",
+    trnECS = {"__name__": "Huber (2018)",
 
               "__doi__": {
-                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
-                  "title": "Model for the Viscosity and Thermal Conductivity "
-                           "of Refrigerants, Including a New Correlation for "
-                           "the Viscosity of R134a",
-                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
-                  "doi": "10.1021/ie0300880"},
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
 
               "eq": "ecs",
-
               "ref": R134a,
-              "visco": "visco0",
-              "thermo": "thermo0",
 
-              "ek": 318.33, "sigma": 0.5604, "omega": 5,
+              "ek": 318.33, "sigma": 0.5604, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
 
-              "psi": [1.12216, -2.73101e-2], "psi_d": [0, 1],
-              "fint": [1.70267e-3, -4.91063e-7], "fint_t": [0, 1],
-              "chi": [0.9617, 3.37897e-2], "chi_d": [0, 1],
+              "psi": [1.19985, -0.0906827, 0.0128243], "psi_d": [0, 1, 2],
+              "fint": [.0054277, -2.33425e-5, 3.46098e-8], "fint_t": [0, 1, 2],
+              "chi": [0.961712, 0.0337897], "chi_d": [0, 1],
 
               "critical": 3,
-              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.208e-9, "gam0": 0.06, "qd": 0.636e-9, "Tcref": 1.5*Tc}
 
     _viscosity = (trnECS, )
     _thermal = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R236ea(T=371.2, rhom=7.645)
+        # self.assertEqual(round(st.mu.muPas, 4), 157.3023)
+        self.assertEqual(round(st.mu.muPas, 4), 157.3032)
+        self.assertEqual(round(st.k.mWmK, 4), 57.4730)

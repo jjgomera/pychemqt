@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class iC6(MEoS):
@@ -56,7 +57,7 @@ class iC6(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -74,7 +75,7 @@ class iC6(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {"sigma": [0.05024], "exp": [1.194]}
     _vapor_Pressure = {
@@ -90,10 +91,41 @@ class iC6(MEoS):
         "n": [-0.41180e1, -0.61956e1, -0.21190e2, -0.58972e2, -0.15824e3],
         "t": [0.4824, 1.418, 3.32, 7.1, 16.1]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 395.2, "sigma": 0.58, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.2664, -0.191045, 0.0336982],
+              "psi_d": [0, 1, 2],
+              "fint": [0.00115], "fint_t": [0],
+              "chi": [1.09075, -0.0103574], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.238e-9, "gam0": 0.059, "qd": 0.708e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
+
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = iC6(T=499, rho=2*iC6.M)
         self.assertEqual(round(st.P.kPa, 3), 3058.917)
         self.assertEqual(round(st.hM.kJkmol, 3), 48733.740)
@@ -101,3 +133,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 233.627)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 1129.816)
         self.assertEqual(round(st.w, 3), 90.210)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = iC6(T=447.9, rhom=5.581)
+        # self.assertEqual(round(st.mu.muPas, 5), 87.01045)
+        self.assertEqual(round(st.mu.muPas, 5), 87.02139)
+        self.assertEqual(round(st.k.mWmK, 4), 69.8968)

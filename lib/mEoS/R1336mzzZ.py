@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R1336mzzZ(MEoS):
@@ -56,8 +57,8 @@ class R1336mzzZ(MEoS):
                     "(2020)",
         "__doi__": {"autor": "McLinden, M.O., Akasaka, R.",
                     "title": "Thermodynamic Properties of cis-1,1,1,4,4,4-"
-                             "Hexafluorobutene [R-1234ze(Z)]: Vapor Pressure, "
-                             "(p, ρ, T) Behavior, and Speed of Sound "
+                             "Hexafluorobutene [R-1336mzz(Z)]: Vapor Pressure,"
+                             " (p, ρ, T) Behavior, and Speed of Sound "
                              "Measurements and Equation of State",
                     "ref": "J. Chem. Eng. Data 65(9) (2020) 4201-4214",
                     "doi": "10.1021/acs.jced.9b01198"},
@@ -111,6 +112,32 @@ class R1336mzzZ(MEoS):
         "n": [-2.5907, -6.55386, -82.16925, -22.4756],
         "t": [0.3608, 1.0607, 6.9789, 3.00187]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 352.97, "sigma": 0.5582, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.94,
+
+              "psi": [0.615513, 0.281144, -0.0527921], "psi_d": [0, 1, 2],
+              "fint": [0.00109396, 0.675562e-6], "fint_t": [0, 1],
+              "chi": [1.09323, -0.0316036], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.221e-9, "gam0": 0.058, "qd": 0.681e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+
     thermo0 = {"__name__": "Perkins (2020)",
                "__doi__": {
                    "autor": "Perkins, R.A., Huber, M.L.",
@@ -130,12 +157,11 @@ class R1336mzzZ(MEoS):
                "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
                "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
 
-               "critical": 0,
+               "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
-               "Xio": 0.182e-9, "gam0": 0.058, "qd": 0.479e-9, "Tcref": 434.6
-               }
+               "Xio": 0.221e-9, "gam0": 0.058, "qd": 0.955e-9, "Tcref": 666.75}
 
-    _thermal = (thermo0, )
+    _thermal = (thermo0, trnECS)
 
     def _thermo0(self, rho, T, fase):
         """Custom dilute-gas limit thermal conductivity for Perkins method"""
@@ -188,21 +214,21 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJmolK, 4), 19.8479)
         self.assertEqual(round(st.w, 4), 60.4525)
 
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R1336mzzZ(T=400, rhom=6.422, thermal=1)
+        # self.assertEqual(round(st.mu.muPas, 4), 121.0332)
+        # self.assertEqual(round(st.k.mWmK, 4), 53.5264)
+        self.assertEqual(round(st.mu.muPas, 4), 121.0337)
+        self.assertEqual(round(st.k.mWmK, 4), 53.5265)
+
     def test_Perkins(self):
         """Table 3, pag 103"""
-        # TODO: Uncomment when add viscosity ecs correlation and enable
-        # critical enhancement
         self.assertEqual(round(R1336mzzZ(T=300, rho=0).k.WmK, 6), 0.011056)
-#         self.assertEqual(round(R1336mzzZ(T=300, rho=1363).k.WmK, 6), 0.078701)
+        self.assertEqual(round(R1336mzzZ(T=300, rho=1363).k.WmK, 6), 0.078701)
         self.assertEqual(round(R1336mzzZ(T=450, rho=0).k.WmK, 6), 0.022723)
-#         self.assertEqual(round(R1336mzzZ(T=450, rho=500).k.WmK, 6), 0.053990)
-        self.assertEqual(round(R1336mzzZ(T=450, rho=500).k.WmK, 6), 0.038462)
+        self.assertEqual(round(R1336mzzZ(T=450, rho=500).k.WmK, 6), 0.053990)
 
     def test_Surface(self):
         """Table 10, pag 271"""
         self.assertEqual(round(R1336mzzZ(T=400, x=0.5).sigma, 7), 0.0036203)
-
-if __name__ == "__main__":
-    st = R1336mzzZ(T=400, rhom=6.422)
-    print(round(st.mu.muPas, 4), 121.0332)
-    print(13.79768, 107.2355)

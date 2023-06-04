@@ -342,9 +342,10 @@ class Ethanol(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_schroeder(self):
-        # Table 30, Pag 38
+        """Table 30, Pag 38"""
         st = Ethanol(T=300, rhom=18)
         self.assertEqual(round(st.P.MPa, 6), 65.640781)
         self.assertEqual(round(st.cvM.JmolK, 6), 94.211739)
@@ -381,7 +382,7 @@ class Test(TestCase):
         self.assertEqual(round(st.s.kJkgK, 4), 1)
 
     def test_dillon(self):
-        # Table IV, Pag 329
+        """Table IV, Pag 329"""
         st = Ethanol(T=350, P=1e5, eq="dillon")
         self.assertEqual(round(st.rho, 2), 737.85)
         self.assertEqual(round(st.h.kJkg, 2), 259.95)
@@ -445,7 +446,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 1015.1)
 
     def test_assael(self):
-        # Table 4, Pag 8
+        """Table 4, Pag 8"""
         self.assertEqual(round(
             Ethanol(T=300, rho=850, visco=1).k.mWmK, 2), 209.68)
         self.assertEqual(round(

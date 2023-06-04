@@ -165,9 +165,9 @@ class R11(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R11(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 0.6879)
         self.assertEqual(round(st.P.MPa, 3), 6.077)

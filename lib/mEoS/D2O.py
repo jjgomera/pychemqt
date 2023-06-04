@@ -104,8 +104,8 @@ class D2O(MEoS):
 
     hill = {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for heavy water of Hill "
-        "et al. (1982).",
+        "__name__": "Helmholtz equation of state for heavy water of Hill et "
+                    "al. (1982).",
         "__doi__": {"autor": "Hill, P.G., MacMillan, R.D.C., Lee, V.",
                     "title": "A Fundamental Equation of State for Heavy Water",
                     "ref": "J. Phys. Chem. Ref. Data 11, 1 (1982)",
@@ -156,7 +156,7 @@ class D2O(MEoS):
     _melting = {"Tmin": 254.415, "Tmax": 315}
 
     @classmethod
-    def _Melting_Pressure(cls, T):
+    def _Melting_Pressure(cls, T, melting=None):
         try:
             Pm = _D2O_Melting_Pressure(T)
         except NotImplementedError:
@@ -217,18 +217,18 @@ class D2O(MEoS):
         mu = _D2O_Viscosity(rho, T, fase=fase, drho=drho)
         return unidades.Viscosity(mu)
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
                "__name__": "IAPWS (2021)",
                "__doi__": {
-                  "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
-                           "Levelt Sengers, J.M.H.",
-                  "title": "New International Formulation for the Thermal "
-                           "Conductivity of Heavy Water",
-                  "ref": "J. Phys. Chem. Ref. Data 51(1) (2022) 013102",
-                  "doi": "10.1063/5.0084222"},
+                   "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
+                            "Levelt Sengers, J.M.H.",
+                   "title": "New International Formulation for the Thermal "
+                            "Conductivity of Heavy Water",
+                   "ref": "J. Phys. Chem. Ref. Data 51(1) (2022) 013102",
+                   "doi": "10.1063/5.0084222"},
                "__code__": (_D2O_ThCond, )}
 
     def _thermo0(self, rho, T, fase):
@@ -263,9 +263,9 @@ class D2O(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_herrig(self):
-        # Table 6, pag 12"""
+        """Table 6, pag 12"""
         fluid = D2O()
 
         delta = 46.26*fluid.M/fluid.rhoc
@@ -391,7 +391,7 @@ class Test(TestCase):
         self.assertEqual(round(P, 7), 83.7888413)
 
     def test_D2O_Viscosity(self):
-        # Table 4, pag 11
+        """Table 4, pag 11"""
         self.assertEqual(round(_D2O_Viscosity(0, 298.15)*1e6, 6), 10.035938)
         self.assertEqual(round(_D2O_Viscosity(1105, 298.15)*1e6, 4), 1092.6424)
         self.assertEqual(round(_D2O_Viscosity(1130, 298.15)*1e6, 4), 1088.3626)
@@ -415,7 +415,7 @@ class Test(TestCase):
         self.assertEqual(round(fluid.mu*1e6, 6), 50.241640)
 
     def test_D2O_ThCond(self):
-        # Table 6, pag 10
+        """Table 6, pag 10"""
         self.assertEqual(round(_D2O_ThCond(0, 298.15)*1e3, 4), 17.7498)
         self.assertEqual(round(_D2O_ThCond(1104.5, 298.15)*1e3, 3), 599.557)
         self.assertEqual(round(_D2O_ThCond(1200, 298.15)*1e3, 3), 690.421)
@@ -440,7 +440,7 @@ class Test(TestCase):
         self.assertEqual(round(fluid.k*1e3, 3), 454.846)
 
     def test_D2O_Tension(self):
-        # Selected values from table 1 in IAPWS R5-85"""
+        """Selected values from table 1 in IAPWS R5-85"""
         st = D2O(T=283.15, x=0)
         self.assertEqual(round(st.sigma.mNm, 2), 74.06)
 

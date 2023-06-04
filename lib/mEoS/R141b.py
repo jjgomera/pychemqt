@@ -57,7 +57,7 @@ class R141b(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -76,7 +76,7 @@ class R141b(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [-0.1122, -17.5406]
 
     _surface = {"sigma": [7.3958e-5, 0.059941], "exp": [0.066331, 1.2214]}
@@ -120,13 +120,14 @@ class R141b(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = R141b(T=479, rhom=3)
         self.assertEqual(round(st.P.kPa, 3), 4267.596)
         self.assertEqual(round(st.hM.kJkmol, 3), 61757.274)

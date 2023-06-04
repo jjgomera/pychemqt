@@ -87,7 +87,7 @@ class Novec649(MEoS):
         "gamma3": [1.10, 1.04, 1.15, 0.9, 0.8, 1.2, 1.19],
         "epsilon3": [1.16, 0.793, 1.13, 0.527, 1.19, 0.83, 0.82]}
 
-    eq = mclinden,
+    eq = (mclinden, )
 
     _vapor_Pressure = {
         "eq": 3,
@@ -119,8 +119,7 @@ class Novec649(MEoS):
                   "title": "Measurement and Correlation of the Viscosity of "
                            "1,1,1,2,2,4,5,5,5-Nanofluoro-4-(trifluromethyl)-"
                            "3-pentanone",
-                  # TODO: Search final reference
-                  "ref": "J. Chem. Eng. Data ",
+                  "ref": "J. Chem. Eng. Data 62(10) (2017) 3603-3609",
                   "doi": "10.1021/acs.jced.7b00572"},
 
               "eq": 1, "omega": 5,
@@ -144,7 +143,7 @@ class Novec649(MEoS):
               "tr_den": [0, 0, -1, -1, -1],
               "dr_den": [0, 1, 0, 1, 2]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Perkins (2018)",
                "__doi__": {
@@ -152,9 +151,7 @@ class Novec649(MEoS):
                    "title": "Measurement and Correlation of the Thermal "
                             "Conducitivity of 1,1,1,2,2,4,5,5,5-Nanofluoro-4-"
                             "(trifluromethyl)-3-pentanone",
-                   "ref": "J. Phys. Chem. Ref. Data 47(4) (2018) 043101",
-                   # TODO: Search final reference
-                   "ref": "J. Chem. Eng. Data ",
+                   "ref": "J. Chem. Eng. Data 63(8) (2018) 2783-2789",
                    "doi": "10.1021/acs.jced.8b00132"},
 
                "eq": 1,
@@ -177,13 +174,14 @@ class Novec649(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 2.51e-10,
                "gam0": 0.061, "qd": 0.334e-9, "Tcref": 1.5*Tc}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_mclinden(self):
-        # Table 9, pag J
+        """Table 9, pag J"""
         st = Novec649(T=250, rhom=5.6)
         self.assertEqual(round(st.P.MPa, 6), 11.459869)
         self.assertEqual(round(st.cvM.JmolK, 3), 277.136)
@@ -215,7 +213,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 512.603)
 
     def test_Wen(self):
-        # Table 4, pag 6
+        """Table 4, pag 6"""
         self.assertEqual(round(Novec649(T=250, rho=0).mu.muPas, 2), 8.09)
         self.assertEqual(round(Novec649(T=250, rho=0.41).mu.muPas, 2), 8.33)
         self.assertEqual(round(
@@ -230,7 +228,7 @@ class Test(TestCase):
             Novec649(T=350, rho=1595.99).mu.muPas, 2), 587.87)
 
     def test_perkins(self):
-        # Table 3, pag 5
+        """Table 3, pag 5"""
         self.assertEqual(round(Novec649(T=300, rho=0).k.WmK, 6), 0.011876)
         self.assertEqual(round(Novec649(T=300, rho=5.5).k.WmK, 6), 0.011813)
         self.assertEqual(round(Novec649(T=300, rho=1673.3).k.WmK, 6), 0.065209)

@@ -47,7 +47,7 @@ class oH2(MEoS):
            "ao_exp": [2.54151, -2.3661, 1.00365, 1.22447],
            "titao": [856/Tc, 1444/Tc, 2194/Tc, 6968/Tc]}
 
-    helmholtz1 = {
+    leachman = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ortohydrogen of Leachman "
                     "et al. (2007)",
@@ -83,7 +83,7 @@ class oH2(MEoS):
         "epsilon3": [0.6366, 0.3876, 0.9437, 0.3976, 0.9626],
         "nr4": []}
 
-    eq = helmholtz1,
+    eq = (leachman, )
 
     _vapor_Pressure = {
         "eq": 3,
@@ -100,9 +100,10 @@ class oH2(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_leachman(self):
-        # Selected point from Table 14, Pag 746, saturation states
+        """Selected point from Table 14, Pag 746, saturation states"""
         st = oH2(T=14.008, x=0.5)
         self.assertEqual(round(st.P.kPa, 4), 7.5601)
         self.assertEqual(round(st.Liquido.rho, 3), 77.010)

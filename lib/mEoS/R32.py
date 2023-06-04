@@ -91,7 +91,7 @@ class R32(MEoS):
 
         "nr2": [0.3386203e-2, -0.4202444e-2, 0.4782025e-3, -0.5504323e-2,
                 -0.2418396e-1, 0.4209034, -0.4616537, -0.1200513e1,
-                -0.2591550e1, -0.1400145e1,  0.8263017],
+                -0.2591550e1, -0.1400145e1, 0.8263017],
         "d2": [4, 4, 8, 3, 5, 1, 1, 3, 1, 2, 3],
         "t2": [18., 26., -1., 25., 1.75, 4., 5., 1., 1.5, 1., 0.5],
         "c2": [4, 3, 1, 4, 1, 2, 2, 1, 1, 1, 1],
@@ -299,14 +299,15 @@ class R32(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_tillner(self):
-        # Selected point from Table 12, Pag 1293, saturation state
+        """Selected point from Table 12, Pag 1293, saturation state"""
 
         st = R32(T=R32.Tt, x=0.5)
         self.assertEqual(round(st.P.kPa, 2), 0.05)
@@ -517,7 +518,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 2), 989.78)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R32(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 1.1419)
         self.assertEqual(round(st.P.MPa, 3), 30.358)

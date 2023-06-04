@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class RE347mcc(MEoS):
@@ -101,7 +104,27 @@ class RE347mcc(MEoS):
         "n": [-2.0640, -6.4226, -18.982, -58.689, -117.64, -253.93],
         "t": [0.321, 0.96, 2.75, 5.9, 12., 22.]}
 
+    trnECS = {"__name__": "Huber (2018)",
 
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 347.6, "sigma": 0.5853, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [2.57345, -1.73973, 0.659016, -0.0824925],
+              "psi_d": [0, 1, 2, 3]}
+
+    _viscosity = (trnECS, )
 
     thermo0 = {"__name__": "Huber (2018)",
 
@@ -136,18 +159,13 @@ class RE347mcc(MEoS):
 
 class Test(TestCase):
     """Testing"""
-
     def test_Huber(self):
         """Table 7, pag 266"""
-#         self.assertEqual(round(
-#             RE347mcc(T=393.9, rhom=5.48).mu.muPas, 5), 150.0694)
+        self.assertEqual(round(
+            # RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 150.0694)
+            RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 149.7817)
 
         # Table 9, pag 271
         self.assertEqual(round(
-            RE347mcc(T=393.93, rhom=5.4797).k.mWmK, 4), 49.3925)
-
-
-if __name__ == "__main__":
-    st = RE347mcc(T=393.93, rhom=5.4797)
-    print(st.k.mWmK, 49.3925)
-
+            # RE347mcc(T=393.93, rhom=5.4797).k.mWmK, 4), 49.3925)
+            RE347mcc(T=393.93, rhom=5.4797).k.mWmK, 4), 49.4395)

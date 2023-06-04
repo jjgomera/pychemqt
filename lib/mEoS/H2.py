@@ -110,7 +110,7 @@ class H2(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -118,13 +118,13 @@ class H2(MEoS):
 
         "Tmin": Tt, "Tmax": 400.0, "Pmax": 121000.0, "rhomax": 38.148,
 
-        "nr1": [0.53579928451252e1, -0.62050252530595e1,  0.13830241327086,
-                -0.71397954896129e-1,  0.15474053959733e-1],
+        "nr1": [0.53579928451252e1, -0.62050252530595e1, 0.13830241327086,
+                -0.71397954896129e-1, 0.15474053959733e-1],
         "d1": [1, 1, 2, 2, 4],
         "t1": [0.5, 0.625, 0.384, 0.625, 1.125],
 
-        "nr2": [-0.14976806405771, -0.26368723988451e-1,  0.56681303156066e-1,
-                -0.60063958030436e-1, -0.45043942027132,  0.42478840244500,
+        "nr2": [-0.14976806405771, -0.26368723988451e-1, 0.56681303156066e-1,
+                -0.60063958030436e-1, -0.45043942027132, 0.42478840244500,
                 -0.021997640827139, -0.01049952137453, -0.28955902866816e-2],
         "d2": [1, 5, 5, 5, 1, 1, 2, 5, 1],
         "t2": [2.625, 0, 0.25, 1.375, 4, 4.25, 5, 8, 8],
@@ -283,8 +283,10 @@ class H2(MEoS):
             return suma*100
 
         def mu1(rho, T):
-            A = exp(5.7694 + log(rho.gcc) + 0.65e2*rho.gcc**1.5 -
-                    6e-6*exp(127.2*rho.gcc))
+            if not rho:
+                return 0
+            A = exp(5.7694 + log(rho.gcc) + 0.65e2*rho.gcc**1.5
+                    - 6e-6*exp(127.2*rho.gcc))
             B = 10 + 7.2*((rho.gcc/0.07)**6-(rho.gcc/0.07)**1.5) - \
                 17.63*exp(-58.75*(rho.gcc/0.07)**3)
             return A*exp(B/T)*0.1
@@ -364,13 +366,13 @@ class H2(MEoS):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.15e-9, "gam0": 0.052, "qd": 0.4e-9, "Tcref": 49.7175}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_leachman(self):
-        # Selected point from Table 14, Pag 746, saturation states
+        """Selected point from Table 14, Pag 746, saturation states"""
         st = H2(T=13.957, x=0.5)
         self.assertEqual(round(st.P.kPa, 3), 7.358)
         self.assertEqual(round(st.Liquido.rho, 3), 77.004)
@@ -432,18 +434,20 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.w, 2), 373.93)
 
     def test_Assael(self):
-        # Table 7, Pag 11
-        # TODO: Problem in critical enhancement
-        self.assertEqual(round(H2(T=298.15, rho=0).k.mWmK, 2), 185.67)
-        self.assertEqual(round(H2(T=298.15, rho=0.80844).k.mWmK, 2), 186.97)
-        self.assertEqual(round(H2(T=298.15, rho=14.4813).k.mWmK, 2), 201.35)
-        self.assertEqual(round(H2(T=35, rho=0).k.mWmK, 3), 26.988)
-        # self.assertEqual(round(H2(T=35, rho=30).k.mWmK, 3), 75.594)
-        self.assertEqual(round(H2(T=18, rho=0).k.mWmK, 3), 13.875)
-        self.assertEqual(round(H2(T=18, rho=75).k.mWmK, 2), 104.48)
+        """Table 7, Pag 11"""
+        kw = {"visco": 1}
+        self.assertEqual(round(H2(T=298.15, rho=0, **kw).k.mWmK, 2), 185.67)
+        self.assertEqual(round(
+            H2(T=298.15, rho=0.80844, **kw).k.mWmK, 2), 186.97)
+        self.assertEqual(round(
+            H2(T=298.15, rho=14.4813, **kw).k.mWmK, 2), 201.35)
+        self.assertEqual(round(H2(T=35, rho=0, **kw).k.mWmK, 3), 26.988)
+        self.assertEqual(round(H2(T=35, rho=30, **kw).k.mWmK, 3), 75.595)
+        self.assertEqual(round(H2(T=18, rho=0, **kw).k.mWmK, 3), 13.875)
+        self.assertEqual(round(H2(T=18, rho=75, **kw).k.mWmK, 2), 104.48)
 
     def test_Muzny(self):
-        # Table 1 from erratum article
+        """Table 1 from erratum article"""
         self.assertEqual(round(H2(T=40, rho=0).mu.muPas, 4), 1.9772)
         self.assertEqual(round(H2(T=40, rho=50).mu.muPas, 4), 5.9905)
         self.assertEqual(round(H2(T=40, rho=100).mu.muPas, 3), 49.034)

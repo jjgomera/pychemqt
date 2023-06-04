@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class nC5(MEoS):
@@ -104,7 +105,7 @@ class nC5(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -259,16 +260,16 @@ class nC5(MEoS):
         "Au": 29.84, "D": 2}
 
     _melting = {
-            "eq": 2,
-            "__doi__": {
-                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
-                "title": "Melting Curves of Pressure-Transmitting fluids",
-                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
-                "doi": "10.1063/1.1725068"},
+        "eq": 2,
+        "__doi__": {
+            "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+            "title": "Melting Curves of Pressure-Transmitting fluids",
+            "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+            "doi": "10.1063/1.1725068"},
 
-            "Tmin": Tt, "Tmax": 2000.0,
-            "Tref": Tt, "Pref": 0.076321,
-            "a2": [6600e5], "exp2": [1.649]}
+        "Tmin": Tt, "Tmax": 2000.0,
+        "Tref": Tt, "Pref": 0.076321,
+        "a2": [6600e5], "exp2": [1.649]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -283,7 +284,27 @@ class nC5(MEoS):
         "n": [-2.9389, -6.2784, -19.941, -16.709, -36.543, -127.99],
         "t": [0.4, 1.18, 3.2, 6.6, 7.0, 15.0]}
 
-    visco0 = {"__name__": u"Quiñones-Cisneros (2006)",
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 349.44, "sigma": 0.5790, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [0.455019, 0.677221, -0.277823, 0.0372505],
+              "psi_d": [0, 1, 2, 3]}
+
+    visco0 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -304,7 +325,7 @@ class nC5(MEoS):
               "B": [1.98521e-8, 2.05972e-9, 0.0],
               "C": [-1.18487e-7, 1.69571e-7, 0.0]}
 
-    _viscosity = visco0,
+    _viscosity = (trnECS, visco0)
 
     thermo0 = {"__name__": "Vassiliou (2015)",
                "__doi__": {
@@ -334,13 +355,14 @@ class nC5(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.227e-9, "gam0": 0.058, "qd": 0.668e-9, "Tcref": 704.55}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = nC5(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.2053)
         self.assertEqual(round(st.P.MPa, 3), 13.454)
@@ -350,8 +372,14 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 213.42)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.34915)
 
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # nC5(T=422.7, rhom=6.548).mu.muPas, 5), 80.03148)
+            nC5(T=422.7, rhom=6.548).mu.muPas, 5), 80.16498)
+
     def test_Vassiliou(self):
-        # Section 3.3.2, Pag 14
+        """Section 3.3.2, Pag 14"""
         # Viscosity value different to used in paper
         # self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.300)
-        self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.413)
+        self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.394)

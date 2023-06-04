@@ -74,7 +74,7 @@ class R14(MEoS):
         "c2": [2]*6,
         "gamma2": [0.99832625]*6}
 
-    eq = platzer,
+    eq = (platzer, )
 
     _surface = {"sigma": [0.0423], "exp": [1.24]}
     _vapor_Pressure = {
@@ -103,8 +103,6 @@ class R14(MEoS):
               "eq": "ecs",
 
               "ref": N2,
-              "visco": "visco0",
-              "thermo": "thermo0",
 
               "ek": 164.44, "sigma": 0.4543, "omega": 5,
 

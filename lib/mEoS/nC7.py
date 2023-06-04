@@ -215,7 +215,7 @@ class nC7(MEoS):
               3.57524917645, 3.27649699126e3, -1.15729200586e-1,
               3.93007045330e1, 3.88225605345e3]}
 
-    eq = shortSpan, GERG, polt, starling,  # ratanapisit
+    eq = shortSpan, GERG, polt, starling   # ratanapisit
     _PR = [0.0074, -19.6376]
 
     _surface = {
@@ -277,7 +277,7 @@ class nC7(MEoS):
               "tr_den": [0, -1, 0, 0, -1],
               "dr_den": [0, 0, 1, 2, 1]}
 
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco1 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -330,13 +330,14 @@ class nC7(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.245e-9, "gam0": 0.0586, "qd": 0.8e-9, "Tcref": 810.2}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = nC7(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.1651)
         self.assertEqual(round(st.P.MPa, 3), 7.957)
@@ -347,7 +348,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31964)
 
     def test_Michailidou(self):
-        # Table 7, Pag 10
+        """Table 7, Pag 10"""
         self.assertEqual(round(nC7(T=250, rho=0).mu.muPas, 4), 4.9717)
         self.assertEqual(round(nC7(T=400, rho=0).mu.muPas, 4), 7.8361)
         self.assertEqual(round(nC7(T=550, rho=0).mu.muPas, 4), 10.7394)
@@ -356,7 +357,7 @@ class Test(TestCase):
         self.assertEqual(round(nC7(T=550, rho=500).mu.muPas, 3), 95.102)
 
     def test_Assael(self):
-        # Table 4, Pag 8
+        """Table 4, Pag 8"""
         self.assertEqual(round(nC7(T=250, rho=720).k.mWmK, 2), 137.08)
         self.assertEqual(round(nC7(T=400, rho=2).k.mWmK, 3), 21.794)
         self.assertEqual(round(nC7(T=400, rho=650).k.mWmK, 2), 120.74)

@@ -238,9 +238,10 @@ class R161(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Tsolakidou(self):
-        # Table 9, pag 10, saturation state for mEoS testing
+        """Table 9, pag 10, saturation state for mEoS testing"""
         st = R161(T=250, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 0.1880)
         self.assertEqual(round(st.Liquido.rho, 2), 789.54)

@@ -84,7 +84,7 @@ class R227ea(MEoS):
         "gamma3": [0.414, 1.051, 1.226, 1.7, 0.904, 1.42, 0.926],
         "epsilon3": [1.13, 0.71, 1.2, 1.7, 0.546, 0.896, 0.747]}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [-0.0199, -19.4164]
 
     _surface = {"sigma": [0.06127, -0.009516, -0.00192],
@@ -128,14 +128,14 @@ class R227ea(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_lemmon(self):
-        # Table 7, Pag 3754
+        """Table 7, Pag 3754"""
         st = R227ea(T=300, rhom=0)
         self.assertEqual(round(st.P.MPa, 6), 0.0)
         self.assertEqual(round(st.cvM.JmolK, 4), 127.9514)

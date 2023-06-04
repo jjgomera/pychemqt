@@ -166,7 +166,7 @@ class C2(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -436,7 +436,7 @@ class C2(MEoS):
                     0.8235954037e4],
               "rhoc": 6.875}
 
-    visco4 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco4 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -508,9 +508,9 @@ class C2(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_buecker(self):
-        # Selected point from Table 29, Pag 238, saturation states
+        """Selected point from Table 29, Pag 238, saturation states"""
         st = C2(T=90.368, x=0.5)
         self.assertEqual(round(st.P.MPa, 7), 0.0000011)
         self.assertEqual(round(st.Liquido.rho, 5), 651.52948)
@@ -762,12 +762,12 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 2), 2628.58)
 
     def test_younglove(self):
+        """Selected point from Appendix F, Pag 642, single phase region"""
         # The saturation point use the ancillary equation for calculate
         # pressure and density, so the values differ of values give by mBWR,
         # so not used for testing
         kw = {"eq": "younglove", "visco": 3, "thermal": 1}
 
-        # Selected point from Appendix F, Pag 642, single phase region
         st = C2(T=100, P=1e4, **kw)
         self.assertEqual(round(st.rho, 1), 641.1)
         self.assertEqual(round(st.rhoM, 2), 21.32)
@@ -1033,7 +1033,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k, 3), 0.115)
 
     def test_friend(self):
-        # Selected point from Table A1, Pag 336, ideal gas
+        """Selected point from Table A1, Pag 336, ideal gas"""
         # The point really are not the gas ideal at zero preesure as it's
         # calculated here, it's the value at 1 bar pressure so the values of
         # Helmholtz free energy and entropy differ of ideal properties
@@ -1182,7 +1182,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k.mWmK, 1), 59.6)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = C2(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 3), 3.299)
         self.assertEqual(round(st.P.MPa, 3), 44.781)
@@ -1193,7 +1193,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.50714)
 
     def test_Herrmann(self):
-        # Table 3, Pag 5
+        """Table 3, Pag 5"""
         self.assertEqual(round(C2(T=100, rho=650).mu.muPas, 3), 1050.774)
         self.assertEqual(round(C2(T=300, rho=0).mu.muPas, 6), 9.285785)
         self.assertEqual(round(C2(T=300, rho=1).mu.muPas, 6), 9.293015)
@@ -1212,7 +1212,7 @@ class Test(TestCase):
         self.assertEqual(round(C2(T=675, rho=300).mu.muPas, 5), 45.90524)
 
     def test_Vogel(self):
-        # Table 6, Pag 22
+        """Table 6, Pag 22"""
         self.assertEqual(round(
             C2(T=100, rho=650, visco=1).mu.muPas, 9), 1058.240219296)
         self.assertEqual(round(
@@ -1243,7 +1243,7 @@ class Test(TestCase):
             C2(T=675, rho=300, visco=1).mu.muPas, 9), 45.895671715)
 
     def test_friendThermo(self):
-        # Selected point from Table A1, Pag 336, ideal gas
+        """Selected point from Table A1, Pag 336, ideal gas"""
         st = C2(T=100, rho=0, eq="friend", visco=2)
         self.assertEqual(round(st.mu.muPas, 2), 3.32)
         self.assertEqual(round(st.k.mWmK, 2), 3.46)
@@ -1266,6 +1266,7 @@ class Test(TestCase):
 
         # Selected point from Table A2, Pag 337, saturation state
         # This table has tiny desviation in saturation calculation
+
         # st = C2(T=304, x=0.5, eq="friend", visco=2)
         # self.assertEqual(round(st.Liquido.mu.muPas, 2), 28.97)
         # self.assertEqual(round(st.Liquido.k.mWmK, 1), 79.0)

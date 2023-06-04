@@ -83,7 +83,7 @@ class mXylene(MEoS):
         "gamma3": [1.1013, 0.6515, 0.4975, 1.26],
         "epsilon3": [0.713, 0.9169, 0.6897, 0.7245]}
 
-    eq = zhou,
+    eq = (zhou, )
     _PR = [0.0465, -21.1362]
 
     _surface = {
@@ -139,7 +139,7 @@ class mXylene(MEoS):
                 muB += n/T**i
         return muB*rho/self.M
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Mylona (2014)",
                "__doi__": {
@@ -170,13 +170,15 @@ class mXylene(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.235e-9,
                "gam0": 0.057, "qd": 0.713e-9, "Tcref": 925.3}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Cao(self):
-        # Table 5, saturation state properties, include basic test for Zhou EoS
+        """Table 5, saturation state properties,
+        include basic test for Zhou EoS"""
         st = mXylene(T=273.15, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 0.0002)
         self.assertEqual(round(st.Gas.rhoM, 4), 0.0001)
@@ -241,11 +243,11 @@ class Test(TestCase):
             mXylene(T=600, rhom=7.6591).mu.muPas, 3), 299.164)
 
     def test_Mylona(self):
+        """Table 11, the point with critical enhancement differ"""
         # The critical enchancement use a innacurate ecs viscosity correlation
         # This viscosity with that correlation is fairly diferent of Cao
         # correlation, this is the cause of testing error
 
-        # Table 11, the point with critical enhancement differ
         self.assertEqual(round(mXylene(T=240, rho=0).k.mWmK, 2), 5.60)
         self.assertEqual(round(mXylene(T=300, rho=0).k.mWmK, 2), 9.45)
         self.assertEqual(round(mXylene(T=400, rho=0).k.mWmK, 2), 18.04)

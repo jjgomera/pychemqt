@@ -118,7 +118,7 @@ class Ar(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -279,11 +279,11 @@ class Ar(MEoS):
 
     visco0 = {"__name__": "Lemmon (2004)",
               "__doi__": {
-                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
-                   "title": "Viscosity and Thermal Conductivity Equations for "
-                            "Nitrogen, Oxygen, Argon, and Air",
-                   "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
-                   "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
+                  "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                  "title": "Viscosity and Thermal Conductivity Equations for "
+                           "Nitrogen, Oxygen, Argon, and Air",
+                  "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                  "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
               "eq": 1, "omega": 1,
               "ek": 143.2, "sigma": 0.335,
@@ -416,7 +416,7 @@ class Ar(MEoS):
                "to": [-1, -2./3, -1./3, 0, 1./3, 2./3, 1., 4./3, 5./3],
 
                "rhoref_res": M, "kref_res": 1.,
-               "nr": [0.757894e-3, 0.612624e-4, -0.205353e-5,  0.745621e-7],
+               "nr": [0.757894e-3, 0.612624e-4, -0.205353e-5, 0.745621e-7],
                "tr": [0, 0, 0, 0],
                "dr": [1, 2, 3, 4],
 
@@ -478,9 +478,9 @@ class Ar(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_Tegeler(self):
-        # Selected point from Table 33, Pag 828, saturation states
+        """Selected point from Table 33, Pag 828, saturation states"""
         st = Ar(T=83.8058, x=0.5)
         self.assertEqual(round(st.P.MPa, 6), 0.068891)
         self.assertEqual(round(st.Liquido.rho, 2), 1416.77)
@@ -643,7 +643,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 1851.9)
 
     def test_Younglove(self):
-        # Selected point from Appendix F, Pag 1-12, saturation states
+        """Selected point from Appendix F, Pag 1-12, saturation states"""
         # The pressure and density in saturation is calculate in tables using
         # the ancillary equation used in paper so the calculated point differ
         # of implement eq
@@ -936,7 +936,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k.WmK, 4), 0.0606)
 
     def test_Stewart(self):
-        # Saturation pressures from Table 12, pag. 675
+        """Saturation pressures from Table 12, pag. 675"""
         st = Ar(T=84, x=0.5, eq="stewart")
         self.assertEqual(round(st.P.MPa, 4), 0.0705)
         st = Ar(T=90, x=0.5, eq="stewart")
@@ -1160,7 +1160,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 0), 1715)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = Ar(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 0.5203)
         self.assertEqual(round(st.P.MPa, 3), 31.922)
@@ -1171,7 +1171,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.18479)
 
     def test_LemmonTransport(self):
-        # Table V, pag 28
+        """Table V, pag 28"""
         # Viscosity
         self.assertEqual(round(Ar(T=100, rhom=0).mu.muPas, 5), 8.18940)
         self.assertEqual(round(Ar(T=300, rhom=0).mu.muPas, 4), 22.7241)
@@ -1189,6 +1189,7 @@ class Test(TestCase):
         self.assertEqual(round(Ar(rhom=13.4, T=150.69).k.mWmK, 1), 856.8)
 
     def test_YoungloveHanley(self):
+        """Selected point from table 5 and table 6 in pag 1331"""
         st = Ar(T=90, P=1e5, eq="younglove", visco=1, thermal=3)
         self.assertEqual(round(st.mu.muPas, 1), 7.2)
         self.assertEqual(round(st.k.mWmK, 1), 5.5)

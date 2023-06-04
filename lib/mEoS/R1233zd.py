@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R1233zd(MEoS):
@@ -151,6 +152,27 @@ class R1233zd(MEoS):
         "n": [-0.80785, -3.2355, -2.7567, -10.863, -33.456, -69.31],
         "t": [0.24, 0.59, 1, 2.2, 4.7, 9]}
 
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 349.1, "sigma": 0.524, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.93,
+
+              "psi": [-0.0848988, 1.22693, -0.463275, 0.0568798],
+              "psi_d": [0, 1, 2, 3]}
+
+    _viscosity = (trnECS, )
+
     thermo0 = {"__name__": "Perkins (2017)",
                "__doi__": {
                    "autor": "Perkins, R.A., Huber, M.L.",
@@ -181,9 +203,10 @@ class R1233zd(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Akasaka(self):
-        # Table 9, pag 16
+        """Table 9, pag 16"""
         st = R1233zd(T=300, rhom=0)
         self.assertEqual(round(st.P.MPa, 5), 0)
         self.assertEqual(round(st.cvM.JmolK, 4), 93.7166)
@@ -221,7 +244,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 4), 77.5936)
 
     def test_Perkins(self):
-        # Table 2, pag E
+        """Table 2, pag E"""
         # Include basic testing for Mondejar mEoS
         # The paper use a undocumented ecs viscosity correlation, so critical
         # enhancement differ
@@ -235,7 +258,7 @@ class Test(TestCase):
 
         st = R1233zd(T=300, rho=1308.8, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 20.02)
-        self.assertEqual(round(st.k.WmK, 6), 0.091409)
+        self.assertEqual(round(st.k.WmK, 6), 0.091403)
 
         st = R1233zd(T=445, rho=0, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 0)
@@ -243,4 +266,10 @@ class Test(TestCase):
 
         st = R1233zd(T=445, rho=168.52, eq="mondejar")
         self.assertEqual(round(st.P.MPa, 2), 3.00)
-        self.assertEqual(round(st.k.WmK, 6), 0.026044)
+        self.assertEqual(round(st.k.WmK, 6), 0.026587)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # R1233zd(T=395.6, rhom=7.561).mu.muPas, 5), 113.0913)
+            R1233zd(T=395.6, rhom=7.561).mu.muPas, 5), 112.90889)

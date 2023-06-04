@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class C23_butane(MEoS):
@@ -84,7 +85,7 @@ class C23_butane(MEoS):
         "gamma3": [1.16, 0.91, 1.0, 1.05, 1.06],
         "epsilon3": [0.689, 2.139, 0.314, 0.992, 0.619]}
 
-    eq = gao,
+    eq = (gao, )
 
     _surface = {
         "__doi__": {"autor": "Huber, M.L.",
@@ -108,11 +109,40 @@ class C23_butane(MEoS):
         "n": [-3.8824, -8.0209, -25.626, -56.727, -145.5],
         "t": [0.448, 1.55, 3.85, 7.85, 17.15]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 397.5, "sigma": 0.574, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.25327, -0.178928, 0.0348391], "psi_d": [0, 1, 2],
+              "fint": [0.00116], "fint_t": [0],
+              "chi": [1.00438, 0.014484], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.238e-9, "gam0": 0.058, "qd": 0.701e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Gao(self):
-        # Table 13, pag 22
+        """Table 13, pag 22"""
         st = C23_butane(T=260, rhom=8.3)
         self.assertEqual(round(st.P.MPa, 5), 33.95611)
         self.assertEqual(round(st.cvM.JmolK, 4), 137.4007)
@@ -159,6 +189,13 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 4), 161.0000)
         self.assertEqual(round(st.hM.kJmol, 5), 48.68907)
         self.assertEqual(round(st.sM.JmolK, 4), 112.3156)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = C23_butane(T=450.5, rhom=5.652)
+        # self.assertEqual(round(st.mu.muPas, 5), 90.14569)
+        self.assertEqual(round(st.mu.muPas, 5), 90.14598)
+        self.assertEqual(round(st.k.mWmK, 4), 67.3762)
 
     def test_Surface(self):
         """Table 10, pag 271"""

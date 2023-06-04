@@ -172,9 +172,10 @@ class R22(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_wagner(self):
-        # Table 11, Pag 381
+        """Table 11, Pag 381"""
         st = R22(T=273.15, P=1e6, eq="wagner")
         self.assertEqual(round(st.rho, 5), 1283.58841)
         self.assertEqual(round(st.cv.kJkgK, 5), 0.67801)
@@ -196,7 +197,7 @@ class Test(TestCase):
         self.assertEqual(round(st.joule.KMPa, 5), 18.34747)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R22(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 0.8498)
         self.assertEqual(round(st.P.MPa, 3), 17.202)

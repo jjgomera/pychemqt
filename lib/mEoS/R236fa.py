@@ -132,43 +132,50 @@ class R236fa(MEoS):
         "n": [-4.4507, -3.7583, -20.279, -268.01, 501.71, -349.17],
         "t": [0.506, 1.16, 2.8, 7.0, 8.0, 9.0]}
 
-    trnECS = {"__name__": "Huber (2003)",
+    trnECS = {"__name__": "Huber (2018)",
 
               "__doi__": {
-                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
-                  "title": "Model for the Viscosity and Thermal Conductivity "
-                           "of Refrigerants, Including a New Correlation for "
-                           "the Viscosity of R134a",
-                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
-                  "doi": "10.1021/ie0300880"},
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
 
               "eq": "ecs",
-
               "ref": C3,
               "visco": "visco1",
-              "thermo": "thermo0",
 
-              "ek": 307.24, "sigma": 0.5644, "omega": 5,
+              "ek": 307.24, "sigma": 0.5644, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
 
-              "psi": [1.10195, -2.94253e-2], "psi_d": [0, 1],
+              "psi": [1.08017, -0.026407, 0.00605762], "psi_d": [0, 1, 2],
               "fint": [1.00946e-3, 1.21255e-6], "fint_t": [0, 1],
-              "chi": [1.1627, -4.37246e-2], "chi_d": [0, 1],
+              "chi": [1.29118, -0.0785568], "chi_d": [0, 1],
 
               "critical": 3,
-              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.209e-9, "gam0": 0.06, "qd": 0.641e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Pan(self):
-        # State point in paragraph 5. Conclusion
+        """State point in paragraph 5. Conclusion"""
         st = R236fa(T=398.1, rhom=3.63)
         self.assertEqual(round(st.P.MPa, 5), 3.19277)
         self.assertEqual(round(st.hM.Jmol, 1), 59895.4)
         self.assertEqual(round(st.sM.JmolK, 3), 237.269)
         self.assertEqual(round(st.cvM.JmolK, 3), 188.426)
         self.assertEqual(round(st.w, 4), 65.0881)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R236fa(T=358.3, rhom=7.465)
+        # self.assertEqual(round(st.mu.muPas, 4), 141.9426)
+        self.assertEqual(round(st.mu.muPas, 4), 141.9451)
+        self.assertEqual(round(st.k.mWmK, 4), 56.8852)

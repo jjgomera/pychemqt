@@ -2,7 +2,8 @@
 
 extension-pkg-whitelist = PyQt6, CoolProp
 
-disable = invalid-name, too-many-instance-attributes, too-many-statements, too-many-ancestors, too-many-lines
+disable = invalid-name, too-many-instance-attributes, too-many-statements,
+    too-many-ancestors, too-many-lines, protected-access
 
 [TYPECHECK]
 

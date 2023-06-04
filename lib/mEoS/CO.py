@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class CO(MEoS):
@@ -178,10 +179,39 @@ class CO(MEoS):
               -0.29858e2],
         "t": [0.395, 1.21, 3.0, 3.5, 6.0, 8.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 103.697, "sigma": 0.3615, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.07369, -0.0283067], "psi_d": [0, 1],
+              "fint": [3.29558e-4, 3.05976e-6, -3.13222e-9],
+              "fint_t": [0, 1, 2],
+              "chi": [1.00037, -0.0082682], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.164e-9, "gam0": 0.059, "qd": 0.437e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = CO(T=134, rhom=10)
         self.assertEqual(round(st.P.kPa, 3), 3668.867)
         self.assertEqual(round(st.hM.kJkmol, 3), 4838.507)
@@ -189,3 +219,9 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 38.702)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 1642.142)
         self.assertEqual(round(st.w, 3), 168.632)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = CO(T=119.6, rhom=21.287)
+        self.assertEqual(round(st.mu.muPas, 5), 56.70495)
+        self.assertEqual(round(st.k.mWmK, 4), 75.7297)

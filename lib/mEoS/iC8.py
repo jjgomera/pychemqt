@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import nC8
 
 
 class iC8(MEoS):
@@ -77,7 +80,7 @@ class iC8(MEoS):
         "gamma3": [1.44, 0.68, 0.51, 0.8],
         "epsilon3": [0.66, 0.9, 0.54, 0.18]}
 
-    eq = blackham,
+    eq = (blackham, )
 
     _surface = {
         "__doi__": {
@@ -100,3 +103,42 @@ class iC8(MEoS):
         "eq": 2,
         "n": [-2.5793, -6.4934, -18.631, -54.123, -123.58],
         "t": [0.366, 1.11, 3.0, 6.4, 14.0]}
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": nC8,
+
+              "ek": 635.7, "sigma": 0.588, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.09755, -0.0223075],
+              "psi_d": [0, 1],
+              "fint": [0.00115], "fint_t": [0],
+              "chi": [0.827544, 0.0391177], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.256e-9, "gam0": 0.059, "qd": 0.771e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = iC8(T=489.6, rhom=4.325)
+        # self.assertEqual(round(st.mu.muPas, 5), 92.51572)
+        # self.assertEqual(round(st.k.mWmK, 4), 59.0987)
+        self.assertEqual(round(st.mu.muPas, 5), 92.51538)
+        self.assertEqual(round(st.k.mWmK, 4), 59.0985)

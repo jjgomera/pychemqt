@@ -268,7 +268,7 @@ class Ethylene(MEoS):
         "Tmin": Tt, "Tmax": 550.0}
 
     @classmethod
-    def _Melting_Pressure(cls, T):
+    def _Melting_Pressure(cls, T, melting=None):
         """Calculate the melting pressure using the fractional method of
         Smukala"""
         Tt2 = 110.369
@@ -325,13 +325,14 @@ class Ethylene(MEoS):
         tita = (rho-221)/221
         j = [-4.8544486732, 1.3033585236e1, 2.7808928908e4, -1.8241971308e3,
              1.5913024509, -2.0513573927e2, -3.9478454708e4]
-        mu2 = exp(j[0]+j[3]/T) * (exp(rho.gcc**0.1*(j[1]+j[2]/T**1.5) +
-                                  tita*rho.gcc**0.5*(j[4]+j[5]/T+j[6]/T**2))-1)
+        mu2 = exp(j[0]+j[3]/T) * (
+            exp(rho.gcc**0.1*(j[1]+j[2]/T**1.5)
+                + tita*rho.gcc**0.5*(j[4]+j[5]/T+j[6]/T**2))-1)
 
         # The reurned values is in microP, convert to μPas
         return mu2/10
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Assael (2016)",
                "__doi__": {
@@ -389,8 +390,8 @@ class Ethylene(MEoS):
             k = [-1.304503323e1, 1.8214616599e1, -9.903022496e3, 7.420521631e2,
                  -3.0083271933e-1, 9.6456068829e1, 1.350256962e4]
             l2 = exp(k[0]+k[3]/T) * (
-                exp(rho.gcc**0.1*(k[1]+k[2]/T**1.5) +
-                    tita*rho.gcc**0.5*(k[4]+k[5]/T+k[6]/T**2))-1)
+                exp(rho.gcc**0.1*(k[1]+k[2]/T**1.5)
+                    + tita*rho.gcc**0.5*(k[4]+k[5]/T+k[6]/T**2))-1)
 
             # Critical enhancement
             deltarho = (rho-221)/221
@@ -415,14 +416,15 @@ class Ethylene(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_smukala(self):
+        """Selected values from Table 32, Pag 1093, saturation state"""
         # Zero enthalpy-entropy reference state
         st = Ethylene(T=298.15, P=101325)
         self.assertEqual(round(st.h.kJkg, 2), 0)
         self.assertEqual(round(st.s.kJkgK, 3), 0)
 
-        # Selected values from Table 32, Pag 1093, saturation state
         # Using custom parametr for reference state, the enthalpy and entropy
         # values are diferent to table
         st = Ethylene(T=103.989, x=0.5)
@@ -542,7 +544,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 1668.7)
 
     def test_mccarty(self):
-        # Selected values from Table B-1, Pag 74, saturation state
+        """Selected values from Table B-1, Pag 74, saturation state"""
         st = Ethylene(T=104, x=0.5, eq="mccarty")
         self.assertEqual(round(st.P.MPa, 5), 0.00012)
         self.assertEqual(round(st.Liquido.rhoM, 3), 23.389)
@@ -705,7 +707,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 0), 593)
 
     def test_jahangiri(self):
-        # Table 24, Pag 635, Second virial coefficients
+        """Table 24, Pag 635, Second virial coefficients"""
         st = Ethylene(T=200.15, P=101325, eq="jahangiri")
         self.assertEqual(round(st.virialB.ccg*st.M, 3), -310.248)
         st = Ethylene(T=250.15, P=101325, eq="jahangiri")
@@ -719,7 +721,7 @@ class Test(TestCase):
         st = Ethylene(T=450.15, P=101325, eq="jahangiri")
         self.assertEqual(round(st.virialB.ccg*st.M, 3), -50.099)
 
-        # # Table 27, Pag 646, saturation states
+        # Table 27, Pag 646, saturation states
         st = Ethylene(T=104, x=0.5, eq="jahangiri")
         self.assertEqual(round(st.P.MPa, 5), 0.00012)
         self.assertEqual(round(st.Liquido.rhoM, 3), 23.347)
@@ -971,7 +973,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 0), 1792)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = Ethylene(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 2.7682)
         self.assertEqual(round(st.P.MPa, 3), 48.416)
@@ -982,7 +984,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.47681)
 
     def test_Assael(self):
-        # Table 5, pag 8
+        """Table 5, pag 8"""
         self.assertEqual(round(Ethylene(T=200, rho=0).k.mWmK, 2), 10.39)
         self.assertEqual(round(Ethylene(T=300, rho=0).k.mWmK, 2), 21.01)
         self.assertEqual(round(Ethylene(T=400, rho=0).k.mWmK, 2), 36.36)
@@ -1012,9 +1014,9 @@ class Test(TestCase):
         self.assertEqual(round(Ethylene(T=300, rho=300).k.mWmK, 2), 69.62)
 
     def test_Holland(self):
-        # Single phase selected point
-        # Viscosity, Table 5, pag 924
-        # Thermal Conductivity, Table 6, pag 927
+        """Single phase selected point
+        Viscosity, Table 5, pag 924
+        Thermal Conductivity, Table 6, pag 927"""
         st = Ethylene(T=110, P=1e5, eq="mccarty", thermal=1)
         self.assertEqual(round(st.mu.microP, 1), 5660.5)
         self.assertEqual(round(st.k.mWmK, 2), 261.77)

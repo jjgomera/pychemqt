@@ -71,7 +71,7 @@ class nC12(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [0.1099, -26.8035]
 
     _surface = {
@@ -123,7 +123,7 @@ class nC12(MEoS):
               "CPgi": [2.23089/2.32661],
               "CPti": [-0.5]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"eq": 1,
                "__name__": "Huber (2004)",
@@ -147,13 +147,13 @@ class nC12(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
                "Xio": 0.194e-9, "gam0": 0.0496, "qd": 1.52e-9, "Tcref": 987.15}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_lemmon(self):
-        # Table 5, Pag 967
+        """Table 5, Pag 967"""
         st = nC12(T=300, rho=0)
         self.assertEqual(round(st.P.MPa, 3), 0)
         self.assertEqual(round(st.cvM.JmolK, 4), 271.3952)
@@ -185,7 +185,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 5), 49.76424)
 
     def test_Huber(self):
-        # Viscosity test point, Pag 972
+        """Viscosity test point, Pag 972"""
         self.assertEqual(round(nC12(T=300, rhom=4.4115).mu.muPas, 1), 1484.8)
         self.assertEqual(round(nC12(T=500, P=1e6).mu.muPas, 2), 183.76)
 

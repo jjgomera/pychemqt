@@ -295,7 +295,7 @@ class R134a(MEoS):
 
               "eq": 1, "omega": 1,
 
-              "M": 102.031, "ek": 299.363, "sigma": 0.46893,
+              "M": 102.032, "ek": 299.363, "sigma": 0.46893,
               "n_chapman": 0.021357,
               "collision": [0.355404, -0.464337, 0.257353e-1],
 
@@ -326,7 +326,7 @@ class R134a(MEoS):
         muCP = c7/(delta0-delta) - c7/delta0
         return muCP * 1000
 
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco1 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -347,7 +347,7 @@ class R134a(MEoS):
               "B": [1.35594e-8, 0.0, 3.17550e-10],
               "C": [0.0, 4.81769e-7, -1.17149e-7]}
 
-    _viscosity = visco0, visco1,
+    _viscosity = visco0, visco1
 
     thermo0 = {"__name__": "Perkins (2000)",
                "__doi__": {
@@ -374,16 +374,17 @@ class R134a(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
                "gam0": 0.0496, "qd": 5.285356e-10, "Tcref": 561.411}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_tillner(self):
+        """Selected point from Table 8, Pag 696, saturation state"""
         # The tables have fairly values that differ in the last decimal place,
         # always a value below the one obtained, perhaps a problem of rounding
 
-        # Selected point from Table 8, Pag 696, saturation state
         st = R134a(T=169.85, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.00039)
         self.assertEqual(round(st.Liquido.rho, 1), 1591.1)
@@ -587,7 +588,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 1208.3)
 
     def test_MBWR(self):
-        # Selected points from Table 9, Pag 459, saturation state
+        """Selected points from Table 9, Pag 459, saturation state"""
         st = R134a(T=-100+273.15, x=0.5, eq="MBWR")
         self.assertEqual(round(st.P.MPa, 5), 0.00056)
         self.assertEqual(round(st.Liquido.rho, 1), 1581.9)
@@ -665,7 +666,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.w, 0), 94)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R134a(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 1.1577)
         self.assertEqual(round(st.P.MPa, 3), 14.656)

@@ -70,7 +70,8 @@ class nC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Fundamental Helmholtz equation of state for octane of "
                     "Beckmüller et al. (2022)",
-        "__doi__": {"autor": "Beckmüller, R., Span, R., Lemmon, E.W.",
+        "__doi__": {"autor": "Beckmüller, R., Span, R., Lemmon, E.W., "
+                             "Thol, M.",
                     "title": "A Fundamental Equation of State for the "
                              "Calculation of Themodynamic Properties of "
                              "n-Octane",
@@ -78,7 +79,9 @@ class nC8(MEoS):
                     "doi": "10.1063/5.0104661"},
 
         # Using several constants rounded as in fld supplementary data.
-        "R": 8.3144598, "M": 114.229, "rhoc": 2.031,
+        "R": 8.3144598,
+        "M": 114.229,
+        "rhoc": 2.031,
 
         "cp": CP0,
         "ref": "NBP",
@@ -358,13 +361,14 @@ class nC8(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
                "gam0": 0.0496, "qd": 0.68628e-9, "Tcref": 853.98}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_beckmuller(self):
-        # Table 17, Pag 39
+        """Table 17, Pag 39"""
         st = nC8(T=500, rhom=0.2)
         self.assertEqual(round(st.P.MPa, 9), 0.679567285)
         self.assertEqual(round(st.cpM.JmolK, 7), 308.0591118)
@@ -390,7 +394,7 @@ class Test(TestCase):
         self.assertEqual(round(st.aM.Jmol, 5), -33715.62722)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = nC8(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.1537)
         self.assertEqual(round(st.P.MPa, 3), 6.363)
@@ -401,11 +405,11 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31183)
 
     def test_viscoHuber(self):
-        # Section 3.1 pag 265
+        """Section 3.1 pag 265"""
         self.assertEqual(round(
             nC8(T=300, P=1e7, eq="shortSpan").mu.muPas, 2), 553.60)
 
     def test_thermoHuber(self):
-        # Section 3.1 pag 50
+        """Section 3.1 pag 50"""
         self.assertEqual(round(
             nC8(T=300, P=1e7, eq="shortSpan").k.mWmK, 2), 128.36)

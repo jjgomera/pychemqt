@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class D5(MEoS):
@@ -144,11 +145,39 @@ class D5(MEoS):
         "n": [-0.916, -5.911, -18.617, -74.29, -154.4, -284.1],
         "t": [0.23, 0.68, 2.24, 5.1, 10.7, 18.9]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 491, "sigma": 0.864, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [-2.49055, 4.63356, -1.89292, 0.247782],
+              "psi_d": [0, 1, 2, 3],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [1.40287, 0.0940128], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.319e-9, "gam0": 0.064, "qd": 1.068e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
-
+    """Testing"""
     def test_thol(self):
-        # Table 6, Pag. 9621
+        """Table 6, Pag. 9621"""
         st = D5(T=290, rhom=2.7)
         self.assertEqual(round(st.P.MPa, 7), 36.3487297)
         self.assertEqual(round(st.hM.Jmol, 3), -122272.731)
@@ -183,3 +212,9 @@ class Test(TestCase):
         self.assertEqual(round(st.sM.JmolK, 6), 215.447596)
         self.assertEqual(round(st.w, 6), 415.207142)
         self.assertEqual(round(st.aM.Jmol, 4), -18903.4744)
+
+    # def test_Huber(self):
+    #     """Table 7, pag 266"""
+    #     st = D5(T=556.5, rhom=1.718)
+    #     self.assertEqual(round(st.mu.muPas, 4), 184.5268)
+    #     self.assertEqual(round(st.k.mWmK, 4), 59.4893)

@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class Kr(MEoS):
@@ -54,7 +55,7 @@ class Kr(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -143,10 +144,38 @@ class Kr(MEoS):
         "n": [-.64163e1, .89956e1, -.10216e2, -.13477e2, -.21152e3, .21375e3],
         "t": [0.525, 0.77, 1.04, 3.2, 8.3, 9.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 178.9, "sigma": 0.3655, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1.008291,
+
+              "psi": [1], "psi_d": [0],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [0.962573, -0.0118156], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.168e-9, "gam0": 0.058, "qd": 0.437e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = Kr(T=211, rhom=10)
         self.assertEqual(round(st.P.kPa, 3), 5741.445)
         self.assertEqual(round(st.hM.kJkmol, 3), 6700.326)
@@ -156,8 +185,14 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 137.838)
 
     def test_Michels(self):
-        # Table I, pag 105
+        """Table I, pag 105"""
         self.assertEqual(round(Kr._Melting_Pressure(115.893).atm, 2), 5.52)
         self.assertEqual(round(Kr._Melting_Pressure(119.069).atm, 2), 110.55)
         self.assertEqual(round(Kr._Melting_Pressure(138.598).atm, 2), 794.08)
         self.assertEqual(round(Kr._Melting_Pressure(157.033).atm, 2), 1496.47)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = Kr(T=188.5, rhom=21.274)
+        self.assertEqual(round(st.mu.muPas, 4), 115.6593)
+        self.assertEqual(round(st.k.mWmK, 4), 48.3068)

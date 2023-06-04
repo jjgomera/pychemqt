@@ -162,7 +162,7 @@ class pD2(D2):
 
     richardson = D2.richardson.copy()
     richardson["cp"] = Fi1
-    eq = richardson,
+    eq = (richardson, )
 
 
 class oD2(D2):
@@ -183,13 +183,13 @@ class oD2(D2):
 
     richardson = D2.richardson.copy()
     richardson["cp"] = Fi1
-    eq = richardson,
+    eq = (richardson, )
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_richardson(self):
-        # Selected point from Table 7 pag 12, saturation state
+        """Selected point from Table 7 pag 12, saturation state"""
         st = D2(T=18.724, x=0.5)
         self.assertEqual(round(st.P.kPa, 3), 17.189)
         self.assertEqual(round(st.Liquido.rho, 2), 174.63)

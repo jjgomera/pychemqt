@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class Trans_2_butene(MEoS):
@@ -56,7 +57,7 @@ class Trans_2_butene(MEoS):
                     "title": "Thermodynamic properties of the butenes: Part "
                              "II. Short fundamental equations of state",
                     "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
-                    "doi":  "10.1016/j.fluid.2004.09.004"},
+                    "doi": "10.1016/j.fluid.2004.09.004"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -74,7 +75,7 @@ class Trans_2_butene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [-0.1594, -16.6119]
 
     _surface = {
@@ -99,10 +100,41 @@ class Trans_2_butene(MEoS):
         "n": [-3.1276, -6.0548, -18.243, -60.842, 135.95, -182.70],
         "t": [0.412, 1.24, 3.2, 7.0, 10.0, 11.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 259, "sigma": 0.5508, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.12449, -0.147034, 0.036655],
+              "psi_d": [0, 1, 2],
+              "fint": [0.00102143, 6.64409e-7], "fint_t": [0, 1],
+              "chi": [0.838527, 0.0648013], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.21e-9, "gam0": 0.057, "qd": 0.609e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
+
     def test_shortLemmon(self):
-        # Table 9, Pag 186
+        """Table 9, Pag 186"""
         st = Trans_2_butene(T=350, rho=0)
         self.assertEqual(round(st.P.MPa, 4), 0)
         self.assertEqual(round(st.hM.kJkmol, 0), 29959)
@@ -133,3 +165,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 2), 128.04)
         self.assertEqual(round(st.cpM.kJkmolK, 2), 692.14)
         self.assertEqual(round(st.w, 2), 139.25)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = Trans_2_butene(T=385.7, rhom=8.529)
+        # self.assertEqual(round(st.mu.muPas, 5), 75.84518)
+        self.assertEqual(round(st.mu.muPas, 5), 75.84560)
+        self.assertEqual(round(st.k.mWmK, 4), 74.3078)

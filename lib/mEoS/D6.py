@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class D6(MEoS):
@@ -76,7 +79,7 @@ class D6(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = colonna,
+    eq = (colonna, )
 
     _surface = {
         "__doi__": {
@@ -100,3 +103,39 @@ class D6(MEoS):
         "n": [-0.20930e1, -0.94442e1, -0.44731e2, -0.57898e2, -0.35144e2,
               -0.29661e3],
         "t": [0.338, 1.02, 3.46, 7.1, 7.4, 15.0]}
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 512.8, "sigma": 0.945, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.06991, 0.00448715], "psi_d": [0, 1],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [1.38744, 0.127827], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.341e-9, "gam0": 0.072, "qd": 1.17e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = D6(T=581.2, rhom=1.371)
+        self.assertEqual(round(st.mu.muPas, 4), 124.8445)
+        self.assertEqual(round(st.k.mWmK, 4), 55.3611)

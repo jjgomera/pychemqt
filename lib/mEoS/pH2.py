@@ -140,7 +140,7 @@ class pH2(MEoS):
         "Tmin": Tt, "Tmax": 400.0}
 
     @classmethod
-    def _Melting_Pressure(cls, T):
+    def _Melting_Pressure(cls, T, melting=None):
         """The correlation has two different equation so hardcoded here"""
         if T > 22:
             P = -26.5289115 + 0.248578596*T**1.764739
@@ -202,8 +202,8 @@ class pH2(MEoS):
             return suma*100
 
         def mu1(rho, T):
-            A = exp(5.7694 + log(rho.gcc) + 0.65e2*rho.gcc**1.5 -
-                    6e-6*exp(127.2*rho.gcc))
+            A = exp(5.7694 + log(rho.gcc) + 0.65e2*rho.gcc**1.5
+                    - 6e-6*exp(127.2*rho.gcc))
             B = 10 + 7.2*((rho.gcc/0.07)**6-(rho.gcc/0.07)**1.5) - \
                 17.63*exp(-58.75*(rho.gcc/0.07)**3)
             return A*exp(B/T)*0.1
@@ -227,7 +227,7 @@ class pH2(MEoS):
             mu = muo(T)+mu1(rho, T)
         return unidades.Viscosity(mu, "muPas")
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Assael (2011)",
                "__doi__": {
@@ -260,13 +260,14 @@ class pH2(MEoS):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.15e-9, "gam0": 0.052, "qd": 0.5e-9, "Tcref": 49.407}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_leachman(self):
-        # Selected point from Table 13, Pag 745, saturation states
+        """Selected point from Table 13, Pag 745, saturation states"""
         st = pH2(T=13.8033, x=0.5)
         self.assertEqual(round(st.P.kPa, 3), 7.0410)
         self.assertEqual(round(st.Liquido.rho, 3), 76.977)
@@ -328,7 +329,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.w, 2), 372.03)
 
     def test_younglove(self):
-        # Selected point from Appendix H. Pag 97
+        """Selected point from Appendix H. Pag 97"""
         st = pH2(T=40, P=5e3, eq="younglove")
         self.assertEqual(round(st.rho, 5), 0.03033)
         self.assertEqual(round(st.rhoM, 5), 0.01505)
@@ -570,7 +571,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 0), 2394)
 
     def test_Assael(self):
-        # Table 7, Pag 11
+        """Table 7, Pag 11"""
         self.assertEqual(round(pH2(T=298.15, rho=0).k.mWmK, 2), 192.38)
         self.assertEqual(round(pH2(T=298.15, rho=0.80844).k.mWmK, 2), 192.80)
         self.assertEqual(round(pH2(T=298.15, rho=14.4813).k.mWmK, 2), 207.85)

@@ -95,7 +95,7 @@ class C3(MEoS):
                              "Reference Equation of State for Temperatures "
                              "from the Melting Line to 650 K and Pressures up "
                              "to 1000 MPa",
-                    "ref": "J. Chem. Eng. Datai, 54(12) (2009) 3141-3180",
+                    "ref": "J. Chem. Eng. Data, 54(12) (2009) 3141-3180",
                     "doi": "10.1021/je900217v"},
 
         "R": 8.314472,
@@ -421,9 +421,14 @@ class C3(MEoS):
                   "ref": "J. Phys. Chem. Ref. Data 27(5) (1998) 947-970",
                   "doi": "10.1063/1.556025"},
 
+              # TODO: Tiny desviation, relevant because propane is used as the
+              # reference fluid for many compounds in ecs transport properties
+              # correlation
               "eq": 1, "omega": 1,
 
-              "M": 44.098, "ek": 263.88, "sigma": 0.49748,
+              "Tc": 369.85, "rhoc": 5,
+              "M": 44.0956,
+              "ek": 263.88, "sigma": 0.49748,
               "n_chapman": 0.021357,
               "collision": [0.25104574, -0.47271238, 0, 0.060836515],
 
@@ -433,7 +438,7 @@ class C3(MEoS):
                            -0.34664158],
               "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
 
-              "Tref_res": 369.825, "rhoref_res": 5*44.098,
+              "Tref_res": 369.825, "rhoref_res": 5*44.0956,
               "nr": [35.9873030195, -180.512188564, 87.7124888223,
                      -105.773052525, 205.319740877, -129.210932610,
                      58.9491587759, -129.7400331, 76.6280419971,
@@ -463,7 +468,7 @@ class C3(MEoS):
                     0.0168910864, 43.527109444, 7659.45434720],
               "rhoc": 5.0}
 
-    visco3 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco3 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -501,7 +506,7 @@ class C3(MEoS):
                "no": [-1.24778e-3, 8.16371e-3, 1.99374e-2],
                "to": [0, 1, 2],
 
-               "Tref_res": 369.85, "rhoref_res": 220.3, "kref_res": 1.,
+               "Tref_res": 369.85, "rhoref_res": 5*M, "kref_res": 1.,
                "nr": [-3.695e-2, 4.82798e-2, 1.48658e-1, -1.35636e-1,
                       -1.19986e-1, 1.17588e-1, 4.12431e-2, -4.36911e-2,
                       -4.86905e-3, 6.16079e-3],
@@ -537,9 +542,9 @@ class C3(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_lemmon(self):
-        # Table 5, pag 3174
+        """Table 5, pag 3174"""
         st = C3(T=200, rhom=14)
         self.assertEqual(round(st.P.MPa, 7), 2.3795138)
         self.assertEqual(round(st.cvM.JmolK, 6), 61.078424)
@@ -602,12 +607,12 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.w, 1), 202.2)
 
     def test_younglove(self):
+        """Selected point from Appendix G, Pag 688, single phase region"""
         # The saturation point use the ancillary equation for calculate
         # pressure and density, so the values differ of values give by mBWR,
         # so not used for testing
         kw = {"eq": "younglove", "visco": 2, "thermal": 1}
 
-        # Selected point from Appendix G, Pag 688, single phase region
         st = C3(T=90, P=1e4, **kw)
         self.assertEqual(round(st.rho, 1), 728.5)
         self.assertEqual(round(st.rhoM, 2), 16.52)
@@ -888,7 +893,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k, 3), 0.121)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = C3(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 3), 3.235)
         self.assertEqual(round(st.P.MPa, 3), 27.175)
@@ -899,7 +904,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41879)
 
     def test_Vogel(self):
-        # Table 6, Pag 16
+        """Table 6, Pag 16"""
         self.assertEqual(round(C3(T=90, rho=730).mu.muPas, 3), 8010.968)
         self.assertEqual(round(C3(T=300, rho=1).mu.muPas, 6), 8.174374)
         self.assertEqual(round(C3(T=300, rho=20).mu.muPas, 6), 8.230795)
@@ -918,19 +923,19 @@ class Test(TestCase):
         self.assertEqual(round(C3(T=650, rho=400).mu.muPas, 5), 62.40780)
 
     def test_Vogel2(self):
-        # Table 4, pag 961
+        """Table 4, pag 961"""
         # Tiny desviation in the last decimal
         kw = {"eq": "younglove", "visco": 1}
-        self.assertEqual(round(C3(T=90, P=1e4, **kw).mu.muPas, 0), 7386)
-        self.assertEqual(round(C3(T=100, P=1e6, **kw).mu.muPas, 0), 3823)
-        self.assertEqual(round(C3(T=110, P=1e8, **kw).mu.muPas, 0), 5597)
-        self.assertEqual(round(C3(T=140, P=1e6, **kw).mu.muPas, 1), 834.5)
-        self.assertEqual(round(C3(T=160, P=1e4, **kw).mu.muPas, 1), 537.6)
-        self.assertEqual(round(C3(T=200, P=5e5, **kw).mu.muPas, 1), 290.2)
-        self.assertEqual(round(C3(T=260, P=1e4, **kw).mu.muPas, 3), 7.136)
-        self.assertEqual(round(C3(T=300, P=3e6, **kw).mu.muPas, 2), 99.38)
-        self.assertEqual(round(C3(T=340, P=1e6, **kw).mu.muPas, 3), 9.415)
+        self.assertEqual(round(C3(T=90, P=1e4, **kw).mu.muPas, 0), 7397)
+        self.assertEqual(round(C3(T=100, P=1e6, **kw).mu.muPas, 0), 3828)
+        self.assertEqual(round(C3(T=110, P=1e8, **kw).mu.muPas, 0), 5604)
+        self.assertEqual(round(C3(T=140, P=1e6, **kw).mu.muPas, 1), 835.0)
+        self.assertEqual(round(C3(T=160, P=1e4, **kw).mu.muPas, 1), 537.9)
+        self.assertEqual(round(C3(T=200, P=5e5, **kw).mu.muPas, 1), 290.3)
+        self.assertEqual(round(C3(T=260, P=1e4, **kw).mu.muPas, 3), 7.135)
+        self.assertEqual(round(C3(T=300, P=3e6, **kw).mu.muPas, 2), 99.39)
+        self.assertEqual(round(C3(T=340, P=1e6, **kw).mu.muPas, 3), 9.414)
         self.assertEqual(round(C3(T=400, P=1e8, **kw).mu.muPas, 1), 138.5)
         self.assertEqual(round(C3(T=440, P=6e5, **kw).mu.muPas, 2), 11.92)
         self.assertEqual(round(C3(T=500, P=4e6, **kw).mu.muPas, 2), 14.63)
-        self.assertEqual(round(C3(T=600, P=1e8, **kw).mu.muPas, 2), 73.93)
+        self.assertEqual(round(C3(T=600, P=1e8, **kw).mu.muPas, 2), 73.94)

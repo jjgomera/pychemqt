@@ -421,14 +421,16 @@ class R125(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_lemmon(self):
+        """Table 12, Pag 104"""
+
         # Enthalpy-Entropy reference state
         st = R125(T=273.15, x=0)
         self.assertEqual(round(st.h.kJkg, 3), 200)
         self.assertEqual(round(st.s.kJkgK, 5), 1)
 
-        # Table 12, Pag 104
         st = R125(T=200, rhom=14)
         self.assertEqual(round(st.P.MPa, 6), 42.302520)
         self.assertEqual(round(st.cvM.JmolK, 6), 85.816305)
@@ -506,7 +508,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.w, 1), 79.2)
 
     def test_piao(self):
-        # Selected properties of Table 12, pag 790, saturation state
+        """Selected properties of Table 12, pag 790, saturation state"""
         st = R125(T=R125.Tt, x=0.5, eq="piao")
         self.assertEqual(round(st.P.kPa, 1), 3.0)
         self.assertEqual(round(st.Liquido.rho, 1), 1692.4)
@@ -717,7 +719,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 2), 239.78)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R125(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 1.0745)
         self.assertEqual(round(st.P.MPa, 3), 14.620)
@@ -728,7 +730,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.35860)
 
     def test_Huber(self):
-        # Data in text, pag 4452
+        """Data in text, pag 4452"""
         st = R125(T=300, P=1e7)
         self.assertEqual(round(st.mu.muPas, 2), 177.38)
         st = R125(T=400, P=101325)

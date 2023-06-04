@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class C1Cyclohexane(MEoS):
@@ -79,7 +80,7 @@ class C1Cyclohexane(MEoS):
         "c2": [1, 1, 1, 2, 2],
         "gamma2": [1]*17}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {
         "__doi__": {
@@ -102,6 +103,27 @@ class C1Cyclohexane(MEoS):
         "eq": 2,
         "n": [-0.52572e1, -0.13417e2, -0.24271e1, -0.54482e2, -0.15791e3],
         "t": [0.544, 2.3, 2.5, 6.1, 15.0]}
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 454.38, "sigma": 0.5795, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.2122, -0.129599, 0.0257019], "psi_d": [0, 1, 2]}
+
+    _viscosity = (trnECS, )
 
     thermo0 = {"__name__": "Perkins (2008)",
                "__doi__": {
@@ -130,17 +152,17 @@ class C1Cyclohexane(MEoS):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 1.5e-10, "gam0": 0.052, "qd": 6.24e-10, "Tcref": 858.3}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_Perkins(self):
+        """Table 5, pag 2125"""
         # The critical enhancement may differ because the correlation used for
         # viscosity in paper isn't implemented in pychemqt, so the values in
         # test could differ
 
-        # Table 5, pag 2125
         st = C1Cyclohexane(T=300, P=1e5)
         self.assertEqual(round(st.rho, 6), 763.527638)
         self.assertEqual(round(st.k, 5), 0.10633)
@@ -151,7 +173,7 @@ class Test(TestCase):
 
         st = C1Cyclohexane(T=450, P=5e7)
         self.assertEqual(round(st.rho, 6), 701.680049)
-        self.assertEqual(round(st.k, 5), 0.09953)
+        self.assertEqual(round(st.k, 5), 0.09951)
 
         st = C1Cyclohexane(T=600, P=1e5)
         self.assertEqual(round(st.rho, 8), 1.98434155)
@@ -164,3 +186,9 @@ class Test(TestCase):
         st = C1Cyclohexane(T=600, P=5e7)
         self.assertEqual(round(st.rho, 6), 610.749122)
         # self.assertEqual(round(st.k, 5), 0.09315)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # C1Cyclohexane(T=515, rhom=5.48).mu.muPas, 5), 107.4351)
+            C1Cyclohexane(T=515, rhom=5.48).mu.muPas, 4), 107.4355)

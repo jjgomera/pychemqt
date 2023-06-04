@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
 from lib.mEoS import C3
@@ -32,9 +34,9 @@ class R124(MEoS):
     _refPropName = "R124"
     _coolPropName = "R124"
     rhoc = unidades.Density(560.)
-    Tc = unidades.Temperature(395.43)
+    Tc = unidades.Temperature(395.425)
     Pc = unidades.Pressure(3624.295, "kPa")
-    M = 136.4762  # g/mol
+    M = 136.475  # g/mol
     Tt = unidades.Temperature(74.)
     Tb = unidades.Temperature(261.187)
     f_acent = 0.28810
@@ -57,7 +59,7 @@ class R124(MEoS):
                     "title": "Thermodynamic Properties of HCFC 124,",
                     "ref": "19th International Congress of Refrigeration, The "
                            "Hague, The Netherlands, IIR, IVa:582-589, 1995",
-                    "doi":  ""},
+                    "doi": ""},
 
         "R": 8.314471,
         "M": 136.475, "rhoc": 4.1033156,
@@ -143,9 +145,9 @@ class R124(MEoS):
 
               "ref": C3,
               "visco": "visco1",
-              "thermo": "thermo0",
 
-              "ek": 275.8, "sigma": 0.5501, "omega": 5,
+              "ek": 275.8, "sigma": 0.5501, "omega": 6,
+              "n_chapman": 0.026692,
 
               "psi": [1.04253, 1.38528e-3], "psi_d": [0, 1],
               "fint": [1.1769e-3, 6.78397e-7], "fint_t": [0, 1],
@@ -155,5 +157,14 @@ class R124(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_huber(self):
+        """Table 4 from lib.coolprop reference, pag 2504"""
+        st = R124(T=350, x=0)
+        self.assertEqual(round(st.mu.muPas, 3), 138.059)
+        self.assertEqual(round(st.k.mWmK, 3), 52.794)

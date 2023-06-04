@@ -140,7 +140,6 @@ class R13(MEoS):
 
               "ref": C3,
               "visco": "visco1",
-              "thermo": "thermo0",
 
               "ek": 204.0, "sigma": 0.4971, "omega": 5,
 
@@ -152,5 +151,5 @@ class R13(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
               "gam0": 0.0496, "qd": 3.49636e-10, "Tcref": 453.0}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )

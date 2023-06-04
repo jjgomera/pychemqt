@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class C1Linoleate(MEoS):
@@ -83,7 +84,7 @@ class C1Linoleate(MEoS):
         "epsilon3": [0.79, 0.9, 0.76],
         "nr4": []}
 
-    eq = huber,
+    eq = (huber, )
 
     _surface = {
         "__doi__": {
@@ -107,6 +108,28 @@ class C1Linoleate(MEoS):
         "n": [-8.588, 14.766, -24.195, -374.74, 326.89, -191.25],
         "t": [0.568, 1.08, 1.4, 4.8, 5.0, 9.0]}
 
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 634.48, "sigma": 0.8684, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.49489, -0.25538, 0.0306593], "psi_d": [0, 1, 2]}
+
+    _viscosity = (trnECS, )
+
     thermo0 = {"__name__": "Perkins (2010)",
                "__doi__": {
                    "autor": "Perkins, R.A., Huber, M.L.",
@@ -119,37 +142,40 @@ class C1Linoleate(MEoS):
                "eq": 1,
 
                "Toref": 799.0, "koref": 1,
-               "no": [-1.09042e-4,  2.40543e-3,  0.0407364, -0.0105928],
+               "no": [-1.09042e-4, 2.40543e-3, 0.0407364, -0.0105928],
                "to": [0, 1, 2, 3],
 
                "Tref_res": 799.0, "rhoref_res": 238.05, "kref_res": 1.,
                "nr": [-0.0713126, 0.0989415, 0.0466421, -0.065785, -0.00557406,
                       0.0128922],
-               "tr": [0, 1, 0, 1, 0, 1],
+               "tr": [0, -1, 0, -1, 0, -1],
                "dr": [1, 1, 2, 2, 3, 3],
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
                "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1198.5}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # C1Linoleate(T=719.1, rhom=1.861).mu.muPas, 3), 148.324)
+            C1Linoleate(T=719.1, rhom=1.861).mu.muPas, 3), 148.334)
 
     def test_Perkins(self):
-        # Critical enhancement can differ because the viscosity correlation
-        # in paper is not implemented in pychemqt
-
-        # Table 3, Pag 2386
+        """Table 3, Pag 2386"""
         st = C1Linoleate(T=450, P=1e2)
         self.assertEqual(round(st.rho, 8), 0.00787223)
-        self.assertEqual(round(st.k, 7), 0.0122783)
+        self.assertEqual(round(st.k, 7), 0.0122743)
 
         st = C1Linoleate(T=450, P=1e6)
         self.assertEqual(round(st.rho, 3), 778.176)
-        # self.assertEqual(round(st.k, 6), 0.122742)
+        self.assertEqual(round(st.k, 6), 0.122742)
 
         st = C1Linoleate(T=450, P=2e7)
         self.assertEqual(round(st.rho, 3), 799.160)
-        # self.assertEqual(round(st.k, 6), 0.131867)
+        self.assertEqual(round(st.k, 6), 0.131867)

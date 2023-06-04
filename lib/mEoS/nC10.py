@@ -62,7 +62,7 @@ class nC10(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -166,7 +166,7 @@ class nC10(MEoS):
               "CPgi": [1.71465/2.55105],
               "CPti": [-0.5]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Huber (2005)",
                "__doi__": {
@@ -193,12 +193,14 @@ class nC10(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
                "gam0": 0.0496, "qd": 7.086368e-10, "Tcref": 926.55}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
+
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = nC10(T=619, rhom=1)
         self.assertEqual(round(st.P.kPa, 3), 2071.025)
         self.assertEqual(round(st.hM.kJkmol, 3), 89742.553)
@@ -208,9 +210,9 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 74.576)
 
     def test_viscoHuber(self):
-        # Section 3.3 pag 269
+        """Section 3.3 pag 269"""
         self.assertEqual(round(nC10(T=300, P=1e7).mu.muPas, 2), 926.37)
 
     def test_thermoHuber(self):
-        # Section 3.3 pag 54
+        """Section 3.3 pag 54"""
         self.assertEqual(round(nC10(T=300, P=1e7).k.mWmK, 2), 132.80)

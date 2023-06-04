@@ -153,13 +153,14 @@ class R116(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = R116(T=295, rhom=4)
         self.assertEqual(round(st.P.kPa, 3), 3180.336)
         self.assertEqual(round(st.hM.kJkmol, 3), 34509.528)

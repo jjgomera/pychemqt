@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class C1Linolenate(MEoS):
@@ -79,7 +82,7 @@ class C1Linolenate(MEoS):
         "gamma3": [1.14, 0.65, 0.77],
         "epsilon3": [0.79, 0.9, 0.76]}
 
-    eq = huber,
+    eq = (huber, )
 
     _vapor_Pressure = {
         "eq": 3,
@@ -93,3 +96,33 @@ class C1Linolenate(MEoS):
         "eq": 2,
         "n": [-11.463, 45.192, -65.779, -0.18386e4, 0.40689e4, -0.25124e4],
         "t": [0.65, 1.55, 1.8, 6.6, 7.2, 7.8]}
+
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 613.04, "sigma": 0.8549, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.04783, -0.0251965], "psi_d": [0, 1]}
+
+    _viscosity = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # C1Linolenate(T=694.8, rhom=1.949).mu.muPas, 4), 125.1601)
+            C1Linolenate(T=694.8, rhom=1.949).mu.muPas, 4), 125.1744)

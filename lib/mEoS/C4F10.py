@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib.meos import MEoS
 from lib import unidades
+from lib.mEoS import R134a
 
 
 class C4F10(MEoS):
@@ -84,7 +85,6 @@ class C4F10(MEoS):
 
     eq = (gao,)
 
-
     _surface = {"sigma": [0.04429], "exp": [1.242]}
     _vapor_Pressure = {
         "eq": 3,
@@ -99,9 +99,37 @@ class C4F10(MEoS):
         "n": [-6.2029, 7.0601, -11.424, -24.160, -67.136, -182.16],
         "t": [0.496, 0.82, 1.17, 3.3, 6.8, 15.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 179, "sigma": 0.694, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.045], "psi_d": [0],
+              "fint": [0.00125], "fint_t": [0],
+              "chi": [1.99, -0.33], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.233e-9, "gam0": 0.061, "qd": 0.715e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
     """Testing"""
+
     def test_gao(self):
         """Pag. 14"""
         st = C4F10(T=225, rhom=0)
@@ -150,3 +178,10 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 5), 89.44035)
         self.assertEqual(round(st.hM.kJmol, 5), 38.40444)
         self.assertEqual(round(st.sM.JmolK, 4), 112.8369)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = C4F10(T=347.7, rhom=5.405)
+        # self.assertEqual(round(st.mu.muPas, 4), 137.8044)
+        self.assertEqual(round(st.mu.muPas, 4), 137.8051)
+        self.assertEqual(round(st.k.mWmK, 4), 56.5125)

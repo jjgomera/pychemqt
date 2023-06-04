@@ -24,10 +24,6 @@ from lib import unidades
 from lib.meos import MEoS
 
 
-# TODO: Add plot with extrapolation lines and range of validity, to show in
-# docummentation. Maybe I've delete the script...
-
-
 class PropylenGlycol(MEoS):
     """Multiparameter equation of state for propylene glycol"""
     name = "Propylene glycol"
@@ -61,7 +57,7 @@ class PropylenGlycol(MEoS):
                     "title": "Speed-of-Sound Measurements and a Fundamental "
                              "Equation of State for Propylene Glycol",
                     "ref": "J. Phys. Chem. Ref. Data 50(2) (2021) 023105",
-                    "doi":  "10.1063/5.0050021"},
+                    "doi": "10.1063/5.0050021"},
 
         "R": 8.314462618,
         "cp": Fi1,
@@ -69,8 +65,8 @@ class PropylenGlycol(MEoS):
 
         "Tmin": Tt, "Tmax": 680, "Pmax": 350000, "rhomax": 14.4,
 
-        "nr1":  [0.046611538, 2.0273992, -2.6048664, -0.58592792, 0.2967405,
-                 0.053863656],
+        "nr1": [0.046611538, 2.0273992, -2.6048664, -0.58592792, 0.2967405,
+                0.053863656],
         "d1": [4, 1, 1, 2, 2, 3],
         "t1": [1.0, 0.14, 0.92, 1.254, 0.425, 0.688],
 
@@ -88,10 +84,9 @@ class PropylenGlycol(MEoS):
         "alfa3": [18.7, 18.7, 1.86, 0.63, 0.83, 1.278, 0.45],
         "beta3": [685, 1230, 2.28, 0.13, 0.07, 1.09, 0.13],
         "gamma3": [1.09, 1.04, 1.05, 1.5, 1.43, 1.13, 2.11],
-        "epsilon3": [0.789, 0.99, 0.981, 1.004, 0.698, 0.808, 0.81],
-        }
+        "epsilon3": [0.789, 0.99, 0.981, 1.004, 0.698, 0.808, 0.81]}
 
-    eq = eisenbach,
+    eq = (eisenbach, )
 
     _vapor_Pressure = {
         "eq": 3,
@@ -108,9 +103,10 @@ class PropylenGlycol(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_eisenbach(self):
-        # Table 8, Pag 12
+        """Table 8, Pag 12"""
         st = PropylenGlycol(T=400, rhom=0.001)
         self.assertEqual(round(st.P.MPa, 10), 0.0033220476)
         self.assertEqual(round(st.w, 5), 214.57321)
@@ -150,9 +146,3 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 3), 80765.269)
         self.assertEqual(round(st.sM.JmolK, 6), 81.467593)
         self.assertEqual(round(st.aM.Jmol, 4), -7751.8504)
-
-
-if __name__ == "__main__":
-    st = PropylenGlycol(T=400, rhom=0.001)
-    print(st.w-214.57321)
-

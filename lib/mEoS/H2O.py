@@ -77,9 +77,9 @@ class H2O(MEoS):
 
     iapws = {
         "__type__": "Helmholtz",
-        "__name__": u"Helmholtz equation of state for water of Wagner and "
-                    u"Pruß (2002).",
-        "__doi__": {"autor": u"Wagner, W., Pruß, A.",
+        "__name__": "Helmholtz equation of state for water of Wagner and "
+                    "Pruß (2002).",
+        "__doi__": {"autor": "Wagner, W., Pruß, A.",
                     "title": "The IAPWS Formulation 1995 for the Thermodynamic"
                              "Properties of Ordinary Water Substance for"
                              "General and Scientific Use",
@@ -353,7 +353,7 @@ class H2O(MEoS):
         mu = _Viscosity(rho, T, fase=fase, drho=drho)
         return unidades.Viscosity(mu)
 
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco1 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -389,7 +389,7 @@ class H2O(MEoS):
                    "doi": "10.1063/1.4738955"},
                "__code__": (_ThCond, )}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
     def _thermo0(self, rho, T, fase):
         ref = H2O()
@@ -427,7 +427,7 @@ class H2O(MEoS):
         return unidades.Tension(s)
 
     @classmethod
-    def _Melting_Pressure(cls, T):
+    def _Melting_Pressure(cls, T, melting=None):
         try:
             Pm = _Melting_Pressure(T)
         except NotImplementedError:
@@ -444,9 +444,10 @@ class H2O(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_iapws(self):
-        # Table 6.6, pag 436"""
+        """Table 6.6, pag 436"""
         fluid = H2O()
 
         delta = 838.025/fluid.rhoc
@@ -702,7 +703,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 2095.5)
 
     def test_Viscosity(self):
-        # Table 6, pag 116
+        """Table 6, pag 116"""
         self.assertEqual(round(_Viscosity(998, 298.15)*1e6, 6), 889.735100)
         self.assertEqual(round(_Viscosity(1200, 298.15)*1e6, 6), 1437.649467)
         self.assertEqual(round(_Viscosity(1000, 373.15)*1e6, 6), 307.883622)
@@ -730,7 +731,7 @@ class Test(TestCase):
         self.assertEqual(round(fluid.mu.muPas, 6), 49.436256)
 
     def test_ThCond(self):
-        # Table 7, pag 12
+        """Table 7, pag 12"""
         self.assertEqual(round(_ThCond(0, 298.15)*1000, 7), 18.4341883)
         self.assertEqual(round(_ThCond(998, 298.15)*1000, 6), 607.712868)
         self.assertEqual(round(_ThCond(1200, 298.15)*1000, 6), 799.038144)

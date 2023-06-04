@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class C1Oleate(MEoS):
@@ -83,7 +84,7 @@ class C1Oleate(MEoS):
         "epsilon3": [0.79, 0.9, 0.76],
         "nr4": []}
 
-    eq = huber,
+    eq = (huber, )
 
     _surface = {
         "__doi__": {
@@ -107,6 +108,28 @@ class C1Oleate(MEoS):
         "n": [-13.426, 1.8069e2, -1.1108e3, 1.3265e3, -4.6421e2, -2.1070e2],
         "t": [0.667, 1.71, 2.2, 2.46, 3.0, 9.7]}
 
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 620.98, "sigma": 0.8668, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.92477, -0.515884, 0.0703972], "psi_d": [0, 1, 2]}
+
+    _viscosity = (trnECS, )
+
     thermo0 = {"__name__": "Perkins (2010)",
                "__doi__": {
                    "autor": "Perkins, R.A., Huber, M.L.",
@@ -125,31 +148,34 @@ class C1Oleate(MEoS):
                "Tref_res": 782.0, "rhoref_res": 241, "kref_res": 1.,
                "nr": [-0.0410106, 0.0606657, 0.0328443, -0.0498407,
                       -0.00418506, 0.0121752],
-               "tr": [0, 1, 0, 1, 0, 1],
+               "tr": [0, -1, 0, -1, 0, -1],
                "dr": [1, 1, 2, 2, 3, 3],
 
                "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1173}
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
+               "gam0": 0.0496, "qd": 8.75e-10, "Tcref": 1198.5}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # C1Oleate(T=703.8, rhom=1.819).mu.muPas, 4), 187.8277)
+            C1Oleate(T=703.8, rhom=1.819).mu.muPas, 4), 187.8412)
 
     def test_Perkins(self):
-        # Critical enhancement can differ because the viscosity correlation
-        # in paper is not implemented in pychemqt
-
-        # Table 3, Pag 2386
+        """Table 3, Pag 2386"""
         st = C1Oleate(T=450, P=1e2)
         self.assertEqual(round(st.rho, 8), 0.00792666)
-        self.assertEqual(round(st.k, 7), 0.0111019)
+        self.assertEqual(round(st.k, 7), 0.0110996)
 
         st = C1Oleate(T=450, P=1e6)
         self.assertEqual(round(st.rho, 3), 764.716)
-        # self.assertEqual(round(st.k, 6), 0.123794)
+        self.assertEqual(round(st.k, 6), 0.123794)
 
         st = C1Oleate(T=450, P=2e7)
         self.assertEqual(round(st.rho, 3), 787.080)
-        # self.assertEqual(round(st.k, 6), 0.133856)
+        self.assertEqual(round(st.k, 6), 0.133856)

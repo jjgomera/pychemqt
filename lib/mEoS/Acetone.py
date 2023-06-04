@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class Acetone(MEoS):
@@ -64,7 +65,7 @@ class Acetone(MEoS):
 
         "Tmin": Tt, "Tmax": 550.0, "Pmax": 700000.0, "rhomax": 15.73,
 
-        "nr1":  [0.90041, -2.1267, -0.083409, 0.065683, 0.00016527],
+        "nr1": [0.90041, -2.1267, -0.083409, 0.065683, 0.00016527],
         "d1": [1, 1, 1, 3, 7],
         "t1": [0.25, 1.25, 1.5, 0.25, 0.875],
 
@@ -75,7 +76,7 @@ class Acetone(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {"sigma": [0.0633], "exp": [1.16]}
     _vapor_Pressure = {
@@ -91,10 +92,39 @@ class Acetone(MEoS):
         "n": [-.25200e1, -.66065e1, -.25751e2, .78120e1, -.53778e2, -116.84],
         "t": [0.36, 1.05, 3.2, 4.0, 6.5, 14.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 519, "sigma": 0.4669, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.25183, -0.239533, 0.0485815], "psi_d": [0, 1, 2],
+              "fint": [0.954299e-3, 0.522303e-6], "fint_t": [0, 1],
+              "chi": [1.08482, -0.0313081], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.196e-9, "gam0": 0.052, "qd": 0.586e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = Acetone(T=510, rhom=4)
         self.assertEqual(round(st.P.kPa, 3), 4807.955)
         self.assertEqual(round(st.hM.kJkmol, 3), 51782.004)
@@ -102,3 +132,11 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 138.449)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 3766.619)
         self.assertEqual(round(st.w, 3), 125.351)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = Acetone(T=457.3, rhom=9.8)
+        # self.assertEqual(round(st.mu.muPas, 5), 99.01729)
+        # self.assertEqual(round(st.k.mWmK, 4), 96.5053)
+        self.assertEqual(round(st.mu.muPas, 5), 99.02148)
+        self.assertEqual(round(st.k.mWmK, 4), 96.5060)

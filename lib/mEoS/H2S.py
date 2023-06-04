@@ -23,6 +23,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class H2S(MEoS):
@@ -302,12 +303,40 @@ class H2S(MEoS):
               "B": [-1.53973e-9, 2.17652e-9, 0.0],
               "C": [3.54228e-7, -4.76258e-8, 0.0]}
 
-    _viscosity = visco0, visco1
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 296.28, "sigma": 0.3732, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1], "psi_d": [0],
+              "fint": [1.5603e-4, 1.78874e-6, -6.75136e-10],
+              "fint_t": [0, 1, 2],
+              "chi": [1], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.164e-9, "gam0": 0.058, "qd": 0.447e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = visco0, visco1, trnECS
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = H2S(T=375, rhom=10)
         self.assertEqual(round(st.P.kPa, 3), 9289.914)
         self.assertEqual(round(st.hM.kJkmol, 3), 15571.227)
@@ -315,3 +344,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 42.574)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 2645.392)
         self.assertEqual(round(st.w, 3), 248.512)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = H2S(T=335.8, rhom=20.154, visco=2)
+        # self.assertEqual(round(st.mu.muPas, 5), 97.16912)
+        self.assertEqual(round(st.mu.muPas, 5), 97.16763)
+        self.assertEqual(round(st.k.mWmK, 4), 121.2579)

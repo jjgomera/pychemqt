@@ -114,7 +114,7 @@ class R41(MEoS):
                     "title": "Thermophysical Properties of HCFC Alternatives",
                     "ref": "NIST, Boulder, Colorado, Final Report for ARTI "
                            "MCLR Project Number 660-50800, 1996. Pag. A-82",
-                    "doi":  ""},
+                    "doi": ""},
 
         "R": 8.314471,
         "Tc": 317.28, "Pc": 5897, "rhoc": 316.51/M,
@@ -155,8 +155,9 @@ class R41(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842, eq b
+        """Table 10, Pag 842, eq b"""
         st = R41(T=319, rhom=9)
         self.assertEqual(round(st.P.kPa, 3), 6129.100)
         self.assertEqual(round(st.hM.kJkmol, 3), 13670.133)

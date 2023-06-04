@@ -271,12 +271,12 @@ class nC6(MEoS):
         # Eq 8
         vir = 2.53402335/Tr - \
             9.724061002/(0.469437316+Tr+158.5571631*rhor**2) + \
-            72.42916856*(1+rhor)/(10.60751253+8.628373915*Tr-6.61346441*rhor +
-                                  rhor**2-2.212724566*rhor*Tr)
+            72.42916856*(1+rhor)/(10.60751253+8.628373915*Tr-6.61346441*rhor
+                                  + rhor**2-2.212724566*rhor*Tr)
         vir *= rhor**(2/3)*Tr**0.5
         return vir
 
-    visco1 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco1 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -326,13 +326,14 @@ class nC6(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.2364e-9,
                "gam0": 0.05803, "qd": 0.737e-9, "Tcref": 761.7}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = nC6(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.1802)
         self.assertEqual(round(st.P.MPa, 3), 10.221)
@@ -343,7 +344,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.33219)
 
     def test_Michailidou(self):
-        # Table 6, Pag 10
+        """Table 6, Pag 10"""
         self.assertEqual(round(nC6(T=250, rho=0).mu.muPas, 4), 5.2584)
         self.assertEqual(round(nC6(T=400, rho=0).mu.muPas, 4), 8.4150)
         self.assertEqual(round(nC6(T=550, rho=0).mu.muPas, 3), 11.443)
@@ -352,7 +353,7 @@ class Test(TestCase):
         self.assertEqual(round(nC6(T=550, rho=500).mu.muPas, 3), 95.002)
 
     def test_Assael(self):
-        # Table 4, Pag 8
+        """Table 4, Pag 8"""
         self.assertEqual(round(nC6(T=250, rho=700).k.mWmK, 2), 137.62)
         self.assertEqual(round(nC6(T=400, rho=2).k.mWmK, 3), 23.558)
         self.assertEqual(round(nC6(T=400, rho=650).k.mWmK, 2), 129.28)

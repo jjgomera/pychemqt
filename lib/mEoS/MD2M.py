@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class MD2M(MEoS):
@@ -146,12 +147,40 @@ class MD2M(MEoS):
         "n": [-4.5483, -101.989, 224.06, -182.79, -110.45, -330.87],
         "t": [0.428, 2.32, 2.8, 3.3, 8.5, 17.5]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 476, "sigma": 0.849, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.41415, -0.14233], "psi_d": [0, 1],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [3.48369, -1.34356, 0.23613], "chi_d": [0, 1, 2],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.311e-9, "gam0": 0.066, "qd": 1.049e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
 
     # Reference state fail with last decimal number
     def test_thol(self):
-        # Table 13, Pag. 2646
+        """Table 13, Pag. 2646"""
         st = MD2M(T=350, rhom=0.0001)
         self.assertEqual(round(st.P.MPa, 10), 0.0002908572)
         # self.assertEqual(round(st.cpM.JmolK, 4), 467.6281)
@@ -191,3 +220,9 @@ class Test(TestCase):
         # self.assertEqual(round(st.hM.Jmol, 1), 101922.4)
         # self.assertEqual(round(st.sM.JmolK, 4), 121.0574)
         # self.assertEqual(round(st.aM.Jmol, 3), -5416.819)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = MD2M(T=539.5, rhom=1.836)
+        self.assertEqual(round(st.mu.muPas, 4), 130.7664)
+        self.assertEqual(round(st.k.mWmK, 4), 68.4771)

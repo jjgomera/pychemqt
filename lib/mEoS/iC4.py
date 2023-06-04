@@ -96,9 +96,9 @@ class iC4(MEoS):
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 35000.0, "rhomax": 12.9,
 
-        "nr1":  [0.20686820727966e1, -0.36400098615204e1, 0.51968754427244,
-                 0.17745845870123, -0.12361807851599, 0.45145314010528e-1,
-                 0.30476479965980e-1],
+        "nr1": [0.20686820727966e1, -0.36400098615204e1, 0.51968754427244,
+                0.17745845870123, -0.12361807851599, 0.45145314010528e-1,
+                0.30476479965980e-1],
         "d1": [1, 1, 1, 2, 3, 4, 4],
         "t1": [0.50, 1.00, 1.50, 0.00, 0.50, 0.50, 0.75],
         "nr2": [0.75508387706302, -0.85885381015629, 0.36324009830684e-1,
@@ -167,8 +167,8 @@ class iC4(MEoS):
 
         "Tmin": Tt, "Tmax": 575.0, "Pmax": 35000.0, "rhomax": 12.9,
 
-        "nr1":  [0.10429331589100e1, -0.28184272548892e1, 0.86176232397850,
-                 -0.10613619452487, 0.98615749302134e-1, 0.23948208682322e-3],
+        "nr1": [0.10429331589100e1, -0.28184272548892e1, 0.86176232397850,
+                -0.10613619452487, 0.98615749302134e-1, 0.23948208682322e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
@@ -196,8 +196,8 @@ class iC4(MEoS):
 
         "Tmin": 113.56, "Tmax": 573.0, "Pmax": 35000.0, "rhomax": 12.9,
 
-        "nr1":  [2.892737e-1, -1.342570, -7.976713e-3, 2.025793e-1,
-                 -4.241612e-2, 2.617971e-3, 5.068955e-5, -1.144596e-6],
+        "nr1": [2.892737e-1, -1.342570, -7.976713e-3, 2.025793e-1,
+                -4.241612e-2, 2.617971e-3, 5.068955e-5, -1.144596e-6],
         "d1": [1, 1, 2, 2, 3, 5, 8, 8],
         "t1": [-0.25, 1.5, -0.75, 0, 1.25, 1.5, 0.5, 2.5],
 
@@ -226,8 +226,8 @@ class iC4(MEoS):
 
         "Tmin": 113.55, "Tmax": 750.0, "Pmax": 100000.0, "rhomax": 12.89,
 
-        "nr1":  [0.10429332e1, -0.28184273e1, 0.86176232, -0.10613619,
-                 0.986157490e-1, 0.23948209e-3],
+        "nr1": [0.10429332e1, -0.28184273e1, 0.86176232, -0.10613619,
+                0.986157490e-1, 0.23948209e-3],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.25, 1.125, 1.5, 1.375, 0.25, 0.875],
 
@@ -253,12 +253,12 @@ class iC4(MEoS):
 
         "Tmin": 120.0, "Tmax": 498.0, "Pmax": 35000.0, "rhomax": 12.89,
 
-        "nr1":  [-0.958589873652, 0.818846326211, -0.115814967179,
-                 0.345513148715, -0.168751721524e1, 0.936693300209,
-                 -0.106644545724e1, 0.980958295776e-1, 0.495941129005,
-                 -0.261313404262, 0.485109471188, -0.177275820736,
-                 -0.209415485311e-1, 0.788178884079e-1, -0.102751671767,
-                 0.178645875838e-1],
+        "nr1": [-0.958589873652, 0.818846326211, -0.115814967179,
+                0.345513148715, -0.168751721524e1, 0.936693300209,
+                -0.106644545724e1, 0.980958295776e-1, 0.495941129005,
+                -0.261313404262, 0.485109471188, -0.177275820736,
+                -0.209415485311e-1, 0.788178884079e-1, -0.102751671767,
+                0.178645875838e-1],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
         "t1": [3, 4, 5, 0, 1, 2, 3, 4, 0, 1, 2, 0, 1, 0, 1, 1],
 
@@ -489,9 +489,10 @@ class iC4(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_buecker(self):
-        # Selected point from Table 46, Pag 996, saturation state
+        """Selected point from Table 46, Pag 996, saturation state"""
         st = iC4(T=114, x=0.5)
         self.assertEqual(round(st.P.MPa, 8), 0.00000002)
         self.assertEqual(round(st.Liquido.rho, 5), 740.08373)
@@ -647,12 +648,12 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 2), 1398.87)
 
     def test_younglove(self):
+        """Selected point from Appendix G, Pag 688, single phase region"""
         # The saturation point use the ancillary equation for calculate
         # pressure and density, so the values differ of values give by mBWR,
         # so not used for testing
         kw = {"eq": "younglove", "visco": 2, "thermal": 1}
 
-        # Selected point from Appendix G, Pag 688, single phase region
         st = iC4(T=120, P=1e4, **kw)
         self.assertEqual(round(st.rho, 1), 735.1)
         self.assertEqual(round(st.rhoM, 2), 12.65)
@@ -885,7 +886,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k, 4), 0.0857)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = iC4(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.2393)
         self.assertEqual(round(st.P.MPa, 3), 19.108)
@@ -896,7 +897,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37469)
 
     def test_herrmann(self):
-        # Table 6, Pag 17
+        """Table 6, Pag 17"""
 
         # This point isn't real, it's in two phases region so need force
         # calculation

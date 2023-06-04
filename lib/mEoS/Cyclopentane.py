@@ -179,9 +179,9 @@ class Cyclopentane(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_gedanitz(self):
-        # Table 5, Pag 1336
+        """Table 5, Pag 1336"""
         st = Cyclopentane(T=330, rhom=0.01)
         self.assertEqual(round(st.P.MPa, 8), 0.02720379)
         self.assertEqual(round(st.cvM.JmolK, 5), 86.25843)
@@ -213,12 +213,12 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 4), 234.2660)
 
     def test_Vassiliou(self):
-        # Section 3.1.2, Pag 7
+        """Section 3.1.2, Pag 7"""
         # Viscosity value different to used in paper
         self.assertEqual(round(Cyclopentane(T=512, rho=400).k.mWmK, 3), 67.332)
 
     def test_Tasidou(self):
-        # Selected values from Table 7, saturation states
+        """Selected values from Table 7, saturation states"""
         st = Cyclopentane(T=180, x=0.5)
         self.assertEqual(round(st.Liquido.mu.muPas, 0), 3053)
         self.assertEqual(round(st.Gas.mu.muPas, 3), 5.058)

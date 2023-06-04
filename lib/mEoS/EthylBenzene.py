@@ -193,9 +193,11 @@ class EthylBenzene(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Meng(self):
-        # Table 5, saturation state properties, include basic test for Zhou EoS
+        """Table 5, saturation state properties, include basic test for Zhou
+        EoS"""
         st = EthylBenzene(T=273.15, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 0.0003)
         self.assertEqual(round(st.Gas.rhoM, 4), 0.0001)
@@ -256,11 +258,11 @@ class Test(TestCase):
             EthylBenzene(T=600, rhom=7.1427).mu.muPas, 3), 229.686)
 
     def test_Mylona(self):
+        """Table 21, the point with critical enhancement differ"""
         # The critical enchancement use a innacurate ecs viscosity correlation
         # This viscosity with that correlation is fairly diferent of Meng
         # correlation, this is the cause of testing error
 
-        # Table 21, the point with critical enhancement differ
         self.assertEqual(round(EthylBenzene(T=200, rho=0).k.mWmK, 2), 3.96)
         self.assertEqual(round(EthylBenzene(T=300, rho=0).k.mWmK, 2), 9.71)
         self.assertEqual(round(EthylBenzene(T=400, rho=0).k.mWmK, 2), 18.39)

@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R40(MEoS):
@@ -100,13 +101,42 @@ class R40(MEoS):
         "n": [-0.9433, -6.8001, -82.752, 202.14, -264.16, 99.135],
         "t": [0.18, 0.9, 3.7, 4.6, 5.6, 6.7]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 330.6, "sigma": 0.419, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.97,
+
+              "psi": [0.894605, -0.0117296, 0.0130264],
+              "psi_d": [0, 1, 2],
+              "fint": [2.78821e-4, 2.10163e-6], "fint_t": [0, 1],
+              "chi": [0.971796, -0.0356445], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.18e-9, "gam0": 0.056, "qd": 0.505e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_thol(self):
+        """Table 9, Pag 26"""
         # Discard the last 4 number, I'm fairly sure is a problem with the
         # significative figures in the equation parameters in paper
 
-        # Table 9, Pag 26
         st = R40(T=240, rho=0.1)
         self.assertEqual(round(st.P.MPa, 9), 0.003946471)
         self.assertEqual(round(st.h.kJkg, 4), -44.8931)
@@ -138,3 +168,11 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 5), 0.92382)
         self.assertEqual(round(st.cp.kJkgK, 5), 1.46353)
         self.assertEqual(round(st.w, 4), 1077.7374)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R40(T=374.7, rhom=14.671)
+        # self.assertEqual(round(st.mu.muPas, 5), 90.87011)
+        # self.assertEqual(round(st.k.mWmK, 4), 87.6545)
+        self.assertEqual(round(st.mu.muPas, 5), 90.87045)
+        self.assertEqual(round(st.k.mWmK, 4), 87.6538)

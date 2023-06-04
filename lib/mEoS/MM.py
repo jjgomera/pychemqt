@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class MM(MEoS):
@@ -144,11 +145,39 @@ class MM(MEoS):
         "n": [-0.37421e1, -0.37087e2, 0.7546e2, -0.7167e2, -68.69, -178.4],
         "t": [0.428, 1.79, 2.28, 2.8, 7, 15.4]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 357, "sigma": 0.719, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [-0.413767, 1.17675, -0.241401], "psi_d": [0, 1, 2],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [1.1777, 0.0473755], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.268e-9, "gam0": 0.062, "qd": 0.84e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
 
     def test_thol(self):
-        # Test in thesis
+        """Test in thesis"""
         # Thol, M.
         # Empirical Multiparameter Equations of State Based on Molecular
         # Simulation and Hybrid Data Sets
@@ -196,3 +225,9 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 3), 83661.457)
         self.assertEqual(round(st.sM.JmolK, 5), 119.31484)
         self.assertEqual(round(st.aM.Jmol, 3), -10493.807)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = MM(T=466.8, rhom=3.375)
+        self.assertEqual(round(st.mu.muPas, 5), 84.04997)
+        self.assertEqual(round(st.k.mWmK, 4), 62.6223)

@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class HCl(MEoS):
@@ -100,13 +101,43 @@ class HCl(MEoS):
         "n": [-2.95523223, -8.10448179, -14.78392979, -87.13352586],
         "t": [1.29/3, 4.2/3, 11.1/3, 24/3]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 257.8, "sigma": 0.355, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [0.615877, 0.55609, -0.337867, 0.0681029],
+              "psi_d": [0, 1, 2, 3],
+              "fint": [0.0006], "fint_t": [0],
+              "chi": [1.57373, -0.17681], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.154e-9, "gam0": 0.054, "qd": 0.424e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_thol(self):
+        """Table 9, Pag 26"""
         # Discard the last 4 number, I'm fairly sure is a problem with the
         # significative figures in the equation parameters in paper
 
-        # Table 9, Pag 26
         st = HCl(T=170, rho=0.01)
         self.assertEqual(round(st.P.MPa, 9), 0.000387586)
         self.assertEqual(round(st.h.kJkg, 5), -102.41433)
@@ -138,3 +169,9 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 5), 0.96150)
         self.assertEqual(round(st.cp.kJkgK, 5), 2.15083)
         self.assertEqual(round(st.w, 4), 577.7828)
+
+    # def test_Huber(self):
+    #     """Table 7, pag 266"""
+    #     st = HCl(T=292.2, rhom=23.87)
+    #     self.assertEqual(round(st.mu.muPas, 5), 92.63275)
+    #     self.assertEqual(round(st.k.mWmK, 4), 199.4777)

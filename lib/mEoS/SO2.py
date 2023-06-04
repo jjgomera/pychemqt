@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class SO2(MEoS):
@@ -67,7 +68,7 @@ class SO2(MEoS):
             "autor": "Gao, K., Wu, J., Zhang, P., Lemmon, E.W.",
             "title": "A Helmholtz Energy Equation of State for Sulfur Dioxide",
             "ref": "J. Chem. Eng. Data, 61(6) (2016) 2859-2872",
-            "doi":  "10.1021/acs.jced.6b00195"},
+            "doi": "10.1021/acs.jced.6b00195"},
 
         "R": 8.3144621,
         "cp": Fi1,
@@ -103,7 +104,7 @@ class SO2(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -170,12 +171,42 @@ class SO2(MEoS):
     _vapor_Density = {
         "eq": 2,
         "n": [-7.487, 10.118, -13.608, -25.408, -42.04, -38.668],
-        "t": [0.545,  0.85, 1.2, 3.7, 7.5, 10]}
+        "t": [0.545, 0.85, 1.2, 3.7, 7.5, 10]}
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 363, "sigma": 0.4026, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [0.917778, 0.0248405], "psi_d": [0, 1],
+              "fint": [6.60505e-4, 7.47059e-7], "fint_t": [0, 1],
+              "chi": [1.38755, -0.128721], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.167e-9, "gam0": 0.059, "qd": 0.485e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
+
     def test_gao(self):
-        # Table 6, Pag M
+        """Table 6, Pag M"""
         st = SO2(T=250, rhom=23.6)
         self.assertEqual(round(st.P.MPa, 7), 12.2955804)
         self.assertEqual(round(st.cvM.kJkmolK, 4), 53.1514)
@@ -213,7 +244,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 250.095)
 
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = SO2(T=432, rhom=8, eq="lemmon")
         self.assertEqual(round(st.P.kPa, 3), 8052.256)
         self.assertEqual(round(st.hM.kJkmol, 3), 20821.200)
@@ -221,3 +252,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 61.478)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 4877.456)
         self.assertEqual(round(st.w, 3), 171.538)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = SO2(T=387.6, rhom=16.843)
+        # self.assertEqual(round(st.mu.muPas, 4), 127.4105)
+        self.assertEqual(round(st.mu.muPas, 4), 127.4117)
+        self.assertEqual(round(st.k.mWmK, 4), 115.4211)

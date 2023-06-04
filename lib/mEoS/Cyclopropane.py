@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class Cyclopropane(MEoS):
@@ -57,7 +60,7 @@ class Cyclopropane(MEoS):
 
         "R": 8.3143,
         "cp": CP1,
-        "ref": "NBP",
+        "ref": "IIR",
 
         "Tmin": 273, "Tmax": 473.0, "Pmax": 28000.0, "rhomax": 15.595,
 
@@ -66,7 +69,7 @@ class Cyclopropane(MEoS):
                 0.283576113255, -0.842718450726e-1, 0.931086305879,
                 -0.105296584292e1, 0.432020532920, -0.251108254803,
                 0.127725582443, 0.483621161849e-1, -0.116473795607e-1,
-                0.334005754773e-3, ],
+                0.334005754773e-3],
         "d1": [0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4, 4, 5],
         "t1": [3, 4, 5, 0, 1, 2, 3, 4, 0, 1, 2, 0, 1, 0, 1, 1],
 
@@ -77,7 +80,7 @@ class Cyclopropane(MEoS):
         "c2": [2]*6,
         "gamma2": [1]*6}
 
-    eq = polt,
+    eq = (polt, )
 
     _surface = {
         "__doi__": {
@@ -100,3 +103,42 @@ class Cyclopropane(MEoS):
         "eq": 2,
         "n": [-0.33232, -29.566, 57.762, -142.21, 325.73, -244.39],
         "t": [0.1, 0.87, 1.14, 1.78, 2.32, 2.6]}
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 316.29, "sigma": 0.442, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.95,
+
+              "psi": [1], "psi_d": [0],
+              "fint": [0.00122], "fint_t": [0],
+              "chi": [1], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.191e-9, "gam0": 0.057, "qd": 0.534e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = Cyclopropane(T=358.5, rhom=12.343)
+        # self.assertEqual(round(st.mu.muPas, 5), 82.90981)
+        # self.assertEqual(round(st.k.mWmK, 4), 95.1952)
+        self.assertEqual(round(st.mu.muPas, 5), 82.90939)
+        self.assertEqual(round(st.k.mWmK, 4), 95.345)

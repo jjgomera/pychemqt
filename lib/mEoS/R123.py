@@ -268,9 +268,10 @@ class R123(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_younglove(self):
-        # Selected point from Table C1 pag 759, saturation states
+        """Selected point from Table C1 pag 759, saturation states"""
         st = R123(T=R123.Tt, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0)
         self.assertEqual(round(st.Liquido.rho, 1), 1770.9)
@@ -506,7 +507,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 537.5)
 
     def test_tillner(self):
-        # Selected point from pag 166, saturation state
+        """Selected point from pag 166, saturation state"""
         st = R123(T=-55+273.15, x=0.5, eq="tillner")
         self.assertEqual(round(st.P.MPa, 5), 0.00121)
         self.assertEqual(round(st.Liquido.rho, 1), 1653.9)
@@ -680,7 +681,7 @@ class Test(TestCase):
         self.assertEqual(round(st.s.kJkgK, 4), 1.8225)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R123(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 0.8667)
         self.assertEqual(round(st.P.MPa, 3), 6.018)
@@ -691,7 +692,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.29582)
 
     def test_tanaka(self):
-        # Table VII, Pag 316
+        """Table VII, Pag 316"""
         # The pressure values are not good, the density differ too so the
         # resulting values differ in the last digit
 
@@ -745,7 +746,7 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 1), 521.0)
 
     def test_Laesecke(self):
-        # Table 2, Pag 237
+        """Table 2, Pag 237"""
         st = R123(T=180, x=0.5)
         self.assertEqual(round(st.P.MPa, 8), 0.00002814)
         self.assertEqual(round(st.Liquido.rho, 0), 1739.0)

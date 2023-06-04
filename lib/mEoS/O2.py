@@ -113,7 +113,7 @@ class O2(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -131,10 +131,7 @@ class O2(MEoS):
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.623, 3.625, 14.5, 12],
         "c2": [1, 1, 2, 2, 3, 3],
-        "gamma2": [1]*20,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*20}
 
     younglove = {
         "__type__": "MBWR",
@@ -294,11 +291,11 @@ class O2(MEoS):
 
     thermo0 = {"__name__": "Lemmon (2004)",
                "__doi__": {
-                  "autor": "Lemmon, E.W., Jacobsen, R.T.",
-                  "title": "Viscosity and Thermal Conductivity Equations for "
-                           "Nitrogen, Oxygen, Argon, and Air",
-                  "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
-                  "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
+                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
+                   "title": "Viscosity and Thermal Conductivity Equations for "
+                            "Nitrogen, Oxygen, Argon, and Air",
+                   "ref": "Int. J. Thermophys., 25(1) (2004) 21-69",
+                   "doi": "10.1023/B:IJOT.0000022327.04529.f3"},
 
                "eq": 1,
 
@@ -318,8 +315,7 @@ class O2(MEoS):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.24e-9, "gam0": 0.055, "qd": 0.51e-9, "Tcref": 309.162}
 
-    thermo1 = {
-               "__name__": "Younglove (1982)",
+    thermo1 = {"__name__": "Younglove (1982)",
                "__doi__": {
                    "autor": "Younglove, B.A.",
                    "title": "Thermophysical Properties of Fluids. I. Argon, "
@@ -343,25 +339,25 @@ class O2(MEoS):
                "rhoc": 0.4362, "Tc": 154.575,
                "ek": 113, "f": 2.210636, "gm": 3.8896e-10}
 
-    thermo2 = {"eq": 1,
-               "__name__": "Laesecke (1990)",
-               "__doi__": {
-                  "autor": "Laesecke, A., Krauss, R., Stephan, K., Wagner, W.",
-                  "title": "Transport Properties of Fluid Oxygen",
-                  "ref": "J. Phys. Chem. Ref. Data 19(5) (1990) 1089-1122",
-                  "doi": "10.1063/1.555863"},
+    thermo2 = {
+        "__name__": "Laesecke (1990)",
+        "__doi__": {
+            "autor": "Laesecke, A., Krauss, R., Stephan, K., Wagner, W.",
+            "title": "Transport Properties of Fluid Oxygen",
+            "ref": "J. Phys. Chem. Ref. Data 19(5) (1990) 1089-1122",
+            "doi": "10.1063/1.555863"},
 
-               "special": "_ThCond0",
+        "eq": 1,
+        "special": "_ThCond0",
 
-               "rhoref_res": 13.63*M, "kref_res": 4.909e-3,
-               "nr": [2.32825085, 4.23024231, -3.60798307, 2.01675631,
-                      -0.289731736],
-               "tr": [0, 0, 0, 0, 0],
-               "dr": [1, 2, 3, 4, 5],
+        "rhoref_res": 13.63*M, "kref_res": 4.909e-3,
+        "nr": [2.32825085, 4.23024231, -3.60798307, 2.01675631, -0.289731736],
+        "tr": [0, 0, 0, 0, 0],
+        "dr": [1, 2, 3, 4, 5],
 
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.2415, "R0": 1.01, "Xio": 1.6e-10,
-               "gam0": 0.08391, "qd": 0.4167e-9, "Tcref": 309.162}
+        "critical": 3,
+        "gnu": 0.63, "gamma": 1.2415, "R0": 1.01, "Xio": 1.6e-10,
+        "gam0": 0.08391, "qd": 0.4167e-9, "Tcref": 309.162}
 
     def _ThCond0(self, rho, T, fase):
         """Special formulation for thermal Conductivity in the zero-Density
@@ -382,9 +378,10 @@ class O2(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_schmidt(self):
-        # Table 4 pag 191, Saturation densities
+        """Table 4 pag 191, Saturation densities"""
         st = O2(T=150, x=0.5)
         self.assertEqual(round(st.Liquido.rhoM, 4), 21.1096)
         self.assertEqual(round(st.Gas.rhoM, 5), 6.71701)
@@ -398,7 +395,7 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.rhoM, 4), 12.3876)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = O2(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 1.0308)
         self.assertEqual(round(st.P.MPa, 3), 41.051)
@@ -409,11 +406,12 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.26457)
 
     def test_younglove(self):
+        """Selected point from Appendix K, Pag 304, single phase region"""
+
         kw = {"eq": "younglove", "visco": 1, "thermal": 1}
 
         # The saturation state use ancillary equation for saturation pressure
         # and densities calculated values so differ of equation values
-        # Selected point from Appendix K, Pag 304, single phase region
         st = O2(T=400, P=2e4, **kw)
         self.assertEqual(round(st.rho, 4), 0.1924)
         self.assertEqual(round(st.rhoM, 6), 0.006014)
@@ -620,7 +618,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k.WmK, 4), 0.0641)
 
     def test_LemmonTransport(self):
-        # Table V, pag 28
+        """Table V, pag 28"""
         # Viscosity
         self.assertEqual(round(O2(T=100, rhom=0).mu.muPas, 5), 7.70243)
         self.assertEqual(round(O2(T=300, rhom=0).mu.muPas, 4), 20.6307)
@@ -638,10 +636,12 @@ class Test(TestCase):
         self.assertEqual(round(O2(rhom=13.6, T=154.6).k.mWmK, 1), 377.5)
 
     def test_Laesecke(self):
-        kw = {"visco": 2, "thermal": 2}
-        # Table 3, Pag 1100, the saturation state is calculated with auxiliary
+        """Table 3, Pag 1100"""
+        # The saturation state is calculated with auxiliary
         # equation so the density used are not exact, so it can possible get
         # differences in returned values
+        kw = {"visco": 2, "thermal": 2}
+
         st = O2(T=100, x=0.5, **kw)
         self.assertEqual(round(st.Liquido.mu.muPas, 0), 146)
         self.assertEqual(round(st.Gas.mu.muPas, 3), 7.436)

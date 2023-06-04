@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R365mfc(MEoS):
@@ -81,7 +82,7 @@ class R365mfc(MEoS):
         "gamma3": [1.48, 1.49, 1.01, 1.16],
         "epsilon3": [1.02, 0.62, 0.53, 0.48]}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {"sigma": [0.0534], "exp": [1.21]}
     _vapor_Pressure = {
@@ -97,11 +98,40 @@ class R365mfc(MEoS):
         "n": [-.1612e1, -.67679e1, -.24499e2, .33398e1, -.2111e3, .25807e3],
         "t": [0.281, 0.91, 3.0, 5.0, 8.0, 10.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 365.28, "sigma": 0.549, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [0.670823, 0.316208, -0.0680077], "psi_d": [0, 1, 2],
+              "fint": [4.11581e-3, -1.70975e-5, 2.55262e-8],
+              "fint_t": [0, 1, 2],
+              "chi": [0.434182, 0.229206], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.218e-9, "gam0": 0.06, "qd": 0.669e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
 
     def test_lemmon(self):
-        # Table 7, Pag 3754
+        """Table 7, Pag 3754"""
         st = R365mfc(T=300, rhom=0)
         self.assertEqual(round(st.P.MPa, 6), 0.0)
         self.assertEqual(round(st.cvM.JmolK, 4), 137.9013)
@@ -119,3 +149,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 4), 224.7732)
         self.assertEqual(round(st.cpM.JmolK, 2), 10987.87)
         self.assertEqual(round(st.w, 5), 68.71050)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R365mfc(T=414, rhom=6.494)
+        # self.assertEqual(round(st.mu.muPas, 4), 134.9674)
+        self.assertEqual(round(st.mu.muPas, 4), 134.9681)
+        self.assertEqual(round(st.k.mWmK, 4), 51.7498)

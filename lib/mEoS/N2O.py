@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class N2O(MEoS):
@@ -56,7 +57,7 @@ class N2O(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -64,7 +65,7 @@ class N2O(MEoS):
 
         "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 28.12,
 
-        "nr1":  [0.88045, -2.4235, 0.38237, 0.068917, 0.00020367],
+        "nr1": [0.88045, -2.4235, 0.38237, 0.068917, 0.00020367],
         "d1": [1, 1, 1, 3, 7],
         "t1": [0.25, 1.25, 1.5, 0.25, 0.875],
 
@@ -75,7 +76,7 @@ class N2O(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {"sigma": [0.07087], "exp": [1.204]}
     _vapor_Pressure = {
@@ -91,10 +92,39 @@ class N2O(MEoS):
         "n": [-3.1287, -77.651, .21442e3, -.47809e3, .75185e3, -.46279e3],
         "t": [0.409, 1.91, 2.33, 3.0, 3.6, 4.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 232.4, "sigma": 0.3828, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [0.88769, 0.0214265], "psi_d": [0, 1],
+              "fint": [5.15648e-4, 2.85508e-6, -2.46391e-9],
+              "fint_t": [0, 1, 2],
+              "chi": [0.923824, 0.03315898], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.159e-9, "gam0": 0.057, "qd": 0.446e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = N2O(T=311, rhom=10)
         self.assertEqual(round(st.P.kPa, 3), 7474.778)
         self.assertEqual(round(st.hM.kJkmol, 3), 13676.531)
@@ -102,3 +132,9 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 50.336)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 2997.404)
         self.assertEqual(round(st.w, 3), 185.945)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = N2O(T=278.6, rhom=20.524)
+        self.assertEqual(round(st.mu.muPas, 5), 90.96945)
+        self.assertEqual(round(st.k.mWmK, 4), 100.6284)

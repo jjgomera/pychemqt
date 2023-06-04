@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class MD3M(MEoS):
@@ -142,11 +143,40 @@ class MD3M(MEoS):
         "n": [-4.0084, -7.913, -79.392, -28.572, -211.86, -1800],
         "t": [0.441, 1.244, 5.88, 3.03, 12.7, 32]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+              "Tc": 628.96, "rhoc": 0.7*384.839,
+
+              "ek": 499.5, "sigma": 0.911, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.45796, -0.15796], "psi_d": [0, 1],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [1.72213], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.33e-9, "gam0": 0.066, "qd": 1.127e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
 
     def test_thol(self):
-        # Table 6, Pag. 9621
+        """Table 6, Pag. 9621"""
         st = MD3M(T=300, rhom=2.4)
         self.assertEqual(round(st.P.MPa, 7), 56.5643398)
         self.assertEqual(round(st.hM.Jmol, 3), -133761.828)
@@ -181,3 +211,9 @@ class Test(TestCase):
         self.assertEqual(round(st.sM.JmolK, 6), 113.577309)
         self.assertEqual(round(st.w, 6), 902.133167)
         self.assertEqual(round(st.aM.Jmol, 5), -3403.97539)
+
+    # def test_Huber(self):
+    #     """Table 7, pag 266"""
+    #     st = MD3M(T=566.1, rhom=1.47)
+    #     self.assertEqual(round(st.mu.muPas, 4), 142.9225)
+    #     self.assertEqual(round(st.k.mWmK, 4), 63.0474)

@@ -110,7 +110,7 @@ class CH4(MEoS):
                4, 4],
         "gamma2": [1]*23,
 
-        "nr3": [9.324799946e-5, -6.287171518,  12.71069467, -6.423953466],
+        "nr3": [9.324799946e-5, -6.287171518, 12.71069467, -6.423953466],
         "d3": [2, 0, 0, 0],
         "t3": [2., 0., 1., 2.],
         "alfa3": [20, 40, 40, 40],
@@ -156,15 +156,15 @@ class CH4(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
 
         "Tmin": 90.6941, "Tmax": 625.0, "Pmax": 1000000.0, "rhomax": 40.072,
 
-        "nr1":  [0.57335704239162, -0.16760687523730e1, 0.23405291834916,
-                 -0.21947376343441, 0.16369201404128e-1, 0.15004406389280e-1],
+        "nr1": [0.57335704239162, -0.16760687523730e1, 0.23405291834916,
+                -0.21947376343441, 0.16369201404128e-1, 0.15004406389280e-1],
         "d1": [1, 1, 2, 2, 4, 4],
         "t1": [0.125, 1.125, 0.375, 1.125, 0.625, 1.5],
 
@@ -311,7 +311,7 @@ class CH4(MEoS):
               -37.553961],
         "t": [0.354, 5/6, 3/2, 5/2, 25/6, 47/6]}
 
-    visco0 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco0 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -481,9 +481,9 @@ class CH4(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_setzmann(self):
-        # Selected point from Table 39, Pag 1117, saturation state
+        """Selected point from Table 39, Pag 1117, saturation state"""
         st = CH4(T=90.694, x=0.5)
         self.assertEqual(round(st.P.MPa, 6), 0.011696)
         self.assertEqual(round(st.Liquido.rho, 2), 451.48)
@@ -696,12 +696,12 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 2915.6)
 
     def test_younglove(self):
+        """Selected point from Appendix E, Pag 588, single phase region"""
         # The saturation point use the ancillary equation for calculate
         # pressure and density, so the values differ of values give by mBWR,
         # so not used for testing
         kw = {"eq": "younglove", "visco": 2, "thermal": 1}
 
-        # Selected point from Appendix E, Pag 588, single phase region
         st = CH4(T=360, P=1e4, **kw)
         self.assertEqual(round(st.rho, 4), 0.05360)
         self.assertEqual(round(st.rhoM, 6), 0.003341)
@@ -967,7 +967,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k, 3), 0.336)
 
     def test_friend(self):
-        # Selected point from Table A1, Pag 630, ideal gas
+        """Selected point from Table A1, Pag 630, ideal gas"""
 
         # The point really are not the gas ideal at zero preesure as it's
         # calculated here, it's the value at 1 bar pressure so the values of
@@ -1092,7 +1092,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k.mWmK, 1), 88.7)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = CH4(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.6278)
         self.assertEqual(round(st.P.MPa, 3), 108.108)

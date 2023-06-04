@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class iC5(MEoS):
@@ -58,7 +59,7 @@ class iC5(MEoS):
 
     f = 72.151/8.3143
     CP3 = {"ao": 0.396504*f,
-           "an": [0.260678e-2*f, 0.93677e-5*f, -0.158286e-7*f,  0.76525e-11*f],
+           "an": [0.260678e-2*f, 0.93677e-5*f, -0.158286e-7*f, 0.76525e-11*f],
            "pow": [1, 2, 3, 4]}
 
     f = 4.184/8.3159524
@@ -74,7 +75,7 @@ class iC5(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
         "R": 8.314472,
         "cp": Fi1,
         "ref": "NBP",
@@ -191,16 +192,16 @@ class iC5(MEoS):
         "Au": 73.69, "D": 2}
 
     _melting = {
-            "eq": 2,
-            "__doi__": {
-                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
-                "title": "Melting Curves of Pressure-Transmitting fluids",
-                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
-                "doi": "10.1063/1.1725068"},
+        "eq": 2,
+        "__doi__": {
+            "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+            "title": "Melting Curves of Pressure-Transmitting fluids",
+            "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+            "doi": "10.1063/1.1725068"},
 
-            "Tmin": Tt, "Tmax": 2000.0,
-            "Tref": Tt, "Pref": 8.952745e-5,
-            "a2": [5916e5], "exp2": [1.563]}
+        "Tmin": Tt, "Tmax": 2000.0,
+        "Tref": Tt, "Pref": 8.952745e-5,
+        "a2": [5916e5], "exp2": [1.563]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -214,6 +215,28 @@ class iC5(MEoS):
         "eq": 2,
         "n": [-38.825, 79.040, -48.791, -21.603, -57.218, -151.64],
         "t": [0.565, 0.66, 0.77, 3.25, 7.3, 16.6]}
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 365.56, "sigma": 0.545, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.95,
+
+              "psi": [0.939665, 0.0093105, 0.0135256, -0.00262931],
+              "psi_d": [0, 1, 2, 3]}
+
+    _viscosity = (trnECS, )
 
     thermo0 = {"__name__": "Vassiliou (2015)",
                "__doi__": {
@@ -243,12 +266,14 @@ class iC5(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.227e-9, "gam0": 0.058, "qd": 0.664e-9, "Tcref": 690.53}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
+
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = iC5(T=462, rhom=3)
         self.assertEqual(round(st.P.kPa, 3), 3458.617)
         self.assertEqual(round(st.hM.kJkmol, 3), 37318.534)
@@ -257,8 +282,14 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 3), 4660.943)
         self.assertEqual(round(st.w, 3), 96.324)
 
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # iC5(T=414.3, rhom=6.562).mu.muPas, 5), 77.32917)
+            iC5(T=414.3, rhom=6.562).mu.muPas, 5), 77.32940)
+
     def test_Vassiliou(self):
-        # Section 3.2.2, Pag 11
+        """Section 3.2.2, Pag 11"""
         # Viscosity value different to used in paper
         # self.assertEqual(round(iC5(T=460, P=3.5e6).k.mWmK, 3), 59.649)
-        self.assertEqual(round(iC5(T=460, P=3.5e6).k.mWmK, 3), 59.388)
+        self.assertEqual(round(iC5(T=460, P=3.5e6).k.mWmK, 3), 59.376)

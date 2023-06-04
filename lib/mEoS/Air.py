@@ -73,11 +73,10 @@ class Air(MEoSBlend):
                      "Nitrogen, Argon, and Oxygen From 60 to 2000 K at "
                      "Pressures to 2000 MPa",
             "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
-            "doi":  "10.1063/1.1285884"},
+            "doi": "10.1063/1.1285884"},
 
         "R": 8.31451,
         "cp": Fi1,
-        # "ref": {"Tref": 298.15, "Pref": 101.325, "ho": 8649.34, "so": 194.},
         "ref": {"Tref": 273.15, "Pref": 101.325, "ho": 0, "so": 0},
 
         "M": 28.9586, "Tc": 132.6312, "rhoc": 10.4477,
@@ -164,7 +163,7 @@ class Air(MEoSBlend):
             "title": "Thermodynamic Properties of Air from 60 to 2000 K at "
                      "Pressures up to 2000 MPa",
             "ref": "Int. J. Themophys. 20(1) (1999) 217-228",
-            "doi":  "10.1023/a:1021450818807"},
+            "doi": "10.1023/a:1021450818807"},
 
         "R": 8.31451,
         "cp": Fi2,
@@ -225,7 +224,7 @@ class Air(MEoSBlend):
         """Bubble-point density ancillary equation, Eq 2 in Lemmon reference"""
         if T < self.Tt:
             T = self.Tt
-        if T > 132.6312:
+        elif T > 132.6312:
             T = 132.6312
 
         Tita = 1-T/132.6312
@@ -255,7 +254,7 @@ class Air(MEoSBlend):
               "gr": [0, 0, 0, 1, 1],
               "cr": [0, 0, 0, 1, 1]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Lemmon (2004)",
                "__doi__": {
@@ -284,12 +283,13 @@ class Air(MEoSBlend):
                "gnu": 0.63, "gamma": 1.2415, "R0": 1.01,
                "Xio": 0.11e-9, "gam0": 0.055, "qd": 0.31e-9, "Tcref": 265.262}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
     def test_lemmon(self):
-        # Selected point from Table A1, Pag 363
+        """Selected point from Table A1, Pag 363"""
         self.assertEqual(round(Air._bubbleP(59.75).MPa, 6), 0.005265)
         self.assertEqual(round(Air._dewP(59.75).MPa, 5), 0.00243)
         self.assertEqual(round(Air._bubbleP(70).MPa, 5), 0.03191)
@@ -358,7 +358,7 @@ class Test(TestCase):
         self.assertEqual(round(f_prho.T-T, 6), 0)
 
     def test_LemmonTransport(self):
-        # Table V, pag 28
+        """Table V, pag 28"""
         # Viscosity
         self.assertEqual(round(Air(T=100, rhom=0).mu.muPas, 5), 7.09559)
         self.assertEqual(round(Air(T=300, rhom=0).mu.muPas, 4), 18.5230)

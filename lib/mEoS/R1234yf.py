@@ -175,7 +175,7 @@ class R1234yf(MEoS):
               "tr_den": [-1, -1],
               "dr_den": [0, 1]}
 
-    _viscosity = ( visco0, )
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Perkins (2011)",
                "__doi__": {
@@ -205,7 +205,7 @@ class R1234yf(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
                "gam0": 0.0496, "qd": 5.835e-10, "Tcref": 551.775}
 
-    _thermal = ( thermo0, )
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):

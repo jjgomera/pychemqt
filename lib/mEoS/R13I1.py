@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R13I1(MEoS):
@@ -71,7 +72,7 @@ class R13I1(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {"sigma": [0.05767], "exp": [1.298]}
     _vapor_Pressure = {
@@ -87,11 +88,38 @@ class R13I1(MEoS):
         "n": [-3.0987, -6.8771, -19.701, -46.86, -100.02],
         "t": [0.41, 1.33, 3.5, 7.4, 16.0]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 314.8, "sigma": 0.4926, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.95,
+
+              "psi": [1.22725, -0.0879263], "psi_d": [0, 1],
+              "fint": [1.28541e-3, 5.32854e-7], "fint_t": [0, 1],
+              "chi": [1], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.21e-9, "gam0": 0.057, "qd": 0.598e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
-
+    """Testing"""
     def test_lemmon(self):
-        # Table 7, Pag 3754
+        """Table 7, Pag 3754"""
         st = R13I1(T=300, rhom=0)
         self.assertEqual(round(st.P.MPa, 6), 0.0)
         self.assertEqual(round(st.cvM.JmolK, 5), 58.90476)
@@ -109,3 +137,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 5), 90.32758)
         self.assertEqual(round(st.cpM.JmolK, 2), 11675.81)
         self.assertEqual(round(st.w, 5), 74.67026)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R13I1(T=356.8, rhom=8.724)
+        # self.assertEqual(round(st.mu.muPas, 4), 168.5168)
+        self.assertEqual(round(st.mu.muPas, 4), 168.5175)
+        self.assertEqual(round(st.k.mWmK, 4), 40.8519)

@@ -220,9 +220,10 @@ class R245fa(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Akasaka(self):
-        # Table 7, Pag 12
+        """Table 7, Pag 12"""
         st = R245fa(T=250, x=0.5)
         self.assertEqual(round(st.P.MPa, 8), 0.01646009)
         self.assertEqual(round(st.Liquido.rhoM, 5), 10.90057)
@@ -286,7 +287,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 135.712)
 
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = R245fa(T=429, rhom=3, eq="lemmon")
         self.assertEqual(round(st.P.kPa, 3), 3737.844)
         self.assertEqual(round(st.hM.kJkmol, 3), 63909.822)
@@ -296,7 +297,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 78.673)
 
     def test_Perkins(self):
-        # Thermal Conductivity, Table 4, pag 5
+        """Thermal Conductivity, Table 4, pag 5"""
         self.assertEqual(round(R245fa(T=250, rho=0).k.mWmK, 4), 8.3085)
         self.assertEqual(round(R245fa(T=250, rho=1500).k.mWmK, 2), 111.40)
         self.assertEqual(round(R245fa(T=430, rho=0).k.mWmK, 2), 24.63)

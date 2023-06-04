@@ -86,10 +86,10 @@ class SF6(MEoS):
         "d1": [1, 1, 1, 2, 2, 2, 3, 3, 4, 6],
         "t1": [0.125, 1.25, 1.875, 0.125, 1.5, 1.625, 1.5, 5.625, 0.625, 0.25],
 
-        "nr2": [-.24150013863890e-1,  .59447650642255e-1, -.38302880142267,
+        "nr2": [-.24150013863890e-1, .59447650642255e-1, -.38302880142267,
                 .32606800951983, -.29955940562031e-1, -.86579186671173e-1,
                 .41600684707562e01, -.41398128855814e01, -.55842159922714,
-                .56531382776891,  .82612463415545e-2, -.10200995338080e-1],
+                .56531382776891, .82612463415545e-2, -.10200995338080e-1],
         "d2": [1, 2, 2, 2, 3, 6, 2, 2, 4, 4, 2, 2],
         "t2": [6, 0.25, 4.75, 5.375, 5.875, 2, 5.875, 6, 5.625, 5.75, 0, 0.5],
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3],
@@ -238,7 +238,7 @@ class SF6(MEoS):
               -6.65585369],
         "t": [0.348, 1/6, 2/6, 4/6, 16/6, 34/6]}
 
-    visco0 = {"__name__": u"Quiñones-Cisneros (2012)",
+    visco0 = {"__name__": "Quiñones-Cisneros (2012)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Huber, M.L., Deiters, "
                            "U.K.",
@@ -263,7 +263,7 @@ class SF6(MEoS):
               "D": [0, 0, 2.2798e-11],
               "E": [0, -5.69402e-11, 2.92190e-11]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Assael (2012)",
                "__doi__": {
@@ -303,13 +303,14 @@ class SF6(MEoS):
                # 10.1063/1.4885454
                "Tcref": 478.08}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_guder(self):
-        # Table 27, Pag 57
+        """Table 27, Pag 57"""
         st = SF6(T=350, P=5e6)
         self.assertEqual(round(st.rho, 7), 436.9770888)
 
@@ -490,7 +491,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 2), 755.29)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = SF6(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 0.9671)
         self.assertEqual(round(st.P.MPa, 3), 8.094)
@@ -501,7 +502,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.10913)
 
     def test_Quinones(self):
-        # Table 8, pag 10
+        """Table 8, pag 10"""
         # The dilute-gas limit differ in 6th figure
         # 0.0006 μPa·s at 300 and 400K
         self.assertEqual(round(SF6(T=300, rho=0).mu.muPas, 4), 15.2881)
@@ -512,7 +513,7 @@ class Test(TestCase):
         self.assertEqual(round(SF6(T=400, rho=1123.8).mu.muPas, 4), 84.7838)
 
     def test_Assael(self):
-        # Table 5, from Erratum article
+        """Table 5, from Erratum article"""
         self.assertEqual(round(SF6(T=298.15, rho=0).k.mWmK, 2), 12.95)
         self.assertEqual(round(SF6(T=298.15, rho=100).k.mWmK, 2), 14.13)
         self.assertEqual(round(SF6(T=298.15, rho=1600).k.mWmK, 2), 69.73)

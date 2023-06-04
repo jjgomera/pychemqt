@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class RE245cb2(MEoS):
@@ -51,7 +54,7 @@ class RE245cb2(MEoS):
                     "title": "Equations of state for RE245cb2, RE347mcc, "
                              "RE245fa2 and R1216",
                     "ref": "Preliminary equation",
-                    "doi":  ""},
+                    "doi": ""},
 
         "R": 8.314472,
         "cp": CP1,
@@ -77,7 +80,7 @@ class RE245cb2(MEoS):
         "gamma3": [1.1, 0.64, 0.5, 1.26],
         "epsilon3": [0.713, 0.917, 0.69, 0.743]}
 
-    eq = zhou,
+    eq = (zhou, )
 
     _surface = {
         "__doi__": {
@@ -100,3 +103,40 @@ class RE245cb2(MEoS):
         "eq": 2,
         "n": [-1.5224, -5.7245, -15.972, -50.473, -6.8916],
         "t": [0.286, 0.82, 2.5, 5.6, 7.3]}
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 323.05, "sigma": 0.5418, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.0692, -0.023595], "psi_d": [0, 1],
+              "fint": [0.001129], "fint_t": [0],
+              "chi": [0.96324, 0.027265], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.217e-9, "gam0": 0.057, "qd": 0.66e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = RE245cb2(T=366.1, rhom=6.908)
+        # self.assertEqual(round(st.mu.muPas, 4), 131.9492)
+        self.assertEqual(round(st.mu.muPas, 4), 131.9498)
+        self.assertEqual(round(st.k.mWmK, 4), 52.1205)

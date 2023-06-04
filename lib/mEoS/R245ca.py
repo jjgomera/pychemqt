@@ -88,7 +88,7 @@ class R245ca(MEoS):
         "gamma3": [1.265, 0.42, 0.864, 1.15],
         "epsilon3": [0.55, 0.724, 0.524, 0.857]}
 
-    eq = zhou,
+    eq = (zhou, )
     _PR = [-0.0856, -17.8089]
 
     _surface = {"sigma": [0.069297, -0.022419], "exp": [1.2795, 3.1368]}
@@ -105,40 +105,39 @@ class R245ca(MEoS):
         "n": [-4.65885, -1.03328, -13.5047, -48.4225, -104.097],
         "t": [0.5, 1.09, 2.1, 5.1, 10.4]}
 
-    trnECS = {"__name__": "Huber (2003)",
+    trnECS = {"__name__": "Huber (2018)",
 
               "__doi__": {
-                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
-                  "title": "Model for the Viscosity and Thermal Conductivity "
-                           "of Refrigerants, Including a New Correlation for "
-                           "the Viscosity of R134a",
-                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
-                  "doi": "10.1021/ie0300880"},
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
 
               "eq": "ecs",
-
               "ref": R134a,
-              "visco": "visco0",
-              "thermo": "thermo0",
 
-              "ek": 345.44, "sigma": 0.5505, "omega": 5,
+              "ek": 355.41, "sigma": 0.5131, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
 
-              "psi": [1.13848, -3.32328e-2], "psi_d": [0, 1],
-              "fint": [1.03579e-3, 1.37878e-6], "fint_t": [0, 1],
-              "chi": [1.1627, -4.73491e-2], "chi_d": [0, 1],
+              "psi": [0.850332, 0.185603, -0.0415622], "psi_d": [0, 1, 2],
+              "fint": [7.33395e-4, 1.62265e-6], "fint_t": [0, 1],
+              "chi": [1.04155, -0.0118606], "chi_d": [0, 1],
 
               "critical": 3,
-              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
-              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.205e-9, "gam0": 0.06, "qd": 0.624e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_zhou(self):
-        # Table 3, Pag 11
+        """Table 3, Pag 11"""
         st = R245ca(T=250, rhom=11.3)
         self.assertEqual(round(st.P.MPa, 6), 7.998072)
         self.assertEqual(round(st.cvM.JmolK, 3), 127.995)
@@ -174,3 +173,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 3), 160.706)
         self.assertEqual(round(st.cpM.JmolK, 3), 237.245)
         self.assertEqual(round(st.w, 3), 256.123)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R245ca(T=402.8, rhom=8.056)
+        # self.assertEqual(round(st.mu.muPas, 4), 154.9093)
+        self.assertEqual(round(st.mu.muPas, 4), 154.9100)
+        self.assertEqual(round(st.k.mWmK, 4), 65.7107)

@@ -84,7 +84,7 @@ class pXylene(MEoS):
         "gamma3": [1.267, 0.4242, 0.864, 1.1465],
         "epsilon3": [0.54944, 0.7234, 0.4926, 0.8459]}
 
-    eq = zhou,
+    eq = (zhou, )
     _PR = [0.0380, -20.8346]
 
     _surface = {
@@ -195,13 +195,15 @@ class pXylene(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02, "Xio": 0.235e-9,
                "gam0": 0.056, "qd": 0.71e-9, "Tcref": 924.3}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_balogun(self):
-        # Table 7, saturation state properties, include basic test for Zhou EoS
+        """Table 7, saturation state properties,
+        include basic test for Zhou EoS"""
         st = pXylene(T=293.15, x=0.5)
         self.assertEqual(round(st.P.MPa, 4), 0.0009)
         self.assertEqual(round(st.Gas.rhoM, 4), 0.0004)
@@ -258,7 +260,7 @@ class Test(TestCase):
             T=600, rhom=7.0985).mu.muPas, 3), 209.151)
 
     def test_meng(self):
-        # Table 8, Pag 9
+        """Table 8, Pag 9"""
         self.assertEqual(round(
             pXylene(T=300, rhom=0, visco=1).mu.muPas, 3), 6.604)
 
@@ -284,11 +286,11 @@ class Test(TestCase):
             pXylene(T=600, rhom=7.0985, visco=1).mu.muPas, 3), 199.160)
 
     def test_Mylona(self):
+        """Table 16, the point with critical enhancement differ"""
         # The critical enchancement use a innacurate ecs viscosity correlation
         # This viscosity with that correlation is fairly diferent of Balogun
         # or Meng correlations, this is the cause of testing error
 
-        # Table 16, the point with critical enhancement differ
         self.assertEqual(round(pXylene(T=300, rho=0).k.mWmK, 2), 10.57)
         self.assertEqual(round(pXylene(T=400, rho=0).k.mWmK, 2), 19.48)
         self.assertEqual(round(pXylene(T=500, rho=0).k.mWmK, 2), 30.17)

@@ -434,7 +434,7 @@ class nC4(MEoS):
                     0.9849317662e4],
               "rhoc": 3.920}
 
-    visco3 = {"__name__": u"Quiñones-Cisneros (2006)",
+    visco3 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -509,9 +509,10 @@ class nC4(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_buecker(self):
-        # Selected point from Table 44, Pag 974, saturation state
+        """Selected point from Table 44, Pag 974, saturation state"""
         st = nC4(T=136, x=0.5)
         self.assertEqual(round(st.P.MPa, 8), 0.00000082)
         self.assertEqual(round(st.Liquido.rho, 4), 733.9269)
@@ -652,12 +653,12 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 2), 826.87)
 
     def test_younglove(self):
+        """Selected point from Appendix I, Pag 758, single phase region"""
         # The saturation point use the ancillary equation for calculate
         # pressure and density, so the values differ of values give by mBWR,
         # so not used for testing
         kw = {"eq": "younglove", "visco": 2, "thermal": 1}
 
-        # Selected point from Appendix I, Pag 758, single phase region
         st = nC4(T=220, P=1e4, **kw)
         self.assertEqual(round(st.rho, 1), 654.6)
         self.assertEqual(round(st.rhoM, 2), 11.26)
@@ -923,7 +924,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k, 3), 0.108)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = nC4(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.2176)
         self.assertEqual(round(st.P.MPa, 3), 18.416)
@@ -934,7 +935,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.37465)
 
     def test_herrmann(self):
-        # Table 6, Pag 18
+        """Table 6, Pag 18"""
         self.assertEqual(round(nC4(T=136, rho=735).mu.muPas, 3), 2310.306)
         self.assertEqual(round(nC4(T=300, rho=1).mu.muPas, 6), 7.440574)
         self.assertEqual(round(nC4(T=300, rho=6).mu.muPas, 6), 7.382406)

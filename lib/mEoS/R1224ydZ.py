@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R1224ydZ(MEoS):
@@ -104,9 +105,42 @@ class R1224ydZ(MEoS):
         "n": [-1.7785, -7.1173, -19.416, -43.38],
         "t": [0.284, 1, 3, 6]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 340.42, "sigma": 0.53, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [0.712387, 0.186976, -0.0316058], "psi_d": [0, 1, 2],
+              "fint": [0.00125], "fint_t": [0],
+              "chi": [1.04], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.214e-9, "gam0": 0.058, "qd": 0.646e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
     """Test class"""
+
+#     def test_Huber(self):
+#         """Table 7, pag 266"""
+#         st = R1224ydZ(T=385.8, rhom=7.275)
+#         self.assertEqual(round(st.mu.muPas, 4), 113.9872)
+#         self.assertEqual(round(st.k.mWmK, 4), 53.9324)
 
     def test_Surface(self):
         """Table 10, pag 271"""

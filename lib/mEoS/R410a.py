@@ -83,7 +83,7 @@ class R410a(MEoSBlend):
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3],
         "gamma2": [1]*16}
 
-    eq = lemmon,
+    eq = (lemmon, )
 
     _surface = {
         "__doi__": {
@@ -125,13 +125,13 @@ class R410a(MEoSBlend):
 
                "critical": 0}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_lemmon(self):
-        # Table V, Pag 998
+        """Table V, Pag 998"""
         st = R410a(T=300, rhom=0)
         self.assertEqual(round(st.P.MPa, 3), 0)
         self.assertEqual(round(st.cvM.JmolK, 3), 50.400)

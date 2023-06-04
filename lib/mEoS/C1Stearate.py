@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class C1Stearate(MEoS):
@@ -80,7 +83,7 @@ class C1Stearate(MEoS):
         "epsilon3": [0.79, 0.9, 0.76],
         "nr4": []}
 
-    eq = huber,
+    eq = (huber, )
 
     _surface = {
         "__doi__": {
@@ -103,3 +106,34 @@ class C1Stearate(MEoS):
         "eq": 2,
         "n": [-18.187, 81.619, -90.21, -5.2888e2, 1.1270e3, -8.4453e2],
         "t": [0.71, 1.3, 1.5, 6.0, 7.0, 8.0]}
+
+    trnECS = {"__name__": "Huber (2003)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
+                  "title": "Model for the Viscosity and Thermal Conductivity "
+                           "of Refrigerants, Including a New Correlation for "
+                           "the Viscosity of R134a",
+                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
+                  "doi": "10.1021/ie0300880"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 615.42, "sigma": 0.8735, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.46654, -0.260069, 0.0354629], "psi_d": [0, 1, 2]}
+
+    _viscosity = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        self.assertEqual(round(
+            # C1Stearate(T=697.5, rhom=1.79).mu.muPas, 4), 151.1512)
+            C1Stearate(T=697.5, rhom=1.79).mu.muPas, 4), 151.1649)

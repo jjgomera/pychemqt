@@ -160,9 +160,10 @@ class nC11(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Assael(self):
-        # Table 9, pag 10, saturation state for mEoS testing
+        """Table 9, pag 10, saturation state for mEoS testing"""
         st = nC11(T=300, x=0.5)
         self.assertEqual(round(st.P.MPa, 8), 6.639e-5)
         self.assertEqual(round(st.Liquido.rho, 2), 734.99)

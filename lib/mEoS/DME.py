@@ -18,8 +18,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from unittest import TestCase
+
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class DME(MEoS):
@@ -155,3 +158,44 @@ class DME(MEoS):
               "cr": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
 
     _viscosity = (visco0, )
+
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 395, "sigma": 0.4307, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.81678, -0.696062, 0.13901], "psi_d": [0, 1, 2],
+              "fint": [-9.8101e-4, 1.22857e-5, -1.60844e-8],
+              "fint_t": [0, 1, 2],
+              "chi": [1.12497, -4.88562e-2], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.189e-9, "gam0": 0.057, "qd": 0.54e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
+
+class Test(TestCase):
+    """Testing"""
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = DME(T=360.3, rhom=12.001)
+        # self.assertEqual(round(st.mu.muPas, 5), 83.3511)
+        self.assertEqual(round(st.mu.muPas, 5), 83.3514)
+        self.assertEqual(round(st.k.mWmK, 4), 99.1164)

@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class DEE(MEoS):
@@ -75,7 +76,7 @@ class DEE(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 3],
         "gamma2": [1]*9}
 
-    eq = thol,
+    eq = (thol, )
 
     _surface = {
         "__doi__": {
@@ -99,13 +100,43 @@ class DEE(MEoS):
         "n": [-0.35858, -16.843, 32.476, -33.444, -48.036],
         "t": [0.06, 0.87, 1.3, 1.7, 5.3]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 370.6, "sigma": 0.53, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 0.9,
+
+              "psi": [1.15039, -0.1535, 0.0330048], "psi_d": [0, 1, 2],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [1.16276, -0.0357361], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.196e-9, "gam0": 0.066, "qd": 0.645e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
+
     def test_thol(self):
+        """Table 9, Pag 26"""
         # Discard the last 4 number, I'm fairly sure is a problem with the
         # significative figures in the equation parameters in paper
 
-        # Table 9, Pag 26
         st = DEE(T=280, rho=0.1)
         self.assertEqual(round(st.P.MPa, 9), 0.003134775)
         self.assertEqual(round(st.h.kJkg, 5), -29.23155)
@@ -137,3 +168,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cv.kJkgK, 5), 1.94956)
         self.assertEqual(round(st.cp.kJkgK, 6), 2.520106)
         self.assertEqual(round(st.w, 4), 919.5757)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = DEE(T=420, rhom=7.267)
+        # self.assertEqual(round(st.mu.muPas, 5), 82.72072)
+        self.assertEqual(round(st.mu.muPas, 5), 82.72174)
+        self.assertEqual(round(st.k.mWmK, 4), 80.8456)

@@ -291,9 +291,10 @@ class R1234zeE(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_thol(self):
-        # Table 3, pag 15
+        """Table 3, pag 15"""
         st = R1234zeE(T=200, rhom=12.6)
         self.assertEqual(round(st.P.MPa, 6), 2.161400)
         self.assertEqual(round(st.cvM.JmolK, 4), 94.9481)
@@ -331,7 +332,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 371.320)
 
     def test_Perkins(self):
-        # Table 2, Pag 4872
+        """Table 2, Pag 4872"""
         # The used EoS is other version of mclinden referenced in REFPROP
         st = R1234zeE(T=250, P=5e4, eq="mclinden")
         # self.assertEqual(round(st.rho, 5), 2.80451)
@@ -350,7 +351,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k, 6), 0.085550)
 
     def test_Huber(self):
-        # Section 2.4
+        """Section 2.4"""
         self.assertEqual(round(R1234zeE(T=300, rhom=0).mu.muPas, 3), 11.777)
         self.assertEqual(round(
             R1234zeE(T=300, rhom=0.044).mu.muPas, 3), 12.041)

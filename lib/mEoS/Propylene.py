@@ -198,16 +198,16 @@ class Propylene(MEoS):
     _surface = {"sigma": [0.05268], "exp": [1.186]}
 
     _melting = {
-            "eq": 2,
-            "__doi__": {
-                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
-                "title": "Melting Curves of Pressure-Transmitting fluids",
-                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
-                "doi": "10.1063/1.1725068"},
+        "eq": 2,
+        "__doi__": {
+            "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+            "title": "Melting Curves of Pressure-Transmitting fluids",
+            "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+            "doi": "10.1063/1.1725068"},
 
-            "Tmin": Tt, "Tmax": 2000.0,
-            "Tref": Tt, "Pref": 0.00074864,
-            "a2": [3196e5], "exp2": [2.821]}
+        "Tmin": Tt, "Tmax": 2000.0,
+        "Tref": Tt, "Pref": 0.00074864,
+        "a2": [3196e5], "exp2": [2.821]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -236,7 +236,6 @@ class Propylene(MEoS):
 
               "ref": C3,
               "visco": "visco1",
-              "thermo": "thermo0",
 
               "ek": 298.9, "sigma": 0.4678, "omega": 5,
 
@@ -248,7 +247,7 @@ class Propylene(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
+    _viscosity = (trnECS, )
 
     thermo0 = {"__name__": "Assael (2016)",
                "__doi__": {
@@ -283,13 +282,15 @@ class Propylene(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Assael(self):
-        # Table 9, pag 12
+        """Table 9, pag 12"""
         # Tiny error about inconsistency in ecs viscosity method between the
         # eq used for conformal state solver (Overhoff) and the eq used in
         # critical enhancement (Lemmon)
         kw = {"eq": "overhoff"}
+
         self.assertEqual(round(Propylene(T=200, rho=0, **kw).k.mWmK, 2), 8.75)
         self.assertEqual(round(Propylene(T=300, rho=0, **kw).k.mWmK, 2), 17.55)
         self.assertEqual(round(Propylene(T=400, rho=0, **kw).k.mWmK, 2), 29.18)

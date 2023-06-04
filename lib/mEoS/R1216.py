@@ -78,7 +78,7 @@ class R1216(MEoS):
         "epsilon3": [0.67, 0.925, 0.75, 0.73],
         "nr4": []}
 
-    eq = zhou,
+    eq = (zhou, )
 
     _surface = {
         "__doi__": {

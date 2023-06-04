@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class MDM(MEoS):
@@ -146,12 +147,40 @@ class MDM(MEoS):
         "n": [-5.3686, -11.85, -16.64, -52.26, -125.6, -235.7],
         "t": [0.515, 4.58, 2.06, 5.25, 11.3, 21.6]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 448.9, "sigma": 0.776, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.46043, -0.161196], "psi_d": [0, 1],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [3.47746, -1.50335, 0.27515], "chi_d": [0, 1, 2],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.295e-9, "gam0": 0.064, "qd": 0.956e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
 
-    # Reference state fail with last decimal number
     def test_thol(self):
-        # Table 13, Pag. 2646
+        """Table 13, Pag. 2646"""
+        # Reference state fail with last decimal number
         st = MDM(T=320, rhom=0.0001)
         self.assertEqual(round(st.P.MPa, 10), 0.0002659237)
         # self.assertEqual(round(st.cpM.JmolK, 4), 343.4178)
@@ -191,3 +220,9 @@ class Test(TestCase):
         # self.assertEqual(round(st.hM.Jmol, 2), 81168.03)
         self.assertEqual(round(st.sM.JmolK, 4), 160.0291)
         self.assertEqual(round(st.aM.Jmol, 2), -12604.53)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = MDM(T=508.8, rhom=2.366)
+        self.assertEqual(round(st.mu.muPas, 4), 131.0288)
+        self.assertEqual(round(st.k.mWmK, 4), 68.7734)

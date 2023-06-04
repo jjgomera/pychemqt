@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class RE143a(MEoS):
@@ -100,9 +101,44 @@ class RE143a(MEoS):
         "n": [-3.02576, -6.97239, -20.2601, -53.4441],
         "t": [0.38, 1.24, 3.2, 6.9]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 300.104, "sigma": 0.4847, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.008], "psi_d": [0],
+              "fint": [0.001129], "fint_t": [0],
+              "chi": [0.975], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.198e-9, "gam0": 0.054, "qd": 0.588e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
     """Test class"""
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = RE143a(T=340.1, rhom=9.488)
+        # self.assertEqual(round(st.mu.muPas, 4), 123.6032)
+        # self.assertEqual(round(st.k.mWmK, 4), 62.6479)
+        self.assertEqual(round(st.mu.muPas, 4), 123.6033)
+        self.assertEqual(round(st.k.mWmK, 4), 62.6478)
 
     def test_Surface(self):
         """Table 10, pag 271"""

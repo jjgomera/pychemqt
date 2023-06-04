@@ -60,7 +60,7 @@ class R218(MEoS):
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
                     "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
-                    "doi":  "10.1021/je050186n"},
+                    "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -78,7 +78,7 @@ class R218(MEoS):
         "c2": [1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*7}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [-0.3225, -15.1811]
 
     _surface = {"sigma": [0.04322], "exp": [1.224]}
@@ -95,39 +95,40 @@ class R218(MEoS):
         "n": [-4.2658, -6.9496, -.18099e2, -.4921e2, -.55945e2, -.74492e2],
         "t": [0.481, 1.53, 3.2, 6.3, 12.0, 15.0]}
 
-    trnECS = {"__name__": "Huber (2003)",
+    trnECS = {"__name__": "Huber (2018)",
 
               "__doi__": {
-                  "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
-                  "title": "Model for the Viscosity and Thermal Conductivity "
-                           "of Refrigerants, Including a New Correlation for "
-                           "the Viscosity of R134a",
-                  "ref": "Ind. Eng. Chem. Res., 42(13) (2003) 3163-3178",
-                  "doi": "10.1021/ie0300880"},
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
 
               "eq": "ecs",
-
               "ref": C3,
               "visco": "visco1",
-              "thermo": "thermo0",
 
               "ek": 266.35, "sigma": 0.58, "omega": 5,
+              "n_chapman": 26.692e-3, "Fc": 1,
 
-              "psi": [1.10225, -5.50442e-3], "psi_d": [0, 1],
-              "fint": [8.92659e-4, 1.14912e-6], "fint_t": [0, 1],
-              "chi": [1.2877, -7.58811e-2], "chi_d": [0, 1],
+              "psi": [1.06992, 0.0100068, -0.00126094], "psi_d": [0, 1, 2],
+              "fint": [5.99446e-4, 2.29822e-6, -9.77006e-10],
+              "fint_t": [0, 1, 2],
+              "chi": [0.466251, 0.54426, -0.110279], "chi_d": [0, 1, 2],
 
               "critical": 3,
-              "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
-              "gam0": 0.0496, "qd": 1.09043e-9, "Tcref": 1.5*Tc}
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.219e-9,
+              "gam0": 0.061, "qd": 0.659e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 10, Pag 842
+        """Table 10, Pag 842"""
         st = R218(T=347, rhom=3)
         self.assertEqual(round(st.P.kPa, 3), 2742.100)
         self.assertEqual(round(st.hM.kJkmol, 3), 58080.724)
@@ -135,3 +136,11 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 3), 181.131)
         self.assertEqual(round(st.cpM.kJkmolK, 3), 2375.958)
         self.assertEqual(round(st.w, 3), 57.554)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R218(T=310.5, rhom=6.771)
+        # self.assertEqual(round(st.mu.muPas, 4), 144.3991)
+        # self.assertEqual(round(st.k.mWmK, 4), 41.7675)
+        self.assertEqual(round(st.mu.muPas, 4), 144.4036)
+        self.assertEqual(round(st.k.mWmK, 4), 41.7754)

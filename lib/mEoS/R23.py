@@ -67,7 +67,7 @@ class R23(MEoS):
                     "title": "A Fundamental Equation for Trifluoromethane "
                              "(R-23)",
                     "ref": "J. Phys. Chem. Ref. Data 32(4) (2003) 1473-1499",
-                    "doi":  "10.1063/1.1559671"},
+                    "doi": "10.1063/1.1559671"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -95,7 +95,7 @@ class R23(MEoS):
                              "the Thermodynamic Properties of "
                              "Trifluoromethane (R23)",
                     "ref": "ASHRAE Trans. 106(Part 1) (2000) 739-756",
-                    "doi":  ""},
+                    "doi": ""},
 
         "R": 8.31451,
         "cp": CP1,
@@ -105,7 +105,7 @@ class R23(MEoS):
 
         "nr1": [0.350093635099, -0.131185838025e1, -0.254118065769,
                 .104275296122, -.205326997924, .256040993750, .118078220087e-1,
-                0.532850915621e-3,  0.956700157221e-3, -0.118990410423e-5],
+                0.532850915621e-3, 0.956700157221e-3, -0.118990410423e-5],
         "d1": [1, 1, 1, 2, 2, 2, 3, 4, 6, 8],
         "t1": [-0.14, 1.49, 2.41, 0.05, 1.59, 2.04, -0.27, 2.76, -0.06, 3.25],
 
@@ -155,7 +155,7 @@ class R23(MEoS):
     _surface = {"sigma": [-0.32359, 0.37702], "exp": [1.6055, 1.5232]}
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-7.2631,  1.3140, -0.78507, -3.1991],
+        "n": [-7.2631, 1.3140, -0.78507, -3.1991],
         "t": [1, 1.5, 2.4, 3.9]}
     _liquid_Density = {
         "eq": 1,
@@ -197,21 +197,21 @@ class R23(MEoS):
         muo = self._Visco0(T)
         mug = muo*(Drho/rhol)**C1
         mur = (rho/self.M/rhol)**C1*C2*rhol**2/Drho*T**0.5*exp(
-                rho/self.M/Drho*deltaG/R/self.M/T)
+            rho/self.M/Drho*deltaG/R/self.M/T)
         muc = 4*nmax/(exp(delta)+exp(-delta))/(exp(tau)+exp(-tau))
         return unidades.Viscosity(mug+mur+muc, "muPas")
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"eq": 0,
                "method": "_thermo0",
                "__name__": "Shan (2000)",
                "__doi__": {
-                  "autor": "Shan, Z., Penoncello, S.G., Jacobsen, R.T.",
-                  "title": "A Generalized Model for Viscosity and Thermal "
-                           "Conductivity of Trifluoromethane (R-23)",
-                  "ref": "ASHRAE Trans. 106(Part 1) (2000) 757-767",
-                  "doi": ""}}
+                   "autor": "Shan, Z., Penoncello, S.G., Jacobsen, R.T.",
+                   "title": "A Generalized Model for Viscosity and Thermal "
+                            "Conductivity of Trifluoromethane (R-23)",
+                   "ref": "ASHRAE Trans. 106(Part 1) (2000) 757-767",
+                   "doi": ""}}
 
     def _thermo0(self, rho, T, fase):
         rhol = 68.345
@@ -228,17 +228,18 @@ class R23(MEoS):
 
         lg = (B1+B2*T)*(Drho/rhol)**C1
         lr = (rho/self.M/rhol)**C1*C2*rhol**2/Drho*T**0.5*exp(
-                rho/self.M/Drho*deltaG/self.R.kJkgK/self.M/T)
+            rho/self.M/Drho*deltaG/self.R.kJkgK/self.M/T)
         lc = 4*lmax/(exp(delta)+exp(-delta))/(exp(tau)+exp(-tau))
         return unidades.ThermalConductivity(lg+lr+lc, "mWmK")
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_penoncello(self):
-        # Appendix pag 1489, saturation state
+        """Appendix pag 1489, saturation state"""
         st = R23(T=R23.Tt, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.00006)
         self.assertEqual(round(st.Liquido.rho, 1), 1701.9)

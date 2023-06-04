@@ -78,7 +78,7 @@ class NF3(MEoS):
               0.8597429644e-4, 0.1240544214e-2, 0.1286224248e-6,
               -0.8941104276e-6, 0.3353054595e-4]}
 
-    eq = younglove,
+    eq = (younglove, )
 
     _surface = {
         "__doi__": {
@@ -104,11 +104,12 @@ class NF3(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_younglove(self):
+        """Selected point from Appendix J, Pag 267, single phase region"""
         # The saturation state use ancillary equation for saturation pressure
         # and densities calculated values so differ of equation values
-        # Selected point from Appendix J, Pag 267, single phase region
         st = NF3(T=120, P=2e4)
         self.assertEqual(round(st.rho, 0), 1649)
         self.assertEqual(round(st.rhoM, 2), 23.22)

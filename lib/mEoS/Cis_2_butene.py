@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import C3
 
 
 class Cis_2_butene(MEoS):
@@ -56,7 +57,7 @@ class Cis_2_butene(MEoS):
                     "title": "Thermodynamic properties of the butenes: Part "
                              "II. Short fundamental equations of state",
                     "ref": "Fluid Phase Equilibria 228-229 (2005) 173-187",
-                    "doi":  "10.1016/j.fluid.2004.09.004"},
+                    "doi": "10.1016/j.fluid.2004.09.004"},
 
         "R": 8.314472,
         "cp": Fi1,
@@ -64,7 +65,7 @@ class Cis_2_butene(MEoS):
 
         "Tmin": Tt, "Tmax": 525., "Pmax": 50000.0, "rhomax": 14.09,
 
-        "nr1":  [0.77827, -2.8064, 1.003, 0.013762, 0.085514, 0.00021268],
+        "nr1": [0.77827, -2.8064, 1.003, 0.013762, 0.085514, 0.00021268],
         "d1": [1, 1, 1, 2, 3, 7],
         "t1": [0.12, 1.3, 1.74, 2.1, 0.28, 0.69],
 
@@ -74,7 +75,7 @@ class Cis_2_butene(MEoS):
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
 
-    eq = lemmon,
+    eq = (lemmon, )
     _PR = [-0.1193, -17.2151]
 
     _surface = {
@@ -100,10 +101,41 @@ class Cis_2_butene(MEoS):
               -0.11392e3],
         "t": [0.4098, 1.174, 3.11, 6.1, 7.6, 14.8]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+
+              "ref": C3,
+              "visco": "visco1",
+
+              "ek": 259, "sigma": 0.5508, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.12449, -0.147034, 0.036655],
+              "psi_d": [0, 1, 2],
+              "fint": [0.00102143, 6.64409e-7], "fint_t": [0, 1],
+              "chi": [0.838527, 0.0648013], "chi_d": [0, 1],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.21e-9, "gam0": 0.058, "qd": 0.607e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
     def test_shortLemmon(self):
-        # Table 9, Pag 186
+        """Table 9, Pag 186"""
         st = Cis_2_butene(T=350, rhom=0)
         self.assertEqual(round(st.P.MPa, 4), 0)
         self.assertEqual(round(st.hM.kJkmol, 0), 29735)
@@ -134,3 +166,10 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 2), 126.00)
         self.assertEqual(round(st.cpM.kJkmolK, 1), 1686.3)
         self.assertEqual(round(st.w, 2), 130.71)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = Cis_2_butene(T=392.2, rhom=8.669)
+        # self.assertEqual(round(st.mu.muPas, 5), 76.27209)
+        self.assertEqual(round(st.mu.muPas, 5), 76.27222)
+        self.assertEqual(round(st.k.mWmK, 4), 74.2905)

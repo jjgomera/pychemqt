@@ -249,7 +249,7 @@ class Cyclohexane(MEoS):
                 muB += n/T**i
         return muB*rho/self.M
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
     thermo0 = {"__name__": "Koutian (2017)",
                "__doi__": {
@@ -283,9 +283,9 @@ class Cyclohexane(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_zhou(self):
-        # Table 5, Pag 17
+        """Table 5, Pag 17"""
 
         # Possible Erratum reference Table 5, in enthalpy and entropy values,
         # only work the two phases region, and the reference state, but not
@@ -353,7 +353,7 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 2), 23949.02)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = Cyclohexane(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 3.0278)
         self.assertEqual(round(st.P.MPa, 3), 9.007)
@@ -364,7 +364,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31449)
 
     def test_tariq(self):
-        # Table 8, pag 11
+        """Table 8, pag 11"""
         st = Cyclohexane(T=300, rhom=0)
         self.assertEqual(round(st.mu.muPas, 3), 7.058)
 
@@ -395,7 +395,7 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 3), 176.749)
 
     def test_Koutian(self):
-        # Table 5, pag 8
+        """Table 5, pag 8"""
         self.assertEqual(round(Cyclohexane(T=300, rho=0).k.mWmK, 1), 11.0)
         self.assertEqual(round(Cyclohexane(T=400, rho=0).k.mWmK, 1), 21.6)
         self.assertEqual(round(Cyclohexane(T=500, rho=0).k.mWmK, 1), 35.0)
@@ -428,6 +428,6 @@ class Test(TestCase):
             Cyclohexane(T=554, rho=350).k.mWmK, 2), 79.66)
 
     def test_Wisotzki(self):
-        # Table 6, pag 19
+        """Table 6, pag 19"""
         self.assertEqual(round(
             Cyclohexane._Melting_Pressure(329.7).bar, 0), 1001)

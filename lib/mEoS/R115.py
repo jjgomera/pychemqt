@@ -150,14 +150,14 @@ class R115(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
               "gam0": 0.0496, "qd": 3.72933e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_lemmon(self):
-        # Table 7, Pag 3754
+        """Table 7, Pag 3754"""
         st = R115(T=300, rhom=0)
         self.assertEqual(round(st.P.MPa, 6), 0.0)
         self.assertEqual(round(st.cvM.JmolK, 4), 102.2181)

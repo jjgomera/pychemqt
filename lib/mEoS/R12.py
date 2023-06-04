@@ -114,16 +114,16 @@ class R12(MEoS):
     _surface = {"sigma": [-0.000124, 0.05662], "exp": [0.4318, 1.263]}
 
     _melting = {
-            "eq": 2,
-            "__doi__": {
-                "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
-                "title": "Melting Curves of Pressure-Transmitting fluids",
-                "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
-                "doi": "10.1063/1.1725068"},
+        "eq": 2,
+        "__doi__": {
+            "autor": "Reeves, L.E., Scott, G.J., Babb, S.E. Jr.",
+            "title": "Melting Curves of Pressure-Transmitting fluids",
+            "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+            "doi": "10.1063/1.1725068"},
 
-            "Tmin": Tt, "Tmax": 2000.0,
-            "Tref": Tt, "Pref": 0.,
-            "a2": [3288e5], "exp2": [2.231]}
+        "Tmin": Tt, "Tmax": 2000.0,
+        "Tref": Tt, "Pref": 0.,
+        "a2": [3288e5], "exp2": [2.231]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -140,9 +140,9 @@ class R12(MEoS):
 
 
 class Test(TestCase):
-
+    """Testing"""
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R12(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 0.7421)
         self.assertEqual(round(st.P.MPa, 3), 11.552)

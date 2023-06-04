@@ -87,7 +87,7 @@ class LJ(MEoS):
         "epsilon3": [0.2053, 0.409, 0.6, 1.203, 1.829, 1.397, 1.39, 0.539,
                      0.934, 2.369, 2.43]}
 
-    eq = thol,
+    eq = (thol, )
 
     _vapor_Pressure = {
         "eq": 3,
@@ -104,9 +104,10 @@ class LJ(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Thol(self):
-        # Table 1, pag 1
+        """Table 1, pag 1"""
         # FIXME: Speed of sound values fail
         st = LJ(T=0.8, rho=0.005)
         self.assertEqual(round(st.P, 7), 3.8430053)

@@ -42,15 +42,16 @@ class R152a(MEoS):
     momentoDipolar = unidades.DipoleMoment(2.262, "Debye")
     id = 245
 
-    CP1 = {# Cp/R relation in paper
-           # Tr terms in polynomial, so the resulting terms are:
-           # a0 = c0
-           # a1 = c1/Tc
-           # a2 = c2/Tc**2
-           # a3 = c3/Tc**3
-           "ao": 3.354951,
-           "an": [4.245301/Tc, 3.735248/Tc**2, -1.608254/Tc**3],
-           "pow": [1, 2, 3]}
+    CP1 = {
+        # Cp/R relation in paper
+        # Tr terms in polynomial, so the resulting terms are:
+        # a0 = c0
+        # a1 = c1/Tc
+        # a2 = c2/Tc**2
+        # a3 = c3/Tc**3
+        "ao": 3.354951,
+        "an": [4.245301/Tc, 3.735248/Tc**2, -1.608254/Tc**3],
+        "pow": [1, 2, 3]}
 
     Fi1 = {"R": 8.314471,
            "ao_log": [1, -1],
@@ -63,6 +64,7 @@ class R152a(MEoS):
            "ao_exp": [1.978152028, 5.880826311],
            "titao": [1.753741145, 4.360150337]}
 
+    # Splitted formulation, using the valid for T>-20ºC
     Fi3 = {"ao_log": [1, 0.0434935],
            "pow": [0, 1, -1, -2, -3],
            "ao_pow": [-5.969835, 7.421932, -5.56713, 0.436101, -0.0196281]}
@@ -141,15 +143,14 @@ class R152a(MEoS):
     kim = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R-152a of Kim (1997).",
-        "__doi__": {"autor": "Kim, Y., Borgnakke, C., Sonntag, R.E.",
-                    "title": "Equation of State for 1,1-difluoroethane "
-                             " (R152a)",
-                    "ref": "International Journal of Energy Research 21 (7)"
-                           "(1997) 575-589",
-                    "doi": "10.1002/(sici)1099-114x(19970610)21:7<575::"
-                           "aid-er272>3.0.co;2-f"},
+        "__doi__": {
+            "autor": "Kim, Y., Borgnakke, C., Sonntag, R.E.",
+            "title": "Equation of State for 1,1-difluoroethane (R152a)",
+            "ref": "Int. J. Energy Res 21(7) (1997) 575-589",
+            "doi": "10.1002/(sici)1099-114x(19970610)21:7<575::aid-er272>"
+                   "3.0.co;2-f"},
 
-        "R": 8.314471,
+        "R": 8.31451,
         "cp": Fi3,
         "ref": "IIR",
         "Tc": 386.4, "Pc": 4519., "rhoc": 368/M,
@@ -307,40 +308,41 @@ class R152a(MEoS):
               "tr_den": [0, 0],
               "dr_den": [1, 0]}
 
-    _viscosity = visco0,
+    _viscosity = (visco0, )
 
-    thermo0 = {"__name__": "Krauss (1996)",
-               "__doi__": {
-                   "autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, "
-                            "J.V., Stephan, K.",
-                   "title": "Transport Properties of 1,1-Difluoroethane "
-                            "(R152a)",
-                   "ref": "Int. J. Thermophysics 17:731-757, 1996.",
-                   "doi": "10.1007/BF01439187"},
+    thermo0 = {
+        "__name__": "Krauss (1996)",
+        "__doi__": {
+            "autor": "Krauss, R., Weiss, V.C., Edison, T.A., Sengers, J.V., "
+                     "Stephan, K.",
+            "title": "Transport Properties of 1,1-Difluoroethane (R152a)",
+            "ref": "Int. J. Thermophysics 17:731-757, 1996.",
+            "doi": "10.1007/BF01439187"},
 
-               "eq": 1,
-               "M": 66.05, "Tc": 386.411, "Pc": 4520,
+        "eq": 1,
+        "M": 66.05, "Tc": 386.411, "Pc": 4520,
 
-               "Toref": 1., "koref": 1e-3,
-               "no": [-14.942, 0.0973283],
-               "to": [0, 1],
+        "Toref": 1., "koref": 1e-3,
+        "no": [-14.942, 0.0973283],
+        "to": [0, 1],
 
-               "Tref_res": 1., "rhoref_res": 368, "kref_res": 1.155e-3,
-               "nr": [9.1809, 11.8577, -5.4473, 1.71379],
-               "tr": [0, 0, 0, 0],
-               "dr": [1, 2, 3, 4],
+        "Tref_res": 1., "rhoref_res": 368, "kref_res": 1.155e-3,
+        "nr": [9.1809, 11.8577, -5.4473, 1.71379],
+        "tr": [0, 0, 0, 0],
+        "dr": [1, 2, 3, 4],
 
-               "critical": 3,
-               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 1.894e-10,
-               "gam0": 0.0487, "qd": 4.37e-10, "Tcref": 579.6165}
+        "critical": 3,
+        "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 1.894e-10,
+        "gam0": 0.0487, "qd": 4.37e-10, "Tcref": 579.6165}
 
-    _thermal = thermo0,
+    _thermal = (thermo0, )
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Outcalt(self):
-        # Selected point from Table 6, Pag 616, saturation states
+        """Selected point from Table 6, Pag 616, saturation states"""
         st = R152a(T=-118+273.15, x=0.5)
         self.assertEqual(round(st.P.MPa, 6), 0.000069)
         self.assertEqual(round(st.Liquido.rho, 1), 1191.8)
@@ -584,7 +586,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 1), 599.3)
 
     def test_shortSpan(self):
-        # Table III, Pag 117
+        """Table III, Pag 117"""
         st = R152a(T=500, rho=500, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 1.4632)
         self.assertEqual(round(st.P.MPa, 3), 21.594)
@@ -595,7 +597,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.60934)
 
     def test_astina(self):
-        # Table III, Pag 1719
+        """Table III, Pag 1719"""
         st = R152a(T=200, P=1e4, eq="astina")
         self.assertEqual(round(st.rho, 2), 1108.30)
         self.assertEqual(round(st.cv.kJkgK, 5), 1.02563)
@@ -753,11 +755,11 @@ class Test(TestCase):
         self.assertEqual(round(st.Gas.s.kJkgK, 5), 2.02940)
 
     def test_kim(self):
-        # Table 6, pag 585, saturation states
-        # FIXME: The value fail in fourth digital sign
-        pass
+        """Table 6, pag 585, saturation states"""
+        # FIXME: The value fail in fourth decimal figure
+
         # st = R152a(T=-60+273.15, x=0.5, eq="kim")
-        # self.assertEqual(round(st.P.MPa, 5), 0.01500)
+        # self.assertEqual(round(st.P.MPa, 5), 0.01502)
         # self.assertEqual(round(st.Liquido.rho, 1), 1081.8)
         # self.assertEqual(round(st.Gas.v, 5), 1.76626)
         # self.assertEqual(round(st.Liquido.h.kJkg, 2), 103.24)
@@ -770,7 +772,7 @@ class Test(TestCase):
         # self.assertEqual(round(st.Gas.w, 1), 176.4)
 
     def test_Krauss(self):
-        # Table VI, pag 750, saturation states
+        """Table VI, pag 750, saturation states"""
 
         # The correlation use the Pelt-Sengers extension for the critical
         # region from tillner mEoS, so the returned values differ, specially

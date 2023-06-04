@@ -84,7 +84,7 @@ class N2(MEoS):
                              "Temperatures from 63.151 to 1000 K and "
                              "Pressures to 2200 MPa",
                     "ref": "J. Phys. Chem. Ref. Data 29(6) (2000) 1361-1433",
-                    "doi":  "10.1063/1.1349047"},
+                    "doi": "10.1063/1.1349047"},
 
         "R": 8.31451,
         "cp": Fi1,
@@ -162,7 +162,7 @@ class N2(MEoS):
                              "Natural Gases and Other Mixtures: An Expansion "
                              "of GERG-2004",
                     "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi":  "10.1021/je300655b"},
+                    "doi": "10.1021/je300655b"},
 
         "R": 8.314472,
         "cp": Fi2,
@@ -369,7 +369,7 @@ class N2(MEoS):
 
               "ek": 100.01654, "sigma": 0.36502496,
               "n_chapman": 0.141290/M**0.5,
-              "collision": [0.46649, -0.57015, 0.19164, -0.03708,  0.00241],
+              "collision": [0.46649, -0.57015, 0.19164, -0.03708, 0.00241],
 
               "rhoref_res": 314, "muref_res": 14.,
               "nr": [-5.8470232, -1.4470051, -0.027766561, -0.21662362],
@@ -487,9 +487,10 @@ class N2(MEoS):
 
 
 class Test(TestCase):
+    """Testing"""
 
     def test_Span(self):
-        # Selected point of pag 1403, saturation state
+        """Selected point of pag 1403, saturation state"""
         st = N2(T=63.151, x=0.5)
         self.assertEqual(round(st.P.MPa, 5), 0.01252)
         self.assertEqual(round(st.Liquido.rhoM, 3), 30.957)
@@ -672,12 +673,13 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 0), 2002)
 
     def test_younglove(self):
-        kw = {"eq": "younglove", "visco": 1, "thermal": 1}
+        """Selected point from Appendix I, Pag 1-162, saturation states"""
 
-        # Selected point from Appendix I, Pag 1-162, saturation states
         # The pressure and density in saturation is calculate in tables using
         # the ancillary equation used in paper so the calculated point differ
         # of implement eq
+        kw = {"eq": "younglove", "visco": 1, "thermal": 1}
+
         st = N2(T=N2.Tt, x=0.5, **kw)
         self.assertEqual(round(st.P.MPa, 5), 0.01268)
         self.assertEqual(round(st.Liquido.rho, 1), 867.8)
@@ -1038,7 +1040,7 @@ class Test(TestCase):
         self.assertEqual(round(st.k.WmK, 3), 0.210)
 
     def test_jacobsen(self):
-        # Selected point from Table 21, Pag 795, saturation states
+        """Selected point from Table 21, Pag 795, saturation states"""
         st = N2(T=63.15, x=0.5, eq="jacobsen")
         self.assertEqual(round(st.P.MPa, 5), 0.01252)
         self.assertEqual(round(st.Liquido.rhoM, 3), 31.046)
@@ -1344,7 +1346,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 0), 1899)
 
     def test_shortSpan(self):
-        # Table III, Pag 46
+        """Table III, Pag 46"""
         st = N2(T=700, rho=200, eq="shortSpan")
         self.assertEqual(round(st.cp0.kJkgK, 4), 1.0979)
         self.assertEqual(round(st.P.MPa, 3), 51.268)
@@ -1355,7 +1357,7 @@ class Test(TestCase):
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31053)
 
     def test_LemmonTransport(self):
-        # Table V, pag 28
+        """Table V, pag 28"""
         # Viscosity
         self.assertEqual(round(N2(rhom=0, T=100).mu.muPas, 5), 6.90349)
         self.assertEqual(round(N2(rhom=0, T=300).mu.muPas, 4), 17.8771)
@@ -1373,6 +1375,7 @@ class Test(TestCase):
         self.assertEqual(round(N2(rhom=11.18, T=126.195).k.mWmK, 1), 675.8)
 
     def test_stephan(self):
+        """Table A1, Pag 1013"""
         # The paper use a old Jacobsen EoS with MBWR format
         # Jacobsen, R.T., Stewart, R.B.
         # Thermodynamic Properties of Nitrogen Including Liquid and Vapor
@@ -1384,7 +1387,7 @@ class Test(TestCase):
         # critical point
 
         kw = {"visco": 2, "thermal": 2}
-        # Table A1, Pag 1013
+
         self.assertEqual(round(N2(T=80, P=1e5, **kw).mu.muPas, 2), 5.24)
         self.assertEqual(round(N2(T=300, P=1e6, **kw).mu.muPas, 2), 18.03)
         self.assertEqual(round(N2(T=1100, P=1e7, **kw).mu.muPas, 2), 44.67)

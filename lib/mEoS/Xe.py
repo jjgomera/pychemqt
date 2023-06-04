@@ -211,6 +211,7 @@ class Xe(MEoS):
 
         return ko*1e-3
 
+
 class Test(TestCase):
     """Testing"""
     def test_shortLemmon(self):
@@ -238,8 +239,8 @@ class Test(TestCase):
         self.assertEqual(round(Xe(T=292.711322, rho=0).mu.muPas, 4), 22.6125)
 
         # The critical enhancement fail
-#         self.assertEqual(round(
-#             Xe(T=292.711322, rho=1102.9).mu.muPas, 5), 52.82074)
+        # self.assertEqual(round(
+        #     Xe(T=292.711322, rho=1102.9).mu.muPas, 5), 52.82074)
 
     def test_VelliadouThermo(self):
         """Point data given in Section 4"""
@@ -261,12 +262,12 @@ if __name__ == "__main__":
     mu1 = []
     mu2 = []
     for ti in Ti:
-        st = Xe(T=ti, rho=Xe.rhoc)
-        mu.append(st.mu.muPas)
-        st = Xe(T=ti, rho=Xe.rhoc, viscocriticallineal=True)
-        mu1.append(st.mu.muPas)
-        st = Xe(T=ti, rho=Xe.rhoc, viscocritical=False)
-        mu2.append(st.mu.muPas)
+        state = Xe(T=ti, rho=Xe.rhoc)
+        mu.append(state.mu.muPas)
+        state = Xe(T=ti, rho=Xe.rhoc, viscocriticallineal=True)
+        mu1.append(state.mu.muPas)
+        state = Xe(T=ti, rho=Xe.rhoc, viscocritical=False)
+        mu2.append(state.mu.muPas)
 
     plt.plot(t, mu, color="k", ls="-")
     plt.plot(t, mu1, color="k", ls="--")

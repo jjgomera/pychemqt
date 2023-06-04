@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import N2
 
 
 class MD4M(MEoS):
@@ -142,11 +143,39 @@ class MD4M(MEoS):
         "n": [-3.316, -8.324, -184.27, 350.11, -287.08, -267.25],
         "t": [0.432, 1.085, 3.78, 4.42, 5.1, 13]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": N2,
+
+              "ek": 518.7, "sigma": 0.976, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.45542, -0.154807], "psi_d": [0, 1],
+              "fint": [0.00132], "fint_t": [0],
+              "chi": [1.91993], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.347e-9, "gam0": 0.07, "qd": 1.208e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
+    """Testing"""
 
     def test_thol(self):
-        # Table 6, Pag. 9621
+        """Table 6, Pag. 9621"""
         st = MD4M(T=280, rhom=2.1)
         self.assertEqual(round(st.P.MPa, 7), 70.8719158)
         self.assertEqual(round(st.hM.Jmol, 3), -199382.667)
@@ -181,3 +210,9 @@ class Test(TestCase):
         self.assertEqual(round(st.sM.JmolK, 6), 178.458722)
         self.assertEqual(round(st.w, 6), 637.354433)
         self.assertEqual(round(st.aM.Jmol, 5), -9999.40628)
+
+    # def test_Huber(self):
+    #     """Table 7, pag 266"""
+    #     st = MD4M(T=587.9, rhom=1.229)
+    #     self.assertEqual(round(st.mu.muPas, 4), 142.4179)
+    #     self.assertEqual(round(st.k.mWmK, 4), 66.3927)

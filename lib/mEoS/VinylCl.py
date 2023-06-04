@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class VinylCl(MEoS):
@@ -112,6 +113,33 @@ class VinylCl(MEoS):
         "n": [-0.5868, -5.3182, -14.6323, -46.665, -98.3277, -228.973],
         "t": [0.193, 0.687, 2.540, 6.12, 13, 25.5]}
 
+    trnECS = {"__name__": "Huber (2018)",
+
+              "__doi__": {
+                  "autor": "Huber, M.L.",
+                  "title": "Models for Viscosity, Thermal Conductivity, and "
+                           "Surface Tension of Selected Pure Fluids as "
+                           "Implemented in REFPROP v10.0",
+                  "ref": "NISTIR 8209",
+                  "doi": "10.6028/NIST.IR.8209"},
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 337.46, "sigma": 0.455, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1.06,
+
+              "psi": [0.991393, -0.0190085], "psi_d": [0, 1],
+              "fint": [4.68338e-4, 1.55637e-6], "fint_t": [0, 1],
+              "chi": [1], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+              "Xio": 0.195e-9, "gam0": 0.059, "qd": 0.551e-9, "Tcref": 1.5*Tc}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
+
 
 class Test(TestCase):
     """Testing"""
@@ -156,6 +184,14 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 4), 18735.1820)
         self.assertEqual(round(st.sM.JmolK, 7), 37.6281054)
         self.assertEqual(round(st.aM.Jmol, 5), -3749.62785)
+
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = VinylCl(T=382.5, rhom=11.537)
+        # self.assertEqual(round(st.mu.muPas, 5), 90.53455)
+        # self.assertEqual(round(st.k.mWmK, 4), 84.5575)
+        self.assertEqual(round(st.mu.muPas, 5), 90.94743)
+        self.assertEqual(round(st.k.mWmK, 4), 84.8306)
 
     def test_Surface(self):
         """Table 10, pag 271"""

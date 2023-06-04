@@ -74,7 +74,7 @@ class R21(MEoS):
         "c2": [2]*6,
         "gamma2": [0.07470252]*6}
 
-    eq = platzer,
+    eq = (platzer, )
     _PR = [-0.1034, -17.4444]
 
     _surface = {"sigma": [0.06924], "exp": [1.259]}
