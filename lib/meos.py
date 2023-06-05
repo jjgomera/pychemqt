@@ -5836,7 +5836,7 @@ class MEoS(ThermoAdvanced):
                * betac: δ term translation
                * dc: δ exponent
         """
-        if self._thermal["critical"] == 0:
+        if "critical" not in self._thermal or self._thermal["critical"] == 0:
             # No critical enhancement
             tc = 0
 

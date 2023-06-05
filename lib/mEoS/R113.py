@@ -123,6 +123,32 @@ class R113(MEoS):
         "n": [-2.6225, -6.0753, -15.768, -42.361, -7.9071, -319.66],
         "t": [0.379, 1.13, 2.9, 6.0, 7.0, 15.0]}
 
+    thermo0 = {"__name__": "Krauss (1989)",
+               "__doi__": {
+                   "autor": "Krauss, R., Stephan, K.",
+                   "title": "Thermal Conductivity of Refrigerants in a Wide "
+                            "Range of Temperature and Pressure",
+                   "ref": "J. Phys. Chem. Ref. Data 18(1) (1989) 43-76",
+                   "doi": "10.1063/1.555842"},
+
+               "eq": 1,
+
+               # Typo in paper
+               # Temperature reducing value is critical value
+               # Thermal conductivity reducing value using the exact value from
+               # dimensional analysis with molecular weight in kg/mol
+               # R**(5/6)*Pc**(2/3)/Tc**(1/6)/(M/1000)**0.5/Na**(1/3)
+               "Toref": 487.25, "koref": 1.282787e-3,
+               "no": [-4.0391092, 17.894056],
+               "to": [0, 1],
+
+               "rhoref_res": 3.07*187.376, "kref_res": 1.282787e-3,
+               "nr": [4.6244034, -1.1772098, 2.3277658],
+               "tr": [0, 0, 0],
+               "dr": [1, 2, 3]}
+
+    _thermal = (thermo0, )
+
 
 class Test(TestCase):
     """Testing"""
@@ -136,3 +162,24 @@ class Test(TestCase):
         st2 = R113(T=600, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 131.00)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.26005)
+
+    def test_krauss(self):
+        """Selected point from Table C3 and C4, pag 69"""
+        # The values differ because the paper use and old EoS don't
+        # implemented in pychemqt
+        self.assertEqual(round(R113(T=300, P=1e5, eq=1).k.mWmK, 2), 73.33)
+        self.assertEqual(round(R113(T=460, P=5e6, eq=1).k.mWmK, 2), 43.65)
+        self.assertEqual(round(R113(T=500, P=1e7, eq=1).k.mWmK, 2), 42.08)
+        self.assertEqual(round(R113(T=300, P=2e7, eq=1).k.mWmK, 2), 78.88)
+        self.assertEqual(round(R113(T=350, P=3e7, eq=1).k.mWmK, 2), 72.96)
+
+        # Saturation point, Table C4
+        st = R113(T=300, x=0.5, eq=1)
+        self.assertEqual(round(st.P.bar, 5), 0.48123)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 8.99)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 73.31)
+
+        st = R113(T=460, x=0.5, eq=1)
+        self.assertEqual(round(st.P.bar, 3), 22.596)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 18.33)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 39.23)

@@ -120,7 +120,32 @@ class RC318(MEoS):
               "gam0": 0.062, "qd": 0.677e-9, "Tcref": 1.5*Tc}
 
     _viscosity = (trnECS, )
-    _thermal = (trnECS, )
+
+    thermo0 = {"__name__": "Krauss (1989)",
+               "__doi__": {
+                   "autor": "Krauss, R., Stephan, K.",
+                   "title": "Thermal Conductivity of Refrigerants in a Wide "
+                            "Range of Temperature and Pressure",
+                   "ref": "J. Phys. Chem. Ref. Data 18(1) (1989) 43-76",
+                   "doi": "10.1063/1.555842"},
+
+               "eq": 1,
+
+               # Typo in paper
+               # Temperature reducing value is critical value
+               # Thermal conductivity reducing value using the exact value from
+               # dimensional analysis with molecular weight in kg/mol
+               # R**(5/6)*Pc**(2/3)/Tc**(1/6)/(M/1000)**0.5/Na**(1/3)
+               "Toref": 388.46, "koref": 1.13314e-3,
+               "no": [-7.7081392, 24.281282],
+               "to": [0, 1],
+
+               "rhoref_res": 3.1*200.031, "kref_res": 1.13314e-3,
+               "nr": [5.403515, -1.4936, 3.0426812],
+               "tr": [0, 0, 0],
+               "dr": [1, 2, 3]}
+
+    _thermal = (trnECS, thermo0)
 
 
 class Test(TestCase):
@@ -132,3 +157,23 @@ class Test(TestCase):
         # self.assertEqual(round(st.k.mWmK, 4), 50.2769)
         self.assertEqual(round(st.mu.muPas, 4), 188.5478)
         self.assertEqual(round(st.k.mWmK, 4), 50.2780)
+
+    def test_krauss(self):
+        """Selected point from Table C7 and C8, pag 74"""
+        # The values differ because the paper use and old EoS don't
+        # implemented in pychemqt
+        kw = {"thermal": 1}
+        self.assertEqual(round(RC318(T=240, P=1e5, **kw).k.mWmK, 2), 84.33)
+        self.assertEqual(round(RC318(T=300, P=5e6, **kw).k.mWmK, 2), 68.32)
+        self.assertEqual(round(RC318(T=260, P=6e7, **kw).k.mWmK, 2), 96.83)
+
+        # Saturation point, Table C4
+        st = RC318(T=250, x=0.5, **kw)
+        self.assertEqual(round(st.P.bar, 5), 0.46901)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 9.02)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 81.06)
+
+        st = RC318(T=360, x=0.5, **kw)
+        self.assertEqual(round(st.P.bar, 3), 15.601)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 18.27)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 45.83)

@@ -138,6 +138,32 @@ class R12(MEoS):
         "n": [-3.153, -6.4734, -17.346, -15.918e2, -32.492, -120.72],
         "t": [0.418, 1.32, 3.3, 6.6, 7.0, 15.0]}
 
+    thermo0 = {"__name__": "Krauss (1989)",
+               "__doi__": {
+                   "autor": "Krauss, R., Stephan, K.",
+                   "title": "Thermal Conductivity of Refrigerants in a Wide "
+                            "Range of Temperature and Pressure",
+                   "ref": "J. Phys. Chem. Ref. Data 18(1) (1989) 43-76",
+                   "doi": "10.1063/1.555842"},
+
+               "eq": 1,
+
+               # Typo in paper
+               # Temperature reducing value is critical value
+               # Thermal conductivity reducing value using the exact value from
+               # dimensional analysis with molecular weight in kg/mol
+               # R**(5/6)*Pc**(2/3)/Tc**(1/6)/(M/1000)**0.5/Na**(1/3)
+               "Toref": 385.15, "koref": 1.898767e-3,
+               "no": [-2.8497878, 10.338094],
+               "to": [0, 1],
+
+               "rhoref_res": 4.62*120.914, "kref_res": 1.898767e-3,
+               "nr": [.82454302, 14.887641, -13.347132, 5.5118177, -.67277383],
+               "tr": [0, 0, 0, 0, 0],
+               "dr": [1, 2, 3, 4, 5]}
+
+    _thermal = (thermo0, )
+
 
 class Test(TestCase):
     """Testing"""
@@ -151,3 +177,23 @@ class Test(TestCase):
         st2 = R12(T=600, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 121.54)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.28621)
+
+    def test_krauss(self):
+        """Selected point from Table C1 and C2, pag 67"""
+        # The values differ because the paper use and old EoS don't
+        # implemented in pychemqt
+        self.assertEqual(round(R12(T=200, P=1e5, eq=1).k.mWmK, 2), 104.99)
+        self.assertEqual(round(R12(T=600, P=5e6, eq=1).k.mWmK, 2), 26.80)
+        self.assertEqual(round(R12(T=400, P=1e7, eq=1).k.mWmK, 2), 44.65)
+        self.assertEqual(round(R12(T=240, P=6e7, eq=1).k.mWmK, 2), 108.09)
+
+        # Saturation point, Table C2
+        st = R12(T=200, x=0.5, eq=1)
+        self.assertEqual(round(st.P.bar, 6), 0.099521)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 4.78)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 104.96)
+
+        st = R12(T=380, x=0.5, eq=1)
+        self.assertEqual(round(st.P.bar, 3), 37.739)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 20.57)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 36.77)

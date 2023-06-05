@@ -79,7 +79,7 @@ class R114(MEoS):
         "c2": [2]*6,
         "gamma2": [1.21103865]*6}
 
-    eq = platzer,
+    eq = (platzer, )
     _PR = [-0.1804, -16.3839]
 
     _surface = {"sigma": [0.05239], "exp": [1.258]}
@@ -123,7 +123,32 @@ class R114(MEoS):
               "Xio": 0.223e-9, "gam0": 0.059, "qd": 0.656e-9, "Tcref": 1.5*Tc}
 
     _viscosity = (trnECS, )
-    _thermal = (trnECS, )
+
+    thermo0 = {"__name__": "Krauss (1989)",
+               "__doi__": {
+                   "autor": "Krauss, R., Stephan, K.",
+                   "title": "Thermal Conductivity of Refrigerants in a Wide "
+                            "Range of Temperature and Pressure",
+                   "ref": "J. Phys. Chem. Ref. Data 18(1) (1989) 43-76",
+                   "doi": "10.1063/1.555842"},
+
+               "eq": 1,
+
+               # Typo in paper
+               # Temperature reducing value is critical value
+               # Thermal conductivity reducing value using the exact value from
+               # dimensional analysis with molecular weight in kg/mol
+               # R**(5/6)*Pc**(2/3)/Tc**(1/6)/(M/1000)**0.5/Na**(1/3)
+               "Toref": 418.85, "koref": 1.3812067e-3,
+               "no": [-4.4141934, 16.535328],
+               "to": [0, 1],
+
+               "rhoref_res": 3.4*170.922, "kref_res": 1.3812067e-3,
+               "nr": [7.1429545, -2.7453806, 2.453072],
+               "tr": [0, 0, 0],
+               "dr": [1, 2, 3]}
+
+    _thermal = (trnECS, thermo0)
 
 
 class Test(TestCase):
@@ -135,3 +160,21 @@ class Test(TestCase):
         # self.assertEqual(round(st.k.mWmK, 4), 45.8090)
         self.assertEqual(round(st.mu.muPas, 4), 152.2322)
         self.assertEqual(round(st.k.mWmK, 4), 45.8068)
+
+    def test_krauss(self):
+        """Selected point from Table C5 and C6, pag 72"""
+        # The values differ because the paper use and old EoS don't
+        # implemented in pychemqt
+        self.assertEqual(round(R114(T=280, P=1e5, thermal=1).k.mWmK, 2), 9.30)
+        self.assertEqual(round(R114(T=400, P=5e6, thermal=1).k.mWmK, 2), 43.75)
+        self.assertEqual(round(R114(T=300, P=1e7, thermal=1).k.mWmK, 2), 67.64)
+        self.assertEqual(round(R114(T=480, P=2e7, thermal=1).k.mWmK, 2), 45.59)
+
+        # Saturation point, Table C6
+        st = R114(T=300, x=0.5, thermal=1)
+        self.assertEqual(round(st.P.bar, 4), 2.2746)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 63.80)
+
+        st = R114(T=400, x=0.5, thermal=1)
+        self.assertEqual(round(st.P.bar, 3), 23.530)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 38.68)
