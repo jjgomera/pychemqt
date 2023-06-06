@@ -1157,10 +1157,10 @@ class MEoS(ThermoAdvanced):
             * aM: Molar Helmholtz Free Energy, [kJ/kmol]
             * g: Gibbs Free Energy, [kJ/kg]
             * gM: Molar Gibbs Free Energy, [kJ/kmol]
-            * cv: Specific isochoric heat capacity, [kJ/kg·K]
-            * cvM: Molar Specific isochoric heat capacity, [kJ/kmol·K]
-            * cp: Specific isobaric heat capacity, [kJ/kg·K]
-            * cpM: Molar Specific isobaric heat capacity, [kJ/kmol·K]
+            * cv: Specific isochoric heat capacity, [J/kg·K]
+            * cvM: Molar Specific isochoric heat capacity, [J/kmol·K]
+            * cp: Specific isobaric heat capacity, [J/kg·K]
+            * cpM: Molar Specific isobaric heat capacity, [J/kmol·K]
             * cp_cv: Heat capacities ratio, [-]
             * w: Speed sound, [m/s]
             * Z: Compresibility, [-]
@@ -1185,9 +1185,9 @@ class MEoS(ThermoAdvanced):
             * dpdrho_T: (dp/drho)_T, [Pam³/kg]
             * drhodT_P: (drho/dT)_P, [kg/m³·K]
             * drhodP_T: (drho/dP)_T, [kg/Pam³]
-            * dhdT_rho: (dh/dT)_rho, [kJ/kg·K]
-            * dhdP_T: (dh/dP)_T, [kJ/kgPa]
-            * dhdT_P: (dh/dT)_P, [kJ/kg·K]
+            * dhdT_rho: (dh/dT)_rho, [J/kg·K]
+            * dhdP_T: (dh/dP)_T, [J/kgPa]
+            * dhdT_P: (dh/dT)_P, [J/kg·K]
             * dhdrho_T: (dh/drho)_T, [kJm³/kg²]
             * dhdrho_P: (dh/drho)_P, [kJm³/kg²]
             * dhdP_rho: (dh/dP)_rho, [kJ/kgPa]
@@ -1197,7 +1197,7 @@ class MEoS(ThermoAdvanced):
             * Kt: Isothermal bulk modulus, [Pa]
             * IntP: Internal pressure, [Pa]
             * invT: Negative reciprocal temperature, [1/K]
-            * hInput: Specific heat input, [kJ/kg]
+            * hInput: Specific heat input, [J/kg]
             * epsilon: Dielectric constant, [-]
             * mu: Viscosity, [Pa·s]
             * k: Thermal conductivity, [W/m·K]
@@ -1207,13 +1207,13 @@ class MEoS(ThermoAdvanced):
             * Prandt: Prandtl number, [-]
             * v0: Ideal gas Specific volume, [m³/kg]
             * rho0: Ideal gas Density, [kg/m³]
-            * h0: Ideal gas Specific enthalpy, [kJ/kg]
-            * u0: Ideal gas Specific internal energy, [kJ/kg]
-            * s0: Ideal gas Specific entropy, [kJ/kg·K]
-            * a0: Ideal gas Specific Helmholtz free energy, [kJ/kg]
-            * g0: Ideal gas Specific Gibbs free energy, [kJ/kg]
-            * cp0: Ideal gas Specific isobaric heat capacity, [kJ/kg·K]
-            * cv0: Ideal gas Specific isochoric heat capacity, [kJ/kg·K]
+            * h0: Ideal gas Specific enthalpy, [J/kg]
+            * u0: Ideal gas Specific internal energy, [J/kg]
+            * s0: Ideal gas Specific entropy, [J/kg·K]
+            * a0: Ideal gas Specific Helmholtz free energy, [J/kg]
+            * g0: Ideal gas Specific Gibbs free energy, [J/kg]
+            * cp0: Ideal gas Specific isobaric heat capacity, [J/kg·K]
+            * cv0: Ideal gas Specific isochoric heat capacity, [J/kg·K]
             * cp0_cv: Ideal gas heat capacities ratio, [-]
             * gamma0: Ideal gas Isoentropic exponent, [-]
 
@@ -4221,11 +4221,10 @@ class MEoS(ThermoAdvanced):
         Returns
         -------
         P : float
-            Melting pressure, [K]
+            Melting pressure, [Pa]
         """
         if melting is None and not cls._melting:
             return None
-
         elif cls._melting:
             melting = cls._melting
 
@@ -4304,7 +4303,7 @@ class MEoS(ThermoAdvanced):
         Returns
         -------
         P : float
-            Sublimation pressure, [K]
+            Sublimation pressure, [Pa]
         """
         if cls._sublimation:
             coef = cls._sublimation
@@ -4482,7 +4481,7 @@ class MEoS(ThermoAdvanced):
                 {1/2}\\
                 \end{array}
 
-            where :math:`\varOmega^{(2,2)}` is the collision integral, see
+            where :math:`\Omega^{(2,2)}` is the collision integral, see
             :func:`lib.physics.Collision_Neufeld`
 
             The residual contribution to the viscosity is calculated using
