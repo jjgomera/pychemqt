@@ -19,108 +19,132 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 ###############################################################################
-# Virial equation of state implementation
+# Lee-Kesler equation of state implementation
 ###############################################################################
 
 
-from numpy import exp
+from numpy import exp, r_
 from numpy.lib.scimath import log
-from scipy import zeros
 from scipy.constants import R
+from scipy.optimize import fsolve
 
-from lib import unidades
+from lib.compuestos import RhoL_Costald
+
 from lib.eos import EoS
-from lib.physics import R_atml
+from lib.physics import R_atml, factor_acentrico_octano
 
 
 class Lee_Kesler(EoS):
-    """Ecuación de estado de Lee-Kesler"""
-    __title__="Lee Kesler"
-    __status__="LK"
+    r"""
+    Corresponding state equation of state of Lee-Kesler
+
+    .. math::
+        \begin{array}[t]{l}
+        Z = Z^{(0)} + \omega Z^{(1)}\\
+        Z = \frac{P_rV_r}{T_r} = 1 + \frac{B}{V_r} + \frac{C}{V_r^2} +
+        \frac{D}{V_r^5} + \frac{c_4}{T_r^3V_r^2}\left(\beta+\frac{\gamma}
+        {V_r^2}\right)\exp{\left(-\frac{\gamma}{V_r^2}\right)}\\
+        B = b_1 - \frac{b_2}{T_r} - \frac{b_3}{T_r^2}-\frac{b_4}{T_r^3}\\
+        C = c_1 - \frac{c_2}{T_r} - \frac{c_3}{T_r^3}\\
+        D = d_1 - \frac{d_2}{T_r}\\
+        \end{array}
+
+    """
+    __title__ = "Lee Kesler"
+    __status__ = "LK"
+
+    __doi__ = (
+        {"autor": "Lee, B.I., Kesler, M.G.",
+         "title": "A Generalized Thermodynamic Correlation Based on "
+                  "Three-Parameter Corresponding States",
+         "ref": "AIChE Journal 21(3) (1975) 510-527",
+         "doi": "10.1002/aic.690210313"},
+        {"autor": "Joffe, J.",
+         "title": "Vapor-Liquid Equilibria by the Pseudocritical Method",
+         "ref": "Ind. Eng. Chem. Fundam. 15(4) (1976) 298-303",
+         "doi": "10.1021/i160060a013"})
 
     def __init__(self, T, P, mezcla):
-        self.T=unidades.Temperature(T)
-        self.P=unidades.Pressure(P, "atm")
-        self.componente=mezcla.componente
-        self.fraccion=mezcla.fraccion
+        EoS.__init__(self, T, P, mezcla)
 
-        zci=[]
-        Vci=[]
-        for componente in self.componente:
-            zci.append(0.2905-0.085*componente.f_acent)
-            Vci.append(zci[-1]*R_atml*componente.Tc/componente.Pc.atm)
+        # Mixing rules, Eq 20-25
+        Zci = [0.2905-0.085*cmp.f_acent for cmp in self.componente]
+        Vci = [zc*R*cmp.Tc/cmp.Pc.kPa for zc, cmp in zip(Zci, self.componente)]
+        Tci = [cmp.Tc for cmp in self.componente]
+        sumV = 0
+        sumT = 0
+        for xj, Vcj, Tcj in zip(self.zi, Vci, Tci):
+            for xk, Vck, Tck in zip(self.zi, Vci, Tci):
+                sumV += xj*xk*(Vcj**(1/3)+Vck**(1/3))**3
+                sumT += xj*xk*(Vcj**(1/3)+Vck**(1/3))**3*(Tcj*Tck)**0.5
+        Vc = sumV/8
+        Tc = sumT/8/Vc
+        Pc = (0.2905-0.085*mezcla.f_acent)*R_atml*Tc/Vc
 
-        sumaV1=sumaV2=sumaV3=sumaT1=sumaT2=sumaT3=0
-        for i, componente in enumerate(self.componente):
-            sumaV1+=self.fraccion[i]*Vci[i]
-            sumaV2+=self.fraccion[i]*Vci[i]**(2./3)
-            sumaV3+=self.fraccion[i]*Vci[i]**(1./3)
-            sumaT1+=self.fraccion[i]*Vci[i]*componente.Tc
-            sumaT2+=self.fraccion[i]*Vci[i]**(2./3)*componente.Tc**(1./2)
-            sumaT3+=self.fraccion[i]*Vci[i]**(1./3)*componente.Tc**(1./2)
+        Tr = T/Tc
+        Pr = P/Pc
 
-        Vmc=(sumaV1+3*sumaV2*sumaV3)/4.
-        Tmc=(sumaT1+3*sumaT2*sumaT3)/4/Vmc
-        Pmc=(0.2905-0.085*mezcla.f_acent)*R_atml*Tmc/Vmc
+        # Table 1
+        b1 = 0.1181193, 0.2026579
+        b2 = 0.265728, 0.331511
+        b3 = 0.154790, 0.027655
+        b4 = 0.030323, 0.203488
+        c1 = 0.0236744, 0.0313385
+        c2 = 0.0186984, 0.0503618
+        c3 = 0.0, 0.016901
+        c4 = 0.042724, 0.041577
+        d1 = 0.155488e-4, 0.48736e-4
+        d2 = 0.623689e-4, 0.0740336e-4
+        beta = 0.65392, 1.226
+        gamma = 0.060167, 0.03754
 
-        Tr=T/Tmc
-        Pr=P/Pmc
+        Bo = b1[0]-b2[0]/Tr-b3[0]/Tr**2-b4[0]/Tr**3
+        Co = c1[0]-c2[0]/Tr+c3[0]/Tr**3
+        Do = d1[0]+d2[0]/Tr
 
-        b1=0.1181193, 0.2026579
-        b2=0.265728, 0.331511
-        b3=0.154790, 0.027655
-        b4=0.030323, 0.203488
-        c1=0.0236744, 0.0313385
-        c2=0.0186984, 0.0503618
-        c3=0.0, 0.016901
-        c4=0.042724, 0.041577
-        d1=0.155488e-4, 0.48736e-4
-        d2=0.623689e-4, 0.0740336e-4
-        beta=0.65392, 1.226
-        gamma=0.060167, 0.03754
+        def Vr(V):
+            Vr = 1 + Bo/V + Co/V**2 + Do/V**5 + c4[0]/Tr**3/V**2 * \
+                (beta[0]+gamma[0]/V**2) * exp(-gamma[0]/V**2)-Pr*V/Tr
+            return Vr
 
-        Bo=b1[0]-b2[0]/Tr-b3[0]/Tr**2-b4[0]/Tr**3
-        Co=c1[0]-c2[0]/Tr+c3[0]/Tr**3
-        Do=d1[0]+d2[0]/Tr
-        Vr=lambda V: 1+Bo/V+Co/V**2+Do/V**5+c4[0]/Tr**3/V**2*(beta[0]+gamma[0]/V**2)*exp(-gamma[0]/V**2)-Pr*V/Tr
+        Bh = b1[1]-b2[1]/Tr-b3[1]/Tr**2-b4[1]/Tr**3
+        Ch = c1[1]-c2[1]/Tr+c3[1]/Tr**3
+        Dh = d1[1]+d2[1]/Tr
 
-        Bh=b1[1]-b2[1]/Tr-b3[1]/Tr**2-b4[1]/Tr**3
-        Ch=c1[1]-c2[1]/Tr+c3[1]/Tr**3
-        Dh=d1[1]+d2[1]/Tr
-        Vrh=lambda V: 1+Bh/V+Ch/V**2+Dh/V**5+c4[1]/Tr**3/V**2*(beta[1]+gamma[1]/V**2)*exp(-gamma[1]/V**2)-Pr*V/Tr
+        def Vrh(V):
+            Vrh = 1 + Bh/V + Ch/V**2 + Dh/V**5 + c4[1]/Tr**3/V**2 * \
+                (beta[1]+gamma[1]/V**2) * exp(-gamma[1]/V**2)-Pr*V/Tr
+            return Vrh
 
-        #Usamos SRK para estimar los volumenes de ambas fases usados como valores iniciales en la iteración
-        srk=SRK(T, P, mezcla)
-        Z_srk=srk.Z
-        Vgo=Z_srk[0]*R_atml*T/P
-        Vlo=Z_srk[1]*R_atml*T/P
+        # Used initial values for iteration
+        Vlo = RhoL_Costald(T, Tc, mezcla.f_acent, Vc)
+        Vgo = R_atml*T/P
 
-        vr0v=fsolve(Vr, Vgo)
-        vrhv=fsolve(Vrh, Vgo)
-        vr0l=fsolve(Vr, Vlo)
-        vrhl=fsolve(Vrh, Vlo)
+        vr0v = fsolve(Vr, Vgo)
+        vrhv = fsolve(Vrh, Vgo)
+        vr0l = fsolve(Vr, Vlo)
+        vrhl = fsolve(Vrh, Vlo)
 
-        z0l=Pr*vr0l/Tr
-        zhl=Pr*vrhl/Tr
-        z0v=Pr*vr0v/Tr
-        zhv=Pr*vrhv/Tr
-        self.Z=r_[z0v+mezcla.f_acent/factor_acentrico_octano*(zhv-z0v), z0l+mezcla.f_acent/factor_acentrico_octano*(zhl-z0l)]
-        self.V=self.Z*R_atml*self.T/self.P.atm  #mol/l
+        z0l = Pr*vr0l/Tr
+        zhl = Pr*vrhl/Tr
+        z0v = Pr*vr0v/Tr
+        zhv = Pr*vrhv/Tr
+        self.Z = r_[z0v+mezcla.f_acent/factor_acentrico_octano*(zhv-z0v), z0l+mezcla.f_acent/factor_acentrico_octano*(zhl-z0l)]
+        self.V = self.Z*R_atml*self.T/self.P.atm  #mol/l
 
-        E=c4[0]/(2*Tr**3*gamma[0])*(beta[0]+1-(beta[0]+1+gamma[0]/vr0v**2)*exp(-gamma[0]/vr0v**2))
-        H0=-Tr*(z0v-1-(b2[0]+2*b3[0]/Tr+3*b4[0]/Tr**2)/Tr/vr0v-c2[0]/Tr/2/vr0v**2+d2[0]/5/Tr/vr0v**5+3*E)
-        E=c4[1]/(2*Tr**3*gamma[1])*(beta[1]+1-(beta[1]+1+gamma[1]/vrhv**2)*exp(-gamma[1]/vrhv**2))
-        Hh=-Tr*(zhv-1-(b2[1]+2*b3[1]/Tr+3*b4[1]/Tr**2)/Tr/vrhv-(c2[1]-3*c3[1]/Tr**2)/Tr/2/vrhv**2+d2[1]/5/Tr/vrhv**5+3*E)
-        Hv=H0+mezcla.f_acent/factor_acentrico_octano*(Hh-H0)
+        E = c4[0]/(2*Tr**3*gamma[0])*(beta[0]+1-(beta[0]+1+gamma[0]/vr0v**2)*exp(-gamma[0]/vr0v**2))
+        H0 = -Tr*(z0v-1-(b2[0]+2*b3[0]/Tr+3*b4[0]/Tr**2)/Tr/vr0v-c2[0]/Tr/2/vr0v**2+d2[0]/5/Tr/vr0v**5+3*E)
+        E = c4[1]/(2*Tr**3*gamma[1])*(beta[1]+1-(beta[1]+1+gamma[1]/vrhv**2)*exp(-gamma[1]/vrhv**2))
+        Hh = -Tr*(zhv-1-(b2[1]+2*b3[1]/Tr+3*b4[1]/Tr**2)/Tr/vrhv-(c2[1]-3*c3[1]/Tr**2)/Tr/2/vrhv**2+d2[1]/5/Tr/vrhv**5+3*E)
+        Hv = H0+mezcla.f_acent/factor_acentrico_octano*(Hh-H0)
 
-        E=c4[0]/(2*Tr**3*gamma[0])*(beta[0]+1-(beta[0]+1+gamma[0]/vr0l**2)*exp(-gamma[0]/vr0l**2))
-        H0=-Tr*(z0l-1-(b2[0]+2*b3[0]/Tr+3*b4[0]/Tr**2)/Tr/vr0l-c2[0]/Tr/2/vr0l**2+d2[0]/5/Tr/vr0l**5+3*E)
-        E=c4[1]/(2*Tr**3*gamma[1])*(beta[1]+1-(beta[1]+1+gamma[1]/vrhl**2)*exp(-gamma[1]/vrhl**2))
-        Hh=-Tr*(zhl-1-(b2[1]+2*b3[1]/Tr+3*b4[1]/Tr**2)/Tr/vrhl-(c2[1]-3*c3[1]/Tr**2)/Tr/2/vrhl**2+d2[1]/5/Tr/vrhl**5+3*E)
-        Hl=H0+mezcla.f_acent/factor_acentrico_octano*(Hh-H0)
-        self.H_exc=r_[Hv, Hl]
-        self.x, self.xi, self.yi, self.Ki=srk._Flash()
-
+        E = c4[0]/(2*Tr**3*gamma[0])*(beta[0]+1-(beta[0]+1+gamma[0]/vr0l**2)*exp(-gamma[0]/vr0l**2))
+        H0 = -Tr*(z0l-1-(b2[0]+2*b3[0]/Tr+3*b4[0]/Tr**2)/Tr/vr0l-c2[0]/Tr/2/vr0l**2+d2[0]/5/Tr/vr0l**5+3*E)
+        E = c4[1]/(2*Tr**3*gamma[1])*(beta[1]+1-(beta[1]+1+gamma[1]/vrhl**2)*exp(-gamma[1]/vrhl**2))
+        Hh = -Tr*(zhl-1-(b2[1]+2*b3[1]/Tr+3*b4[1]/Tr**2)/Tr/vrhl-(c2[1]-3*c3[1]/Tr**2)/Tr/2/vrhl**2+d2[1]/5/Tr/vrhl**5+3*E)
+        Hl = H0+mezcla.f_acent/factor_acentrico_octano*(Hh-H0)
+        self.H_exc = r_[Hv, Hl]
+#         self.x, self.xi, self.yi, self.Ki = srk._Flash()
 
 
     # def Cp_Lee_Kesler(self, T, P, fase=None):
@@ -382,4 +406,5 @@ if __name__ == "__main__":
     mezcla = Mezcla(1, ids=[98], caudalUnitarioMasico=[1.])
     for T in [125, 135, 145, 165, 185, 205]:
         eq = Lee_Kesler(T, 1, mezcla)
-        print(eq.H_exc)
+#         print(eq.H_exc)
+        print(eq.Z)
