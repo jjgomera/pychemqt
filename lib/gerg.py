@@ -31,15 +31,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 import json
+from math import exp, log
 
-from scipy import exp, log, zeros, r_
+from numpy import zeros, r_
 from scipy.constants import R
 from scipy.optimize import fsolve
 
 from lib import unidades
-from lib.physics import R_atml
 from lib import mEoS
 from lib.thermo import ThermoAdvanced
+
+
+__doi__ = {
+    1:
+        {"autor": "Kunz, O., Klimeck, R., Wagner, W., Jaeschke, M.",
+         "title": "The GERG-2004 Wide-Range Equation of State for Natural "
+                  "Gases and Other Mixtures",
+         "ref": "GERG TM15 2007",
+         "doi": ""},
+    2:
+        {"autor": "Kunz, O., Wagner, W.",
+         "title": "The GERG-2008 Wide-Range Equation of State for Natural "
+                  "Gases and Other Mixtures: An Expansion of GERG-2004",
+         "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
+         "doi": "10.1021/je300655b"}}
+
 
 Tref = 298.15
 Pref = 101325.
@@ -50,6 +66,10 @@ Pref = 101325.
 class GERG():
     """Multiparameter equation of state GERG 2008
     ref http://dx.doi.org/10.1021/je300655b"""
+
+    __title__ = "GERG (2008)"
+    __status__ = "GERG08"
+
     kwargs = {"componente": [],
               "fraccion": [],
               "T": 0.0,
@@ -258,6 +278,8 @@ class GERG():
                 -u: internal energy, J/kg
                 -x: quality
             """
+        self._definition = False
+
         self.kwargs = GERG.kwargs.copy()
         self.__call__(**kwargs)
 
@@ -271,6 +293,7 @@ class GERG():
 
     @property
     def calculable(self):
+        """Check input available to decide if is enough to solve state"""
         if self.kwargs["componente"] and self.kwargs["fraccion"]:
             self._definition = True
         else:
@@ -286,6 +309,7 @@ class GERG():
         return self._definition and thermo >= 2
 
     def calculo(self):
+        """Calculate procedure"""
         T = self.kwargs["T"]
         rho = self.kwargs["rho"]
         P = self.kwargs["P"]
@@ -444,7 +468,7 @@ class GERG():
             1+2*delta*fird+delta**2*firdd-(1+delta*fird-delta*tau*firdt)**2 /
             tau**2/(fiott+firtt)))**0.5)
 
-        f, FI = self.fug(rho, T, nfirni)
+        FI = self.fug(rho, T, nfirni)
         Ki, xi, yi, Q = self.flash()
         self.x = unidades.Dimensionless(Q)
         self.xl = xi
@@ -458,13 +482,12 @@ class GERG():
         if not nfirni:
             tau = self.Tc/T
             delta = rho/self.rhoc
-            fir, firt, firtt, fird, firdd, firdt, firdtt, nfirni = self._phir(tau, delta)
-        f = []
+            nfirni = self._phir(tau, delta)[-1]
+
         FI = []
         for xi, dn in zip(self.xi, nfirni):
-            f.append(unidades.Pressure(xi*rho/self.M*R_atml*T*exp(dn), "atm"))
-            FI.append(dn-log(self.Z))
-        return f, FI
+            FI.append(exp(dn-log(self.Z)))
+        return FI
 
 #        firn=delta*fird*(1-1./self.rhoc*n*rhodn)+tau*firt/self.Tc*n*Tcdn
 #        nfirn=fir+n*dfirn
@@ -496,7 +519,8 @@ class GERG():
     def _eq(self, rho, T):
         tau = self.Tc/T
         delta = rho/self.rhoc
-        fio, fiot, fiott, fiod, fiodd, fiodt, nfioni = self._phi0(tau, delta)
+        phi0 = self._phi0(tau, delta)
+        # fio, fiot, fiott, fiod, fiodd, fiodt, nfioni = self._phi0(tau, delta)
         fir, firt, firtt, fird, firdd, firdt, firdtt, nfirni = self._phir(tau, delta)
         return (fio, fiot, fiott, fiod, fiodd, fiodt, fir, firt, firtt, fird,
                 firdd, firdt, firdtt, nfioni, nfirni)
@@ -514,48 +538,57 @@ class GERG():
         return propiedades
 
     def _phi0(self, tau, delta):
-        """Contribución ideal de la energía libre de Helmholtz eq. 7.5"""
-        fio = fiot = fiott = fiod = fiodd = fiodt = 0
-        nfioni = []   # ðnao/ðni
-        for i, componente in enumerate(self.comp):
-            deltai = delta*self.rhoc/componente.rhoc
-            taui = componente.Tc*tau/self.Tc
-            fio_, fiot_, fiott_, fiod_, fiodd_, fiodt_ = componente._phi0(
-                componente.GERG["cp"], taui, deltai)
-            fio += self.xi[i]*(fio_+log(self.xi[i]))
-            fiot += self.xi[i]*fiot_
-            fiott += self.xi[i]*fiott_
-            fiod += self.xi[i]*fiod_
-            fiodd += self.xi[i]*fiodd_
-            fiodt += self.xi[i]*fiodt_
-            nfioni.append(fio_+1+log(self.xi[i]))
-        return fio, fiot, fiott, fiod, fiodd, fiodt, nfioni
+        """Ideal contribution to dimensionless Helmholtz free energy α and
+        their derivatives"""
+        # Table 7.5
+        ph0 = {
+            "fio": 0,
+            "fiot": 0,
+            "fiott": 0,
+            "fiod": 0,
+            "fiodd": 0,
+            "fiodt": 0,
+            "nfioni": []}
+
+        for i, (cmp, xi) in enumerate(zip(self.comp, self.xi)):
+            # Each component contribution is at its specific reduced properties
+            deltai = delta*self.rhoc/cmp.rhoc
+            taui = cmp.Tc*tau/self.Tc
+            p = cmp._phi0(cmp.GERG["cp"], taui, deltai)
+
+            ph0["fio"] += xi*(p["fio"]+log(xi))                      # Eq 7.20a
+            ph0["fiod"] += xi*self.rhoc/cmp.rhoc*p["fiod"]           # Eq 7.20b
+            ph0["fiodd"] += xi*(self.rhoc/cmp.rhoc)**2*p["fiodd"]    # Eq 7.20c
+            # Eq 7.20d
+            ph0["fiodt"] += xi*self.rhoc/cmp.rhoc*cmp.Tc/self.Tc*p["fiodt"]
+            ph0["fiot"] += xi*cmp.Tc/self.Tc*p["fiot"]               # Eq 7.20e
+            ph0["fiott"] += xi*(cmp.Tc/self.Tc)**2*p["fiott"]        # Eq 7.20f
+
+            # Eq 7.14, ∂nao/∂ni
+            ph0["nfioni"].append(ph0["fio"]+1+log(xi))
+
+        return ph0
 
     def _phir(self, tau, delta):
-        """Contribución residual de la energía libre de Helmholtz eq. 7.7"""
+        """Residual contribution to dimensionless Helmholtz free energy α and
+        their derivatives"""
         fir = firt = firtt = fird = firdd = firdt = firdtt = 0
         firxi = []
-        firxixj = zeros((len(self.comp), len(self.comp)))
-        firdxi = []
-        firtxi = []
 
-        for i, componente in enumerate(self.comp):
-            deltai = delta*self.rhoc/componente.rhoc
-            taui = componente.Tc*tau/self.Tc
-            fir_, firt_, firtt_, fird_, firdd_, firdt_, firdtt_, B_, C_ = \
-                componente._Helmholtz(taui, deltai)
-            fir += self.xi[i]*fir_
-            firt += self.xi[i]*firt_
-            firtt += self.xi[i]*firtt_
-            fird += self.xi[i]*fird_
-            firdd += self.xi[i]*firdd_
-            firdt += self.xi[i]*firdt_
+        for i, (cmp, x) in enumerate(zip(self.comp, self.xi)):
+            deltai = delta*self.rhoc/cmp.rhoc
+            taui = cmp.Tc*tau/self.Tc
+            phir = cmp._Helmholtz(taui, deltai)
+            fir += x*phir["fir"]
+            firt += x*phir["firt"]
+            firtt += x*phir["firtt"]
+            fird += x*phir["fird"]
+            firdd += x*phir["firdd"]
+            firdt += x*phir["firdt"]
 
-            firxi.append(fir_)
-            firdxi.append(fird_)
-            firtxi.append(firt_)
+            firxi.append(phir["fir"])
 
-        # Contribución residual cruzada eq 7.8
+        # Contribución residual cruzada , Table 7.8
         for i, x_i in enumerate(self.xi):
             for j, x_j in enumerate(self.xi):
                 if j > i:
@@ -569,9 +602,6 @@ class GERG():
                     firdt += x_i*x_j*self.Fij[self.id[i]][self.id[j]]*firdt_
 
                     firxi[i] += x_j*self.Fij[self.id[i]][self.id[j]]*fir_
-                    firxixj[i, j] = self.Fij[self.id[i]][self.id[j]]*fir_
-                    firdxi[i] += x_j*self.Fij[self.id[i]][self.id[j]]*fird_
-                    firtxi[i] += x_j*self.Fij[self.id[i]][self.id[j]]*firt_
 
         suma = suma_rho = suma_T = 0
         for i, x_i in enumerate(self.xi):
@@ -588,8 +618,8 @@ class GERG():
         n_firni = []  # ðar/ðni
         nfirni = []   # ðnar/ðni
         for i, componente in enumerate(self.comp):
-            n_firni.append(delta*fird*(1-1./self.rhoc*n_rhocni[i]) +
-                           tau*firt/self.Tc*n_Tcni[i]+firxi[i]-suma)
+            n_firni.append(delta*fird*(1-1./self.rhoc*n_rhocni[i])
+                           + tau*firt/self.Tc*n_Tcni[i]+firxi[i]-suma)
             nfirni.append(fir_+n_firni[i])
         return fir, firt, firtt, fird, firdd, firdt, firdtt, nfirni
 
@@ -602,67 +632,61 @@ class GERG():
             nr1 = constants["nr1"]
             d1 = constants["d1"]
             t1 = constants["t1"]
-            for i in range(len(constants.get("nr1", []))):
+            for n, d, t in zip(nr1, d1, t1):
                 # Polinomial terms
-                fir += nr1[i]*delta**d1[i]*tau**t1[i]
-                fird += nr1[i]*d1[i]*delta**(d1[i]-1)*tau**t1[i]
-                firdd += nr1[i]*d1[i]*(d1[i]-1)*delta**(d1[i]-2)*tau**t1[i]
-                firt += nr1[i]*t1[i]*delta**d1[i]*tau**(t1[i]-1)
-                firtt += nr1[i]*t1[i]*(t1[i]-1)*delta**d1[i]*tau**(t1[i]-2)
-                firdt += nr1[i]*t1[i]*d1[i]*delta**(d1[i]-1)*tau**(t1[i]-1)
-                firdtt += nr1[i]*t1[i]*d1[i]*(t1[i]-1)*delta**(d1[i]-1)*tau**(t1[i]-2)
-                B += nr1[i]*d1[i]*delta_0**(d1[i]-1)*tau**t1[i]
-                C += nr1[i]*d1[i]*(d1[i]-1)*delta_0**(d1[i]-2)*tau**t1[i]
+                fir += n * delta**d * tau**t
+                fird += n * d * delta**(d-1) * tau**t
+                firdd += n * d * (d-1) * delta**(d-2) * tau**t
+                firt += n * t * delta**d * tau**(t-1)
+                firtt += n * t * (t-1) * delta**d * tau**(t-2)
+                firdt += n * t * d * delta**(d-1) * tau**(t-1)
+                firdtt += n * t * d * (t-1) * delta**(d-1) * tau**(t-2)
+                B += n * d * delta_0**(d-1) * tau**t
+                C += n * d * (d-1) * delta_0**(d-2) * tau**t
 
             nr2 = constants["nr2"]
-            if nr2:
-                d2 = constants["d2"]
-                t2 = constants["t2"]
-                n2 = constants["n2"]
-                e2 = constants["e2"]
-                b2 = constants["b2"]
-                g2 = constants["g2"]
-                for i in range(len(constants.get("nr2", []))):
-                    # Gaussian terms
-                    fir += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2))
-                    fird += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        (d2[i]/delta-2*n2[i]*(delta-e2[i]))
-                    firdd += nr2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        (-2*n2[i]*delta**d2[i]+4*n2[i]**2*delta**d2[i] *
-                         (delta-e2[i])**2-4*d2[i]*n2[i]*delta**2*(delta-e2[i])+d2[i]*2*delta)
-                    firt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        (t2[i]/tau-2*b2[i]*(tau-g2[i]))
-                    firtt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        ((t2[i]/tau-2*b2[i]*(tau-g2[i]))**(2)-t2[i]/tau**2-2*b2[i])
-                    firdt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        (t2[i]/tau-2*b2[i]*(tau-g2[i])) * \
-                        (d2[i]/delta-2*n2[i]*(delta-e2[i]))
-                    firdtt += nr2[i]*delta**d2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        ((t2[i]/tau-2*b2[i]*(tau-g2[i]))**(2)-t2[i]/tau**2-2*b2[i]) * \
-                        (d2[i]/delta-2*n2[i]*(delta-e2[i]))
-                    B += nr2[i]*delta_0**d2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta_0-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        (d2[i]/delta_0-2*n2[i]*(delta_0-e2[i]))
-                    C += nr2[i]*tau**t2[i] * \
-                        exp(-n2[i]*(delta_0-e2[i])**2-b2[i]*(tau-g2[i])**(2)) * \
-                        (-2*n2[i]*delta_0**d2[i]+4*n2[i]**2*delta_0**d2[i]*(delta_0-e2[i])**2 -
-                         4*d2[i]*n2[i]*delta_0**2*(delta_0-e2[i])+d2[i]*2*delta_0)
+            d2 = constants["d2"]
+            t2 = constants["t2"]
+            n2 = constants["n2"]
+            e2 = constants["e2"]
+            b2 = constants["b2"]
+            g2 = constants["g2"]
+            for nr, d, t, n, e, b, g in zip(nr2, d2, t2, n2, e2, b2, g2):
+                # Gaussian terms
+                fir += nr * delta**d * tau**t * \
+                    exp(-n*(delta-e)**2 - b*(tau-g)**(2))
+                fird += nr * delta**d * tau**t * (d/delta - 2*n*(delta-e)) * \
+                    exp(-n*(delta-e)**2-b*(tau-g)**(2))
+                firdd += nr * tau**t * exp(-n*(delta-e)**2-b*(tau-g)**(2)) * \
+                    (-2*n*delta**d + 4*n**2*delta**d*(delta-e)**2
+                     - 4*d*n*delta**2*(delta-e) + d*2*delta)
+                firt += nr*delta**d*tau**t * (t/tau - 2*b*(tau-g)) * \
+                    exp(-n*(delta-e)**2 - b*(tau-g)**(2))
+                firtt += nr*delta**d*tau**t * \
+                    ((t/tau - 2*b*(tau-g))**2 - t/tau**2 - 2*b) * \
+                    exp(-n*(delta-e)**2 - b*(tau-g)**(2))
+                firdt += nr*delta**d*tau**t * (t/tau - 2*b*(tau-g)) * \
+                    (d/delta - 2*n*(delta-e)) * \
+                    exp(-n*(delta-e)**2-b*(tau-g)**2)
+                firdtt += nr*delta**d*tau**t * \
+                    exp(-n*(delta-e)**2 - b*(tau-g)**2) * \
+                    ((t/tau - 2*b*(tau-g))**2 - t/tau**2 - 2*b) * \
+                    (d/delta - 2*n*(delta-e))
+                B += nr * delta_0**d * tau**t * (d/delta_0-2*n*(delta_0-e)) * \
+                    exp(-n*(delta_0-e)**2-b*(tau-g)**(2))
+                C += nr * tau**t * exp(-n*(delta_0-e)**2-b*(tau-g)**(2)) * \
+                    (-2*n*delta_0**d + 4*n**2*delta_0**d*(delta_0-e)**2
+                     - 4*d*n*delta_0**2*(delta_0-e) + d*2*delta_0)
 
         return fir, firt, firtt, fird, firdd, firdt, firdtt, B, C
 
     def flash(self):
-        """Cálculo de los coeficientes de reparto entre fases"""
-        #Estimación inicial de K mediante correlación wilson Eq 5.61 Pag 82
+        """Calculate liquid-vapour phase equilibrium"""
+
+        # Initial estimation using Wilson correlation, Eq 19
         Ki = []
-        for componente in self.comp:
-            Ki.append(componente.Pc/self.P*exp(5.373*(1.+componente.f_acent)*(1.-componente.Tc/self.T)))
+        for c in self.comp:
+            Ki.append(c.Pc/self.P*exp(5.373*(1.+c.f_acent)*(1.-c.Tc/self.T)))
 
         def f(Q):
             sum = 0
@@ -709,9 +733,9 @@ id_GERG = [i.id for i in GERG.componentes]
 if __name__ == "__main__":
 #    import doctest
 #    doctest.testmod()
-    T = unidades.Temperature(205, "F")
-    P = unidades.Pressure(315, "psi")
-    aire = GERG(T=T, P=P, componente=[0, 3, 4, 5, 7, 9], fraccion=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
+    t_ = unidades.Temperature(205, "F")
+    p = unidades.Pressure(315, "psi")
+    aire = GERG(T=t_, P=p, componente=[0, 3, 4, 5, 7, 9], fraccion=[0.26, 0.09, 0.25, 0.17, 0.11, 0.12])
 #    print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (aire.T, aire.rho, aire.h.kJkg, aire.s.kJkgK, aire.cv.kJkgK, aire.cp.kJkgK, aire.w), aire.P.MPa
 
 #    aire=GERG([0], [1.], P=0.1, T=300)
@@ -722,4 +746,3 @@ if __name__ == "__main__":
 
 #    aire=GERG([15], [1.], P=0.1, T=500)
 #    print "%0.1f %0.4f %0.3f %0.3f %0.5f %0.4f %0.2f" % (aire.T, aire.rho, aire.h.kJkg, aire.s.kJkgK, aire.cv.kJkgK, aire.cp.kJkgK, aire.w), aire.P.MPa
-
