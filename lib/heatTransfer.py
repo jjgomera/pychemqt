@@ -23,10 +23,97 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from math import exp, factorial
+from math import exp, factorial, pi
 
+from numpy import tanh
 from numpy.lib.scimath import log, log10
-from scipy import pi, tanh
+
+from lib.utilities import refDoc
+
+
+__doi__ = {
+    1:
+        {"autor": "VDI-Gesellschaft",
+         "title": "VDI Heat Atlas 2nd Edition",
+         "ref": "Berlin, New York. Springer 2010.",
+         "doi": ""},
+    2:
+        {"autor": "Bergman, T.L., Lavine, A.S., Incropera, F.P., DeWitt, D.P.",
+         "title": "Introduction to Heat Transfer. 6th Ed.",
+         "ref": "Wiley, 2011.",
+         "doi": ""},
+    3:
+        {"autor": "Churchill, S.W., Chu, H.H.S.",
+         "title": "Correlating Equations for Laminar and Turbulent Free "
+                  "Convection from a Vertical Plate",
+         "ref": "Int. J. Heat Mass Transfer 18(11) (1975) 1323-29",
+         "doi": "10.1016/0017-9310(75)90243-4"},
+
+    5:
+        {"autor": "",
+         "title": "",
+         "ref": "",
+         "doi": ""},
+
+}
+
+
+@refDoc(__doi__, [1, 2, 3])
+def Nu_vertical_Churchill(Pr, Ra):
+    r"""Calculates Nusselt number for laminar and turbulent flows near a
+    vertical surface with Churchill-Chu correlation [3]_
+
+    .. math::
+        Nu^{1/2} = 0.825 + \frac{0.387 Ra^{1/6}}
+        {\left(1+(0.492/Pr)^{9/16}\right)^{8/27}}
+
+    For laminar flow (Ra ≤ 10⁹) use this correlation with a slightly better
+    accuracy
+
+    .. math::
+        Nu = 0.68 + \frac{0.67 Ra^{1/4}}
+        {\left(1+(0.492/Pr)^{9/16}\right)^{4/9}}
+
+    The correlation originally developed for vertical flat surfaces can be too
+    applied to vertical cylinders if this conditions is satisfied:
+
+    .. math::
+        \frac{D}{L} \ge \frac{35}{Gr_L^{1/4}}
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Ra : float
+        Rayleigh number [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    Notes
+    -----
+    This method does not exactly represent the behavior in the transition zone
+    between laminar and turbulent flows (10⁸ ≤ Ra ≤ 20⁹), but its accuracy is
+    enought for engineering applications in the entire range of Rayleigh
+    numbers.
+
+    Examples
+    --------
+    From [1]_, Example 1, pag. 667
+
+    >>> print("%0.f" % Nu_vertical_Churchill(0.7, 9.26e8))
+    120
+
+    From [2]_, Example 9.2, pag. 574:
+
+    >>> print("%0.f" % Nu_vertical_Churchill(0.69, 1.813E9))
+    147
+    """
+    f = 1+(0.492/Pr)**(9/16)
+    Nu = (0.825+0.387*Ra**(1/6)/f**(8/27))**2                        # Eq 9
+    return Nu
 
 
 # Pipe Laminar flow

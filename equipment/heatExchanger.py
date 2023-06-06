@@ -1801,6 +1801,7 @@ class Shell_Tube(equipment):
         else:  # Interpolacion entre los valores de arriba
             Jr = 0.853379+0.0014662*Re
 
+        # Table 6.1
         if self.kwargs["distribucionTube"] == 1:
             a3, a4 = 0, 0
             if Re < 10:
@@ -1913,15 +1914,15 @@ class Shell_Tube(equipment):
                 b2 = -0.152
             else:
                 b1 = 0.372
-                b2 = -0.123
+                b2 = -0.12
                 b3 = 7.0
                 b4 = 0.5
 
-        a = a3/(1+0.14*Re**a4)
-        b = b3/(1+0.14*Re**b4)
+        a = a3/(1+0.14*Re**a4)                                       # Eq 6.3
+        b = b3/(1+0.14*Re**b4)                                       # Eq 6.4
 
-        j = a1*(1.33/P)**a*Re**a2
-        f = b1*(1.33/P)**b*Re**b2
+        j = a1*(1.33/P)**a*Re**a2                                    # Eq 6.1
+        f = b1*(1.33/P)**b*Re**b2                                    # Eq 6.2
         hid = j*cp*G*fi/Pr**(2./3)
         h = unidades.HeatTransfCoef(hid*Jc*Jl*Jb*Jr*Js)
 
