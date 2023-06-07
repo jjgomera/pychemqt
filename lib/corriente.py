@@ -132,6 +132,7 @@ class Corriente(config.Entity):
         self.__call__(**kwargs)
 
     def __call__(self, **kwargs):
+        # Clean input parameters to get only the defined in the last run
         if kwargs.get("mezcla", None):
             kwargs.update(kwargs["mezcla"].kwargs)
         if kwargs.get("solido", None):
@@ -374,31 +375,31 @@ class Corriente(config.Entity):
                 ids.append(gerg.id_GERG.index(id))
             kwargs = self.kwargs
             kwargs["mezcla"] = self.mezcla
-            compuesto = gerg.GERG(componente=ids, fraccion=self.fraccion, **kwargs)
+            compuesto = gerg.GERG(
+                    componente=ids, fraccion=self.fraccion, **kwargs)
         elif self._thermo == "coolprop":
             if not self.kwargs["ids"]:
                 self.kwargs["ids"] = self.ids
             compuesto = coolProp.CoolProp(**self.kwargs)
         elif self._thermo == "meos":
+            class_ = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])]
             if self.tipoTermodinamica == "TP":
-                compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, P=P)
+                compuesto = class_(T=T, P=P)
             elif self.tipoTermodinamica == "Tx":
-                compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](T=T, x=x)
+                compuesto = class_(T=T, x=x)
             elif self.tipoTermodinamica == "Px":
-                compuesto = mEoS.__all__[mEoS.id_mEoS.index(self.ids[0])](P=P, x=x)
+                compuesto = class_(P=P, x=x)
         elif self._thermo == "eos":
             if self.kwargs["K"]:
-                index = EoS.K_name.index(self.kwargs["K"])
+                index = EoS.K_status.index(self.kwargs["K"])
                 K = EoS.K[index]
-                print(K)
             else:
-                K = EoS.K[Config.getint("Thermo","K")]
+                K = EoS.K[Config.getint("Thermo", "K")]
             if self.kwargs["H"]:
-                index = EoS.H_name.index(self.kwargs["H"])
+                index = EoS.H_status.index(self.kwargs["H"])
                 H = EoS.H[index]
-                print(H)
             else:
-                H = EoS.H[Config.getint("Thermo","H")]
+                H = EoS.H[Config.getint("Thermo", "H")]
 
             setData = False
             self.M = unidades.Dimensionless(self.mezcla.M)
@@ -409,64 +410,100 @@ class Corriente(config.Entity):
             if self.tipoTermodinamica == "TP":
                 self.T = unidades.Temperature(T)
                 self.P = unidades.Pressure(P)
-                eos = K(self.T, self.P.atm, self.mezcla)
+                eos = K(self.T, self.P, self.mezcla)
                 self.eos = eos
                 self.x = unidades.Dimensionless(eos.x)
             else:
                 self.x = unidades.Dimensionless(x)
 
-#            self.mezcla.recallZeros(eos.xi)
-#            self.mezcla.recallZeros(eos.yi)
-#            self.mezcla.recallZeros(eos.Ki, 1.)
+#             self.mezcla.recallZeros(eos.xi)
+#             self.mezcla.recallZeros(eos.yi)
+#             self.mezcla.recallZeros(eos.Ki, 1.)
 
             if 0. < self.x < 1.:
-                self.Liquido = Mezcla(tipo=5, fraccionMolar=eos.xi, caudalMolar=self.caudalmolar*(1-self.x))
-                self.Gas = Mezcla(tipo=5, fraccionMolar=eos.yi, caudalMolar=self.caudalmolar*self.x)
+                self.Liquido = Mezcla(
+                    tipo=5, ids=self.mezcla.ids, fraccionMolar=eos.xi,
+                    caudalMolar=self.caudalmolar*(1-self.x))
+                self.Gas = Mezcla(
+                    tipo=5, ids=self.mezcla.ids,  fraccionMolar=eos.yi,
+                    caudalMolar=self.caudalmolar*self.x)
             elif self.x <= 0:
                 self.Liquido = self.mezcla
                 self.Gas = Mezcla()
             else:
                 self.Liquido = Mezcla()
                 self.Gas = self.mezcla
-            self.Gas.Z = unidades.Dimensionless(eos.Zg)
-            self.Liquido.Z = unidades.Dimensionless(eos.Zl)
+#             self.Gas.Z = unidades.Dimensionless(eos.Zg)
+#             self.Liquido.Z = unidades.Dimensionless(eos.Zl)
 
-            if H == K:
-                eosH = eos
-            else:
-                eosH = H(self.T, self.P.atm, self.mezcla)
-            self.H_exc = eosH.H_exc
+            # if H == K:
+                # eosH = eos
+            # else:
+                # eosH = H(self.T, self.P.atm, self.mezcla)
+            # self.H_exc = eosH.H_exc
+            self.H_exc = (0, 0)
 
             self.Liquido.Q = unidades.VolFlow(0)
             self.Gas.Q = unidades.VolFlow(0)
             self.Liquido.h = unidades.Power(0)
             self.Gas.h = unidades.Power(0)
+
             if self.x < 1:
                 # There is liquid phase
-                Hl = (self.Liquido._Ho(self.T).Jg-self.Liquido.Hv_DIPPR(self.T).Jg)*self.Liquido.caudalmasico.gh
+
+                if Config.getboolean("Transport", "RhoLEoS") and eos.rhoL:
+                    self.Liquido.rho = eos.rhoL
+                    self.Liquido.Z = unidades.Dimensionless(float(eos.Zl))
+                else:
+                    self.Liquido.rho = self.Liquido.RhoL(T, P)
+                    Z = self.Liquido.rho*R*T/P
+                    self.Liquido.Z = unidades.Dimensionless(Z)
+
+                # Hl = (self.Liquido._Ho(self.T).Jg-self.Liquido.Hv_DIPPR(self.T).Jg)*self.Liquido.caudalmasico.gh
+                Hl = 0
                 self.Liquido.h = unidades.Power(Hl-R*self.T/self.M*self.H_exc[1]*(1-self.x)*self.Liquido.caudalmasico.gh, "Jh")
                 self.Liquido.cp = self.Liquido.Cp_Liquido(T)
-                self.Liquido.rho = self.Liquido.RhoL(T, self.P)
-                self.Liquido.mu = self.Liquido.Mu_Liquido(T, self.P.atm)
-                self.Liquido.k = self.Liquido.ThCond_Liquido(T, self.P.atm, self.Liquido.rho)
-                self.Liquido.sigma = self.Liquido.Tension(T)
+
+
                 self.Liquido.Q = unidades.VolFlow(self.Liquido.caudalmasico/self.Liquido.rho)
+
+                # Transport properties
+                self.Liquido.mu = self.Liquido.Mu_Liquido(T, P)
+                k = self.Liquido.ThCond_Liquido(T, P, self.Liquido.rho)
+                self.Liquido.k = k
+                self.Liquido.sigma = self.Liquido.Tension(T)
                 self.Liquido.Prandt = self.Liquido.cp*self.Liquido.mu/self.Liquido.k
+
             if self.x > 0:
                 # There is gas phase
+
+                if eos.rhoG:
+                    self.Gas.Z = unidades.Dimensionless(float(eos.Zg))
+                    self.Gas.rho = eos.rhoG
+                else:
+                    self.Gas.rho = self.Liquido.RhoL(T, P)
+                    Z = self.Gas.rho*R*T/P
+                    self.Gas.Z = unidades.Dimensionless(Z)
+                self.Gas.rho = unidades.Density(self.P/self.Gas.Z/R/self.T*self.M, "gl")
+                self.Gas.rhoSd = unidades.Density(1./self.Gas.Z/R_atml/298.15*self.M, "gl")
+
                 Hg = self.Gas._Ho(self.T).Jg*self.Gas.caudalmasico.gh
                 self.Gas.h = unidades.Power(Hg-R*self.T/self.M*self.H_exc[0]*self.x*self.Gas.caudalmasico.gh, "Jh")
-                self.Gas.cp = self.Gas.Cp_Gas(T, self.P.atm)
-                self.Gas.rho = unidades.Density(self.P.atm/self.Gas.Z/R_atml/self.T*self.M, "gl")
-                self.Gas.rhoSd = unidades.Density(1./self.Gas.Z/R_atml/298.15*self.M, "gl")
-                self.Gas.mu = self.Gas.Mu_Gas(T, self.P.atm, self.Gas.rho)
-                self.Gas.k = self.Gas.ThCond_Gas(T, self.P.atm, self.Gas.rho)
+                self.Gas.cp = self.Gas.Cp_Gas(T, self.P)
+                self.Gas.mu = self.Gas.Mu_Gas(T, self.P, self.Gas.rho)
+                self.Gas.k = self.Gas.ThCond_Gas(T, self.P, self.Gas.rho)
                 self.Gas.Q = unidades.VolFlow(self.Gas.caudalmasico/self.Gas.rho)
                 self.Gas.Prandt = self.Gas.cp*self.Gas.mu/self.Gas.k
 
             self.Q = unidades.VolFlow(self.Liquido.Q+self.Gas.Q)
             self.h = unidades.Power(self.Liquido.h+self.Gas.h)
             self.Molaridad = [caudal/self.Q.m3h for caudal in self.caudalunitariomolar]
+
+            # print(self.Liquido.mu, self.Liquido.k)
+#             self.Liquido.fraccion = self.Liquido.recallZeros(self.Liquido.fraccion)
+#             print(self.Liquido.fraccion)
+            # self.Liquido.recallZeros(eos.yi)
+            # self.Liquido.recallZeros(eos.Ki, 1.)
 
             # TODO:
             self.cp_cv = 0.5
@@ -560,7 +597,13 @@ class Corriente(config.Entity):
             self.kwargs["caudalMolar"] = None
 
     def _method(self):
-        """Find the thermodynamic method to use"""
+        """Find the thermodynamic method to use
+        Define internal variables to know the definition:
+            _thermo: Method of definition, one of this values:
+                eos, iapws, freesteam, meos, coolprop, refprop, gerg
+            _dependence: In advanced method with external dependencias define
+                the neccesary dependences to calculate
+        """
         Config = config.getMainWindowConfig()
 
         # MEoS availability,
@@ -675,6 +718,7 @@ class Corriente(config.Entity):
         return Corriente(**old_kwargs)
 
     def __repr__(self):
+        """String representation of any instance"""
         if self.status:
             return "Corriente at %0.2fK and %0.2fatm" % (self.T, self.P.atm)
         else:
@@ -725,7 +769,7 @@ class Corriente(config.Entity):
             txt += "#"+tr("pychemqt", "Molar Composition")
             txt += os.linesep
             for cmp, xi in zip(self.componente, self.fraccion):
-                txt += "%-25s\t %0.4f" % (cmp.nombre, xi)+os.linesep
+                txt += "%-25s\t %0.4f" % (cmp.name, xi)+os.linesep
 
             if self.x > 0:
                 txt += os.linesep+"#---------------"
@@ -747,7 +791,7 @@ class Corriente(config.Entity):
                 txt += tr("pychemqt", "Molar Composition")
                 txt += os.linesep
                 for cmp, xi in zip(self.componente, self.Gas.fraccion):
-                    txt += "%-25s\t %0.4f" % (cmp.nombre, xi)+os.linesep
+                    txt += "%-25s\t %0.4f" % (cmp.name, xi)+os.linesep
 
                 txt += os.linesep+"%-25s\t%s" % (
                     tr("pychemqt", "Density"),
@@ -789,7 +833,7 @@ class Corriente(config.Entity):
                 txt += tr("pychemqt", "Molar Composition")
                 txt += os.linesep
                 for cmp, xi in zip(self.componente, self.Liquido.fraccion):
-                    txt += "%-25s\t %0.4f" % (cmp.nombre, xi)+os.linesep
+                    txt += "%-25s\t %0.4f" % (cmp.name, xi)+os.linesep
 
                 txt += os.linesep
                 txt += "%-25s\t%s" % (
@@ -825,7 +869,7 @@ class Corriente(config.Entity):
             txt += tr("pychemqt", "Solid")
             txt += "-------------------#"+os.linesep
             for cmp, G in zip(self.solido.componente, self.solido.caudalUnitario):
-                txt += "%-25s\t%s" % (cmp.nombre, G.str)+os.linesep
+                txt += "%-25s\t%s" % (cmp.name, G.str)+os.linesep
             txt += os.linesep
             txt += "%-25s\t%s" % (tr("pychemqt", "Density"),
                                            self.solido.rho.str)+os.linesep
@@ -870,14 +914,14 @@ class Corriente(config.Entity):
                 elif key in ["f", "fi"]:
                     complejos += propiedad + os.linesep
                     for i, cmp in enumerate(self.componente):
-                        values = ["  " + cmp.nombre]
+                        values = ["  " + cmp.name]
                         for phase in phases:
                             values.append(phase.__getattribute__(key)[i].str)
                         complejos += param % tuple(values) + os.linesep
                 elif key in ["K", "csat", "dpdt_sat", "cv2p", "chempot"]:
                     complejos += propiedad + os.linesep
                     for i, cmp in enumerate(self.componente):
-                        values = ["  " + cmp.nombre]
+                        values = ["  " + cmp.name]
                         values.append(self.__getattribute__(key)[i].str)
                         complejos += "%-40s\t%s" % tuple(values)
                         complejos += os.linesep
@@ -935,7 +979,7 @@ class Corriente(config.Entity):
 
     def propertiesListTitle(self, index):
         """Define los titulos para los popup de listas"""
-        lista = [comp.nombre for comp in self.componente]
+        lista = [comp.name for comp in self.componente]
         return lista
 
     def writeToJSON(self, data):
@@ -1249,4 +1293,49 @@ if __name__ == '__main__':
     stream = Corriente(T=T, P=P, caudalMolar=5.597, ids=[1, 2, 40, 41],
                        fraccionMolar=[0.3177, 0.5894, 0.0715, 0.0214],
                        K="Peng-Robinson", H="Benedict-Webb-Rubin-Starling")
+    # from lib.mEoS import H2O
+    # agua = H2O(T=300, P=101325)
+    # agua1 = Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], MEoS=True)
+    # # agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], iapws=True)
+    # from pprint import pprint
+    # pprint(agua.__dict__)
+    # pprint(agua1.__dict__)
 
+    # agua2=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], MEoS=True, refprop=True)
+    # print(agua.rho, agua1.rho, agua2.rho)
+
+    # agua3 = Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], MEoS=False, K="BWRS", H="BWRS")
+    # print(agua.rho, agua1.rho, agua3.Gas.rho)
+
+    # P = unidades.Pressure(410.3, "psi")
+    # T = unidades.Temperature(400, "F")
+    # mix = Corriente(T=T, P=P, caudalMasico=1., ids=[4, 40],
+                    # caudalUnitarioMasico=[26.92, 73.08],  K="GS", H="BWRS")
+    # print(mix.x)
+
+    zi = [0.31767, 0.58942, 0.07147, 0.02144]
+    P = unidades.Pressure(485, "psi")
+    T = unidades.Temperature(100, "F")
+    mix = Corriente(T=T, P=P, ids=[1, 2, 40, 41], caudalUnitarioMolar=zi,
+                    K="GS", H="BWRS")
+    print(mix.x)
+    print(mix.Liquido.fraccion)
+    print(mix.Gas.fraccion)
+
+    zi = [0.31767, 0.58942, 0.07147, 0.02144, 0]
+    mix = Corriente(T=T, P=P, ids=[1, 2, 40, 41, 34], caudalUnitarioMolar=zi,
+                    K="GS", H="BWRS")
+    print(mix.x)
+    print(mix.Liquido.fraccion)
+    print(mix.Gas.fraccion)
+
+    # P = unidades.Pressure(485, "psi")
+    # T = unidades.Temperature(100, "F")
+    # mix = Corriente(T=T, P=P, caudalMasico=1., ids=[1, 2, 40, 41],
+                    # caudalUnitarioMolar=[0.31767, 0.58942, 0.07147, 0.02144],
+                    # K="PR76", H="PR76")
+
+    # mix = Corriente(T=293.15, P=5e6, caudalMasico=1.,
+                    # ids=[2, 3, 4, 6, 5, 8, 46, 49, 50, 22],
+                    # caudalUnitarioMolar=[1]*10, K="PR76", H="PR76")
+    # print(mix.x)
