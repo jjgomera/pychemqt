@@ -4,7 +4,7 @@
 
 
 """Pychemqt, Chemical Engineering Process simulator
-Copyright (C) 2009-2022, Juan José Gómez Romera <jjgomera@gmail.com>
+Copyright (C) 2009-2023, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,37 +32,57 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Patch, Polygon
 from scipy.optimize import fsolve
 
-from lib import mEoS
 from iapws import IAPWS95
+from lib import mEoS
+
+desc = 'Generate several phase plot for a compound in the mEos library'
+parser = argparse.ArgumentParser(description=desc)
+parser.add_argument("cmp", type=str, nargs="?", help='Name of compound')
+parser.add_argument(
+    "points", type=int, nargs="?",
+    help='Definition of plot, as number of point for each line')
+parser.add_argument("-m", "--matplotlib", help="Show matplotlib dialog",
+                    action="store_true")
+parser.add_argument("-s", "--show", help="Show image", action="store_true")
+
+args = parser.parse_args()
 
 
 ###############################################################################
 # Configuration section
 ###############################################################################
 
+# Point count for line, high value get more definition but slow calculate time
+points = 200
+
 # Define standard to use in plot, IAPWS95 very slow!
-fluid = mEoS.C3
+fluid = mEoS.Ne
 
 # fluid = IAPWS95
 # fluid._constants["Tmin"] = IAPWS95.Tt
 # fluid._constants["Tmax"] = IAPWS95.Tc
 # fluid._constants["Pmax"] = 1e8
 
+# Use the input parameter if given
+if args.cmp:
+    fluid = mEoS.__getattribute__(args.cmp)
+if args.points:
+    points = args.points
 
 Pt = fluid(T=fluid.Tt, x=0)
-Pc = fluid(T=fluid.Tc*0.999, x=0)
+Pc = fluid(T=fluid.Tc * 0.999, x=0)
 Vt = fluid(T=fluid.Tt, x=1)
 Tmin = fluid()._constants["Tmin"]
 Tmax = fluid()._constants["Tmax"]
-Pmax = fluid()._constants["Pmax"]*1e3
+Pmax = fluid()._constants["Pmax"] * 1e3
 Pmin = Pt.P
 
 smin = Pt.s.kJkgK
 smax = max(Pc.s.kJkgK, Vt.s.kJkgK)
-smax += abs(smax*0.1)
+smax += abs(smax * 0.1)
 hmin = Pt.h.kJkg
 hmax = max(Pc.h.kJkg, Vt.h.kJkg)
-hmax += abs(hmax*0.1)
+hmax += abs(hmax * 0.1)
 
 # smin = Pt.s
 # smax = max(Pc.s, Vt.s)
@@ -70,9 +90,6 @@ hmax += abs(hmax*0.1)
 # hmin = Pt.h
 # hmax = max(Pc.h, Vt.h)
 # hmax += abs(hmax*0.1)
-
-# Point count for line, high value get more definition but slow calculate time
-points = 50
 
 # Saturation line format
 isosat_kw = {"ls": "-", "color": "black", "lw": 1}
@@ -88,7 +105,12 @@ isoq_kw = {"ls": "--", "color": "black", "lw": 0.8}
 anc_kw = {"ls": "--", "color": "green", "lw": 0, "marker": "*"}
 
 # Isotherm lines to plot
-isoT = np.linspace(Tmin, Tmax, 10, endpoint=True)
+if Tmax > 10*fluid.Tc:
+    extended = np.logspace(np.log10(fluid.Tc), np.log10(Tmax), 10)
+else:
+    extended = np.r_[fluid.Tc, Tmax]
+isoT = np.concatenate([
+    np.linspace(Tmin, fluid.Tc, 5, endpoint=False), extended])
 isoT_kw = {"ls": ":", "color": "red", "lw": 0.8}
 
 # Isobar lines to plot
@@ -104,7 +126,8 @@ isos = np.linspace(smin, smax, 10)
 isos_kw = {"ls": ":", "color": "brown", "lw": 0.8}
 
 # Isochor lines to plot
-isov = np.logspace(np.log10(1/1200), 8, 10)
+isov = np.logspace(
+    np.log10(1/fluid()._constants["rhomax"]/fluid.M), np.log10(Vt.v), 10)
 isov_kw = {"ls": ":", "color": "darkgreen", "lw": 0.8}
 
 # Validity region
@@ -156,27 +179,27 @@ ax_vu.set_ylabel("v, m³/kg")
 
 
 Ts = list(np.concatenate([
-    np.linspace(fluid.Tt, 0.9*fluid.Tc, points, endpoint=False),
-    np.linspace(0.9*fluid.Tc, 0.99*fluid.Tc, points, endpoint=False),
-    np.linspace(0.99*fluid.Tc, fluid.Tc, points, endpoint=True)]))
+    np.linspace(fluid.Tt, 0.9 * fluid.Tc, points, endpoint=False),
+    np.linspace(0.9 * fluid.Tc, 0.99 * fluid.Tc, points, endpoint=False),
+    np.linspace(0.99 * fluid.Tc, fluid.Tc, points, endpoint=True)]))
 Pl = list(np.concatenate([
     np.logspace(
-        np.log10(Pt.P), np.log10(0.9*fluid.Pc), points, endpoint=False),
-    np.linspace(0.9*fluid.Pc, 0.99*fluid.Pc, points, endpoint=False),
-    np.linspace(0.99*fluid.Pc, 1.1*fluid.Pc, points, endpoint=False),
+        np.log10(Pt.P), np.log10(0.9 * fluid.Pc), points, endpoint=False),
+    np.linspace(0.9 * fluid.Pc, 0.99 * fluid.Pc, points, endpoint=False),
+    np.linspace(0.99 * fluid.Pc, 1.1 * fluid.Pc, points, endpoint=False),
     np.logspace(
-        np.log10(1.1*fluid.Pc), np.log10(Pmax), points, endpoint=True)]))
+        np.log10(1.1 * fluid.Pc), np.log10(Pmax), points, endpoint=True)]))
 Tl = list(np.concatenate([
-    np.linspace(Tmin, 0.9*fluid.Tc, points, endpoint=False),
-    np.linspace(0.9*fluid.Tc, 1.1*fluid.Tc, points, endpoint=False),
-    np.linspace(1.1*fluid.Tc, Tmax, points, endpoint=True)]))
+    np.linspace(Tmin, 0.9 * fluid.Tc, points, endpoint=False),
+    np.linspace(0.9 * fluid.Tc, 1.1 * fluid.Tc, points, endpoint=False),
+    np.logspace(np.log10(1.1 * fluid.Tc), np.log10(Tmax), points)]))
 
 
 # Melting pressure
 if fluid is not IAPWS95 and fluid._melting:
     print("Calculating melting line...")
     Tm = np.logspace(np.log10(fluid._melting["Tmin"]),
-                     np.log10(fluid._melting["Tmax"]), points*10)
+                     np.log10(fluid._melting["Tmax"]), points * 10)
     Pm = [fluid._Melting_Pressure(t) for t in Tm]
     mel = [fluid(T=t, P=p) for t, p in zip(Tm, Pm)]
 
@@ -195,7 +218,7 @@ if fluid is not IAPWS95 and fluid._melting:
             v.append(p.v)
             u.append(p.u.kJkg)
 
-    ax1.plot(Tm/fluid.Tc, [p/fluid.Pc for p in Pm], **mel_kw)
+    ax1.plot(Tm / fluid.Tc, [p / fluid.Pc for p in Pm], **mel_kw)
     ax_Ph.plot(h, P, label="Melting line", **mel_kw)
     ax_Ts.plot(s, T, label="Melting line", **mel_kw)
     ax_Tv.plot(v, T, label="Melting line", **mel_kw)
@@ -208,11 +231,11 @@ print("Calculating saturation lines...")
 liq = [fluid(T=t, x=0) for t in Ts]
 vap = [fluid(T=t, x=1) for t in Ts]
 
-xliq = [line.T/fluid.Tc for line in liq]
-yliq = [line.P/fluid.Pc for line in liq]
+xliq = [line.T / fluid.Tc for line in liq]
+yliq = [line.P / fluid.Pc for line in liq]
 ax1.plot(xliq, yliq, **isosat_kw)
-xvap = [v.T/fluid.Tc for v in vap]
-yvap = [v.P/fluid.Pc for v in vap]
+xvap = [v.T / fluid.Tc for v in vap]
+yvap = [v.P / fluid.Pc for v in vap]
 ax1.plot(xvap, yvap, **isosat_kw)
 
 hliq = [line.h.kJkg for line in liq]
@@ -240,18 +263,18 @@ ax_vu.plot(uvap, vvap, label="Saturaded Vapor", **isosat_kw)
 
 # Set graphics limit to only saturation region
 hmax = max(hvap)
-hmax += abs(hmax*0.1)
+hmax += abs(hmax * 0.1)
 umax = max(uvap)
-umax += abs(umax*0.1)
+umax += abs(umax * 0.1)
 smax = max(svap)
-smax += abs(smax*0.1)
+smax += abs(smax * 0.1)
 
 ax_Ph.set_xlim(Pt.h.kJkg, hmax)
-ax_Ph.set_ylim(Pt.P.MPa, Pmax/1e6)
+ax_Ph.set_ylim(Pt.P.MPa, Pc.P.MPa * 10)
 ax_Ts.set_xlim(Pt.s.kJkgK, smax)
-ax_Ts.set_ylim(Pt.T, Pc.T*1.1)
+ax_Ts.set_ylim(Pt.T, Pc.T * 1.1)
 ax_Tv.set_xlim(Pt.v, Vt.v)
-ax_Tv.set_ylim(Pt.T, Pc.T*1.1)
+ax_Tv.set_ylim(Pt.T, Pc.T * 1.1)
 ax_hs.set_xlim(Pt.s.kJkgK, smax)
 ax_hs.set_ylim(Pt.h.kJkg, hmax)
 ax_vu.set_xlim(Pt.u.kJkg, umax)
@@ -260,13 +283,13 @@ ax_vu.set_ylim(Pt.v, Vt.v)
 
 # Ancillary equation
 Tanc = np.concatenate([
-    np.linspace(fluid.Tt, 0.9*fluid.Tc, 10),
-    np.linspace(0.9*fluid.Tc, fluid.Tc, 10, endpoint=True)])
-Panc = [fluid()._Vapor_Pressure(t)/fluid.Pc for t in Tanc]
-ax1.plot(Tanc/fluid.Tc, Panc, label="Ancillary Vapor Pressure", **anc_kw)
+    np.linspace(fluid.Tt, 0.9 * fluid.Tc, 10),
+    np.linspace(0.9 * fluid.Tc, fluid.Tc, 10, endpoint=True)])
+Panc = [fluid()._Vapor_Pressure(t) / fluid.Pc for t in Tanc]
+ax1.plot(Tanc / fluid.Tc, Panc, label="Ancillary Vapor Pressure", **anc_kw)
 
-lanc = [1/fluid()._Liquid_Density(t) for t in Tanc]
-vanc = [1/fluid()._Vapor_Density(t) for t in Tanc]
+lanc = [1 / fluid()._Liquid_Density(t) for t in Tanc]
+vanc = [1 / fluid()._Vapor_Density(t) for t in Tanc]
 ax_Tv.plot(lanc, Tanc, label="Ancillary Liquid Density", **anc_kw)
 ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
 
@@ -303,9 +326,10 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
 # for T in isoT:
     # txt = "T: %s K" % T
     # print("    %s" % txt)
+
     # # Calculate the saturation point if available
+    # sat_pnt = []
     # if T < fluid.Tc:
-        # sat_pnt = []
         # for x in np.linspace(1, 0.1, 10, endpoint=False):
             # sat_pnt.append(fluid(T=T, x=x))
         # for x in np.linspace(0.1, 0, 11):
@@ -319,7 +343,10 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
 
     # for p in Pl:
         # point = fluid(P=p, T=T)
-        # if point.status == 1:
+        # if point.status in (1, 3):
+
+            # if point.rhoM > point._constants["rhomax"]:
+                # continue
 
             # # Discard point below the melting line
             # if melting and fluid._melting:
@@ -330,8 +357,8 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
 
             # # Add saturation point if neccesary
             # if sat and T < fluid.Tc and sat_pnt and point.s < sat_pnt[-1].s:
-                # for p in sat_pnt:
-                    # pts.append(p)
+                # for pt in sat_pnt:
+                    # pts.append(pt)
                 # sat = False
             # pts.append(point)
 
@@ -344,7 +371,7 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
     # u = []
     # v = []
     # for p in pts:
-        # if p.status:
+        # if p.status in (1, 3):
             # h.append(p.h.kJkg)
             # P.append(p.P.MPa)
             # s.append(p.s.kJkgK)
@@ -360,6 +387,7 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
 # for P in isoP:
     # txt = "P: %0.5g MPa" % (P/1e6)
     # print("    %s" % txt)
+
     # # Calculate the saturation point if available
     # if P < fluid.Pc:
         # sat_pnt = []
@@ -375,24 +403,28 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
     # for t in Tl:
         # point = fluid(P=P, T=t)
 
-        # if point.status == 1:
+        # if point.status in (1, 3):
+
+            # if point.rhoM > point._constants["rhomax"]:
+                # continue
 
             # # Discard point below the melting line
             # if fluid._melting:
                 # pm = fluid()._Melting_Pressure(point.T)
                 # if pm < point.P:
 
-                    # def f(t):
+                    # def f_p(t):
                         # pm = fluid()._Melting_Pressure(t)
                         # return pm - P
 
-                    # T = fsolve(f, point.T)
+                    # T = fsolve(f_p, point.T)
                     # point = fluid(T=T, P=P)
 
             # # Add saturation point if neccesary
             # if sat and P < fluid.Pc and sat_pnt and point.s > sat_pnt[-1].s:
                 # for p in sat_pnt[::-1]:
-                    # pts.append(p)
+                    # if p.status in (1, 3):
+                        # pts.append(p)
                 # sat = False
 
             # pts.append(point)
@@ -403,7 +435,7 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
     # u = []
     # v = []
     # for p in pts:
-        # if p.status == 1:
+        # if p.status in (1, 3):
             # h.append(p.h.kJkg)
             # T.append(p.T)
             # s.append(p.s.kJkgK)
@@ -417,32 +449,31 @@ ax_Tv.plot(vanc, Tanc, label="Ancillary Vapor Density", **anc_kw)
 
 # Calculate isoenthalpic lines
 print("Calculating isoenthalpic lines...")
-for h in isoh[-5:-2]:
-    txt = "h: %0.5g kJ/kg" % (h/1000)
+for h in isoh[3:]:
+    txt = "h: %0.5g kJ/kg" % (h)
     print("    %s" % txt)
 
     pts = []
     for p in Pl:
+        print(p, h)
         point = fluid(P=p, h=h*1000)
-        if point.status == 1:
+
+        if point.status in (1,3):
 
             # Discard point below the melting line
             if fluid._melting:
                 pm = fluid()._Melting_Pressure(point.T)
                 if pm < point.P:
 
-                    def f(t):
+                    def f_h(t):
                         pm = fluid()._Melting_Pressure(t)
-                        return fluid(T=t, P=pm).h.kJkg-h
+                        return fluid(T=t, P=pm).h.kJkg - h
 
-                    T = fsolve(f, point.T)
+                    T = fsolve(f_h, point.T)
                     pm = fluid()._Melting_Pressure(T)
                     point = fluid(T=T, P=pm)
 
             pts.append(point)
-            print(point.T, point.s, point.x)
-        else:
-            print("Error", p, point.status, point.msg)
 
     T = []
     s = []
@@ -474,11 +505,11 @@ for h in isoh[-5:-2]:
 
     # # Find saturated liquid point
     # if Pt.s.kJkgK > s:
-        # def f(ti):
+        # def f_sm(ti):
             # if ti < fluid.Tt:
                 # ti = fluid.Tt
             # return fluid(T=ti, x=0).s - s*1000
-        # ts = fsolve(f, (fluid.Tc-fluid.Tt)/2)
+        # ts = fsolve(f_sm, (fluid.Tc-fluid.Tt)/2)
     # else:
         # phase = False
 
@@ -492,13 +523,15 @@ for h in isoh[-5:-2]:
                 # pm = fluid()._Melting_Pressure(point.T)
                 # if pm < point.P and point.x == 1:
 
-                    # # Fuction to find the intersection between isoentropic line
-                    # # and melting line
-                    # def f(ti):
+                    # # Fuction to find the intersection between isoentropic
+                    # # line and melting line
+                    # def f_s(ti):
                         # pm = fluid()._Melting_Pressure(ti)
+                        # if pm < 0:
+                            # pm = 1e-10
                         # return fluid(T=ti, P=pm).s.kJkgK-s
 
-                    # T = fsolve(f, point.T)
+                    # T = fsolve(f_s, point.T)
                     # pm = fluid()._Melting_Pressure(T)
                     # point = fluid(T=T, P=pm)
                     # break
@@ -559,14 +592,14 @@ for h in isoh[-5:-2]:
                 # pm = fluid()._Melting_Pressure(p.T)
                 # if pm < p.P:
 
-                    # # Fuction to find the intersection between isochor line
-                    # def f(ti):
+                    # # Function to find the intersection between isochor line
+                    # def f_v(ti):
                         # pm = fluid()._Melting_Pressure(ti)
                         # return fluid(T=ti, P=pm).v-v
 
                     # t = None
                     # for to in [p.Tt, p.T, p.Tc]:
-                        # rinput = fsolve(f, p.T, full_output=True)
+                        # rinput = fsolve(f_v, p.T, full_output=True)
                         # if rinput[2] == 1 and abs(rinput[1]["fvec"]) < 1e-5:
                             # t = rinput[0]
                             # break
@@ -584,19 +617,19 @@ for h in isoh[-5:-2]:
             # P.append(p.P.MPa)
 
     # ax_Ph.plot(h, P, label=txt, **isov_kw)
-    # ax_Ts.plot(s, T, label=txt, **isov_kw)
-    # ax_hs.plot(s, h, label=txt, **isov_kw)
+    # # ax_Ts.plot(s, T, label=txt, **isov_kw)
+    # # ax_hs.plot(s, h, label=txt, **isov_kw)
 
 # Show the validity range of equation
-Prmin = Pt.P/fluid.Pc
-Trmin = Tmin/fluid.Tc
-Prmax = Pmax/fluid.Pc
-Trmax = Tmax/fluid.Tc
+Prmin = Pt.P / fluid.Pc
+Trmin = Tmin / fluid.Tc
+Prmax = Pmax / fluid.Pc
+Trmax = Tmax / fluid.Tc
 
 if fluid._melting:
     vert = [(Trmin, Prmin)]
     for t, p in zip(Tm, Pm):
-        vert.append((t/fluid.Tc, min(p/fluid.Pc, Prmax)))
+        vert.append((t / fluid.Tc, min(p / fluid.Pc, Prmax)))
 else:
     vert = [(Trmin, Prmin), (Trmin, Prmax)]
 
@@ -609,15 +642,18 @@ ax1.add_patch(poly)
 
 # Ideal Curves
 # print("Calculating ideal curves...")
-# T = np.logspace(2, 4, points*5, endpoint=True)
+# T = np.logspace(np.log10(Tmin), 4, points*5, endpoint=True)
 
 # for curva in ["ideal", "boyle", "joule-thomson", "joule"]:
-    # print(curva)
+    # print("    %s" % curva)
     # T_line = []
     # P_line = []
     # pmin = Pmin
     # for t in T:
         # P = fluid()._IdealCurve(curva, t)
+        # if P is None or P < 0:
+            # continue
+
         # if fluid._melting:
             # Pm = fluid()._Melting_Pressure(t)
         # else:
@@ -630,6 +666,10 @@ ax1.add_patch(poly)
                 # if st.P > P:
                     # P = st.P
                     # pmin = P
+
+                # # Discard any boyle point over saturation
+                # if curva == "boyle":
+                    # continue
 
         # if 0 < P <= Pm:
             # T_line.append(t/fluid.Tc)
@@ -648,8 +688,8 @@ ax1.add_patch(poly)
     # else:
         # txt = curva
 
-    # # Location of text, in boyle and j-t using the maximum, in other a position
-    # # at left of plot
+    # # Location of text, in boyle and j-t using the maximum, in other a
+    # # position at left of plot
     # if curva in ["joule", "boyle", "joule-thomson"]:
         # i = P_line.index(max(P_line))
     # else:
@@ -682,16 +722,20 @@ legend_tv = [
     Line2D([0], [0], label='Isoquality lines', **isoq_kw),
     Line2D([0], [0], label='Isoterm lines', **isoT_kw),
     Line2D([0], [0], label='Isobar lines', **isoP_kw),
-    Line2D([0], [0], label='Isoenthalpic lines', **isoh_kw),
+    # Line2D([0], [0], label='Isoenthalpic lines', **isoh_kw),
     Line2D([0], [0], label='Isoentropic lines', **isos_kw),
     Line2D([0], [0], label='Isochor lines', **isov_kw)]
 ax_Tv.legend(handles=legend_tv, loc='upper right')
 
 fig.set_tight_layout(True)
 
-plt.show()
+if args.matplotlib:
+    plt.show()
 
 file = "/home/jjgomera/Descargas/ImagesPychemqt/%s.png" % fluid.__name__
 fig.savefig(file)
 
-subprocess.Popen(['gpicview', file])
+if args.show:
+    subprocess.call(["xdg-open", file])
+else:
+    print("Image generated at %s" % file)
