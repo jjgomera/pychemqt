@@ -165,8 +165,7 @@ import os
 
 from scipy import sin, tan, sinh, cosh, tanh, arctan, arccos, exp, log
 from scipy.constants import Boltzmann, pi, Avogadro, R, u
-from scipy.optimize import fsolve
-from tools.qt import tr
+from scipy.optimize import fsolve, newton
 
 from lib import unidades
 from lib.config import conf_dir
@@ -178,6 +177,7 @@ from lib.mezcla import Mezcla
 from lib.physics import Collision_Neufeld
 from lib.thermo import ThermoAdvanced
 from lib.utilities import SimpleEq, refDoc
+from tools.qt import tr
 
 
 __doi__ = {
@@ -1127,12 +1127,12 @@ class MEoS(ThermoAdvanced):
         >>> from lib.mEoS import H2O
         >>> st1 = H2O(T=300, P=101325)
         >>> st2 = H2O(T=300, h=st1.h)
-        >>> print(st1.T, st2.T)
-        300.0 300.0
-        >>> print(st1.x, st2.x)
-        0.0 3.694259929868599e-05
-        >>> print(st1.h, st2.h)
-        112654.89965300939 112654.89965300939
+        >>> "%0.2f %0.2f" % (st1.T, st2.T)
+        '300.00 300.00'
+        >>> "%0.4f %0.4f" % (st1.x, st2.x)
+        '0.0000 0.0000'
+        >>> "%0.4f %0.4f" % (st1.h, st2.h)
+        '112654.8997 112654.8997'
 
         As we can see, there are two point with same T-h values, so as input
         pair they are not a complete definition of state point.
@@ -1383,7 +1383,7 @@ class MEoS(ThermoAdvanced):
 
         # Define _mode variable to know in calculo procedure the input pair
         self._mode = ""
-        if self.kwargs["T"] and self.kwargs["P"]:
+        if self.kwargs["T"] and self.kwargs["P"] > 0:
             self._mode = "T-P"
         elif self.kwargs["T"] and self.kwargs["rho"] is not None:
             self._mode = "T-rho"
@@ -2517,17 +2517,28 @@ class MEoS(ThermoAdvanced):
                     * u : Known internal energy, [kJ/kg]
                     * T0 : initial values for temperature, [K]
                     * rho0 : initial values for density, [kg/m³]
+
+        Returns
+        -------
+            prop : dict
+                Dict with the calculated properties:
+
+                    * T : Calculated temperature,[K]
+                    * rho : Calculated bulk density, [kg/m³]
+                    * rhoG : Calculated gas phase density, [kg/m³]
+                    * rhoL : Calculated liquid phase density, [kg/m³]
+                    * x : Calculated quality, [-]
         """
         # Set initial value for iteration
         if "T" not in kwargs:
             to = [self._constants["Tmin"], (self.Tt+self.Tc)/2, self.Tc,
                   self._constants["Tmax"]]
-            if self.kwargs["T0"]:
+            if "T0" in kwargs:
                 if isinstance(kwargs["T0"], list):
                     for t in kwargs["T0"][-1::-1]:
                         to.insert(0, t)
                 else:
-                    to.insert(0, self.kwargs["T0"])
+                    to.insert(0, kwargs["T0"])
 
         if "rho" not in kwargs:
             rhov = self._Vapor_Density(self.Tt)
@@ -6225,16 +6236,23 @@ if __name__ == "__main__":
     # print(st.x, st.h.kJkg, st.s.kJkgK, st.msg)
     # print(st2.x, st2.h.kJkg, st2.s.kJkgK, st2.msg)
 
-    from lib.mEoS import nC5
-    st1 = nC5(T=300, P=1e6)
-    st2 = nC5(T=300, P=1e6, eq="PR")
+    # from lib.mEoS import nC5
+    # st1 = nC5(T=300, P=1e6)
+    # st2 = nC5(T=300, P=1e6, eq="PR")
 
-    for key in st1.propertiesPhase():
-        p1 = st1.__getattribute__(key)
-        p2 = st2.__getattribute__(key)
-        if isinstance(p1, list):
-            print(key, p1, p2)
-        elif p2 != 0:
-            print(key, p1, p2, "%0.2f%s" % ((p1-p2)/p2*100, "%"))
-        else:
-            print(key, p1, p2)
+    # for key in st1.propertiesPhase():
+        # p1 = st1.__getattribute__(key)
+        # p2 = st2.__getattribute__(key)
+        # if isinstance(p1, list):
+            # print(key, p1, p2)
+        # elif p2 != 0:
+            # print(key, p1, p2, "%0.2f%s" % ((p1-p2)/p2*100, "%"))
+        # else:
+            # print(key, p1, p2)
+
+    from lib.mEoS import H2O
+    from lib.refProp import RefProp
+    ref = RefProp(ids=[H2O.id], T=40+273.15, P=1e5)
+    st = H2O(T=40+273.15, P=1e5)
+
+    print(ref.virialC*ref.M**2, st.virialC*st.M**2)
