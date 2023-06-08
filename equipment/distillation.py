@@ -26,19 +26,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
-from math import log, exp
+from math import exp, log, pi
 import os
 
+from numpy import linspace
 from numpy.lib.scimath import log10
-from scipy import pi, linspace
 from scipy.optimize import fsolve
 from tools.qt import tr
 
+from equipment.parents import equipment
+from equipment.heatExchanger import Heat_Exchanger
 from lib import unidades
 from lib.corriente import Corriente
 from lib.plot import PlotDialog
-from equipment.parents import equipment
-from equipment.heatExchanger import Heat_Exchanger
 
 
 class Flash(equipment):
@@ -278,38 +278,30 @@ class Flash(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(tr("pychemqt", "Mode"),
-              ("TEXT_FLASH", "flash"), str),
-             (tr("pychemqt", "Output Temperature"),
-              "Tout", unidades.Temperature),
-             (tr("pychemqt", "Output Pressure"), "Pout",
-              unidades.Pressure),
-             (tr("pychemqt", "Vapor Output Molar Flow"),
-              "VaporMolarFlow", unidades.MolarFlow),
-             (tr("pychemqt", "Vapor Output Mass Flow"),
-              "VaporMassFlow", unidades.MassFlow),
-             (tr(
-                 "pychemqt", "Vapor Output Volumetric Flow"), "VaporVolFlow",
-                 unidades.VolFlow),
-             (tr(
-                 "pychemqt", "Vapor Output Molar Composition"),
-                 "VaporMolarComposition", unidades.Dimensionless),
-             (tr(
-                 "pychemqt", "Vapor Output Mass Composition"),
-                 "VaporMassComposition", unidades.Dimensionless),
-             (tr("pychemqt", "Liquid Output Molar Flow"),
-              "LiquidMolarFlow", unidades.MolarFlow),
-             (tr("pychemqt", "Liquid Output Mass Flow"),
-              "LiquidMassFlow", unidades.MassFlow),
-             (tr(
-                 "pychemqt", "Liquid Output Volumetric Flow"),
-                 "LiquidVolFlow", unidades.VolFlow),
-             (tr(
-                 "pychemqt", "Liquid Output Molar Composition"),
-                 "LiquidMolarComposition", unidades.Dimensionless),
-             (tr(
-                 "pychemqt", "Liquid Output Mass Composition"),
-                 "LiquidMassComposition", unidades.Dimensionless)]
+        l = [(tr("pychemqt", "Mode"), ("TEXT_FLASH", "flash"), str),
+             (tr("pychemqt", "Output Temperature"), "Tout",
+              unidades.Temperature),
+             (tr("pychemqt", "Output Pressure"), "Pout", unidades.Pressure),
+             (tr("pychemqt", "Vapor Output Molar Flow"), "VaporMolarFlow",
+              unidades.MolarFlow),
+             (tr("pychemqt", "Vapor Output Mass Flow"), "VaporMassFlow",
+              unidades.MassFlow),
+             (tr("pychemqt", "Vapor Output Volumetric Flow"), "VaporVolFlow",
+              unidades.VolFlow),
+             (tr("pychemqt", "Vapor Output Molar Composition"),
+              "VaporMolarComposition", unidades.Dimensionless),
+             (tr("pychemqt", "Vapor Output Mass Composition"),
+              "VaporMassComposition", unidades.Dimensionless),
+             (tr("pychemqt", "Liquid Output Molar Flow"), "LiquidMolarFlow",
+              unidades.MolarFlow),
+             (tr("pychemqt", "Liquid Output Mass Flow"), "LiquidMassFlow",
+              unidades.MassFlow),
+             (tr("pychemqt", "Liquid Output Volumetric Flow"), "LiquidVolFlow",
+              unidades.VolFlow),
+             (tr("pychemqt", "Liquid Output Molar Composition"),
+              "LiquidMolarComposition", unidades.Dimensionless),
+             (tr("pychemqt", "Liquid Output Mass Composition"),
+              "LiquidMassComposition", unidades.Dimensionless)]
         return l
 
     def propertiesListTitle(self, index):
@@ -675,8 +667,7 @@ class ColumnFUG(Tower):
             return
 
         if not self.kwargs["R"] and not self.kwargs["R_Rmin"]:
-            self.msg = tr(
-                "pychemqt", "undefined reflux ratio condition")
+            self.msg = tr("pychemqt", "undefined reflux ratio condition")
             self.status = 0
             return
 
@@ -693,19 +684,16 @@ class ColumnFUG(Tower):
             self.status = 0
             return
         if self.kwargs["LK"] == -1:
-            self.msg = tr(
-                "pychemqt", "undefined light key component")
+            self.msg = tr("pychemqt", "undefined light key component")
             self.status = 0
             return
         if self.kwargs["HK"] == -1:
-            self.msg = tr(
-                "pychemqt", "undefined heavy key component")
+            self.msg = tr("pychemqt", "undefined heavy key component")
             self.status = 0
             return
 
         if self.kwargs["HK"] <= self.kwargs["LK"]:
-            self.msg = tr(
-                "pychemqt", "key component bad specified")
+            self.msg = tr("pychemqt", "key component bad specified")
             self.status = 0
             return
 
