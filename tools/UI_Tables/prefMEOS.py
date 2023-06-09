@@ -343,7 +343,7 @@ class Widget(QtWidgets.QDialog):
 
         self.wireframeConfig = LineConfig(
             "3D", tr("pychemqt", "Wireframe line configuration"))
-        self.wireframeConfig.Marker.setVisible(False)
+        self.wireframeConfig.Marker.setEnabled(False)
         layoutgroup2.addWidget(self.wireframeConfig, 4, 1, 1, 2)
 
         layout.addItem(QtWidgets.QSpacerItem(
