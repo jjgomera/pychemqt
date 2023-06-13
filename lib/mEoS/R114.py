@@ -157,9 +157,8 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = R114(T=376.9, rhom=6.897)
         # self.assertEqual(round(st.mu.muPas, 4), 152.2317)
-        # self.assertEqual(round(st.k.mWmK, 4), 45.8090)
         self.assertEqual(round(st.mu.muPas, 4), 152.2322)
-        self.assertEqual(round(st.k.mWmK, 4), 45.8068)
+        self.assertEqual(round(st.k.mWmK, 4), 45.8090)
 
     def test_krauss(self):
         """Selected point from Table C5 and C6, pag 72"""

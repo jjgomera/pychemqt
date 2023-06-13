@@ -169,13 +169,13 @@ class Ne(MEoS):
         om = rho/1673.0
         c = [1.03010, -0.99175, 2.47127, -3.11864, 1.57066]
         b = [0.48148, -1.18732, 2.80277, -5.41058, 7.04779, -3.76608]
-        sum1 = sum([ci*om**i for i, ci in enumerate(c)])
-        sum2 = sum([bi*om**i for i, bi in enumerate(b)])
+        sum1 = sum(ci*om**i for i, ci in enumerate(c))
+        sum2 = sum(bi*om**i for i, bi in enumerate(b))
         sigma = 3.05e-10*(sum1-sum2*log10(T/122.1))
         br = 2.0/3.0*pi*Avogadro*sigma**3
         brho = rho/self.M*1000*br
         d = [1, 0.27676, 0.014355, 2.6480, -1.9643, 0.89161]
-        nd = sum([di*brho**i for i, di in enumerate(d)])
+        nd = sum(di*brho**i for i, di in enumerate(d))
         return unidades.Viscosity(nd*nt/100, "muPas")
 
 

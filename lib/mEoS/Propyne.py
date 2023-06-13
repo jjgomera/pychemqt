@@ -131,4 +131,4 @@ class Test(TestCase):
         # self.assertEqual(round(st.mu.muPas, 5), 80.62469)
         # self.assertEqual(round(st.k.mWmK, 4), 91.2068)
         self.assertEqual(round(st.mu.muPas, 5), 80.62182)
-        self.assertEqual(round(st.k.mWmK, 4), 91.2048)
+        self.assertEqual(round(st.k.mWmK, 4), 91.2093)

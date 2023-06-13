@@ -2884,11 +2884,11 @@ class MEoS(ThermoAdvanced):
         s = self.R.kJkgK*(tau*(fiot+firt)-fio-fir)+self.sref-self.soffset
         cv = -self.R.kJkgK*tau**2*(fiott+firtt)
         cp = self.R.kJkgK*(
-            -tau**2*(fiott+firtt) +
-            (1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd))
+            (1+delta*fird-delta*tau*firdt)**2/(1+2*delta*fird+delta**2*firdd)
+            - tau**2*(fiott+firtt))
         w = (self.R*self.T*(
-             1 + 2*delta*fird+delta**2*firdd -
-             (1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
+             1 + 2*delta*fird+delta**2*firdd
+             - (1+delta*fird-delta*tau*firdt)**2/tau**2/(fiott+firtt)))**0.5
 
         if delta*fird <= -1:
             fugacity = None
@@ -3013,7 +3013,6 @@ class MEoS(ThermoAdvanced):
             self._Dielectric(fase.rho, self.T))
         fase.fraccion = [1]
         fase.fraccion_masica = [1]
-
 
 #        dbt=-phi11/rho/t
 #        propiedades["cps"] = propiedades["cv"]-self.R*(1+delta*fird-delta*tau
@@ -3607,6 +3606,9 @@ class MEoS(ThermoAdvanced):
             * alfa_ass: Association term exponential tau term coefficient
             * beta_ass: Association term exponential tau term coefficient
             * b_ass: Association special last term
+
+        exp1 and exp2 are used only for Lemmon-Jacobsen correlation for R125,
+        normally don't used and using the default value 2.
 
         Parameters
         ----------
