@@ -338,8 +338,13 @@ __doi__ = {
                   "the Thermodynamic Properties of Ammonia",
          "ref": "J. Phys. Chem. Ref. Data 52 (2023) 013102",
          "doi": "10.1063/5.0128269"},
-
     27:
+        {"autor": "Thorade, M., Saadat, A.",
+         "title": "Partial derivatives of thermodynamic state properties for "
+                  "dynamic simulation",
+         "ref": "Environ Eartth Sci 70(8) (2013) 3497-3503",
+         "doi": "10.1007/s12665-013-2394-z"},
+    28:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -1216,7 +1221,22 @@ class MEoS(ThermoAdvanced):
             * cv0: Ideal gas Specific isochoric heat capacity, [J/kg·K]
             * cp0_cv: Ideal gas heat capacities ratio, [-]
             * gamma0: Ideal gas Isoentropic exponent, [-]
-
+            * d2Pdrho2: [∂²P/∂ρ²]T
+            * d2PdrhodT: [∂²P/∂ρ∂T]
+            * d2PdT2: [∂²P/∂∂T²]
+            * d2sdrho2: [∂²s/∂ρ²]
+            * d2sdrhodT: [∂²s/∂ρ∂T]
+            * d2sdT2: [∂²s/∂T²]
+            * d2udrho: [∂²u/∂ρ²]
+            * d2udrhodT: [∂²u/∂ρ∂T]
+            * d2udT2: [∂²u/∂T²]
+            * d2hdrho2: [∂²h/∂ρ²]
+            * d2hdrhodT: [∂²h/∂ρ∂T]
+            * d2hdT2: [∂²h/∂ρ∂T²]
+            * d2gdrho2: [∂²g/∂ρ²]
+            * d2gdrhodT: [∂²g/∂ρ∂T]
+            * d2gdT2: [∂²g/∂T²]
+            * fase.PIP: Phase identification parameter, [-]
 
         Parameters
         ----------
@@ -1882,7 +1902,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 if x < 0:
@@ -2026,7 +2046,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 if x < 0:
@@ -2093,7 +2113,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 tau = self.Tc/T
@@ -2154,7 +2174,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 tau = self.Tc/T
@@ -2218,7 +2238,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 tau = self.Tc/T
@@ -2287,7 +2307,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 if x < 0:
@@ -2360,7 +2380,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 if x < 0:
@@ -2435,7 +2455,7 @@ class MEoS(ThermoAdvanced):
                 if T < 1:
                     T = 1
                 if rhol < 0:
-                    rhol = 1e-10
+                    rhol = 1e-9
                 if rhog < 0:
                     rhog = 1e-10
                 if x < 0:
@@ -2656,9 +2676,6 @@ class MEoS(ThermoAdvanced):
             else:
                 self.rhoc = self.__class__.rhoc
 
-        # Phase identification parameter
-        # PI = 2-rho*(d2PdrhodT/dPdT-d2pdrho2/dPdrho)
-
     def fsolve(self, f, f2=None, **kwargs):
         """Procedure to iterate to calculate T and rho in input pair without
         some of that unknown
@@ -2851,6 +2868,7 @@ class MEoS(ThermoAdvanced):
 
         return prop
 
+    @refDoc(__doi__, [27], tab=8)
     def fill(self, fase, estado):
         """Fill phase properties"""
         fase._bool = True
@@ -2865,12 +2883,17 @@ class MEoS(ThermoAdvanced):
         fiot = estado["fiot"]
         fiott = estado["fiott"]
         fiodt = estado["fiodt"]
+        fiottt = estado["fiottt"]
         fir = estado["fir"]
         firt = estado["firt"]
         firtt = estado["firtt"]
         fird = estado["fird"]
         firdd = estado["firdd"]
         firdt = estado["firdt"]
+        firddd = estado["firddd"]
+        firddt = estado["firddt"]
+        firdtt = estado["firdtt"]
+        firttt = estado["firttt"]
 
         fase.fir = fir
         fase.fird = fird
@@ -2878,6 +2901,10 @@ class MEoS(ThermoAdvanced):
         fase.firt = firt
         fase.firtt = firtt
         fase.firdt = firdt
+        fase.firddd = firddd
+        fase.firddt = firddt
+        fase.firdtt = firdtt
+        fase.firttt = firdtt
 
         h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird) \
             + self.href-self.hoffset
@@ -2911,7 +2938,7 @@ class MEoS(ThermoAdvanced):
         fase.cp = unidades.SpecificHeat(cp, "kJkgK")
         fase.cv = unidades.SpecificHeat(cv, "kJkgK")
         fase.cp_cv = unidades.Dimensionless(fase.cp/fase.cv)
-#        fase.cps = estado["cps"]
+        # fase.cps = estado["cps"]
         fase.w = unidades.Speed(w)
 
         fase.rhoM = unidades.MolarDensity(fase.rho/self.M)
@@ -2926,9 +2953,6 @@ class MEoS(ThermoAdvanced):
         fase.alfap = unidades.InvTemperature(alfap)
         fase.betap = unidades.Density(betap)
 
-        # if fase.rho:
-        #    d2Pdvdt = self.derivative("P", "v", "T", fase))
-
         if fase.rho:
             fase.gamma = unidades.Dimensionless(
                 -fase.v/self.P*self.derivative("P", "v", "s", fase))
@@ -2939,6 +2963,21 @@ class MEoS(ThermoAdvanced):
             self.derivative("T", "P", "h", fase))
         fase.Gruneisen = unidades.Dimensionless(
             fase.v/fase.cv*self.derivative("P", "T", "v", fase))
+        fase.dpdT_rho = unidades.PressureTemperature(
+            self.derivative("P", "T", "rho", fase))
+        fase.IntP = unidades.Pressure(self.derivative("u", "v", "T", fase))
+
+        # Several second-order partial derivatives from ref #27
+        fase.d2PdrhodT = self.R*(1 + 2*delta*fird + delta**2*firdd
+                                 - 2*delta*tau*firdt - tau*delta**2*firddt)
+        fase.d2PdT2 = fase.rho*self.R/self.T*(tau**2*delta*firdtt)
+        fase.d2sdT2 = self.R/self.T**2*(
+            tau**3*(fiottt+firttt) + 3*tau**2*(fiott+firtt))
+        fase.d2udT2 = self.R/self.T*(
+            tau**3*(fiottt+firttt)+2*tau**2*(fiott+firtt))
+        fase.d2hdT2 = self.T/self.T*(
+            tau**3*(fiottt+firttt) + 2*tau**2*(fiott+firtt)+tau*delta*firdtt)
+        fase.d2gdT2 = self.R/self.T*(tau**2*(fiott+firtt)+tau**2*delta*firdtt)
 
         if fase.rho:
             fase.alfav = unidades.InvTemperature(
@@ -2984,9 +3023,27 @@ class MEoS(ThermoAdvanced):
             fase.hInput = unidades.Enthalpy(
                 fase.v*self.derivative("h", "v", "P", fase))
 
-        fase.dpdT_rho = unidades.PressureTemperature(
-            self.derivative("P", "T", "rho", fase))
-        fase.IntP = unidades.Pressure(self.derivative("u", "v", "T", fase))
+            fase.d2Pdrho2 = self.R*self.T/fase.rho*(
+                2*delta*fird + 4*delta**2*firdd + delta**3*firddd)
+            fase.d2sdrho2 = self.R/fase.rho**2*(
+                1 - delta**2*firdd + tau*delta**2*firddt)
+            fase.d2sdrhodT = self.R/self.T/fase.rho*(-tau**2*delta*firdtt)
+            fase.d2udrho = self.T*self.R/fase.rho**2*(tau*delta**2*firddt)
+            fase.d2udrhodT = self.R/fase.rho*(-tau**2*delta*firdtt)
+            fase.d2hdrho2 = self.T*self.R/fase.rho*(
+                tau*delta**2*firddt + 2*delta**2*firdd + delta**3*firddd)
+            fase.d2hdrhodT = self.R/fase.rho * (
+                delta**2*firdd - tau**2*delta*firdtt + delta*fird
+                - tau*delta**2*firddt - tau*delta*firdt)
+            fase.d2gdrho2 = self.T*self.R/fase.rho**2 * (
+                -1 + 3*delta**2*firdd + delta**3*firddd)
+            fase.d2gdrhodT = self.R/fase.rho * (
+                1 + 2*delta*fird - 2*tau*delta*firdt + delta**2*firdd
+                - tau*delta**2*firddt)
+
+            # Phase identification parameter
+            fase.PIP = 2-fase.rho*(
+                fase.d2PdrhodT/fase.dpdT_rho-fase.d2Pdrho2/fase.dpdrho_T)
 
         fase.virialB = unidades.SpecificVolume(estado["B"]/self.rhoc)
         fase.virialC = unidades.SpecificVolume_square(
@@ -3492,6 +3549,10 @@ class MEoS(ThermoAdvanced):
         fio = Fi0["ao_log"][1]*log(tau)
         fiot = Fi0["ao_log"][1]/tau
         fiott = -Fi0["ao_log"][1]/tau**2
+        try:
+            fiottt = 2*Fi0["ao_log"][1]/tau**3
+        except ZeroDivisionError:
+            fiottt = 0
 
         if delta:
             fiod = 1/delta
@@ -3508,18 +3569,23 @@ class MEoS(ThermoAdvanced):
                     fiot += t*n*tau**(t-1)
                 if t not in [0, 1]:
                     fiott += n*t*(t-1)*tau**(t-2)
+                if t not in [0, 1, 2]:
+                    fiottt += n*t*(t-1)*(t-2)*tau**(t-3)
 
         if "ao_exp" in Fi0:
             for n, g in zip(Fi0["ao_exp"], Fi0["titao"]):
                 fio += n*log(1-exp(-g*tau))
                 fiot += n*g*((1-exp(-g*tau))**-1-1)
                 fiott -= n*g**2*exp(-g*tau)*(1-exp(-g*tau))**-2
+                fiottt += n*g**3*((exp(g*tau) - 1)**2 \
+                                  + 3*exp(g*tau) - 1)/(exp(g*tau) - 1)**3
 
         # Special case for τ·ln(τ) terms (i.e. undecane, D2O)
         if "tau*logtau" in Fi0:
             fio += Fi0["tau*logtau"]*tau*log(tau)
             fiot += Fi0["tau*logtau"]*(log(tau)+1)
             fiott += Fi0["tau*logtau"]/tau
+            fiottt -= Fi0["tau*logtau"]/tau**2
 
         if "tau*logdelta" in Fi0 and delta:
             fio += Fi0["tau*logdelta"]*tau*log(delta)
@@ -3534,6 +3600,10 @@ class MEoS(ThermoAdvanced):
                 fio += n*log(C+exp(g*tau))
                 fiot += n*g/(C*exp(-g*tau)+1)
                 fiott += C*n*g**2*exp(-g*tau)/(C*exp(-g*tau)+1)**2
+                fiottt += g**3*n*((C + exp(g*tau))**2 \
+                    - 3*(C + exp(g*tau))*exp(g*tau) \
+                    + 2*exp(2*g*tau))*exp(g*tau)/(C+exp(g*tau))**3
+
 
         # Hyperbolic terms
         if "ao_sinh" in Fi0:
@@ -3541,12 +3611,14 @@ class MEoS(ThermoAdvanced):
                 fio += n*log(abs(sinh(c*tau)))
                 fiot += n*c/tanh(c*tau)
                 fiott -= n*c**2/sinh(c*tau)**2
+                fiottt += 2*c**3*n*cosh(c*tau)/sinh(c*tau)**3
 
         if "ao_cosh" in Fi0:
             for n, c in zip(Fi0["ao_cosh"], Fi0["cosh"]):
                 fio -= n*log(abs(cosh(c*tau)))
                 fiot -= n*c*tanh(c*tau)
                 fiott -= n*c**2/cosh(c*tau)**2
+                fiottt -= -2*c**3*n*sinh(c*tau)/cosh(c*tau)**3
 
         R_ = cp.get("R", self._constants["R"])
         factor = R_/self._constants["R"]
@@ -3559,6 +3631,7 @@ class MEoS(ThermoAdvanced):
         prop["fio"] = fio
         prop["fiot"] = fiot*factor
         prop["fiott"] = fiott*factor
+        prop["fiottt"] = fiottt*factor
         prop["fiod"] = fiod
         prop["fiodd"] = fiodd
         prop["fiodt"] = fiodt
@@ -3630,10 +3703,11 @@ class MEoS(ThermoAdvanced):
                 * firdd: [∂²fir/∂δ²]τ,x  [-]
         """
 
-        fir = fird = firdd = firt = firtt = firdt = firdtt = 0
-        firddd = firttt = firddt = 0
+        fir = fird = firdd = firt = firtt = firdt = 0
+        firddd = firdtt = firddt = firttt = 0
         delta_0 = 1e-100
-        B = Bt = C = Ct = D = 0
+        B = C = D = 0
+        Bt = Ct = 0
 
         if delta:
             # Polinomial terms
@@ -3647,15 +3721,15 @@ class MEoS(ThermoAdvanced):
                 firt += n*t*delta**d*tau**(t-1)
                 firtt += n*t*(t-1)*delta**d*tau**(t-2)
                 firdt += n*t*d*delta**(d-1)*tau**(t-1)
-                firdtt += n*t*d*(t-1)*delta**(d-1)*tau**(t-2)
                 firddd += n*d*(d-1)*(d-2)*delta**(d-3)*tau**t
+                firdtt += n*t*d*(t-1)*delta**(d-1)*tau**(t-2)
                 firddt += n*d*(d-1)*delta**(d-2)*t*tau**(t-1)
                 firttt += n*t*(t-1)*(t-2)*delta**d*tau**(t-3)
                 B += n*d*delta_0**(d-1)*tau**t
-                Bt += n*t*d*delta_0**(d-1)*tau**(t-1)
                 C += n*d*(d-1)*delta_0**(d-2)*tau**t
-                Ct += n*d*(d-1)*delta_0**(d-2)*t*tau**(t-1)
                 D += n*d*(d-1)*(d-2)*delta_0**(d-3)*tau**t
+                # Bt += n*t*d*delta_0**(d-1)*tau**(t-1)
+                # Ct += n*d*(d-1)*delta_0**(d-2)*t*tau**(t-1)
 
             # Exponential terms
             nr2 = self._constants.get("nr2", [])
@@ -3665,41 +3739,46 @@ class MEoS(ThermoAdvanced):
             c2 = self._constants.get("c2", [])
             for n, d, g, t, c in zip(nr2, d2, g2, t2, c2):
                 fir += n*delta**d*tau**t*exp(-g*delta**c)
-                fird += n*exp(-g*delta**c)*delta**(d-1)*tau**t*(d-g*c*delta**c)
-                firdd += n*exp(-g*delta**c)*delta**(d-2)*tau**t * \
-                    ((d-g*c*delta**c)*(d-1-g*c*delta**c)-g**2*c**2*delta**c)
-                firddd -= n*exp(-g*delta**c)*delta**(d-3)*tau**t * \
-                    (c**3*delta**(3*c)*g**3 - 3*c**2*d*delta**(2*c)*g**2 -
-                     3*c**3*delta**(2*c)*g**2 + 3*c**2*delta**(2*c)*g**2 +
-                     3*c*d**2*delta**c*g + 3*c**2*d*delta**c*g -
-                     6*c*d*delta**c*g + c**3*delta**c*g - 3*c**2*delta**c*g +
-                     2*c*delta**c*g - d**3 + 3*d**2 - 2*d)
-                firt += n*t*delta**d*tau**(t-1)*exp(-g*delta**c)
-                firtt += n*t*(t-1)*delta**d*tau**(t-2)*exp(-g*delta**c)
-                firdt += n*t*delta**(d-1)*tau**(t-1)*(d-g*c*delta**c) * \
-                    exp(-g*delta**c)
-                firdtt += n*t*(t-1)*delta**(d-1)*tau**(t-2) * \
-                    (d-g*c*delta**c) * exp(-g*delta**c)
-                firddt += n*t*delta**(d-2)*tau**(t-1)*exp(-g*delta**c) * (
-                    c**2*delta**(2*c)*g**2 - 2*c*d*delta**c*g -
-                    c**2*delta**c*g + c*delta**c*g + d**2 - d)
-                firttt += n*t*(t-1)*(t-2)*delta**d*tau**(t-3)*exp(-g*delta**c)
-                B += n*exp(-g*delta_0**c)*delta_0**(d-1)*tau**t * \
-                    (d-g*c*delta_0**c)
-                Bt += n*t*delta_0**(d-1)*tau**(t-1)*(d-g*c*delta_0**c) * \
-                    exp(-g*delta_0**c)
-                C += n*exp(-g*delta_0**c) * \
-                    (delta_0**(d-2)*tau**t*((d-g*c*delta_0**c)*(
-                        d-1-g*c*delta_0**c)-g**2*c**2 * delta_0**c))
-                Ct += n*t*delta_0**(d-2)*tau**(t-1)*exp(-g*delta_0**c) * (
-                    c**2*delta_0**(2*c)*g**2 - 2*c*d*delta_0**c*g -
-                    c**2*delta_0**c*g + c*delta_0**c*g + d**2 - d)
-                D -= n*exp(-g*delta_0**c)*delta_0**(d-3)*tau**t * \
-                    (c**3*delta_0**(3*c)*g**3 - 3*c**2*d*delta_0**(2*c)*g**2 -
-                     3*c**3*delta_0**(2*c)*g**2 + 3*c**2*delta_0**(2*c)*g**2 +
-                     3*c*d**2*delta_0**c*g + 3*c**2*d*delta_0**c*g -
-                     6*c*d*delta_0**c*g + c**3*delta_0**c*g -
-                     3*c**2*delta_0**c*g + 2*c*delta_0**c*g - d**3+3*d**2-2*d)
+                fird += n * delta**(d-1) * tau**t * exp(-delta**c*g) \
+                    * (d-c*delta**c*g)
+                firdd += n * delta**(d-2) * tau**t * exp(-delta**c*g) \
+                    * (c**2*delta**(2*c)*g**2 - c**2*delta**c*g
+                       - 2*c*d*delta**c*g + c*delta**c*g + d**2 - d)
+                firt += n * delta**d * t * tau**(t-1) * exp(-delta**c*g)
+                firtt += n * delta**d*t*tau**(t - 2)*(t - 1)*exp(-delta**c*g)
+                firdt += n * delta**(d-1) * t * tau**(t-1) * exp(-delta**c*g) \
+                    * (d - c*delta**c*g)
+                firddd += n * delta**(d-3) * tau**t * exp(-delta**c*g) \
+                    * (2*d - c**3*delta**(3*c)*g**3 + 3*c**3*delta**(2*c)*g**2
+                       - c**3*delta**c*g + 3*c**2*d*delta**(2*c)*g**2
+                       - 3*c**2*d*delta**c*g - 3*c**2*delta**(2*c)*g**2
+                       + 3*c**2*delta**c*g - 3*c*d**2*delta**c*g
+                       + 6*c*d*delta**c*g - 2*c*delta**c*g + d**3 - 3*d**2)
+                firddt += n * delta**(d-2) * t*tau**(t-1) * exp(-delta**c*g) \
+                    * (c**2*delta**(2*c)*g**2 - c**2*delta**c*g
+                       - 2*c*d*delta**c*g + c*delta**c*g + d**2 - d)
+                firdtt += n * delta**(d-1) * t*tau**(t-2) * exp(-delta**c*g) \
+                    * (-c*delta**c*g*t + c*delta**c*g + d*t - d)
+                firttt += n * delta**d * t * tau**(t-3) * exp(-delta**c*g) \
+                    * (t**2 - 3*t + 2)
+
+                B += n * delta_0**(d-1) * tau**t * exp(-delta_0**c*g) \
+                    * (d-c*delta_0**c*g)
+                C += n * delta_0**(d-2) * tau**t * exp(-delta_0**c*g) \
+                    * (c**2*delta_0**(2*c)*g**2 - c**2*delta_0**c*g
+                       - 2*c*d*delta_0**c*g + c*delta_0**c*g + d**2 - d)
+                D += n * delta_0**(d-3) * tau**t * exp(-delta_0**c*g) \
+                    * (- c**3*delta_0**(3*c)*g**3 + 3*c**3*delta_0**(2*c)*g**2
+                       - c**3*delta_0**c*g + 3*c**2*d*delta_0**(2*c)*g**2
+                       - 3*c**2*d*delta_0**c*g - 3*c**2*delta_0**(2*c)*g**2
+                       + 3*c**2*delta_0**c*g - 3*c*d**2*delta_0**c*g + 2*d
+                       + 6*c*d*delta_0**c*g - 2*c*delta_0**c*g + d**3 - 3*d**2)
+
+                # Bt += n*t*delta_0**(d-1)*tau**(t-1)*(d-g*c*delta_0**c) * \
+                #     exp(-g*delta_0**c)
+                # Ct += n*t*delta_0**(d-2)*tau**(t-1)*exp(-g*delta_0**c) * (
+                #     c**2*delta_0**(2*c)*g**2 - 2*c*d*delta_0**c*g -
+                #     c**2*delta_0**c*g + c*delta_0**c*g + d**2 - d)
 
             # Gaussian terms
             nr3 = self._constants.get("nr3", [])
@@ -3715,54 +3794,108 @@ class MEoS(ThermoAdvanced):
                     nr3, d3, t3, a3, e3, b3, g3, exp1, exp2):
                 expr = exp(-a*(delta-e)**ex1-b*(tau-g)**ex2)
 
-                fir += n*delta**d*tau**t * expr
-                fird += expr * (n*d*delta**(d-1)*tau**t -
-                                n*a*delta**d*(delta-e)**(ex1-1)*ex1*tau**t)
-                firdd += expr * (
-                    n*a**2*delta**d*(delta-e)**(2*ex1-2)*ex1**2*tau**t -
-                    n*a*delta**d*(delta-e)**(ex1-2)*(ex1-1)*ex1*tau**t -
-                    2*n*a*d*delta**(d-1)*(delta-e)**(ex1-1)*ex1*tau**t +
-                    n*(d-1)*d*delta**(d-2)*tau**t)
-                firt += expr * (n*delta**d*t*tau**(t-1) -
-                                n*b*delta**d*ex2*tau**t*(tau-g)**(ex2-1))
-                firtt += expr * (
-                    n*b**2*delta**d*ex2**2*tau**t*(tau-g)**(2*ex2-2) -
-                    2*n*b*delta**d*ex2*t*tau**(t-1)*(tau-g)**(ex2-1) -
-                    n*b*delta**d*(ex2-1)*ex2*tau**t*(tau-g)**(ex2-2) +
-                    n*delta**d*(t-1)*t*tau**(t-2))
-                firdt += expr * (
-                    n*a*b*delta**d*(delta-e)**(ex1-1)*ex1*ex2*tau**t *
-                    (tau-g)**(ex2-1) -
-                    n*b*d*delta**(d-1)*ex2*tau**t*(tau-g)**(ex2-1) -
-                    n*a*delta**d*(delta-e)**(ex1-1)*ex1*t*tau**(t-1) +
-                    n*d*delta**(d-1)*t*tau**(t-1))
-                firdtt += expr * (
-                    -n*a*b**2*delta**d*(delta-e)**(ex1-1)*ex1*ex2**2*tau**t *
-                    (tau-g)**(2*ex2-2) +
-                    n*b**2*d*delta**(d-1)*ex2**2*tau**t*(tau-g)**(2*ex2-2) +
-                    2*n*a*b*delta**d*(delta-e)**(ex1-1)*ex1*ex2*t*tau**(t-1) *
-                    (tau-g)**(ex2-1) -
-                    2*n*b*d*delta**(d-1)*ex2*t*tau**(t-1)*(tau-g)**(ex2-1) +
-                    n*a*b*delta**d*(delta-e)**(ex1-1)*ex1*(ex2-1)*ex2*tau**t *
-                    (tau-g)**(ex2-2) -
-                    n*b*d*delta**(d-1)*(ex2-1)*ex2*tau**t*(tau-g)**(ex2-2) -
-                    n*a*delta**d*(delta-e)**(ex1-1)*ex1*(t-1)*t*tau**(t-2) +
-                    n*d*delta**(d-1)*(t-1)*t*tau**(t-2))
+                fir += expr * n*delta**d*tau**t
+                fird += expr * n*tau**t * (
+                    d*delta**(d-1) - a*delta**d*ex1*(delta-e)**(ex1-1))
+                firt += expr * n*delta**d * (
+                    t*tau**(t-1) - b*ex2*tau**t*(-g + tau)**(ex2-1))
+                firdd += expr * n*tau**t * (
+                    a**2*delta**d*ex1**2*(delta-e)**(2*ex1-2)
+                    - 2*a*d*delta**(d-1)*ex1*(delta-e)**(ex1-1)
+                    - a*delta**d*ex1**2*(delta-e)**(ex1-2)
+                    + a*delta**d*ex1*(delta-e)**(ex1-2)
+                    + d**2*delta**(d-2) - d*delta**(d-2))
+                firtt += expr * n*delta**d * (
+                    b**2*ex2**2*tau**t*(-g+tau)**(2*ex2-2)
+                    - b*ex2**2*tau**t*(-g+tau)**(ex2-2)
+                    - 2*b*ex2*t*tau**(t-1)*(-g+tau)**(ex2-1)
+                    + b*ex2*tau**t*(-g+tau)**(ex2-2) + (t**2-t)*tau**(t-2))
+                firdt += expr * n * (
+                    a*b*delta**d*ex1*ex2*tau**t*(delta-e)**(ex1-1)
+                    * (-g+tau)**(ex2-1)
+                    - a*delta**d*ex1*t*tau**(t-1)*(delta - e)**(ex1-1)
+                    - b*d*delta**(d-1)*ex2*tau**t*(-g + tau)**(ex2-1)
+                    + d*delta**(d-1)*t*tau**(t-1))
+
+                if delta != e:
+                    firddd += expr * n*tau**t * (
+                        -a**3*delta**d*ex1**3*(delta-e)**(3*ex1-3)
+                        + 3*a**2*d*delta**(d-1)*ex1**2*(delta-e)**(2*ex1-2)
+                        + 3*a**2*delta**d*ex1**3*(delta-e)**(2*ex1-3)
+                        - 3*a**2*delta**d*ex1**2*(delta-e)**(2*ex1-3)
+                        - 3*a*d**2*delta**(d-2)*ex1*(delta-e)**(ex1-1)
+                        - 3*a*d*delta**(d-1)*ex1**2*(delta-e)**(ex1-2)
+                        + 3*a*d*delta**(d-1)*ex1*(delta-e)**(ex1-2)
+                        + 3*a*d*delta**(d-2)*ex1*(delta-e)**(ex1-1)
+                        - a*delta**d*ex1**3*(delta-e)**(ex1-3)
+                        + 3*a*delta**d*ex1**2*(delta-e)**(ex1-3)
+                        - 2*a*delta**d*ex1*(delta-e)**(ex1-3)
+                        + (d**3-3*d**2+2*d)*delta**(d-3))
+
+                firddt += expr * n * (
+                    -a**2*b*delta**d*ex1**2*ex2*tau**t*(delta-e)**(2*ex1-2)*(tau-g)**(ex2-1)
+                    + a**2*delta**d*ex1**2*t*tau**(t-1)*(delta-e)**(2*ex1-2)
+                    + 2*a*b*d*delta**(d-1)*ex1*ex2*tau**t*(delta-e)**(ex1-1)*(tau-g)**(ex2-1)
+                    + a*b*delta**d*ex1**2*ex2*tau**t*(delta-e)**(ex1-2)*(tau-g)**(ex2-1)
+                    - a*b*delta**d*ex1*ex2*tau**t*(delta - e)**(ex1-2)*(tau-g)**(ex2-1)
+                    - 2*a*d*delta**(d-1)*ex1*t*tau**(t-1)*(delta-e)**(ex1-1)
+                    - a*delta**d*ex1**2*t*tau**(t-1)*(delta-e)**(ex1-2)
+                    + a*delta**d*ex1*t*tau**(t-1)*(delta-e)**(ex1-2)
+                    - b*d**2*delta**(d-2)*ex2*tau**t*(tau-g)**(ex2-1)
+                    + b*d*delta**(d-2)*ex2*tau**t*(tau-g)**(ex2-1)
+                    + (d**2*t-d)*delta**(d-2)*tau**(t-1))
+
+                firdtt += expr * n * (
+                    -a*b**2*delta**d*ex1*ex2**2*tau**t*(delta-e)**(ex1-1)*(tau-g)**(2*ex2-1)
+                    + a*b*delta**d*ex1*ex2**2*tau**t*(delta-e)**(ex1-1)*(tau-g)**(ex2-2)
+                    + 2*a*b*delta**d*ex1*ex2*t*tau**(t-1)*(delta-e)**(ex1-1)*(tau-g)**(ex2-1)
+                    - a*b*delta**d*ex1*ex2*tau**t*(delta-e)**(ex1-1)*(tau-g)**(ex2-2)
+                    - a*delta**d*ex1*t**2*tau**(t-2)*(delta-e)**(ex1-1)
+                    + a*delta**d*ex1*t*tau**(t-2)*(delta-e)**(ex1-1)
+                    + b**2*d*delta**(d-1)*ex2**2*tau**t*(tau-g)**(2*ex2-2)
+                    - b*d*delta**(d-1)*ex2**2*tau**t*(tau-g)**(ex2-2)
+                    - 2*b*d*delta**(d-1)*ex2*t*tau**(t-1)*(tau-g)**(ex2-1)
+                    + b*d*delta**(d-1)*ex2*tau**t*(tau-g)**(ex2-2)
+                    + (d*t**2 - d*t)*delta**(d-1)*tau**(t-2))
+
+                firttt += delta**d*n*tau**(t - 3)*(
+                    -3*b*ex2*t*tau**2*(tau-g)**(ex2 + 1)
+                    * (b*ex2*(tau-g)**ex2 - ex2 + 1)
+                    + 3*b*ex2*t*tau*(tau-g)**(ex2 + 2) * (t - 1)
+                    + b*ex2*tau**3*(tau-g)**ex2*(
+                        b**2*ex2**2*(tau-g)**(2*ex2) - 3*b*ex2**2*(tau-g)**ex2
+                        + 3*b*ex2*(tau-g)**ex2 + ex2**2 - 3*ex2 + 2)
+                    + t*(g-tau)**3*(t**2-3*t+2))*expr/(g-tau)**3
 
                 expr_ = exp(-a*(delta_0-e)**ex1-b*(tau-g)**ex2)
-                B += expr_ * (n*d*delta_0**(d-1)*tau**t -
-                              n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*tau**t)
-                C += expr_ * (
-                    n*a**2*delta_0**d*(delta_0-e)**(2*ex1-2)*ex1**2*tau**t -
-                    n*a*delta_0**d*(delta_0-e)**(ex1-2)*(ex1-1)*ex1*tau**t -
-                    2*n*a*d*delta_0**(d-1)*(delta_0-e)**(ex1-1)*ex1*tau**t +
-                    n*(d-1)*d*delta_0**(d-2)*tau**t)
-                Bt += expr_ * (
-                    n*a*b*delta_0**d*(delta_0-e)**(ex1-1)*ex1*ex2*tau**t *
-                    (tau-g)**(ex2-1) -
-                    n*b*d*delta_0**(d-1)*ex2*tau**t*(tau-g)**(ex2-1) -
-                    n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*t*tau**(t-1) +
-                    n*d*delta_0**(d-1)*t*tau**(t-1))
+                B += expr_ * n*tau**t * (
+                    d*delta_0**(d-1) - a*delta_0**d*ex1*(delta_0-e)**(ex1-1))
+                C += expr_ * n*tau**t * (
+                    a**2*delta_0**d*ex1**2*(delta_0-e)**(2*ex1-2)
+                    - 2*a*d*delta_0**(d-1)*ex1*(delta_0-e)**(ex1-1)
+                    - a*delta_0**d*ex1**2*(delta_0-e)**(ex1-2)
+                    + a*delta_0**d*ex1*(delta_0-e)**(ex1-2)
+                    + d**2*delta_0**(d-2) - d*delta_0**(d-2))
+                D += expr_ * n*tau**t * (
+                    -a**3*delta_0**d*ex1**3*(delta_0-e)**(3*ex1-3)
+                    + 3*a**2*d*delta_0**(d-1)*ex1**2*(delta_0-e)**(2*ex1-2)
+                    + 3*a**2*delta_0**d*ex1**3*(delta_0-e)**(2*ex1-3)
+                    - 3*a**2*delta_0**d*ex1**2*(delta_0-e)**(2*ex1-3)
+                    - 3*a*d**2*delta_0**(d-2)*ex1*(delta_0-e)**(ex1-1)
+                    - 3*a*d*delta_0**(d-1)*ex1**2*(delta_0-e)**(ex1-2)
+                    + 3*a*d*delta_0**(d-1)*ex1*(delta_0-e)**(ex1-2)
+                    + 3*a*d*delta_0**(d-2)*ex1*(delta_0-e)**(ex1-1)
+                    - a*delta_0**d*ex1**3*(delta_0-e)**(ex1-3)
+                    + 3*a*delta_0**d*ex1**2*(delta_0-e)**(ex1-3)
+                    - 2*a*delta_0**d*ex1*(delta_0-e)**(ex1-3)
+                    + (d**3-3*d**2+2*d)*delta_0**(d-3))
+
+#                 Bt += expr_ * (
+#                     n*a*b*delta_0**d*(delta_0-e)**(ex1-1)*ex1*ex2*tau**t *
+#                     (tau-g)**(ex2-1) -
+#                     n*b*d*delta_0**(d-1)*ex2*tau**t*(tau-g)**(ex2-1) -
+#                     n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*t*tau**(t-1) +
+#                     n*d*delta_0**(d-1)*t*tau**(t-1))
 
             # Non analitic terms
             # FIXME: Invalid value in critical point with this term
