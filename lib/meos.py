@@ -1236,7 +1236,7 @@ class MEoS(ThermoAdvanced):
             * d2gdrho2: [∂²g/∂ρ²]
             * d2gdrhodT: [∂²g/∂ρ∂T]
             * d2gdT2: [∂²g/∂T²]
-            * fase.PIP: Phase identification parameter, [-]
+            * PIP: Phase identification parameter, [-]
 
         Parameters
         ----------
@@ -3989,28 +3989,51 @@ class MEoS(ThermoAdvanced):
                         nr_ass, d5, t5, a5, e5, bt5, g5, b5):
 
                     expr = exp(-a*(delta-e)**2+1/(bt*(tau-g)**2+b))
+                    expr_ = exp(-a*(delta_0-e)**2+1/(bt*(tau-g)**2+b))
                     expr_d = d*delta**(d-1) - 2*a*(delta-e)*delta**d
                     expr_dd = d*(d-1)*delta**(d-2) \
                         - 4*a*(delta-e)*d*delta**(d-1) \
                         - (2*a-4*a**2*(delta-e)**2)*delta**d
+                    expr_ddd = d*(d-1)*(d-2)*delta**(d-3) \
+                        - 6*a*(delta-e)*d*(d-1)*delta**(d-2) \
+                        - 6*a*(1-2*a*(delta-e)**2)*d*delta**(d-1) \
+                        + 4*a**2*(delta-e)*(3-2*a*(delta-e)**2)*delta**d
                     expr_t = t/tau - 2*bt*(tau-g)/(bt*(tau-g)**2+b)**2
                     expr_tt = expr_t**2 - t/tau**2 \
                         - 2*bt/(bt*(tau-g)**2+b)**2 \
                         + 8*bt**2*(tau-g)**2/(bt*(tau-g)**2+b)**3
-                    expr_dt = expr_t*(d*delta**(d-1) - 2*a*(delta-e)*delta**d)
+                    expr_ttt = 4*bt**2*(g-tau)/(b + bt*(g-tau)**2)**3*(
+                        12*bt*(g-tau)**2/(b + bt*(g-tau)**2)
+                        + 12*bt*(g-tau)**2/(b + bt*(g-tau)**2)**2
+                        + 2*bt*(g-tau)**2/(b + bt*(g-tau)**2)**3 - 6
+                        - 3/(b + bt*(g-tau)**2)) \
+                        + 6*bt*t/(tau*(b + bt*(g - tau)**2)**2)*(
+                            4*bt*(g-tau)**2/(b + bt*(g-tau)**2)
+                            + 2*bt*(g-tau)**2/(b + bt*(g-tau)**2)**2 - 1) \
+                        + 6*bt*t*(g-tau)*(t-1)/(tau**2*(b+bt*(g-tau)**2)**2) \
+                        + t*(t**2 - 3*t + 2)/tau**3
                     expr_d0 = d*delta_0**(d-1)-2*a*(delta_0-e)*delta_0**d
                     expr_dd0 = d*(d-1)*delta_0**(d-2) \
                         - 4*a*(delta_0-e)*d*delta_0**(d-1) \
                         - (2*a-4*a**2*(delta_0-e)**2)*delta_0**d
+                    expr_ddd0 = d*(d-1)*(d-2)*delta_0**(d-3) \
+                        - 6*a*(delta_0-e)*d*(d-1)*delta_0**(d-2) \
+                        - 6*a*(1-2*a*(delta_0-e)**2)*d*delta_0**(d-1) \
+                        + 4*a**2*(delta_0-e)*(3-2*a*(delta_0-e)**2)*delta_0**d
 
                     fir += n*delta**d*tau**t * expr
                     fird += n*tau**t * expr * expr_d
                     firdd += n*tau**t * expr * expr_dd
                     firt += n*delta**d*tau**t * expr * expr_t
                     firtt += n*delta**d*tau**t * expr * expr_tt
-                    firdt += n*tau**t * expr * expr_dt
-                    B += n*tau**t * expr * expr_d0
-                    C += n*tau**t * expr * expr_dd0
+                    firdt += n*tau**t * expr * expr_d * expr_t
+                    firddd += n*tau**t * expr * expr_ddd
+                    firddt += n*tau**t * expr * expr_dd * expr_t
+                    firdtt += n*tau**t * expr * expr_d * expr_tt
+                    firttt += n*delta**d*tau**t * expr * expr_ttt
+                    B += n*tau**t * expr_ * expr_d0
+                    C += n*tau**t * expr_ * expr_dd0
+                    D += n*tau**t * expr_ * expr_ddd0
 
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr_saul" in self._constants:
