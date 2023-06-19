@@ -94,6 +94,17 @@ class Xe(MEoS):
         "a": [10.122, 0], "b": [31.97, 46.97], "c": [-948.4, 0],
         "Au": 0, "D": 1.7}
 
+    @classmethod
+    def _Melting_Pressure(cls, T, melting=None):
+        """Customized method for calculate melting pressure implementing two
+        different region"""
+        if melting is not None:
+            return MEoS._Melting_Pressure(T, melting)
+
+        if T < 166.65:
+            return MEoS._Melting_Pressure(T, cls._melting1)
+        return MEoS._Melting_Pressure(T, cls._melting)
+
     _melting = {
         "eq": 2,
         "__doi__": {"autor": "Michels, A., Prins, C.",
@@ -103,9 +114,17 @@ class Xe(MEoS):
                     "ref": "Physica 28 (1962) 101-116",
                     "doi": "10.1016/0031-8914(62)90096-4"},
 
-        "Tmin": Tt, "Tmax": 1300.0,
+        "Tmin": 166.65, "Tmax": 1300.0,
         "Tref": 1, "Pref": -2576*101325,
-        "a1": [0.7983277027965369*101325], "exp1": [1.589165]}
+        "a1": [10**-0.0978188*101325], "exp1": [1.589165]}
+
+    _melting1 = {
+        "eq": 2,
+        "__doi__": _melting["__doi__"],
+
+        "Tmin": Tt, "Tmax": 166.65,
+        "Tref": 1, "Pref": -1600*101325,
+        "a1": [10**-2.2783896*101325], "exp1": [2.4833433]}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -225,9 +244,12 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 3), 125.648)
 
     def test_Michels(self):
-        """Table I, pag 105"""
-        self.assertEqual(round(Xe._Melting_Pressure(161.554).atm, 2), 3.66)
+        """Table II, pag 107"""
+        self.assertEqual(round(Xe._Melting_Pressure(161.554).atm, 2), 5.54)
+        self.assertEqual(round(Xe._Melting_Pressure(163.375).atm, 2), 50.86)
         self.assertEqual(round(Xe._Melting_Pressure(167.154).atm, 2), 147.21)
+
+        # Table I, pag 105
         self.assertEqual(round(Xe._Melting_Pressure(191.144).atm, 2), 794.08)
         self.assertEqual(round(Xe._Melting_Pressure(215.264).atm, 2), 1494.59)
 
