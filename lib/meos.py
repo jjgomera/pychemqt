@@ -1784,7 +1784,72 @@ class MEoS(ThermoAdvanced):
 
         return prop
 
+    def _Ph(self):
+        # Get input parameters
+        P = self.kwargs["P"]
+        h = self.kwargs["h"]
 
+        prop = {}
+        offset = (self.href-self.hoffset)*1000
+
+        def f(parr):
+            rho, T = parr
+            if rho < 0:
+                rho = 0
+            if T < 1:
+                T = 1
+            delta = rho/self.rhoc
+            tau = self.Tc/T
+
+            ideal = self._phi0(self._constants["cp"], tau, delta)
+            fiot = ideal["fiot"]
+            fird = self._phird(tau, delta)
+            firt = self._phirt(tau, delta)
+            Po = self.R.kJkgK*T*(1+delta*fird)*rho
+            ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)+offset
+            return Po-P/1e3, ho-h
+
+        def f2(parr):
+            T, rhol, rhog, x = parr
+            # print("f2", parr)
+            if T < 1:
+                T = 1
+            if rhol < 0:
+                rhol = 1e-9
+            if rhog < 0:
+                rhog = 1e-10
+            if x < 0:
+                x = 0
+            if x > 1:
+                x = 1
+            tau = self.Tc/T
+            deltaL = rhol/self.rhoc
+            deltaG = rhog/self.rhoc
+
+            ideal = self._phi0(self._constants["cp"], tau, deltaL)
+            fiot = ideal["fiot"]
+
+            firL = self._phir(tau, deltaL)
+            firdL = self._phird(tau, deltaL)
+            firtL = self._phirt(tau, deltaL)
+            hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)+offset
+            firG = self._phir(tau, deltaG)
+            firdG = self._phird(tau, deltaG)
+            firtG = self._phirt(tau, deltaG)
+            hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)+offset
+
+            Jl = rhol*(1+deltaL*firdL)
+            Jv = rhog*(1+deltaG*firdG)
+            K = firL-firG
+            Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
+
+            return (Jl-Jv,
+                    Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
+                    hoL*(1-x) + hoG*x - h,
+                    Ps - P/1e3)
+
+        prop = self.fsolve(f, f2, **{"P": P, "h": h, "T0": self.kwargs["T0"]})
+        return prop
 
     def calculo(self):
         """Calculate procedure"""
@@ -1870,74 +1935,19 @@ class MEoS(ThermoAdvanced):
         elif self._mode == "P-rho":
             prop = self._Prho()
 
-            T = prop["T"]
-            if "x" in prop:
-                x = prop["x"]
-                rhoG = prop["rhoG"]
-                rhoL = prop["rhoL"]
+            if "T" in prop:
+                T = prop["T"]
+                if "x" in prop:
+                    x = prop["x"]
+                    rhoG = prop["rhoG"]
+                    rhoL = prop["rhoL"]
+            else:
+                self.status = 4
 
         elif self._mode == "P-h":
-            offset = (self.href-self.hoffset)*1000
+            prop = self._Ph()
 
-            def f(parr):
-                rho, T = parr
-                if rho < 0:
-                    rho = 0
-                if T < 1:
-                    T = 1
-                delta = rho/self.rhoc
-                tau = self.Tc/T
-
-                ideal = self._phi0(self._constants["cp"], tau, delta)
-                fiot = ideal["fiot"]
-                fird = self._phird(tau, delta)
-                firt = self._phirt(tau, delta)
-                Po = self.R.kJkgK*T*(1+delta*fird)*rho
-                ho = self.R*T*(1+tau*(fiot+firt)+delta*fird)+offset
-                return Po-P/1e3, ho-h
-
-            def f2(parr):
-                T, rhol, rhog, x = parr
-                # print("f2", parr)
-                if T < 1:
-                    T = 1
-                if rhol < 0:
-                    rhol = 1e-9
-                if rhog < 0:
-                    rhog = 1e-10
-                if x < 0:
-                    x = 0
-                if x > 1:
-                    x = 1
-                tau = self.Tc/T
-                deltaL = rhol/self.rhoc
-                deltaG = rhog/self.rhoc
-
-                ideal = self._phi0(self._constants["cp"], tau, deltaL)
-                fiot = ideal["fiot"]
-
-                firL = self._phir(tau, deltaL)
-                firdL = self._phird(tau, deltaL)
-                firtL = self._phirt(tau, deltaL)
-                hoL = self.R*T*(1+tau*(fiot+firtL)+deltaL*firdL)+offset
-                firG = self._phir(tau, deltaG)
-                firdG = self._phird(tau, deltaG)
-                firtG = self._phirt(tau, deltaG)
-                hoG = self.R*T*(1+tau*(fiot+firtG)+deltaG*firdG)+offset
-
-                Jl = rhol*(1+deltaL*firdL)
-                Jv = rhog*(1+deltaG*firdG)
-                K = firL-firG
-                Ps = self.R.kJkgK*T*rhol*rhog/(rhol-rhog)*(K+log(rhol/rhog))
-
-                return (Jl-Jv,
-                        Jl*(1/rhog-1/rhol)-log(rhol/rhog)-K,
-                        hoL*(1-x) + hoG*x - h,
-                        Ps - P/1e3)
-
-            prop = self.fsolve(f, f2, **{"P": P, "h": h, "T0": self.kwargs["T0"]})
-            # print(prop)
-            if prop:
+            if "T" in prop:
                 T = prop["T"]
                 if "rho" in prop:
                     rho = prop["rho"]
