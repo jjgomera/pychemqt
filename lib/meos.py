@@ -2562,10 +2562,10 @@ class MEoS(ThermoAdvanced):
                 0 < rho:  # <= self._constants["rhomax"]*self.M:
             self.status = 1
             self.msg = ""
-        # elif self._constants["Tmin"] > T or T > self._constants["Tmax"] or \
-                # rho > self._constants["rhomax"]*self.M:
-            # self.status = 3
-            # self.msg = "Point out of limit of range of equation"
+#         elif self._constants["Tmin"] > T or T > self._constants["Tmax"]:
+#                 # rho > self._constants["rhomax"]*self.M:
+#             self.status = 3
+#             self.msg = "Point out of limit of range of equation"
         else:
             self.status = 5
             self.msg = tr(
@@ -2748,7 +2748,9 @@ class MEoS(ThermoAdvanced):
         rinput = None
         rho, T = 0, 0
         converge = False
+
         if "T" in kwargs:
+            # Calculate only density
             T = kwargs["T"]
             for r in ro:
                 try:
@@ -2773,6 +2775,7 @@ class MEoS(ThermoAdvanced):
                         converge = True
                         break
         elif "rho" in kwargs:
+            # Calculate only temperature
             rho = kwargs["rho"]
             for t in to:
                 try:
@@ -2792,6 +2795,7 @@ class MEoS(ThermoAdvanced):
                         converge = True
                         break
         else:
+            # Both density and temperature unknowns
             for r, t in product(ro, to):
                 try:
                     rinput = fsolve(f, [r, t], full_output=True)
@@ -2806,66 +2810,54 @@ class MEoS(ThermoAdvanced):
                         twophas = self.Tt <= T <= self.Tc and rhov < rho < rhol
                     else:
                         twophas = False
-                    if 0 < rho and f1 < 1e-5 and not twophas:
+                    if 0 < rho and f1 < 1e-2 and not twophas:
                         converge = True
                         break
                     elif (rho != r or T != t) and 0 < rho and f1 < 1e-5:
                         converge = False
-                        break
 
         # Two phase region calculation
         if f2 is not None and not converge:
 
             from numpy import linspace
-            to = list(linspace(self.Tt, self.Tc, 5))
-            if "T0" in kwargs:
+            to = list(linspace(self.Tt, self.Tc, 10))
+            if "T0" in kwargs and kwargs["T0"]:
                 if isinstance(kwargs["T0"], list):
                     for t in kwargs["T0"][-1::-1]:
                         to.insert(0, t)
                 else:
                     to.insert(0, kwargs["T0"])
 
-
-        # for to in ((self.Tc+self.Tt)/2, self.Tt, self.Tc):
             for t in to:
                 # print("to", t)
                 rLo = self._Liquid_Density(t)
                 rGo = self._Vapor_Density(t)
                 if "rho" in kwargs:
-                    # try:
-                        rinput = fsolve(f2, [t, rLo, rGo], full_output=True)
-                        T, rhoL, rhoG = rinput[0]
-                    # except:
-                        # pass
-                    # else:
-                        if sum(abs(rinput[1]["fvec"])) < 1e-4:
-                            prop["T"] = T
-                            prop["rhoL"] = rhoL
-                            prop["rhoG"] = rhoG
-                            prop["x"] = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
-                            break
+                    rinput = fsolve(f2, [t, rLo, rGo], full_output=True)
+                    T, rhoL, rhoG = rinput[0]
+                    if sum(abs(rinput[1]["fvec"])) < 1e-4:
+                        prop["T"] = T
+                        prop["rhoL"] = rhoL
+                        prop["rhoG"] = rhoG
+                        prop["x"] = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
+                        break
 
                 else:
-#                         print("to", t, rLo, rGo)
-                    # try:
-                        # from scipy.optimize import least_squares
-                        # rinput = least_squares(
-                            # f2, (t, rLo, rGo, 0.5),
-                            # bounds = ((self.Tt, 0, 0, 0), (self.Tc, inf, inf, 1)))
-                        # print(rinput)
-                        rinput = fsolve(
-                            f2, [t, rLo, rGo, 0.5], full_output=True)
-                        T, rhoL, rhoG, x = rinput[0]
-                    # except:
-                        # pass
-                    # else:
-                        # print(sum(abs(rinput[1]["fvec"])))
-                        if sum(abs(rinput[1]["fvec"])) < 1e-4:
-                            prop["T"] = T
-                            prop["rhoL"] = rhoL
-                            prop["rhoG"] = rhoG
-                            prop["x"] = x
-                            break
+                    rinput = fsolve(
+                        f2, [t, rLo, rGo, 0.5], full_output=True)
+                    T, rhoL, rhoG, x = rinput[0]
+
+                    # Same input pair are very inestable to converge, specially
+                    # in region near the triple point, so check too the
+                    # reported values as saturation coherent state
+                    rGo = self._Vapor_Density(T)
+                    if sum(abs(rinput[1]["fvec"])) < 1e-2 and 0 <= x <= 1 \
+                            and rGo*0.95 < rhoG < rGo*1.05:
+                        prop["T"] = T
+                        prop["rhoL"] = rhoL
+                        prop["rhoG"] = rhoG
+                        prop["x"] = x
+                        break
 
         else:
             if "T" in kwargs:
@@ -3717,7 +3709,7 @@ class MEoS(ThermoAdvanced):
         firddd = firdtt = firddt = firttt = 0
         delta_0 = 1e-100
         B = C = D = 0
-        Bt = Ct = 0
+#         Bt = Ct = 0
 
         if delta:
             # Polinomial terms
@@ -3900,12 +3892,12 @@ class MEoS(ThermoAdvanced):
                     - 2*a*delta_0**d*ex1*(delta_0-e)**(ex1-3)
                     + (d**3-3*d**2+2*d)*delta_0**(d-3))
 
-#                 Bt += expr_ * (
-#                     n*a*b*delta_0**d*(delta_0-e)**(ex1-1)*ex1*ex2*tau**t *
-#                     (tau-g)**(ex2-1) -
-#                     n*b*d*delta_0**(d-1)*ex2*tau**t*(tau-g)**(ex2-1) -
-#                     n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*t*tau**(t-1) +
-#                     n*d*delta_0**(d-1)*t*tau**(t-1))
+                # Bt += expr_ * (
+                #     n*a*b*delta_0**d*(delta_0-e)**(ex1-1)*ex1*ex2*tau**t *
+                #     (tau-g)**(ex2-1) -
+                #     n*b*d*delta_0**(d-1)*ex2*tau**t*(tau-g)**(ex2-1) -
+                #     n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*t*tau**(t-1) +
+                #     n*d*delta_0**(d-1)*t*tau**(t-1))
 
             # Non analitic terms
             # FIXME: Invalid value in critical point with this term
@@ -3982,8 +3974,8 @@ class MEoS(ThermoAdvanced):
                 B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
                 C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ \
                     * (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
-                Bt += n*(Delta_**b*(Ft+delta_0*Fdt)+delta_0*DeltaBd_*Ft +
-                         DeltaBt*(F+delta_0*Fd)+DeltaBdt*delta_0*F_)
+                # Bt += n*(Delta_**b*(Ft+delta_0*Fdt)+delta_0*DeltaBd_*Ft +
+                #          DeltaBt*(F+delta_0*Fd)+DeltaBdt*delta_0*F_)
 
             # Associative term from Gao correlation for ammonia
             if "nr_ass" in self._constants:
@@ -4084,9 +4076,9 @@ class MEoS(ThermoAdvanced):
                         + 86.4*delta**9*exp(-0.4*delta**6) \
                         + 240*delta**3*delta**d*n*tau**t*exp(-2*delta**6)
                     firddt += 24*d*delta**4*delta**d*n*t*tau**t*exp(-2*delta**6)/tau \
-                        - d**2*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta**2*tau)
-                        + d*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta**2*tau)
-                        - 144*delta**10*delta**d*n*t*tau**t*exp(-2*delta**6)/tau
+                        - d**2*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta**2*tau) \
+                        + d*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta**2*tau) \
+                        - 144*delta**10*delta**d*n*t*tau**t*exp(-2*delta**6)/tau \
                         + 60*delta**4*delta**d*n*t*tau**t*exp(-2*delta**6)/tau
                     firdtt += delta**d*n*t*tau**t * exp(-2*delta**6)/tau**2 \
                         * (-d*t/delta + d/delta + 12*delta**5*t - 12*delta**5)
@@ -4095,7 +4087,7 @@ class MEoS(ThermoAdvanced):
                         + 12*delta**5*delta**d*n*t**2*tau**t*exp(-2*delta**6)/tau**2 \
                         - 12*delta**5*delta**d*n*t*tau**t*exp(-2*delta**6)/tau**2
                     firttt += 3*delta**d*n*t**2*tau**t*exp(-2*delta**6)/tau**3 \
-                        -delta**d*n*t**3*tau**t*exp(-2*delta**6)/tau**3
+                        -delta**d*n*t**3*tau**t*exp(-2*delta**6)/tau**3 \
                         - 2*delta**d*n*t*tau**t*exp(-2*delta**6)/tau**3
 
                     B += 12*delta_0**5*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
@@ -4133,9 +4125,9 @@ class MEoS(ThermoAdvanced):
         prop["firdtt"] = firdtt
         prop["firttt"] = firttt
         prop["B"] = B
-        prop["Bt"] = Bt
         prop["C"] = C
         prop["D"] = D
+        # prop["Bt"] = Bt
         return prop
 
     @refDoc(__doi__, [11], tab=8)
