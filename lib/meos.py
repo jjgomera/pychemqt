@@ -4037,58 +4037,79 @@ class MEoS(ThermoAdvanced):
 
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr_saul" in self._constants:
-                if delta < 0.2:
-                    factor = 1.6*delta**6*(1-1.2*delta**6)
-                else:
-                    factor = exp(-0.4*delta**6)-exp(-2*delta**6)
-
                 nr5 = self._constants.get("nr_saul", [])
                 d5 = self._constants.get("d_saul", [])
                 t5 = self._constants.get("t_saul", [])
-                fr, frt, frtt, frdtt1, frdtt2 = 0, 0, 0, 0, 0
-                frd1, frd2 = 0, 0
-                frdd1, frdd2, frdd3 = 0, 0, 0
-                frdt1, frdt2 = 0, 0
-                Bsum1, Bsum2, Csum1, Csum2, Csum3 = 0, 0, 0, 0, 0
                 for n, d, t in zip(nr5, d5, t5):
-                    fr += n*delta**d*tau**t
-                    frd1 += n*delta**(d+5)*tau**t
-                    frd2 += n*d*delta**(d-1)*tau**t
-                    frdd1 += n*delta**(d+10)*tau**t
-                    frdd2 += n*(2*d+5)*delta**(d+4)*tau**t
-                    frdd3 += n*d*(d-1)*delta**(d-2)*tau**t
-                    frt += n*delta**d*t*tau**(t-1)
-                    frtt += n*delta**d*t*(t-1)*tau**(t-2)
-                    frdt1 += n*delta**(d+5)*t*tau**(t-1)
-                    frdt2 += n*d*delta**(d-1)*t*tau**(t-1)
-                    frdtt1 += n*delta**(d+5)*t*(t-1)*tau**(t-2)
-                    frdtt2 += n*d*delta**(d-1)*t*(t-1)*tau**(t-2)
-                    Bsum1 += n*delta_0**(d+5)*tau**t
-                    Bsum2 += n*d*delta_0**(d-1)*tau**t
-                    Csum1 += n*delta_0**(d+10)*tau**t
-                    Csum2 += n*(2*d+5)*delta_0**(d+4)*tau**t
-                    Csum3 += n*d*(d-1)*delta_0**(d-2)*tau**t
+                    fir += exp(-0.4*delta**6) \
+                        - delta**d*n*tau**t*exp(-2*delta**6)
+                    fird += 12*delta**5*delta**d*n*tau**t*exp(-2*delta**6) \
+                        - d*delta**d*n*tau**t*exp(-2*delta**6)/delta \
+                        - 2.4*delta**5*exp(-0.4*delta**6)
+                    firt -= delta**d*n*t*tau**t*exp(-2*delta**6)/tau
+                    firdd += 24*d*delta**4*delta**d*n*tau**t*exp(-2*delta**6) \
+                        - d**2*delta**d*n*tau**t*exp(-2*delta**6)/delta**2 \
+                        + d*delta**d*n*tau**t*exp(-2*delta**6)/delta**2 \
+                        - 144*delta**10*delta**d*n*tau**t*exp(-2*delta**6) \
+                        + 5.76*delta**10*exp(-0.4*delta**6) \
+                        + 60*delta**4*delta**d*n*tau**t*exp(-2*delta**6) \
+                        - 12.0*delta**4*exp(-0.4*delta**6)
+                    firtt += delta**d*n*t*tau**t*(1-t)*exp(-2*delta**6)/tau**2
+                    firttt += delta**d*n*t*tau**t*(-t**2 + 3*t - 2) \
+                        * exp(-2*delta**6)/tau**3
+                    firdt += exp(a*(delta - e)**2 - 1/(b + bt*(-g + tau)**2)) \
+                        / (n*tau**t) * (
+                        12*delta**5*delta**d*n*t*tau**t*exp(-2*delta**6)/tau
+                        - d*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta*tau))
+                    firddd += - 48.0*delta**3*exp(-0.4*delta**6) \
+                        -d**3*delta**d*n*tau**t*exp(-2*delta**6)/delta**3 \
+                        + 36*d**2*delta**3*delta**d*n*tau**t*exp(-2*delta**6) \
+                        + 3*d**2*delta**d*n*tau**t*exp(-2*delta**6)/delta**3 \
+                        - 432*d*delta**9*delta**d*n*tau**t*exp(-2*delta**6) \
+                        + 144*d*delta**3*delta**d*n*tau**t*exp(-2*delta**6) \
+                        - 2*d*delta**d*n*tau**t*exp(-2*delta**6)/delta**3 \
+                        + 1728*delta**15*delta**d*n*tau**t*exp(-2*delta**6) \
+                        - 13.824*delta**15*exp(-0.4*delta**6) \
+                        - 2160*delta**9*delta**d*n*tau**t*exp(-2*delta**6) \
+                        + 86.4*delta**9*exp(-0.4*delta**6) \
+                        + 240*delta**3*delta**d*n*tau**t*exp(-2*delta**6)
+                    firddt += 24*d*delta**4*delta**d*n*t*tau**t*exp(-2*delta**6)/tau \
+                        - d**2*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta**2*tau)
+                        + d*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta**2*tau)
+                        - 144*delta**10*delta**d*n*t*tau**t*exp(-2*delta**6)/tau
+                        + 60*delta**4*delta**d*n*t*tau**t*exp(-2*delta**6)/tau
+                    firdtt += delta**d*n*t*tau**t * exp(-2*delta**6)/tau**2 \
+                        * (-d*t/delta + d/delta + 12*delta**5*t - 12*delta**5)
+                    firdtt += d*delta**d*n*t*tau**t*exp(-2*delta**6)/(delta*tau**2) \
+                        -d*delta**d*n*t**2*tau**t*exp(-2*delta**6)/(delta*tau**2) \
+                        + 12*delta**5*delta**d*n*t**2*tau**t*exp(-2*delta**6)/tau**2 \
+                        - 12*delta**5*delta**d*n*t*tau**t*exp(-2*delta**6)/tau**2
+                    firttt += 3*delta**d*n*t**2*tau**t*exp(-2*delta**6)/tau**3 \
+                        -delta**d*n*t**3*tau**t*exp(-2*delta**6)/tau**3
+                        - 2*delta**d*n*t*tau**t*exp(-2*delta**6)/tau**3
 
-                fir += factor*fr
-                fird += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6))*frd1 + \
-                    factor*frd2
-                firdd += (5.76*exp(-0.4*delta**6)-144*exp(-2*delta**6)) * \
-                    frdd1 + (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdd2 + factor*frdd3
-                firt += factor*frt
-                firtt += factor*frtt
-                firdt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdt1 + factor*frdt2
-                firdtt += (-2.4*exp(-0.4*delta**6)+12*exp(-2*delta**6)) * \
-                    frdtt1 + factor*frdtt2
-
-                B += (-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6)) * \
-                    Bsum1 + (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Bsum2
-                C += (5.76*exp(-0.4*delta_0**6)-144*exp(-2*delta_0**6)) * \
-                    Csum1+(-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6)) * \
-                    Csum2 + (exp(0.4*delta_0**6)-exp(-2*delta_0**6))*Csum3
-                Bt += (-2.4*exp(-0.4*delta_0**6)+12*exp(-2*delta_0**6)) * \
-                    frdt1 + factor*frdt2
+                    B += 12*delta_0**5*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        - d*delta_0**d*n*tau**t*exp(-2*delta_0**6)/delta_0 \
+                        - 2.4*delta_0**5*exp(-0.4*delta_0**6)
+                    C += 24*d*delta_0**4*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        - d**2*delta_0**d*n*tau**t*exp(-2*delta_0**6)/delta_0**2 \
+                        + d*delta_0**d*n*tau**t*exp(-2*delta_0**6)/delta_0**2 \
+                        - 144*delta_0**10*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        + 5.76*delta_0**10*exp(-0.4*delta_0**6) \
+                        + 60*delta_0**4*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        - 12.0*delta_0**4*exp(-0.4*delta_0**6)
+                    D += - 48.0*delta_0**3*exp(-0.4*delta_0**6) \
+                        -d**3*delta_0**d*n*tau**t*exp(-2*delta_0**6)/delta_0**3 \
+                        + 36*d**2*delta_0**3*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        + 3*d**2*delta_0**d*n*tau**t*exp(-2*delta_0**6)/delta_0**3 \
+                        - 432*d*delta_0**9*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        + 144*d*delta_0**3*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        - 2*d*delta_0**d*n*tau**t*exp(-2*delta_0**6)/delta_0**3 \
+                        + 1728*delta_0**15*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        - 13.824*delta_0**15*exp(-0.4*delta_0**6) \
+                        - 2160*delta_0**9*delta_0**d*n*tau**t*exp(-2*delta_0**6) \
+                        + 86.4*delta_0**9*exp(-0.4*delta_0**6) \
+                        + 240*delta_0**3*delta_0**d*n*tau**t*exp(-2*delta_0**6)
 
         prop = {}
         prop["fir"] = fir
