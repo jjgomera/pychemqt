@@ -28,11 +28,34 @@ from lib.config import IMAGE_PATH
 from equipment import equipments
 
 
+class QLineEditClickable(QtWidgets.QLineEdit):
+    """Custom QLineEdit to catch Enter key and set focus to list and avoid
+    close dialog"""
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key.Key_Return:
+            self.parent().parent().tree.setFocus()
+        else:
+            super().keyPressEvent(event)
+
+
+class QTreeWidgetClickable(QtWidgets.QTreeWidget):
+    """Custom QTreeWidget to catch Enter key and open file with it"""
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key.Key_Return:
+            if self.currentItem().childCount():
+                self.currentItem().setExpanded(True)
+            else:
+                self.parent().open(self.currentItem())
+        else:
+            super().keyPressEvent(event)
+
+
 class ShowReference(QtWidgets.QDialog):
     """Dialog to show the references used in the program"""
 
     searchIndex = -1
     searchResults = []
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
@@ -41,7 +64,7 @@ class ShowReference(QtWidgets.QDialog):
             "pychemqt", "Reference Paper Show Dialog"))
         layout = QtWidgets.QGridLayout(self)
 
-        self.tree = QtWidgets.QTreeWidget()
+        self.tree = QTreeWidgetClickable()
         header = QtWidgets.QTreeWidgetItem(
             ["id",
              tr("pychemqt", "Autor"),
@@ -56,7 +79,7 @@ class ShowReference(QtWidgets.QDialog):
         searchlayout = QtWidgets.QHBoxLayout(self.searchWidget)
         searchlayout.setSpacing(0)
         searchlayout.setContentsMargins(0, 0, 0, 0)
-        self.searchTxt = QtWidgets.QLineEdit()
+        self.searchTxt = QLineEditClickable()
         self.searchTxt.textChanged.connect(self.search)
         searchlayout.addWidget(self.searchTxt)
         self.btnPrevious = QtWidgets.QToolButton()
@@ -152,6 +175,9 @@ class ShowReference(QtWidgets.QDialog):
         if self.searchIndex >= len(self.searchResults):
             self.searchIndex = 0
         self.tree.setCurrentItem(self.searchResults[self.searchIndex])
+        self.tree.scrollToItem(
+            self.searchResults[self.searchIndex],
+            QtWidgets.QAbstractItemView.ScrollHint.PositionAtCenter)
 
     def fill(self):
         """Fill tree with documentation entries"""
