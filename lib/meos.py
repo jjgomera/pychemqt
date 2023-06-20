@@ -2546,12 +2546,15 @@ class MEoS(ThermoAdvanced):
             if T > self.Tc:
                 x = 1
             else:
-                rhol, rhov, Ps = self._saturation(T)
-                if Ps > P:
-                    x = 1
-                else:
+                rhol = self._Liquid_Density(T)
+                rhov = self._Vapor_Density(T)
+                rhom = (rhol+rhov)/2
+                if rho > rhom:
                     x = 0
-        elif 0 < x < 1:
+                else:
+                    x = 1
+
+        elif 0 < x < 1 or rho is None:
             rho = 1/(1/rhoG*x+1/rhoL*(1-x))
 
         if self._mode == "T-rho" and self.kwargs["rho"] == 0:
