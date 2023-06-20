@@ -54,17 +54,16 @@ args = parser.parse_args()
 ###############################################################################
 
 # Point count for line, high value get more definition but slow calculate time
-points = 100
+points = 10
 
 # Define standard to use in plot, IAPWS95 very slow!
-fluid = mEoS.NH3
+fluid = mEoS.Ar
 
 # fluid = IAPWS95
 # fluid._constants["Tmin"] = IAPWS95.Tt
 # fluid._constants["Tmax"] = IAPWS95.Tc
 # fluid._constants["Pmax"] = 1e8
 
-Tc = fluid.eq[0].get("Tc", fluid.Tc)
 
 # Use the input parameter if given
 if args.cmp:
@@ -72,8 +71,10 @@ if args.cmp:
 if args.points:
     points = args.points
 
+Tc = fluid.eq[0].get("Tc", fluid.Tc)
+
 Pt = fluid(T=max(fluid.Tt, fluid()._constants["Tmin"]), x=0)
-Pc = fluid(T=Tc * 0.999, x=0)
+Pc = fluid(T=Tc*0.999, x=0)
 Vt = fluid(T=max(fluid.Tt, fluid()._constants["Tmin"]), x=1)
 Vmin = fluid(T=fluid()._constants["Tmax"], P=Pt.P)
 Tmin = fluid()._constants["Tmin"]
@@ -128,8 +129,8 @@ isoP_PIP = np.r_[0.1, 0.2, 0.5, 1, 2, 5, fluid.Pc.MPa, 15, 20, 25, 30, 35, 50,
 isoP_kw = {"ls": ":", "color": "blue", "lw": 0.8}
 
 # # Isoenthalpic lines to plot
-# isoh = np.linspace(hmin, hmax, 10)
-isoh = np.r_[0, 250, 500, 750, 1000, 1250, 1500, 1750]
+isoh = np.linspace(hmin, hmax, 10)
+# isoh = np.r_[0, 250, 500, 750, 1000, 1250, 1500, 1750]
 isoh_kw = {"ls": ":", "color": "orange", "lw": 0.8}
 
 # Isoentropic lines to plot
@@ -137,10 +138,10 @@ isos = np.linspace(smin, smax, 10)
 isos_kw = {"ls": ":", "color": "brown", "lw": 0.8}
 
 # Isochor lines to plot
-# isov = np.logspace(
-#     np.log10(1/fluid()._constants["rhomax"]/fluid.M), np.log10(Vmin.v), 10)
-isov = np.r_[1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 0.1, 0.2,
-             0.5, 1, 2, 5, 10, 20, 50]
+isov = np.logspace(
+    np.log10(1/fluid()._constants["rhomax"]/fluid.M), np.log10(Vmin.v), 10)
+# isov = np.r_[1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 0.1, 0.2,
+#              0.5, 1, 2, 5, 10, 20, 50]
 isov_kw = {"ls": ":", "color": "darkgreen", "lw": 0.8}
 
 # Validity region
@@ -223,14 +224,20 @@ Tl = list(np.concatenate([
 # Melting pressure
 if fluid is not IAPWS95 and fluid._melting:
     print("Calculating melting line...")
-    if fluid is mEoS.NH3:
+    if fluid in (mEoS.NH3, mEoS.Xe):
         Tm = np.logspace(np.log10(fluid._melting1["Tmin"]),
                          np.log10(fluid._melting["Tmax"]), points * 10)
     else:
         Tm = np.logspace(np.log10(fluid._melting["Tmin"]),
                          np.log10(fluid._melting["Tmax"]), points * 10)
     Pm = [fluid._Melting_Pressure(t) for t in Tm]
-    mel = [fluid(T=t, P=p) for t, p in zip(Tm, Pm)]
+    mel = []
+    for t, p in zip(Tm, Pm):
+        Ps = fluid()._Vapor_Pressure(t)
+        if abs(p-Ps)/Ps < 1e-2:
+            mel.append(fluid(T=t, x=0))
+        else:
+            mel.append(fluid(T=t, P=p))
 
     P = []
     T = []
@@ -305,6 +312,7 @@ smax = max(svap)
 smax += abs(smax * 0.1)
 
 ax_PIP.set_ylim(-10, 15)
+ax_PIP.set_xlim(Tmin, 2*fluid.Tc)
 ax_Ph.set_xlim(Pt.h.kJkg, hmax)
 ax_Ph.set_ylim(Pt.P.MPa, Pc.P.MPa * 10)
 ax_Ts.set_xlim(Pt.s.kJkgK, smax)
@@ -508,7 +516,12 @@ for h in isoh:
         if point.status in (1,3):
 
             # Discard point below the melting line
-            if fluid._melting and fluid._melting["Tmin"] < point.T:
+            if fluid in (mEoS.NH3, mEoS.Xe):
+                Tmin = fluid._melting1["Tmin"]
+            else:
+                Tmin = fluid._melting["Tmin"]
+
+            if fluid._melting and Tmin < point.T:
                 pm = fluid()._Melting_Pressure(point.T)
                 if pm < point.P:
 
@@ -519,6 +532,8 @@ for h in isoh:
                     T = fsolve(f_h, point.T)[0]
                     pm = fluid()._Melting_Pressure(T)
                     point = fluid(T=T, P=pm)
+                    pts.append(point)
+                    break
 
             pts.append(point)
 
@@ -561,24 +576,31 @@ for s in isos:
     pts = []
     for t in Tl:
         point = fluid(T=t, s=s*1000)
-        if point.status == 1:
 
+        if point.status in (1,3):
             # Discard point over the melting line
-            if fluid._melting:
+            if fluid in (mEoS.NH3, mEoS.Xe):
+                Tmin = fluid._melting1["Tmin"]
+            else:
+                Tmin = fluid._melting["Tmin"]
+
+            if fluid._melting and Tmin < point.T:
                 pm = fluid()._Melting_Pressure(point.T)
-                if pm < point.P and point.x == 1:
+                if pm < point.P:
 
                     # Fuction to find the intersection between isoentropic
                     # line and melting line
                     def f_s(ti):
+                        ti = max(ti, Tmin)
                         pm = fluid()._Melting_Pressure(ti)
-                        if pm < 0:
-                            pm = 1e-10
                         return fluid(T=ti, P=pm).s.kJkgK-s
 
                     T = fsolve(f_s, point.T)
                     pm = fluid()._Melting_Pressure(T)
                     point = fluid(T=T, P=pm)
+                    if point.status in (1,3):
+                        pts.append(point)
+
                     break
 
             # Add saturation point and near to that
