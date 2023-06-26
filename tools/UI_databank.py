@@ -131,7 +131,8 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.correctos = []
         for i in sql.databank:
             self.correctos.append(i[0])
-        self.BaseDatos.setCurrentCell(self.correctos[self.indice]-1, 0)
+        if self.correctos:
+            self.BaseDatos.setCurrentCell(self.correctos[self.indice]-1, 0)
 
     def Next(self):
         """Show next coincidence with search string"""
