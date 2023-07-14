@@ -35,8 +35,8 @@ from lib.utilities import representacion
 from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
                           Speed, Currency)
 from lib.pipeDatabase import CATALOG, CATALOG_TRANSLATE, FITTING, FITTING_DESC
-from lib.friction import (K_contraction, K_enlargement, K_flush, K_MitreBend,
-                          Ft, K_longBend)
+from lib.fitting import (K_contraction, K_enlargement, K_flush, K_MitreBend,
+                         Ft, K_longBend)
 from tools.costIndex import CostData
 from equipment.parents import UI_equip
 from equipment.pipe import Pipe
