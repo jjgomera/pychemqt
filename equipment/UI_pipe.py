@@ -20,73 +20,92 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###############################################################################
 # Pipe equipment dialog and functionality
+
+# - Dialog: Generic dialog for definition of special fitting
 #
 ###############################################################################
 
 from functools import partial
+from math import pi
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
-
-from scipy import pi
-
-from lib.config import Preferences, IMAGE_PATH
-from lib.utilities import representacion
-from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
-                          Speed, Currency)
-from lib.pipeDatabase import CATALOG, CATALOG_TRANSLATE, FITTING, FITTING_DESC
-from lib.fitting import (K_contraction, K_enlargement, K_flush, K_MitreBend,
-                         Ft, K_longBend)
-from tools.costIndex import CostData
 from equipment.parents import UI_equip
 from equipment.pipe import Pipe
+from lib.config import Preferences, IMAGE_PATH
+from lib.utilities import representacion
+from lib.pipeDatabase import CATALOG, CATALOG_TRANSLATE, FITTING, FITTING_DESC
+from lib.fitting import (K_contraction_crane, K_enlargement_crane, K_flush,
+                         K_MitreBend, Ft, K_longBend)
+from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
+                          Speed, Currency)
+from tools.costIndex import CostData
+from tools.qt import QtCore, QtGui, QtWidgets, tr
 from UI.delegate import SpinEditor, CellEditor
 from UI.widgets import Entrada_con_unidades
 
 
 class Dialog(QtWidgets.QDialog):
-    """Diálogo genérico de definición de elementos especiales"""
-    def __init__(self, tipo=0, titulo="", icon=None, textos=["", ""], parent=None):
-        """tipo: define el tipo de dialogo:
-            0 - Contracción, expansión
-            1 - Codo segmentado de angulo arbitrario
-            2 - Codo largo
-            3 - Entrada redondeada"""
-        super(Dialog, self).__init__(parent)
+    """Generic dialog for definition of special fitting
+
+    Parameters
+    ----------
+    tipo : int
+        Define the kind of dialog
+        0 - Contraction, enlargement
+        1 - Codo segmentado de angulo arbitrario
+        2 - Codo largo
+        3 - Entrada redondeada
+    titulo : str
+        Title of dialog
+    icon : str
+        Path of icon file
+    textos : List
+    """
+
+    def __init__(self, tipo=0, titulo="", icon=None, textos=None, parent=None):
+        super().__init__(parent)
+
+        if textos is None:
+            textos = ("", "")
+
         self.tipo = tipo
         self.setWindowTitle(titulo)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(icon)))
         gridLayout = QtWidgets.QGridLayout(self)
         self.label = QtWidgets.QLabel(textos[0])
         self.label.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing |
-            QtCore.Qt.AlignmentFlag.AlignVCenter)
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignTrailing
+            | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gridLayout.addWidget(self.label, 0, 0)
         self.D1 = Entrada_con_unidades(Length)
         self.D1.valueChanged.connect(self.calculaK)
         gridLayout.addWidget(self.D1, 0, 1, 1, 2)
         lb_2 = QtWidgets.QLabel(textos[1])
         lb_2.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing |
-            QtCore.Qt.AlignmentFlag.AlignVCenter)
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignTrailing
+            | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gridLayout.addWidget(lb_2, 1, 0)
         self.D2 = Entrada_con_unidades(Length)
         self.D2.valueChanged.connect(self.calculaK)
         gridLayout.addWidget(self.D2, 1, 1, 1, 2)
         self.checkBox = QtWidgets.QCheckBox()
-        self.checkBox.setText(
-            tr("pychemqt", "Gradual"))
+        self.checkBox.setText(tr("pychemqt", "Gradual"))
         self.checkBox.toggled.connect(self.check_toggled)
         self.checkBox.toggled.connect(self.calculaK)
         gridLayout.addWidget(self.checkBox, 2, 0)
         lb_3 = QtWidgets.QLabel(tr("pychemqt", "Angle"))
-        lb_3.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing |
-                          QtCore.Qt.AlignmentFlag.AlignVCenter)
+        lb_3.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight
+                          | QtCore.Qt.AlignmentFlag.AlignTrailing
+                          | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gridLayout.addWidget(lb_3, 2, 1)
         self.angulo = QtWidgets.QSpinBox()
         self.angulo.setFixedWidth(50)
-        self.angulo.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTrailing
-                                 | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.angulo.setAlignment(
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignTrailing
+            | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.angulo.setRange(1, 90)
         gridLayout.addWidget(self.angulo, 2, 2)
         self.regla = QtWidgets.QSlider()
@@ -100,10 +119,12 @@ class Dialog(QtWidgets.QDialog):
         self.angulo.valueChanged.connect(self.calculaK)
         gridLayout.addWidget(self.regla, 3, 0, 1, 3)
         self.K_text = QtWidgets.QLabel("K=")
-        self.K_text.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.K_text.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter
+                                 | QtCore.Qt.AlignmentFlag.AlignVCenter)
         gridLayout.addWidget(self.K_text, 4, 0, 1, 3)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Ok | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.setCenterButtons(True)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
@@ -138,27 +159,28 @@ class Dialog(QtWidgets.QDialog):
             tita = self.angulo.value()
             f = Ft(self.D1.value.mm)
             K = K_MitreBend(tita)*f
-            self.K_text.setText("K = %0.3f" % K)
+            self.K_text.setText(f"K = {K:0.3f}")
             self.K = K
         else:
-            if self.D1.value and self.D2.value:
-                beta = self.D2.value/self.D1.value
+            D1 = self.D1.value
+            D2 = self.D2.value
+            if D1 and D2:
                 if self.checkBox.isChecked():
                     tita = self.angulo.value()
                 else:
                     tita = 180
                 if self.tipo == 0:
-                    if beta > 1:
-                        K = K_enlargement(tita, beta)
+                    if D2 > D1:
+                        K = K_enlargement_crane(D1, D2, tita)
                     else:
-                        K = K_contraction(tita, beta)
+                        K = K_contraction_crane(D1, D2, tita)
                 elif self.tipo == 2:
                     f = Ft(self.D2.value.mm)
                     rD = self.D1.value/self.D2.value
                     K = K_longBend(rD)*f
                 else:
-                    K = K_flush(1./beta)
-                self.K_text.setText("K = %0.3f" % K)
+                    K = K_flush(D1/D2)
+                self.K_text.setText(f"K = {K:0.3f}")
                 self.K = K
 
 
@@ -167,19 +189,19 @@ class Catalogo_Materiales(QtWidgets.QWidget):
     valueChanged = QtCore.pyqtSignal(list)
 
     def __init__(self, parent=None):
-        super(Catalogo_Materiales, self).__init__(parent)
+        super().__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
 
         self.TablaMaterial = QtWidgets.QTableWidget()
         self.TablaMaterial.verticalHeader().hide()
         self.TablaMaterial.setRowCount(1)
         self.TablaMaterial.setColumnCount(3)
-        titles = [
-            tr("pychemqt", "Material"),
-            tr("pychemqt", "Class"),
-            tr("pychemqt", "Roughness") + ", mm"]
+        titles = [tr("pychemqt", "Material"),
+                  tr("pychemqt", "Class"),
+                  tr("pychemqt", "Roughness") + ", mm"]
         self.TablaMaterial.setHorizontalHeaderLabels(titles)
-        self.TablaMaterial.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
+        self.TablaMaterial.setSelectionMode(
+            QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
         self.TablaMaterial.setColumnWidth(0, 200)
         self.TablaMaterial.setColumnWidth(1, 80)
         self.TablaMaterial.setColumnWidth(2, 100)
@@ -202,7 +224,8 @@ class Catalogo_Materiales(QtWidgets.QWidget):
             tr("pychemqt", "Weight")+", kg/m",
             "V"+", m³/100m", "S"+", m²/100m"]
         self.TablaDiametro.setHorizontalHeaderLabels(titles)
-        self.TablaDiametro.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
+        self.TablaDiametro.setSelectionMode(
+            QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
         self.TablaDiametro.horizontalHeader().setStretchLastSection(True)
         self.TablaDiametro.setRowHeight(0, 20)
         self.TablaDiametro.setFixedHeight(47)
@@ -214,14 +237,14 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         self.TablaDiametro.itemChanged.connect(self.emitirSignal)
         gridLayout.addWidget(self.TablaDiametro, 2, 0, 1, 2)
 
-        path = os.environ["pychemqt"]+"/images/button/clear.png"
+        path = os.path.join(IMAGE_PATH, "button", "clear.png")
         self.botonClear = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             tr("pychemqt", "Reset"))
         self.botonClear.clicked.connect(self.clear)
         gridLayout.addWidget(self.botonClear, 1, 2)
 
-        path = os.environ["pychemqt"]+"/images/button/filenew.png"
+        path = os.path.join(IMAGE_PATH, "button", "filenew.png")
         self.botonEdit = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             tr("pychemqt", "Edit"))
@@ -236,7 +259,8 @@ class Catalogo_Materiales(QtWidgets.QWidget):
 
         label = QtWidgets.QLabel(
             tr("pychemqt", "Material:"))
-        label.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
+        label.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,
+                            QtWidgets.QSizePolicy.Policy.Fixed)
         gridLayout.addWidget(label, 4, 0)
         self.ComboMaterial = QtWidgets.QComboBox()
         gridLayout.addWidget(self.ComboMaterial, 4, 1)
@@ -245,13 +269,16 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         self.TablaDiametro2.verticalHeader().hide()
         self.TablaDiametro2.setColumnCount(7)
         self.TablaDiametro2.setHorizontalHeaderLabels(titles)
-        self.TablaDiametro2.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
-        self.TablaDiametro2.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
-        self.TablaDiametro2.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.TablaDiametro2.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.TablaDiametro2.setVerticalScrollBarPolicy(
+            QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
+        self.TablaDiametro2.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.TablaDiametro2.setFixedWidth(720)
         gridLayout.addWidget(self.TablaDiametro2, 5, 0, 1, 2)
 
-        path = os.environ["pychemqt"]+"/images/button/arrow-up-double.png"
+        path = os.path.join(IMAGE_PATH, "button", "arrow-up-double.png")
         self.botonSelect = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             tr("pychemqt", "Select"))
@@ -261,8 +288,8 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         self.botonSelect.clicked.connect(self.add)
         gridLayout.addWidget(self.botonSelect, 4, 2)
         gridLayout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Preferred),
-            6, 0, 1, 3)
+            10, 10, QtWidgets.QSizePolicy.Policy.Preferred,
+            QtWidgets.QSizePolicy.Policy.Preferred), 6, 0, 1, 3)
 
         materiales = []
         diametros = []
@@ -292,11 +319,13 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         for i in range(1, 7):
             self.TablaDiametro.setItem(0, i, QtWidgets.QTableWidgetItem(""))
             self.TablaDiametro.item(0, i).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
         for i in range(3):
             self.TablaMaterial.setItem(0, i, QtWidgets.QTableWidgetItem(""))
         self.TablaMaterial.item(0, 2).setTextAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignVCenter)
 
     def selectedChanged(self):
         self.botonSelect.setEnabled(True)
@@ -342,11 +371,13 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         inactivo = QtGui.QColor(Preferences.get("General", 'Color_ReadOnly'))
         activo = QtGui.QColor(Preferences.get("General", 'Color_Resaltado'))
         if bool:
-            flags = QtCore.Qt.ItemFlag.ItemIsEditable | QtCore.Qt.ItemFlag.ItemIsEnabled | \
-                QtCore.Qt.ItemFlag.ItemIsSelectable
+            flags = QtCore.Qt.ItemFlag.ItemIsEditable \
+                    | QtCore.Qt.ItemFlag.ItemIsEnabled \
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
             color = activo
         else:
-            flags = QtCore.Qt.ItemFlag.ItemIsEnabled | QtCore.Qt.ItemFlag.ItemIsSelectable
+            flags = QtCore.Qt.ItemFlag.ItemIsEnabled \
+                    | QtCore.Qt.ItemFlag.ItemIsSelectable
             color = inactivo
 
         for i in [0, 1, 2]:
@@ -358,10 +389,12 @@ class Catalogo_Materiales(QtWidgets.QWidget):
 
         self.TablaDiametro.item(0, 5).setBackground(inactivo)
         self.TablaDiametro.item(0, 6).setBackground(inactivo)
-        self.TablaDiametro.item(0, 5).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled |
-                                               QtCore.Qt.ItemFlag.ItemIsSelectable)
-        self.TablaDiametro.item(0, 6).setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled |
-                                               QtCore.Qt.ItemFlag.ItemIsSelectable)
+        self.TablaDiametro.item(0, 5).setFlags(
+            QtCore.Qt.ItemFlag.ItemIsEnabled
+            | QtCore.Qt.ItemFlag.ItemIsSelectable)
+        self.TablaDiametro.item(0, 6).setFlags(
+            QtCore.Qt.ItemFlag.ItemIsEnabled
+            | QtCore.Qt.ItemFlag.ItemIsSelectable)
         self.blockSignals(False)
 
     def rellenarDiametros(self, indice):
@@ -376,28 +409,36 @@ class Catalogo_Materiales(QtWidgets.QWidget):
             self.TablaDiametro2.item(i, 0).setText(self.diametros[indice][i][2])
             self.TablaDiametro2.setItem(i, 1, QtWidgets.QTableWidgetItem(""))
             self.TablaDiametro2.item(i, 1).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.TablaDiametro2.item(i, 1).setText(str(round(di, 2)))
             self.TablaDiametro2.setItem(i, 2, QtWidgets.QTableWidgetItem(""))
             self.TablaDiametro2.item(i, 2).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-            self.TablaDiametro2.item(i, 2).setText(str(self.diametros[indice][i][3]))
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
+            self.TablaDiametro2.item(i, 2).setText(
+                str(self.diametros[indice][i][3]))
             self.TablaDiametro2.setItem(i, 3, QtWidgets.QTableWidgetItem(""))
             self.TablaDiametro2.item(i, 3).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
-            self.TablaDiametro2.item(i, 3).setText(str(self.diametros[indice][i][4]))
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
+            self.TablaDiametro2.item(i, 3).setText(
+                str(self.diametros[indice][i][4]))
             self.TablaDiametro2.setItem(i, 4, QtWidgets.QTableWidgetItem(""))
             self.TablaDiametro2.item(i, 4).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.TablaDiametro2.item(i, 4).setText(
                 str(round(self.diametros[indice][i][5], 3)))
             self.TablaDiametro2.setItem(i, 5, QtWidgets.QTableWidgetItem(""))
             self.TablaDiametro2.item(i, 5).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.TablaDiametro2.item(i, 5).setText(str(round(V, 3)))
             self.TablaDiametro2.setItem(i, 6, QtWidgets.QTableWidgetItem(""))
             self.TablaDiametro2.item(i, 6).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.TablaDiametro2.item(i, 6).setText(str(round(S, 3)))
 
     def getMaterial(self):
@@ -432,11 +473,12 @@ class Catalogo_Materiales_Dialog(QtWidgets.QDialog, Catalogo_Materiales):
     valueChanged = QtCore.pyqtSignal(list)
 
     def __init__(self, parent=None):
-        super(Catalogo_Materiales_Dialog, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(tr(
             "pychemqt", "Select Pipe from Database"))
         buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         buttonBox.accepted.connect(self.accept)
         buttonBox.rejected.connect(self.reject)
         self.layout().addWidget(buttonBox, 10, 0, 1, 3)
@@ -451,7 +493,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         tr("pychemqt", "Description")]
 
     def __init__(self, parent=None):
-        super(Catalogo_Accesorios, self).__init__(parent)
+        super().__init__(parent)
         self.semaforo = QtCore.QSemaphore(1)
         self.accesorios = []
         self.K = 0
@@ -462,7 +504,8 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.Accesorios.setColumnCount(6)
         self.Accesorios.setHorizontalHeaderLabels(self.titles)
         self.Accesorios.setItemDelegateForColumn(4, SpinEditor(self))
-        self.Accesorios.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.Accesorios.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.Accesorios.setSortingEnabled(True)
         self.Accesorios.horizontalHeader().setStretchLastSection(True)
         self.Accesorios.setColumnWidth(0, 80)
@@ -471,19 +514,21 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.Accesorios.setColumnWidth(3, 50)
         self.Accesorios.setColumnWidth(4, 50)
         self.Accesorios.cellChanged.connect(self.CalcularK)
-        self.Accesorios.currentCellChanged.connect(self.selectedChangedAccesorios)
+        self.Accesorios.currentCellChanged.connect(
+            self.selectedChangedAccesorios)
         gridLayout.addWidget(self.Accesorios, 0, 0, 3, 1)
 
         self.k_total = QtWidgets.QLabel()
         self.k_total.setText("K = 0")
-        self.k_total.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter | QtCore.Qt.AlignmentFlag.AlignTop)
+        self.k_total.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter
+                                  | QtCore.Qt.AlignmentFlag.AlignTop)
         self.k_total.setFixedSize(100, 25)
         gridLayout.addWidget(self.k_total, 0, 1)
-        path = os.environ["pychemqt"]+"/images/button/editDelete.png"
+        path = os.path.join(IMAGE_PATH, "button", "editDelete.png")
         self.botonBorrar = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             tr("pychemqt", "Delete"))
-        path = os.environ["pychemqt"]+"/images/button/clear.png"
+        path = os.path.join(IMAGE_PATH, "button", "clear.png")
         self.botonBorrar.clicked.connect(self.borrar)
         gridLayout.addWidget(self.botonBorrar, 1, 1)
         self.botonClear = QtWidgets.QPushButton(
@@ -498,14 +543,16 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         gridLayout.addWidget(self.line, 3, 0, 1, 2)
 
         self.TablaAccesorios = QtWidgets.QTableWidget()
-        self.TablaAccesorios.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.TablaAccesorios.setSelectionBehavior(
+            QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.TablaAccesorios.horizontalHeader().setStretchLastSection(True)
-        self.TablaAccesorios.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.TablaAccesorios.setEditTriggers(
+            QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
         self.TablaAccesorios.currentCellChanged.connect(self.selectedChanged)
         self.TablaAccesorios.cellDoubleClicked.connect(self.add)
         gridLayout.addWidget(self.TablaAccesorios, 4, 0, 7, 1)
 
-        path = os.environ["pychemqt"]+"/images/button/add.png"
+        path = os.path.join(IMAGE_PATH, "button", "add.png")
         self.botonAdd = QtWidgets.QPushButton(
             QtGui.QIcon(QtGui.QPixmap(path)),
             tr("pychemqt", "Add"))
@@ -587,7 +634,8 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 self.comboxmm.append(QtWidgets.QComboBox())
                 self.TablaAccesorios.setCellWidget(indice, 1, self.comboxmm[-1])
                 self.comboxmm[-1].addItem(str(int(Di)))
-                self.comboxmm[-1].currentIndexChanged.connect(self.combommChanged)
+                self.comboxmm[-1].currentIndexChanged.connect(
+                    self.combommChanged)
                 self.comboxPulgadas.append(QtWidgets.QComboBox())
                 self.TablaAccesorios.setCellWidget(
                     indice, 2, self.comboxPulgadas[-1])
@@ -597,7 +645,8 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 self.TablaAccesorios.setItem(
                     indice, 3, QtWidgets.QTableWidgetItem("%0.3f" % K))
                 self.TablaAccesorios.item(indice, 3).setTextAlignment(
-                    QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                    QtCore.Qt.AlignmentFlag.AlignRight
+                    | QtCore.Qt.AlignmentFlag.AlignVCenter)
                 self.TablaAccesorios.setItem(
                     indice, 4, QtWidgets.QTableWidgetItem(FITTING_DESC[key]))
                 self.TablaAccesorios.setRowHeight(
@@ -631,16 +680,19 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 txt = tr(
                     "pychemqt", "Sudden enlargement")
                 dia = "%0.3f->%0.3f" % (dialog.D1.value, dialog.D2.value)
-            self.Accesorios.setItem(indice, 0, QtWidgets.QTableWidgetItem(icon, type))
+            self.Accesorios.setItem(
+                indice, 0, QtWidgets.QTableWidgetItem(icon, type))
             self.Accesorios.setSpan(indice, 1, 1, 2)
             self.Accesorios.setItem(indice, 1, QtWidgets.QTableWidgetItem(dia))
             self.Accesorios.setItem(
                 indice, 3, QtWidgets.QTableWidgetItem(representacion(dialog.K, 3)))
             self.Accesorios.item(indice, 3).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 4, QtWidgets.QTableWidgetItem(str(1)))
             self.Accesorios.item(indice, 4).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 5, QtWidgets.QTableWidgetItem(txt))
             self.Accesorios.setRowHeight(indice, 20)
             self.CalcularK()
@@ -661,13 +713,15 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                     "pychemqt", "Gradual contraction")
                 dia = "%0.3f->%0.3f θ=%iº" % (
                     dialog.D1.value, dialog.D2.value, dialog.angulo.value())
+                icon = QtGui.QIcon(QtGui.QPixmap(
+                    os.path.join(IMAGE_PATH, "equipment", "pipe", "GC.png")))
             else:
                 icon = QtGui.QIcon(QtGui.QPixmap(
                     os.path.join(IMAGE_PATH, "equipment", "pipe", "SC.png")))
                 type = "SC"
                 txt = tr(
                     "pychemqt", "Sudden contraction")
-                dia =  "%0.3f->%0.3f" % (dialog.D1.value, dialog.D2.value)
+                dia = "%0.3f->%0.3f" % (dialog.D1.value, dialog.D2.value)
             self.Accesorios.setItem(indice, 0,
                                     QtWidgets.QTableWidgetItem(icon, type))
             self.Accesorios.setSpan(indice, 1, 1, 2)
@@ -675,10 +729,12 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.Accesorios.setItem(
                 indice, 3, QtWidgets.QTableWidgetItem(representacion(dialog.K, 3)))
             self.Accesorios.item(indice, 3).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 4, QtWidgets.QTableWidgetItem(str(1)))
             self.Accesorios.item(indice, 4).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 5, QtWidgets.QTableWidgetItem(txt))
             self.Accesorios.setRowHeight(indice, 20)
             self.CalcularK()
@@ -697,17 +753,18 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 QtGui.QIcon(QtGui.QPixmap(icon)), "ER"))
             self.Accesorios.setSpan(indice, 1, 1, 2)
             self.Accesorios.setItem(indice, 1, QtWidgets.QTableWidgetItem(
-                "r=%0.3f, D=%0.3f" % (dialog.D1.value.mm, dialog.D2.value.mm)))
+                f"r={dialog.D1.value.mm:0.3f}, D={dialog.D2.value.mm:0.3f}"))
             self.Accesorios.setItem(indice, 3, QtWidgets.QTableWidgetItem(
                 representacion(dialog.K, 3)))
             self.Accesorios.item(indice, 3).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 4, QtWidgets.QTableWidgetItem(str(1)))
             self.Accesorios.item(indice, 4).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 5, QtWidgets.QTableWidgetItem(
-                tr(
-                    "pychemqt", "Pipe entrance rounded intake")))
+                tr("pychemqt", "Pipe entrance rounded intake")))
             self.Accesorios.setRowHeight(indice, 20)
             self.CalcularK()
 
@@ -881,60 +938,54 @@ class UI_equipment(UI_equip):
         """
         equipment: Initial equipment instance to model
         """
-        super(UI_equipment, self).__init__(Pipe, entrada=False, salida=False,
-                                           parent=parent)
+        super().__init__(Pipe, entrada=False, salida=False, parent=parent)
 
         # Catalog tab
         self.tabCatalogo = Catalogo_Materiales()
         self.tabCatalogo.valueChanged.connect(
             partial(self.changeParams, "material"))
-        self.tabWidget.insertTab(
-            1, self.tabCatalogo,
-            tr("pychemqt", "Catalog"))
+        self.tabWidget.insertTab(1, self.tabCatalogo,
+                                 tr("pychemqt", "Catalog"))
 
         # Fitting tab
         self.tabAccesorios = Catalogo_Accesorios()
         self.tabAccesorios.valueChanged.connect(
             partial(self.changeParams, "accesorios"))
-        self.tabWidget.insertTab(
-            2, self.tabAccesorios,
-            tr("pychemqt", "Fittings"))
+        self.tabWidget.insertTab(2, self.tabAccesorios,
+                                 tr("pychemqt", "Fittings"))
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
 #        lyt.addWidget(QtGui.QLabel(tr("pychemqt", "Modo:")),0,0)
 #        self.Modo=QtGui.QComboBox()
 #        lyt.addWidget(self.Modo,0,1,1,1)
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Method")), 1, 0)
+        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "Method")), 1, 0)
         self.metodo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METODO:
             self.metodo.addItem(txt)
         self.metodo.currentIndexChanged.connect(self.metodoCambiado)
         lyt.addWidget(self.metodo, 1, 1, 1, 5)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            1, 0, 1, 6)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 0, 1, 6)
 
         lyt.addWidget(QtWidgets.QLabel(
             tr("pychemqt", "Length")), 2, 0)
         self.l = Entrada_con_unidades(Length, resaltado=True)
         self.l.valueChanged.connect(partial(self.changeParams, "l"))
         lyt.addWidget(self.l, 2, 1)
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Elevation")), 3, 0)
+        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "Elevation")), 3, 0)
         self.h = Entrada_con_unidades(Length, min=float("-inf"))
         self.h.valueChanged.connect(partial(self.changeParams, "h"))
         lyt.addWidget(self.h, 3, 1)
-        self.labelC = QtWidgets.QLabel(
-            tr("pychemqt", "C Factor"))
+        self.labelC = QtWidgets.QLabel(tr("pychemqt", "C Factor"))
         lyt.addWidget(self.labelC, 2, 3)
         self.C = Entrada_con_unidades(float)
         self.C.valueChanged.connect(partial(self.changeParams, "C"))
         lyt.addWidget(self.C, 2, 4)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            4, 0, 1, 6)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 0, 1, 6)
 
         lyt.addWidget(QtWidgets.QLabel(
             tr("pychemqt", "Thermal Mode")), 11, 0)
@@ -960,78 +1011,65 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.U, 2, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            12, 0, 1, 6)
-        self.labelQ = QtWidgets.QLabel(
-            tr("pychemqt", "Heat Flux"))
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 12, 0, 1, 6)
+        self.labelQ = QtWidgets.QLabel(tr("pychemqt", "Heat Flux"))
         lyt.addWidget(self.labelQ, 13, 0)
         self.Calor = Entrada_con_unidades(Power)
         self.Calor.valueChanged.connect(partial(self.changeParams, "Q"))
         lyt.addWidget(self.Calor, 13, 1)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            14, 0, 1, 6)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 14, 0, 1, 6)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
-            15, 0, 1, 6)
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 15, 0, 1, 6)
 
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "Results"))
+        group = QtWidgets.QGroupBox(tr("pychemqt", "Results"))
         lyt.addWidget(group, 16, 0, 1, 6)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "ΔP total", None)),
-            0, 0)
-        self.DeltaP = Entrada_con_unidades(Pressure, retornar=False,
-                                           readOnly=True)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP total")), 0, 0)
+        self.DeltaP = Entrada_con_unidades(
+            Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP, 0, 1)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "ΔP friction", None)),
-            1, 0)
-        self.DeltaP_f = Entrada_con_unidades(Pressure, retornar=False,
-                                             readOnly=True)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP friction")), 1, 0)
+        self.DeltaP_f = Entrada_con_unidades(
+            Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP_f, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "ΔP fittings", None)),
-            2, 0)
-        self.DeltaP_ac = Entrada_con_unidades(Pressure, retornar=False,
-                                              readOnly=True)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP fittings")), 2, 0)
+        self.DeltaP_ac = Entrada_con_unidades(
+            Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP_ac, 2, 1)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "ΔP elevation", None)),
-            3, 0)
-        self.DeltaP_h = Entrada_con_unidades(Pressure, retornar=False,
-                                             readOnly=True)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP elevation")), 3, 0)
+        self.DeltaP_h = Entrada_con_unidades(
+            Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP_h, 3, 1)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "ΔP acceleration", None)),
-            4, 0)
-        self.DeltaP_v = Entrada_con_unidades(Pressure, retornar=False,
-                                             readOnly=True)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP acceleration")),
+                         4, 0)
+        self.DeltaP_v = Entrada_con_unidades(
+            Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP_v, 4, 1)
 
         layout.addWidget(QtWidgets.QLabel("ΔP/100ft"), 0, 4)
         self.DeltaP_100ft = Entrada_con_unidades(Pressure, retornar=False,
                                                  readOnly=True)
         layout.addWidget(self.DeltaP_100ft, 0, 5)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Speed")), 1, 4)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Speed")), 1, 4)
         self.V = Entrada_con_unidades(Speed, retornar=False, readOnly=True)
         layout.addWidget(self.V, 1, 5)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Friction factor")), 2, 4)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Friction factor")),
+                         2, 4)
         self.f = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.f, 2, 5)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Reynolds")), 3, 4)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Reynolds")), 3, 4)
         self.Re = Entrada_con_unidades(float, tolerancia=5, decimales=1,
                                        readOnly=True)
         layout.addWidget(self.Re, 3, 5)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Output Temperature")), 4, 4)
-        self.Tout = Entrada_con_unidades(Temperature, decimales=2,
-                                         retornar=False, readOnly=True)
+        layout.addWidget(QtWidgets.QLabel(
+            tr("pychemqt", "Output Temperature")), 4, 4)
+        self.Tout = Entrada_con_unidades(
+            Temperature, decimales=2, retornar=False, readOnly=True)
         layout.addWidget(self.Tout, 4, 5)
 
         layout.addWidget(QtWidgets.QLabel(
@@ -1056,12 +1094,11 @@ class UI_equipment(UI_equip):
         layout.addWidget(self.f_gas, 4, 8)
 
         layout.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum),
-            0, 3)
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum), 0, 3)
         layout.addItem(QtWidgets.QSpacerItem(
-            40, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Minimum),
-            0, 6)
-#        lyt.addItem(QtGui.QSpacerItem(20,20,QtGui.QSizePolicy.Policy.Expanding,QtGui.QSizePolicy.Policy.Expanding),17,1,1,6)
+            40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Minimum), 0, 6)
 
         # Cost tab
         lyt = QtWidgets.QGridLayout(self.tabCostos)
@@ -1076,25 +1113,24 @@ class UI_equipment(UI_equip):
         lyt.addWidget(self.Costos, 1, 0, 1, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
-            2, 0, 1, 2)
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "Stimated Cost"))
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 2, 0, 1, 2)
+        group = QtWidgets.QGroupBox(tr("pychemqt", "Stimated Cost"))
         lyt.addWidget(group, 3, 0, 1, 2)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Purchase Costs")), 0, 1)
-        self.C_adq = Entrada_con_unidades(Currency, retornar=False,
-                                          readOnly=True)
+        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Purchase Costs")),
+                         0, 1)
+        self.C_adq = Entrada_con_unidades(
+            Currency, retornar=False, readOnly=True)
         layout.addWidget(self.C_adq, 0, 2)
         layout.addWidget(QtWidgets.QLabel(
             tr("pychemqt", "Installed Costs")), 1, 1)
-        self.C_inst = Entrada_con_unidades(Currency, retornar=False,
-                                           readOnly=True)
+        self.C_inst = Entrada_con_unidades(
+            Currency, retornar=False, readOnly=True)
         layout.addWidget(self.C_inst, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding),
-            4, 0, 1, 2)
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 4, 0, 1, 2)
 
         self.Heat_visible(0)
         self.metodoCambiado(0)
