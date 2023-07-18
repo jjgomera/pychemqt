@@ -24,39 +24,137 @@ TODO
 '''
 
 
-from math import exp, sqrt, pi
+from math import atan, exp, sqrt, sin, pi
 
-from lib.utilities import  refDoc
+from lib.unidades import Dimensionless
+from lib.utilities import refDoc
 
 
 __doi__ = {
     1:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Crane",
+         "title": "Flow of Fluids Through Valves, Fittings, and Pipe",
+         "ref": "Crane CO, 1982",
          "doi": ""},
+
+    # 2:
+    #     {"autor": "",
+    #      "title": "",
+    #      "ref": "",
+    #      "doi": ""},
 }
 
 
-# Fitting K
 # Crane, Flow-of-Fluids-Through-Valve Pag 107
-def K_contraction(tita, beta):
-    """Tita: angulo de la contracción en grados
-    beta: razón entre los diametros antes y despues de la contracción"""
-    if tita < 45.:
-        K = 0.8*sin(tita*pi/360)*(1-beta**2)/beta**4
+@refDoc(__doi__, [1])
+def K_contraction_crane(D1, D2, tita=None, L=None):
+    r"""Returns loss coefficient for a pipe contraction as shown in [1]_, pag
+    A-26
+
+    If Θ < 45º:
+
+    .. math::
+        K = 0.8 \sin \frac{\theta}{2}\left(1 - \beta^2\right)
+
+    and for Θ > 45º:
+
+    .. math::
+        K = 0.5 \right(1 - \beta^2\left) \sqrt{\sin \frac{\theta}{2}}
+
+    Parameters
+    ----------
+    D1 : float
+        Pipe diameter of entrance of contraction, [m]
+    D2 : float
+        Pipe diameter of the exit of contraction, [m]
+    tita : float, optional
+        Angle of contraction, [degrees]
+    L : float, optional
+        Length of the contraction, [m]
+
+    Notes
+    -----
+    For gradual contraction we can define with the angle of the contraction Θ
+    or with the length of contraction, L.
+
+    Returns
+    -------
+    K : float
+        Loss coefficient, [-]
+    """
+
+    # Ratio between both diameters after and before conraction
+    beta = D2/D1
+
+    if L is not None:
+        if L == 0.0:
+            tita = 180
+        else:
+            tita = 360/pi*2.0*atan((D1-D2)/(2*L))
+
+    if tita < 45:
+        # Formula 1
+        K = 0.8*sin(tita*pi/360)*(1-beta**2)
     else:
-        K = 0.5*sqrt(sin(tita*pi/360))*(1.-beta**2)/beta**4
-    return K
+        # Formula 2
+        K = 0.5*sqrt(sin(tita*pi/360))*(1.-beta**2)
+
+    return Dimensionless(K)
 
 
-def K_enlargement(tita, beta):
-    """Tita: angulo del ensanchamiento en grados
-    beta: razón entre los diametros antes y despues del ensanchamiento"""
-    if tita < 45.:
-        K = 2.6*sin(tita*pi/360)*(1.-beta**2)**2/beta**4
+@refDoc(__doi__, [1])
+def K_enlargement_crane(D1, D2, tita=None, L=None):
+    r"""Returns loss coefficient for a pipe expansion as shown in [1]_, pag
+    A-26
+
+    If Θ < 45º:
+
+    .. math::
+        K = 2.6 \sin \frac{\theta}{2}\left(1 - \beta^2\right)
+
+    and for Θ > 45º:
+
+    .. math::
+        K = \right(1 - \beta^2\left)^2
+
+    Parameters
+    ----------
+    D1 : float
+        Pipe diameter of entrance of contraction, [m]
+    D2 : float
+        Pipe diameter of the exit of contraction, [m]
+    tita : float, optional
+        Angle of contraction, [degrees]
+    L : float, optional
+        Length of the contraction, [m]
+
+    Notes
+    -----
+    For gradual contraction we can define with the angle of the contraction Θ
+    or with the length of contraction, L.
+
+    Returns
+    -------
+    K : float
+        Loss coefficient, [-]
+    """
+
+    # Ratio between both diameters after and before conraction
+    beta = D1/D2
+
+    if L is not None:
+        if L == 0.0:
+            tita = 180
+        else:
+            tita = 360/pi*2.0*atan((D1-D2)/(2*L))
+
+    if tita < 45:
+        # Formula 3
+        K = 2.6*sin(tita*pi/360)*(1.-beta**2)**2
     else:
-        K = (1.-beta**2)**2/beta**4
+        # Formula 4
+        K = (1-beta**2)**2
+
     return K
 
 
@@ -136,4 +234,6 @@ def Ft(D):
 
 
 if __name__ == "__main__":
-    print K_MitreBend(60)
+    print(K_contraction_crane(3, 2, tita=None, L=0))
+    print(K_contraction_crane(3, 2, tita=180))
+    print(K_flush(0.10))
