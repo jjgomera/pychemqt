@@ -43,7 +43,7 @@ mix = ("van der Waals", "Stryjek-Vera", "Panagiotopoulos", "Melhem")
 cp_ideal = (tr("pychemqt", "Ideal"), "DIPPR")
 
 # __all__ = [BWRS, BWRSoave, Cubic, Grayson_Streed, Lee_Kesler, virial]
-__all__ = [BWRS, BWRSoave, Cubic, Grayson_Streed, virial]
+__all__ = [BWRS, BWRSoave, Lee_Kesler, Cubic, Grayson_Streed, virial]
 
 # Add references
 # each submodule must define its custom __doi__
