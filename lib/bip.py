@@ -27,7 +27,7 @@ from lib.sql import databank
 EoSBIP = ["SRK", "PR", "APISRK", "BWRS", "NRTL", "UNIQUAC", "WILSON"]
 
 
-def Kij(ids, EOS=None):
+def Kij(ids, EOS=None, dat=None):
     """Calculate binary interaction matrix for component of mixture,
     use bip data from database
 
@@ -37,9 +37,11 @@ def Kij(ids, EOS=None):
         Index of components in database, [-]
     EOS : string
         Code of equation of state: SRK, APISRK, PR, BWRS, NRTL, UNIQUAC, WILSON
+    dat : dict
+        For EoS with interaction parameter don't defined in database
     """
     # Return null bip if EOS is not specified
-    if EOS is None or EOS not in EoSBIP:
+    if EOS is None or (EOS not in EoSBIP and dat is None):
         kij = zeros((len(ids), len(ids)))
         return kij
 
@@ -60,6 +62,22 @@ def Kij(ids, EOS=None):
                 else:
                     kiji.append(0)
 
+            kij.append(kiji)
+        return kij
+
+    elif EOS == "LK":
+        kij = []
+        for i in ids:
+            kiji = []
+            for j in ids:
+                key = f"{i}-{j}"
+                key2 = f"{j}-{i}"
+                if key in dat:
+                    kiji.append(dat[key])
+                elif key2 in dat:
+                    kiji.append(dat[key2])
+                else:
+                    kiji.append(1)
             kij.append(kiji)
         return kij
 
