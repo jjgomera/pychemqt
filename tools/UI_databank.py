@@ -34,7 +34,7 @@ class UI_databank_widget(QtWidgets.QWidget):
     """Database widget, to use in whatever need: database dialog, proyect
     component list definnition"""
     def __init__(self, parent=None):
-        super(UI_databank_widget, self).__init__(parent)
+        super().__init__(parent)
         gridLayout = QtWidgets.QGridLayout(self)
 
         layoutTitle = QtWidgets.QHBoxLayout()
@@ -124,9 +124,9 @@ class UI_databank_widget(QtWidgets.QWidget):
     def buscar(self):
         """Search str at database"""
         self.indice = 0
-        texto = "%"+self.Busqueda.text()+"%"
+        texto = self.Busqueda.text()
         query = "select * from compuestos where "
-        query += "name LIKE '%s' or formula LIKE '%s'" % (texto, texto)
+        query += f"name LIKE '{texto}' or formula LIKE '{texto}'"
         sql.databank.execute(query)
         self.correctos = []
         for i in sql.databank:
@@ -153,8 +153,8 @@ class UI_databank_widget(QtWidgets.QWidget):
         """Show properties of selected component"""
         indice = self.currentIndice
         if indice > 0:
-            Dialog = viewComponents.View_Component(indice)
-            Dialog.exec()
+            dlg = viewComponents.View_Component(indice)
+            dlg.exec()
 
     @property
     def currentIndice(self):
@@ -165,8 +165,8 @@ class UI_databank_widget(QtWidgets.QWidget):
         return self.BaseDatos.currentRow()
 
     def newComponent(self):
-        Dialog = viewComponents.View_Component(0)
-        if Dialog.exec():
+        dlg = viewComponents.View_Component(0)
+        if dlg.exec():
             self.rellenar()
 
     def copyComponent(self):
@@ -181,14 +181,15 @@ class UI_databank_widget(QtWidgets.QWidget):
 class UI_databank(QtWidgets.QDialog):
     """Database dialog"""
     def __init__(self, parent=None):
-        super(UI_databank, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(tr(
             "pychemqt", "Components database"))
         layout = QtWidgets.QVBoxLayout(self)
         self.databank = UI_databank_widget()
         layout.addWidget(self.databank)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
