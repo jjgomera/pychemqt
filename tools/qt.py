@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 try:
     from PyQt6 import QtWidgets, QtGui, QtCore, QtSvg, QtSvgWidgets
+    from PyQt6 import QtWebEngineWidgets
 
     try:
         from PyQt6 import Qsci
@@ -35,8 +36,13 @@ try:
     # Define qt version, for check version if it's necessary different code
     __qt__ = 6
 
+    # Disable webenginecontext log
+    web_engine_context_log = QtCore.QLoggingCategory("qt.webenginecontext")
+    web_engine_context_log.setFilterRules("*.info=false")
+
 except ImportError:
     from PyQt5 import QtWidgets, QtGui, QtCore, QtSvg
+    from PyQt5 import QtWebEngineWidgets
 
     try:
         from PyQt5 import Qsci
@@ -56,4 +62,5 @@ except ImportError:
 
 tr = QtWidgets.QApplication.translate
 
-__all__ = ["QtCore", "QtGui", "QtWidgets", "QtSvg", "QtSvgWidgets", "Qsci"]
+__all__ = ["QtCore", "QtGui", "QtWidgets", "QtSvg", "QtSvgWidgets",
+           "QtWebEngineWidgets", "Qsci"]
