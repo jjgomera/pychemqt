@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import N2
+from lib.mEoS.N2 import N2
 
 
 class N2O(MEoS):
@@ -63,7 +63,7 @@ class N2O(MEoS):
         "cp": Fi1,
         "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 28.12,
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 50000.0, "rhomax": 30,
 
         "nr1": [0.88045, -2.4235, 0.38237, 0.068917, 0.00020367],
         "d1": [1, 1, 1, 3, 7],

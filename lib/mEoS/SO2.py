@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import C3
+from lib.mEoS.C3 import C3
 
 
 class SO2(MEoS):
@@ -75,7 +75,7 @@ class SO2(MEoS):
         "ref": "NBP",
 
         "rhoc": 8.078,
-        "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 25.40,
+        "Tmin": Tt, "Tmax": 525.0, "Pmax": 35000.0, "rhomax": 27,
 
         "nr1": [0.01744413, 1.814878, -2.246338, -0.4602906, 0.1097049],
         "d1": [4, 1, 1, 2, 3],

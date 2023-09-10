@@ -210,7 +210,7 @@ class D2O(MEoS):
         drho = 1/dpdrho*1e6
 
         # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
-        if fase:
+        if rho and fase:
             fase = copy(fase)
             fase.drhodP_T *= 1e6
 
@@ -243,7 +243,7 @@ class D2O(MEoS):
 
         # convert ∂ρ/∂P]τ to IAPWS units, [kg/m³·MPa]
         # convert cp to [J/kmol·K]
-        if fase:
+        if rho and fase:
             fase = copy(fase)
             fase.drhodP_T *= 1e6
             fase.cp /= 1e3

@@ -377,7 +377,7 @@ class He(MEoS):
             lc = 3.4685233e-17*3.726229668*lc
 
         # print(lo, lr, lc)
-        return unidades.ThermalConductivity(lo+lr+lc)
+        return unidades.ThermalConductivity((lo+lr+lc).real)
 
     thermo1 = {"__name__": "McCarty (1981)",
                "__doi__": {

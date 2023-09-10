@@ -1394,6 +1394,10 @@ class MEoS(ThermoAdvanced):
         elif kwargs.get("vm", 0):
             kwargs["rho"] = self.M/kwargs["vm"]
             del kwargs["vm"]
+        elif "P" in kwargs and kwargs["P"] == 0:
+            kwargs["rho"] = 0
+            del kwargs["P"]
+
         self.kwargs.update(kwargs)
 
     @property
@@ -1888,6 +1892,8 @@ class MEoS(ThermoAdvanced):
             rhov = self._Vapor_Density(T)
 
             if T > self.Tc:
+                x = 1
+            elif rho == 0:
                 x = 1
             elif rho >= rhol:
                 x = 0
@@ -2606,6 +2612,11 @@ class MEoS(ThermoAdvanced):
             self.status = 4
             return
 
+        if P > self._constants["Pmax"]*1000:
+            self.status = 3
+            self.msg = tr(
+                "pychemqt", "State with pressure above maximum")
+
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)
         self.P = unidades.Pressure(P)
@@ -2765,7 +2776,7 @@ class MEoS(ThermoAdvanced):
                         rhol = self._Liquid_Density(T)
                         rhov = self._Vapor_Density(T)
                         if self._mode == "T-P":
-                            twophas = 0
+                            twophas = False
                         else:
                             twophas = self.Tt < T < self.Tc \
                                 and rhov < rho < rhol
@@ -2774,7 +2785,7 @@ class MEoS(ThermoAdvanced):
 
                     if 0 < rho < self._constants.get("rhomax", 1e5)*self.M \
                             and abs(f(rho)) < 1e-5 and not twophas \
-                            and rinput.converged == 1:
+                            and rinput.converged:
                         converge = True
                         break
         elif "rho" in kwargs:
@@ -3057,8 +3068,16 @@ class MEoS(ThermoAdvanced):
             estado["D"]/self.rhoc**3)
         fase.invT = unidades.InvTemperature(-1/self.T)
 
-        fase.mu = self._Viscosity(fase.rho, self.T, fase)
-        fase.k = self._ThCond(fase.rho, self.T, fase)
+        try:
+            fase.mu = self._Viscosity(fase.rho, self.T, fase)
+        except OverflowError:
+            fase.mu = None
+
+        try:
+            fase.k = self._ThCond(fase.rho, self.T, fase)
+        except TypeError:
+            fase.k = None
+
         if fase.mu and fase.rho:
             fase.nu = unidades.Diffusivity(fase.mu/fase.rho)
         else:
@@ -5201,6 +5220,10 @@ class MEoS(ThermoAdvanced):
                     rho_o = rho*rhoc0/rhoc
 
                     rinput = fsolve(f, [to, rho_o], full_output=True)
+
+                    if sum(abs(rinput[1]["fvec"])) > 1e-5:
+                        rinput = fsolve(f, [T, rho], full_output=True)
+
                     if sum(abs(rinput[1]["fvec"])) < 1e-5:
                         T0, rho0 = rinput[0]
 
@@ -6530,7 +6553,7 @@ class MEoS(ThermoAdvanced):
         except RuntimeError:
             return None
         else:
-            if rinput.converged and abs(f(rho)) < 1e-5:
+            if rho > 0 and rinput.converged and abs(f(rho)) < 1e-5:
                 delta = rho/self.rhoc
                 P = (1+delta*self._phird(tau, delta))*self.R*T*rho
                 return P

@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import C3
+from lib.mEoS.C3 import C3
 
 
 class COS(MEoS):
@@ -63,7 +63,7 @@ class COS(MEoS):
         "cp": Fi1,
         "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 22.52,
+        "Tmin": Tt, "Tmax": 650., "Pmax": 50000.0, "rhomax": 25,
 
         "nr1": [0.94374, -2.5348, 0.59058, -0.021488, 0.082083, 0.00024689],
         "d1": [1, 1, 1, 2, 3, 7],

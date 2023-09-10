@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import C3
+from lib.mEoS.C3 import C3
 
 
 class F2(MEoS):

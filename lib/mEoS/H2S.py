@@ -23,7 +23,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import C3
+from lib.mEoS.C3 import C3
 
 
 class H2S(MEoS):
@@ -84,7 +84,7 @@ class H2S(MEoS):
         "cp": Fi1,
         "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 29.12,
+        "Tmin": Tt, "Tmax": 760.0, "Pmax": 170000.0, "rhomax": 32,
 
         "nr1": [0.87641, -2.0367, 0.21634, -0.050199, 0.066994, 0.00019076],
         "d1": [1, 1, 1, 2, 3, 7],

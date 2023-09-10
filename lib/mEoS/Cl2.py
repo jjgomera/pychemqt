@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import C3
+from lib.mEoS.C3 import C3
 
 
 class Cl2(MEoS):
@@ -63,7 +63,7 @@ class Cl2(MEoS):
         "cp": Fi1,
         "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 450, "Pmax": 20000,
+        "Tmin": Tt, "Tmax": 450, "Pmax": 20000, "rhomax": 100,
 
         "nr1": [0.0245017, 0.9132904, -1.72309, -0.3359344, 0.1200495],
         "d1": [4, 1, 1, 2, 3],
