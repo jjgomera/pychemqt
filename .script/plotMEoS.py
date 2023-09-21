@@ -235,10 +235,11 @@ if fluid is not IAPWS95 and fluid._melting:
     for t, p in zip(Tm, Pm):
         Ps = fluid()._Vapor_Pressure(t)
         if abs(p-Ps)/Ps < 1e-2:
-            mel.append(fluid(T=t, x=0))
+            # Avoid round error in log10, sometimes return a value below Tt
+            mel.append(fluid(T=max(t, Tmin), x=0))
         else:
             try:
-                mel.append(fluid(T=t, P=p))
+                mel.append(fluid(T=t, P=p, rho0=fluid._Liquid_Density(t)))
             except:
                 pass
 
@@ -380,7 +381,7 @@ for T in isoT:
 
     # Calculate the saturation point if available
     sat_pnt = []
-    if T < Tc:
+    if Pt.T < T < Tc:
         for x in np.linspace(1, 0.1, 9, endpoint=False):
             sat_pnt.append(fluid(T=T, x=x))
         for x in np.linspace(0.1, 0, 11):
@@ -496,15 +497,17 @@ for P in np.concatenate([isoP, isoP_PIP]):
     PIP = []
     for p in pts:
         if p.status == 1:
+            if p.x in (0, 1):
+                if not PIP and (p.PIP < 0 or p.PIP > 10):
+                    continue
+                PIP.append(p.PIP)
+            else:
+                PIP.append(None)
             h.append(p.h.kJkg)
             T.append(p.T)
             s.append(p.s.kJkgK)
             u.append(p.u.kJkg)
             v.append(p.v)
-            if p.x in (0, 1):
-                PIP.append(p.PIP)
-            else:
-                PIP.append(None)
     if P in isoP:
         ax_Ts.plot(s, T, label=txt, **isoP_kw)
         ax_Tv.plot(v, T, label=txt, **isoP_kw)
@@ -747,6 +750,14 @@ for curva in ["ideal", "boyle", "joule-thomson", "joule"]:
     P_line = []
     pmin = Pmin
     for t in T:
+        # Optional limits for ideal curves to avoid false values out of range
+        # if curva in ["ideal", "boyle"]:
+        #     if t > 2.5*fluid.Tc:
+        #         continue
+        # if curva == "joule-thomson":
+        #     if t > 8*fluid.Tc:
+        #         continue
+
         P = fluid()._IdealCurve(curva, t)
         if P is None or P < 0:
             continue

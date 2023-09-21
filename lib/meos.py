@@ -1907,6 +1907,8 @@ class MEoS(ThermoAdvanced):
                     x = 1
                 else:
                     x = (1./rho-1/rhoL)/(1/rhoG-1/rhoL)
+                    x = min(x, 1)
+                    x = max(x, 0)
 
         elif self._mode == "T-h":
             prop = self._Th()
@@ -2539,7 +2541,11 @@ class MEoS(ThermoAdvanced):
                 T = float(T)
                 rhol, rhov, Ps = self._saturation(T)
                 return Ps-P
-            T, rinput = newton(funcion, 0.99*self.Tc, full_output=True)
+            try:
+                T, rinput = newton(funcion, 0.99*self.Tc, full_output=True)
+            except RuntimeError:
+                self.status = 0
+                return
             rhoL, rhoG, Ps = self._saturation(T)
             rho = 1/(1/rhoG*x+1/rhoL*(1-x))
             self.status = 1
