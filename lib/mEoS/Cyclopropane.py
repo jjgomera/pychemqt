@@ -48,6 +48,7 @@ class Cyclopropane(MEoS):
                   -0.77223700e-7/8.3143*42.081, 0.40538000e-10/8.3143*42.081],
            "pow": [1, 2, 3, 4]}
 
+    # FIXME: Bad saturation point
     polt = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for cyclopropane of Polt et "

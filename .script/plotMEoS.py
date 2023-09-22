@@ -315,7 +315,7 @@ umax += abs(umax * 0.1)
 smax = max(svap)
 smax += abs(smax * 0.1)
 
-# ax_Ideal.set_ylim(bottom=0.1*pmin/fluid.Pc)
+# ax_Ideal.set_ylim(bottom=0.01, top=)
 ax_PIP.set_ylim(-10, 15)
 ax_PIP.set_xlim(Tmin, min(2*fluid.Tc, Tmax))
 ax_Ph.set_xlim(Pt.h.kJkg, hmax)
@@ -333,7 +333,7 @@ ax_vu.set_ylim(Pt.v, Vt.v)
 
 # Ancillary equation
 Tanc = np.concatenate([
-    np.linspace(fluid.Tt, 0.9 * Tc, 10),
+    np.linspace(max(fluid.Tt, fluid()._constants["Tmin"]), 0.9 * Tc, 10),
     np.linspace(0.9 * Tc, Tc, 10, endpoint=True)])
 Panc = [fluid()._Vapor_Pressure(t) / fluid.Pc for t in Tanc]
 ax_Ideal.plot(Tanc / Tc, Panc, label="Ancillary Vapor Pressure", **anc_kw)

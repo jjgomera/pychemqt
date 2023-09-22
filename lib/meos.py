@@ -5268,6 +5268,9 @@ class MEoS(ThermoAdvanced):
                     # Eq 8
                     F = f**0.5/h**(2/3)*(M/M0)**0.5
 
+                    if T0 <= ref.eq[0]["Tmin"]:
+                        T0 = ref.eq[0]["Tmin"]
+
                     mur = ref()._Viscosity(rho0*psi, T0, None, visco0, True)
                     mu += mur*F
 
