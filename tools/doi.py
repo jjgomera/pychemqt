@@ -19,9 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 import os
-import subprocess
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr, QtWebEngineWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.pdf import openPDF
 
 import lib
 from lib.config import IMAGE_PATH
@@ -278,33 +278,12 @@ class ShowReference(QtWidgets.QDialog):
             file = os.path.join("doc", code) + ".pdf"
             file2 = os.path.join("doc", title) + ".pdf"
             if os.path.isfile(file):
-                winPDF = PDF(file, title)
+                openPDF(file, title)
             elif os.path.isfile(file2):
-                winPDF = PDF(file2, title)
-            winPDF.exec()
+                openPDF(file2, title)
         elif item.parent():
             url = QtCore.QUrl(f"http://dx.doi.org/{item.text(4)}")
             QtGui.QDesktopServices.openUrl(url)
-
-
-class PDF(QtWidgets.QDialog):
-    "Dialog to show a pdf file"""
-    def __init__(self, pdffile, title=None):
-        super().__init__()
-
-        if title:
-            self.setWindowTitle(title)
-        lyt = QtWidgets.QVBoxLayout(self)
-
-        self.webView = QtWebEngineWidgets.QWebEngineView()
-        lyt.addWidget(self.webView)
-        self.webView.settings().setAttribute(
-            self.webView.settings().WebAttribute.PluginsEnabled, True)
-        self.webView.settings().setAttribute(
-            self.webView.settings().WebAttribute.PdfViewerEnabled, True)
-        wd = os.environ["pychemqt"]
-        self.webView.setUrl(QtCore.QUrl(f"file://{wd}/{pdffile}"))
-        self.showMaximized()
 
 
 def findFile(ref):

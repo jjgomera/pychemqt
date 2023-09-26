@@ -37,6 +37,7 @@ import sys
 
 from equipment import equipments
 from lib import unidades, corriente
+from lib.config import IMAGE_PATH
 from lib.openbabel import ConfBabel
 from lib.plot import ConfPlot
 from lib.utilities import representacion
@@ -187,8 +188,8 @@ class ConfTooltipUnit(QtWidgets.QDialog):
                 header = QtWidgets.QTableWidgetItem(txt)
                 if magnitud[0] == "Currency":
                     header.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
-                        os.environ["pychemqt"], "images", "flag",
-                        "%s.png" % unidades.Currency.__units__[j]))))
+                        IMAGE_PATH, "flag", unidades.Currency.__units__[j])
+                        + ".png")))
                     header.setToolTip(unidades.Currency.__tooltip__[j])
 
                 tabla.setVerticalHeaderItem(j, header)
@@ -414,15 +415,25 @@ class ConfApplications(QtWidgets.QDialog):
         msg = tr(
             "pychemqt", "Select External Calculator Application")
         self.calculadora = PathConfig(t + ":", msg=msg, patron="exe")
-        layout.addWidget(self.calculadora, 1, 1)
+        layout.addWidget(self.calculadora, 1, 1, 1, 2)
         t = tr("pychemqt", "Text viewer")
         msg = tr(
             "pychemqt", "Select External Text Viewer Application")
         self.textViewer = PathConfig(t + ":", msg=msg, patron="exe")
-        layout.addWidget(self.textViewer, 2, 1)
+        layout.addWidget(self.textViewer, 2, 1, 1, 2)
+
+        self.checkPDF = QtWidgets.QCheckBox(
+            tr("pychemqt", "Use external pdf viewer"))
+        layout.addWidget(self.checkPDF, 3, 1)
+        msg = tr(
+            "pychemqt", "Select External shell")
+        self.pdf = PathConfig("", msg=msg, patron="exe")
+        self.pdf.setEnabled(False)
+        layout.addWidget(self.pdf, 3, 2)
+        self.checkPDF.toggled.connect(self.pdf.setEnabled)
 
         terminal = QtWidgets.QGroupBox()
-        layout.addWidget(terminal, 3, 1)
+        layout.addWidget(terminal, 5, 1, 1, 2)
         layoutTerminal = QtWidgets.QGridLayout(terminal)
         msg = tr(
             "pychemqt", "Select External shell")
@@ -458,6 +469,9 @@ class ConfApplications(QtWidgets.QDialog):
         if config.has_section("Applications"):
             self.calculadora.setText(config.get("Applications", 'Calculator'))
             self.textViewer.setText(config.get("Applications", 'TextViewer'))
+            self.checkPDF.setChecked(config.getboolean("Applications", "PDF"))
+            self.pdf.setText(config.get("Applications", 'PDFExternal'))
+
             self.terminal.setText(config.get("Applications", 'Shell'))
             self.ipython.setChecked(
                 config.getboolean("Applications", 'ipython'))
@@ -479,6 +493,8 @@ class ConfApplications(QtWidgets.QDialog):
             config.add_section("Applications")
         config.set("Applications", "Calculator", self.calculadora.text())
         config.set("Applications", "TextViewer", self.textViewer.text())
+        config.set("Applications", "PDF", str(self.checkPDF.isChecked()))
+        config.set("Applications", "PDFExternal", self.pdf.text())
         config.set("Applications", "Shell", self.terminal.text())
         config.set("Applications", "ipython", str(self.ipython.isChecked()))
         config.set("Applications", "maximized",
@@ -547,8 +563,7 @@ class Preferences(QtWidgets.QDialog):
         count = 0
         for icon, dialog, title in self.classes:
             item = QtWidgets.QTreeWidgetItem([title])
-            icon = QtGui.QIcon(QtGui.QPixmap(
-                os.environ["pychemqt"]+"/images/%s" % icon))
+            icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(IMAGE_PATH, icon)))
             item.setIcon(0, icon)
             item.setData(0, QtCore.Qt.ItemDataRole.UserRole, count)
             count += 1

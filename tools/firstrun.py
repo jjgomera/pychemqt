@@ -187,6 +187,8 @@ def Preferences():
     conf.add_section("Applications")
     conf.set("Applications", "Calculator", calculator)
     conf.set("Applications", "TextViewer", editor)
+    conf.set("Applications", "PDF", "False")
+    conf.set("Applications", "PDFExternal", "")
     conf.set("Applications", "Shell", shell)
     conf.set("Applications", "ipython", "False")
     conf.set("Applications", "maximized", "False")
