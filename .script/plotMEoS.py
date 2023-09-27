@@ -272,19 +272,19 @@ print("Calculating saturation lines...")
 liq = [fluid(T=t, x=0) for t in Ts]
 vap = [fluid(T=t, x=1) for t in Ts]
 
-xliq = [line.T / Tc for line in liq]
-yliq = [line.P / fluid.Pc for line in liq]
+xliq = [line.T / Tc if line.status == 1 else None for line in liq]
+yliq = [line.P / fluid.Pc if line.status == 1 else None for line in liq]
 ax_Ideal.plot(xliq, yliq, **isosat_kw)
 xvap = [v.T / Tc for v in vap]
 yvap = [v.P / fluid.Pc for v in vap]
 ax_Ideal.plot(xvap, yvap, **isosat_kw)
 
-PIPliq = [line.PIP for line in liq]
-hliq = [line.h.kJkg for line in liq]
-Pliq = [line.P.MPa for line in liq]
-sliq = [line.s.kJkgK for line in liq]
-vliq = [line.v for line in liq]
-uliq = [line.u.kJkg for line in liq]
+PIPliq = [line.PIP if line.status == 1 else None for line in liq]
+hliq = [line.h.kJkg if line.status == 1 else None for line in liq]
+Pliq = [line.P.MPa if line.status == 1 else None for line in liq]
+sliq = [line.s.kJkgK if line.status == 1 else None for line in liq]
+vliq = [line.v if line.status == 1 else None for line in liq]
+uliq = [line.u.kJkg if line.status == 1 else None for line in liq]
 ax_PIP.plot(Ts, PIPliq, label="Saturated Liquid", **PIP_kw)
 ax_Ph.plot(hliq, Pliq, label="Saturated Liquid", **isosat_kw)
 ax_Ts.plot(sliq, Ts, label="Saturated Liquid", **isosat_kw)
@@ -531,7 +531,13 @@ for h in isoh:
             T0 = None
             rho0 = None
 
-        point = fluid(P=p, h=h*1000)
+        if pts:
+            rho0 = pts[-1].rho
+            T0 = pts[-1].T
+        else:
+            T0 = fluid()._constants["Tmin"]
+            rho0 = fluid()._Liquid_Density(T0)
+        point = fluid(P=p, h=h*1000, T0=T0, rho0=rho0)
 
         if point.status == 1:
 
