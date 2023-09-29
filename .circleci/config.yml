@@ -35,6 +35,10 @@ jobs:
           pip-dependency-file: requirements_test.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
 
       - run:
+          name: Install xcb
+          command: sudo apt-get install -y libxkbcommon-x11-0
+
+      - run:
           name: Run tests
           # This assumes coverage is installed via the install-package step above
           command: |
