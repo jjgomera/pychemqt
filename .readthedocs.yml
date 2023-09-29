@@ -13,9 +13,7 @@ build:
 
 python:
   install:
-#  - requirements: docs/requirements.txt
-  - requirements: requirements_docs.txt
-  use_system_site_packages: true
+  - requirements: docs/requirements.txt
 
 ## Build documentation in the "docs/" directory with Sphinx
 sphinx:

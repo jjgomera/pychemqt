@@ -35,7 +35,7 @@ jobs:
           pip-dependency-file: requirements_test.txt  # if you have a different name for your requirements file, maybe one that combines your runtime and test requirements.
 
       - run:
-          name: Install xcb
+          name: Install pyqt system dependencies
           command: |
             sudo apt-get update 
             sudo apt-get install -y --no-install-recommends libxkbcommon-x11-0 libegl1 libxdamage1 libasound2

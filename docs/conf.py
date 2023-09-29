@@ -43,10 +43,10 @@ from urllib.error import URLError
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-sys.path.insert(0, os.path.dirname(os.path.abspath('..')))
+sys.path.insert(0, os.path.dirname(os.path.abspath('.')))
 
-autodoc_mock_imports = ['sip', 'PyQt5', 'PyQt5.QtGui', 'PyQt5.QtCore',
-                        'PyQt5.QtWidgets']
+autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
+                        'PyQt6.QtWidgets']
 
 
 # Define pychemqt environment
@@ -73,6 +73,7 @@ try:
 except FileExistsError:  # noqa
     pass
 
+print(sys.path)
 # Checking config files
 from tools import firstrun  # noqa
 
