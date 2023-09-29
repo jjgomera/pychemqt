@@ -73,7 +73,6 @@ try:
 except FileExistsError:  # noqa
     pass
 
-print(sys.path)
 # Checking config files
 from tools import firstrun  # noqa
 

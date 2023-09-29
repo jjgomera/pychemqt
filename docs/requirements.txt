@@ -2,6 +2,7 @@ scipy
 numpy
 numpydoc
 pyqt6
+pyqt6-webengine
 matplotlib>=3.5
 iapws
 sphinx_rtd_theme
