@@ -43,6 +43,7 @@ from urllib.error import URLError
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+sys.path.insert(0, os.path.dirname(os.path.abspath('..')))
 sys.path.insert(0, os.path.dirname(os.path.abspath('.')))
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
