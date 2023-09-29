@@ -122,9 +122,6 @@ shutil.copy(origen, conf_dir + "moneda.dat")
 if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
 
-import equipment  # noqa
-import lib  # noqa
-import tools  # noqa
 
 # -- General configuration ------------------------------------------------
 
