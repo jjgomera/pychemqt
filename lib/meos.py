@@ -6126,6 +6126,9 @@ class MEoS(ThermoAdvanced):
 
                     F = f**0.5/h**(2/3)*(ref.M/self.M)**0.5             # Eq 29
 
+                    if T0 <= ref.eq[0]["Tmin"]:
+                        T0 = ref.eq[0]["Tmin"]
+
                     # Residual contribution using the ecs method
                     kr = F * ref()._ThCond(rho0*chi, T0, fase, thermo0, True)
 
@@ -6553,7 +6556,10 @@ class MEoS(ThermoAdvanced):
                 return prop["firdt"]
 
         if rho0 is None and T < self.Tc:
-            rho0 = self._Liquid_Density(T)
+            rho0 = self._Liquid_Density(self._constants["Tmin"])
+#             rho0 = self._Liquid_Density(T)
+#         elif rho0 is None and T < self.Tc:
+#             rho0 = self.rhoc
         elif rho0 is None:
             rho0 = self.rhoc/3
 

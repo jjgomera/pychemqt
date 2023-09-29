@@ -457,6 +457,7 @@ for P in np.concatenate([isoP, isoP_PIP]):
         point = fluid(P=P, T=t)
 
         if point.status == 1:
+#             print(t, point.T, point.v, point.u)
 
 #             if point.rhoM > point._constants["rhomax"]:
 #                 continue
@@ -478,6 +479,7 @@ for P in np.concatenate([isoP, isoP_PIP]):
                 for p in sat_pnt[::-1]:
                     if p.status == 1:
                         pts.append(p)
+#                         print("SAT", t, p.T, p.v, p.u)
                 sat = False
             pts.append(point)
 
@@ -757,12 +759,12 @@ for curva in ["ideal", "boyle", "joule-thomson", "joule"]:
     pmin = Pmin
     for t in T:
         # Optional limits for ideal curves to avoid false values out of range
-        # if curva in ["ideal", "boyle"]:
-        #     if t > 2.5*fluid.Tc:
-        #         continue
-        # if curva == "joule-thomson":
-        #     if t > 8*fluid.Tc:
-        #         continue
+#         if curva in ["ideal", "boyle"]:
+#             if t > 5*fluid.Tc:
+#                 continue
+#         if curva == "joule-thomson":
+#             if t > 8*fluid.Tc:
+#                 continue
 
         P = fluid()._IdealCurve(curva, t)
         if P is None or P < 0:

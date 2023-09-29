@@ -239,9 +239,13 @@ class Ethanol(MEoS):
         rhor = rho/self.rhoc
 
         # Eq 6
-        mur = rhor**(2/3)*Tr**0.5 * (
-            8.32575272*rhor**2
-            + 9.66535242e-2*rhor**8/(Tr**4*(1+rhor**2)-Tr**2))
+        # Avoid ZeroDivison Error at Tc and rho near 0
+        try:
+            mur = rhor**(2/3)*Tr**0.5 * (
+                8.32575272*rhor**2
+                + 9.66535242e-2*rhor**8/(Tr**4*(1+rhor**2)-Tr**2))
+        except ZeroDivisionError:
+            mur = 0
         return mur
 
     visco1 = {"__name__": "Kiselev (2005)",
