@@ -38,7 +38,7 @@ jobs:
           name: Install xcb
           command: |
             sudo apt-get update 
-            sudo apt-get install -y --no-install-recommends libxkbcommon-x11-0 libegl1
+            sudo apt-get install -y --no-install-recommends libxkbcommon-x11-0 libegl1 libxdamage1
 
       - run:
           name: Run tests
