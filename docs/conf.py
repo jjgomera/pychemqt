@@ -45,6 +45,7 @@ from urllib.error import URLError
 
 sys.path.insert(0, os.path.dirname(os.path.abspath('..')))
 sys.path.insert(0, os.path.dirname(os.path.abspath('.')))
+print(sys.path)
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
