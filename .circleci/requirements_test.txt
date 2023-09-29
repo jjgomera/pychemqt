@@ -1,6 +1,6 @@
 scipy
 matplotlib
-PyQt5
+PyQt6
 iapws
 coverage
 coveralls
