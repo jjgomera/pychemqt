@@ -43,12 +43,7 @@ from urllib.error import URLError
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('.'))
-print(sys.path)
-import glob
-print(glob.glob("../*/"))
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
@@ -128,7 +123,6 @@ if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
 
 
-from equipment import *
 
 # -- General configuration ------------------------------------------------
 
