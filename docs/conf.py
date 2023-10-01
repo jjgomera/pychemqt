@@ -48,7 +48,7 @@ sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('.'))
 print(sys.path)
 import glob
-print(glob.glob("."))
+print(glob.glob("../.."))
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
