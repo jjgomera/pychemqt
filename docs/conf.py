@@ -49,6 +49,8 @@ print(sys.path)
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
 
+from equipment import equipments
+import equipment
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('../')
