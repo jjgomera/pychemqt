@@ -56,9 +56,9 @@ setup(
                       'matplotlib>=1.4',
                       'iapws>=1.3'],
     extras_require={
-        'CoolProp':  ["CoolProp>=6.1.0"],
-        'openbabel':  ["openbabel>=2.4.1"],
-        'spreadsheet':  ["openpyxl>=2.3.0", "xlwt>=1.2.0", "ezodf>=0.3.2"],
+        'CoolProp': ["CoolProp>=6.1.0"],
+        'openbabel': ["openbabel>=2.4.1"],
+        'spreadsheet': ["openpyxl>=2.3.0", "xlwt>=1.2.0", "ezodf>=0.3.2"],
         'icu': ["PyICU>=2.1"],
         'reportlab': ["reportlab>=3.5.8"]},
 

@@ -12,6 +12,8 @@ build:
     python: "3.11"
   apt_packages:
      - libasound2
+  commands:
+     - python3 setup install
 
 # Install requirements
 python:
