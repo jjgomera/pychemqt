@@ -24,7 +24,9 @@ import os
 import sys
 
 print(sys.path)
-import equipment
+from equipment import __all__ as equipmentall
+from equipment import equipments
+# import equipment
 import lib
 import plots
 import tools
@@ -194,14 +196,14 @@ txt += "----------" + os.linesep + os.linesep
 txt += ".. toctree::" + os.linesep
 txt += "    :maxdepth: 1" + os.linesep + os.linesep
 
-for mod in equipment.__all__:
+for mod in equipmentall:
     txt += "    equipment.%s" % mod + os.linesep
 
 with open("docs/equipment.rst", "w") as file:
     file.write(txt)
 
 # Generate each module documentation file
-for equip in equipment.equipments:
+for equip in equipments:
     # Make equipment.rst schemas
     with open("docs/equipment.%s.rst" % equip.__name__, "w") as file:
         print("equipment.%s module" % equip.__name__, file=file)
