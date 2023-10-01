@@ -47,7 +47,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('.'))
 print(sys.path)
-print(sys.executable)
+import glob
+print(glob.glob("."))
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
@@ -126,6 +127,8 @@ shutil.copy(origen, conf_dir + "moneda.dat")
 if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
 
+
+import equipment
 
 # -- General configuration ------------------------------------------------
 
