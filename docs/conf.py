@@ -44,7 +44,6 @@ from urllib.error import URLError
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 sys.path.insert(0, os.path.abspath('../'))
-print(sys.path)
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
@@ -122,8 +121,6 @@ shutil.copy(origen, conf_dir + "moneda.dat")
 if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
 
-
-import equipment
 
 # -- General configuration ------------------------------------------------
 

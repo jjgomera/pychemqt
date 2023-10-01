@@ -21,7 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # Generate the *-ref.rst files with list of references
 
 import os
+import sys
 
+print(sys.path)
 import equipment
 import lib
 import plots
