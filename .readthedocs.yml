@@ -12,13 +12,12 @@ build:
     python: "3.11"
   apt_packages:
      - libasound2
-  install:
-    - method: setuptools
-      path: .
 
 # Install requirements
 python:
   install:
+  - method: setuptools
+    path: .
   - requirements: docs/requirements.txt
 
 # Build documentation in the "docs/" directory with Sphinx
