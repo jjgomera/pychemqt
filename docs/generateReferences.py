@@ -21,12 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 # Generate the *-ref.rst files with list of references
 
 import os
-import sys
 
-print(sys.path)
-from equipment import __all__ as equipmentall
-from equipment import equipments
-# import equipment
+import equipment
 import lib
 import plots
 import tools
@@ -196,14 +192,14 @@ txt += "----------" + os.linesep + os.linesep
 txt += ".. toctree::" + os.linesep
 txt += "    :maxdepth: 1" + os.linesep + os.linesep
 
-for mod in equipmentall:
+for mod in equipment.__all__:
     txt += "    equipment.%s" % mod + os.linesep
 
 with open("docs/equipment.rst", "w") as file:
     file.write(txt)
 
 # Generate each module documentation file
-for equip in equipments:
+for equip in equipment.equipments:
     # Make equipment.rst schemas
     with open("docs/equipment.%s.rst" % equip.__name__, "w") as file:
         print("equipment.%s module" % equip.__name__, file=file)

@@ -44,6 +44,10 @@ from urllib.error import URLError
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
 sys.path.insert(0, os.path.abspath('../'))
+print(sys.path)
+
+from glob import glob
+print(glob("../*"))
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
