@@ -28,6 +28,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        echo 'export PYTHONPATH="${PYTHONPATH}:${HOME}/myproject/"' >> $BASH_ENV
+        echo $PYTHONPATH
+        python3 tests/initialization.py
     - name: Test with pytest
       run: |
         pytest
