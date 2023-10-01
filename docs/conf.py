@@ -128,7 +128,7 @@ if not os.path.isfile(conf_dir + "databank.db"):
     firstrun.createDatabase(conf_dir + "databank.db")
 
 
-import equipment
+from equipment import *
 
 # -- General configuration ------------------------------------------------
 
