@@ -75,6 +75,7 @@ except FileExistsError:  # noqa
 
 # Checking config files
 from tools import firstrun  # noqa
+import equipment
 
 # Checking config file
 default_Preferences = firstrun.Preferences()
