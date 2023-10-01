@@ -43,14 +43,11 @@ from urllib.error import URLError
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-sys.path.insert(0, os.path.abspath('../.'))
+sys.path.insert(0, os.path.abspath('../..'))
 print(sys.path)
 
 autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
                         'PyQt6.QtWidgets']
-
-from equipment import equipments
-import equipment
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('../')
