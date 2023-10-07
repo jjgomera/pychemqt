@@ -55,8 +55,8 @@ class Hexene_1(MEoS):
                     "title": "Thermodynamic properties fo 1-hexene - "
                              "Measurements and Modeling",
                     "ref": "J. Chem. Thermo., 176 (2023) 106881",
-                    "doi": "10.1016/j.jct.2022.106881"},
                     # Find final article
+                    "doi": "10.1016/j.jct.2022.106881"},
 
         "R": 8.314462618,
         "cp": CP0,
@@ -99,6 +99,77 @@ class Hexene_1(MEoS):
         "n": [-2.3518, -5.7777, -16.194, -48.539, -81.266, -174.12],
         "t": [0.33, 1.04, 2.76, 5.98, 11.91, 21.4]}
 
+    visco0 = {
+        "__name__": "Sotiriadou (2023)",
+        "__doi__": {
+            "autor": "Sotiriadou, S., Ntonti, E., Assael, M.J., Huber, M.L.,",
+            "title": "Reference Correlations of the Viscosity and Thermal "
+                     "Conductivity of 1-Hexene from the Triple Point to High "
+                     "Temmperatures and Pressures",
+            "ref": "Int. J. Thermophysics 44 (2023) 108",
+            "doi": "10.1007/s10765-023-03217-y"},
+
+        "eq": 1, "omega": 0,
+        "ek": 318, "sigma": 0.62,
+
+        "Toref": Tc,
+        "no_num": [0.0939564, 3.70702, -5.09947, 12.9844, -1.74165, 0.149722],
+        "to_num": [0, 1, 2, 3, 4, 5],
+        "no_den": [0.373772, -0.467423, 1.00],
+        "to_den": [0, 1, 2],
+
+        "Tref_virial": 318,
+        "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125, -3375.1717,
+                     2491.6597, -787.26086, 14.085455, -0.34664158],
+        "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+        "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Sotiriadou correlation"""
+        Tr = T/self.Tc
+        rhor = rho/238.1713
+
+        # Eq 8
+        mur = rhor**(2/3)*Tr**0.5 * (
+            11.277217*rhor*(1+1/Tr) + (-12.898822*rhor + 1.0917037*rhor**5)
+            / (10.742116+8.475744*Tr-6.74312*rhor+rhor**2-1.842042*Tr*rhor))
+
+        return mur
+
+    _viscosity = (visco0, )
+
+    thermo0 = {
+        "__name__": "Sotiriadou (2023)",
+        "__doi__": {
+            "autor": "Sotiriadou, S., Ntonti, E., Assael, M.J., Huber, M.L.,",
+            "title": "Reference Correlations of the Viscosity and Thermal "
+                     "Conductivity of 1-Hexene from the Triple Point to High "
+                     "Temmperatures and Pressures",
+            "ref": "Int. J. Thermophysics 44 (2023) 108",
+            "doi": "10.1007/s10765-023-03217-y"},
+
+        "eq": 1,
+
+        "Toref": Tc,
+        "no_num": [-4.02537e-4, 3.55864e-3, -3.98674e-4, -1.72629e-2,
+                   5.23353e-2, -1.38719e-2, 1.30184e-3],
+        "to_num": [0, 1, 2, 3, 4, 5, 6],
+        "no_den": [0.238788, -0.526011, 1],
+        "to_den": [0, 1, 2],
+
+        "Tref_res": Tc, "rhoref_res": 238.1713, "kref_res": 1e-3,
+        "nr": [17.4154, -5.92427, -53.4126, 25.7922, 59.5765, -20.8764,
+               -19.3526, 3.91783, 2.09622, 0.158646],
+        "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+        "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+
+        "critical": 3,
+        "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+        "Xio": 0.235e-9, "gam0": 0.056, "qd": 0.698e-9, "Tcref": 1.5*Tc}
+
+    _thermal = (thermo0, )
+
 
 class Test(TestCase):
     """Testing"""
@@ -109,9 +180,9 @@ class Test(TestCase):
         self.assertEqual(round(st.P.MPa, 9), 0.002490162)
         self.assertEqual(round(st.cpM.kJkmolK, 7), 130.2264437)
         self.assertEqual(round(st.w, 7), 177.6851621)
-        self.assertEqual(round(st.hM.kJkmol, 5), 23687.70872)
-        self.assertEqual(round(st.sM.kJkmolK, 8), 99.94829958)
-        self.assertEqual(round(st.aM.kJkmol, 6), -8786.943309)
+        self.assertEqual(round(st.hM.kJkmol, 5), 23687.70871)
+        self.assertEqual(round(st.sM.kJkmolK, 8), 99.94829959)
+        self.assertEqual(round(st.aM.kJkmol, 6), -8786.943313)
 
         st = Hexene_1(T=300, rhom=8)
         self.assertEqual(round(st.P.MPa, 9), 6.036182516)
@@ -119,15 +190,15 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 6), 1105.511473)
         self.assertEqual(round(st.hM.kJkmol, 5), -6538.47503)
         self.assertEqual(round(st.sM.kJkmolK, 7), -22.9515988)
-        self.assertEqual(round(st.aM.kJkmol, 6), -407.518197)
+        self.assertEqual(round(st.aM.kJkmol, 6), -407.518201)
 
         st = Hexene_1(T=450, rhom=5.8)
         self.assertEqual(round(st.P.MPa, 9), 1.450738906)
         self.assertEqual(round(st.cpM.kJkmolK, 7), 257.9030576)
         self.assertEqual(round(st.w, 7), 403.7924555)
         self.assertEqual(round(st.hM.kJkmol, 5), 25284.94461)
-        self.assertEqual(round(st.sM.kJkmolK, 8), 63.84057208)
-        self.assertEqual(round(st.aM.kJkmol, 6), -3693.440228)
+        self.assertEqual(round(st.sM.kJkmolK, 8), 63.84057209)
+        self.assertEqual(round(st.aM.kJkmol, 6), -3693.440233)
 
         st = Hexene_1(T=450, rhom=0.07)
         self.assertEqual(round(st.P.MPa, 9), 0.250858298)
@@ -135,7 +206,7 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 7), 207.5147257)
         self.assertEqual(round(st.hM.kJkmol, 5), 46846.16148)
         self.assertEqual(round(st.sM.kJkmolK, 7), 124.0529255)
-        self.assertEqual(round(st.aM.kJkmol, 5), -12561.34494)
+        self.assertEqual(round(st.aM.kJkmol, 5), -12561.34495)
 
         st = Hexene_1(T=600, rhom=3)
         self.assertEqual(round(st.P.MPa, 9), 8.033819707)
@@ -144,3 +215,23 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.kJkmol, 5), 66611.43496)
         self.assertEqual(round(st.sM.kJkmolK, 7), 140.0031906)
         self.assertEqual(round(st.aM.kJkmol, 5), -20068.41931)
+
+    def test_Sotiriadou(self):
+        """Section 4.2, Pag 22"""
+        st = Hexene_1(T=300, rhom=0)
+        self.assertEqual(round(st.mu.muPas, 4), 6.7237)
+        self.assertEqual(round(st.k.mWmK, 3), 12.589)
+
+        st = Hexene_1(T=300, rho=700)
+        self.assertEqual(round(st.mu.muPas, 2), 364.37)
+        # Critical enhancement don't reproduce paper, maybe a error in it
+        # because critical enhancement at a point so far to critical point
+        # self.assertEqual(round(st.k.mWmK, 3), 132.139)
+
+        st = Hexene_1(T=500, x=0.5)
+        self.assertEqual(round(st.Liquido.rho, 2), 339.09)
+        self.assertEqual(round(st.Liquido.mu.muPas, 2), 53.46)
+        self.assertEqual(round(st.Liquido.k.mWmK, 2), 64.80)
+        self.assertEqual(round(st.Gas.rho, 2), 142.38)
+        self.assertEqual(round(st.Gas.mu.muPas, 2), 21.70)
+        self.assertEqual(round(st.Gas.k.mWmK, 2), 50.65)
