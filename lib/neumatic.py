@@ -58,6 +58,12 @@ __doi__ = {
          "ref": "J. Chem. Eng. Japan 10(4) (1977) 273-279",
          "doi": "10.1252/jcej.10.273"},
     6:
+        {"autor": "Ochi, M.",
+         "title": "Saltation Velocity of the Gas-Solid Two-Phase Flow in a "
+                  "Horizontal Pipe",
+         "ref": "Trans. JSME B. 59(564) (1993) 2416-2421",
+         "doi": "10.1299/kikaib.59.2416"},
+    7:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -223,13 +229,65 @@ def Matsumoto(M, rhop, dp, rhog, D, Vt, method="1977"):
     return Vs
 
 
+@refDoc(__doi__, [6])
+def Ochi(M, dp, rhog, D, Vt, fp=0.4):
+    r"""Calculates saltation velocity of the gas for pneumatic conveying,
+    according to Ochi correlation, [6]_.
+
+    .. math::
+        \begin{array}[t]{c}
+        Fr_s = 1.05 f_d^{0.47}Fr_t^{0.82} \mu_s^{0.25}\\
+        Fr_t = \frac{V_{t}}{\sqrt{g d_p}}\\
+        \mu_s = \frac{M}{\rho_g V_{salt} A}\\
+        A = \frac{pi}{4} D^2\\
+        \end{array}
+
+    Rearanged saltation velocity
+
+    .. math::
+        V_{salt} = \left(\frac{1.05 M^{0.25} f^{0.47} Fr_t^{0.82} \sqrt{g d_p}}
+        {\left(\rho_g A\right)^{0.25}}\right)^{0.8}
+
+    Parameters
+    ----------
+    M : float
+        Solid mass flow rate, [kg/s]
+    dp : float
+        Particle diameter, [m]
+    rhog : float
+        Gas density, [kg/m^3]
+    D : float
+        Diameter of pipe, [m]
+    Vt : float
+        Terminal velocity of particle settling in gas, [m/s]
+    fp : float
+        Coefficient of friction between particles and surface, [-]
+
+    Returns
+    -------
+    Vs : float
+        Saltation velocity of gas, [m/s]
+
+    Examples
+    --------
+    >>> "%0.2f" % (Ochi(M=0.25, dp=4.7e-4, rhog=1.2, D=0.0026, Vt=3.16))
+    '8.82'
+    """
+
+    A = pi/4*D**2
+    Frt = Vt/(g*dp)**0.5
+    Vs = (1.05*fp**0.47*Frt**0.82*M**0.25*(g*dp)**0.5/(rhog*A)**0.25)**0.8
+    return Vs
+
+
 def V_saltation(*args, **kw):
     """List with all saltation velocity correlations availables
 
-    * 0 - Rizk
-    * 1 - Matsumoto_1977
-    * 2 - Matsumoto_1975
-    * 3 - Matsumoto_1974
+    * 0 - Rizk (1973)
+    * 1 - Matsumoto (1977)
+    * 2 - Matsumoto (1975)
+    * 3 - Matsumoto (1974)
+    * 4 - Ochi (1991)
     """
     method = kw.get("method", 0)
     if method == 0:
@@ -240,3 +298,5 @@ def V_saltation(*args, **kw):
         return Matsumoto(*args, method="1975", **kw)
     elif method == 3:
         return Matsumoto(*args, method="1974", **kw)
+    elif method == 4:
+        return Ochi(*args, **kw)
