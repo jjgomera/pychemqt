@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 from functools import partial
 
+from numpy import arange
 from tools.qt import QtGui, QtWidgets, tr
-from scipy import arange
 
 
 from lib.config import IMAGE_PATH, Preferences
@@ -49,7 +49,7 @@ class View_Petro(QtWidgets.QDialog):
     """Dialog to show the properties of a petroleum fractions"""
 
     def __init__(self, petroleo=None, parent=None):
-        super(View_Petro, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(tr(
             "pychemqt", "Petrol assay characteristics"))
         layout = QtWidgets.QGridLayout(self)
@@ -184,7 +184,8 @@ class View_Petro(QtWidgets.QDialog):
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 15, 8)
-        button = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        button = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         button.rejected.connect(self.reject)
         layout.addWidget(button, 16, 1, 1, 8)
 
@@ -192,36 +193,36 @@ class View_Petro(QtWidgets.QDialog):
         if petroleo:
             self.rellenar(petroleo)
 
-    def setReadOnly(self, bool):
-        self.M.setReadOnly(bool)
-        self.Tb.setReadOnly(bool)
-        self.gravity.setReadOnly(bool)
-        self.API.setReadOnly(bool)
-        self.watson.setReadOnly(bool)
+    def setReadOnly(self, boolean):
+        self.M.setReadOnly(boolean)
+        self.Tb.setReadOnly(boolean)
+        self.gravity.setReadOnly(boolean)
+        self.API.setReadOnly(boolean)
+        self.watson.setReadOnly(boolean)
 
-        self.Tc.setReadOnly(bool)
-        self.Pc.setReadOnly(bool)
-        self.Vc.setReadOnly(bool)
-        self.Zc.setReadOnly(bool)
-        self.f_acent.setReadOnly(bool)
-        self.refractivity.setReadOnly(bool)
-        self.CH.setReadOnly(bool)
-        self.S.setReadOnly(bool)
-        self.H.setReadOnly(bool)
+        self.Tc.setReadOnly(boolean)
+        self.Pc.setReadOnly(boolean)
+        self.Vc.setReadOnly(boolean)
+        self.Zc.setReadOnly(boolean)
+        self.f_acent.setReadOnly(boolean)
+        self.refractivity.setReadOnly(boolean)
+        self.CH.setReadOnly(boolean)
+        self.S.setReadOnly(boolean)
+        self.H.setReadOnly(boolean)
 
-        self.n.setReadOnly(bool)
-        self.I.setReadOnly(bool)
-        self.cetane.setReadOnly(bool)
-        self.aniline.setReadOnly(bool)
-        self.cloud.setReadOnly(bool)
-        self.pour.setReadOnly(bool)
-        self.freezing.setReadOnly(bool)
-        self.smoke.setReadOnly(bool)
-        self.v100.setReadOnly(bool)
-        self.v210.setReadOnly(bool)
-        self.VGC.setReadOnly(bool)
-        self.flashOpen.setReadOnly(bool)
-        self.flashClosed.setReadOnly(bool)
+        self.n.setReadOnly(boolean)
+        self.I.setReadOnly(boolean)
+        self.cetane.setReadOnly(boolean)
+        self.aniline.setReadOnly(boolean)
+        self.cloud.setReadOnly(boolean)
+        self.pour.setReadOnly(boolean)
+        self.freezing.setReadOnly(boolean)
+        self.smoke.setReadOnly(boolean)
+        self.v100.setReadOnly(boolean)
+        self.v210.setReadOnly(boolean)
+        self.VGC.setReadOnly(boolean)
+        self.flashOpen.setReadOnly(boolean)
+        self.flashClosed.setReadOnly(boolean)
 
     def rellenar(self, petroleo):
         self.nombre.setText(petroleo.name)
@@ -262,7 +263,7 @@ class Definicion_Petro(newComponent):
     ViewDetails = View_Petro
 
     def __init__(self, parent=None):
-        super(Definicion_Petro, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(tr(
             "pychemqt", "Petrol component definition"))
 
@@ -339,19 +340,18 @@ class Definicion_Petro(newComponent):
         lyt.addWidget(self.checkCurva, 1, 1, 1, 2)
         lyt.addWidget(curveWidget, 2, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            3, 1)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 1)
         self.checkCrudo = QtWidgets.QRadioButton(
-            tr(
-                "pychemqt", "Use petrol fraction from list"))
+            tr("pychemqt", "Use petrol fraction from list"))
         self.checkCrudo.toggled.connect(self.changeUnknown)
         self.checkCrudo.toggled.connect(crudeWidget.setEnabled)
         crudeWidget.setEnabled(False)
         lyt.addWidget(self.checkCrudo, 4, 1, 1, 2)
         lyt.addWidget(crudeWidget, 5, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            6, 1, 1, 2)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 6, 1, 1, 2)
         self.checkBlend = QtWidgets.QCheckBox(tr(
             "pychemqt", "Blend if its necessary"))
         lyt.addWidget(self.checkBlend, 7, 1, 1, 2)
@@ -453,8 +453,8 @@ class Definicion_Petro(newComponent):
         lyt.addWidget(self.N, 13, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            14, 1, 1, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 14, 1, 1, 2)
         lyt.addWidget(QtWidgets.QLabel(tr(
             "pychemqt", "Alternate definition, poor accuracy")), 15, 1, 1, 2)
         txt = QtWidgets.QLabel("Nc")
@@ -485,14 +485,14 @@ class Definicion_Petro(newComponent):
     def unknown(self):
         if self.checkCrudo.isChecked():
             return self.Crudo
-        else:
-            return self.Petroleo
+        return self.Petroleo
 
     def changeUnknown(self):
         self.status.setState(self.unknown.status, self.unknown.msg)
         self.buttonShowDetails.setEnabled(self.unknown.status)
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Save).setEnabled(
-            self.unknown.status)
+        self.btonBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Save).setEnabled(
+                self.unknown.status)
 
     # Curve distillation definition
     def curveIndexChanged(self, index):
@@ -558,7 +558,7 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     # petroleo = Petroleo(name="Petroleo", API=22.5, M=339.7)
-    petroleo = Petroleo(name="Petroleo", Nc=20)
-    Dialog = View_Petro(petroleo)
+    petrol = Petroleo(name="Petroleo", Nc=20)
+    Dialog = View_Petro(petrol)
     Dialog.show()
     sys.exit(app.exec())
