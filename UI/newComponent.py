@@ -31,8 +31,8 @@ from functools import partial
 
 from tools.qt import QtCore, QtGui, QtWidgets, tr
 
-from lib import sql
 from lib.config import IMAGE_PATH
+from lib import sql
 from lib.newComponent import _methods
 from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
                           SolubilityParameter)
@@ -439,13 +439,13 @@ class Ui_Contribution(newComponent):
                 "pychemqt", "Platt number")), 16, 0)
             self.plat = QtWidgets.QSpinBox()
             self.plat.setFixedWidth(80)
-            tr = "The Platt number is the number of pairs of carbon atoms "
-            tr += "which are separated by three carbon-carbon bonds and is an "
-            tr += "indicator of the degree of branching in the molecule. The "
-            tr += "Platt number of an n-alkane is equal to the number of "
-            tr += "carbons minus three"
+            t = "The Platt number is the number of pairs of carbon atoms "
+            t += "which are separated by three carbon-carbon bonds and is an "
+            t += "indicator of the degree of branching in the molecule. The "
+            t += "Platt number of an n-alkane is equal to the number of "
+            t += "carbons minus three"
             self.plat.setToolTip(tr(
-                "pychemqt", tr))
+                "pychemqt", t))
             self.plat.valueChanged.connect(partial(self.changeParams, "platt"))
             layout.addWidget(self.plat, 16, 1)
 

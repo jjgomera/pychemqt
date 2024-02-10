@@ -27,17 +27,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from math import pi, exp, log, sin
 import warnings
 
-from tools.qt import tr
 from numpy.lib.scimath import log10
 from scipy.optimize import fsolve
-
-from lib.physics import R_atml
 
 from lib import unidades
 from lib.compuestos import Componente
 from lib.petro import Petroleo
+from lib.physics import R_atml
 from lib.sql import databank
 from lib.utilities import refDoc
+from tools.qt import tr
 
 
 __doi__ = {
@@ -177,8 +176,7 @@ __doi__ = {
          "title": "Efficient methods for calculations of compressibility, "
                   "density and viscosity of natural gases",
          "ref": "Fluid Phase Equilibria 218:1 (2004) 1-13",
-         "doi": "10.1016/j.fluid.2003.02.003"}
-        }
+         "doi": "10.1016/j.fluid.2003.02.003"}}
 
 
 # Gas compresibility factor
@@ -502,11 +500,11 @@ def Z_Sarem(Tr, Pr):
     y = (2.*Tr-4)/1.9
     Aij = [
         [2.1433504, .0831762, -.0214670, -.0008714, .0042846, -.0016595],
-        [.3312352, -.1340361, .0668810,  -.0271743,  .0088512,  -.002152],
-        [.1057287,  -.0503937,  .0050925,  .0105513,  -.0073182,  .0026960],
-        [.0521840,  .0443121,  -.0193294,  .0058973,  .0015367,  -.0028327],
-        [.0197040,  -.0263834, .019262,  -.0115354,  .0042910,  -.0081303],
-        [.0053096,  .0089178,  -.0108948,  .0095594,  -.0060114, .0031175]]
+        [.3312352, -.1340361, .0668810, -.0271743, .0088512, -.002152],
+        [.1057287, -.0503937, .0050925, .0105513, -.0073182, .0026960],
+        [.0521840, .0443121, -.0193294, .0058973, .0015367, -.0028327],
+        [.0197040, -.0263834, .019262, -.0115354, .0042910, -.0081303],
+        [.0053096, .0089178, -.0108948, .0095594, -.0060114, .0031175]]
 
     P = [lambda a: 0.7071068,
          lambda a: 1.224745*a,
@@ -1124,8 +1122,12 @@ class Crudo(Petroleo):
         SG = 141.5/(API+131.5)
         PP = unidades.Temperature(prop[8], "F")
         v100 = prop[10]
-        Tb = unidades.Temperature(
-            (-753.-136*(1.-exp(-.15*v100))+572*SG-0.0512*v100+PP.R)/0.139, "R")
+        if v100:
+            Tb = unidades.Temperature(
+                (-753 - 136*(1-exp(-0.15*v100)) + 572*SG - 0.0512*v100 + PP.R)
+                / 0.139, "R")
+        else:
+            Tb = None
 
         self.definicion = 1
         self.kwargs["name"] = ", ".join(prop[1:3])
@@ -1134,7 +1136,7 @@ class Crudo(Petroleo):
         self.kwargs["S"] = prop[5]
         self.kwargs["N"] = prop[6]
         self.kwargs["v100"] = prop[10]
-        # Petroleo.calculo(self)
+        Petroleo.calculo(self)
 
         self.vanadium = prop[11]
         self.nickel = prop[12]
