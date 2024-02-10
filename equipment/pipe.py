@@ -127,8 +127,7 @@ class Pipe(equipment):
         tr("pychemqt", "Steam (Fritzsche)"),
         tr("pychemqt", "Isotermic gas flow"),
         tr("pychemqt", "Two Phase flow (Baker method)"),
-        tr("pychemqt",
-                               "Two Phase flow (Beggs and Brill method)"))
+        tr("pychemqt", "Two Phase flow (Beggs and Brill method)"))
     TEXT_THERMAL = (
         tr("pychemqt", "Adiabatic"),
         tr("pychemqt", "Heat flux"),

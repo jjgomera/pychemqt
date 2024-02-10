@@ -712,7 +712,7 @@ class ColorSelector(QtWidgets.QWidget):
             color = QtGui.QColor(color)
             color.setAlpha(alpha)
         self.color = color
-        self.button.setStyleSheet("background: {color.name(self.name)};")
+        self.button.setStyleSheet(f"background: {color.name(self.name)};")
         self.RGB.setText(color.name(self.name))
 
     def ColorButtonClicked(self):
