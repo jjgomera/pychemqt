@@ -31,8 +31,8 @@ from math import sqrt, exp, log
 import os
 
 from tools.qt import tr
-from scipy import pi, arccos, sin, cos, tanh
-from scipy.constants import g
+from numpy import arccos, sin, cos, tanh
+from scipy.constants import g, pi
 from scipy.optimize import fsolve
 
 from lib import unidades

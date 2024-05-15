@@ -27,7 +27,8 @@ from math import log, exp
 import os
 
 from tools.qt import tr
-from scipy import optimize, polyval, roots, r_
+from numpy import polyval, roots, r_
+from scipy.optimize import leastsq
 from scipy.constants import g
 
 from lib.unidades import (Pressure, Length, Power, VolFlow, Currency,
@@ -295,10 +296,10 @@ class Pump(equipment):
 
         inicio = r_[1, 1, 1]
 
-        ajuste_h, exito_h = optimize.leastsq(residuo, inicio, args=(Q, h))
+        ajuste_h, exito_h = leastsq(residuo, inicio, args=(Q, h))
         self.CurvaHQ = ajuste_h
 
-        ajuste_P, exito_P = optimize.leastsq(residuo, inicio, args=(Q, Pot))
+        ajuste_P, exito_P = leastsq(residuo, inicio, args=(Q, Pot))
         self.CurvaPotQ = ajuste_P
 
         def funcion_NPSH(p, x):
@@ -306,7 +307,7 @@ class Pump(equipment):
 
         def residuo_NPSH(p, x, y):
             return funcion_NPSH(p, x) - y
-        ajuste_N, ex = optimize.leastsq(residuo_NPSH, inicio, args=(Q, NPSH))
+        ajuste_N, ex = leastsq(residuo_NPSH, inicio, args=(Q, NPSH))
         self.CurvaNPSHQ = ajuste_N
 
     def calcularCurvaActual(self):

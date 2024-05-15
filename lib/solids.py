@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
-from scipy import log, exp, r_
+from numpy import log, exp, r_
 from scipy.optimize import leastsq
 from scipy.special import erf
 from tools.qt import tr

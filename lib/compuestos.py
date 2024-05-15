@@ -129,8 +129,7 @@ import os
 import re
 
 from numpy.lib.scimath import log, log10
-from numpy import exp
-from scipy import cosh, sinh, tanh, roots, absolute, array
+from numpy import exp, cosh, sinh, tanh, roots, absolute, array
 from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
 from scipy.interpolate import interp1d, interp2d

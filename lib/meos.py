@@ -163,7 +163,7 @@ import json
 import logging
 import os
 
-from scipy import sin, tan, sinh, cosh, tanh, arctan, arccos, exp, log
+from numpy import sin, tan, sinh, cosh, tanh, arctan, arccos, exp, log
 from scipy.constants import Boltzmann, pi, Avogadro, R, u
 from scipy.optimize import fsolve, newton
 

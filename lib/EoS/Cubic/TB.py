@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from math import exp, log
 
-from scipy import roots
+from numpy import roots
 from scipy.constants import R
 
 from lib.EoS.cubic import Cubic

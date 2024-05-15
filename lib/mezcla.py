@@ -1334,7 +1334,7 @@ def MuG_Wilke(xi, Mi, mui):
     Selected point in Table II from [1]_
     CO2 3.5%, O2 0.3%, CO 27.3%, H2 14.4%, CH4 3.7%, N2 50%, C2 0.8%
 
-    >>> from scipy import r_
+    >>> from numpy import r_
     >>> from lib.mEoS import CO2, O2, CO, H2, CH4, N2, C2
     >>> Mi = [CO2.M, O2.M, CO.M, H2.M, CH4.M, N2.M, C2.M]
     >>> xi = [0.035, 0.003, 0.273, 0.144, 0.037, 0.5, 0.008]

@@ -92,10 +92,9 @@ PNA decomposition procedures:
 
 from configparser import ConfigParser
 
-from numpy import array
+from numpy import array, exp, sqrt
 from numpy.lib.scimath import log, log10
 from numpy.linalg import solve
-from scipy import exp, sqrt
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, leastsq, newton
 

@@ -31,7 +31,7 @@ import os
 from math import exp, sqrt, ceil
 
 from tools.qt import tr
-from scipy import roots
+from numpy import roots
 from scipy.constants import pi, g, e, epsilon_0
 from scipy.optimize import fsolve
 

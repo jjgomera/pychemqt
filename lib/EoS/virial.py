@@ -41,9 +41,8 @@ Third virial coefficient correlations:
 '''
 
 
-from numpy import exp
+from numpy import exp, zeros
 from numpy.lib.scimath import log
-from scipy import zeros
 from scipy.constants import R
 from scipy.misc import derivative
 
