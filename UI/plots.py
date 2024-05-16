@@ -23,8 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from tools.qt import QtCore, QtWidgets, tr
 
-from scipy import arange
-from numpy import transpose
+from numpy import arange, transpose
 
 from UI.widgets import Tabla
 from lib.plot import PlotWidget

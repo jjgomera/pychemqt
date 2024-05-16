@@ -24,7 +24,8 @@ import tempfile
 
 from tools.qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets, tr
 
-from scipy import array, optimize, linspace
+from numpy import array, linspace
+from scipy import optimize
 
 from lib.plot import PlotDialog
 from lib.compuestos import (Componente, MuL_Parametric, Pv_Antoine, Pv_Wagner,
