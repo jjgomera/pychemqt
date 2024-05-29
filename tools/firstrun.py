@@ -60,7 +60,7 @@ equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
            'Pipe', 'Flash', 'ColumnFUG', 'Heat_Exchanger', 'Shell_Tube',
            'Hairpin', 'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse',
            'ElectricPrecipitator', 'Dryer', 'Scrubber', 'Spreadsheet',
-           'Reactor']
+           'Reactor', 'Grinder']
 
 
 def which(program):

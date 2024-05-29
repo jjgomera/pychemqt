@@ -839,8 +839,8 @@ class SolidDefinition(QtWidgets.QWidget):
 
     def distribucionFinished(self):
         conversion = unidades.Length(1, "conf", "ParticleDiameter").m
-        diametros = [diametro*conversion for diametro in self.distribucionTamanos.getColumn(0, False)]
-        fracciones = self.distribucionTamanos.getColumn(1, False)
+        diametros = [diametro*conversion for diametro in self.distribucionTamanos.getColumn(0)]
+        fracciones = self.distribucionTamanos.getColumn(1)
         if diametros:
             kwargs = {"distribucion_diametro": diametros,
                       "distribucion_fraccion": fracciones}
@@ -872,9 +872,9 @@ class SolidDefinition(QtWidgets.QWidget):
 
     def botonNormalizar_clicked(self, diametros=None, fracciones=None):
         if not diametros:
-            diametros = self.distribucionTamanos.getColumn(0, False)
+            diametros = self.distribucionTamanos.getColumn(0)
         if not fracciones:
-            fracciones = self.distribucionTamanos.getColumn(1, False)
+            fracciones = self.distribucionTamanos.getColumn(1)
         if diametros:
             diametros.sort()
             suma = sum(fracciones)
@@ -1007,7 +1007,7 @@ class SolidDistribution(QtWidgets.QDialog):
         self.standard.addItem("AFNOR")
         self.standard.addItem("ISO")
         self.standard.addItem(tr("pychemqt", "Custom"))
-        self.standard.currentIndexChanged[str].connect(self.standardCambiado)
+        self.standard.currentTextChanged.connect(self.standardCambiado)
         layout.addWidget(self.standard, 2, 1, 1, 1)
 
         self.diametros = QtWidgets.QLineEdit()

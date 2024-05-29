@@ -428,8 +428,6 @@ class Pump(equipment):
             elif self.kwargs["rpm"] == 2 and HP > 7.5:
                 a1, a2, a3 = 5.5655, 0.31284, 0.07212
 
-        CI = self.kwargs["Current_index"]
-        BI = self.kwargs["Base_index"]
         C_motor = 1.2*exp(a1+a2*LnHP+a3*LnHP**2)*CI/BI
 
         self.C_bomba = Currency(C_bomba)

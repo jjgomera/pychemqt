@@ -18,18 +18,19 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+###############################################################################
+# Grinder equipment dialog
+###############################################################################
 
-#######################################################################
-###                                              Diálogo de definición de molinos, UI_grinder                                                  ###
-#######################################################################
 
-from tools.qt import QtCore, QtWidgets, tr
+from functools import partial
+
 
 from equipment.parents import UI_equip
 from equipment.solids import Grinder
 from lib import unidades
 from tools import costIndex
-from UI import UI_corriente
+from tools.qt import QtWidgets, tr
 from UI.widgets import Entrada_con_unidades
 
 
@@ -122,96 +123,126 @@ class UI_equipment(UI_equip):
     """Diálogo de definición de molinos trituradores de sólidos"""
     Equipment = Grinder()
 
-    def __init__(self, entrada=None, parent=None):
-        """entrada: Parametro opcional de clase corriente que indica la corriente de entrada en kla tubería"""
-        super(UI_equipment, self).__init__(Grinder, entrada=False, salida=False, parent=parent)
+    def __init__(self, equipment=None, parent=None):
+        """equipment: Initial equipment instance to model"""
+        super().__init__(Grinder, entrada=False, salida=False, parent=parent)
 
-        #Pestaña calculo
-        gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
-        gridLayout_Calculo.addWidget(QtWidgets.QLabel(tr("equipment", "Índice de trabajo de bond:", None)), 1, 0, 1, 1)
-        self.Material=QtWidgets.QComboBox()
-        self.Material.addItem(tr("equipment", "Definido por el usuario", None))
+        # Calculate tab
+        lyt = QtWidgets.QGridLayout(self.tabCalculo)
+        lyt.addWidget(QtWidgets.QLabel(
+            tr("pychemqt", "Bond work index")), 1, 0, 1, 1)
+        self.Material = QtWidgets.QComboBox()
+        self.Material.addItem(tr("pychemqt", "User defined"))
         for key in sorted(BondIndex.keys()):
             self.Material.addItem(key)
-        self.Material.currentIndexChanged[str].connect(self.cambiarBondWordIndex)
-        gridLayout_Calculo.addWidget(self.Material, 1, 1, 1, 1)
-        self.BondWorkIndex=Entrada_con_unidades(float)
-        gridLayout_Calculo.addWidget(self.BondWorkIndex, 1, 2, 1, 1)
-        gridLayout_Calculo.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,0,1,5)
+        self.Material.currentIndexChanged.connect(self.cambiarBondWordIndex)
+        lyt.addWidget(self.Material, 1, 1, 1, 1)
+        self.BondIndex = Entrada_con_unidades(float)
+        self.BondIndex.valueChanged.connect(
+            partial(self.changeParams, "BondIndex"))
+        lyt.addWidget(self.BondIndex, 1, 2, 1, 1)
+        lyt.addWidget(QtWidgets.QLabel(
+            tr("pychemqt", "Exponent")), 2, 0, 1, 1)
+        self.exponent = Entrada_con_unidades(float)
+        self.exponent.valueChanged.connect(
+            partial(self.changeParams, "exponent"))
+        lyt.addWidget(self.exponent, 2, 1, 1, 2)
+        lyt.addWidget(QtWidgets.QLabel(
+            tr("pychemqt", "D80")), 3, 0, 1, 1)
+        self.D80 = Entrada_con_unidades(unidades.Length, "ParticleDiameter")
+        self.D80.valueChanged.connect(
+            partial(self.changeParams, "D80"))
+        lyt.addWidget(self.D80, 3, 1, 1, 2)
 
-        #Pestaña costos
-        gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(tr("equipment", "Tipo:", None)), 1, 1, 1, 1)
-        self.tipo=QtWidgets.QComboBox()
-        self.tipo.addItem(tr("equipment", "De cono", None))
-        self.tipo.addItem(tr("equipment", "Giratorio", None))
-        self.tipo.addItem(tr("equipment", "Dentado", None))
-        self.tipo.addItem(tr("equipment", "De martillo", None))
-        self.tipo.addItem(tr("equipment", "De bolas", None))
-        self.tipo.addItem(tr("equipment", "Pulverizador", None))
-        self.tipo.currentIndexChanged.connect(self.calcularCostos)
-        gridLayout_Costos.addWidget(self.tipo, 1, 2, 1, 1)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),2,1,1,2)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 0, 1, 5)
+
+        group = QtWidgets.QGroupBox(
+            tr("pychemqt", "Results"))
+        layout = QtWidgets.QGridLayout(group)
+        layout.addWidget(QtWidgets.QLabel(
+            tr("pychemqt", "Power")), 1, 0)
+        self.power = Entrada_con_unidades(
+            unidades.Power, retornar=False, readOnly=True)
+        layout.addWidget(self.power, 1, 1)
+        layout.addWidget(QtWidgets.QLabel(
+            tr("pychemqt", "Solid Mass Flow")), 2, 0)
+        self.solidflow = Entrada_con_unidades(
+            unidades.MassFlow, retornar=False)
+        self.solidflow.setReadOnly(True)
+        layout.addWidget(self.solidflow, 2, 1)
+        lyt.addWidget(group, 5, 0, 1, 5)
+
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 0, 1, 5)
+
+        # Cost tab
+        lyt = QtWidgets.QGridLayout(self.tabCostos)
+        lyt.addWidget(
+            QtWidgets.QLabel(tr("pychemqt", "Type:")), 1, 1, 1, 1)
+        self.tipo = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_TIPO_COSTOS:
+            self.tipo.addItem(txt)
+        self.tipo.currentIndexChanged.connect(
+            partial(self.changeParamsCoste, "tipoCoste"))
+        lyt.addWidget(self.tipo, 1, 2, 1, 1)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 2)
 
         self.Costos = costIndex.CostData(self.Equipment)
-        self.Costos.valueChanged.connect(self.calcularCostos)
-        gridLayout_Costos.addWidget(self.Costos,4,1,2,5)
+        self.Costos.valueChanged.connect(self.changeParamsCoste)
+        lyt.addWidget(self.Costos, 4, 1, 2, 5)
 
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),6,1,1,6)
-        gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,1,1,6)
-        self.groupBox_Costos = QtWidgets.QGroupBox(tr("equipment", "Costos calculados", None))
-        gridLayout_Costos.addWidget(self.groupBox_Costos,7,1,1,6)
-        gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Adquisición:", None)),0,1,1,1)
-        self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
-        gridLayout_5.addWidget(self.C_adq,0,2,1,1)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Instalación:", None)),1,1,1,1)
-        self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
-        gridLayout_5.addWidget(self.C_inst,1,2,1,1)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 6, 1, 1, 6)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
+        groupBox_Costos = QtWidgets.QGroupBox(tr("pychemqt", "Stimated costs"))
+        lyt.addWidget(groupBox_Costos, 7, 1, 1, 6)
+        lytgroup = QtWidgets.QGridLayout(groupBox_Costos)
+        lytgroup.addWidget(QtWidgets.QLabel(tr(
+            "pychemqt", "Purchase cost")), 0, 1)
+        self.C_adq = Entrada_con_unidades(
+            unidades.Currency, retornar=False, readOnly=True)
+        lytgroup.addWidget(self.C_adq, 0, 2)
+        lytgroup.addWidget(QtWidgets.QLabel(tr(
+            "pychemqt", "Installed cost")), 1, 1)
+        self.C_inst = Entrada_con_unidades(
+            unidades.Currency, retornar=False, readOnly=True)
+        lytgroup.addWidget(self.C_inst, 1, 2)
 
+        if equipment:
+            self.setEquipment(equipment)
 
-    def cambiarBondWordIndex(self, txt):
+    def cambiarBondWordIndex(self, idx):
         try:
-            value=BondIndex[str(txt)]
+            value = self.Equipment.BOND_INDEX[idx+1][1]
         except KeyError:
-            self.BondWorkIndex.setReadOnly(False)
-            self.BondWorkIndex.clear()
+            self.BondIndex.setReadOnly(False)
         else:
-            self.BondWorkIndex.setValue(value)
-            self.BondWorkIndex.setReadOnly(True)
+            self.BondIndex.setValue(value)
+            self.BondIndex.setReadOnly(True)
+            self.changeParams("BondIndex", value)
 
-    def cambiar_entrada(self, corriente):
-        selfentrada=corriente
-        self.calculo()
-
-    def calculo(self):
-        if self.todos_datos():
-
-            self.rellenoSalida()
-
-    def rellenoSalida(self):
-        pass
-
-    def todos_datos(self):
-        pass
-
-    def calcularCostos(self, factor=None, indiceBase=None, indiceActual=None):
-        if self.todos_datos():
-            if not factor: factor=self.Costos.factor
-            if not indiceBase: indiceBase=self.Costos.Base
-            if not indiceActual: indiceActual=self.Costos.Actual
-            if self.tipo.currentIndex()==0:
-                self.FireHeater.Coste(factor, indiceBase, indiceActual, 0, self.tipobox.currentIndex(), self.material.currentIndex())
-            else:
-                self.FireHeater.Coste(factor, indiceBase, indiceActual, 1, self.tipocilindrico.currentIndex(), self.material.currentIndex())
-            self.C_adq.setValue(self.FireHeater.C_adq.config())
-            self.C_inst.setValue(self.FireHeater.C_inst.config())
 
 if __name__ == "__main__":
     import sys
-    from lib.corriente import Corriente, Mezcla, Solid
+    from lib.corriente import Corriente
+    from lib.solids import Solid
     app = QtWidgets.QApplication(sys.argv)
-    agua=Corriente(T=300, P=101325, caudalMasico=1., ids=[62], fraccionMolar=[1.], MEoS=True)
-    dialogo = UI_equipment(agua)
+
+    dm = [17.5, 22.4, 26.2, 31.8, 37, 42.4, 48, 54,
+          60, 69, 81.3, 96.5, 109, 127]
+    fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                  0.05, 0.03, 0.02]
+    solid = Solid(caudalSolido=[1], distribucion_diametro=dm,
+                  distribucion_fraccion=fracciones, solids=[638])
+    grinder = Grinder(entrada=Corriente(solido=solid), D80=1e-5, BondIndex=10)
+    dialogo = UI_equipment(grinder)
     dialogo.show()
     sys.exit(app.exec())

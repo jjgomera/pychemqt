@@ -542,8 +542,7 @@ class Length(unidad):
                    "Ångström"]
     _magnitudes = [
         ("Length", tr("pychemqt", "Length")),
-        ("ParticleDiameter", tr("pychemqt",
-                                                    "Particle Diameter")),
+        ("ParticleDiameter", tr("pychemqt", "Particle Diameter")),
         ("Thickness", tr("pychemqt", "Thickness")),
         ("PipeDiameter", tr("pychemqt", "Pipe Diameter")),
         ("Head", tr("pychemqt", "Head"))]

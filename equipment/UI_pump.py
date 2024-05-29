@@ -25,12 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets, tr
-
 from lib.unidades import Pressure, Length, Power, VolFlow, Currency
-from tools.costIndex import CostData
 from equipment.parents import UI_equip
 from equipment.pump import Pump
+from tools.qt import QtWidgets, tr
+from tools.costIndex import CostData
 from UI import bombaCurva
 from UI.widgets import Entrada_con_unidades
 
@@ -64,8 +63,8 @@ class UI_equipment(UI_equip):
         self.Carga.valueChanged.connect(partial(self.cambiar_data, "Carga"))
         lyt.addWidget(self.Carga, 3, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            4, 1, 1, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
         self.usarCurva = QtWidgets.QCheckBox(
             tr("pychemqt", "Pump curve"))
         self.usarCurva.toggled.connect(self.usarCurvaToggled)
@@ -96,8 +95,8 @@ class UI_equipment(UI_equip):
         self.incognita = QtWidgets.QComboBox(self.tabCalculo)
         self.incognita.setToolTip(tr(
             "pychemqt",
-            "If use curve, it can calculate the head or the flowrate, in that \
-case it override flow of input stream"))
+            "If use curve, it can calculate the head or the flowrate, in that "
+            "case it override flow of input stream"))
         self.incognita.addItem(
             tr("pychemqt", "Output pressure"))
         self.incognita.addItem(

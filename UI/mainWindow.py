@@ -752,7 +752,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             slot=partial(self.addEquipment, equipment.UI_grinder),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonGrinder)
-        botonGrinder.setEnabled(False)
         actionDryer, botonDryer = createAction(
             tr("pychemqt", "Solids dryer"),
             icon=os.path.join("equipment", "dryer.png"),
