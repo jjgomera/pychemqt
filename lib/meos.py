@@ -5643,8 +5643,8 @@ class MEoS(ThermoAdvanced):
 
                 # Eq 2.18
                 Y = sin(3*Fid)/12 - sin(2*Fid)/4/qc/X \
-                  + (1-5/4*(qc*X)**2)/(qc*X)**2*sin(Fid) \
-                  - ((1-3/2*(qc*X)**2)*Fid-abs((qc*X)**2-1)**1.5*Lw)/(qc*X)**3
+                    + (1-5/4*(qc*X)**2)/(qc*X)**2*sin(Fid) \
+                    - ((1-3/2*(qc*X)**2)*Fid-abs((qc*X)**2-1)**1.5*Lw)/(qc*X)**3
 
             muc = exp(xu*Y)                                           # Eq 3.2
         return muc
