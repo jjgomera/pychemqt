@@ -39,7 +39,7 @@ from lib.fitting import (K_contraction_crane, K_enlargement_crane, K_flush,
 from lib.unidades import (Length, Temperature, HeatTransfCoef, Pressure, Power,
                           Speed, Currency)
 from tools.costIndex import CostData
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 from UI.delegate import SpinEditor, CellEditor
 from UI.widgets import Entrada_con_unidades
 
@@ -91,11 +91,11 @@ class Dialog(QtWidgets.QDialog):
         self.D2.valueChanged.connect(self.calculaK)
         gridLayout.addWidget(self.D2, 1, 1, 1, 2)
         self.checkBox = QtWidgets.QCheckBox()
-        self.checkBox.setText(tr("pychemqt", "Gradual"))
+        self.checkBox.setText(self.tr("Gradual"))
         self.checkBox.toggled.connect(self.check_toggled)
         self.checkBox.toggled.connect(self.calculaK)
         gridLayout.addWidget(self.checkBox, 2, 0)
-        lb_3 = QtWidgets.QLabel(tr("pychemqt", "Angle"))
+        lb_3 = QtWidgets.QLabel(self.tr("Angle"))
         lb_3.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight
                           | QtCore.Qt.AlignmentFlag.AlignTrailing
                           | QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -196,9 +196,9 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         self.TablaMaterial.verticalHeader().hide()
         self.TablaMaterial.setRowCount(1)
         self.TablaMaterial.setColumnCount(3)
-        titles = [tr("pychemqt", "Material"),
-                  tr("pychemqt", "Class"),
-                  tr("pychemqt", "Roughness") + ", mm"]
+        titles = [self.tr("Material"),
+                  self.tr("Class"),
+                  self.tr("Roughness") + ", mm"]
         self.TablaMaterial.setHorizontalHeaderLabels(titles)
         self.TablaMaterial.setSelectionMode(
             QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
@@ -217,11 +217,11 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         self.TablaDiametro.setRowCount(1)
         self.TablaDiametro.setColumnCount(7)
         titles = [
-            tr("pychemqt", "Nº", None),
-            tr("pychemqt", "D int")+", mm",
-            tr("pychemqt", "Thickness") + ", mm",
-            tr("pychemqt", "D ext")+", mm",
-            tr("pychemqt", "Weight")+", kg/m",
+            self.tr("Nº", None),
+            self.tr("D int")+", mm",
+            self.tr("Thickness") + ", mm",
+            self.tr("D ext")+", mm",
+            self.tr("Weight")+", kg/m",
             "V"+", m³/100m", "S"+", m²/100m"]
         self.TablaDiametro.setHorizontalHeaderLabels(titles)
         self.TablaDiametro.setSelectionMode(
@@ -239,15 +239,13 @@ class Catalogo_Materiales(QtWidgets.QWidget):
 
         path = os.path.join(IMAGE_PATH, "button", "clear.png")
         self.botonClear = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Reset"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Reset"))
         self.botonClear.clicked.connect(self.clear)
         gridLayout.addWidget(self.botonClear, 1, 2)
 
         path = os.path.join(IMAGE_PATH, "button", "filenew.png")
         self.botonEdit = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Edit"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Edit"))
         self.botonEdit.clicked.connect(self.edit)
         self.botonEdit.setCheckable(True)
         gridLayout.addWidget(self.botonEdit, 2, 2)
@@ -257,8 +255,7 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
         gridLayout.addWidget(self.line, 3, 0, 1, 3)
 
-        label = QtWidgets.QLabel(
-            tr("pychemqt", "Material:"))
+        label = QtWidgets.QLabel(self.tr("Material:"))
         label.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,
                             QtWidgets.QSizePolicy.Policy.Fixed)
         gridLayout.addWidget(label, 4, 0)
@@ -280,8 +277,7 @@ class Catalogo_Materiales(QtWidgets.QWidget):
 
         path = os.path.join(IMAGE_PATH, "button", "arrow-up-double.png")
         self.botonSelect = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Select"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Select"))
         self.botonSelect.setDisabled(True)
         self.TablaDiametro2.currentCellChanged.connect(self.selectedChanged)
         self.TablaDiametro2.cellDoubleClicked.connect(self.add)
@@ -372,12 +368,12 @@ class Catalogo_Materiales(QtWidgets.QWidget):
         activo = QtGui.QColor(Preferences.get("General", 'Color_Resaltado'))
         if bool:
             flags = QtCore.Qt.ItemFlag.ItemIsEditable \
-                    | QtCore.Qt.ItemFlag.ItemIsEnabled \
-                    | QtCore.Qt.ItemFlag.ItemIsSelectable
+               | QtCore.Qt.ItemFlag.ItemIsEnabled \
+               | QtCore.Qt.ItemFlag.ItemIsSelectable
             color = activo
         else:
             flags = QtCore.Qt.ItemFlag.ItemIsEnabled \
-                    | QtCore.Qt.ItemFlag.ItemIsSelectable
+               | QtCore.Qt.ItemFlag.ItemIsSelectable
             color = inactivo
 
         for i in [0, 1, 2]:
@@ -474,8 +470,7 @@ class Catalogo_Materiales_Dialog(QtWidgets.QDialog, Catalogo_Materiales):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Select Pipe from Database"))
+        self.setWindowTitle(self.tr("Select Pipe from Database"))
         buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Cancel
             | QtWidgets.QDialogButtonBox.StandardButton.Ok)
@@ -488,9 +483,9 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
     """Widget to select/edit/add fitting to pipe"""
     valueChanged = QtCore.pyqtSignal(list)
     titles = [
-        tr("pychemqt", "Type"),
+        QtWidgets.QApplication.translate("equipment", "Type"),
         "D,mm", "D,in", "K", "Nº",
-        tr("pychemqt", "Description")]
+        QtWidgets.QApplication.translate("equipment", "Description")]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -526,14 +521,12 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         gridLayout.addWidget(self.k_total, 0, 1)
         path = os.path.join(IMAGE_PATH, "button", "editDelete.png")
         self.botonBorrar = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Delete"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Delete"))
         path = os.path.join(IMAGE_PATH, "button", "clear.png")
         self.botonBorrar.clicked.connect(self.borrar)
         gridLayout.addWidget(self.botonBorrar, 1, 1)
         self.botonClear = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Clear"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Clear"))
         self.botonClear.clicked.connect(self.clear)
         gridLayout.addWidget(self.botonClear, 2, 1)
 
@@ -554,44 +547,38 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
 
         path = os.path.join(IMAGE_PATH, "button", "add.png")
         self.botonAdd = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Add"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Add"))
         self.botonAdd.setDisabled(True)
         self.botonAdd.clicked.connect(self.add)
         gridLayout.addWidget(self.botonAdd, 4, 1)
 
         path = os.path.join(IMAGE_PATH, "equipment", "pipe", "ER.png")
         self.botonEntrada = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Entrance"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Entrance"))
         self.botonEntrada.clicked.connect(self.EntradaRedondeada)
         gridLayout.addWidget(self.botonEntrada, 6, 1)
 
         path = os.path.join(IMAGE_PATH, "equipment", "pipe", "GE.png")
         self.botonExpansion = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Enlargement"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Enlargement"))
         self.botonExpansion.clicked.connect(self.expansion)
         gridLayout.addWidget(self.botonExpansion, 7, 1)
 
         path = os.path.join(IMAGE_PATH, "equipment", "pipe", "GC.png")
         self.botonContraccion = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Contraction"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Contraction"))
         self.botonContraccion.clicked.connect(self.contraccion)
         gridLayout.addWidget(self.botonContraccion, 8, 1)
 
         path = os.path.join(IMAGE_PATH, "equipment", "pipe", "LB.png")
         self.botonCodoLargo = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Long bend"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Long bend"))
         self.botonCodoLargo.clicked.connect(self.CodoLargo)
         gridLayout.addWidget(self.botonCodoLargo, 9, 1)
 
         path = os.path.join(IMAGE_PATH, "equipment", "pipe", "MB45.png")
         self.botonCodoSegmentado = QtWidgets.QPushButton(
-            QtGui.QIcon(QtGui.QPixmap(path)),
-            tr("pychemqt", "Mitre bend"))
+            QtGui.QIcon(QtGui.QPixmap(path)), self.tr("Mitre bend"))
         self.botonCodoSegmentado.clicked.connect(self.CodoSegmentado)
         gridLayout.addWidget(self.botonCodoSegmentado, 10, 1)
 
@@ -658,27 +645,25 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.TablaAccesorios.setColumnWidth(3, 50)
 
     def expansion(self):
-        title = tr("pychemqt", "Expansion")
+        title = self.tr("Expansion")
         icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "GE.png")
         parameter = [
-            tr("pychemqt", "Input diameter"),
-            tr("pychemqt", "Output diameter")]
+            self.tr("Input diameter"),
+            self.tr("Output diameter")]
         dialog = Dialog(0, title, icon, parameter)
         if dialog.exec():
             indice = self.Accesorios.rowCount()
             self.Accesorios.setRowCount(indice+1)
             if dialog.checkBox.isChecked():
                 type = "GE"
-                txt = tr(
-                    "pychemqt", "Gradual enlargement")
+                txt = self.tr("Gradual enlargement")
                 dia = "%0.3f->%0.3f θ=%iº" % (
                     dialog.D1.value, dialog.D2.value, dialog.angulo.value())
             else:
                 icon = QtGui.QIcon(QtGui.QPixmap(
                     os.path.join(IMAGE_PATH, "equipment", "pipe", "SE.png")))
                 type = "SE"
-                txt = tr(
-                    "pychemqt", "Sudden enlargement")
+                txt = self.tr("Sudden enlargement")
                 dia = "%0.3f->%0.3f" % (dialog.D1.value, dialog.D2.value)
             self.Accesorios.setItem(
                 indice, 0, QtWidgets.QTableWidgetItem(icon, type))
@@ -698,19 +683,18 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.CalcularK()
 
     def contraccion(self):
-        title = tr("pychemqt", "Contraction")
+        title = self.tr("Contraction")
         icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "GC.png")
         parameter = [
-            tr("pychemqt", "Input diameter"),
-            tr("pychemqt", "Output diameter")]
+            self.tr("Input diameter"),
+            self.tr("Output diameter")]
         dialog = Dialog(0, title, icon, parameter)
         if dialog.exec():
             indice = self.Accesorios.rowCount()
             self.Accesorios.setRowCount(indice+1)
             if dialog.checkBox.isChecked():
                 type = "GC"
-                txt = tr(
-                    "pychemqt", "Gradual contraction")
+                txt = self.tr("Gradual contraction")
                 dia = "%0.3f->%0.3f θ=%iº" % (
                     dialog.D1.value, dialog.D2.value, dialog.angulo.value())
                 icon = QtGui.QIcon(QtGui.QPixmap(
@@ -719,8 +703,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 icon = QtGui.QIcon(QtGui.QPixmap(
                     os.path.join(IMAGE_PATH, "equipment", "pipe", "SC.png")))
                 type = "SC"
-                txt = tr(
-                    "pychemqt", "Sudden contraction")
+                txt = self.tr("Sudden contraction")
                 dia = "%0.3f->%0.3f" % (dialog.D1.value, dialog.D2.value)
             self.Accesorios.setItem(indice, 0,
                                     QtWidgets.QTableWidgetItem(icon, type))
@@ -740,11 +723,11 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.CalcularK()
 
     def EntradaRedondeada(self):
-        title = tr("pychemqt", "Rounded entrance")
+        title = self.tr("Rounded entrance")
         icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "ER.png")
         parameter = [
-            tr("pychemqt", "Exit radio"),
-            tr("pychemqt", "Pipe Diameter")]
+            self.tr("Exit radio"),
+            self.tr("Pipe Diameter")]
         dialog = Dialog(3, title, icon, parameter)
         if dialog.exec():
             indice = self.Accesorios.rowCount()
@@ -764,16 +747,16 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
                 QtCore.Qt.AlignmentFlag.AlignRight
                 | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 5, QtWidgets.QTableWidgetItem(
-                tr("pychemqt", "Pipe entrance rounded intake")))
+                self.tr("Pipe entrance rounded intake")))
             self.Accesorios.setRowHeight(indice, 20)
             self.CalcularK()
 
     def CodoLargo(self):
-        title = tr("pychemqt", "Long Pipe Bend")
+        title = self.tr("Long Pipe Bend")
         icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "LB.png")
         parameter = [
-            tr("pychemqt", "Bend radio"),
-            tr("pychemqt", "Pipe diameter")]
+            self.tr("Bend radio"),
+            self.tr("Pipe diameter")]
         dialog = Dialog(2, title, icon, parameter)
         if dialog.exec():
             indice = self.Accesorios.rowCount()
@@ -786,18 +769,20 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.Accesorios.setItem(indice, 3, QtWidgets.QTableWidgetItem(
                 representacion(dialog.K, 3)))
             self.Accesorios.item(indice, 3).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 4, QtWidgets.QTableWidgetItem(str(1)))
             self.Accesorios.item(indice, 4).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 5, QtWidgets.QTableWidgetItem(title))
             self.Accesorios.setRowHeight(indice, 20)
             self.CalcularK()
 
     def CodoSegmentado(self):
-        title = tr("pychemqt", "Mitre bend with custom angle")
+        title = self.tr("Mitre bend with custom angle")
         icon = os.path.join(IMAGE_PATH, "equipment", "pipe", "MB45.png")
-        parameter = [tr("pychemqt", "Pipe diameter"), ""]
+        parameter = [self.tr("Pipe diameter"), ""]
         dialog = Dialog(1, title, icon, parameter)
         if dialog.exec():
             indice = self.Accesorios.rowCount()
@@ -811,12 +796,14 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.Accesorios.setItem(indice, 3, QtWidgets.QTableWidgetItem(
                 representacion(dialog.K, 3)))
             self.Accesorios.item(indice, 3).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 4, QtWidgets.QTableWidgetItem(str(1)))
             self.Accesorios.item(indice, 4).setTextAlignment(
-                QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+                QtCore.Qt.AlignmentFlag.AlignRight
+                | QtCore.Qt.AlignmentFlag.AlignVCenter)
             self.Accesorios.setItem(indice, 5, QtWidgets.QTableWidgetItem(
-                tr("pychemqt", "Mitre Bend")))
+                self.tr("Mitre Bend")))
             self.Accesorios.setRowHeight(indice, 20)
             self.CalcularK()
 
@@ -944,22 +931,20 @@ class UI_equipment(UI_equip):
         self.tabCatalogo = Catalogo_Materiales()
         self.tabCatalogo.valueChanged.connect(
             partial(self.changeParams, "material"))
-        self.tabWidget.insertTab(1, self.tabCatalogo,
-                                 tr("pychemqt", "Catalog"))
+        self.tabWidget.insertTab(1, self.tabCatalogo, self.tr("Catalog"))
 
         # Fitting tab
         self.tabAccesorios = Catalogo_Accesorios()
         self.tabAccesorios.valueChanged.connect(
             partial(self.changeParams, "accesorios"))
-        self.tabWidget.insertTab(2, self.tabAccesorios,
-                                 tr("pychemqt", "Fittings"))
+        self.tabWidget.insertTab(2, self.tabAccesorios, self.tr("Fittings"))
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
-#        lyt.addWidget(QtGui.QLabel(tr("pychemqt", "Modo:")),0,0)
+#        lyt.addWidget(QtGui.QLabel(self.tr("Modo:")),0,0)
 #        self.Modo=QtGui.QComboBox()
 #        lyt.addWidget(self.Modo,0,1,1,1)
-        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "Method")), 1, 0)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Method")), 1, 0)
         self.metodo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METODO:
             self.metodo.addItem(txt)
@@ -969,16 +954,15 @@ class UI_equipment(UI_equip):
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 1, 0, 1, 6)
 
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Length")), 2, 0)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Length")), 2, 0)
         self.l = Entrada_con_unidades(Length, resaltado=True)
         self.l.valueChanged.connect(partial(self.changeParams, "l"))
         lyt.addWidget(self.l, 2, 1)
-        lyt.addWidget(QtWidgets.QLabel(tr("pychemqt", "Elevation")), 3, 0)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Elevation")), 3, 0)
         self.h = Entrada_con_unidades(Length, min=float("-inf"))
         self.h.valueChanged.connect(partial(self.changeParams, "h"))
         lyt.addWidget(self.h, 3, 1)
-        self.labelC = QtWidgets.QLabel(tr("pychemqt", "C Factor"))
+        self.labelC = QtWidgets.QLabel(self.tr("C Factor"))
         lyt.addWidget(self.labelC, 2, 3)
         self.C = Entrada_con_unidades(float)
         self.C.valueChanged.connect(partial(self.changeParams, "C"))
@@ -987,25 +971,24 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 0, 1, 6)
 
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Thermal Mode")), 11, 0)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Thermal Mode")), 11, 0)
         self.thermal = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_THERMAL:
             self.thermal.addItem(txt)
         self.thermal.currentIndexChanged.connect(self.Heat_visible)
         lyt.addWidget(self.thermal, 11, 1, 1, 5)
 
-        self.groupBox_Heat = QtWidgets.QGroupBox(tr(
-            "pychemqt", "Heat transfer to surroundings"))
+        self.groupBox_Heat = QtWidgets.QGroupBox(
+            self.tr("Heat transfer to surroundings"))
         lyt.addWidget(self.groupBox_Heat, 12, 0, 3, 2)
         layout = QtWidgets.QGridLayout(self.groupBox_Heat)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "External temperature")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(
+            self.tr("External temperature")), 1, 1)
         self.T_ext = Entrada_con_unidades(Temperature)
         self.T_ext.valueChanged.connect(partial(self.changeParams, "T_ext"))
         layout.addWidget(self.T_ext, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Heat transfer coefficient")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer coefficient")), 2, 1)
         self.U = Entrada_con_unidades(HeatTransfCoef)
         self.U.valueChanged.connect(partial(self.changeParams, "U"))
         layout.addWidget(self.U, 2, 2)
@@ -1013,7 +996,7 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 12, 0, 1, 6)
-        self.labelQ = QtWidgets.QLabel(tr("pychemqt", "Heat Flux"))
+        self.labelQ = QtWidgets.QLabel(self.tr("Heat Flux"))
         lyt.addWidget(self.labelQ, 13, 0)
         self.Calor = Entrada_con_unidades(Power)
         self.Calor.valueChanged.connect(partial(self.changeParams, "Q"))
@@ -1026,26 +1009,26 @@ class UI_equipment(UI_equip):
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 15, 0, 1, 6)
 
-        group = QtWidgets.QGroupBox(tr("pychemqt", "Results"))
+        group = QtWidgets.QGroupBox(self.tr("Results"))
         lyt.addWidget(group, 16, 0, 1, 6)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP total")), 0, 0)
+        layout.addWidget(QtWidgets.QLabel(self.tr("ΔP total")), 0, 0)
         self.DeltaP = Entrada_con_unidades(
             Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP, 0, 1)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP friction")), 1, 0)
+        layout.addWidget(QtWidgets.QLabel(self.tr("ΔP friction")), 1, 0)
         self.DeltaP_f = Entrada_con_unidades(
             Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP_f, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP fittings")), 2, 0)
+        layout.addWidget(QtWidgets.QLabel(self.tr("ΔP fittings")), 2, 0)
         self.DeltaP_ac = Entrada_con_unidades(
             Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP_ac, 2, 1)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP elevation")), 3, 0)
+        layout.addWidget(QtWidgets.QLabel(self.tr("ΔP elevation")), 3, 0)
         self.DeltaP_h = Entrada_con_unidades(
             Pressure, retornar=False, readOnly=True)
         layout.addWidget(self.DeltaP_h, 3, 1)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "ΔP acceleration")),
+        layout.addWidget(QtWidgets.QLabel(self.tr("ΔP acceleration")),
                          4, 0)
         self.DeltaP_v = Entrada_con_unidades(
             Pressure, retornar=False, readOnly=True)
@@ -1055,41 +1038,35 @@ class UI_equipment(UI_equip):
         self.DeltaP_100ft = Entrada_con_unidades(Pressure, retornar=False,
                                                  readOnly=True)
         layout.addWidget(self.DeltaP_100ft, 0, 5)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Speed")), 1, 4)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Speed")), 1, 4)
         self.V = Entrada_con_unidades(Speed, retornar=False, readOnly=True)
         layout.addWidget(self.V, 1, 5)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Friction factor")),
+        layout.addWidget(QtWidgets.QLabel(self.tr("Friction factor")),
                          2, 4)
         self.f = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.f, 2, 5)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Reynolds")), 3, 4)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Reynolds")), 3, 4)
         self.Re = Entrada_con_unidades(float, tolerancia=5, decimales=1,
                                        readOnly=True)
         layout.addWidget(self.Re, 3, 5)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Output Temperature")), 4, 4)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Output Temperature")), 4, 4)
         self.Tout = Entrada_con_unidades(
             Temperature, decimales=2, retornar=False, readOnly=True)
         layout.addWidget(self.Tout, 4, 5)
 
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Flow region")), 0, 7)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Flow region")), 0, 7)
         self.regimen = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.regimen, 0, 8)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Reynolds liquid")), 1, 7)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Reynolds liquid")), 1, 7)
         self.Re_liq = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.Re_liq, 1, 8)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Reynolds gas")), 2, 7)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Reynolds gas")), 2, 7)
         self.Re_gas = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.Re_gas, 2, 8)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Friction liquid")), 3, 7)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Friction liquid")), 3, 7)
         self.f_liq = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.f_liq, 3, 8)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Friction gas")), 4, 7)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Friction gas")), 4, 7)
         self.f_gas = Entrada_con_unidades(float, readOnly=True)
         layout.addWidget(self.f_gas, 4, 8)
 
@@ -1102,8 +1079,8 @@ class UI_equipment(UI_equip):
 
         # Cost tab
         lyt = QtWidgets.QGridLayout(self.tabCostos)
-        self.labelAvisoCostos = QtWidgets.QLabel(tr(
-            "pychemqt", "Costs only available for steel pipes"))
+        self.labelAvisoCostos = QtWidgets.QLabel(self.tr(
+    "Costs only available for steel pipes"))
         self.labelAvisoCostos.setVisible(False)
         self.labelAvisoCostos.setStyleSheet("color: #FF0000;")
         lyt.addWidget(self.labelAvisoCostos, 0, 0, 1, 2)
@@ -1115,16 +1092,14 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 2, 0, 1, 2)
-        group = QtWidgets.QGroupBox(tr("pychemqt", "Stimated Cost"))
+        group = QtWidgets.QGroupBox(self.tr("Stimated Cost"))
         lyt.addWidget(group, 3, 0, 1, 2)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Purchase Costs")),
-                         0, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Purchase Costs")), 0, 1)
         self.C_adq = Entrada_con_unidades(
             Currency, retornar=False, readOnly=True)
         layout.addWidget(self.C_adq, 0, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Installed Costs")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Installed Costs")), 1, 1)
         self.C_inst = Entrada_con_unidades(
             Currency, retornar=False, readOnly=True)
         layout.addWidget(self.C_inst, 1, 2)

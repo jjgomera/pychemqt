@@ -36,7 +36,7 @@ from lib.petro import Petroleo
 from lib.physics import R_atml
 from lib.sql import databank
 from lib.utilities import refDoc
-from tools.qt import tr
+from tools.qt import QtWidgets
 
 
 __doi__ = {
@@ -1111,7 +1111,7 @@ class Crudo(Petroleo):
             return True
         else:
             self.status = 0
-            self.msg = tr("pychemqt", "Undefined petrol")
+            self.msg = QtWidgets.QApplication.translate("Undefined petrol")
 
     def calculo(self):
         id = self.kwargs["index"]

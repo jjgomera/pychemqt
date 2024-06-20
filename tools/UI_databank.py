@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from tools.qt import QtGui, QtWidgets, tr
+from tools.qt import QtGui, QtWidgets
 
 from lib import sql
 from UI import viewComponents
@@ -40,22 +40,19 @@ class UI_databank_widget(QtWidgets.QWidget):
         layoutTitle = QtWidgets.QHBoxLayout()
         layoutTitle.setSpacing(5)
         self.buttonNew = QtWidgets.QToolButton(self)
-        self.buttonNew.setToolTip(tr(
-            "pychemqt", "Create new element"))
+        self.buttonNew.setToolTip(self.tr("Create new element"))
         self.buttonNew.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileNew.png")))
         self.buttonNew.clicked.connect(self.newComponent)
         layoutTitle.addWidget(self.buttonNew)
         self.buttonCopy = QtWidgets.QToolButton(self)
-        self.buttonCopy.setToolTip(tr(
-            "pychemqt", "Clone this element"))
+        self.buttonCopy.setToolTip(self.tr("Clone this element"))
         self.buttonCopy.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/editCopy.png")))
         self.buttonCopy.clicked.connect(self.copyComponent)
         layoutTitle.addWidget(self.buttonCopy)
         self.buttonDelete = QtWidgets.QToolButton(self)
-        self.buttonDelete.setToolTip(tr(
-            "pychemqt", "Delete element"))
+        self.buttonDelete.setToolTip(self.tr("Delete element"))
         self.buttonDelete.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/editDelete.png")))
         self.buttonDelete.clicked.connect(self.deleteComponent)
@@ -63,13 +60,11 @@ class UI_databank_widget(QtWidgets.QWidget):
         layoutTitle.addWidget(self.buttonDelete)
         gridLayout.addItem(layoutTitle, 1, 1)
 
-        gridLayout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Find")+": "), 1, 2)
+        gridLayout.addWidget(QtWidgets.QLabel(self.tr("Find")+": "), 1, 2)
         self.Busqueda = QtWidgets.QLineEdit()
         self.Busqueda.textChanged.connect(self.buscar)
         gridLayout.addWidget(self.Busqueda, 1, 3)
-        self.siguiente = QtWidgets.QPushButton(
-            tr("pychemqt", "Next"))
+        self.siguiente = QtWidgets.QPushButton(self.tr("Next"))
         self.siguiente.clicked.connect(self.Next)
         gridLayout.addWidget(self.siguiente, 1, 4)
 
@@ -83,10 +78,10 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.BaseDatos.setColumnCount(3)
         self.BaseDatos.setHorizontalHeaderItem(
             0, QtWidgets.QTableWidgetItem("Id"))
-        self.BaseDatos.setHorizontalHeaderItem(1, QtWidgets.QTableWidgetItem(
-            tr("pychemqt", "Name")))
-        self.BaseDatos.setHorizontalHeaderItem(2, QtWidgets.QTableWidgetItem(
-            tr("pychemqt", "Formula")))
+        self.BaseDatos.setHorizontalHeaderItem(
+            1, QtWidgets.QTableWidgetItem(self.tr("Name")))
+        self.BaseDatos.setHorizontalHeaderItem(
+            2, QtWidgets.QTableWidgetItem(self.tr("Formula")))
         self.BaseDatos.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.BaseDatos.horizontalHeader().setStretchLastSection(True)
@@ -158,6 +153,7 @@ class UI_databank_widget(QtWidgets.QWidget):
 
     @property
     def currentIndice(self):
+        """Return index of selected element"""
         value = self.BaseDatos.item(self.BaseDatos.currentRow(), 0).text()
         return int(value)
 
@@ -165,15 +161,18 @@ class UI_databank_widget(QtWidgets.QWidget):
         return self.BaseDatos.currentRow()
 
     def newComponent(self):
+        """Define new component"""
         dlg = viewComponents.View_Component(0)
         if dlg.exec():
             self.rellenar()
 
     def copyComponent(self):
+        """Copy component from database to can edit its values"""
         sql.copyElement(self.currentIndice)
         self.rellenar()
 
     def deleteComponent(self):
+        """Delete selected component if its user defined"""
         sql.deleteElement(self.currentIndice)
         self.rellenar()
 
@@ -182,8 +181,7 @@ class UI_databank(QtWidgets.QDialog):
     """Database dialog"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Components database"))
+        self.setWindowTitle(self.tr("Components database"))
         layout = QtWidgets.QVBoxLayout(self)
         self.databank = UI_databank_widget()
         layout.addWidget(self.databank)

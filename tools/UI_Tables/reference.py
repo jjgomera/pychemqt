@@ -28,9 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from ast import literal_eval
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib import unidades
+from lib.config import IMAGE_PATH
 from lib.thermo import ThermoAdvanced
 from UI.delegate import CheckEditor
 from UI.widgets import Entrada_con_unidades
@@ -43,21 +44,21 @@ class Ui_ReferenceState(QtWidgets.QDialog):
     def __init__(self, config=None, parent=None):
         """config: instance with project config to set initial values"""
         super().__init__(parent)
-        self.setWindowTitle(tr("pychemqt", "Select reference state"))
+        self.setWindowTitle(self.tr("Select reference state"))
         layout = QtWidgets.QGridLayout(self)
-        self.OTO = QtWidgets.QRadioButton(tr(
-            "pychemqt", "OTO,  h,s=0 at 298K and 1 atm"))
+        self.OTO = QtWidgets.QRadioButton(
+            self.tr("OTO,  h,s=0 at 298K and 1 atm"))
         layout.addWidget(self.OTO, 0, 1, 1, 7)
-        self.NBP = QtWidgets.QRadioButton(tr(
-            "pychemqt", "NBP,  h,s=0 saturated liquid at Tb"))
+        self.NBP = QtWidgets.QRadioButton(
+            self.tr("NBP,  h,s=0 saturated liquid at Tb"))
         layout.addWidget(self.NBP, 1, 1, 1, 7)
-        self.IIR = QtWidgets.QRadioButton(tr(
-            "pychemqt", "IIR,  h=200,s=1 saturated liquid at 273K"))
+        self.IIR = QtWidgets.QRadioButton(
+            self.tr("IIR,  h=200,s=1 saturated liquid at 273K"))
         layout.addWidget(self.IIR, 2, 1, 1, 7)
-        self.ASHRAE = QtWidgets.QRadioButton(tr(
-            "pychemqt", "ASHRAE,  h,s=0 saturated liquid at 243K"))
+        self.ASHRAE = QtWidgets.QRadioButton(
+            self.tr("ASHRAE,  h,s=0 saturated liquid at 243K"))
         layout.addWidget(self.ASHRAE, 3, 1, 1, 7)
-        self.personalizado = QtWidgets.QRadioButton(tr("pychemqt", "Custom"))
+        self.personalizado = QtWidgets.QRadioButton(self.tr("Custom"))
         self.personalizado.toggled.connect(self.setEnabled)
         layout.addWidget(self.personalizado, 4, 1, 1, 7)
 
@@ -138,7 +139,7 @@ class Ui_Properties(QtWidgets.QDialog):
             fase = False
             self.order = list(range(N_PROP))
 
-        self.setWindowTitle(tr("pychemqt", "Select Properties"))
+        self.setWindowTitle(self.tr("Select Properties"))
         layout = QtWidgets.QGridLayout(self)
         self.prop = QtWidgets.QTableWidget(len(ThermoAdvanced.properties()), 2)
         self.prop.verticalHeader().hide()
@@ -167,19 +168,17 @@ class Ui_Properties(QtWidgets.QDialog):
 
         self.ButtonArriba = QtWidgets.QToolButton()
         self.ButtonArriba.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "arrow-up.png"))))
+            os.path.join(IMAGE_PATH, "button", "arrow-up.png"))))
         self.ButtonArriba.clicked.connect(self.Up)
         layout.addWidget(self.ButtonArriba, 3, 2, 1, 1)
         self.ButtonAbajo = QtWidgets.QToolButton()
         self.ButtonAbajo.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] +
-            os.path.join("images", "button", "arrow-down.png"))))
+            os.path.join(IMAGE_PATH, "button", "arrow-down.png"))))
         self.ButtonAbajo.clicked.connect(self.Down)
         layout.addWidget(self.ButtonAbajo, 4, 2, 1, 1)
 
-        self.checkFase = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Show bulk, liquid and vapor properties"))
+        self.checkFase = QtWidgets.QCheckBox(
+            self.tr("Show bulk, liquid and vapor properties"))
         self.checkFase.setChecked(fase)
         layout.addWidget(self.checkFase, 7, 1, 1, 2)
         self.buttonBox = QtWidgets.QDialogButtonBox(
@@ -187,9 +186,10 @@ class Ui_Properties(QtWidgets.QDialog):
             | QtWidgets.QDialogButtonBox.StandardButton.Ok
             | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.buttonBox.addButton(
-            tr("pychemqt", "Mark all"),
+            self.tr("Mark all"),
             QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
-        self.buttonBox.addButton(tr("pychemqt", "No Mark"),
+        self.buttonBox.addButton(
+            self.tr("No Mark"),
             QtWidgets.QDialogButtonBox.ButtonRole.ResetRole)
         self.btYes = QtWidgets.QPushButton
         self.buttonBox.clicked.connect(self.buttonClicked)
@@ -240,7 +240,7 @@ class Ui_Properties(QtWidgets.QDialog):
             if boton == self.buttonBox.button(
                     QtWidgets.QDialogButtonBox.StandardButton.Reset):
                 values = self._default
-            elif boton.text() == tr("pychemqt", "No Mark"):
+            elif boton.text() == self.tr("No Mark"):
                 values = [0]*N_PROP
             else:
                 values = [1]*N_PROP

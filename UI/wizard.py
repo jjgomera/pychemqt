@@ -36,7 +36,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from configparser import ConfigParser
 import os
 
-from tools.qt import QtGui, QtWidgets, tr
 from numpy import count_nonzero
 
 from lib import mEoS, gerg, refProp, coolProp, EoS
@@ -46,6 +45,7 @@ from lib.config import conf_dir
 from lib.unidades import Temperature, Pressure
 from tools import (UI_confComponents, UI_confTransport, UI_confThermo,
                    UI_confUnits, UI_confResolution)
+from tools.qt import QtGui, QtWidgets
 from UI.widgets import Entrada_con_unidades
 
 
@@ -141,27 +141,24 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
 class AutoDialog(QtWidgets.QDialog):
     """Dialog to input value for auto thermal function"""
     def __init__(self, parent=None):
-        super(AutoDialog, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "T<sub>min</sub>")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("T<sub>min</sub>")), 1, 1)
         self.Tmin = Entrada_con_unidades(Temperature)
         layout.addWidget(self.Tmin, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "T<sub>max</sub>")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("T<sub>max</sub>")), 2, 1)
         self.Tmax = Entrada_con_unidades(Temperature)
         layout.addWidget(self.Tmax, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "P<sub>min</sub>")), 3, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("P<sub>min</sub>")), 3, 1)
         self.Pmin = Entrada_con_unidades(Pressure)
         layout.addWidget(self.Pmin, 3, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "P<sub>max</sub>")), 4, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("P<sub>max</sub>")), 4, 1)
         self.Pmax = Entrada_con_unidades(Pressure)
         layout.addWidget(self.Pmax, 4, 2)
 
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 5, 1, 1, 2)
@@ -170,37 +167,33 @@ class AutoDialog(QtWidgets.QDialog):
 class Wizard(QtWidgets.QWizard):
     """Wizard dialog for project configuration"""
     def __init__(self, config=None, parent=None):
-        super(Wizard, self).__init__(parent)
+        super().__init__(parent)
         self.config = config
-        self.setWindowTitle(tr(
-            "pychemqt", "Configuration wizard..."))
+        self.setWindowTitle(self.tr("Configuration wizard..."))
         self.setOptions(QtWidgets.QWizard.WizardOption.ExtendedWatermarkPixmap
                         | QtWidgets.QWizard.WizardOption.IndependentPages
                         | QtWidgets.QWizard.WizardOption.HaveCustomButton1)
         self.setWizardStyle(QtWidgets.QWizard.WizardStyle.ModernStyle)
 
-        botonAuto = QtWidgets.QPushButton(
-            tr("pychemqt", "Auto"))
-        botonAuto.setToolTip(tr(
-            "pychemqt",
+        botonAuto = QtWidgets.QPushButton(self.tr("Auto"))
+        botonAuto.setToolTip(self.tr(
             "Choose good values from project components and conditions"))
         self.setButton(QtWidgets.QWizard.WizardButton.CustomButton1, botonAuto)
         self.customButtonClicked.connect(self.auto)
 
         page1_welcome = QtWidgets.QWizardPage()
-        page1_welcome.setTitle(
-            tr("pychemqt", "Welcome"))
-        page1_welcome.setSubTitle(tr(
-            "pychemqt",
+        page1_welcome.setTitle(self.tr("Welcome"))
+        page1_welcome.setSubTitle(self.tr(
             "That's the configuration wizard of a new project from pychemqt"))
-        page1_welcome.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
+        page1_welcome.setPixmap(
+            QtWidgets.QWizard.WizardPixmap.LogoPixmap,
+            QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         page1_welcome.setPixmap(
             QtWidgets.QWizard.WizardPixmap.WatermarkPixmap, QtGui.QPixmap(
                 os.path.join(os.environ["pychemqt"], "images", "logo_2.jpg")))
         lyt = QtWidgets.QVBoxLayout(page1_welcome)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt",
+        lyt.addWidget(QtWidgets.QLabel(self.tr(
             """<html><body>
 This wizard let's you configure all parameters necessary in a pychemqt's
 project<br>
@@ -219,11 +212,10 @@ These are the options you must expecific next:<br>
         self.addPage(page1_welcome)
 
         page2_components = QtWidgets.QWizardPage()
-        page2_components.setTitle(tr(
-            "pychemqt", "Define components"))
-        page2_components.setSubTitle(tr(
-            "pychemqt", "Add componentes from database"))
-        page2_components.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
+        page2_components.setTitle(self.tr("Define components"))
+        page2_components.setSubTitle(self.tr("Add componentes from database"))
+        page2_components.setPixmap(
+            QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page2_components)
         self.componentes = UI_confComponents.UI_confComponents_widget(config)
@@ -234,12 +226,12 @@ These are the options you must expecific next:<br>
         self.addPage(page2_components)
 
         page3_thermo = QtWidgets.QWizardPage()
-        page3_thermo.setTitle(tr(
-            "pychemqt", "Define thermodynamics procedures"))
-        page3_thermo.setSubTitle(tr(
-            "pychemqt", "The thermodynamics properties are the basic of \
-pychemqt, a bad selection would be disastrous for the results"))
-        page3_thermo.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
+        page3_thermo.setTitle(self.tr("Define thermodynamics procedures"))
+        page3_thermo.setSubTitle(self.tr(
+            "The thermodynamics properties are the basic of "
+            "pychemqt, a bad selection would be disastrous for the results"))
+        page3_thermo.setPixmap(
+            QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page3_thermo)
         self.thermo = UI_confThermo.UI_confThermo_widget(config)
@@ -247,11 +239,9 @@ pychemqt, a bad selection would be disastrous for the results"))
         self.addPage(page3_thermo)
 
         page4_transport = QtWidgets.QWizardPage()
-        page4_transport.setTitle(tr(
-            "pychemqt", "Define transport procedures"))
-        page4_transport.setSubTitle(tr(
-            "pychemqt", "The transport properties are important too for good \
-simulation results"))
+        page4_transport.setTitle(self.tr("Define transport procedures"))
+        page4_transport.setSubTitle(self.tr(
+            "The transport properties are important too for good \ simulation results"))
         page4_transport.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page4_transport)
@@ -260,11 +250,10 @@ simulation results"))
         self.addPage(page4_transport)
 
         page5_units = QtWidgets.QWizardPage()
-        page5_units.setTitle(tr(
-            "pychemqt", "Define preferred units"))
-        page5_units.setSubTitle(tr(
-            "pychemqt", "The preferred units are not necessary for the \
-simulation, but a good election let you only focus in simulation"))
+        page5_units.setTitle(self.tr("Define preferred units"))
+        page5_units.setSubTitle(self.tr(
+            "The preferred units are not necessary for the simulation, "
+            "but a good election let you only focus in simulation"))
         page5_units.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page5_units)

@@ -32,7 +32,7 @@ from matplotlib import image
 
 from lib.config import conf_dir, IMAGE_PATH, Preferences
 from lib.plot import PlotWidget
-from tools.qt import QtGui, QtWidgets, tr
+from tools.qt import QtGui, QtWidgets
 
 
 class Chart(QtWidgets.QDialog):
@@ -54,15 +54,15 @@ class Chart(QtWidgets.QDialog):
             QtWidgets.QDialogButtonBox.StandardButton.Close, self)
         self.butonPNG = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "image.png")),
-            tr("pychemqt", "Save as PNG"))
+            self.tr("Save as PNG"))
         self.butonPNG.clicked.connect(self.plt.savePNG)
         self.butonConf = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "configure.png")),
-            tr("pychemqt", "Configure"))
+            self.tr("Configure"))
         self.butonConf.clicked.connect(self.configure)
         self.butonCalc = QtWidgets.QPushButton(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "button", "calculator.png")),
-            tr("pychemqt", "Calculate point"))
+            self.tr("Calculate point"))
         self.butonCalc.clicked.connect(self.calculate)
         btBox.rejected.connect(self.reject)
         btBox.addButton(self.butonConf,

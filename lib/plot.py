@@ -30,7 +30,7 @@ from matplotlib.figure import Figure
 from numpy import arange
 
 from lib.config import Preferences
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 from UI.widgets import ColorSelector, LineStyleCombo, MarkerCombo
 
 
@@ -61,9 +61,7 @@ class PlotWidget(backend_qtagg.FigureCanvasQTAgg):
         """Save chart image to png file"""
         fmt = "Portable Network Graphics (*.png)"
         fname, ext = QtWidgets.QFileDialog.getSaveFileName(
-            self,
-            tr("pychemqt", "Save chart to file"),
-            "./", fmt)
+            self, QtWidgets.QApplication.translate("Save chart to file"), "./", fmt)
         if fname and ext == fmt:
             if fname.split(".")[-1] != "png":
                 fname += ".png"
@@ -130,531 +128,321 @@ class ConfPlot(QtWidgets.QDialog):
         #           one more to define step (default 0.01 for range 0-1 or 1 in
         #           other cases) and one more for define decimals (default 2)
 
-      "axes.facecolor": (
-        tr("pychemqt", "Axes background color"),
-        ColorSelector),
-      "axes.edgecolor": (
-        tr("pychemqt", "Axes edge color"),
-        ColorSelector),
-      "axes.linewidth": (
-        tr("pychemqt", "Edge line width"),
-        QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
-      "axes.grid": (
-        tr("pychemqt", "Display grid or not"),
-        QtWidgets.QCheckBox),
-      "axes.grid.axis": (
-        tr(
-          "pychemqt", "Which axis the grid should apply to"),
+      "axes.facecolor": (QtWidgets.QApplication.translate("plot", "Axes background color"), ColorSelector),
+      "axes.edgecolor": (QtWidgets.QApplication.translate("plot", "Axes edge color"), ColorSelector),
+      "axes.linewidth": (QtWidgets.QApplication.translate("plot", "Edge line width"),
+                         QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
+      "axes.grid": (QtWidgets.QApplication.translate("plot", "Display grid or not"), QtWidgets.QCheckBox),
+      "axes.grid.axis": (QtWidgets.QApplication.translate("plot", "Which axis the grid should apply to"),
         QtWidgets.QComboBox, "both", "x", "y"),
-      "axes.grid.which": (
-        tr(
-          "pychemqt", "Grid lines at {major, minor, both} ticks"),
-        QtWidgets.QComboBox, "both", "major", "minor"),
-      "axes.titlelocation": (
-        tr("pychemqt", "Alignment of the title"),
-        QtWidgets.QComboBox, "left", "right", "center"),
-      "axes.titlesize": (
-        tr(
-          "pychemqt", "Font size of the axes title"),
-        QtWidgets.QComboBox, 'xx-small', 'x-small', 'small', 'medium',
-        'large', 'x-large', 'xx-large'),
-      "axes.titleweight": (
-        tr("pychemqt", "Font weight of title"),
-        QtWidgets.QComboBox, "normal", "bold"),
-      "axes.titlecolor": (
-        tr("pychemqt", "Color of axes title"),
-        ColorSelector),
-      "axes.titley": (
-        tr(
-          "pychemqt", "Position title (axes relative units)"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
-      "axes.titlepad": (
-        tr(
-          "pychemqt", "Pad between axes and title in points"),
-        QtWidgets.QSpinBox, 0, 20),
-      "axes.labelsize": (
-        tr(
-          "pychemqt", "Font size of the x and y labels"),
-        QtWidgets.QComboBox, 'xx-small', 'x-small', 'small', 'medium',
-        'large', 'x-large', 'xx-large'),
-      "axes.labelpad": (
-        tr(
-          "pychemqt", "Pad between label and axis"),
-        QtWidgets.QSpinBox, 0, 20),
-      "axes.labelweight": (
-        tr(
-          "pychemqt", "Weight of the x and y labels"),
-        QtWidgets.QComboBox, "normal", "bold"),
-      "axes.labelcolor": (
-        tr("pychemqt", "Axes label color"),
-        ColorSelector),
-      "axes.axisbelow": (
-        tr(
-          "pychemqt", "Draw axis gridlines and ticks"),
-        QtWidgets.QComboBox, "True", "line", "False"),
+      "axes.grid.which": (QtWidgets.QApplication.translate("plot", "Grid lines at {major, minor, both} ticks"),
+                          QtWidgets.QComboBox, "both", "major", "minor"),
+      "axes.titlelocation": (QtWidgets.QApplication.translate("plot", "Alignment of the title"),
+                             QtWidgets.QComboBox, "left", "right", "center"),
+      "axes.titlesize": (QtWidgets.QApplication.translate("plot", "Font size of the axes title"),
+                         QtWidgets.QComboBox, 'xx-small', 'x-small', 'small',
+                         'medium', 'large', 'x-large', 'xx-large'),
+      "axes.titleweight": (QtWidgets.QApplication.translate("plot", "Font weight of title"),
+                           QtWidgets.QComboBox, "normal", "bold"),
+      "axes.titlecolor": (QtWidgets.QApplication.translate("plot", "Color of axes title"), ColorSelector),
+      "axes.titley": (QtWidgets.QApplication.translate("plot", "Position title (axes relative units)"),
+                      QtWidgets.QDoubleSpinBox, 0, 1),
+      "axes.titlepad": (QtWidgets.QApplication.translate("plot", "Pad between axes and title in points"),
+                        QtWidgets.QSpinBox, 0, 20),
+      "axes.labelsize": (QtWidgets.QApplication.translate("plot", "Font size of the x and y labels"),
+                         QtWidgets.QComboBox, 'xx-small', 'x-small', 'small',
+                         'medium', 'large', 'x-large', 'xx-large'),
+      "axes.labelpad": (QtWidgets.QApplication.translate("plot", "Pad between label and axis"),
+                        QtWidgets.QSpinBox, 0, 20),
+      "axes.labelweight": (QtWidgets.QApplication.translate("plot", "Weight of the x and y labels"),
+                           QtWidgets.QComboBox, "normal", "bold"),
+      "axes.labelcolor": (QtWidgets.QApplication.translate("plot", "Axes label color"), ColorSelector),
+      "axes.axisbelow": (QtWidgets.QApplication.translate("plot", "Draw axis gridlines and ticks"),
+                         QtWidgets.QComboBox, "True", "line", "False"),
       "axes.formatter.limits": (
-        tr(
-          "pychemqt", "Use scientific notation if log10 of the axis range is "
-          "larger than this value"), QtWidgets.QSpinBox, 0, 10),
+          QtWidgets.QApplication.translate("plot", "Use scientific notation if log10 of the axis range is "
+             "larger than this value"),
+          QtWidgets.QSpinBox, 0, 10),
       "axes.formatter.use_locale": (
-        tr(
-          "pychemqt", "Format tick labels according to the user's locale"),
-        QtWidgets.QCheckBox),
+          QtWidgets.QApplication.translate("plot", "Format tick labels according to the user's locale"),
+          QtWidgets.QCheckBox),
       "axes.formatter.use_mathtext": (
-        tr(
-          "pychemqt", "Use mathtext for scientific notation"),
-        QtWidgets.QCheckBox),
+          QtWidgets.QApplication.translate("plot", "Use mathtext for scientific notation"), QtWidgets.QCheckBox),
       "axes.formatter.min_exponent": (
-        tr(
-          "pychemqt", "Minimum exponent to format in scientific notation"),
-        QtWidgets.QSpinBox, 0, 10),
+          QtWidgets.QApplication.translate("plot", "Minimum exponent to format in scientific notation"),
+          QtWidgets.QSpinBox, 0, 10),
       "axes.formatter.useoffset": (
-        tr(
-          "pychemqt", "The tick label formatter will default to labeling "
-          "ticks relative to an offset when the data range is small "
-          "compared to the minimum absolute value of the data."),
-        QtWidgets.QCheckBox),
+          QtWidgets.QApplication.translate("plot", "The tick label formatter will default to labeling ticks "
+          "relative to an offset when the data range is small compared to the "
+          "minimum absolute value of the data."), QtWidgets.QCheckBox),
       "axes.formatter.offset_threshold": (
-        tr(
-          "pychemqt", "When useoffset is True, the offset will be used when "
-          "it can remove at least this number of significant digits from "
-          "tick labels"),
-        QtWidgets.QSpinBox, 0, 10),
-      "axes.spines.left": (
-        tr("pychemqt", "Display axis spines"),
-        QtWidgets.QCheckBox),
-      "axes.spines.bottom": (
-        tr("pychemqt", "Display axis spines"),
-        QtWidgets.QCheckBox),
-      "axes.spines.top": (
-        tr("pychemqt", "Display axis spines"),
-        QtWidgets.QCheckBox),
-      "axes.spines.right": (
-        tr("pychemqt", "Display axis spines"),
-        QtWidgets.QCheckBox),
+          QtWidgets.QApplication.translate("plot", "When useoffset is True, the offset will be used when it can "
+          "remove at least this number of significant digits from tick labels"),
+          QtWidgets.QSpinBox, 0, 10),
+      "axes.spines.left": (QtWidgets.QApplication.translate("plot", "Display axis spines"), QtWidgets.QCheckBox),
+      "axes.spines.bottom": (QtWidgets.QApplication.translate("plot", "Display axis spines"), QtWidgets.QCheckBox),
+      "axes.spines.top": (QtWidgets.QApplication.translate("plot", "Display axis spines"), QtWidgets.QCheckBox),
+      "axes.spines.right": (QtWidgets.QApplication.translate("plot", "Display axis spines"), QtWidgets.QCheckBox),
       "axes.unicode_minus": (
-        tr(
-          "pychemqt", "Use Unicode for the minus symbol rather than hyphen"),
-        QtWidgets.QCheckBox),
-      "axes.xmargin": (
-        tr("pychemqt", "X margin"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
-      "axes.ymargin": (
-        tr("pychemqt", "Y margin"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
-      "axes.zmargin": (
-        tr("pychemqt", "Z margin"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
+          QtWidgets.QApplication.translate("plot", "Use Unicode for the minus symbol rather than hyphen"),
+          QtWidgets.QCheckBox),
+      "axes.xmargin": (QtWidgets.QApplication.translate("plot", "X margin"), QtWidgets.QDoubleSpinBox, 0, 1),
+      "axes.ymargin": (QtWidgets.QApplication.translate("plot", "Y margin"), QtWidgets.QDoubleSpinBox, 0, 1),
+      "axes.zmargin": (QtWidgets.QApplication.translate("plot", "Z margin"), QtWidgets.QDoubleSpinBox, 0, 1),
 
-      "axes3d.grid": (
-        tr(
-          "pychemqt", "Display grid on 3D axes"), QtWidgets.QCheckBox),
+      "axes3d.grid": (QtWidgets.QApplication.translate("plot", "Display grid on 3D axes"), QtWidgets.QCheckBox),
 
-      "figure.titlesize": (
-        tr(
-          "pychemqt", "Size of the figure title"),
-        QtWidgets.QComboBox, 'xx-small', 'x-small', 'small', 'medium',
-        'large', 'x-large', 'xx-large'),
-      "figure.titleweight": (
-        tr(
-          "pychemqt", "Weight of the figure title"),
-        QtWidgets.QComboBox, "normal", "bold"),
-      "figure.labelsize": (
-        tr(
-          "pychemqt", "Size of the figure label"),
-        QtWidgets.QComboBox, 'xx-small', 'x-small', 'small', 'medium',
-        'large', 'x-large', 'xx-large'),
-      "figure.labelweight": (
-        tr("pychemqt", "Weight of figure label"),
-        QtWidgets.QComboBox, "normal", "bold"),
+      "figure.titlesize": (QtWidgets.QApplication.translate("plot", "Size of the figure title"),
+                           QtWidgets.QComboBox, 'xx-small', 'x-small', 'small',
+                           'medium', 'large', 'x-large', 'xx-large'),
+      "figure.titleweight": (QtWidgets.QApplication.translate("plot", "Weight of the figure title"),
+                             QtWidgets.QComboBox, "normal", "bold"),
+      "figure.labelsize": (QtWidgets.QApplication.translate("plot", "Size of the figure label"),
+                           QtWidgets.QComboBox, 'xx-small', 'x-small', 'small',
+                           'medium', 'large', 'x-large', 'xx-large'),
+      "figure.labelweight": (QtWidgets.QApplication.translate("plot", "Weight of figure label"),
+                             QtWidgets.QComboBox, "normal", "bold"),
       # ("figure.figsize": (,     6.4, 4.8  # figure size in inches
-      "figure.dpi": (
-        tr("pychemqt", "Figure dots per inch"),
-        QtWidgets.QSpinBox, 10,200),
-      "figure.facecolor": (
-        tr("pychemqt", "Figure face color"),
-        ColorSelector),
-      "figure.edgecolor": (
-        tr("pychemqt", "Figure edge color"),
-        ColorSelector),
-      "figure.frameon": (
-        tr("pychemqt", "Enable figure frame"),
-        QtWidgets.QCheckBox),
+      "figure.dpi": (QtWidgets.QApplication.translate("plot", "Figure dots per inch"), QtWidgets.QSpinBox, 10,200),
+      "figure.facecolor": (QtWidgets.QApplication.translate("plot", "Figure face color"), ColorSelector),
+      "figure.edgecolor": (QtWidgets.QApplication.translate("plot", "Figure edge color"), ColorSelector),
+      "figure.frameon": (QtWidgets.QApplication.translate("plot", "Enable figure frame"), QtWidgets.QCheckBox),
       "figure.subplot.left": (
-        tr(
-          "pychemqt", "The left side of the subplots of the figure"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
+          QtWidgets.QApplication.translate("plot", "The left side of the subplots of the figure"),
+          QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.subplot.right": (
-        tr(
-          "pychemqt", "The right side of the subplots of the figure"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
+          QtWidgets.QApplication.translate("plot", "The right side of the subplots of the figure"),
+          QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.subplot.bottom": (
-        tr(
-          "pychemqt", "The bottom of the subplots of the figure"),
+        QtWidgets.QApplication.translate("plot", "The bottom of the subplots of the figure"),
         QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.subplot.top": (
-        tr(
-          "pychemqt", "The top of the subplots of the figure"),
+        QtWidgets.QApplication.translate("plot", "The top of the subplots of the figure"),
         QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.subplot.wspace": (
-        tr(
-          "pychemqt", "Width reserved for space between subplots"),
+        QtWidgets.QApplication.translate("plot", "Width reserved for space between subplots"),
         QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.subplot.hspace": (
-        tr(
-          "pychemqt", "Height reserved for space between subplots"),
+        QtWidgets.QApplication.translate("plot", "Height reserved for space between subplots"),
         QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.autolayout": (
-        tr(
-          "pychemqt", "Automatically adjust subplot"), QtWidgets.QCheckBox),
+        QtWidgets.QApplication.translate("plot", "Automatically adjust subplot"), QtWidgets.QCheckBox),
       "figure.constrained_layout.h_pad": (
-        tr(
-          "pychemqt", "Padding around axes objects. Float representing"),
+        QtWidgets.QApplication.translate("plot", "Padding around axes objects. Float representing"),
         QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.constrained_layout.w_pad": (
-        tr(
-          "pychemqt", "Padding around axes objects. Float representing"),
+        QtWidgets.QApplication.translate("plot", "Padding around axes objects. Float representing"),
         QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.constrained_layout.hspace": (
-        tr(
-          "pychemqt", "Space between subplot groups. Float representing"),
+        QtWidgets.QApplication.translate("plot", "Space between subplot groups. Float representing"),
         QtWidgets.QDoubleSpinBox, 0, 1),
       "figure.constrained_layout.wspace": (
-        tr(
-          "pychemqt", "Space between subplot groups. Float representing"),
+        QtWidgets.QApplication.translate("plot", "Space between subplot groups. Float representing"),
         QtWidgets.QDoubleSpinBox, 0, 1),
 
-      "font.family": (
-        "", QtWidgets.QComboBox,
-        "serif", "sans-serif", "cursive", "fantasy", "monospace"),
+      "font.family": ("", QtWidgets.QComboBox, "serif", "sans-serif",
+                      "cursive", "fantasy", "monospace"),
       "font.style": ("", QtWidgets.QComboBox, "normal", "italic", "oblique"),
       "font.variant": ("", QtWidgets.QComboBox, "normal", "small-caps"),
       "font.weight": ("", QtWidgets.QComboBox, "normal", "bold"),
-      "font.stretch": (
-        "", QtWidgets.QComboBox, "ultra-condensed", "extra-condensed",
-        "condensed", "semi-condensed", "normal", "semi-expanded", "expanded",
-        "extra-expanded", "ultra-expanded", "wider", "narrower"),
+      "font.stretch": ("", QtWidgets.QComboBox, "ultra-condensed",
+                       "extra-condensed", "condensed", "semi-condensed",
+                       "normal", "semi-expanded", "expanded", "extra-expanded",
+                       "ultra-expanded", "wider", "narrower"),
       "font.size": ("", QtWidgets.QDoubleSpinBox, 5, 20, 0.5, 1),
 
-      "grid.color": (
-        tr("pychemqt", "Grid color"),
-        ColorSelector),
-      "grid.linestyle": (
-        tr("pychemqt", "Grid line style"),
-        LineStyleCombo),
-      "grid.linewidth": (
-        tr(
-        "pychemqt", "Grid line width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
-      "grid.alpha": (
-        tr("pychemqt", "Grid lines transparency"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
+      "grid.color": (QtWidgets.QApplication.translate("plot", "Grid color"), ColorSelector),
+      "grid.linestyle": (QtWidgets.QApplication.translate("plot", "Grid line style"), LineStyleCombo),
+      "grid.linewidth": (QtWidgets.QApplication.translate("plot", "Grid line width in points"),
+                         QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
+      "grid.alpha": (QtWidgets.QApplication.translate("plot", "Grid lines transparency"),
+                     QtWidgets.QDoubleSpinBox, 0, 1),
 
-      "hatch.linewidth": (
-        tr("pychemqt", "Line width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
-      "hatch.color": (
-        tr("pychemqt", "Hatch color"),
-        ColorSelector),
+      "hatch.linewidth": (QtWidgets.QApplication.translate("plot", "Line width in points"),
+                          QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
+      "hatch.color": (QtWidgets.QApplication.translate("plot", "Hatch color"), ColorSelector),
 
       "legend.loc": (
-        tr(
-          "pychemqt", "Location of legend in axes"),
-        QtWidgets.QComboBox, 'best', 'center', 'center left', 'center right',
-        'lower center', 'lower left', 'lower right', 'right', 'upper center',
-        'upper left', 'upper right'),
-      "legend.frameon": (
-        tr(
-            "pychemqt", "Draw the legend on a background patch"),
-        QtWidgets.QCheckBox),
-      "legend.framealpha": (
-        tr(
-            "pychemqt", "Legend patch transparency"),
-        QtWidgets.QDoubleSpinBox, 0, 1),
-      "legend.facecolor": (
-        tr("pychemqt", "Legend patch color"),
-        ColorSelector),
-      "legend.edgecolor": (
-        tr(
-            "pychemqt", "Background patch boundary color"), ColorSelector),
+          QtWidgets.QApplication.translate("plot", "Location of legend in axes"), QtWidgets.QComboBox, 'best',
+          'center', 'center left', 'center right', 'lower center',
+          'lower left', 'lower right', 'right', 'upper center', 'upper left',
+          'upper right'),
+      "legend.frameon": (QtWidgets.QApplication.translate("plot", "Draw the legend on a background patch"),
+                         QtWidgets.QCheckBox),
+      "legend.framealpha": (QtWidgets.QApplication.translate("plot", "Legend patch transparency"),
+                            QtWidgets.QDoubleSpinBox, 0, 1),
+      "legend.facecolor": (QtWidgets.QApplication.translate("plot", "Legend patch color"), ColorSelector),
+      "legend.edgecolor": (QtWidgets.QApplication.translate("plot", "Background patch boundary color"), ColorSelector),
       "legend.fancybox": (
-        tr(
-          "pychemqt", "Use a rounded box for the legend background, else a "
-          "rectangle"), QtWidgets.QCheckBox),
-      "legend.shadow": (
-        tr(
-            "pychemqt", "Give background a shadow effect"),
-        QtWidgets.QCheckBox),
-      "legend.numpoints": (
-        tr(
-          "pychemqt", "Number of marker points in the legend line"),
-        QtWidgets.QSpinBox, 1, 10),
-      "legend.scatterpoints": (
-        tr(
-          "pychemqt", "Number of scatter points"),
-        QtWidgets.QSpinBox, 1, 10),
-      "legend.markerscale": (
-        tr(
-          "pychemqt", "Relative size of legend markers vs. original"),
-        QtWidgets.QDoubleSpinBox, 0, 2, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Use a rounded box for the legend background, else a rectangle"),
+          QtWidgets.QCheckBox),
+      "legend.shadow": (QtWidgets.QApplication.translate("plot", "Give background a shadow effect"),
+                        QtWidgets.QCheckBox),
+      "legend.numpoints": (QtWidgets.QApplication.translate("plot", "Number of marker points in the legend line"),
+                           QtWidgets.QSpinBox, 1, 10),
+      "legend.scatterpoints": (QtWidgets.QApplication.translate("plot", "Number of scatter points"),
+                               QtWidgets.QSpinBox, 1, 10),
+      "legend.markerscale": (QtWidgets.QApplication.translate("plot", "Relative size of legend markers vs. original"),
+                             QtWidgets.QDoubleSpinBox, 0, 2, 0.1, 1),
       "legend.fontsize": ("", QtWidgets.QComboBox, 'xx-small', 'x-small',
                           'small', 'medium', 'large', 'x-large', 'xx-large'),
       "legend.labelcolor": ("", ColorSelector),
       "legend.title_fontsize": ("", QtWidgets.QComboBox, 'xx-small', 'x-small',
-                                'small', 'medium', 'large', 'x-large', 'xx-large'),
+                                'small', 'medium', 'large', 'x-large',
+                                'xx-large'),
       "legend.borderpad": (
-        tr(
-          "pychemqt", "Dimensions as fraction of font size for border whitespace"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Dimensions as fraction of font size for border whitespace"),
+          QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
       "legend.labelspacing": (
-        tr(
-          "pychemqt", "Dimensions as fraction of font size for the vertical "
-          "space between the legend entries"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Dimensions as fraction of font size for the vertical space "
+          "between the legend entries"),
+          QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
       "legend.handlelength": (
-        tr(
-          "pychemqt", "Dimensions as fraction of font size for the length of "
-          "the legend lines"), QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Dimensions as fraction of font size for the length of the "
+          "legend lines"), QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
       "legend.handleheight": (
-        tr(
-          "pychemqt", "Dimensions as fraction of font size for the height of "
-          "the legend handle"), QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Dimensions as fraction of font size for the height of the "
+          "legend handle"), QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
       "legend.handletextpad": (
-        tr(
-          "pychemqt", "Dimensions as fraction of font size for the space "
-          "between the legend line and legend text"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Dimensions as fraction of font size for the space between the "
+          "legend line and legend text"),
+          QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
       "legend.borderaxespad": (
-        tr(
-          "pychemqt", "Dimensions as fraction of font size for the border "
-          "between the axes and legend edge"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Dimensions as fraction of font size for the border between the "
+          "axes and legend edge"), QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
       "legend.columnspacing": (
-        tr(
-          "pychemqt", "Dimensions as fraction of font size for column separation"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+          QtWidgets.QApplication.translate("plot", "Dimensions as fraction of font size for column separation"),
+          QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
 
-      "lines.linewidth": (
-        tr("pychemqt", "Line width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "lines.linestyle": (
-        tr("pychemqt", "Line style"),
-        LineStyleCombo),
-      "lines.color": (
-        tr("pychemqt", "Line color"),
-        ColorSelector),
-      "lines.marker": (
-        tr("pychemqt", "Marker style"),
-        MarkerCombo),
-      "lines.markerfacecolor": (
-        tr("pychemqt", "Marker face color"),
-        ColorSelector),
-      "lines.markeredgecolor": (
-        tr("pychemqt", "Marker edge color"),
-        ColorSelector),
-      "lines.markeredgewidth": (
-        tr(
-          "pychemqt", "Line width around the marker symbol"),
-        QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
-      "lines.markersize": (
-        tr("pychemqt", "Marker size, in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "lines.dash_joinstyle": ("", QtWidgets.QComboBox, "miter", "round", "bevel"),
-      "lines.dash_capstyle": ("", QtWidgets.QComboBox, "butt", "round", "projecting"),
-      "lines.solid_joinstyle": ("", QtWidgets.QComboBox, "miter", "round", "bevel"),
-      "lines.solid_capstyle": ("", QtWidgets.QComboBox, "butt", "round", "projecting"),
-      "lines.antialiased": (
-        tr("pychemqt", "Render antialiased"),
-        QtWidgets.QCheckBox),
+      "lines.linewidth": (QtWidgets.QApplication.translate("plot", "Line width in points"),
+                          QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "lines.linestyle": (QtWidgets.QApplication.translate("plot", "Line style"), LineStyleCombo),
+      "lines.color": (QtWidgets.QApplication.translate("plot", "Line color"), ColorSelector),
+      "lines.marker": (QtWidgets.QApplication.translate("plot", "Marker style"), MarkerCombo),
+      "lines.markerfacecolor": (QtWidgets.QApplication.translate("plot", "Marker face color"), ColorSelector),
+      "lines.markeredgecolor": (QtWidgets.QApplication.translate("plot", "Marker edge color"), ColorSelector),
+      "lines.markeredgewidth": (QtWidgets.QApplication.translate("plot", "Line width around the marker symbol"),
+                                QtWidgets.QDoubleSpinBox, 0, 5, 0.1, 1),
+      "lines.markersize": (QtWidgets.QApplication.translate("plot", "Marker size, in points"),
+                           QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "lines.dash_joinstyle": ("", QtWidgets.QComboBox, "miter", "round",
+                               "bevel"),
+      "lines.dash_capstyle": ("", QtWidgets.QComboBox, "butt", "round",
+                              "projecting"),
+      "lines.solid_joinstyle": ("", QtWidgets.QComboBox, "miter", "round",
+                                "bevel"),
+      "lines.solid_capstyle": ("", QtWidgets.QComboBox, "butt", "round",
+                               "projecting"),
+      "lines.antialiased": (QtWidgets.QApplication.translate("plot", "Render antialiased"), QtWidgets.QCheckBox),
       "lines.scale_dashes": ("", QtWidgets.QCheckBox),
 
-      "patch.linewidth": (
-        tr("pychemqt", "Edge width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "patch.facecolor": (
-        tr("pychemqt", "Patch face color"),
-        ColorSelector),
-      "patch.edgecolor": (
-        tr("pychemqt", "Patch edge color"),
-        ColorSelector),
-      "patch.force_edgecolor": (
-        tr("pychemqt", "Always use edgecolor"),
-        QtWidgets.QCheckBox),
-      "patch.antialiased": (
-        tr("pychemqt", "Render patch antialiased"),
-        QtWidgets.QCheckBox),
+      "patch.linewidth": (QtWidgets.QApplication.translate("plot", "Edge width in points"),
+                          QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "patch.facecolor": (QtWidgets.QApplication.translate("plot", "Patch face color"), ColorSelector),
+      "patch.edgecolor": (QtWidgets.QApplication.translate("plot", "Patch edge color"), ColorSelector),
+      "patch.force_edgecolor": (QtWidgets.QApplication.translate("plot", "Always use edgecolor"), QtWidgets.QCheckBox),
+      "patch.antialiased": (QtWidgets.QApplication.translate("plot", "Render patch antialiased"), QtWidgets.QCheckBox),
 
-      "xtick.top": (
-        tr(
-          "pychemqt", "Draw ticks on the top side"), QtWidgets.QCheckBox),
-      "xtick.bottom": (
-        tr(
-          "pychemqt", "Draw ticks on the bottom side"), QtWidgets.QCheckBox),
-      "xtick.labeltop": (
-        tr("pychemqt", "Draw label on the top"),
-        QtWidgets.QCheckBox),
-      "xtick.labelbottom": (
-        tr("pychemqt", "Draw label on the bottom"),
-        QtWidgets.QCheckBox),
-      "xtick.major.size": (
-        tr("pychemqt", "Major tick size in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "xtick.minor.size": (
-        tr("pychemqt", "Minor tick size in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "xtick.major.width": (
-        tr("pychemqt", "Major tick width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "xtick.minor.width": (
-        tr("pychemqt", "Minor tick width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "xtick.major.pad": (
-        tr(
-          "pychemqt", "Distance to major tick label in points"),
-        QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
-      "xtick.minor.pad": (
-        tr(
-          "pychemqt", "Distance to the minor tick label in points"),
-        QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
-      "xtick.color": (
-        tr("pychemqt", "Color of the ticks"),
-        ColorSelector),
+      "xtick.top": (QtWidgets.QApplication.translate("plot", "Draw ticks on the top side"), QtWidgets.QCheckBox),
+      "xtick.bottom": (QtWidgets.QApplication.translate("plot", "Draw ticks on the bottom side"), QtWidgets.QCheckBox),
+      "xtick.labeltop": (QtWidgets.QApplication.translate("plot", "Draw label on the top"), QtWidgets.QCheckBox),
+      "xtick.labelbottom": (QtWidgets.QApplication.translate("plot", "Draw label on the bottom"), QtWidgets.QCheckBox),
+      "xtick.major.size": (QtWidgets.QApplication.translate("plot", "Major tick size in points"),
+                           QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "xtick.minor.size": (QtWidgets.QApplication.translate("plot", "Minor tick size in points"),
+                           QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "xtick.major.width": (QtWidgets.QApplication.translate("plot", "Major tick width in points"),
+                            QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "xtick.minor.width": (QtWidgets.QApplication.translate("plot", "Minor tick width in points"),
+                            QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "xtick.major.pad": (QtWidgets.QApplication.translate("plot", "Distance to major tick label in points"),
+                          QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
+      "xtick.minor.pad": (QtWidgets.QApplication.translate("plot", "Distance to the minor tick label in points"),
+                          QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
+      "xtick.color": (QtWidgets.QApplication.translate("plot", "Color of the ticks"), ColorSelector),
       "xtick.labelcolor": (
-        tr(
-          "pychemqt", "Color of the tick labels or inherit from xtick.color"),
-        ColorSelector),
-      "xtick.labelsize": (
-        tr(
-          "pychemqt", "Font size of the tick labels"),
-        QtWidgets.QComboBox, 'xx-small', 'x-small', 'small', 'medium',
-        'large', 'x-large', 'xx-large'),
-      "xtick.direction": (
-        tr("pychemqt", "Direction"),
-        QtWidgets.QComboBox, "in", "out", "inout"),
-      "xtick.minor.visible": (
-        tr(
-          "pychemqt", "Visibility of minor ticks on x-axis"),
-        QtWidgets.QCheckBox),
-      "xtick.major.top": (
-        tr("pychemqt", "Draw x axis top major ticks"),
-        QtWidgets.QCheckBox),
-      "xtick.major.bottom": (
-        tr("pychemqt", "Draw x axis bottom major ticks"),
-        QtWidgets.QCheckBox),
-      "xtick.minor.top": (
-        tr("pychemqt", "Draw x axis top minor ticks"),
-        QtWidgets.QCheckBox),
-      "xtick.minor.bottom": (
-        tr("pychemqt", "Draw x axis bottom minor ticks"),
-        QtWidgets.QCheckBox),
-      "xtick.alignment": (
-        tr("pychemqt", "Alignment of ticks"),
-        QtWidgets.QComboBox, "left", "center", "right"),
+          QtWidgets.QApplication.translate("plot", "Color of the tick labels or inherit from xtick.color"),
+          ColorSelector),
+      "xtick.labelsize": (QtWidgets.QApplication.translate("plot", "Font size of the tick labels"),
+                          QtWidgets.QComboBox, 'xx-small', 'x-small', 'small',
+                          'medium', 'large', 'x-large', 'xx-large'),
+      "xtick.direction": (QtWidgets.QApplication.translate("plot", "Direction"), QtWidgets.QComboBox,
+                          "in", "out", "inout"),
+      "xtick.minor.visible": (QtWidgets.QApplication.translate("plot", "Visibility of minor ticks on x-axis"),
+                              QtWidgets.QCheckBox),
+      "xtick.major.top": (QtWidgets.QApplication.translate("plot", "Draw x axis top major ticks"),
+                          QtWidgets.QCheckBox),
+      "xtick.major.bottom": (QtWidgets.QApplication.translate("plot", "Draw x axis bottom major ticks"),
+                             QtWidgets.QCheckBox),
+      "xtick.minor.top": (QtWidgets.QApplication.translate("plot", "Draw x axis top minor ticks"),
+                          QtWidgets.QCheckBox),
+      "xtick.minor.bottom": (QtWidgets.QApplication.translate("plot", "Draw x axis bottom minor ticks"),
+                             QtWidgets.QCheckBox),
+      "xtick.alignment": (QtWidgets.QApplication.translate("plot", "Alignment of ticks"), QtWidgets.QComboBox,
+                          "left", "center", "right"),
 
-      "ytick.left": (
-        tr("pychemqt", "Draw ticks on the left side"),
-        QtWidgets.QCheckBox),
-      "ytick.right": (
-        tr("pychemqt", "Draw ticks on the right side"),
-        QtWidgets.QCheckBox),
-      "ytick.labelleft": (
-        tr("pychemqt", "Draw label on the left"),
-        QtWidgets.QCheckBox),
-      "ytick.labelright": (
-        tr("pychemqt", "Draw label on the right"),
-        QtWidgets.QCheckBox),
-      "ytick.major.size": (
-        tr("pychemqt", "Major tick size in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "ytick.minor.size": (
-        tr("pychemqt", "Minor tick size in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "ytick.major.width": (
-        tr("pychemqt", "Major tick width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "ytick.minor.width": (
-        tr("pychemqt", "Minor tick width in points"),
-        QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
-      "ytick.major.pad": (
-        tr(
-          "pychemqt", "Distance to major tick label in points"),
-        QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
-      "ytick.minor.pad": (
-        tr(
-          "pychemqt", "Distance to the minor tick label in points"),
-        QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
-      "ytick.color": (
-        tr("pychemqt", "Color of the ticks"),
-        ColorSelector),
+      "ytick.left": (QtWidgets.QApplication.translate("plot", "Draw ticks on the left side"), QtWidgets.QCheckBox),
+      "ytick.right": (QtWidgets.QApplication.translate("plot", "Draw ticks on the right side"), QtWidgets.QCheckBox),
+      "ytick.labelleft": (QtWidgets.QApplication.translate("plot", "Draw label on the left"), QtWidgets.QCheckBox),
+      "ytick.labelright": (QtWidgets.QApplication.translate("plot", "Draw label on the right"), QtWidgets.QCheckBox),
+      "ytick.major.size": (QtWidgets.QApplication.translate("plot", "Major tick size in points"),
+                           QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "ytick.minor.size": (QtWidgets.QApplication.translate("plot", "Minor tick size in points"),
+                           QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "ytick.major.width": (QtWidgets.QApplication.translate("plot", "Major tick width in points"),
+                            QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "ytick.minor.width": (QtWidgets.QApplication.translate("plot", "Minor tick width in points"),
+                            QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
+      "ytick.major.pad": (QtWidgets.QApplication.translate("plot", "Distance to major tick label in points"),
+                          QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
+      "ytick.minor.pad": (QtWidgets.QApplication.translate("plot", "Distance to the minor tick label in points"),
+                          QtWidgets.QDoubleSpinBox, 0, 20, 0.1, 1),
+      "ytick.color": (QtWidgets.QApplication.translate("plot", "Color of the ticks"), ColorSelector),
       "ytick.labelcolor": (
-        tr(
-          "pychemqt", "Color of the tick labels or inherit from ytick.color"),
-        ColorSelector),
-      "ytick.labelsize": (
-        tr("pychemqt", "Font size of the tick labels"),
-        QtWidgets.QComboBox, 'xx-small', 'x-small', 'small', 'medium',
-        'large', 'x-large', 'xx-large'),
-      "ytick.direction": (
-        tr("pychemqt", "Direction"),
-        QtWidgets.QComboBox, "in", "out", "inout"),
-      "ytick.minor.visible": (
-        tr(
-          "pychemqt", "Visibility of minor ticks on y-axis"),
-        QtWidgets.QCheckBox),
-      "ytick.major.left": (
-        tr("pychemqt", "Draw y axis left major ticks"),
-        QtWidgets.QCheckBox),
-      "ytick.major.right": (
-        tr("pychemqt", "Draw y axis right major ticks"),
-        QtWidgets.QCheckBox),
-      "ytick.minor.left": (
-        tr("pychemqt", "Draw y axis left minor ticks"),
-        QtWidgets.QCheckBox),
-      "ytick.minor.right": (
-        tr("pychemqt", "Draw y axis right minor ticks"),
-        QtWidgets.QCheckBox),
-      "ytick.alignment": (
-        tr("pychemqt", "Alignment of ticks"),
-        QtWidgets.QComboBox, 'bottom', 'baseline', 'center', 'center_baseline', 'top'),
+          QtWidgets.QApplication.translate("plot", "Color of the tick labels or inherit from ytick.color"),
+          ColorSelector),
+      "ytick.labelsize": (QtWidgets.QApplication.translate("plot", "Font size of the tick labels"),
+                          QtWidgets.QComboBox, 'xx-small', 'x-small', 'small',
+                          'medium', 'large', 'x-large', 'xx-large'),
+      "ytick.direction": (QtWidgets.QApplication.translate("plot", "Direction"), QtWidgets.QComboBox,
+                          "in", "out", "inout"),
+      "ytick.minor.visible": (QtWidgets.QApplication.translate("plot", "Visibility of minor ticks on y-axis"),
+                              QtWidgets.QCheckBox),
+      "ytick.major.left": (QtWidgets.QApplication.translate("plot", "Draw y axis left major ticks"),
+                           QtWidgets.QCheckBox),
+      "ytick.major.right": (QtWidgets.QApplication.translate("plot", "Draw y axis right major ticks"),
+                            QtWidgets.QCheckBox),
+      "ytick.minor.left": (QtWidgets.QApplication.translate("plot", "Draw y axis left minor ticks"),
+                           QtWidgets.QCheckBox),
+      "ytick.minor.right": (QtWidgets.QApplication.translate("plot", "Draw y axis right minor ticks"),
+                            QtWidgets.QCheckBox),
+      "ytick.alignment": (QtWidgets.QApplication.translate("plot", "Alignment of ticks"), QtWidgets.QComboBox,
+                          'bottom', 'baseline', 'center', 'center_baseline',
+                          'top'),
 
-      "xaxis.labellocation": (
-        tr(
-          "pychemqt", "Alignment of the xaxis label"),
-        QtWidgets.QComboBox, "center", "left", "right"),
-      "yaxis.labellocation": (
-        tr(
-         "pychemqt", "Alignment of the yaxis label"),
-        QtWidgets.QComboBox, "center", "bottom", "top"),
+      "xaxis.labellocation": (QtWidgets.QApplication.translate("plot", "Alignment of the xaxis label"),
+                              QtWidgets.QComboBox, "center", "left", "right"),
+      "yaxis.labellocation": (QtWidgets.QApplication.translate("plot",  "Alignment of the yaxis label"),
+                              QtWidgets.QComboBox, "center", "bottom", "top"),
 
-      "savefig.dpi": (
-        tr("pychemqt", "Figure dots per inch"),
-        QtWidgets.QSpinBox, 0, 100),
-      "savefig.facecolor": (
-        tr("pychemqt", "Figure facecolor when saving"),
-        ColorSelector),
-      "savefig.edgecolor": (
-        tr("pychemqt", "Figure edgecolor when saving"),
-        ColorSelector),
-      "savefig.format": (
-        tr("pychemqt", "File format so save"),
-        QtWidgets.QComboBox, "png", "ps", "pdf", "svg"),
+      "savefig.dpi": (QtWidgets.QApplication.translate("plot", "Figure dots per inch"), QtWidgets.QSpinBox, 0, 100),
+      "savefig.facecolor": (QtWidgets.QApplication.translate("plot", "Figure facecolor when saving"), ColorSelector),
+      "savefig.edgecolor": (QtWidgets.QApplication.translate("plot", "Figure edgecolor when saving"), ColorSelector),
+      "savefig.format": (QtWidgets.QApplication.translate("plot", "File format so save"), QtWidgets.QComboBox,
+                         "png", "ps", "pdf", "svg"),
       "savefig.bbox": ("", QtWidgets.QComboBox, "standard", "tight"),
       "savefig.pad_inches": (
-        tr(
-          "pychemqt", "Padding to be used, when bbox is set to 'tight'"),
+          QtWidgets.QApplication.translate("plot", "Padding to be used, when bbox is set to 'tight'"),
           QtWidgets.QDoubleSpinBox, 0, 10, 0.1, 1),
       "savefig.transparent": (
-        tr(
-          "pychemqt", "Figures are saved with a transparent background"),
-        QtWidgets.QCheckBox)
-          }
+          QtWidgets.QApplication.translate("plot", "Figures are saved with a transparent background"),
+          QtWidgets.QCheckBox)}
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
 
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Matplotlib Style:")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Matplotlib Style:")), 1, 1)
         self.style = QtWidgets.QComboBox()
         layout.addWidget(self.style, 1, 2)
         self.style.addItem("default")
@@ -662,8 +450,7 @@ class ConfPlot(QtWidgets.QDialog):
             self.style.addItem(sty)
         self.style.currentTextChanged.connect(self.updateStyle)
 
-        self.customize = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Costomize Style:"))
+        self.customize = QtWidgets.QCheckBox(self.tr("Costomize Style:"))
         layout.addWidget(self.customize, 2, 1, 1, 3)
         self.tabRcParams = QtWidgets.QTabWidget()
         self.tabRcParams.setEnabled(False)

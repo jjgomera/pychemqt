@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 from tools.pdf import openPDF
 
 import lib
@@ -32,6 +32,7 @@ class QLineEditClickable(QtWidgets.QLineEdit):
     """Custom QLineEdit to catch Enter key and set focus to list and avoid
     close dialog"""
     def keyPressEvent(self, event):
+        """Rewrite keyPressEvent to setFocus when Enter key is pressed"""
         if event.key() == QtCore.Qt.Key.Key_Return:
             self.parent().parent().tree.setFocus()
         else:
@@ -41,6 +42,7 @@ class QLineEditClickable(QtWidgets.QLineEdit):
 class QTreeWidgetClickable(QtWidgets.QTreeWidget):
     """Custom QTreeWidget to catch Enter key and open file with it"""
     def keyPressEvent(self, event):
+        """Rewrite keyPressEvent to expand or open item"""
         if event.key() == QtCore.Qt.Key.Key_Return:
             if self.currentItem().childCount():
                 self.currentItem().setExpanded(True)
@@ -60,17 +62,13 @@ class ShowReference(QtWidgets.QDialog):
         super().__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/help.png")))
-        self.setWindowTitle(tr(
-            "pychemqt", "Reference Paper Show Dialog"))
+        self.setWindowTitle(self.tr("Reference Paper Show Dialog"))
         layout = QtWidgets.QGridLayout(self)
 
         self.tree = QTreeWidgetClickable()
         header = QtWidgets.QTreeWidgetItem(
-            ["id",
-             tr("pychemqt", "Autor"),
-             tr("pychemqt", "Title"),
-             tr("pychemqt", "Reference"),
-             tr("pychemqt", "doi")])
+            ["id", self.tr("Autor"), self.tr("Title"),
+             self.tr("Reference"), self.tr("doi")])
         self.tree.setHeaderItem(header)
         layout.addWidget(self.tree, 1, 1, 2, 2)
 
@@ -251,8 +249,7 @@ class ShowReference(QtWidgets.QDialog):
                         1, QtCore.Qt.SortOrder.AscendingOrder)
 
         # Equipment
-        itemEquipment = QtWidgets.QTreeWidgetItem(
-            [tr("pychemqt", "Equipments")])
+        itemEquipment = QtWidgets.QTreeWidgetItem([self.tr("Equipments")])
         self.tree.addTopLevelItem(itemEquipment)
         for equip in equipments:
             itemequip = QtWidgets.QTreeWidgetItem([equip.__name__])

@@ -18,8 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
-
 ###############################################################################
 # Module to define chemical reaction functionality
 ###############################################################################
@@ -28,9 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from math import exp, log
 import sqlite3
 
-from numpy import polyval
 from scipy.optimize import fsolve
-from tools.qt import tr
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.sql import databank_name
@@ -40,7 +37,7 @@ class Reaction(object):
     """Chemical reaction object"""
 
     status = 0
-    msg = tr("pychemqt", "undefined")
+    msg = QtWidgets.QApplication.translate("reaction", "undefined")
     error = 0
 
     kwargs = {"comp": [],
@@ -60,16 +57,16 @@ class Reaction(object):
     calculateValue = ("DeltaP", "DeltaP_f", "DeltaP_ac", "DeltaP_h",
                       "DeltaP_v", "DeltaP_100ft", "V", "f", "Re", "Tout")
 
-    TEXT_TYPE = [tr("pychemqt", "Estequiometric"),
-                 tr("pychemqt", "Equilibrium"),
-                 tr("pychemqt", "Kinetic"),
-                 tr("pychemqt", "Catalitic")]
-    TEXT_PHASE = [tr("pychemqt", "Global"),
-                  tr("pychemqt", "Liquid"),
-                  tr("pychemqt", "Gas")]
-    TEXT_BASE = [tr("pychemqt", "Mole"),
-                 tr("pychemqt", "Mass"),
-                 tr("pychemqt", "Partial pressure")]
+    TEXT_TYPE = [QtWidgets.QApplication.translate("reaction", "Estequiometric"),
+                 QtWidgets.QApplication.translate("reaction", "Equilibrium"),
+                 QtWidgets.QApplication.translate("reaction", "Kinetic"),
+                 QtWidgets.QApplication.translate("reaction", "Catalitic")]
+    TEXT_PHASE = [QtWidgets.QApplication.translate("reaction", "Global"),
+                  QtWidgets.QApplication.translate("reaction", "Liquid"),
+                  QtWidgets.QApplication.translate("reaction", "Gas")]
+    TEXT_BASE = [QtWidgets.QApplication.translate("reaction", "Mole"),
+                 QtWidgets.QApplication.translate("reaction", "Mass"),
+                 QtWidgets.QApplication.translate("reaction", "Partial pressure")]
 
     def __init__(self, **kwargs):
         """constructor, kwargs keys can be:
@@ -113,20 +110,20 @@ class Reaction(object):
         self.msg = ""
         self.status = 1
         if not self.kwargs["comp"]:
-            self.msg = tr("pychemqt", "undefined components")
+            self.msg = QtWidgets.QApplication.translate("reaction", "undefined components")
             self.status = 0
             return
         if not self.kwargs["coef"]:
-            self.msg = tr("pychemqt", "undefined stequiometric")
+            self.msg = QtWidgets.QApplication.translate("reaction", "undefined stequiometric")
             self.status = 0
             return
         if self.kwargs["tipo"] == 0:
             if self.kwargs["conversion"] is None:
-                self.msg = tr("pychemqt", "undefined conversion")
+                self.msg = QtWidgets.QApplication.translate("reaction", "undefined conversion")
                 self.status = 3
         elif self.kwargs["tipo"] == 1:
             if self.kwargs["keq"] is None:
-                self.msg = tr("pychemqt", "undefined equilibrium constants")
+                self.msg = QtWidgets.QApplication.translate("reaction", "undefined equilibrium constants")
                 self.status = 3
         elif self.kwargs["tipo"] == 2:
             pass

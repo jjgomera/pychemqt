@@ -71,7 +71,7 @@ from iapws.iapws97 import _PSat_T, _Region1, prop0
 
 from numpy import exp, roots, linspace, arange, concatenate
 from numpy.lib.scimath import log
-from tools.qt import tr
+from tools.qt import QtWidgets
 from scipy.optimize import fsolve
 
 # Avoid raise error at import this module if the the optional dependence isn't
@@ -108,8 +108,7 @@ __doi__ = {
          "title": "First-Principles Calculation of the Air-Water Second Virial"
                   " Coefficient",
          "ref": "Int. J. Thermophisics 28(2) (2007) 556-565",
-         "doi": "10.1007/s10765-007-0197-8"}
-        }
+         "doi": "10.1007/s10765-007-0197-8"}}
 
 
 R = 8.314472
@@ -547,7 +546,7 @@ def _W_V(Tdb, P, v):
     return (v*P_kpa-0.287042*Tdb)/(0.287042*1.607858*Tdb)
 
 
-class PsyState(object):
+class PsyState():
     """
     Class to model a psychrometric state with properties
     kwargs definition parameters:
@@ -576,7 +575,7 @@ class PsyState(object):
               "P": 0.0,
 
               "tdb": 0.0,
-              "tdb": 0.0,
+              "tdp": 0.0,
               "twb": 0.0,
               "w": None,
               "HR": None,
@@ -586,12 +585,12 @@ class PsyState(object):
     msg = "Unknown variables"
 
     TEXT_MODE = [
-        tr("pychemqt", "T dry bulb, Humidity Ratio"),
-        tr("pychemqt", "T dry bulb, Relative humidity"),
-        tr("pychemqt", "T dry bulb, T wet bulb"),
-        tr("pychemqt", "T dry bulb, T dew point"),
-        tr("pychemqt", "T dew point, Relative humidity"),
-        tr("pychemqt", "T wet bulb, Relative humidity")
+        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, Humidity Ratio"),
+        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, Relative humidity"),
+        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, T wet bulb"),
+        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, T dew point"),
+        QtWidgets.QApplication.translate("Psychrometry", "T dew point, Relative humidity"),
+        QtWidgets.QApplication.translate("Psychrometry", "T wet bulb, Relative humidity")
         ]
     VAR_NAME = [
         ("tdb", "w"),
@@ -602,18 +601,18 @@ class PsyState(object):
         ("twb", "HR")
         ]
 
-#        tr("pychemqt", "T dry bulb, Enthalpy"))
-#        tr("pychemqt", "Tª bulbo seco, Densidad"))
-#        tr("pychemqt", "Tª bulbo húmedo, H absoluta"))
-#        tr("pychemqt", "Tª bulbo húmedo, Entalpia"))
-#        tr("pychemqt", "Tª bulbo húmedo, Densidad"))
-#        tr("pychemqt", "Tª bulbo húmedo, Tª rocio"))
-#        tr("pychemqt", "H absoluta, entalpía"))
-#        tr("pychemqt", "H relativa, entalpía"))
-#        tr("pychemqt", "H absoluta, densidad"))
-#        tr("pychemqt", "H relativa, densidad"))
-#        tr("pychemqt", "Tª rocio, entalpía"))
-#        tr("pychemqt", "Tª rocio, densidad"))
+#        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, Enthalpy"))
+#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo seco, Densidad"))
+#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, H absoluta"))
+#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, Entalpia"))
+#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, Densidad"))
+#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, Tª rocio"))
+#        QtWidgets.QApplication.translate("Psychrometry", "H absoluta, entalpía"))
+#        QtWidgets.QApplication.translate("Psychrometry", "H relativa, entalpía"))
+#        QtWidgets.QApplication.translate("Psychrometry", ""H absoluta, densidad"))
+#        QtWidgets.QApplication.translate("Psychrometry", ""H relativa, densidad"))
+#        QtWidgets.QApplication.translate("Psychrometry", ""Tª rocio, entalpía"))
+#        QtWidgets.QApplication.translate("Psychrometry", ""Tª rocio, densidad"))
 
     def __init__(self, **kwargs):
         self.kwargs = self.__class__.kwargs.copy()
@@ -625,8 +624,7 @@ class PsyState(object):
         if self.calculable:
             self.status = 1
             self.calculo()
-            logging.debug(tr(
-                "pychemqt", "Calculate psychrometric point"))
+            logging.debug(QtWidgets.QApplication.translate("Psychrometry", "Calculate psychrometric point"))
             logging.debug(self.kwargs)
             self.msg = "Solved"
 
@@ -666,7 +664,6 @@ class PsyState(object):
 
     def _lib(self):
         """Properties calculate library, customize in each subclass"""
-        pass
 
     def calculo(self):
         tdp, tdb, twb, P, Pvs, Pv, ws, w, HR, v, h = self._lib()

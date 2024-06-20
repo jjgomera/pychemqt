@@ -23,9 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
+from ast import literal_eval
 import os
 
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 
 from lib.EoS import K, H, alfa, mix, cp_ideal, K_name, H_name, K_status
 from lib.bip import EoSBIP
@@ -38,71 +39,66 @@ class UI_confThermo_widget(QtWidgets.QWidget):
     """Widget to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter with proyect configuration"""
-        super(UI_confThermo_widget, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        title = tr("pychemqt", "K values:")
-        layout.addWidget(QtWidgets.QLabel(title), 0, 0, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("K values:")), 0, 0, 1, 2)
         self.K = QtWidgets.QComboBox()
         for eq in K:
             self.K.addItem(eq.__title__)
         self.K.currentIndexChanged.connect(self.updateBIP)
         layout.addWidget(self.K, 0, 2)
-        self.bipButton = QtWidgets.QPushButton(
-            tr("pychemqt", "BIP"))
+        self.bipButton = QtWidgets.QPushButton(self.tr("BIP"))
         self.bipButton.clicked.connect(self.showBIP)
         layout.addWidget(self.bipButton, 0, 3)
 
-        text = tr("pychemqt", "Alfa function:")
-        layout.addWidget(QtWidgets.QLabel(text), 1, 0, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(
+            self.tr("Alfa function:")), 1, 0, 1, 2)
         self.alfa = QtWidgets.QComboBox()
         for a in alfa:
             self.alfa.addItem(a)
         layout.addWidget(self.alfa, 1, 2, 1, 2)
-        text = tr("pychemqt", "Mix rules:")
-        layout.addWidget(QtWidgets.QLabel(text), 2, 0, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Mix rules:")), 2, 0, 1, 2)
         self.mixing_rule = QtWidgets.QComboBox()
         for m in mix:
             self.mixing_rule.addItem(m)
         layout.addWidget(self.mixing_rule, 2, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            3, 0, 1, 4)
-        text = tr("pychemqt", "Enthalpy:")
-        layout.addWidget(QtWidgets.QLabel(text), 4, 0, 1, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 0, 1, 4)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Enthalpy:")), 4, 0, 1, 2)
         self.H = QtWidgets.QComboBox()
         for h in H:
             self.H.addItem(h.__title__)
         layout.addWidget(self.H, 4, 2, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Ideal heat capacity:")), 5, 0, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(
+            self.tr("Ideal heat capacity:")), 5, 0, 1, 2)
         self.Cp_ideal = QtWidgets.QComboBox()
         for cp in cp_ideal:
             self.Cp_ideal.addItem(cp)
         layout.addWidget(self.Cp_ideal, 5, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            6, 0, 1, 4)
-        self.MEoS = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use MEoS for single compounds if it's available"))
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 6, 0, 1, 4)
+        self.MEoS = QtWidgets.QCheckBox(
+            self.tr("Use MEoS for single compounds if it's available"))
         layout.addWidget(self.MEoS, 7, 0, 1, 4)
-        self.coolProp = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use external library coolProp (faster)"))
+        self.coolProp = QtWidgets.QCheckBox(
+            self.tr("Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
         layout.addWidget(self.coolProp, 8, 1, 1, 3)
-        self.refprop = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use external library refprop (fastest)"))
+        self.refprop = QtWidgets.QCheckBox(
+            self.tr("Use external library refprop (fastest)"))
         self.refprop.setEnabled(False)
         layout.addWidget(self.refprop, 9, 1, 1, 3)
 
-        self.iapws = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use IAPWS97 for water"))
+        self.iapws = QtWidgets.QCheckBox(self.tr("Use IAPWS97 for water"))
         layout.addWidget(self.iapws, 10, 0, 1, 4)
-        self.freesteam = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use freesteam library (faster)"))
+        self.freesteam = QtWidgets.QCheckBox(
+            self.tr("Use freesteam library (faster)"))
         self.freesteam.setEnabled(False)
         layout.addWidget(self.freesteam, 11, 1, 1, 3)
-        self.GERG = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use GERG EoS for mix if it's posible"))
+        self.GERG = QtWidgets.QCheckBox(
+            self.tr("Use GERG EoS for mix if it's posible"))
         layout.addWidget(self.GERG, 12, 0, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
@@ -120,6 +116,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         self.updateBIP(0)
 
     def setConfig(self, config):
+        """Set values from currentConfig"""
         if config.has_section("Thermo"):
             self.K.setCurrentIndex(config.getint("Thermo", "K"))
             self.alfa.setCurrentIndex(config.getint("Thermo", "Alfa"))
@@ -134,12 +131,13 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             self.refprop.setChecked(config.getboolean("Thermo", "refprop"))
 
     def setKwargs(self, kwarg):
+        """Set values from kwargs dict"""
         config = getMainWindowConfig()
         self.setConfig(config)
         for key in ["MEoS", "iapws", "GERG", "freesteam", "coolProp",
                     "refprop"]:
             if kwarg[key] != Corriente.kwargs[key]:
-                self.__getattribute__(key).setChecked(kwarg[key])
+                getattr(self, key).setChecked(kwarg[key])
 
         if kwarg["K"] != Corriente.kwargs["K"]:
             index = K_name.index(kwarg["K"])
@@ -161,6 +159,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
 
     @property
     def kwargs(self):
+        """Return dict with kwarg"""
         kw = {}
         kw["K"] = self.K.currentText().split(" (")[0]
         kw["alfa"] = self.alfa.currentText()
@@ -194,6 +193,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
 
     @classmethod
     def default(cls, config):
+        """Default configuration"""
         config.add_section("Thermo")
         config.set("Thermo", "K", "0")
         config.set("Thermo", "Alfa", "0")
@@ -216,8 +216,9 @@ class UI_confThermo_widget(QtWidgets.QWidget):
             self.bipButton.setEnabled(False)
 
     def showBIP(self):
+        """Show BIP dialog from component for selected EoS"""
         config = getMainWindowConfig()
-        ids = eval(config.get("Components", "components"))
+        ids = literal_eval(config.get("Components", "components"))
         index = EoSBIP.index(K_status[self.K.currentIndex()])
         dlg = BIP.Ui_BIP(ids, index)
         dlg.exec()
@@ -226,14 +227,14 @@ class UI_confThermo_widget(QtWidgets.QWidget):
 class Dialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
-        super(Dialog, self).__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Define project thermodynamic methods"))
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Define project thermodynamic methods"))
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confThermo_widget(config)
         layout.addWidget(self.datos)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

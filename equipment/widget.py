@@ -18,15 +18,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Library for equipment common widget
 #   * FoulingWidget: pipe fouling input data
 #   * Dialog_Finned: Finned tube definition
 ###############################################################################
 
-from tools.qt import QtCore, QtWidgets, tr
 
+from tools.qt import QtCore, QtWidgets
 
 from lib.unidades import Fouling, Length, ThermalConductivity
 from lib.pipeDatabase import finnedTube_database
@@ -34,7 +33,7 @@ from UI.widgets import Entrada_con_unidades
 
 
 class FoulingWidget(QtWidgets.QWidget):
-    """Widget con los parametros de fouling de tuberias"""
+    """Widget with fouling factor for pipes"""
     valueChanged = QtCore.pyqtSignal(float)
     Fouling_Factor = {
         "Industrial": {
@@ -227,7 +226,7 @@ class FoulingWidget(QtWidgets.QWidget):
             "Other": 0.000352}}
 
     def __init__(self, parent=None):
-        super(FoulingWidget, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         self.list = QtWidgets.QComboBox()
@@ -241,7 +240,7 @@ class FoulingWidget(QtWidgets.QWidget):
             self.list.insertSeparator(self.list.count()+1)
             for componente in sorted(self.Fouling_Factor[tipo]):
                 self.list.addItem(" - ".join([tipo, componente]))
-        self.list.currentIndexChanged["QString"].connect(self.rellenar)
+        self.list.currentTextChanged.connect(self.rellenar)
 
     def setValue(self, value):
         self.value.setValue(value)
@@ -260,53 +259,48 @@ class FoulingWidget(QtWidgets.QWidget):
 class Dialog_Finned(QtWidgets.QDialog):
     """Dialog to define finned tube properties"""
     def __init__(self, kwarg=None, parent=None):
-        super(Dialog_Finned, self).__init__(parent=parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Specify tube finned characteristics"))
+        super().__init__(parent=parent)
+        self.setWindowTitle(self.tr("Specify tube finned characteristics"))
         layout = QtWidgets.QGridLayout(self)
         self.listTube = QtWidgets.QComboBox()
         self.listTube.addItem("")
         layout.addWidget(self.listTube, 0, 1, 1, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
-                                         QtWidgets.QSizePolicy.Policy.Fixed), 1, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Material")), 2, 1)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 1, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Material")), 2, 1)
         self.listMaterial = QtWidgets.QComboBox()
         self.listMaterial.addItem("")
-        self.listMaterial.addItem(tr(
-            "pychemqt", "Carbon Steel"))
+        self.listMaterial.addItem(self.tr("Carbon Steel"))
         layout.addWidget(self.listMaterial, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Thermal Conductivity")), 3, 1)
+        layout.addWidget(QtWidgets.QLabel(
+            self.tr("Thermal Conductivity")), 3, 1)
         self.kFin = Entrada_con_unidades(ThermalConductivity)
         layout.addWidget(self.kFin, 3, 2)
-        layout.addItem(QtWidgets.QSpacerItem(10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
-                                         QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
+        layout.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
 
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Root diameter")), 5, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Root diameter")), 5, 1)
         self.RootD = Entrada_con_unidades(Length, "PipeDiameter")
         layout.addWidget(self.RootD, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Fin Height")), 6, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Fin Height")), 6, 1)
         self.hFin = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.hFin, 6, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Base Fin Thickness")), 7, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Base Fin Thickness")), 7, 1)
         self.BaseThickness = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.BaseThickness, 7, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Top Fin Thickness")), 8, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Top Fin Thickness")), 8, 1)
         self.TopThickness = Entrada_con_unidades(Length, "Thickness")
         layout.addWidget(self.TopThickness, 8, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Number of fins")), 9, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Number of fins")), 9, 1)
         self.Nfin = Entrada_con_unidades(float, textounidad="fins/m")
         layout.addWidget(self.Nfin, 9, 2)
 
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
-                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 10, 1, 1, 2)
@@ -353,7 +347,7 @@ class Dialog_Finned(QtWidgets.QDialog):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    #dialogo = Dialog_Finned()
-    dialogo = FoulingWidget()
+    dialogo = Dialog_Finned()
+    # dialogo = FoulingWidget()
     dialogo.show()
     sys.exit(app.exec())

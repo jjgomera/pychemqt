@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Tools to create a python shell with pychemqt libraries imported
 # For now only work in linux with xterm as terminal
@@ -26,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import atexit
 
-from tools.qt import QtCore, QtWidgets, tr
+from tools.qt import QtCore, QtWidgets
 
 from tools.firstrun import which
 
@@ -34,13 +33,13 @@ from tools.firstrun import which
 class XTerm(QtCore.QProcess):
     """Gui container for terminal widget"""
     def __init__(self, config, parent=None):
-        super(XTerm, self).__init__(parent)
+        super().__init__(parent)
         self.config = config
         atexit.register(self.kill)
         self.show_term()
 
     def sizeHint(self):
-        size = QtCore.QSize(400, 300)
+        size = QtCore.QSize(600, 500)
         return size.expandedTo(QtWidgets.QApplication.globalStrut())
 
     def show_term(self):
@@ -52,8 +51,7 @@ class XTerm(QtCore.QProcess):
             # blink cursor
             "-bc",
             # title
-            "-T", tr(
-                "pychemqt", "pychemqt python console")]
+            "-T", self.tr("pychemqt python console")]
 
         if self.config.getboolean("Applications", "maximized"):
             args.append("-maximized")

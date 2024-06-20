@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ############################
 
 from scipy.optimize import fsolve
-from tools.qt import tr
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.corriente import Corriente
@@ -49,9 +49,9 @@ class Reactor(equipment):
         Text: Temperatura en el exterior de la tubería
         U: Coeficiente global de transimisión de calor entre la tubería y el exterior
     """
-    title=tr("pychemqt", "Reactor")
+    title = QtWidgets.QApplication.translate("equipment", "Reactor")
     help=""
-    kwargs={"entrada": None,
+    kwargs = {"entrada": None,
                     "thermal": 0,
                     "deltaP": 0.0,
                     "Pout": 0.0,

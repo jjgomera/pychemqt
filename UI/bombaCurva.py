@@ -21,16 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import pickle
 from functools import partial
 
-from tools.qt import QtCore, QtWidgets, tr
-
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
-#from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-#import matplotlib.gridspec as gridspec #necesita matplotlib >=1.0
-from pylab import Figure
+from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg,
+                                                NavigationToolbar2QT)
+from matplotlib.figure import Figure
 from numpy import transpose
+from tools.qt import QtCore, QtWidgets
 
-from lib.unidades import Length, VolFlow, Power
 from lib import config
+from lib.unidades import Length, VolFlow, Power
 from lib.utilities import representacion
 from UI.widgets import Entrada_con_unidades, Tabla
 
@@ -39,17 +37,18 @@ class Plot(FigureCanvasQTAgg):
     """Ultimately, this is a QWidget (as well as a FigureCanvasAgg, etc.)."""
     def __init__(self, parent=None, width=5, height=5, dpi=100):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
-        FigureCanvasQTAgg.__init__(self, self.fig)
+        super().__init__(self.fig)
         self.setParent(parent)
-        FigureCanvasQTAgg.setSizePolicy(self, QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
-        FigureCanvasQTAgg.updateGeometry(self)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                           QtWidgets.QSizePolicy.Policy.Expanding)
+        self.updateGeometry()
 
 
 class Ui_bombaCurva(QtWidgets.QDialog):
     def __init__(self, curva=[], parent=None):
         """curva: Parametro opcional indicando la curva de la bomba"""
         super(Ui_bombaCurva, self).__init__(parent)
-        self.setWindowTitle(tr("pychemqt", "Pump curves dialog"))
+        self.setWindowTitle(self.tr("Pump curves dialog"))
         self.showMaximized()
 
         self.gridLayout = QtWidgets.QGridLayout(self)
@@ -57,19 +56,19 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         self.botones.clicked.connect(self.botones_clicked)
         self.gridLayout.addWidget(self.botones,1,1,3,1)
         self.gridLayout.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),1,2,3,1)
-        self.gridLayout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Curves")),1,3)
+        self.gridLayout.addWidget(QtWidgets.QLabel(self.tr("Curves")),1,3)
         self.lista=QtWidgets.QComboBox()
         self.lista.currentIndexChanged.connect(self.cambiarCurvaVista)
         self.gridLayout.addWidget(self.lista,1,4)
-        self.gridLayout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Diameter")),2,3)
+        self.gridLayout.addWidget(QtWidgets.QLabel(self.tr("Diameter")),2,3)
         self.diametro=Entrada_con_unidades(int, width=60, textounidad='"')
         self.gridLayout.addWidget(self.diametro,2,4)
-        self.gridLayout.addWidget(QtWidgets.QLabel(tr("pychemqt", "RPM")),3,3)
+        self.gridLayout.addWidget(QtWidgets.QLabel(self.tr("RPM")),3,3)
         self.rpm=Entrada_con_unidades(int, width=60, textounidad="rpm")
         self.gridLayout.addWidget(self.rpm,3,4)
         self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),4,1,1,4)
 
-        self.Tabla=Tabla(4, horizontalHeader=[tr("pychemqt", "Flowrate"), tr("pychemqt", "Head"), tr("pychemqt", "Power"), tr("pychemqt", "NPSH")], verticalOffset=1, filas=1, stretch=False)
+        self.Tabla=Tabla(4, horizontalHeader=[self.tr("Flowrate"), self.tr("Head"), self.tr("Power"), self.tr("NPSH")], verticalOffset=1, filas=1, stretch=False)
         self.Tabla.setColumnWidth(0, 100)
         self.unidadesCaudal = QtWidgets.QComboBox()
         self.Tabla.setCellWidget(0, 0, self.unidadesCaudal)
@@ -89,13 +88,13 @@ class Ui_bombaCurva(QtWidgets.QDialog):
         self.gridLayout.addWidget(self.Tabla,5,1,1,4)
         self.gridLayout.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),1,5,5,1)
 
-        self.checkCarga = QtWidgets.QCheckBox(tr("pychemqt", "Heat"))
+        self.checkCarga = QtWidgets.QCheckBox(self.tr("Heat"))
         self.gridLayout.addWidget(self.checkCarga,1,6)
-        self.checkPotencia = QtWidgets.QCheckBox(tr("pychemqt", "Power"))
+        self.checkPotencia = QtWidgets.QCheckBox(self.tr("Power"))
         self.gridLayout.addWidget(self.checkPotencia,1,7)
-        self.checkNPSH = QtWidgets.QCheckBox(tr("pychemqt", "NPSH"))
+        self.checkNPSH = QtWidgets.QCheckBox(self.tr("NPSH"))
         self.gridLayout.addWidget(self.checkNPSH,1,8)
-        self.rejilla = QtWidgets.QCheckBox(tr("pychemqt", "Grid"))
+        self.rejilla = QtWidgets.QCheckBox(self.tr("Grid"))
         self.rejilla.toggled.connect(self.rejilla_toggled)
         self.gridLayout.addWidget(self.rejilla,1,9)
         self.gridLayout.addItem(QtWidgets.QSpacerItem(1000,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Fixed),1,10)
@@ -160,7 +159,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
             self.rejilla.setChecked(False)
 
         elif boton == self.botones.button(QtWidgets.QDialogButtonBox.StandardButton.Open):
-            fname = str(QtWidgets.QFileDialog.getOpenFileName(self, tr("pychemqt", "Open curve file"), "./", "cpickle file (*.pkl);;All files (*.*)")[0])
+            fname = str(QtWidgets.QFileDialog.getOpenFileName(self, self.tr("Open curve file"), "./", "cpickle file (*.pkl);;All files (*.*)")[0])
             if fname:
                 with open(fname, "r") as archivo:
                     curvas=pickle.load(archivo)
@@ -191,7 +190,7 @@ class Ui_bombaCurva(QtWidgets.QDialog):
                 self.actualizarPlot()
 
         else:
-            fname = str(QtWidgets.QFileDialog.getSaveFileName(self, tr("pychemqt", "Save curve to file"), "./", "cpickle file (*.pkl)")[0])
+            fname = str(QtWidgets.QFileDialog.getSaveFileName(self, self.tr("Save curve to file"), "./", "cpickle file (*.pkl)")[0])
             if fname:
                 if fname.split(".")[-1]!="pkl":
                     fname+=".pkl"

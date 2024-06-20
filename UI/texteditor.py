@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 import os
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 from UI.widgets import createAction
 
 
@@ -37,82 +37,78 @@ class TextEditor(QtWidgets.QWidget):
         """Constructor, opcional parameter texto to set initial value"""
         super().__init__(parent)
         self.texto = texto
-        self.setWindowTitle(
-            tr("pychemqt", "Notes"))
+        self.setWindowTitle(self.tr("Notes"))
         gridLayout = QtWidgets.QVBoxLayout(self)
 
         toolbar = QtWidgets.QToolBar()
         toolbar.setIconSize(QtCore.QSize(16, 16))
         gridLayout.addWidget(toolbar)
         self.fontComboBox = QtWidgets.QFontComboBox()
-        self.fontComboBox.setToolTip(
-            tr("pychemqt", "Font name"))
+        self.fontComboBox.setToolTip(self.tr("Font name"))
         self.fontComboBox.textActivated.connect(self.font)
         toolbar.addWidget(self.fontComboBox)
         self.FontColor = QtWidgets.QPushButton()
         self.FontColor.setFixedSize(22, 22)
         self.FontColor.setPalette(QtGui.QPalette(QtGui.QColor("black")))
-        self.FontColor.setToolTip(
-            tr("pychemqt", "Font color"))
+        self.FontColor.setToolTip(self.tr("Font color"))
         self.FontColor.clicked.connect(self.colordialog)
         toolbar.addWidget(self.FontColor)
         self.FontSize = QtWidgets.QComboBox()
         for i in QtGui.QFontDatabase.standardSizes():
             self.FontSize.addItem(str(i))
-        self.FontSize.setToolTip(
-            tr("pychemqt", "Font size"))
+        self.FontSize.setToolTip(self.tr("Font size"))
         self.FontSize.textActivated.connect(self.PointSize)
         toolbar.addWidget(self.FontSize)
 
         self.actionNegrita = createAction(
             icon=os.path.join("button", "format-text-bold.png"),
-            text=tr("pychemqt", "Bold"),
+            text=self.tr("Bold"),
             slot=self.Negrita, checkable=True)
         toolbar.addAction(self.actionNegrita)
         self.actionCursiva = createAction(
             icon=os.path.join("button", "format-text-italic.png"),
-            text=tr("pychemqt", "Italic"),
+            text=self.tr("Italic"),
             slot=self.Cursiva, checkable=True)
         toolbar.addAction(self.actionCursiva)
         self.actionSubrayado = createAction(
             icon=os.path.join("button", "format-text-underline.png"),
-            text=tr("pychemqt", "Underline"),
+            text=self.tr("Underline"),
             slot=self.Subrayado, checkable=True)
         toolbar.addAction(self.actionSubrayado)
         self.actionTachado = createAction(
             icon=os.path.join("button", "format-text-strikethrough.png"),
-            text=tr("pychemqt", "Strike through"),
+            text=self.tr("Strike through"),
             slot=self.Tachado, checkable=True)
         toolbar.addAction(self.actionTachado)
         self.actionSuperScript = createAction(
             icon=os.path.join("button", "font-superscript.png"),
-            text=tr("pychemqt", "Superscript"),
+            text=self.tr("Superscript"),
             slot=self.Superindice, checkable=True)
         toolbar.addAction(self.actionSuperScript)
         self.actionSubScript = createAction(
             icon=os.path.join("button", "font-subscript.png"),
-            text=tr("pychemqt", "Subscript"),
+            text=self.tr("Subscript"),
             slot=self.Subindice, checkable=True)
         toolbar.addAction(self.actionSubScript)
         toolbar.addSeparator()
         self.actionAlinearIzquierda = createAction(
             icon=os.path.join("button", "format-justify-left.png"),
-            text=tr("pychemqt", "Align left"),
+            text=self.tr("Align left"),
             slot=self.izquierda, checkable=True)
         toolbar.addAction(self.actionAlinearIzquierda)
         self.actionCentrar = createAction(
             icon=os.path.join("button", "format-justify-center.png"),
-            text=tr("pychemqt", "Center"),
+            text=self.tr("Center"),
             slot=self.centrar, checkable=True)
         toolbar.addAction(self.actionCentrar)
         self.actionJustificar = createAction(
             icon=os.path.join("button", "format-justify-fill.png"),
-            text=tr("pychemqt", "Justify"),
+            text=self.tr("Justify"),
             slot=self.justificar, checkable=True)
         toolbar.addAction(self.actionJustificar)
         self.actionAlinearDerecha = createAction(
             icon=os.path.join("button", "format-justify-right.png"),
-            text=tr("pychemqt", "Align right"),
+            text=self.tr("Align right"),
             slot=self.derecha, checkable=True)
         toolbar.addAction(self.actionAlinearDerecha)
 
@@ -142,27 +138,29 @@ class TextEditor(QtWidgets.QWidget):
             self.textChanged.emit(texto, self.notas.toPlainText())
         self.texto = texto
 
-    def MergeFormat(self, format):
+    def MergeFormat(self, fmt):
         """Merge format to current text"""
         cursor = self.notas.textCursor()
         if not cursor.hasSelection():
             cursor.select(QtGui.QTextCursor.SelectionType.Document)
-        cursor.mergeCharFormat(format)
-        self.notas.mergeCurrentCharFormat(format)
+        cursor.mergeCharFormat(fmt)
+        self.notas.mergeCurrentCharFormat(fmt)
 
     def font(self, family):
-        format = QtGui.QTextCharFormat()
-        format.setFontFamily(family)
-        self.MergeFormat(format)
+        fmt = QtGui.QTextCharFormat()
+        fmt.setFontFamily(family)
+        self.MergeFormat(fmt)
 
     def izquierda(self):
-        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignAbsolute)
+        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft
+                                | QtCore.Qt.AlignmentFlag.AlignAbsolute)
 
     def centrar(self):
         self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
 
     def derecha(self):
-        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignAbsolute)
+        self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight
+                                | QtCore.Qt.AlignmentFlag.AlignAbsolute)
 
     def justificar(self):
         self.notas.setAlignment(QtCore.Qt.AlignmentFlag.AlignJustify)
@@ -170,56 +168,60 @@ class TextEditor(QtWidgets.QWidget):
     def PointSize(self, size):
         puntos = int(size)
         if puntos > 0:
-            format = QtGui.QTextCharFormat()
-            format.setFontPointSize(puntos)
-            self.MergeFormat(format)
+            fmt = QtGui.QTextCharFormat()
+            fmt.setFontPointSize(puntos)
+            self.MergeFormat(fmt)
 
     def Negrita(self):
-        format = QtGui.QTextCharFormat()
+        fmt = QtGui.QTextCharFormat()
         if self.actionNegrita.isChecked():
-            format.setFontWeight(QtGui.QFont.Weight.Bold)
+            fmt.setFontWeight(QtGui.QFont.Weight.Bold)
         else:
-            format.setFontWeight(QtGui.QFont.Weight.Normal)
-        self.MergeFormat(format)
+            fmt.setFontWeight(QtGui.QFont.Weight.Normal)
+        self.MergeFormat(fmt)
 
     def Cursiva(self):
-        format = QtGui.QTextCharFormat()
-        format.setFontItalic(self.actionCursiva.isChecked())
-        self.MergeFormat(format)
+        fmt = QtGui.QTextCharFormat()
+        fmt.setFontItalic(self.actionCursiva.isChecked())
+        self.MergeFormat(fmt)
 
     def Subrayado(self):
-        format = QtGui.QTextCharFormat()
-        format.setFontUnderline(self.actionSubrayado.isChecked())
-        self.MergeFormat(format)
+        fmt = QtGui.QTextCharFormat()
+        fmt.setFontUnderline(self.actionSubrayado.isChecked())
+        self.MergeFormat(fmt)
 
     def Tachado(self):
-        format = QtGui.QTextCharFormat()
-        format.setFontStrikeOut(self.actionTachado.isChecked())
-        self.MergeFormat(format)
+        fmt = QtGui.QTextCharFormat()
+        fmt.setFontStrikeOut(self.actionTachado.isChecked())
+        self.MergeFormat(fmt)
 
     def Superindice(self):
         if self.actionSubScript.isChecked():
             self.actionSubScript.blockSignals(True)
             self.actionSubScript.setChecked(False)
             self.actionSubScript.blockSignals(False)
-        format = QtGui.QTextCharFormat()
+        fmt = QtGui.QTextCharFormat()
         if self.actionSuperScript.isChecked():
-            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignSuperScript)
+            fmt.setVerticalAlignment(
+                QtGui.QTextCharFormat.VerticalAlignment.AlignSuperScript)
         else:
-            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignNormal)
-        self.MergeFormat(format)
+            fmt.setVerticalAlignment(
+                QtGui.QTextCharFormat.VerticalAlignment.AlignNormal)
+        self.MergeFormat(fmt)
 
     def Subindice(self):
         if self.actionSuperScript.isChecked():
             self.actionSuperScript.blockSignals(True)
             self.actionSuperScript.setChecked(False)
             self.actionSuperScript.blockSignals(False)
-        format = QtGui.QTextCharFormat()
+        fmt = QtGui.QTextCharFormat()
         if self.actionSubScript.isChecked():
-            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignSubScript)
+            fmt.setVerticalAlignment(
+                QtGui.QTextCharFormat.VerticalAlignment.AlignSubScript)
         else:
-            format.setVerticalAlignment(QtGui.QTextCharFormat.VerticalAlignment.AlignNormal)
-        self.MergeFormat(format)
+            fmt.setVerticalAlignment(
+                QtGui.QTextCharFormat.VerticalAlignment.AlignNormal)
+        self.MergeFormat(fmt)
 
     def updateUI(self):
         """Update button status when cursor move"""
@@ -232,13 +234,15 @@ class TextEditor(QtWidgets.QWidget):
             self.notas.fontWeight() == QtGui.QFont.Weight.Bold)
         self.actionCursiva.setChecked(self.notas.fontItalic())
         self.actionSubrayado.setChecked(self.notas.fontUnderline())
-        format = self.notas.currentCharFormat()
-        self.actionTachado.setChecked(format.fontStrikeOut())
+        fmt = self.notas.currentCharFormat()
+        self.actionTachado.setChecked(fmt.fontStrikeOut())
         self.actionSuperScript.setChecked(False)
         self.actionSubScript.setChecked(False)
-        if format.verticalAlignment() == QtGui.QTextCharFormat.VerticalAlignment.AlignSuperScript:
+        if fmt.verticalAlignment() == \
+                QtGui.QTextCharFormat.VerticalAlignment.AlignSuperScript:
             self.actionSuperScript.setChecked(True)
-        elif format.verticalAlignment() == QtGui.QTextCharFormat.VerticalAlignment.AlignSubScript:
+        elif fmt.verticalAlignment() == \
+                QtGui.QTextCharFormat.VerticalAlignment.AlignSubScript:
             self.actionSubScript.setChecked(True)
         self.actionAlinearIzquierda.setChecked(
             self.notas.alignment() == QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -255,9 +259,9 @@ class TextEditor(QtWidgets.QWidget):
         if dialog.exec():
             self.FontColor.setPalette(QtGui.QPalette(dialog.currentColor()))
             self.notas.setTextColor(dialog.currentColor())
-            format = QtGui.QTextCharFormat()
-            format.setForeground(dialog.currentColor())
-            self.MergeFormat(format)
+            fmt = QtGui.QTextCharFormat()
+            fmt.setForeground(dialog.currentColor())
+            self.MergeFormat(fmt)
 
 
 if __name__ == "__main__":

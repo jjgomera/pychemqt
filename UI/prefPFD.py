@@ -32,7 +32,7 @@ import os
 from UI.widgets import ColorSelector, Entrada_con_unidades
 from UI.widgets import PFDLineCombo
 from tools import UI_confResolution
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 
 
 class Widget(QtWidgets.QDialog):
@@ -48,32 +48,26 @@ class Widget(QtWidgets.QDialog):
         dlg = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout(dlg)
 
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Brush color")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Brush color")), 1, 1)
         self.ColorButtonBrush = ColorSelector()
         layout.addWidget(self.ColorButtonBrush, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Brush style")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Brush style")), 2, 1)
         self.brush = BrushCombo()
         layout.addWidget(self.brush, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Input color")), 4, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Input color")), 4, 1)
         self.ColorButtonEntrada = ColorSelector()
         layout.addWidget(self.ColorButtonEntrada, 4, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Output color:")), 5, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Output color:")), 5, 1)
         self.ColorButtonSalida = ColorSelector()
         layout.addWidget(self.ColorButtonSalida, 5, 2)
 
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "Line format"))
+        group = QtWidgets.QGroupBox(self.tr("Line format"))
         layout.addWidget(group, 6, 1, 1, 3)
         lyt = QtWidgets.QHBoxLayout(group)
         self.lineFormat = ConfLine()
         lyt.addWidget(self.lineFormat)
 
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "PFD resolution"))
+        group = QtWidgets.QGroupBox(self.tr("PFD resolution"))
         layout.addWidget(group, 7, 1, 1, 3)
         lyt = QtWidgets.QHBoxLayout(group)
         self.resolution = UI_confResolution.UI_confResolution_widget(config)
@@ -134,8 +128,7 @@ class Dialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "PFD configuration"))
+        self.setWindowTitle(self.tr("PFD configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Widget(config)
         layout.addWidget(self.widget)
@@ -228,26 +221,23 @@ class ConfLine(QtWidgets.QWidget):
 
         lyt1 = QtWidgets.QHBoxLayout()
         lyt1.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Line")))
+            self.tr("Line")))
         self.ColorButtonLine = ColorSelector()
         self.ColorButtonLine.setToolTip(
-            tr("pychemqt", "Default line color"))
+            self.tr("Default line color"))
         lyt1.addWidget(self.ColorButtonLine)
         self.width = Entrada_con_unidades(
             float, width=50, decimales=1, spinbox=True, step=0.1,
             textounidad="px")
-        self.width.entrada.setToolTip(tr(
-            "pychemqt", "Line Width"))
+        self.width.entrada.setToolTip(self.tr("Line Width"))
         lyt1.addWidget(self.width)
         lyt.addLayout(lyt1)
 
         lyt2 = QtWidgets.QHBoxLayout()
-        lyt2.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Join")))
+        lyt2.addWidget(QtWidgets.QLabel(self.tr("Join")))
         self.mitterLimit = Entrada_con_unidades(
             float, width=50, decimales=1, spinbox=True, step=0.1)
-        self.mitterLimit.entrada.setToolTip(tr(
-            "pychemqt", "Mitter Limit"))
+        self.mitterLimit.entrada.setToolTip(self.tr("Mitter Limit"))
         lyt2.addWidget(self.mitterLimit)
         toolJoinMitter = QtWidgets.QToolButton()
         toolJoinMitter.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
@@ -255,8 +245,7 @@ class ConfLine(QtWidgets.QWidget):
             "stroke-join-miter.png"))))
         toolJoinMitter.setIconSize(QtCore.QSize(24, 24))
         toolJoinMitter.setCheckable(True)
-        toolJoinMitter.setToolTip(tr(
-            "pychemqt",
+        toolJoinMitter.setToolTip(self.tr(
             "Join mitter: The triangular notch between the two lines is not "
             "filled"))
         lyt2.addWidget(toolJoinMitter)
@@ -266,8 +255,7 @@ class ConfLine(QtWidgets.QWidget):
             "stroke-join-bevel.png"))))
         toolJoinBevel.setIconSize(QtCore.QSize(24, 24))
         toolJoinBevel.setCheckable(True)
-        toolJoinBevel.setToolTip(tr(
-            "pychemqt",
+        toolJoinBevel.setToolTip(self.tr(
             "Join bevel: The triangular notch between the two lines is "
             "filled"))
         lyt2.addWidget(toolJoinBevel)
@@ -277,8 +265,7 @@ class ConfLine(QtWidgets.QWidget):
             "stroke-join-round.png"))))
         toolJoinRound.setIconSize(QtCore.QSize(24, 24))
         toolJoinRound.setCheckable(True)
-        toolJoinRound.setToolTip(tr(
-            "pychemqt",
+        toolJoinRound.setToolTip(self.tr(
             "Join round: A circular arc between the two lines is filled"))
         lyt2.addWidget(toolJoinRound)
 
@@ -290,16 +277,14 @@ class ConfLine(QtWidgets.QWidget):
         lyt.addLayout(lyt2)
 
         lyt3 = QtWidgets.QHBoxLayout()
-        lyt3.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Cap")))
+        lyt3.addWidget(QtWidgets.QLabel(self.tr("Cap")))
         toolCapFlat = QtWidgets.QToolButton()
         toolCapFlat.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
             os.environ["pychemqt"], "images", "button",
             "stroke-cap-butt.png"))))
         toolCapFlat.setIconSize(QtCore.QSize(24, 24))
         toolCapFlat.setCheckable(True)
-        toolCapFlat.setToolTip(tr(
-            "pychemqt",
+        toolCapFlat.setToolTip(self.tr(
             "Flat Cap: A square line end that does not cover the end point of "
             "the line"))
         lyt3.addWidget(toolCapFlat)
@@ -309,8 +294,7 @@ class ConfLine(QtWidgets.QWidget):
             "stroke-cap-round.png"))))
         toolCapRound.setIconSize(QtCore.QSize(24, 24))
         toolCapRound.setCheckable(True)
-        toolCapRound.setToolTip(tr(
-            "pychemqt", "Round Cap: A rounded line end"))
+        toolCapRound.setToolTip(self.tr("Round Cap: A rounded line end"))
         lyt3.addWidget(toolCapRound)
         toolCapSquare = QtWidgets.QToolButton()
         toolCapSquare.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
@@ -318,8 +302,7 @@ class ConfLine(QtWidgets.QWidget):
             "stroke-cap-square.png"))))
         toolCapSquare.setIconSize(QtCore.QSize(24, 24))
         toolCapSquare.setCheckable(True)
-        toolCapSquare.setToolTip(tr(
-            "pychemqt",
+        toolCapSquare.setToolTip(self.tr(
             "Square Cap: A square line end that covers the end point and "
             "extends beyond it by half the line width"))
         lyt3.addWidget(toolCapSquare)
@@ -331,14 +314,12 @@ class ConfLine(QtWidgets.QWidget):
         lyt.addLayout(lyt3)
 
         lyt4 = QtWidgets.QHBoxLayout()
-        lyt4.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Dash")))
+        lyt4.addWidget(QtWidgets.QLabel(self.tr("Dash")))
         self.guion = PFDLineCombo()
         lyt4.addWidget(self.guion)
         self.dashOffset = Entrada_con_unidades(
             float, width=50, decimales=1, spinbox=True, step=0.1)
-        self.dashOffset.entrada.setToolTip(tr(
-            "pychemqt", "Dash offset"))
+        self.dashOffset.entrada.setToolTip(self.tr("Dash offset"))
         lyt4.addWidget(self.dashOffset)
         lyt.addLayout(lyt4)
         lyt.addItem(QtWidgets.QSpacerItem(
@@ -377,8 +358,7 @@ class ConfLineDialog(QtWidgets.QDialog, ConfLine):
 
     def __init__(self, pen=None, parent=None):
         super().__init__(pen, parent)
-        self.setWindowTitle(
-            tr("pychemqt", "Edit format line"))
+        self.setWindowTitle(self.tr("Edit format line"))
         buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok
             | QtWidgets.QDialogButtonBox.StandardButton.Cancel)

@@ -32,7 +32,7 @@ in every supported unit
 import logging
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib.unidades import Currency, getrates, _all
 from lib.config import conf_dir
@@ -112,19 +112,16 @@ class moneda(UI_conversorUnidades):
     def __init__(self, valor=None, parent=None):
         super().__init__(Currency, valor=valor, parent=parent)
 
-        self.fecha = QtWidgets.QLabel(tr(
-            "pychemqt", "Date") + ": " + self.value.date)
+        self.fecha = QtWidgets.QLabel(self.tr("Date") + ": " + self.value.date)
         self.layout().addWidget(self.fecha, 0, 1)
-        self.botonActualizar = QtWidgets.QPushButton(
-            tr("pychemqt", "Update"))
+        self.botonActualizar = QtWidgets.QPushButton(self.tr("Update"))
         self.botonActualizar.clicked.connect(self.getrates)
         self.layout().addWidget(self.botonActualizar, 1, 1)
 
-        for i in range(len(Currency.__units__)):
+        for i, unit in enumerate(Currency.__units__):
             header = self.tabla.verticalHeaderItem(i)
-            header.setIcon(QtGui.QIcon(QtGui.QPixmap(
-                os.path.join(os.environ["pychemqt"], "images", "flag",
-                             "%s.png" % Currency.__units__[i]))))
+            header.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                os.environ["pychemqt"], "images", "flag", f"{unit}.png"))))
 
             # Set backgroundcolor to better look or rare currencies
             # Use olimpic continent color code
@@ -156,8 +153,7 @@ class moneda(UI_conversorUnidades):
         filename = conf_dir + "moneda.dat"
         getrates(filename)
         self.value = Currency(self.value)
-        self.fecha.setText(tr(
-            "pychemqt", "Date") + ": " + self.value.date)
+        self.fecha.setText(self.tr("Date") + ": " + self.value.date)
         if self.value != 0:
             self.update(0, 0)
 
@@ -169,8 +165,7 @@ class UI_unitConverter(QtWidgets.QDialog):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(
-            tr("pychemqt", "Units converter"))
+        self.setWindowTitle(self.tr("Units converter"))
 
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
         self.lista = QtWidgets.QListWidget()
@@ -184,8 +179,7 @@ class UI_unitConverter(QtWidgets.QDialog):
             self.lista.addItem(unidad.__title__)
 
         self.lista.setCurrentRow(-1)
-        logging.info(tr(
-            "pychemqt", "Starting unit converte tool"))
+        logging.info(self.tr("Starting unit converte tool"))
 
     def showChildWindow(self):
         """Show child window with selected unit converter"""

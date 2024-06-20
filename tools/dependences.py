@@ -24,23 +24,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from tools.qt import QtGui, QtWidgets, tr, __qt__
+from tools.qt import QtGui, QtWidgets, __qt__
 
 
 optional_modules = (
-    ("freesteam", tr("pychemqt", "freesteam thermal option disabled")),
-    ("CoolProp", tr("pychemqt", "coolprop thermal option disabled")),
-    ("refprop", tr("pychemqt", "refprop thermal option disabled")),
-    ("openbabel", tr("pychemqt", "graphic formula disabled")),
-    ("ezodf", tr("pychemqt", "openoffice/libreoffice interaction disabled")),
-    ("openpyxl", tr(
-        "pychemqt", "Microsoft Excel 2007/2010 interaction disabled")),
-    ("xlwt", tr(
-        "pychemqt", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
-    ("icu", tr("pychemqt", "Unicode collation algorithm for improved string "
-               "sorting disabled")),
-    ("reportlab", tr("pychemqt", "Pdf report exporting disabled")),
-    ("Qsci", tr("pychemqt", "Qscintilla custom module editor disabled")))
+    ("freesteam", QtWidgets.QApplication.translate(
+        "dependences", "freesteam thermal option disabled")),
+    ("CoolProp", QtWidgets.QApplication.translate(
+        "dependences", "coolprop thermal option disabled")),
+    ("refprop", QtWidgets.QApplication.translate(
+        "dependences", "refprop thermal option disabled")),
+    ("openbabel", QtWidgets.QApplication.translate(
+        "dependences", "graphic formula disabled")),
+    ("ezodf", QtWidgets.QApplication.translate(
+        "dependences", "openoffice/libreoffice interaction disabled")),
+    ("openpyxl", QtWidgets.QApplication.translate(
+        "dependences", "Microsoft Excel 2007/2010 interaction disabled")),
+    ("xlwt", QtWidgets.QApplication.translate(
+        "dependences", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
+    ("icu", QtWidgets.QApplication.translate(
+        "dependences", "Unicode collation algorithm for improved string "
+        "sorting disabled")),
+    ("reportlab", QtWidgets.QApplication.translate(
+        "dependences", "Pdf report exporting disabled")),
+    ("Qsci", QtWidgets.QApplication.translate(
+        "dependences", "Qscintilla custom module editor disabled")))
 
 
 class ShowDependences(QtWidgets.QDialog):
@@ -49,13 +57,11 @@ class ShowDependences(QtWidgets.QDialog):
         super().__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
             os.environ["pychemqt"], "images", "button", "showPrograms.png"))))
-        self.setWindowTitle(
-            tr("pychemqt", "External program"))
+        self.setWindowTitle(self.tr("External program"))
         layout = QtWidgets.QVBoxLayout(self)
         self.tree = QtWidgets.QTreeWidget()
         header = QtWidgets.QTreeWidgetItem(
-            [tr("pychemqt", "Module"),
-             tr("pychemqt", "Status")])
+            [self.tr("Module"), self.tr("Status")])
         self.tree.setHeaderItem(header)
 
         for module, txt in optional_modules:
@@ -72,8 +78,7 @@ class ShowDependences(QtWidgets.QDialog):
                 icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
                     os.environ["pychemqt"], "images", "button", "ok.png")))
             else:
-                st = tr(
-                    "pychemqt", "Module not found")
+                st = self.tr("Module not found")
                 st += ", " + txt
                 icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
                     os.environ["pychemqt"], "images", "button",

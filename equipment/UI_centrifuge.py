@@ -18,13 +18,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 #######################################################################
 ###                                         Diálogo de definición de centrifugas, UI_centrifuge                                             ###
 #######################################################################
 
-from tools.qt import QtCore, QtWidgets, tr
 
+from tools.qt import QtCore, QtWidgets
 
 from equipment.liquid_solid import Centrifuge
 from UI import UI_corriente
@@ -45,42 +44,42 @@ class UI_equipment(parents.UI_equip):
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
-        self.tabWidget.insertTab(0, self.Entrada,tr("equipment", "Entrada", None))
+        self.tabWidget.insertTab(0, self.Entrada,self.tr("Entrada", None))
 
         #Pestaña calculo
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
 
         #Pestaña costos
         gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(tr("equipment", "Tipo:", None)), 1, 1, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(self.tr("Tipo:", None)), 1, 1, 1, 1)
         self.tipo=QtWidgets.QComboBox()
-        self.tipo.addItem(tr("equipment", "Proceso inorgánico", None))
-        self.tipo.addItem(tr("equipment", "Proceso orgánico", None))
+        self.tipo.addItem(self.tr("Proceso inorgánico", None))
+        self.tipo.addItem(self.tr("Proceso orgánico", None))
         self.tipo.currentIndexChanged.connect(self.mostrarSubclasificacion)
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 2, 1, 1)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(tr("equipment", "Material:", None)), 2, 1, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(self.tr("Material:", None)), 2, 1, 1, 1)
         self.materialInorganico=QtWidgets.QComboBox()
-        self.materialInorganico.addItem(tr("equipment", "Acero al carbón", None))
-        self.materialInorganico.addItem(tr("equipment", "Acero inoxidable 316", None))
-        self.materialInorganico.addItem(tr("equipment", "Monel", None))
-        self.materialInorganico.addItem(tr("equipment", "Níquel", None))
+        self.materialInorganico.addItem(self.tr("Acero al carbón", None))
+        self.materialInorganico.addItem(self.tr("Acero inoxidable 316", None))
+        self.materialInorganico.addItem(self.tr("Monel", None))
+        self.materialInorganico.addItem(self.tr("Níquel", None))
         self.materialInorganico.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.materialInorganico, 2, 2, 1, 1)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),3,0,1,2)
         self.materialOrganico=QtWidgets.QComboBox()
-        self.materialOrganico.addItem(tr("equipment", "Acero al carbón", None))
-        self.materialOrganico.addItem(tr("equipment", "Acero inoxidable 316", None))
-        self.materialOrganico.addItem(tr("equipment", "Monel", None))
-        self.materialOrganico.addItem(tr("equipment", "Níquel", None))
-        self.materialOrganico.addItem(tr("equipment", "Hastelloy", None))
+        self.materialOrganico.addItem(self.tr("Acero al carbón", None))
+        self.materialOrganico.addItem(self.tr("Acero inoxidable 316", None))
+        self.materialOrganico.addItem(self.tr("Monel", None))
+        self.materialOrganico.addItem(self.tr("Níquel", None))
+        self.materialOrganico.addItem(self.tr("Hastelloy", None))
         self.materialOrganico.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.materialOrganico, 2, 2, 1, 1)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),3,0,1,6)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(tr("equipment", "Caudal calculado:", None)), 4, 1, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(self.tr("Caudal calculado:", None)), 4, 1, 1, 1)
         self.caudalcalculado=Entrada_con_unidades(unidades.MassFlow, readOnly=True, retornar=False)
         gridLayout_Costos.addWidget(self.caudalcalculado,4,2,1,1)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(tr("equipment", "Caudal de diseño:", None)), 5, 1, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(self.tr("Caudal de diseño:", None)), 5, 1, 1, 1)
         self.caudaldiseno=Entrada_con_unidades(unidades.MassFlow)
         gridLayout_Costos.addWidget(self.caudaldiseno,5,2,1,1)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),6,0,1,6)
@@ -91,13 +90,13 @@ class UI_equipment(parents.UI_equip):
 
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),9,0,1,6)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),11,0,1,6)
-        self.groupBox_Costos = QtWidgets.QGroupBox(tr("equipment", "Costos calculados", None))
+        self.groupBox_Costos = QtWidgets.QGroupBox(self.tr("Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,10,0,1,6)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Adquisición:", None)),0,1,1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(self.tr("Coste Adquisición:", None)),0,1,1,1)
         self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_adq,0,2,1,1)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Instalación:", None)),1,1,1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(self.tr("Coste Instalación:", None)),1,1,1,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,1,2,1,1)
 

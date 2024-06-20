@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 
 from lib.unidades import Temperature, Pressure
 from equipment.parents import UI_equip
@@ -45,33 +45,28 @@ class UI_equipment (UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Valve operation")), 1, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Valve operation")), 1, 1)
         self.off = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_WORKING:
             self.off.addItem(txt)
         self.off.currentIndexChanged.connect(self.criterio_Changed)
         lyt_Calc.addWidget(self.off, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            2, 1, 1, 6)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Pout")), 3, 1)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 6)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pout")), 3, 1)
         self.Pout = Entrada_con_unidades(Pressure)
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))
         lyt_Calc.addWidget(self.Pout, 3, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "DeltaP")), 4, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("DeltaP")), 4, 1)
         self.DeltaP = Entrada_con_unidades(Pressure)
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
         lyt_Calc.addWidget(self.DeltaP, 4, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "T dew point")), 5, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("T dew point")), 5, 1)
         self.Dew = Entrada_con_unidades(Temperature)
         self.Dew.valueChanged.connect(partial(self.changeParams, "Dew"))
         lyt_Calc.addWidget(self.Dew, 5, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "T bubble point")), 6, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("T bubble point")), 6, 1)
         self.Bubble = Entrada_con_unidades(Temperature)
         self.Bubble.valueChanged.connect(partial(self.changeParams, "Bubble"))
         lyt_Calc.addWidget(self.Bubble, 6, 2)

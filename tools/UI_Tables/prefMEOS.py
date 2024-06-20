@@ -32,7 +32,7 @@ import os
 
 from matplotlib import colormaps
 from numpy import arange
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib import unidades
 from lib.utilities import representacion
@@ -126,13 +126,13 @@ class Isolinea(QtWidgets.QDialog):
         self.unidad = unit
         self.section = section
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Start")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Start")), 1, 1)
         self.inicio = Entrada_con_unidades(unit)
         layout.addWidget(self.inicio, 1, 2, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Fin")), 2, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Fin")), 2, 1)
         self.fin = Entrada_con_unidades(unit)
         layout.addWidget(self.fin, 2, 2, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Intervalo")), 3, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Intervalo")), 3, 1)
         if unit.__name__ == "Temperature":
             self.intervalo = Entrada_con_unidades(unidades.DeltaT)
         elif unit.__name__ == "Pressure":
@@ -140,7 +140,7 @@ class Isolinea(QtWidgets.QDialog):
         else:
             self.intervalo = Entrada_con_unidades(unit)
         layout.addWidget(self.intervalo, 3, 2, 1, 3)
-        self.Personalizar = QtWidgets.QCheckBox(tr("pychemqt", "Customize"))
+        self.Personalizar = QtWidgets.QCheckBox(self.tr("Customize"))
         layout.addWidget(self.Personalizar, 4, 1, 1, 4)
         self.Lista = QtWidgets.QLineEdit()
         layout.addWidget(self.Lista, 5, 1, 1, 4)
@@ -153,26 +153,25 @@ class Isolinea(QtWidgets.QDialog):
             QtWidgets.QSizePolicy.Policy.Fixed), 6, 1, 1, 4)
         if unit.__name__ != "float" and section != "Psychr":
             self.Critica = QtWidgets.QCheckBox(
-                tr("pychemqt", "Include critic point line"))
+                self.tr("Include critic point line"))
             layout.addWidget(self.Critica, 7, 1, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 8, 1, 1, 4)
 
-        self.lineconfig = LineConfig(ConfSection, tr("pychemqt", "Line Style"))
+        self.lineconfig = LineConfig(ConfSection, self.tr("Line Style"))
         layout.addWidget(self.lineconfig, 9, 1, 1, 4)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 10, 1)
-        self.label = QtWidgets.QCheckBox(tr("pychemqt", "Label"))
+        self.label = QtWidgets.QCheckBox(self.tr("Label"))
         layout.addWidget(self.label, 11, 1)
-        self.variable = QtWidgets.QCheckBox(
-            tr("pychemqt", "Variable in Label"))
+        self.variable = QtWidgets.QCheckBox(self.tr("Variable in Label"))
         layout.addWidget(self.variable, 12, 1, 1, 4)
-        self.unit = QtWidgets.QCheckBox(tr("pychemqt", "Units in Label"))
+        self.unit = QtWidgets.QCheckBox(self.tr("Units in Label"))
         layout.addWidget(self.unit, 13, 1, 1, 4)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Position")), 14, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Position")), 14, 1)
         self.label5 = Entrada_con_unidades(
             int, value=0, width=25, frame=False, readOnly=True)
         self.label5.setFixedWidth(30)
@@ -253,12 +252,12 @@ class Isolinea(QtWidgets.QDialog):
 class Widget(QtWidgets.QDialog):
     """Config mEoS parameter dialog"""
     lineas = [
-        ("Isotherm", unidades.Temperature, tr("pychemqt", "Isotherm")),
-        ("Isobar", unidades.Pressure, tr("pychemqt", "Isobar")),
-        ("Isoenthalpic", unidades.Enthalpy, tr("pychemqt", "Isoenthalpic")),
-        ("Isoentropic", unidades.SpecificHeat, tr("pychemqt", "Isoentropic")),
-        ("Isochor", unidades.SpecificVolume, tr("pychemqt", "Isochor")),
-        ("Isoquality", float, tr("pychemqt", "Isoquality"))]
+        ("Isotherm", unidades.Temperature, QtWidgets.QApplication.translate("UI_Tables", "Isotherm")),
+        ("Isobar", unidades.Pressure, QtWidgets.QApplication.translate("UI_Tables", "Isobar")),
+        ("Isoenthalpic", unidades.Enthalpy, QtWidgets.QApplication.translate("UI_Tables", "Isoenthalpic")),
+        ("Isoentropic", unidades.SpecificHeat, QtWidgets.QApplication.translate("UI_Tables", "Isoentropic")),
+        ("Isochor", unidades.SpecificVolume, QtWidgets.QApplication.translate("UI_Tables", "Isochor")),
+        ("Isoquality", float, QtWidgets.QApplication.translate("UI_Tables", "Isoquality"))]
 
     def __init__(self, config, parent=None):
         """constructor, config optional parameter to input project config"""
@@ -273,21 +272,21 @@ class Widget(QtWidgets.QDialog):
         dlg = QtWidgets.QWidget()
         layout = QtWidgets.QGridLayout(dlg)
 
-        self.coolProp = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use external library coolProp (faster)"))
+        self.coolProp = QtWidgets.QCheckBox(
+            self.tr("Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
         layout.addWidget(self.coolProp, 3, 1, 1, 2)
-        self.refprop = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Use external library refprop (fastest)"))
+        self.refprop = QtWidgets.QCheckBox(
+            self.tr("Use external library refprop (fastest)"))
         self.refprop.setEnabled(False)
         layout.addWidget(self.refprop, 4, 1, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
         self.lineconfig = LineConfig(
-            "saturation", tr("pychemqt", "Saturation Line Style"))
+            "saturation", self.tr("Saturation Line Style"))
         layout.addWidget(self.lineconfig, 5, 1, 1, 2)
-        group = QtWidgets.QGroupBox(tr("pychemqt", "Isolines"))
+        group = QtWidgets.QGroupBox(self.tr("Isolines"))
         layout.addWidget(group, 6, 1, 1, 2)
         layoutgroup = QtWidgets.QGridLayout(group)
         self.comboIsolineas = QtWidgets.QComboBox()
@@ -299,30 +298,28 @@ class Widget(QtWidgets.QDialog):
         for nombre, unidad, text in self.lineas:
             self.comboIsolineas.addItem(text)
             self.Isolineas.addWidget(Isolinea(unidad, nombre, config))
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Plot Definition")), 7, 1)
-        quality = [tr("pychemqt", "Very Low"),
-                   tr("pychemqt", "Low"),
-                   tr("pychemqt", "Medium"),
-                   tr("pychemqt", "High"),
-                   tr("pychemqt", "Ultra High")]
+        layout.addWidget(QtWidgets.QLabel(self.tr("Plot Definition")), 7, 1)
+        quality = [self.tr("Very Low"),
+                   self.tr("Low"),
+                   self.tr("Medium"),
+                   self.tr("High"),
+                   self.tr("Ultra High")]
         self.definition = QtWidgets.QComboBox()
         for q in quality:
             self.definition.addItem(q)
         layout.addWidget(self.definition, 7, 2)
-        self.grid = QtWidgets.QCheckBox(tr("pychemqt", "Draw grid"))
+        self.grid = QtWidgets.QCheckBox(self.tr("Draw grid"))
         layout.addWidget(self.grid, 9, 1, 1, 2)
 
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 10, 2)
-        group2 = QtWidgets.QGroupBox(tr("pychemqt", "3D plot"))
+        group2 = QtWidgets.QGroupBox(self.tr("3D plot"))
         layout.addWidget(group2, 11, 1, 1, 2)
         layoutgroup2 = QtWidgets.QGridLayout(group2)
-        self.checkMesh = QtWidgets.QCheckBox(tr("pychemqt", "Draw 3D mesh"))
+        self.checkMesh = QtWidgets.QCheckBox(self.tr("Draw 3D mesh"))
         layoutgroup2.addWidget(self.checkMesh, 1, 1, 1, 2)
-        layoutgroup2.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Mesh type")), 2, 1)
+        layoutgroup2.addWidget(QtWidgets.QLabel(self.tr("Mesh type")), 2, 1)
         self.typeMesh = QtWidgets.QComboBox()
         self.typeMesh.addItem("Surface")
         self.typeMesh.addItem("Wireframe")
@@ -332,17 +329,16 @@ class Widget(QtWidgets.QDialog):
         layoutgroup2.addWidget(self.widgetSurface, 3, 1, 1, 2)
 
         lytSurface = QtWidgets.QGridLayout(self.widgetSurface)
-        lytSurface.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Colormap")), 1, 1)
+        lytSurface.addWidget(QtWidgets.QLabel(self.tr("Colormap")), 1, 1)
         self.colormapMesh = ColorMapCombo()
         lytSurface.addWidget(self.colormapMesh, 1, 2)
-        lytSurface.addWidget(QtWidgets.QLabel(tr("pychemqt", "Alpha")), 2, 1)
+        lytSurface.addWidget(QtWidgets.QLabel(self.tr("Alpha")), 2, 1)
         self.alphaSurface = QtWidgets.QSpinBox()
         self.alphaSurface.setRange(0, 255)
         lytSurface.addWidget(self.alphaSurface, 2, 2)
 
         self.wireframeConfig = LineConfig(
-            "3D", tr("pychemqt", "Wireframe line configuration"))
+            "3D", self.tr("Wireframe line configuration"))
         self.wireframeConfig.Marker.setEnabled(False)
         layoutgroup2.addWidget(self.wireframeConfig, 4, 1, 1, 2)
 
@@ -398,8 +394,8 @@ class Dialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Multiparameter equation of state configuration"))
+        self.setWindowTitle(
+            self.tr("Multiparameter equation of state configuration"))
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Widget(config)
         layout.addWidget(self.widget)

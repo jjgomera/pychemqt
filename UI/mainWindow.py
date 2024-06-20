@@ -27,7 +27,7 @@ import subprocess
 import sys
 import time
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from UI import newComponent, flujo, wizard, plots, viewComponents
 from UI.prefPFD import BrushCombo
@@ -62,8 +62,8 @@ class TabWidget(QtWidgets.QTabWidget):
             image = QtGui.QImage("images/pychemqt.png")
             rectImage = QtCore.QRect(25, rect.center().y()-50, 100, 100)
             painter.drawImage(rectImage, image)
-            txt = tr(
-                "pychemqt", """Welcome to pychemqt,
+            txt = self.tr(
+        """Welcome to pychemqt,
 a software for simulating Chemical Engineering units operations,
 
 Copyright © 2020 Juan José Gómez Romera (jjgomera)
@@ -90,11 +90,11 @@ class TreeEquipment(QtWidgets.QTreeWidget):
         self.clear()
         self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
         self.Stream.setText(
-            0, tr("pychemqt", "Streams"))
+            0, self.tr("Streams"))
         self.Stream.setExpanded(True)
         self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
         self.Equipment.setText(
-            0, tr("pychemqt", "Equipments"))
+            0, self.tr("Equipments"))
         self.Equipment.setExpanded(True)
 
         ins = []
@@ -252,238 +252,236 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         # Acciones
         fileNewAction = createAction(
-            tr("pychemqt", "&New"),
+            self.tr("&New"),
             slot=self.fileNew,
             shortcut=QtGui.QKeySequence.StandardKey.New,
             icon=os.path.join("button", "fileNew.png"),
-            tip=tr(
-                "pychemqt", "Start new project"),
+            tip=self.tr(
+        "Start new project"),
             parent=self)
         fileOpenAction = createAction(
-            tr("pychemqt", "&Open"),
+            self.tr("&Open"),
             slot=self.fileOpen,
             shortcut=QtGui.QKeySequence.StandardKey.Open,
             icon=os.path.join("button", "fileOpen.png"),
-            tip=tr("pychemqt", "Open project"),
+            tip=self.tr("Open project"),
             parent=self)
         self.fileSaveAction = createAction(
-            tr("pychemqt", "&Save"),
+            self.tr("&Save"),
             slot=self.fileSave,
             shortcut=QtGui.QKeySequence.StandardKey.Save,
             icon=os.path.join("button", "fileSave.png"),
-            tip=tr("pychemqt", "Save project"),
+            tip=self.tr("Save project"),
             parent=self)
         self.fileSaveAsAction = createAction(
-            tr("pychemqt", "Save &as"),
+            self.tr("Save &as"),
             slot=self.fileSaveAs,
             shortcut=QtGui.QKeySequence.StandardKey.SaveAs,
             icon=os.path.join("button", "fileSaveAs.png"),
-            tip=tr(
-                "pychemqt", "Save project as"),
+            tip=self.tr(
+        "Save project as"),
             parent=self)
         self.fileSaveAllAction = createAction(
-            tr("pychemqt", "Save A&ll"),
+            self.tr("Save A&ll"),
             slot=self.fileSaveAll,
             icon=os.path.join("button", "fileSaveAll.png"),
-            tip=tr(
-                "pychemqt", "Save all open project"),
+            tip=self.tr(
+        "Save all open project"),
             parent=self)
         self.fileCloseAction = createAction(
-            tr("pychemqt", "&Close"),
+            self.tr("&Close"),
             slot=self.fileClose,
             shortcut=QtGui.QKeySequence.StandardKey.Close,
             icon=os.path.join("button", "fileClose.png"),
-            tip=tr("pychemqt", "Close project"),
+            tip=self.tr("Close project"),
             parent=self)
         ExitAction = createAction(
-            tr("pychemqt", "&Exit"),
+            self.tr("&Exit"),
             slot=self.closeEvent,
             shortcut=QtGui.QKeySequence.StandardKey.Quit,
             icon=os.path.join("button", "exit.png"),
-            tip=tr("pychemqt", "Quit pychemqt"),
+            tip=self.tr("Quit pychemqt"),
             parent=self)
 
         self.actionWizard = createAction(
-            tr("pychemqt", "Wizard"),
+            self.tr("Wizard"),
             icon=os.path.join("button", "wizard.png"),
             slot=self.wizard,
-            tip=tr(
-                "pychemqt", "Launch configuration wizard"),
+            tip=self.tr(
+        "Launch configuration wizard"),
             parent=self)
         self.actionComponentList = createAction(
-            tr("pychemqt", "Components list"),
+            self.tr("Components list"),
             slot=partial(self.dialogConfig, UI_confComponents),
-            tip=tr(
-                "pychemqt", "Defining componente list dialog"),
+            tip=self.tr(
+        "Defining componente list dialog"),
             parent=self)
         self.actionThermo = createAction(
-            tr(
-                "pychemqt", "Thermodynamic properties"),
+            self.tr(
+        "Thermodynamic properties"),
             slot=partial(self.dialogConfig, UI_confThermo),
-            tip=tr(
-                "pychemqt", "Defining thermodynamic properties methods"),
+            tip=self.tr(
+        "Defining thermodynamic properties methods"),
             parent=self)
         self.actionTransporte = createAction(
-            tr(
-                "pychemqt", "Transport properties"),
+            self.tr(
+        "Transport properties"),
             slot=partial(self.dialogConfig, UI_confTransport),
-            tip=tr(
-                "pychemqt", "Defining transport properties methods"),
+            tip=self.tr(
+        "Defining transport properties methods"),
             parent=self)
         self.actionUnidades = createAction(
-            tr("pychemqt", "Units"),
+            self.tr("Units"),
             slot=partial(self.dialogConfig, UI_confUnits),
-            tip=tr(
-                "pychemqt", "Defining preferred units"),
+            tip=self.tr(
+        "Defining preferred units"),
             parent=self)
         self.actioncostIndex = createAction(
-            tr("pychemqt", "&Cost Index"),
+            self.tr("&Cost Index"),
             slot=self.costos,
-            tip=tr(
-                "pychemqt", "Defining cost index"),
+            tip=self.tr(
+        "Defining cost index"),
             parent=self)
         self.actionPreferencias = createAction(
-            tr("pychemqt", "&Preferences"),
+            self.tr("&Preferences"),
             slot=self.Preferencias,
             icon=os.path.join("button", "configure.png"),
             shortcut=QtGui.QKeySequence.StandardKey.Preferences,
-            tip=tr(
-                "pychemqt", "Defining general preferences"),
+            tip=self.tr(
+        "Defining general preferences"),
             parent=self)
 
         self.actionZoomIn = createAction(
-            tr("pychemqt", "Zoom in"),
+            self.tr("Zoom in"),
             slot=partial(self.zoom, "+"),
             icon=os.path.join("button", "zoomIn.png"),
             shortcut=QtGui.QKeySequence.StandardKey.ZoomIn, parent=self)
         self.actionZoom = createAction(
-            tr("pychemqt", "Zoom"),
+            self.tr("Zoom"),
             slot=partial(self.zoom, "Dialog"),
             icon=os.path.join("button", "zoomIn.png"),
             parent=self)
         self.actionZoomOut = createAction(
-            tr("pychemqt", "Zoom out"),
+            self.tr("Zoom out"),
             slot=partial(self.zoom, "-"),
             icon=os.path.join("button", "zoomOut.png"),
             shortcut=QtGui.QKeySequence.StandardKey.ZoomOut,
             parent=self)
         actionOverviewWindow = createAction(
-            tr("pychemqt", "Overview window"),
+            self.tr("Overview window"),
             slot=self.overview, parent=self)
         actionVerStatus = createAction(
-            tr("pychemqt", "Status"),
+            self.tr("Status"),
             shortcut="Ctrl+Alt+S",
-            tip=tr(
-                "pychemqt", "Show/Hide status toolbar"),
+            tip=self.tr(
+        "Show/Hide status toolbar"),
             checkable=True, parent=self)
         self.actionVerToolbar = createAction(
-            tr("pychemqt", "Palette"),
+            self.tr("Palette"),
             shortcut="Ctrl+Alt+T",
             icon=os.path.join("button", "palette.png"),
-            tip=tr(
-                "pychemqt", "Show/Hide equipment palette"),
+            tip=self.tr(
+        "Show/Hide equipment palette"),
             checkable=True, parent=self)
         self.actionVerItem = createAction(
-            tr("pychemqt", "Item"),
+            self.tr("Item"),
             icon=os.path.join("button", "list.png"),
-            tip=tr(
-                "pychemqt", "Show/Hide item list"),
+            tip=self.tr(
+        "Show/Hide item list"),
             checkable=True, parent=self)
 
         calculatorAction = createAction(
-            tr("pychemqt", "&Calculator"),
+            self.tr("&Calculator"),
             slot=self.calculator,
             icon=os.path.join("button", "calculator.png"),
             shortcut="F2",
-            tip=tr(
-                "pychemqt", "Open system calculator"),
+            tip=self.tr(
+        "Open system calculator"),
             parent=self)
         terminalAction = createAction(
-            tr("pychemqt", "Python Shell"),
+            self.tr("Python Shell"),
             shortcut="F3",
             slot=self.terminal,
             icon=os.path.join("button", "terminal.png"),
-            tip=tr(
-                "pychemqt", "Open system terminal"),
+            tip=self.tr(
+        "Open system terminal"),
             parent=self)
         if sys.platform == "win32":
             terminalAction.setEnabled(False)
 
         conversorUnidadesAction = createAction(
-            tr("pychemqt", "&Units converter"),
+            self.tr("&Units converter"),
             slot=self.conversor_unidades,
             shortcut="F4",
             icon=os.path.join("button", "unitConverter.png"),
-            tip=tr(
-                "pychemqt", "Open Units converter"),
+            tip=self.tr(
+        "Open Units converter"),
             parent=self)
         currencyAction = createAction(
-            tr(
-                "pychemqt", "&Currency converter"),
+            self.tr(
+        "&Currency converter"),
             slot=self.conversor_moneda,
             shortcut="F5",
             icon=os.path.join("button", "currency.png"),
-            tip=tr(
-                "pychemqt", "Open Currency converter"),
+            tip=self.tr(
+        "Open Currency converter"),
             parent=self)
         TablaPeriodicaAction = createAction(
-            tr("pychemqt", "&Periodic Table"),
+            self.tr("&Periodic Table"),
             slot=self.tablaPeriodica,
             shortcut="F6",
             icon=os.path.join("button", "periodicTable.png"),
-            tip=tr(
-                "pychemqt", "Show a basic Mendeleiev periodic table"),
+            tip=self.tr(
+        "Show a basic Mendeleiev periodic table"),
             parent=self)
         TablesAction = createAction(
-            tr("pychemqt", "MEOS"),
+            self.tr("MEOS"),
             slot=self.meos,
             shortcut="F7",
             icon=os.path.join("button", "tables.png"),
-            tip=tr(
-                "pychemqt",
-                "Open a advanced thermodynamic properties application"),
+            tip=self.tr("Open a advanced thermodynamic properties application"),
             parent=self)
         psychrometricChartAction = createAction(
-            tr(
-                "pychemqt", "&Psicrometric Chart"),
+            self.tr(
+        "&Psicrometric Chart"),
             slot=self.diagramaPsicrometrico,
             shortcut="F9",
             icon=os.path.join("button", "psychrometric.png"),
-            tip=tr(
-                "pychemqt", "Open a humid-air application"),
+            tip=self.tr(
+        "Open a humid-air application"),
             parent=self)
         externalProgramAction = createAction(
-            tr("pychemqt", "External Programs"),
+            self.tr("External Programs"),
             slot=self.externalPrograms,
             icon=os.path.join("button", "showPrograms.png"),
-            tip=tr(
-                "pychemqt", "Show External Programs Status"),
+            tip=self.tr(
+        "Show External Programs Status"),
             parent=self)
         saveAsImage = createAction(
-            tr("pychemqt", "Save PFD as image"),
+            self.tr("Save PFD as image"),
             slot=self.savePFDImage,
             icon=os.path.join("button", "image.png"),
             parent=self)
         actionAyuda = createAction(
-            tr("pychemqt", "Help"),
+            self.tr("Help"),
             slot=self.help,
             icon=os.path.join("button", "help.png"),
             parent=self)
         actionDocum = createAction(
-            tr("pychemqt", "References"),
+            self.tr("References"),
             slot=self.documentation,
             parent=self)
         actionLog = createAction(
-            tr("pychemqt", "View Log"),
+            self.tr("View Log"),
             slot=self.log,
             parent=self)
         actionAcerca_de = createAction(
-            tr("pychemqt", "About pychemqt"),
+            self.tr("About pychemqt"),
             slot=self.acerca,
             icon=os.path.join("button/helpAbout.png"),
             parent=self)
         actionAcerca_deQt = createAction(
-            tr("pychemqt", "About Qt"),
+            self.tr("About Qt"),
             slot=self.acercaQt,
             icon=os.path.join("button", "AboutQt.png"),
             parent=self)
@@ -497,7 +495,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         # Toolbar
         self.BarraArchivo = QtWidgets.QToolBar(
-            tr("pychemqt", "File"), self)
+            self.tr("File"), self)
         self.BarraArchivo.setObjectName("BarraArchivo")
         self.BarraArchivo.setIconSize(QtCore.QSize(16, 16))
         self.BarraArchivo.addAction(fileNewAction)
@@ -510,7 +508,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.addToolBar(QtCore.Qt.ToolBarArea.TopToolBarArea, self.BarraArchivo)
 
         self.BarraVer = QtWidgets.QToolBar(
-            tr("pychemqt", "View"), self)
+            self.tr("View"), self)
         self.BarraVer.setObjectName("BarraVer")
         self.BarraVer.setIconSize(QtCore.QSize(16, 16))
         self.BarraVer.addAction(self.actionZoomOut)
@@ -522,7 +520,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.addToolBar(QtCore.Qt.ToolBarArea.TopToolBarArea, self.BarraVer)
 
         self.BarraHerramientas = QtWidgets.QToolBar(
-            tr("pychemqt", "Tools"), self)
+            self.tr("Tools"), self)
         self.BarraHerramientas.setObjectName("BarraHerramientas")
         self.BarraHerramientas.setIconSize(QtCore.QSize(16, 16))
         self.BarraHerramientas.addAction(calculatorAction)
@@ -539,7 +537,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         # Paleta Toolbox
         self.toolboxPalette = QtWidgets.QDockWidget(
-            tr("pychemqt", "Equipos"))
+            self.tr("Equipos"))
         self.toolboxPalette.setObjectName("toolbox")
         toolboxContenido = QtWidgets.QWidget()
         self.toolboxPalette.setWidget(toolboxContenido)
@@ -559,24 +557,24 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         layouttoolbox.setContentsMargins(5, 5, 5, 5)
 
         txt = QtWidgets.QLabel(
-            tr("pychemqt", "Plot"))
+            self.tr("Plot"))
         txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l1 = FlowLayout(spacing=10)
         actionTexto, botonTexto = createAction(
-            tr("pychemqt", "Insert text"),
+            self.tr("Insert text"),
             icon=os.path.join("equipment", "text.png"),
             slot=self.addText,
             button=True, parent=toolboxContenido)
         l1.addWidget(botonTexto)
         actionCuadrado, botonCuadrado = createAction(
-            tr("pychemqt", "Draw square"),
+            self.tr("Draw square"),
             icon=os.path.join("equipment", "square.png"),
             slot=partial(self.addItem, "square"),
             button=True, parent=toolboxContenido)
         l1.addWidget(botonCuadrado)
         actionCircle, botonCircle = createAction(
-            tr("pychemqt", "Draw circle"),
+            self.tr("Draw circle"),
             icon=os.path.join("equipment", "circle.png"),
             slot=partial(self.addItem, "ellipse"),
             button=True, parent=toolboxContenido)
@@ -585,66 +583,66 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         layouttoolbox.addStretch(1)
 
         txt = QtWidgets.QLabel(
-            tr("pychemqt", "Flux"))
+            self.tr("Flux"))
         txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l2 = FlowLayout(spacing=10)
         actionEntrada, botonEntrada = createAction(
-            tr("pychemqt", "Input"),
+            self.tr("Input"),
             icon=os.path.join("equipment", "in.png"),
             slot=partial(self.addItem, "in"),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonEntrada)
         actionCorriente, self.botonCorriente = createAction(
-            tr("pychemqt", "Stream"),
+            self.tr("Stream"),
             icon=os.path.join("equipment", "stream.png"),
             slot=partial(self.addItem, "stream"),
             button=True, checkable=True, parent=toolboxContenido)
         l2.addWidget(self.botonCorriente)
         actionSalida, botonSalida = createAction(
-            tr("pychemqt", "Output"),
+            self.tr("Output"),
             icon=os.path.join("equipment", "out.png"),
             slot=partial(self.addItem, "out"),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonSalida)
         actionDivider, botonDivider = createAction(
-            tr("pychemqt", "Divider"),
+            self.tr("Divider"),
             icon=os.path.join("equipment", "divider.png"),
             slot=partial(self.addEquipment, equipment.UI_divider),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonDivider)
         actionValve, botonValve = createAction(
-            tr("pychemqt", "Valve"),
+            self.tr("Valve"),
             icon=os.path.join("equipment", "valve.png"),
             slot=partial(self.addEquipment, equipment.UI_valve),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonValve)
         actionMixer, botonMixer = createAction(
-            tr("pychemqt", "Mixer"),
+            self.tr("Mixer"),
             icon=os.path.join("equipment", "mixer.png"),
             slot=partial(self.addEquipment, equipment.UI_mixer),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonMixer)
         actionCompresor, botonCompresor = createAction(
-            tr("pychemqt", "Compressor"),
+            self.tr("Compressor"),
             icon=os.path.join("equipment", "compressor.png"),
             slot=partial(self.addEquipment, equipment.UI_compressor),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonCompresor)
         actionTurbine, botonTurbine = createAction(
-            tr("pychemqt", "Turbine"),
+            self.tr("Turbine"),
             icon=os.path.join("equipment", "turbine.png"),
             slot=partial(self.addEquipment, equipment.UI_turbine),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonTurbine)
         actionPump, botonPump = createAction(
-            tr("pychemqt", "Pump"),
+            self.tr("Pump"),
             icon=os.path.join("equipment", "pump.png"),
             slot=partial(self.addEquipment, equipment.UI_pump),
             button=True, parent=toolboxContenido)
         l2.addWidget(botonPump)
         actionPipe, botonPipe = createAction(
-            tr("pychemqt", "Pipe"),
+            self.tr("Pipe"),
             icon=os.path.join("equipment", "pipe.png"),
             slot=partial(self.addEquipment, equipment.UI_pipe),
             button=True, parent=toolboxContenido)
@@ -653,61 +651,58 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         layouttoolbox.addStretch(1)
 
         txt = QtWidgets.QLabel(
-            tr("pychemqt", "Basics"))
+            self.tr("Basics"))
         txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l3 = FlowLayout(spacing=10)
         actionTorreFUG, botonTorreFUG = createAction(
-            tr(
-                "pychemqt", "Distillation tower (method FUG)"),
+            self.tr("Distillation tower (method FUG)"),
             icon=os.path.join("equipment", "columnFUG.png"),
             slot=partial(self.addEquipment, equipment.UI_columnFUG),
             button=True, parent=toolboxContenido)
         l3.addWidget(botonTorreFUG)
         actionFlash, botonFlash = createAction(
-            tr("pychemqt", "Flash"),
+            self.tr("Flash"),
             icon=os.path.join("equipment", "flash.png"),
             slot=partial(self.addEquipment, equipment.UI_flash),
             button=True, parent=toolboxContenido)
         l3.addWidget(botonFlash)
         actionTorre, botonTorre = createAction(
-            tr(
-                "pychemqt", "Distillation tower (exact method)"),
+            self.tr("Distillation tower (exact method)"),
             icon=os.path.join("equipment", "tower.png"),
             slot=partial(self.addEquipment, equipment.UI_tower),
             button=True, parent=toolboxContenido)
         l3.addWidget(botonTorre)
         botonTorre.setEnabled(False)
         actionheatExchanger, botonheatExchanger = createAction(
-            tr(
-                "pychemqt", "Generic heat exchanger.png"),
+            self.tr("Generic heat exchanger"),
             icon=os.path.join("equipment", "heatExchanger"),
             slot=partial(self.addEquipment, equipment.UI_heatExchanger),
             button=True, parent=toolboxContenido)
         l3.addWidget(botonheatExchanger)
         actionhairpin, botonhairpin = createAction(
-            tr(
-                "pychemqt", "Hairpin heat exchanger"),
+            self.tr(
+        "Hairpin heat exchanger"),
             icon=os.path.join("equipment", "hairpin.png"),
             slot=partial(self.addEquipment, equipment.UI_hairpin),
             button=True, parent=toolboxContenido)
         l3.addWidget(botonhairpin)
         actionShellTube, botonShellTube = createAction(
-            tr(
-                "pychemqt", "Shell and tube heat exchanger"),
+            self.tr(
+        "Shell and tube heat exchanger"),
             icon=os.path.join("equipment", "shellTube.png"),
             slot=partial(self.addEquipment, equipment.UI_shellTube),
             button=True, parent=toolboxContenido)
         l3.addWidget(botonShellTube)
         actionFireHeater, botonFireHeater = createAction(
-            tr(
-                "pychemqt", "Fired Heater heat exchanger"),
+            self.tr(
+        "Fired Heater heat exchanger"),
             icon=os.path.join("equipment", "fireHeater.png"),
             slot=partial(self.addEquipment, equipment.UI_fireHeater),
             button=True, parent=toolboxContenido)
         l3.addWidget(botonFireHeater)
         actionReactor, botonReactor = createAction(
-            tr("pychemqt", "Reactor"),
+            self.tr("Reactor"),
             icon=os.path.join("equipment", "reactor.png"),
             slot=partial(self.addEquipment, equipment.UI_reactor),
             button=True, parent=toolboxContenido)
@@ -716,71 +711,70 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         layouttoolbox.addStretch(1)
 
         txt = QtWidgets.QLabel(
-            tr("pychemqt", "Solids"))
+            self.tr("Solids"))
         txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
         l4 = FlowLayout(spacing=10)
         actionBaghouse, botonBaghouse = createAction(
-            tr("pychemqt", "Baghouse"),
+            self.tr("Baghouse"),
             icon=os.path.join("equipment", "baghouse.png"),
             slot=partial(self.addEquipment, equipment.UI_baghouse),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonBaghouse)
         actionCentrifuge, botonCentrifuge = createAction(
-            tr("pychemqt", "Centrifuge"),
+            self.tr("Centrifuge"),
             icon=os.path.join("equipment", "centrifuge.png"),
             slot=partial(self.addEquipment, equipment.UI_centrifuge),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonCentrifuge)
         botonCentrifuge.setEnabled(False)
         actionCiclon, botonCiclon = createAction(
-            tr("pychemqt", "Cyclone"),
+            self.tr("Cyclone"),
             icon=os.path.join("equipment", "ciclon.png"),
             slot=partial(self.addEquipment, equipment.UI_ciclon),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonCiclon)
         actionElectroPrecipitator, botonElectroPrecipitator = createAction(
-            tr(
-                "pychemqt", "Electric precipitator.png"),
+            self.tr("Electric precipitator"),
             icon=os.path.join("equipment", "electricPrecipitator"),
             slot=partial(self.addEquipment, equipment.UI_electricPrecipitator),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonElectroPrecipitator)
         actionGrinder, botonGrinder = createAction(
-            tr("pychemqt", "Grinder"),
+            self.tr("Grinder"),
             icon=os.path.join("equipment", "grinder.png"),
             slot=partial(self.addEquipment, equipment.UI_grinder),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonGrinder)
         actionDryer, botonDryer = createAction(
-            tr("pychemqt", "Solids dryer"),
+            self.tr("Solids dryer"),
             icon=os.path.join("equipment", "dryer.png"),
             slot=partial(self.addEquipment, equipment.UI_dryer),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonDryer)
         actionWasher, botonWasher = createAction(
-            tr("pychemqt", "Solid washer"),
+            self.tr("Solid washer"),
             icon=os.path.join("equipment", "solidWasher.png"),
             slot=partial(self.addEquipment, equipment.UI_solidWasher),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonWasher)
         botonWasher.setEnabled(False)
         actionVacuum, botonVacuum = createAction(
-            tr("pychemqt", "Vacuum filter"),
+            self.tr("Vacuum filter"),
             icon=os.path.join("equipment", "vacuumfilter.png"),
             slot=partial(self.addEquipment, equipment.UI_vacuum),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonVacuum)
         botonVacuum.setEnabled(False)
         actionScrubber, botonScrubber = createAction(
-            tr("pychemqt", "Scrubber"),
+            self.tr("Scrubber"),
             icon=os.path.join("equipment", "scrubber.png"),
             slot=partial(self.addEquipment, equipment.UI_scrubber),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonScrubber)
         actionGravityChandler, botonGravityChandler = createAction(
-            tr(
-                "pychemqt", "Gravity settling chamber"),
+            self.tr(
+        "Gravity settling chamber"),
             icon=os.path.join("equipment", "gravityChamber.png"),
             slot=partial(self.addEquipment, equipment.UI_gravityChamber),
             button=True, parent=toolboxContenido)
@@ -789,28 +783,28 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         layouttoolbox.addStretch(1)
 
         txt = QtWidgets.QLabel(
-            tr("pychemqt", "Tools"))
+            self.tr("Tools"))
         txt.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         layouttoolbox.addWidget(txt)
 
         l5 = FlowLayout()
         actionControler, botonControler = createAction(
-            tr("pychemqt", "PID controller"),
+            self.tr("PID controller"),
             icon=os.path.join("equipment", "controller.png"),
             slot=partial(self.addEquipment, equipment.UI_solidWasher),
             button=True, parent=toolboxContenido)
         l5.addWidget(botonControler)
         botonControler.setEnabled(False)
         actionControlValve, botonControlValve = createAction(
-            tr("pychemqt", "Control valve"),
+            self.tr("Control valve"),
             icon=os.path.join("equipment", "controlvalve.png"),
             slot=partial(self.addEquipment, equipment.UI_vacuum),
             button=True, parent=toolboxContenido)
         l5.addWidget(botonControlValve)
         botonControlValve.setEnabled(False)
         actionSpreadsheet, botonSpreadsheet = createAction(
-            tr(
-                "pychemqt", "External spreadsheet module"),
+            self.tr(
+        "External spreadsheet module"),
             icon=os.path.join("equipment", "spreadsheet.png"),
             slot=partial(self.addEquipment, equipment.UI_spreadsheet),
             button=True,
@@ -828,9 +822,9 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.setMenuBar(self.menubar)
 
         self.menuArchivo = QtWidgets.QMenu(
-            tr("pychemqt", "&File"))
+            self.tr("&File"))
         self.menuRecentFiles = QtWidgets.QMenu(
-            tr("pychemqt", "Open Recent Files"),
+            self.tr("Open Recent Files"),
             self.menuArchivo)
         self.menuRecentFiles.aboutToShow.connect(
             self.aboutToShow_MenuRecentFiles)
@@ -847,13 +841,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuArchivo.addAction(ExitAction)
         self.menubar.addAction(self.menuArchivo.menuAction())
 
-        self.menuEditar = QtWidgets.QMenu(
-            tr("pychemqt", "&Edit"))
+        self.menuEditar = QtWidgets.QMenu(self.tr("&Edit"))
         self.menuEditar.aboutToShow.connect(self.aboutToShow_MenuEdit)
         self.menubar.addAction(self.menuEditar.menuAction())
 
-        self.menuVer = QtWidgets.QMenu(
-            tr("pychemqt", "&View"))
+        self.menuVer = QtWidgets.QMenu(self.tr("&View"))
         self.menuVer.addAction(self.actionZoomOut)
         self.menuVer.addAction(self.actionZoom)
         self.menuVer.addAction(self.actionZoomIn)
@@ -864,14 +856,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuVer.addAction(self.actionVerItem)
         self.menubar.addAction(self.menuVer.menuAction())
 
-        self.menuObjetosGraficos = QtWidgets.QMenu(
-            tr("pychemqt", "Plot"))
+        self.menuObjetosGraficos = QtWidgets.QMenu(self.tr("Plot"))
         self.menuObjetosGraficos.addAction(actionTexto)
         self.menuObjetosGraficos.addAction(actionCuadrado)
         self.menuObjetosGraficos.addAction(actionCircle)
 
-        self.menuObjetosFlujo = QtWidgets.QMenu(
-            tr("pychemqt", "Flux"))
+        self.menuObjetosFlujo = QtWidgets.QMenu(self.tr("Flux"))
         self.menuObjetosFlujo.addAction(actionEntrada)
         self.menuObjetosFlujo.addAction(actionCorriente)
         self.menuObjetosFlujo.addAction(actionSalida)
@@ -883,8 +873,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosFlujo.addAction(actionPump)
         self.menuObjetosFlujo.addAction(actionValve)
 
-        self.menuObjetosBasics = QtWidgets.QMenu(
-            tr("pychemqt", "Basics"))
+        self.menuObjetosBasics = QtWidgets.QMenu(self.tr("Basics"))
         self.menuObjetosBasics.addAction(actionTorreFUG)
         self.menuObjetosBasics.addAction(actionFlash)
         self.menuObjetosBasics.addAction(actionTorre)
@@ -894,8 +883,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosBasics.addAction(actionFireHeater)
         self.menuObjetosBasics.addAction(actionReactor)
 
-        self.menuObjetosSolids = QtWidgets.QMenu(
-            tr("pychemqt", "Solids"))
+        self.menuObjetosSolids = QtWidgets.QMenu(self.tr("Solids"))
         self.menuObjetosSolids.addAction(actionBaghouse)
         self.menuObjetosSolids.addAction(actionCentrifuge)
         self.menuObjetosSolids.addAction(actionCiclon)
@@ -907,19 +895,16 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosSolids.addAction(actionScrubber)
         self.menuObjetosSolids.addAction(actionGravityChandler)
 
-        self.menuObjetosTools = QtWidgets.QMenu(
-            tr("pychemqt", "Tools"))
+        self.menuObjetosTools = QtWidgets.QMenu(self.tr("Tools"))
         self.menuObjetosTools.addAction(actionControler)
         self.menuObjetosTools.addAction(actionControlValve)
         self.menuObjetosTools.addAction(actionSpreadsheet)
 
-        self.menuPFD = QtWidgets.QMenu(
-            tr("pychemqt", "&PFD"))
+        self.menuPFD = QtWidgets.QMenu(self.tr("&PFD"))
         self.actionResolution = createAction(
-            tr("pychemqt", "Resolution"),
+            self.tr("Resolution"),
             slot=partial(self.dialogConfig, UI_confResolution),
-            tip=tr(
-                "pychemqt", "Defining PFD resolution dialog"),
+            tip=self.tr("Defining PFD resolution dialog"),
             parent=self)
         self.menuPFD.addAction(self.actionResolution)
         self.menuPFD.addSeparator()
@@ -933,13 +918,13 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menubar.addAction(self.menuPFD.menuAction())
 
         self.menuPlot = QtWidgets.QMenu(
-            tr("pychemqt", "Pl&ot"))
+            self.tr("Pl&ot"))
         for indice, grafico in enumerate(plots.__all__):
             self.menuPlot.addAction(grafico.title, partial(self.plot, indice))
         self.menubar.addAction(self.menuPlot.menuAction())
 
         self.menuCharts = QtWidgets.QMenu(
-            tr("pychemqt", "Charts"), self)
+            self.tr("Charts"), self)
         for titulo, lista in charts._all.items():
             menu = QtWidgets.QMenu(titulo, self)
             for grafico in lista:
@@ -947,29 +932,26 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.menuCharts.addAction(menu.menuAction())
 
         self.menuAddComponent = QtWidgets.QMenu(
-            tr("pychemqt", "New Component"))
+            self.tr("New Component"))
         self.menuAddComponent.addAction(
-            tr("pychemqt", "Component"),
+            self.tr("Component"),
             self.newcomponente)
         self.menuAddComponent.addAction(
-            tr("pychemqt", "Pseudocomponent"),
+            self.tr("Pseudocomponent"),
             self.pseudocomponente)
         self.menuAddComponent.addSeparator()
 
         # Group contribution new component menu
-        self.menuNewComponent = QtWidgets.QMenu(
-            tr("pychemqt", "Group contribution"))
+        self.menuNewComponent = QtWidgets.QMenu(self.tr("Group contribution"))
         self.menuAddComponent.addAction(self.menuNewComponent.menuAction())
         for f in newComponent._methods:
             self.menuNewComponent.addAction(
                 f.__title__,
                 partial(self.newComponent_Contribution, f.__name__))
 
-        self.menuHerramientas = QtWidgets.QMenu(
-            tr("pychemqt", "&Tools"))
+        self.menuHerramientas = QtWidgets.QMenu(self.tr("&Tools"))
         self.menuHerramientas.addAction(
-            tr("pychemqt", "Component database"),
-            self.verComponentes)
+            self.tr("Component database"), self.verComponentes)
         self.menuHerramientas.addAction(self.menuAddComponent.menuAction())
         self.menuHerramientas.addSeparator()
         self.menuHerramientas.addAction(calculatorAction)
@@ -986,13 +968,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuHerramientas.addAction(externalProgramAction)
         self.menubar.addAction(self.menuHerramientas.menuAction())
 
-        self.menuVentana = QtWidgets.QMenu(
-            tr("pychemqt", "&Window"))
+        self.menuVentana = QtWidgets.QMenu(self.tr("&Window"))
         self.menuVentana.aboutToShow.connect(self.aboutToShow_MenuWindow)
         self.menubar.addAction(self.menuVentana.menuAction())
 
-        self.menuAyuda = QtWidgets.QMenu(
-            tr("pychemqt", "&Help"))
+        self.menuAyuda = QtWidgets.QMenu(self.tr("&Help"))
         self.menuAyuda.addAction(actionAyuda)
         self.menuAyuda.addAction(actionDocum)
         self.menuAyuda.addAction(actionLog)
@@ -1002,8 +982,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menubar.addAction(self.menuAyuda.menuAction())
 
         # Toolbox ListEquipment
-        self.toolboxItem = QtWidgets.QDockWidget(
-            tr("pychemqt", "Item"))
+        self.toolboxItem = QtWidgets.QDockWidget(self.tr("Item"))
         self.toolboxItem.setObjectName("item")
         self.list = TreeEquipment()
         self.list.setSelectionMode(
@@ -1023,8 +1002,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.actionVerItem.triggered.connect(self.toolboxItem.setVisible)
 
         # Toolbox Status
-        toolbox = QtWidgets.QDockWidget(
-            tr("pychemqt", "Status"))
+        toolbox = QtWidgets.QDockWidget(self.tr("Status"))
         toolbox.setObjectName("status")
         self.status = QtWidgets.QTextEdit()
         self.status.setReadOnly(True)
@@ -1146,10 +1124,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if dirty:
             dialog = QtWidgets.QMessageBox.question(
                 self,
-                tr(
-                    "pychemqt", "Unsaved changes"),
-                tr(
-                    "pychemqt", "Save unsaved changes?"),
+                self.tr("Unsaved changes"),
+                self.tr("Save unsaved changes?"),
                 QtWidgets.QMessageBox.StandardButton.Yes
                 | QtWidgets.QMessageBox.StandardButton.No
                 | QtWidgets.QMessageBox.StandardButton.Cancel,
@@ -1185,13 +1161,13 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         # Add subwindow options
         actionLeft = createAction(
-            tr("pychemqt", "&Previous"),
+            self.tr("&Previous"),
             icon=os.path.join("button", "arrow-left.png"),
             slot=self.currentMdi.activatePreviousSubWindow,
             shortcut=QtGui.QKeySequence.StandardKey.PreviousChild, parent=self)
         self.menuVentana.addAction(actionLeft)
         actionRight = createAction(
-            tr("pychemqt", "&Next"),
+            self.tr("&Next"),
             icon=os.path.join("button", "arrow-right.png"),
             slot=self.currentMdi.activateNextSubWindow,
             shortcut=QtGui.QKeySequence.StandardKey.NextChild, parent=self)
@@ -1199,21 +1175,21 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuVentana.addSeparator()
 
         actionTile = createAction(
-            tr("pychemqt", "&Tile"),
+            self.tr("&Tile"),
             icon=os.path.join("button", "tile.png"),
             slot=self.currentMdi.tileSubWindows, parent=self)
         self.menuVentana.addAction(actionTile)
         actionCascade = createAction(
-            tr("pychemqt", "&Cascade"),
+            self.tr("&Cascade"),
             icon=os.path.join("button", "cascade.png"),
             slot=self.currentMdi.cascadeSubWindows, parent=self)
         self.menuVentana.addAction(actionCascade)
         actionRestore = createAction(
-            tr("pychemqt", "&Restore All"),
+            self.tr("&Restore All"),
             slot=self.windowRestoreAll, parent=self)
         self.menuVentana.addAction(actionRestore)
         actionIconize = createAction(
-            tr("pychemqt", "&Iconize All"),
+            self.tr("&Iconize All"),
             slot=self.windowMinimizeAll, parent=self)
         self.menuVentana.addAction(actionIconize)
         self.menuVentana.addSeparator()
@@ -1233,7 +1209,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         self.menuVentana.addAction(
             QtGui.QIcon(IMAGE_PATH + "button/fileClose.png"),
-            tr("pychemqt", "&Close window"),
+            self.tr("&Close window"),
             self.windowClose)
 
     def windowClose(self):
@@ -1277,7 +1253,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuRecentFiles.addSeparator()
         self.menuRecentFiles.addAction(
             QtGui.QIcon(IMAGE_PATH + "button/clear.png"),
-            tr("pychemqt", "Clear"),
+            self.tr("Clear"),
             self.clearRecentFiles)
 
         # Disable clear option if menu is empty
@@ -1312,12 +1288,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         # mdiArea.setStyle(style)
         self.centralWidget().addTab(
             mdiArea,
-            tr("pychemqt", "New Project")
+            self.tr("New Project")
             + " %i" % UI_pychemqt.idNew)
         self.centralWidget().setCurrentIndex(self.centralWidget().count()-1)
         self.loadPFD(mdiArea)
-        self.updateStatus(tr(
-            "pychemqt", "New project created"))
+        self.updateStatus(self.tr("New project created"))
         self.activeControl(True)
         self.wizard()
 
@@ -1406,8 +1381,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
             self.dirty[self.idTab] = False
             self.updateStatus(
-                tr("pychemqt", "Saved as")
-                + " %s" % self.filename[indice])
+                self.tr("Saved as") + " %s" % self.filename[indice])
             self.dirty[indice] = False
             self.saveControl()
 
@@ -1417,7 +1391,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         dir = self.filename[indice] if self.filename[indice] else "."
         fname = QtWidgets.QFileDialog.getSaveFileName(
             self,
-            tr("pychemqt", "Save project"),
+            self.tr("Save project"),
             dir, "pychemqt project file (*.pcq)")
         if fname[0]:
             name = fname[0]
@@ -1442,23 +1416,18 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 dir = "."
             fname = QtWidgets.QFileDialog.getOpenFileName(
                 self,
-                tr("pychemqt", "Open project"),
-                dir, tr(
-                    "pychemqt", "pychemqt project file") + " (*.pcq)")[0]
+                self.tr("Open project"),
+                dir, self.tr("pychemqt project file") + " (*.pcq)")[0]
         if fname:
             try:
                 self.loadFile(fname)
             except ImportError as e:
-                QtWidgets.QMessageBox.warning(
-                    self,
-                    tr("pychemqt", "Error"),
-                    e.msg)
+                QtWidgets.QMessageBox.warning(self, self.tr("Error"), e.msg)
             except Exception as error:
                 QtWidgets.QMessageBox.critical(
                     self,
-                    tr("pychemqt", "Error"),
-                    tr(
-                        "pychemqt", "Failed to load file") + "\n" + fname)
+                    self.tr("Error"),
+                    self.tr("Failed to load file") + "\n" + fname)
                 raise error
             else:
                 self.activeControl(True)
@@ -1484,11 +1453,9 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                         break
 
                 if not available:
-                    msg = tr(
-                        "pychemqt", "Failed to load")
+                    msg = self.tr("Failed to load")
                     msg += " " + fname + os.linesep
-                    msg += tr(
-                        "pychemqt", "This project require")
+                    msg += self.tr("This project require")
                     msg += ": %s" % ", ".join(data["external_dependences"])
                     raise ImportError(msg)
 
@@ -1552,8 +1519,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             mdiArea.subWindowActivated.connect(self.changeWindow)
 
             self.currentScene.project = project
-            self.updateStatus(tr(
-                "pychemqt", "Load") + " " + fname, True)
+            self.updateStatus(self.tr("Load") + " " + fname, True)
 
             self.activeControl(True)
             self.changeWindow(mdiArea.subWindowList()[0])
@@ -1561,8 +1527,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def loadPFD(self, mdiarea):
         PFD = flujo.GraphicsView(True, self)
-        PFD.setWindowTitle(
-            tr("pychemqt", "Flow Diagram"))
+        PFD.setWindowTitle(self.tr("Flow Diagram"))
         scene = flujo.GraphicsScene(self)
         scene.selectionChanged.connect(self.selectionChanged)
         x = self.config[-1].getint("PFD", "x")
@@ -1600,8 +1565,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def fileClose(self, int):
         if self.okToContinue(int):
-            self.updateStatus(tr(
-                "pychemqt", "Closed") + " " + self.currentFilename)
+            self.updateStatus(self.tr( "Closed") + " " + self.currentFilename)
             self.centralWidget().removeTab(int)
             del self.dirty[int]
             del self.config[int]
@@ -1620,12 +1584,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         dialog = wizard.Wizard(self.config[self.idTab])
         if dialog.exec():
             self.updateConfig(dialog.value)
-            self.updateStatus(tr(
-                "pychemqt", "Project configuration"), True)
+            self.updateStatus(self.tr("Project configuration"), True)
         else:
             self.updateConfig(wizard.Wizard.default())
-            self.updateStatus(tr(
-                "pychemqt", "Project configuration"), False)
+            self.updateStatus(self.tr("Project configuration"), False)
 
     def updateConfig(self, config):
         self.config[self.idTab] = config
@@ -1645,10 +1607,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         text: texto a mostrar
         success: boolean que indica si va todo bien"""
         if success:
-            txt = tr("pychemqt", "Success")
+            txt = self.tr("Success")
             color = "#00aa00"
         else:
-            txt = tr("pychemqt", "Failure")
+            txt = self.tr("Failure")
             color = "#ff0000"
         self.status.append(
             '<b>' + time.strftime("%H:%M:%S", time.localtime()) + '</b> - '
@@ -1676,11 +1638,9 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if dialog.exec():
             preferences = dialog.value()
             self.updatePreferences(preferences)
-            self.updateStatus(tr(
-                "pychemqt", "pychemqt configuration change"), True)
+            self.updateStatus(self.tr("pychemqt configuration change"), True)
         else:
-            self.updateStatus(tr(
-                "pychemqt", "pychemqt configuration change"), False)
+            self.updateStatus(self.tr("pychemqt configuration change"), False)
 
     def updatePreferences(self, preferences):
         preferences.write(open(conf_dir+"pychemqtrc", "w"))
@@ -1777,12 +1737,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         subprocess.Popen([command, path])
 
     def acerca(self):
-        txt = tr(
-            "pychemqt",
+        txt = self.tr(
             "Software for simulate units operations in Chemical Engineering")
         QtWidgets.QMessageBox.about(
             self,
-            tr("pychemqt", "About pychemqt"),
+            self.tr("About pychemqt"),
             """<b>pychemqt</b> v %s
             <p>Copyright &copy; 2012 Juan José Gómez Romera (jjgomera)<br>
             Licenced with GPL.v3
@@ -1794,7 +1753,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def acercaQt(self):
         QtWidgets.QMessageBox.aboutQt(
-            self, tr("pychemqt", "About Qt"))
+            self, self.tr("About Qt"))
 
     # Tools
     def calculator(self):
@@ -1808,8 +1767,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def tablaPeriodica(self):
         from tools import qtelemental
         Tabla_Periodica = qtelemental.qtelemental()
-        self.updateStatus(tr(
-            "pychemqt", "Launched periodic table aplication"))
+        self.updateStatus(self.tr("Launched periodic table aplication"))
         Tabla_Periodica.exec()
 
     def meos(self):
@@ -1818,8 +1776,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def diagramaPsicrometrico(self):
         Psychrometry = UI_psychrometry.UI_Psychrometry()
-        self.updateStatus(tr(
-            "pychemqt", "Launched humid air properties aplication"))
+        self.updateStatus(self.tr("Launched humid air properties aplication"))
         Psychrometry.exec()
 
     def externalPrograms(self):
@@ -1828,20 +1785,17 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def conversor_unidades(self):
         Conversor = UI_unitConverter.UI_unitConverter()
-        self.updateStatus(tr(
-            "pychemqt", "Launched unit converter aplication"))
+        self.updateStatus(self.tr("Launched unit converter aplication"))
         Conversor.exec()
 
     def conversor_moneda(self):
         Conversor = UI_unitConverter.moneda()
-        self.updateStatus(tr(
-            "pychemqt", "Launched currency converter aplication"))
+        self.updateStatus(self.tr("Launched currency converter aplication"))
         Conversor.exec()
 
     def chart(self, grafico):
         dialog = grafico()
-        self.updateStatus(tr(
-            "pychemqt", "Show") + " " + grafico.title)
+        self.updateStatus(self.tr("Show") + " " + grafico.title)
         dialog.exec()
 
     def verComponentes(self):
@@ -1879,7 +1833,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             dir = "."
         fname = QtWidgets.QFileDialog.getSaveFileName(
             None,
-            tr("pychemqt", "Save PFD as image"),
+            self.tr("Save PFD as image"),
             dir, "Portable Network Graphics (*.png)")[0]
         if fname:
             rect = self.currentScene.sceneRect()
@@ -1912,8 +1866,8 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         elif value == "Dialog":
             value, bool = QtWidgets.QInputDialog.getInt(
                 self,
-                tr("pychemqt", "Zoom"),
-                tr("pychemqt", "Zoom factor:"),
+                self.tr("Zoom"),
+                self.tr("Zoom factor:"),
                 self.zoomValue.value())
             if bool:
                 self.zoomValue.setValue(value)
@@ -1925,8 +1879,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         PFD = flujo.GraphicsView(False, self)
         # Usea a custom 20% zoom out
         PFD.zoom(20)
-        PFD.setWindowTitle(tr(
-            "pychemqt", "Overview Window"))
+        PFD.setWindowTitle(self.tr("Overview Window"))
         PFD.setScene(self.currentScene)
         self.centralWidget().currentWidget().addSubWindow(PFD)
         PFD.show()

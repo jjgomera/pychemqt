@@ -18,11 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-###Modulo que define los equipos de tratamiento de sólidos
 #######################################################################
-###librería de definición de equipos de tratamiento de sólidos:
-###     -Tamices
-###     -Molinos
+#   Library for solid treatment equipment
+#   * Grinder: Simple divider equipment
+#   * Tamices
 #######################################################################
 
 
@@ -32,13 +31,16 @@ from equipment.parents import equipment
 from lib.corriente import Corriente
 from lib.solids import Solid
 from lib.unidades import Currency, MassFlow, Power
-from tools.qt import tr
+from tools.qt import QtWidgets
 
 
 class Screen(equipment):
     """Clase que define los tamices"""
     title = "Screen"
-    help = ""
+
+    area = None
+    C_adq = None
+    C_inst = None
 
     def coste(self):
         C = 3.1*self.area.ft2**0.59*1000
@@ -50,111 +52,103 @@ class Screen(equipment):
 
 
 class Grinder(equipment):
-    """Clase que define los molinos de trituración de sólidos"""
-    title = "Molino"
-    help = ""
+    """Class to model solid crusher grinder"""
+    title = QtWidgets.QApplication.translate("equipment", "Grinder")
 
     # Table 21-8 from [1]
     BOND_INDEX = (
-        (tr("pychemqt", "Andesite"), 22.13),
-        (tr("pychemqt", "Barite"), 6.24),
-        (tr("pychemqt", "Basalt"), 20.41),
-        (tr("pychemqt", "Bauxite"), 9.45),
-        (tr("pychemqt", "Cement clinker"), 13.49),
-        (tr("pychemqt", "Cement raw material"), 10.57),
-        (tr("pychemqt", "Chrome ore"), 9.6),
-        (tr("pychemqt", "Clay"), 7.1),
-        (tr("pychemqt", "Clay, calcined"), 1.43),
-        (tr("pychemqt", "Coal"), 11.37),
-        (tr("pychemqt", "Coke"), 20.7),
-        (tr("pychemqt", "Coke, fluid petroleum"), 38.6),
-        (tr("pychemqt", "Coke, petroleum"), 73.8),
-        (tr("pychemqt", "Copper ore"), 13.13),
-        (tr("pychemqt", "Coral"), 10.16),
-        (tr("pychemqt", "Diorite"), 19.40),
-        (tr("pychemqt", "Dolomite"), 11.31),
-        (tr("pychemqt", "Emery"), 58.18),
-        (tr("pychemqt", "Feldspar"), 11.67),
-        (tr("pychemqt", "Ferrochrome"), 8.87),
-        (tr("pychemqt", "Ferromanganese"), 7.77),
-        (tr("pychemqt", "Ferrosilicon"), 12.83),
-        (tr("pychemqt", "Flint"), 26.16),
-        (tr("pychemqt", "Fluorspar"), 9.76),
-        (tr("pychemqt", "Gabbro"), 18.45),
-        (tr("pychemqt", "Galena"), 10.19),
-        (tr("pychemqt", "Garnet"), 12.37),
-        (tr("pychemqt", "Glass"), 3.08),
-        (tr("pychemqt", "Gneiss"), 20.13),
-        (tr("pychemqt", "Gold ore"), 14.83),
-        (tr("pychemqt", "Granite"), 14.39),
-        (tr("pychemqt", "Graphite"), 45.03),
-        (tr("pychemqt", "Gravel"), 25.17),
-        (tr("pychemqt", "Gypsum rock"), 8.16),
-        (tr("pychemqt", "Ilmenite"), 13.11),
-        (tr("pychemqt", "Iron ore"), 15.44),
-        (tr("pychemqt", "Hematite"), 12.68),
-        (tr("pychemqt", "Hematite—specular"), 15.4),
-        (tr("pychemqt", "Oolitic"), 11.33),
-        (tr("pychemqt", "Limanite"), 8.45),
-        (tr("pychemqt", "Magnetite"), 10.21),
-        (tr("pychemqt", "Taconite"), 14.87),
-        (tr("pychemqt", "Kyanite"), 18.87),
-        (tr("pychemqt", "Lead ore"), 11.40),
-        (tr("pychemqt", "Lead-zinc ore"), 11.35),
-        (tr("pychemqt", "Limestone"), 11.61),
-        (tr("pychemqt", "Limestone for cement"), 10.18),
-        (tr("pychemqt", "Manganese ore"), 12.46),
-        (tr("pychemqt", "Magnesite, dead burned"), 16.8),
-        (tr("pychemqt", "Mica"), 134.5),
-        (tr("pychemqt", "Molybdenum"), 12.97),
-        (tr("pychemqt", "Nickel ore"), 11.88),
-        (tr("pychemqt", "Oil shale"), 18.1),
-        (tr("pychemqt", "Phosphate fertilizer"), 13.03),
-        (tr("pychemqt", "Phosphate rock"), 10.13),
-        (tr("pychemqt", "Potash ore"), 8.88),
-        (tr("pychemqt", "Potash salt"), 8.23),
-        (tr("pychemqt", "Pumice"), 11.93),
-        (tr("pychemqt", "Pyrite ore"), 8.9),
-        (tr("pychemqt", "Pyrrhotite ore"), 9.57),
-        (tr("pychemqt", "Quartzite"), 12.18),
-        (tr("pychemqt", "Quartz"), 12.77),
-        (tr("pychemqt", "Rutile ore"), 12.12),
-        (tr("pychemqt", "Sandstone"), 11.53),
-        (tr("pychemqt", "Shale"), 16.4),
-        (tr("pychemqt", "Silica"), 13.53),
-        (tr("pychemqt", "Silica sand"), 16.46),
-        (tr("pychemqt", "Silicon carbide"), 26.17),
-        (tr("pychemqt", "Silver ore"), 17.3),
-        (tr("pychemqt", "Sinter"), 8.77),
-        (tr("pychemqt", "Slag"), 15.76),
-        (tr("pychemqt", "Slag, iron blast furnace"), 12.16),
-        (tr("pychemqt", "Slate"), 13.83),
-        (tr("pychemqt", "Sodium silicate"), 13),
-        (tr("pychemqt", "Spodumene ore"), 13.7),
-        (tr("pychemqt", "Syenite"), 14.9),
-        (tr("pychemqt", "Tile"), 15.53),
-        (tr("pychemqt", "Tin ore"), 10.81),
-        (tr("pychemqt", "Titanium ore"), 11.88),
-        (tr("pychemqt", "Trap rock"), 21.1),
-        (tr("pychemqt", "Uranium ore"), 17.93),
-        (tr("pychemqt", "Zinc ore"), 12.42))
+        (QtWidgets.QApplication.translate("equipment", "Andesite"), 22.13),
+        (QtWidgets.QApplication.translate("equipment", "Barite"), 6.24),
+        (QtWidgets.QApplication.translate("equipment", "Basalt"), 20.41),
+        (QtWidgets.QApplication.translate("equipment", "Bauxite"), 9.45),
+        (QtWidgets.QApplication.translate("equipment", "Cement clinker"), 13.49),
+        (QtWidgets.QApplication.translate("equipment", "Cement raw material"), 10.57),
+        (QtWidgets.QApplication.translate("equipment", "Chrome ore"), 9.6),
+        (QtWidgets.QApplication.translate("equipment", "Clay"), 7.1),
+        (QtWidgets.QApplication.translate("equipment", "Clay, calcined"), 1.43),
+        (QtWidgets.QApplication.translate("equipment", "Coal"), 11.37),
+        (QtWidgets.QApplication.translate("equipment", "Coke"), 20.7),
+        (QtWidgets.QApplication.translate("equipment", "Coke, fluid petroleum"), 38.6),
+        (QtWidgets.QApplication.translate("equipment", "Coke, petroleum"), 73.8),
+        (QtWidgets.QApplication.translate("equipment", "Copper ore"), 13.13),
+        (QtWidgets.QApplication.translate("equipment", "Coral"), 10.16),
+        (QtWidgets.QApplication.translate("equipment", "Diorite"), 19.40),
+        (QtWidgets.QApplication.translate("equipment", "Dolomite"), 11.31),
+        (QtWidgets.QApplication.translate("equipment", "Emery"), 58.18),
+        (QtWidgets.QApplication.translate("equipment", "Feldspar"), 11.67),
+        (QtWidgets.QApplication.translate("equipment", "Ferrochrome"), 8.87),
+        (QtWidgets.QApplication.translate("equipment", "Ferromanganese"), 7.77),
+        (QtWidgets.QApplication.translate("equipment", "Ferrosilicon"), 12.83),
+        (QtWidgets.QApplication.translate("equipment", "Flint"), 26.16),
+        (QtWidgets.QApplication.translate("equipment", "Fluorspar"), 9.76),
+        (QtWidgets.QApplication.translate("equipment", "Gabbro"), 18.45),
+        (QtWidgets.QApplication.translate("equipment", "Galena"), 10.19),
+        (QtWidgets.QApplication.translate("equipment", "Garnet"), 12.37),
+        (QtWidgets.QApplication.translate("equipment", "Glass"), 3.08),
+        (QtWidgets.QApplication.translate("equipment", "Gneiss"), 20.13),
+        (QtWidgets.QApplication.translate("equipment", "Gold ore"), 14.83),
+        (QtWidgets.QApplication.translate("equipment", "Granite"), 14.39),
+        (QtWidgets.QApplication.translate("equipment", "Graphite"), 45.03),
+        (QtWidgets.QApplication.translate("equipment", "Gravel"), 25.17),
+        (QtWidgets.QApplication.translate("equipment", "Gypsum rock"), 8.16),
+        (QtWidgets.QApplication.translate("equipment", "Ilmenite"), 13.11),
+        (QtWidgets.QApplication.translate("equipment", "Iron ore"), 15.44),
+        (QtWidgets.QApplication.translate("equipment", "Hematite"), 12.68),
+        (QtWidgets.QApplication.translate("equipment", "Hematite—specular"), 15.4),
+        (QtWidgets.QApplication.translate("equipment", "Oolitic"), 11.33),
+        (QtWidgets.QApplication.translate("equipment", "Limanite"), 8.45),
+        (QtWidgets.QApplication.translate("equipment", "Magnetite"), 10.21),
+        (QtWidgets.QApplication.translate("equipment", "Taconite"), 14.87),
+        (QtWidgets.QApplication.translate("equipment", "Kyanite"), 18.87),
+        (QtWidgets.QApplication.translate("equipment", "Lead ore"), 11.40),
+        (QtWidgets.QApplication.translate("equipment", "Lead-zinc ore"), 11.35),
+        (QtWidgets.QApplication.translate("equipment", "Limestone"), 11.61),
+        (QtWidgets.QApplication.translate("equipment", "Limestone for cement"), 10.18),
+        (QtWidgets.QApplication.translate("equipment", "Manganese ore"), 12.46),
+        (QtWidgets.QApplication.translate("equipment", "Magnesite, dead burned"), 16.8),
+        (QtWidgets.QApplication.translate("equipment", "Mica"), 134.5),
+        (QtWidgets.QApplication.translate("equipment", "Molybdenum"), 12.97),
+        (QtWidgets.QApplication.translate("equipment", "Nickel ore"), 11.88),
+        (QtWidgets.QApplication.translate("equipment", "Oil shale"), 18.1),
+        (QtWidgets.QApplication.translate("equipment", "Phosphate fertilizer"), 13.03),
+        (QtWidgets.QApplication.translate("equipment", "Phosphate rock"), 10.13),
+        (QtWidgets.QApplication.translate("equipment", "Potash ore"), 8.88),
+        (QtWidgets.QApplication.translate("equipment", "Potash salt"), 8.23),
+        (QtWidgets.QApplication.translate("equipment", "Pumice"), 11.93),
+        (QtWidgets.QApplication.translate("equipment", "Pyrite ore"), 8.9),
+        (QtWidgets.QApplication.translate("equipment", "Pyrrhotite ore"), 9.57),
+        (QtWidgets.QApplication.translate("equipment", "Quartzite"), 12.18),
+        (QtWidgets.QApplication.translate("equipment", "Quartz"), 12.77),
+        (QtWidgets.QApplication.translate("equipment", "Rutile ore"), 12.12),
+        (QtWidgets.QApplication.translate("equipment", "Sandstone"), 11.53),
+        (QtWidgets.QApplication.translate("equipment", "Shale"), 16.4),
+        (QtWidgets.QApplication.translate("equipment", "Silica"), 13.53),
+        (QtWidgets.QApplication.translate("equipment", "Silica sand"), 16.46),
+        (QtWidgets.QApplication.translate("equipment", "Silicon carbide"), 26.17),
+        (QtWidgets.QApplication.translate("equipment", "Silver ore"), 17.3),
+        (QtWidgets.QApplication.translate("equipment", "Sinter"), 8.77),
+        (QtWidgets.QApplication.translate("equipment", "Slag"), 15.76),
+        (QtWidgets.QApplication.translate("equipment", "Slag, iron blast furnace"), 12.16),
+        (QtWidgets.QApplication.translate("equipment", "Slate"), 13.83),
+        (QtWidgets.QApplication.translate("equipment", "Sodium silicate"), 13),
+        (QtWidgets.QApplication.translate("equipment", "Spodumene ore"), 13.7),
+        (QtWidgets.QApplication.translate("equipment", "Syenite"), 14.9),
+        (QtWidgets.QApplication.translate("equipment", "Tile"), 15.53),
+        (QtWidgets.QApplication.translate("equipment", "Tin ore"), 10.81),
+        (QtWidgets.QApplication.translate("equipment", "Titanium ore"), 11.88),
+        (QtWidgets.QApplication.translate("equipment", "Trap rock"), 21.1),
+        (QtWidgets.QApplication.translate("equipment", "Uranium ore"), 17.93),
+        (QtWidgets.QApplication.translate("equipment", "Zinc ore"), 12.42))
 
     TEXT_TIPO_COSTOS = (
-        tr("pychemqt", "Cone crusher"),
-        tr("pychemqt", "Gyratory crusher"),
-        tr("pychemqt", "Jaw crusher"),
-        tr("pychemqt", "Hammer mill"),
-        tr("pychemqt", "Ball mill"),
-        tr("pychemqt", "Pulverizer"))
+        QtWidgets.QApplication.translate("equipment", "Cone crusher"),
+        QtWidgets.QApplication.translate("equipment", "Gyratory crusher"),
+        QtWidgets.QApplication.translate("equipment", "Jaw crusher"),
+        QtWidgets.QApplication.translate("equipment", "Hammer mill"),
+        QtWidgets.QApplication.translate("equipment", "Ball mill"),
+        QtWidgets.QApplication.translate("equipment", "Pulverizer"))
 
     calculateCostos = ("C_adq", "C_inst")
-        # self.tipo.addItem(tr("equipment", "De cono"))
-        # self.tipo.addItem(tr("equipment", "Giratorio"))
-        # self.tipo.addItem(tr("equipment", "Dentado"))
-        # self.tipo.addItem(tr("equipment", "De martillo"))
-        # self.tipo.addItem(tr("equipment", "De bolas"))
-
-        # self.tipo.addItem(tr("equipment", "Pulverizador"))
 
     indiceCostos = 7
     kwargs = {
@@ -170,6 +164,11 @@ class Grinder(equipment):
     kwargsInput = ("entrada", )
     kwargsValue = ("BondIndex", "exponent", "D80")
     calculateValue = ("power", "solidflow")
+
+    power = None
+    solidflow = None
+    C_adq = None
+    C_inst = None
 
     @property
     def isCalculable(self):
@@ -203,9 +202,9 @@ class Grinder(equipment):
         self.power = Power(W, "kW")
         sol_in = self.kwargs["entrada"].solido
         sol_out = Solid(caudalSolido=[sol_in.caudal])
-        sol_out(distribucion_diametro=[self.kwargs["D80"]], distribucion_fraccion=[1])
+        sol_out(distribucion_diametro=[self.kwargs["D80"]],
+                distribucion_fraccion=[1])
         self.salida = [self.kwargs["entrada"].clone(solido=sol_out)]
-        # self.salida = [self.kwargs["entrada"].clone(distribucion_diametro=self.kwargs["D80"])]
 
     def coste(self):
         """

@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 
 from lib.bip import Kij, EoSBIP
 from lib.sql import databank
@@ -42,9 +42,8 @@ class Ui_BIP(QtWidgets.QDialog):
     """
     def __init__(self, ids, EoSIndex=0, parent=None):
         """Constructor"""
-        super(Ui_BIP, self).__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "BIP (Binary interaction parameters)"))
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("BIP (Binary interaction parameters)"))
 
         lyt = QtWidgets.QGridLayout(self)
         lyt.addWidget(QtWidgets.QLabel("EoS"), 1, 1)
@@ -99,7 +98,8 @@ class Ui_BIP(QtWidgets.QDialog):
 
         self.eleccion.currentIndexChanged.connect(self.stacked.setCurrentIndex)
         button = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         button.accepted.connect(self.accept)
         button.rejected.connect(self.reject)
         lyt.addWidget(button, 3, 1, 1, 3)

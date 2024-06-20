@@ -26,13 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from functools import partial
 import os
 
-from tools.qt import QtGui, QtWidgets, tr
-
-
 from lib.unidades import Length, Pressure, DeltaP, Speed, VolFlow, Currency
-from tools.costIndex import CostData
 from equipment.gas_solid import Ciclon
 from equipment.parents import UI_equip
+from tools.costIndex import CostData
+from tools.qt import QtGui, QtWidgets
 from UI.widgets import Entrada_con_unidades
 
 
@@ -48,24 +46,21 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Mode")), 0, 1, 1, 2)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Mode")), 0, 1, 1, 2)
         self.tipo_calculo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_TIPO:
             self.tipo_calculo.addItem(txt)
         self.tipo_calculo.currentIndexChanged.connect(
             self.on_tipoCalculo_currentIndexChanged)
         lyt_Calc.addWidget(self.tipo_calculo, 0, 3, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Method")), 1, 1, 1, 2)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Method")), 1, 1, 1, 2)
         self.modelo_rendimiento = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODEL:
             self.modelo_rendimiento.addItem(txt)
         self.modelo_rendimiento.currentIndexChanged.connect(
             partial(self.changeParams, "modelo_rendimiento"))
         lyt_Calc.addWidget(self.modelo_rendimiento, 1, 3, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "ΔP method", None)),
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("ΔP method", None)),
             2, 1, 1, 2)
         self.modelo_DeltaP = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODEL_DELTAP:
@@ -73,8 +68,8 @@ class UI_equipment(UI_equip):
         self.modelo_DeltaP.currentIndexChanged.connect(
             partial(self.changeParams, "modelo_DeltaP"))
         lyt_Calc.addWidget(self.modelo_DeltaP, 2, 3, 1, 4)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Design model")), 3, 1, 1, 2)
+        lyt_Calc.addWidget(QtWidgets.QLabel(
+            self.tr("Design model")), 3, 1, 1, 2)
         self.modelo_ciclon = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_MODEL_CICLON:
             self.modelo_ciclon.addItem(txt)
@@ -82,66 +77,56 @@ class UI_equipment(UI_equip):
             self.modeloEficiencia_Changed)
         lyt_Calc.addWidget(self.modelo_ciclon, 3, 3, 1, 4)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            4, 0, 1, 5)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 0, 1, 5)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Diameter")), 5, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Diameter")), 5, 1)
         self.Dc = Entrada_con_unidades(Length)
         self.Dc.valueChanged.connect(partial(self.changeParams, "Dc"))
         lyt_Calc.addWidget(self.Dc, 5, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Efficiency")), 6, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Efficiency")), 6, 1)
         self.rendimientoAdmisible = Entrada_con_unidades(float, spinbox=True)
         self.rendimientoAdmisible.valueChanged.connect(
             partial(self.changeParams, "rendimientoAdmisible"))
         lyt_Calc.addWidget(self.rendimientoAdmisible, 6, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Allowable ΔP", None)),
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Allowable ΔP", None)),
             7, 1)
         self.DeltaPAdmisible = Entrada_con_unidades(Pressure)
         self.DeltaPAdmisible.valueChanged.connect(
             partial(self.changeParams, "DeltaPAdmisible"))
         lyt_Calc.addWidget(self.DeltaPAdmisible, 7, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Allowable speed")), 8, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Allowable speed")), 8, 1)
         self.velocidadAdmisible = Entrada_con_unidades(Speed)
         self.velocidadAdmisible.valueChanged.connect(
             partial(self.changeParams, "velocidadAdmisible"))
         lyt_Calc.addWidget(self.velocidadAdmisible, 8, 2, 1, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "No. of ciclones")), 9, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("No. of ciclones")), 9, 1)
         self.num_ciclones = Entrada_con_unidades(int, spinbox=True, step=1,
                                                  decimales=0, min=1)
         self.num_ciclones.valueChanged.connect(
             partial(self.changeParams, "num_ciclones"))
         lyt_Calc.addWidget(self.num_ciclones, 9, 2, 1, 2)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            10, 0, 1, 4)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 10, 0, 1, 4)
 
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "Results"))
+        group = QtWidgets.QGroupBox(self.tr("Results"))
         lyt_Calc.addWidget(group, 11, 1, 1, 3)
         lyt = QtWidgets.QGridLayout(group)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Efficiency")), 1, 1)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Efficiency")), 1, 1)
         self.rendimiento = Entrada_con_unidades(float, readOnly=True)
         lyt.addWidget(self.rendimiento, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Pressure drop:")), 2, 1)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Pressure drop:")), 2, 1)
         self.deltaP = Entrada_con_unidades(DeltaP, readOnly=True)
         lyt.addWidget(self.deltaP, 2, 2)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Admission speed")), 3, 1)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Admission speed")), 3, 1)
         self.V = Entrada_con_unidades(Speed, readOnly=True)
         lyt.addWidget(self.V, 3, 2)
 
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            5, 4, 7, 1)
-        group2 = QtWidgets.QGroupBox(
-            tr("pychemqt", "Geometry"))
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 4, 7, 1)
+        group2 = QtWidgets.QGroupBox(self.tr("Geometry"))
         lyt_Calc.addWidget(group2, 5, 5, 7, 1)
         lyt = QtWidgets.QGridLayout(group2)
         lyt.addWidget(QtWidgets.QLabel("D<sub>C</sub>"), 1, 1)
@@ -183,14 +168,14 @@ class UI_equipment(UI_equip):
         image.setPixmap(QtGui.QPixmap(path))
         image.setScaledContents(True)
         sizePolicy = QtWidgets.QSizePolicy(
-            QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Expanding)
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding)
         image.setSizePolicy(sizePolicy)
         lyt_Calc.addWidget(image, 0, 8, 12, 1)
 
         # Cost tab
         lyt_Cost = QtWidgets.QGridLayout(self.tabCostos)
-        lyt_Cost.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Model")), 1, 1)
+        lyt_Cost.addWidget(QtWidgets.QLabel(self.tr("Model")), 1, 1)
         self.tipo_costo = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_COST:
             self.tipo_costo.addItem(txt)
@@ -208,35 +193,28 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 4, 1, 1, 3)
 
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "Stimated Costs"))
+        group = QtWidgets.QGroupBox(self.tr("Stimated Costs"))
         lyt_Cost.addWidget(group, 5, 1, 1, 3)
         lyt = QtWidgets.QGridLayout(group)
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Number")), 0, 0)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Number")), 0, 0)
         self.num_ciclonesCoste = Entrada_con_unidades(int, readOnly=True)
         lyt.addWidget(self.num_ciclonesCoste, 0, 1, 1, 3)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Volumetric Flow")), 1, 0)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Volumetric Flow")), 1, 0)
         self.Q = Entrada_con_unidades(VolFlow, "QGas", retornar=False)
         self.Q.setReadOnly(True)
         lyt.addWidget(self.Q, 1, 1)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Purchase cost")), 0, 3)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Purchase cost")), 0, 3)
         self.C_adq = Entrada_con_unidades(Currency, retornar=False)
         self.C_adq.setReadOnly(True)
         lyt.addWidget(self.C_adq, 0, 4)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Installed cost")), 1, 3)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Installed cost")), 1, 3)
         self.C_inst = Entrada_con_unidades(Currency, retornar=False)
         self.C_inst.setReadOnly(True)
         lyt.addWidget(self.C_inst, 1, 4)
 
         # Output tab
-        self.addSalida(
-            tr("pychemqt", "Filtered gas"))
-        self.addSalida(
-            tr("pychemqt", "Collected solids"))
+        self.addSalida(self.tr("Filtered gas"))
+        self.addSalida(self.tr("Collected solids"))
 
         self.on_tipoCalculo_currentIndexChanged(0)
         self.modeloEficiencia_Changed(0)
@@ -248,8 +226,7 @@ class UI_equipment(UI_equip):
         if int and self.modelo_ciclon.count() == 9:
             self.modelo_ciclon.removeItem(8)
         elif not int and self.modelo_ciclon.count() == 8:
-            self.modelo_ciclon.addItem(
-                tr("pychemqt", "Custom"))
+            self.modelo_ciclon.addItem(self.tr("Custom"))
 
         self.Dc.setReadOnly(int)
         self.Dc.setResaltado(not int)

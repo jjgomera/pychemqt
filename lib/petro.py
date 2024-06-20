@@ -98,7 +98,7 @@ from numpy.linalg import solve
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, leastsq, newton
 
-from tools.qt import tr
+from tools.qt import QtWidgets
 from lib import unidades
 from lib.physics import R_atml, R_Btu
 from lib.newComponent import newComponente
@@ -593,14 +593,11 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
         val1, val2 = val2, val1
 
     if tita1 not in p1 or tita2 not in p2:
-        raise NotImplementedError(tr(
-            "pychemqt", "Undefined input pair"))
+        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Undefined input pair"))
     elif tita1 == "M" and (val1 < 70 or val1 > 300):
-        raise NotImplementedError(tr(
-            "pychemqt", "Molecular weight input out of bounds"))
+        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Molecular weight input out of bounds"))
     elif tita1 == "Tb" and (val1 < 300 or val1 > 620):
-        raise NotImplementedError(tr(
-            "pychemqt", "Boiling temperature input out of bounds"))
+        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Boiling temperature input out of bounds"))
 
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     if tita1 == "Tb":
@@ -808,13 +805,13 @@ def prop_Lee_Kesler(Tb, SG):
         (1-0.77084*SG-0.02058*SG**2)*(1.3437-720.79/Tb_R)*1e7/Tb_R + \
         (1-0.80882*SG+0.02226*SG**2)*(1.8828-181.98/Tb_R)*1e12/Tb_R**3
 
-    tr = Tb_R/Tc
+    Tr = Tb_R/Tc
     Kw = Tb_R**(1./3)/SG
-    if tr > 0.8:
-        w = -7.904+0.1352*Kw-0.007465*Kw**2+8359*tr+(1.408-0.01063*Kw)/tr
+    if Tr > 0.8:
+        w = -7.904+0.1352*Kw-0.007465*Kw**2+8359*Tr+(1.408-0.01063*Kw)/Tr
     else:
-        w = (-log(Pc/14.7)-5.92714+6.09648/tr+1.28862*log(tr)-0.169347*tr**6)/(
-            15.2518-15.6875/tr-13.4721*log(tr)+0.43577*tr**6)
+        w = (-log(Pc/14.7)-5.92714+6.09648/Tr+1.28862*log(Tr)-0.169347*Tr**6)/(
+            15.2518-15.6875/Tr-13.4721*log(Tr)+0.43577*Tr**6)
 
     prop = {}
     prop["Tb"] = unidades.Temperature(Tb)
@@ -1434,8 +1431,7 @@ def prop_Riazi(SG, tita, val):
     """
 
     if tita not in ["M", "Tb"]:
-        raise NotImplementedError(tr(
-            "pychemqt", "Undefined input pair"))
+        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Undefined input pair"))
 
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     if tita == "Tb":
@@ -3503,7 +3499,7 @@ class Petroleo(newComponente):
         9   -   curva de destilación
         """
         self.status = 0
-        self.msg = tr("pychemqt", "Insufficient input")
+        self.msg = QtWidgets.QApplication.translate("Petro", "Insufficient input")
 
         self.hasSG = self.kwargs["SG"] or self.kwargs["API"] or \
             (self.kwargs["Kw"] and self.kwargs["Tb"])

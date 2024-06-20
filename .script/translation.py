@@ -5,6 +5,7 @@
 
 # Next the ts files must be generated with
 # pylupdate5 pychemqt.pro
+# pylupdate6 *.py */*.py */*/*.py -ts i18n/pychemqt_es.ts
 
 # The translation can be done with linguist
 # When translation done make the translation release

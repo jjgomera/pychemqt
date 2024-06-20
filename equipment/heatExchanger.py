@@ -30,19 +30,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import sqrt, exp, log
 import os
 
-from tools.qt import tr
 from numpy import arccos, sin, cos, tanh
 from scipy.constants import g, pi
 from scipy.optimize import fsolve
+from tools.qt import QtWidgets
 
+from equipment.parents import equipment
 from lib import unidades
 from lib.adimensional import Re, Pr, Gr, Gz
 from lib.friction import f_friccion
 from lib.heatTransfer import *  # noqa
-from equipment.parents import equipment
 
 
-# Equipment
 class Heat_Exchanger(equipment):
     """Define a simple heat exchanger, only make energy balance
 
@@ -62,7 +61,7 @@ class Heat_Exchanger(equipment):
     >>> print("%6g" % Cambiador.HeatCalc.MJh)
     753.063
     """
-    title = tr("pychemqt", "Heat Exchanger")
+    title = QtWidgets.QApplication.translate("equipment", "Heat Exchanger")
     help = ""
     kwargs = {
         "entrada": None,
@@ -109,7 +108,7 @@ class Heat_Exchanger(equipment):
             3 - known heat exchanger characteristic, calculate output stream
         """
         if not self.kwargs["entrada"]:
-            self.msg = tr("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
             self.status = 0
             self.modo = 0
             return
@@ -121,8 +120,8 @@ class Heat_Exchanger(equipment):
         elif self.kwargs["Tout"] or self.kwargs["DeltaT"]:
             self.modo = 1
         else:
-            self.msg = tr(
-                "pychemqt", "undefined output temperature specification")
+            self.msg = QtWidgets.QApplication.translate(
+                "equipment", "undefined output temperature specification")
             self.status = 0
             self.modo = 0
 
@@ -166,23 +165,21 @@ class Heat_Exchanger(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += tr("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(5))
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(tr("pychemqt", "Input Temperature"),
+        l = [(QtWidgets.QApplication.translate("equipment", "Input Temperature"),
               "Tin", unidades.Temperature),
-             (tr("pychemqt", "Output Temperature"),
+             (QtWidgets.QApplication.translate("equipment", "Output Temperature"),
               "ToutCalc", unidades.Temperature),
-             (tr("pychemqt", "Temperature increase"),
+             (QtWidgets.QApplication.translate("equipment", "Temperature increase"),
               "deltaT", unidades.DeltaT),
-             (tr("pychemqt", "Pressure increase"),
-              "deltaP", unidades.DeltaP),
-             (tr("pychemqt", "Heat"), "HeatCalc",
-              unidades.Power)]
+             (QtWidgets.QApplication.translate("equipment", "Pressure increase"), "deltaP", unidades.DeltaP),
+             (QtWidgets.QApplication.translate("equipment", "Heat"), "HeatCalc", unidades.Power)]
         return l
 
     def writeStatetoJSON(self, state):
@@ -245,7 +242,7 @@ class Fired_Heater(equipment):
     >>> print("%6g" % cambiador.Heat.MJh)
     357.685
     """
-    title = tr("pychemqt", "Fired Heater")
+    title = QtWidgets.QApplication.translate("equipment", "Fired Heater")
     help = os.environ["pychemqt"] + "doc/fireHeater.htm"
     kwargs = {
         "entrada": None,
@@ -273,18 +270,18 @@ class Fired_Heater(equipment):
     indiceCostos = 3
     salida = [None]
 
-    TEXT_TIPO = [tr("pychemqt", "Box Type"),
-                 tr("pychemqt", "Cylindrical type")]
+    TEXT_TIPO = [QtWidgets.QApplication.translate("equipment", "Box Type"),
+                 QtWidgets.QApplication.translate("equipment", "Cylindrical type")]
     TEXT_SUBTIPOBOX = [
-        tr("pychemqt", "Process heater"),
-        tr("pychemqt", "Pyrolysis"),
-        tr("pychemqt", "Reforme without catalysis")]
+        QtWidgets.QApplication.translate("equipment", "Process heater"),
+        QtWidgets.QApplication.translate("equipment", "Pyrolysis"),
+        QtWidgets.QApplication.translate("equipment", "Reforme without catalysis")]
     TEXT_SUBTIPOCYLINDRICAL = [
-        tr("pychemqt", "Cylindrical"),
-        tr("pychemqt", "Dowtherm")]
-    TEXT_MATERIAL = [tr("pychemqt", "Carbon steel"),
-                     tr("pychemqt", "Cr-Mo steel"),
-                     tr("pychemqt", "Stainless steel")]
+        QtWidgets.QApplication.translate("equipment", "Cylindrical"),
+        QtWidgets.QApplication.translate("equipment", "Dowtherm")]
+    TEXT_MATERIAL = [QtWidgets.QApplication.translate("equipment", "Carbon steel"),
+                     QtWidgets.QApplication.translate("equipment", "Cr-Mo steel"),
+                     QtWidgets.QApplication.translate("equipment", "Stainless steel")]
 
     @property
     def isCalculable(self):
@@ -295,29 +292,25 @@ class Fired_Heater(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg = tr("pychemqt", "undefined input")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
             self.status = 0
             return
 
         if not self.kwargs["Tout"]:
-            self.msg = tr(
-                "pychemqt", "undefined output temperature condition")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined output temperature condition")
             self.status = 0
             return
         if self.kwargs["Tout"] <= self.kwargs["entrada"].T:
-            self.msg = tr(
-                "pychemqt", "bad output temperature condition")
+            self.msg = QtWidgets.QApplication.translate("equipment", "bad output temperature condition")
             self.status = 0
             return
 
         if not self.kwargs["eficiencia"]:
-            self.msg = tr(
-                "pychemqt", "using default efficiency")
+            self.msg = QtWidgets.QApplication.translate("equipment", "using default efficiency")
             self.status = 3
             return True
         if not self.kwargs["poderCalorifico"]:
-            self.msg = tr(
-                "pychemqt", "using default fuel calorific value")
+            self.msg = QtWidgets.QApplication.translate("equipment", "using default fuel calorific value")
             self.status = 3
             return True
 
@@ -426,11 +419,11 @@ class Fired_Heater(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += tr("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(5))
 
-        stimated = " (%s)" % tr("pychemqt", "stimated")
+        stimated = " (%s)" % QtWidgets.QApplication.translate("equipment", "stimated")
         txt += self.propertiesToText(5, kwCheck=True, kwSuffix=stimated,
                                      kwKey="eficiencia", kwValue=0.0)
         txt += self.propertiesToText(6, kwCheck=True, kwSuffix=stimated,
@@ -439,8 +432,7 @@ class Fired_Heater(equipment):
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += tr(
-                "pychemqt", "Preliminary Cost Estimation")
+            txt += QtWidgets.QApplication.translate("equipment", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(8, 18))
 
@@ -448,42 +440,32 @@ class Fired_Heater(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(tr("pychemqt", "Input Temperature"),
+        l = [(QtWidgets.QApplication.translate("equipment", "Input Temperature"),
               "Tin", unidades.Temperature),
-             (tr("pychemqt", "Output Temperature"),
+             (QtWidgets.QApplication.translate("equipment", "Output Temperature"),
               "Tout", unidades.Temperature),
-             (tr("pychemqt", "Temperature increase"),
+             (QtWidgets.QApplication.translate("equipment", "Temperature increase"),
               "deltaT", unidades.DeltaT),
-             (tr("pychemqt", "Pressure increase"),
-              "deltaP", unidades.DeltaP),
-             (tr("pychemqt", "Maximum heat"),
-              "Hmax", unidades.Power),
-             (tr("pychemqt", "Thermal Efficiency"),
+             (QtWidgets.QApplication.translate("equipment", "Pressure increase"), "deltaP", unidades.DeltaP),
+             (QtWidgets.QApplication.translate("equipment", "Maximum heat"), "Hmax", unidades.Power),
+             (QtWidgets.QApplication.translate("equipment", "Thermal Efficiency"),
               "eficiencia", unidades.Dimensionless),
-             (tr("pychemqt", "Fuel Heating Value"),
+             (QtWidgets.QApplication.translate("equipment", "Fuel Heating Value"),
               "poderCalorifico", unidades.Dimensionless),
-             (tr("pychemqt", "Required Fuel"),
+             (QtWidgets.QApplication.translate("equipment", "Required Fuel"),
               "CombustibleRequerido", unidades.VolFlow),
-             (tr("pychemqt", "Base index"),
-              "Base_index", float),
-             (tr("pychemqt", "Current index"),
-              "Current_index", float),
-             (tr("pychemqt", "Install factor"),
-              "f_install", float),
-             (tr("pychemqt", "FireHeater type"),
-              ("TEXT_TIPO", "tipo"), str),
-             (tr("pychemqt", "Cylindrical type"),
+             (QtWidgets.QApplication.translate("equipment", "Base index"), "Base_index", float),
+             (QtWidgets.QApplication.translate("equipment", "Current index"), "Current_index", float),
+             (QtWidgets.QApplication.translate("equipment", "Install factor"), "f_install", float),
+             (QtWidgets.QApplication.translate("equipment", "FireHeater type"), ("TEXT_TIPO", "tipo"), str),
+             (QtWidgets.QApplication.translate("equipment", "Cylindrical type"),
               ("TEXT_SUBTIPOCYLINDRICAL", "subtipoCylindrical"), str),
-             (tr("pychemqt", "Box type"),
+             (QtWidgets.QApplication.translate("equipment", "Box type"),
               ("TEXT_SUBTIPOBOX", "subtipoBox"), str),
-             (tr("pychemqt", "Material"),
-              ("TEXT_MATERIAL", "material"), str),
-             (tr("pychemqt", "Design Pressure"),
-              "P_dis", unidades.Pressure),
-             (tr("pychemqt", "Purchase Cost"),
-              "C_adq", unidades.Currency),
-             (tr("pychemqt", "Installed Cost"),
-              "C_inst", unidades.Currency)]
+             (QtWidgets.QApplication.translate("equipment", "Material"), ("TEXT_MATERIAL", "material"), str),
+             (QtWidgets.QApplication.translate("equipment", "Design Pressure"), "P_dis", unidades.Pressure),
+             (QtWidgets.QApplication.translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
+             (QtWidgets.QApplication.translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
         return l
 
     def writeStatetoJSON(self, state):
@@ -602,7 +584,7 @@ class Hairpin(equipment):
     >>> print("%6g %6g" % (Cambiador.hTube.kWm2K, Cambiador.hAnnulli.kWm2K))
     1555.53 52.8267
     """
-    title = tr("pychemqt", "Hairpin Heat Exchanger")
+    title = QtWidgets.QApplication.translate("equipment", "Hairpin Heat Exchanger")
     help = ""
     kwargs = {
         "entradaTubo": None,
@@ -659,19 +641,19 @@ class Hairpin(equipment):
     indiceCostos = 2
 
     TEXT_MODO = [
-        tr("pychemqt", "Design"),
-        tr("pychemqt", "Rating")]
+        QtWidgets.QApplication.translate("equipment", "Design"),
+        QtWidgets.QApplication.translate("equipment", "Rating")]
     TEXT_FLUJO = [
-        tr("pychemqt", "Counterflow"),
-        tr("pychemqt", "Parallelflow")]
+        QtWidgets.QApplication.translate("equipment", "Counterflow"),
+        QtWidgets.QApplication.translate("equipment", "Parallelflow")]
     TEXT_ORIENTACION = [
-        tr("pychemqt", "Horizontal"),
-        tr("pychemqt", "Vertical, (in down)"),
-        tr("pychemqt", "Vertical, (in up)")]
+        QtWidgets.QApplication.translate("equipment", "Horizontal"),
+        QtWidgets.QApplication.translate("equipment", "Vertical, (in down)"),
+        QtWidgets.QApplication.translate("equipment", "Vertical, (in up)")]
     TEXT_MATERIAL = [
-        tr("pychemqt", "Carbon steel/carbon steel"),
-        tr("pychemqt", "Carbon steel/304 stainless"),
-        tr("pychemqt", "Carbon steel/316 stainless")]
+        QtWidgets.QApplication.translate("equipment", "Carbon steel/carbon steel"),
+        QtWidgets.QApplication.translate("equipment", "Carbon steel/304 stainless"),
+        QtWidgets.QApplication.translate("equipment", "Carbon steel/316 stainless")]
     CODE_FLUJO = ("CF", "PF")
 
     @property
@@ -685,19 +667,16 @@ class Hairpin(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entradaTubo"]:
-            self.msg = tr(
-                "pychemqt", "undefined internal stream input")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined internal stream input")
             self.status = 0
             return
         if not self.kwargs["entradaExterior"]:
-            self.msg = tr(
-                "pychemqt", "undefined external stream input")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined external stream input")
             self.status = 0
             return
 
         if not self.kwargs["DeeTube"]:
-            self.msg = tr(
-                "pychemqt", "undefined pipe external diameter")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined pipe external diameter")
             self.status = 0
             return
 
@@ -709,34 +688,31 @@ class Hairpin(equipment):
         elif self.kwargs["DiTube"] and self.kwargs["wTube"]:
             self.statusPipe = 3
         else:
-            self.msg = tr(
-                "pychemqt", "undefined pipe diameters")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined pipe diameters")
             self.status = 0
             return
 
         if not self.kwargs["kTube"]:
-            self.msg = tr(
-                "pychemqt", "undefined pipe material thermal conductivity")
+            self.msg = QtWidgets.QApplication.translate(
+                "equipment", "undefined pipe material thermal conductivity")
             self.status = 0
             return
 
         self.statusFinned = 0
-        self.tubefinned = tr("pychemqt", "Bare Tube")
+        self.tubefinned = QtWidgets.QApplication.translate("equipment", "Bare Tube")
         if self.kwargs["tubeFinned"]:
-            self.tubefinned = tr("pychemqt", "Finned Tube")
+            self.tubefinned = QtWidgets.QApplication.translate("equipment", "Finned Tube")
             if self.kwargs["hFin"] and (self.kwargs["thicknessBaseFin"] or
                                         self.kwargs["thicknessTopFin"]):
                 self.statusFinned = 1
                 self.msg = ""
             else:
-                self.msg = tr(
-                    "pychemqt", "fin not specified, using bare tube")
+                self.msg = QtWidgets.QApplication.translate("equipment", "fin not specified, using bare tube")
                 self.status = 3
 
         if self.kwargs["modo"]:
             if not self.kwargs["LTube"]:
-                self.msg = tr(
-                    "pychemqt", "undefined pipe length")
+                self.msg = QtWidgets.QApplication.translate("equipment", "undefined pipe length")
                 self.status = 0
                 return
         else:
@@ -750,8 +726,7 @@ class Hairpin(equipment):
             elif o2:
                 self.statusOut = 3
             else:
-                self.msg = tr(
-                    "pychemqt", "undefined output condition")
+                self.msg = QtWidgets.QApplication.translate("equipment", "undefined output condition")
                 self.status = 0
                 return
         return True
@@ -769,8 +744,7 @@ class Hairpin(equipment):
             self.Di = unidades.Length(self.kwargs["DiTube"])
             self.w = unidades.Length((self.De-self.Di)/2)
             if self.kwargs["wTube"] and w != self.kwargs["wTube"]:
-                self.msg = tr(
-                    "pychemqt", "Pipe thickness discard")
+                self.msg = QtWidgets.QApplication.translate("equipment", "Pipe thickness discard")
                 self.status = 3
         elif self.statusPipe == 2:
             self.De = unidades.Length(self.kwargs["DeTube"])
@@ -1127,7 +1101,7 @@ class Hairpin(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += tr("pychemqt", "Catalog")
+        txt += QtWidgets.QApplication.translate("equipment", "Catalog")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(11))
 
@@ -1135,7 +1109,7 @@ class Hairpin(equipment):
             txt += "\t" + self.propertiesToText(range(11, 17))
 
         txt += os.linesep + "#---------------"
-        txt += tr("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(17, 20)) + os.linesep
         txt += self.propertiesToText(range(20, 29)) + os.linesep  # Tube
@@ -1144,8 +1118,7 @@ class Hairpin(equipment):
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += tr(
-                "pychemqt", "Preliminary Cost Estimation")
+            txt += QtWidgets.QApplication.translate("equipment", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(41, 48))
 
@@ -1153,103 +1126,77 @@ class Hairpin(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(tr("pychemqt", "Length"), "L",
-              unidades.Length),
-             (tr("pychemqt", "Pipe Internal Diameter"),
-              "Di", unidades.Length),
-             (tr("pychemqt", "Pipe External Diameter"),
-              "De", unidades.Length),
-             (tr("pychemqt", "Annulli External Diameter"),
+        l = [(QtWidgets.QApplication.translate("equipment", "Length"), "L", unidades.Length),
+             (QtWidgets.QApplication.translate("equipment", "Pipe Internal Diameter"), "Di", unidades.Length),
+             (QtWidgets.QApplication.translate("equipment", "Pipe External Diameter"), "De", unidades.Length),
+             (QtWidgets.QApplication.translate("equipment", "Annulli External Diameter"),
               "Dee", unidades.Length),
-             (tr("pychemqt", "Thickness"), "w",
-              unidades.Length),
-             (tr("pychemqt", "Roughness"), "rugosidad",
-              unidades.Length),
-             (tr("pychemqt", "External Area"), "A",
-              unidades.Area),
-             (tr("pychemqt", "Thermal Conductivity"), "k",
+             (QtWidgets.QApplication.translate("equipment", "Thickness"), "w", unidades.Length),
+             (QtWidgets.QApplication.translate("equipment", "Roughness"), "rugosidad", unidades.Length),
+             (QtWidgets.QApplication.translate("equipment", "External Area"), "A", unidades.Area),
+             (QtWidgets.QApplication.translate("equipment", "Thermal Conductivity"), "k",
               unidades.ThermalConductivity),
-             (tr("pychemqt", "Internal Fouling"), "fi",
-              unidades.Fouling),
-             (tr("pychemqt", "External Fouling"), "fo",
-              unidades.Fouling),
-             (tr("pychemqt", "Finned Tube"), "tubefinned",
-              str),
-             (tr("pychemqt", "Fin height"), "hFin",
-              unidades.Length),
-             (tr("pychemqt", "Thickness at bottom of fin"),
+             (QtWidgets.QApplication.translate("equipment", "Internal Fouling"), "fi", unidades.Fouling),
+             (QtWidgets.QApplication.translate("equipment", "External Fouling"), "fo", unidades.Fouling),
+             (QtWidgets.QApplication.translate("equipment", "Finned Tube"), "tubefinned", str),
+             (QtWidgets.QApplication.translate("equipment", "Fin height"), "hFin", unidades.Length),
+             (QtWidgets.QApplication.translate("equipment", "Thickness at bottom of fin"),
               "thicknessBaseFin", unidades.Length),
-             (tr("pychemqt", "Thickness at top of fin"),
+             (QtWidgets.QApplication.translate("equipment", "Thickness at top of fin"),
               "thicknessTopFin", unidades.Length),
-             (tr("pychemqt",
-                                     "External diameter at bottom of fin"),
+             (QtWidgets.QApplication.translate("equipment", "External diameter at bottom of fin"),
               "rootDoFin", unidades.Length),
-             (tr("pychemqt", "Fin thermal conductivity"),
+             (QtWidgets.QApplication.translate("equipment", "Fin thermal conductivity"),
               "kFin", unidades.ThermalConductivity),
-             (tr("pychemqt", "Fin count per meter"),
+             (QtWidgets.QApplication.translate("equipment", "Fin count per meter"),
               "nFin", unidades.Dimensionless),
-             (tr("pychemqt", "Mode"),
-              ("TEXT_MODO", "modo"), str),
-             (tr("pychemqt", "Arrangement Flow"),
+             (QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_MODO", "modo"), str),
+             (QtWidgets.QApplication.translate("equipment", "Arrangement Flow"),
               ("TEXT_FLUJO", "flujo"), str),
-             (tr("pychemqt", "Layout"),
+             (QtWidgets.QApplication.translate("equipment", "Layout"),
               ("TEXT_ORIENTACION", "orientacion"), str),
-             (tr("pychemqt", "Tube Mechanism"),
-              "phaseTube", str),
-             (tr("pychemqt", "Tube Fluid Speed"), "VTube",
-              unidades.Speed),
-             (tr("pychemqt", "Tube Reynolds"), "ReTube",
+             (QtWidgets.QApplication.translate("equipment", "Tube Mechanism"), "phaseTube", str),
+             (QtWidgets.QApplication.translate("equipment", "Tube Fluid Speed"), "VTube", unidades.Speed),
+             (QtWidgets.QApplication.translate("equipment", "Tube Reynolds"), "ReTube",
               unidades.Dimensionless),
-             (tr("pychemqt", "Tube In Temperature"),
+             (QtWidgets.QApplication.translate("equipment", "Tube In Temperature"),
               "TinTube", unidades.Temperature),
-             (tr("pychemqt", "Tube In Quality"),
+             (QtWidgets.QApplication.translate("equipment", "Tube In Quality"),
               "XinTube", unidades.Dimensionless),
-             (tr("pychemqt", "Tube Out Temperature"),
+             (QtWidgets.QApplication.translate("equipment", "Tube Out Temperature"),
               "ToutTube", unidades.Temperature),
-             (tr("pychemqt", "Tube Out Quality"),
+             (QtWidgets.QApplication.translate("equipment", "Tube Out Quality"),
               "XoutTube", unidades.Dimensionless),
-             (tr("pychemqt", "ΔP Tube"),
-              "deltaPTube", unidades.DeltaP),
-             (tr("pychemqt", "Tube heat transfer"),
+             (QtWidgets.QApplication.translate("equipment", "ΔP Tube"), "deltaPTube", unidades.DeltaP),
+             (QtWidgets.QApplication.translate("equipment", "Tube heat transfer"),
               "hTube", unidades.HeatTransfCoef),
-             (tr("pychemqt", "Annulli Mechanism"),
-              "phaseAnnulli", str),
-             (tr("pychemqt", "Annulli Fluid Speed"),
+             (QtWidgets.QApplication.translate("equipment", "Annulli Mechanism"), "phaseAnnulli", str),
+             (QtWidgets.QApplication.translate("equipment", "Annulli Fluid Speed"),
               "VAnnulli", unidades.Speed),
-             (tr("pychemqt", "Annulli Reynolds"),
+             (QtWidgets.QApplication.translate("equipment", "Annulli Reynolds"),
               "ReAnnulli", unidades.Dimensionless),
-             (tr("pychemqt", "Annulli In Temperature"),
+             (QtWidgets.QApplication.translate("equipment", "Annulli In Temperature"),
               "TinAnnulli", unidades.Temperature),
-             (tr("pychemqt", "Annulli In Quality"),
+             (QtWidgets.QApplication.translate("equipment", "Annulli In Quality"),
               "XinAnnulli", unidades.Dimensionless),
-             (tr("pychemqt", "Annulli Out Temperature"),
+             (QtWidgets.QApplication.translate("equipment", "Annulli Out Temperature"),
               "ToutAnnulli", unidades.Temperature),
-             (tr("pychemqt", "Annulli Out Quality"),
+             (QtWidgets.QApplication.translate("equipment", "Annulli Out Quality"),
               "XoutAnnulli", unidades.Dimensionless),
-             (tr("pychemqt", "ΔP Annulli", None),
+             (QtWidgets.QApplication.translate("equipment", "ΔP Annulli", None),
               "deltaPAnnulli", unidades.DeltaP),
-             (tr("pychemqt", "Annulli heat transfer"),
+             (QtWidgets.QApplication.translate("equipment", "Annulli heat transfer"),
               "hAnnulli", unidades.HeatTransfCoef),
-             (tr("pychemqt", "U"), "U",
-              unidades.HeatTransfCoef),
-             (tr("pychemqt", "Clean Factor"), "CF",
-              unidades.Dimensionless),
-             (tr("pychemqt", "Over Surface"), "OS",
-              unidades.Dimensionless),
-             (tr("pychemqt", "Base index"), "Base_index",
-              float),
-             (tr("pychemqt", "Current index"),
-              "Current_index", float),
-             (tr("pychemqt", "Install factor"),
-              "f_install", float),
-             (tr("pychemqt", "Material"),
-              ("TEXT_MATERIAL", "material"), str),
-             (tr("pychemqt", "Design Pressure"), "P_dis",
-              unidades.Pressure),
-             (tr("pychemqt", "Purchase Cost"), "C_adq",
-              unidades.Currency),
-             (tr("pychemqt", "Installed Cost"), "C_inst",
-              unidades.Currency)]
+             (QtWidgets.QApplication.translate("equipment", "U"), "U", unidades.HeatTransfCoef),
+             (QtWidgets.QApplication.translate("equipment", "Clean Factor"), "CF", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("equipment", "Over Surface"), "OS", unidades.Dimensionless),
+             (QtWidgets.QApplication.translate("equipment", "Base index"), "Base_index", float),
+             (QtWidgets.QApplication.translate("equipment", "Current index"), "Current_index", float),
+             (QtWidgets.QApplication.translate("equipment", "Install factor"), "f_install", float),
+             (QtWidgets.QApplication.translate("equipment", "Material"), ("TEXT_MATERIAL", "material"), str),
+             (QtWidgets.QApplication.translate("equipment", "Design Pressure"), "P_dis", unidades.Pressure),
+             (QtWidgets.QApplication.translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
+             (QtWidgets.QApplication.translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
         return l
 
     def writeStatetoJSON(self, state):
@@ -1481,7 +1428,7 @@ class Shell_Tube(equipment):
         P_dis: Presión de diseño, si no se especifica se usará la máxima presión del las corrientes del proceso
     """
 
-    title = tr("pychemqt", "Shell and Tube Heat Exchanger")
+    title = QtWidgets.QApplication.translate("equipment", "Shell and Tube Heat Exchanger")
     help = ""
     kwargs = {
         "entrada": [],
@@ -1554,58 +1501,58 @@ class Shell_Tube(equipment):
     TEXT_METHOD_SHELL = ["Stream analysis", "Bell-Delaware", "Kern"]
     TEXT_CLASS = ["TEMA R", "TEMA B", "TEMA C"]
     TEXT_FRONTHEAD = [
-        "A - "+tr("pychemqt", "Channel & Removable Cover"),
-        "B - "+tr("pychemqt", "Bonnet"),
-        "C - "+tr("pychemqt", "Removable Bundle"),
-        "D - "+tr("pychemqt", "Special High Pressure Closure"),
-        "N - "+tr("pychemqt", "Channel with Tubesheet & Removable Cover")]
+        "A - " + QtWidgets.QApplication.translate("equipment", "Channel & Removable Cover"),
+        "B - " + QtWidgets.QApplication.translate("equipment", "Bonnet"),
+        "C - " + QtWidgets.QApplication.translate("equipment", "Removable Bundle"),
+        "D - " + QtWidgets.QApplication.translate("equipment", "Special High Pressure Closure"),
+        "N - " + QtWidgets.QApplication.translate("equipment", "Channel with Tubesheet & Removable Cover")]
     TEXT_SHELL = [
-        "E - "+tr("pychemqt", "One Pass"),
-        "F - "+tr("pychemqt", "Two Pass"),
-        "G - "+tr("pychemqt", "Split Flow"),
-        "H - "+tr("pychemqt", "Double Split Flow"),
-        "J - "+tr("pychemqt", "Divided Flow"),
-        "K - "+tr("pychemqt", "Kettle Reboiler"),
-        "X - "+tr("pychemqt", "Cross Flow")]
+        "E - " + QtWidgets.QApplication.translate("equipment", "One Pass"),
+        "F - " + QtWidgets.QApplication.translate("equipment", "Two Pass"),
+        "G - " + QtWidgets.QApplication.translate("equipment", "Split Flow"),
+        "H - " + QtWidgets.QApplication.translate("equipment", "Double Split Flow"),
+        "J - " + QtWidgets.QApplication.translate("equipment", "Divided Flow"),
+        "K - " + QtWidgets.QApplication.translate("equipment", "Kettle Reboiler"),
+        "X - " + QtWidgets.QApplication.translate("equipment", "Cross Flow")]
     TEXT_REARHEAD = [
-        "L - "+tr("pychemqt", "Fixed Tubesheet (A head)"),
-        "M - "+tr("pychemqt", "Fixed Tubesheet (B head)"),
-        "N - "+tr("pychemqt", "Fixed Tubesheet (N head)"),
-        "P - "+tr("pychemqt", "Outside Packed Flt Head"),
-        "S - "+tr("pychemqt", "Flt Head with Backing Dev"),
-        "T - "+tr("pychemqt", "Pull Throught Flt Heat"),
-        "U - "+tr("pychemqt", "U-Tube Bundle"),
-        "W - "+tr("pychemqt", "Exit Sealed Flt Tubesheet")]
+        "L - " + QtWidgets.QApplication.translate("equipment", "Fixed Tubesheet (A head)"),
+        "M - " + QtWidgets.QApplication.translate("equipment", "Fixed Tubesheet (B head)"),
+        "N - " + QtWidgets.QApplication.translate("equipment", "Fixed Tubesheet (N head)"),
+        "P - " + QtWidgets.QApplication.translate("equipment", "Outside Packed Flt Head"),
+        "S - " + QtWidgets.QApplication.translate("equipment", "Flt Head with Backing Dev"),
+        "T - " + QtWidgets.QApplication.translate("equipment", "Pull Throught Flt Heat"),
+        "U - " + QtWidgets.QApplication.translate("equipment", "U-Tube Bundle"),
+        "W - " + QtWidgets.QApplication.translate("equipment", "Exit Sealed Flt Tubesheet")]
     TEXT_ORIENTATION = [
-        tr("pychemqt", "Horizontal"),
-        tr("pychemqt", "Vertical")]
+        QtWidgets.QApplication.translate("equipment", "Horizontal"),
+        QtWidgets.QApplication.translate("equipment", "Vertical")]
     TEXT_DISTRIBUTION_TUBE = [
-        tr("pychemqt", "Triangular")+", 30º",
-        tr("pychemqt", "Diamond")+", 45º",
-        tr("pychemqt", "Rotated Triangular")+", 60º",
-        tr("pychemqt", "Square")+", 90º"]
+        QtWidgets.QApplication.translate("equipment", "Triangular")+", 30º",
+        QtWidgets.QApplication.translate("equipment", "Diamond")+", 45º",
+        QtWidgets.QApplication.translate("equipment", "Rotated Triangular")+", 60º",
+        QtWidgets.QApplication.translate("equipment", "Square")+", 90º"]
     TEXT_BAFFLE_TYPE = [
-        tr("pychemqt", "Single segmental"),
-        tr("pychemqt", "Double segmental"),
-        tr("pychemqt", "Triple segmental"),
-        tr("pychemqt", "No tubes in window"),
-        tr("pychemqt", "Disk & donut"),
-        tr("pychemqt", "Rod")]
+        QtWidgets.QApplication.translate("equipment", "Single segmental"),
+        QtWidgets.QApplication.translate("equipment", "Double segmental"),
+        QtWidgets.QApplication.translate("equipment", "Triple segmental"),
+        QtWidgets.QApplication.translate("equipment", "No tubes in window"),
+        QtWidgets.QApplication.translate("equipment", "Disk & donut"),
+        QtWidgets.QApplication.translate("equipment", "Rod")]
     TEXT_COST_TYPE = [
-        tr("pychemqt", "Fixed Head"),
-        tr("pychemqt", "Kettle Reboiler"),
-        tr("pychemqt", "U-Tube")]
+        QtWidgets.QApplication.translate("equipment", "Fixed Head"),
+        QtWidgets.QApplication.translate("equipment", "Kettle Reboiler"),
+        QtWidgets.QApplication.translate("equipment", "U-Tube")]
     TEXT_COST_MATERIAL = [
-        tr("pychemqt", "Carbon Steel"),
-        tr("pychemqt", "Stainless Steel 316"),
-        tr("pychemqt", "Stainless Steel 304"),
-        tr("pychemqt", "Stainless Steel 347"),
-        tr("pychemqt", "Nickel 200"),
-        tr("pychemqt", "Monel 400"),
-        tr("pychemqt", "Inconel 600"),
-        tr("pychemqt", "Incoloy 825"),
-        tr("pychemqt", "Titanium"),
-        tr("pychemqt", "Hastelloy")]
+        QtWidgets.QApplication.translate("equipment", "Carbon Steel"),
+        QtWidgets.QApplication.translate("equipment", "Stainless Steel 316"),
+        QtWidgets.QApplication.translate("equipment", "Stainless Steel 304"),
+        QtWidgets.QApplication.translate("equipment", "Stainless Steel 347"),
+        QtWidgets.QApplication.translate("equipment", "Nickel 200"),
+        QtWidgets.QApplication.translate("equipment", "Monel 400"),
+        QtWidgets.QApplication.translate("equipment", "Inconel 600"),
+        QtWidgets.QApplication.translate("equipment", "Incoloy 825"),
+        QtWidgets.QApplication.translate("equipment", "Titanium"),
+        QtWidgets.QApplication.translate("equipment", "Hastelloy")]
 
     @property
     def isCalculable(self):
@@ -1616,11 +1563,11 @@ class Shell_Tube(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entradaTubo"]:
-            self.msg = tr("pychemqt", "undefined tubeside input")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined tubeside input")
             self.status = 0
             return
         if not self.kwargs["entradaCarcasa"]:
-            self.msg = tr("pychemqt", "undefined shellside input")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined shellside input")
             self.status = 0
             return
 

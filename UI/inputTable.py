@@ -29,8 +29,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 from functools import partial
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
 from numpy import loadtxt
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib.unidades import Temperature
 from UI.widgets import Entrada_con_unidades, Tabla
@@ -39,18 +39,18 @@ from UI.widgets import Entrada_con_unidades, Tabla
 class eqDIPPR(QtWidgets.QWidget):
     """Custom widget to define DIPPR equation input"""
     def __init__(self, value, parent=None):
-        super(eqDIPPR, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Eq DIPPR") + " "))
+        layout.addWidget(QtWidgets.QLabel(self.tr("Eq DIPPR") + " "))
         self.eqDIPPR = QtWidgets.QSpinBox()
         self.eqDIPPR.setValue(value)
         self.eqDIPPR.setRange(1, 9)
         self.eqDIPPR.setAlignment(
-            QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
+            QtCore.Qt.AlignmentFlag.AlignRight
+            | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.eqDIPPR.setFixedWidth(50)
-        txt = tr("pychemqt", "Equation") + "\n"
+        txt = self.tr("Equation") + "\n"
         txt += "\t1:\tY = A+B*T+C*T²+D*T³+E*T⁴\n"
         txt += "\t2:\tY = exp(A+B*T+C*ln(T)+D*T^E)\n"
         txt += "\t3:\tY = A*T^(B/(1+C*T+D*T^2))\n"
@@ -60,15 +60,11 @@ class eqDIPPR(QtWidgets.QWidget):
         txt += "\t7:\tY = A*(1-Tr)^(B+C*Tr+D*Tr²+E*Tr³)\n"
         txt += "\t8:\tY = A+ B*((C/T)/sinh(C/T))² + D*((E/T)/cosh(E/T))²\n"
         txt += "\t9:\tY = A²/Tr+B-2ACTr-ADTr²-C²Tr³/3-CDTr⁴/2-D²Tr⁵/5\n"
-        txt += tr("pychemqt", "where") + ":\n"
-        txt += "\t" + tr(
-            "pychemqt", "Y Property to fit") + "\n"
-        txt += "\t" + tr(
-            "pychemqt", "T temperature in Kelvin") + "\n"
-        txt += "\t" + tr(
-            "pychemqt", "Tr: reduced temperature T/Tc") + "\n"
-        txt += "\t" + tr(
-            "pychemqt", "A,B,C,D,E parameters")
+        txt += self.tr("where") + ":\n"
+        txt += "\t" + self.tr("Y Property to fit") + "\n"
+        txt += "\t" + self.tr("T temperature in Kelvin") + "\n"
+        txt += "\t" + self.tr("Tr: reduced temperature T/Tc") + "\n"
+        txt += "\t" + self.tr("A,B,C,D,E parameters")
         self.eqDIPPR.setToolTip(txt)
         layout.addWidget(self.eqDIPPR)
         layout.addStretch()
@@ -100,7 +96,7 @@ class InputTableWidget(QtWidgets.QWidget):
         eq: Value for DIPPR equation
         unit: List of unidades classes for column definition
         """
-        super(InputTableWidget, self).__init__(parent)
+        super().__init__(parent)
         self.columnas = columnas
         self.title = title
         self.unit = unit
@@ -108,20 +104,17 @@ class InputTableWidget(QtWidgets.QWidget):
         gridLayout.setContentsMargins(0, 0, 0, 0)
         openButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileOpen.png")), "")
-        openButton.setToolTip(tr(
-            "pychemqt", "Load data from a file"))
+        openButton.setToolTip(self.tr("Load data from a file"))
         openButton.clicked.connect(self.open)
         gridLayout.addWidget(openButton, 1, 1)
         saveButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileSave.png")), "")
-        saveButton.setToolTip(tr(
-            "pychemqt", "Save data to a file"))
+        saveButton.setToolTip(self.tr("Save data to a file"))
         saveButton.clicked.connect(self.save)
         gridLayout.addWidget(saveButton, 1, 2)
         clearButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/clear.png")), "")
-        clearButton.setToolTip(tr(
-            "pychemqt", "Clear data"))
+        clearButton.setToolTip(self.tr("Clear data"))
         clearButton.clicked.connect(self.delete)
         gridLayout.addWidget(clearButton, 1, 3)
         gridLayout.addItem(QtWidgets.QSpacerItem(
@@ -165,9 +158,7 @@ class InputTableWidget(QtWidgets.QWidget):
     def open(self):
         """Load data from a test file"""
         fname, ext = QtWidgets.QFileDialog.getOpenFileName(
-            self,
-            tr("pychemqt", "Open text file"),
-            "./")
+            self, self.tr("Open text file"), "./")
         if fname:
             try:
                 # Numpy raise error if use the fname directly and find a
@@ -179,17 +170,14 @@ class InputTableWidget(QtWidgets.QWidget):
             except ValueError as er:
                 # Raise a error msg if the file can load by loadtxt, the user
                 # can select any type of file and the input error is possible
-                title = tr(
-                    "pychemqt", "Failed to load file")
+                title = self.tr("Failed to load file")
                 msg = fname + "\n" + er.args[0]
                 QtWidgets.QMessageBox.critical(self, title, msg)
 
     def save(self):
         """Save currend data of table to a file"""
         fname, ext = QtWidgets.QFileDialog.getSaveFileName(
-            self,
-            tr("pychemqt", "Save data to file"),
-            "./")
+            self, self.tr("Save data to file"), "./")
         if fname:
             with open(fname, 'w') as file:
                 file.write("#"+self.title+"\n")
@@ -268,7 +256,7 @@ class InputTableDialog(QtWidgets.QDialog):
         helpFile: Path for help file, file or url
         """
         parent = kwargs.get("parent", None)
-        super(InputTableDialog, self).__init__(parent)
+        super().__init__(parent)
         title = kwargs.get("title", "")
         self.setWindowTitle(title)
         self.helpFile = helpFile
@@ -276,9 +264,11 @@ class InputTableDialog(QtWidgets.QDialog):
         self.widget = InputTableWidget(columnas, **kwargs)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         if help:
-            self.buttonBox.addButton(QtWidgets.QDialogButtonBox.StandardButton.Help)
+            self.buttonBox.addButton(
+                QtWidgets.QDialogButtonBox.StandardButton.Help)
             self.buttonBox.helpRequested.connect(self.ayuda)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)

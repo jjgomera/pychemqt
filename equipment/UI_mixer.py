@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 
 from lib.unidades import Pressure
 from equipment.parents import UI_equip
@@ -53,8 +53,8 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Output Pressure Method")), 1, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(
+            self.tr("Output Pressure Method")), 1, 1)
         self.criterio = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METODO:
             self.criterio.addItem(txt)
@@ -62,10 +62,9 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(self.criterio, 1, 2)
 
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            2, 1, 1, 3)
-        lyt_Calc.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Output Pressure")), 3, 1)
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 3)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Output Pressure")), 3, 1)
         self.Pout = Entrada_con_unidades(Pressure)
         self.Pout.valueChanged.connect(partial(self.changeParams, "Pout"))
         lyt_Calc.addWidget(self.Pout, 3, 2)

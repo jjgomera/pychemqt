@@ -56,7 +56,7 @@ not suitable for nonpolar substances with large molecular weight.
 from math import log, exp
 
 from scipy.constants import R
-from tools.qt import tr
+from tools.qt import QtWidgets
 
 from lib import unidades
 from lib.eos import EoS
@@ -97,7 +97,7 @@ __doi__ = {
         }
 
 
-alfa = (tr("pychemqt", "Original"),
+alfa = (QtWidgets.QApplication.translate("EoS", "Original"),
         "Boston-Mathias",
         "Twu",
         "Doridon")

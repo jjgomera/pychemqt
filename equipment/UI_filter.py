@@ -18,19 +18,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 #######################################################################
 ###                                                  Diálogo de definición de filtros, UI_filter                                                     ###
 #######################################################################
 
-from tools.qt import QtCore, QtWidgets, tr
-
 
 from equipment.liquid_solid import Filter
-from UI import UI_corriente
 from equipment import parents
 from lib import unidades
 from tools import costIndex
+from tools.qt import QtCore, QtWidgets
+from UI import UI_corriente
 from UI.widgets import Entrada_con_unidades
 
 
@@ -44,21 +42,21 @@ class UI_equipment(parents.UI_equip):
         #Pestaña entrada
         self.Entrada= UI_corriente.Ui_corriente(entrada)
         self.Entrada.Changed.connect(self.cambiar_entrada)
-        self.tabWidget.insertTab(0, self.Entrada, tr("equipment", "Entrada", None))
+        self.tabWidget.insertTab(0, self.Entrada, self.tr("Entrada", None))
 
         #Pestaña calculo
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
 
         #Pestaña costos
         gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(tr("equipment", "Tipo:", None)), 1, 0, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(self.tr("Tipo:", None)), 1, 0, 1, 1)
         self.tipo=QtWidgets.QComboBox()
-        self.tipo.addItem(tr("equipment", "Rotary vacuum belt discharge", None))
-        self.tipo.addItem(tr("equipment", "Rotary vacuum drum scraper discharge", None))
-        self.tipo.addItem(tr("equipment", "Rotary vacuum disk", None))
-        self.tipo.addItem(tr("equipment", "Horizontal vacuum belt", None))
-        self.tipo.addItem(tr("equipment", "Pressure leaf", None))
-        self.tipo.addItem(tr("equipment", "Plate and frame", None))
+        self.tipo.addItem(self.tr("Rotary vacuum belt discharge", None))
+        self.tipo.addItem(self.tr("Rotary vacuum drum scraper discharge", None))
+        self.tipo.addItem(self.tr("Rotary vacuum disk", None))
+        self.tipo.addItem(self.tr("Horizontal vacuum belt", None))
+        self.tipo.addItem(self.tr("Pressure leaf", None))
+        self.tipo.addItem(self.tr("Plate and frame", None))
         self.tipo.currentIndexChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.tipo, 1, 1, 1, 3)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(10,10,QtWidgets.QSizePolicy.Policy.Fixed,QtWidgets.QSizePolicy.Policy.Fixed),2,0,1,2)
@@ -69,13 +67,13 @@ class UI_equipment(parents.UI_equip):
 
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),6,0,1,6)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,0,1,6)
-        self.groupBox_Costos = QtWidgets.QGroupBox(tr("equipment", "Costos calculados", None))
+        self.groupBox_Costos = QtWidgets.QGroupBox(self.tr("Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,7,0,1,4)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Adquisición:", None)),1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(self.tr("Coste Adquisición:", None)),1,1)
         self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_adq,1,2)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Instalación:", None)),2,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(self.tr("Coste Instalación:", None)),2,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,2,2)
 
@@ -83,8 +81,8 @@ class UI_equipment(parents.UI_equip):
         #Pestaña salida
         self.SalidaGas= UI_corriente.Ui_corriente(readOnly=True)
         self.SalidaSolido= UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(self.SalidaGas,tr("equipment", "Gas filtrado", None))
-        self.Salida.addTab(self.SalidaSolido,tr("equipment", "Sólidos recogidos", None))
+        self.Salida.addTab(self.SalidaGas,self.tr("Gas filtrado", None))
+        self.Salida.addTab(self.SalidaSolido,self.tr("Sólidos recogidos", None))
 
         self.tabWidget.setCurrentIndex(0)
 

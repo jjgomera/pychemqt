@@ -27,7 +27,7 @@ import os, sys
 path=os.path.dirname("/home/jjgomera/pychemqt/")
 sys.path.append(path)
 
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 
 
 from lib import unidades
@@ -45,19 +45,19 @@ class UI_equipment(UI_equip):
         """
         equipment: instancia de equipo inicial
         """
-        super(UI_equipment, self).__init__(Screen, entrada=False, parent=parent)
+        super().__init__(Screen, entrada=False, parent=parent)
 
         #Pestaña entrada
 #        self.Entrada= UI_corriente.Ui_corriente(entrada)
 #        self.Entrada.Changed.connect(self.cambiar_entrada)
-#        self.tabWidget.insertTab(0, self.Entrada, tr("equipment", "Entrada", None, QtGui.QApplication.UnicodeUTF8))
+#        self.tabWidget.insertTab(0, self.Entrada, self.tr("Entrada", None, QtGui.QApplication.UnicodeUTF8))
 
         #Pestaña calculo
         gridLayout_Calculo = QtWidgets.QGridLayout(self.tabCalculo)
 
         #Pestaña costos
         gridLayout_Costos = QtWidgets.QGridLayout(self.tabCostos)
-        gridLayout_Costos.addWidget(QtWidgets.QLabel(tr("equipment", "Area:", None)), 1, 1, 1, 1)
+        gridLayout_Costos.addWidget(QtWidgets.QLabel(self.tr("Area:", None)), 1, 1, 1, 1)
         self.Area=Entrada_con_unidades(unidades.Area)
         self.Area.valueChanged.connect(self.calcularCostos)
         gridLayout_Costos.addWidget(self.Area, 1, 2, 1, 1)
@@ -69,21 +69,21 @@ class UI_equipment(UI_equip):
 
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),6,0,1,6)
         gridLayout_Costos.addItem(QtWidgets.QSpacerItem(20,20,QtWidgets.QSizePolicy.Policy.Expanding,QtWidgets.QSizePolicy.Policy.Expanding),10,0,1,6)
-        self.groupBox_Costos = QtWidgets.QGroupBox(tr("equipment", "Costos calculados", None))
+        self.groupBox_Costos = QtWidgets.QGroupBox(self.tr("Costos calculados", None))
         gridLayout_Costos.addWidget(self.groupBox_Costos,7,0,1,6)
         gridLayout_5 = QtWidgets.QGridLayout(self.groupBox_Costos)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Adquisición:", None)),0,1,1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(self.tr("Coste Adquisición:", None)),0,1,1,1)
         self.C_adq=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_adq,0,2,1,1)
-        gridLayout_5.addWidget(QtWidgets.QLabel(tr("equipment", "Coste Instalación:", None)),1,1,1,1)
+        gridLayout_5.addWidget(QtWidgets.QLabel(self.tr("Coste Instalación:", None)),1,1,1,1)
         self.C_inst=Entrada_con_unidades(unidades.Currency, retornar=False, readOnly=True)
         gridLayout_5.addWidget(self.C_inst,1,2,1,1)
 
         #Pestaña salida
         self.SalidaGas= UI_corriente.Ui_corriente(readOnly=True)
         self.SalidaSolido= UI_corriente.Ui_corriente(readOnly=True)
-        self.Salida.addTab(self.SalidaGas,tr("equipment", "Gas filtrado", None))
-        self.Salida.addTab(self.SalidaSolido,tr("equipment", "Sólidos recogidos", None))
+        self.Salida.addTab(self.SalidaGas,self.tr("Gas filtrado", None))
+        self.Salida.addTab(self.SalidaSolido,self.tr("Sólidos recogidos", None))
 
         self.tabWidget.setCurrentIndex(0)
 

@@ -177,7 +177,7 @@ from lib.mezcla import Mezcla
 from lib.physics import Collision_Neufeld
 from lib.thermo import ThermoAdvanced
 from lib.utilities import SimpleEq, refDoc
-from tools.qt import tr
+from tools.qt import QtWidgets
 
 
 __doi__ = {
@@ -1101,7 +1101,7 @@ class MEoS(ThermoAdvanced):
               "rho0": 0,
               "T0": 0}
     status = 0
-    msg = tr("pychemqt", "Unknown Variables")
+    msg = QtWidgets.QApplication.translate("MEoS", "Unknown Variables")
 
     def __init__(self, **kwargs):
         """
@@ -1378,7 +1378,7 @@ class MEoS(ThermoAdvanced):
 
             if not converge:
                 self.status = 5
-                self.msg = tr("pychemqt", "Solution don´t converge")
+                self.msg = QtWidgets.QApplication.translate("MEoS", "Solution don´t converge")
                 msg = "%s state don't converge" % (self.__class__.__name__)
                 logging.debug(msg)
 
@@ -2571,8 +2571,7 @@ class MEoS(ThermoAdvanced):
 
         if self._mode == "T-rho" and self.kwargs["rho"] == 0:
             self.status = 3
-            self.msg = tr(
-                "pychemqt", "Ideal condition at zero pressure")
+            self.msg = QtWidgets.QApplication.translate("MEoS", "Ideal condition at zero pressure")
         elif self._constants["Tmin"] <= T <= self._constants["Tmax"] and \
                 0 < rho:  # <= self._constants["rhomax"]*self.M:
             self.status = 1
@@ -2583,8 +2582,7 @@ class MEoS(ThermoAdvanced):
 #             self.msg = "Point out of limit of range of equation"
         else:
             self.status = 5
-            self.msg = tr(
-                "pychemqt", "input out of range")
+            self.msg = QtWidgets.QApplication.translate("MEoS", "input out of range")
             return
 
         if x == 0:
@@ -2620,8 +2618,7 @@ class MEoS(ThermoAdvanced):
 
         if P > self._constants["Pmax"]*1000:
             self.status = 3
-            self.msg = tr(
-                "pychemqt", "State with pressure above maximum")
+            self.msg = QtWidgets.QApplication.translate("MEoS", "State with pressure above maximum")
 
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)

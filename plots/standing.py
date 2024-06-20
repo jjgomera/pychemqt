@@ -43,7 +43,7 @@ from lib.config import conf_dir, Preferences
 from lib.crude import Z_list
 from lib.plot import PlotWidget
 from lib.utilities import formatLine
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
 from plots.ui import Chart
@@ -105,14 +105,13 @@ def calculate(config, dat=None):
 
 class Config(QtWidgets.QWidget):
     """Standing-Katz chart configuration"""
-    TITLE = tr("pychemqt", "Standing-Katz chart")
-    TITLECONFIG = tr("pychemqt", "Standing-Katz chart configuration")
+    TITLE = QtWidgets.QApplication.translate("Standing_Katz", "Standing-Katz chart")
+    TITLECONFIG = QtWidgets.QApplication.translate("Standing_Katz", "Standing-Katz chart configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Method:")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Method:")), 1, 1)
         self.method = QtWidgets.QComboBox()
         for Z in Z_list:
             name = Z.__name__[2:].replace("_", "-")
@@ -128,15 +127,13 @@ class Config(QtWidgets.QWidget):
         self.Tr = QtWidgets.QLineEdit()
         layout.addWidget(self.Tr, 4, 2, 1, 2)
         self.lineconfig = LineConfig(
-            "line", tr("pychemqt", "Reduced temperature style line"))
+            "line", self.tr("Reduced temperature style line"))
         layout.addWidget(self.lineconfig, 5, 1, 1, 3)
 
-        self.cruxconfig = LineConfig(
-            "crux", tr("pychemqt", "Crux style line"))
+        self.cruxconfig = LineConfig("crux", self.tr("Crux style line"))
         layout.addWidget(self.cruxconfig, 6, 1, 1, 3)
 
-        self.gridconfig = GridConfig(
-            "grid", tr("pychemqt", "Grid style line"))
+        self.gridconfig = GridConfig("grid", self.tr("Grid style line"))
         layout.addWidget(self.gridconfig, 7, 1, 1, 3)
 
         layout.addItem(QtWidgets.QSpacerItem(
@@ -165,8 +162,8 @@ class Config(QtWidgets.QWidget):
 
 class Standing_Katz(Chart):
     """Standing-Katz chart dialog"""
-    title = tr("pychemqt", "Standing and Katz compressivitity factors chart "
-               "for natural gas")
+    title = QtWidgets.QApplication.translate("Standing_Katz", "Standing and Katz compressivitity factors "
+               "chart for natural gas")
     widgetConfig = Config
     locLogo = (0.8, 0.12, 0.1, 0.1)
     note = None
@@ -186,9 +183,7 @@ class Standing_Katz(Chart):
         """Save chart image to png file"""
         fmt = "Portable Network Graphics (*.png)"
         fname, ext = QtWidgets.QFileDialog.getSaveFileName(
-            self,
-            tr("pychemqt", "Save chart to file"),
-            "./", fmt)
+            self, self.tr("Save chart to file"), "./", fmt)
         if fname and ext == fmt:
             if fname.split(".")[-1] != "png":
                 fname += ".png"
@@ -396,7 +391,7 @@ class Standing_Katz(Chart):
         if Tr:
             txt = f"$T_r$: {Tr:0.4g}\n$P_r$: {Pr:0.4g}\nZ: {Z:0.4g}"
         else:
-            Tr = tr("pychemqt", "Not converged")
+            Tr = self.tr("Not converged")
             txt = f"$T_r$: {Tr}\n$P_r$: {Pr:0.4g}\nZ: {Z:0.4g}"
         self.note = self.plt2.fig.text(0.92, 0.05, txt, size="8", ha="right")
 
@@ -408,11 +403,10 @@ class CalculateDialog(QtWidgets.QDialog):
     """Dialog to calculate a specified point"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        title = tr(
-            "pychemqt", "Calculate compressibility factor of natural gas")
+        title = self.tr("Calculate compressibility factor of natural gas")
         self.setWindowTitle(title)
         layout = QtWidgets.QGridLayout(self)
-        label = QtWidgets.QLabel(tr("pychemqt", "Method:"))
+        label = QtWidgets.QLabel(self.tr("Method:"))
         layout.addWidget(label, 1, 0)
         self.method = QtWidgets.QComboBox()
         for Z in Z_list:

@@ -23,52 +23,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 # Units config tools
 ###############################################################################
 
-import os
-from functools import partial
+from ast import literal_eval
 from configparser import ConfigParser
+from functools import partial
+import os
 
-from tools.qt import QtGui, QtWidgets, tr
-
+from tools.qt import QtGui, QtWidgets
 
 from lib import unidades
-from lib.config import conf_dir
+from lib.config import conf_dir, IMAGE_PATH
 
 
 class UI_confUnits_widget(QtWidgets.QWidget):
     """Units widget, to use in whatever need, dialog, wizard..."""
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config paramater with project config"""
-        super(UI_confUnits_widget, self).__init__(parent)
+        super().__init__(parent)
 
         layout = QtWidgets.QGridLayout(self)
-        systems = QtWidgets.QGroupBox(
-            tr("pychemqt", "Systems of measurement"))
+        systems = QtWidgets.QGroupBox(self.tr("Systems of measurement"))
         systems.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
                               QtWidgets.QSizePolicy.Policy.Fixed)
         layout.addWidget(systems, 1, 1, 1, 2)
         lytSystems = QtWidgets.QHBoxLayout(systems)
-        self.SI = QtWidgets.QRadioButton(
-            tr("pychemqt", "SI"))
+        self.SI = QtWidgets.QRadioButton(self.tr("SI"))
         self.SI.toggled.connect(partial(self.load, "si"))
         lytSystems.addWidget(self.SI)
-        self.AltSI = QtWidgets.QRadioButton(
-            tr("pychemqt", "Alt SI"))
+        self.AltSI = QtWidgets.QRadioButton(self.tr("Alt SI"))
         self.AltSI.toggled.connect(partial(self.load, "altsi"))
         lytSystems.addWidget(self.AltSI)
-        self.English = QtWidgets.QRadioButton(
-            tr("pychemqt", "English"))
+        self.English = QtWidgets.QRadioButton(self.tr("English"))
         self.English.toggled.connect(partial(self.load, "english"))
         lytSystems.addWidget(self.English)
-        self.Metric = QtWidgets.QRadioButton(
-            tr("pychemqt", "Metric"))
+        self.Metric = QtWidgets.QRadioButton(self.tr("Metric"))
         self.Metric.toggled.connect(partial(self.load, "metric"))
         lytSystems.addWidget(self.Metric)
-        self.CGS = QtWidgets.QRadioButton(
-            tr("pychemqt", "CGS"))
+        self.CGS = QtWidgets.QRadioButton(self.tr("CGS"))
         self.CGS.toggled.connect(partial(self.load, "cgs"))
         lytSystems.addWidget(self.CGS)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 2)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 2)
 
         self.tabla = QtWidgets.QTableWidget()
         layout.addWidget(self.tabla, 3, 1, 5, 1)
@@ -85,8 +80,8 @@ class UI_confUnits_widget(QtWidgets.QWidget):
             if magnitud[0] == "Currency":
                 for texto, unidad in zip(magnitud[2].__text__,
                                          magnitud[2].__units__):
-                    combo.addItem(QtGui.QIcon(QtGui.QPixmap(
-                        os.environ["pychemqt"]+"/images/flag/%s.gif" % unidad)),
+                    combo.addItem(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                        IMAGE_PATH, "flag", f"{unidad}.gif"))),
                         texto + " - " + unidad)
             else:
                 for unidad in magnitud[2].__text__:
@@ -103,7 +98,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         layout.addWidget(self.nombre, 3, 2)
         self.Guardar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileSave.png")),
-            tr("pychemqt", "Save profile"))
+            self.tr("Save profile"))
         self.Guardar.setEnabled(False)
         self.Guardar.clicked.connect(self.guardar)
         layout.addWidget(self.Guardar, 4, 2)
@@ -111,7 +106,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         layout.addWidget(self.perfiles, 6, 2)
         self.Cargar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/fileOpen.png")),
-            tr("pychemqt", "Load profile"))
+            self.tr("Load profile"))
         self.Cargar.clicked.connect(self.load)
         layout.addWidget(self.Cargar, 7, 2)
 
@@ -143,7 +138,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
             Config = ConfigParser()
             Config.read(conf_dir+"unitrc")
             for i in Config.options("units"):
-                self.perfiles.addItem(tr("pychemqt", i))
+                self.perfiles.addItem(self.tr(i))
             self.perfiles.setEnabled(True)
             self.Cargar.setEnabled(True)
         else:
@@ -161,24 +156,24 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         else:
             Config.add_section("units")
         Config.set("units", str(self.nombre.text()), lista)
-        Config.write(open(conf_dir+"unitrc", "w"))
+        with open(conf_dir+"unitrc", "w") as unit_file:
+            Config.write(unit_file)
         self.actualizar_lista_perfiles()
 
-    def nameChanged(self, nombre):
-        if nombre:
-            self.Guardar.setEnabled(True)
-        else:
-            self.Guardar.setEnabled(False)
+    def nameChanged(self, name):
+        """Update state of boton Guardar"""
+        self.Guardar.setEnabled(bool(name))
 
-    def load(self, set=None):
+    def load(self, unitset=None):
         """Load unit set, opcional set parameter can be any of predefined:
             si, altsi, metric, cgs, english"""
-        if set:
-            lista = unidades.units_set[set]
+        if unitset:
+            lista = unidades.units_set[unitset]
         else:
             Config = ConfigParser()
             Config.read(conf_dir+"unitrc")
-            lista = eval(Config.get("units", str(self.perfiles.currentText())))
+            lista = literal_eval(
+                Config.get("units", str(self.perfiles.currentText())))
         for combo, indice in zip(self.combos, lista):
             combo.setCurrentIndex(indice)
 
@@ -206,6 +201,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
 
     @classmethod
     def default(cls, config):
+        """Default configuration"""
         config.add_section("Units")
         config.set("Units", "System", "0")
         for magnitud in unidades.MAGNITUDES[:-1]:
@@ -216,13 +212,14 @@ class UI_confUnits_widget(QtWidgets.QWidget):
 class Dialog(QtWidgets.QDialog):
     """Units configuration dialog"""
     def __init__(self, config=None, parent=None):
-        super(Dialog, self).__init__(parent)
-        self.setWindowTitle(tr("pychemqt", "Units"))
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Units"))
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confUnits_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
-                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)

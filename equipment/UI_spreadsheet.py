@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 import os
 
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 
 try:
     import ezodf
@@ -98,33 +98,31 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         layout = QtWidgets.QGridLayout(self.Entrada)
-        label = tr(
-            "pychemqt", "Spreadsheet path")+":"
-        msg = tr(
-            "pychemqt", "Select Spreadsheet")
+        label = self.tr("Spreadsheet path")+":"
+        msg = self.tr("Select Spreadsheet")
         patrones = []
         if os.environ["ezodf"]:
-            patrones.append(tr(
-                "pychemqt", "Libreoffice spreadsheet files")+" (*.ods)")
+            patrones.append(
+                self.tr("Libreoffice spreadsheet files")+" (*.ods)")
         if os.environ["xlwt"]:
-            patrones.append(tr(
-                "pychemqt", "Microsoft Excel 97/2000/XP/2003 XML")+" (*.xls)")
+            patrones.append(
+                self.tr("Microsoft Excel 97/2000/XP/2003 XML")+" (*.xls)")
         if os.environ["openpyxl"]:
-            patrones.append(tr(
-                "pychemqt", "Microsoft Excel 2007/2010 XML")+" (*.xlsx)")
+            patrones.append(
+                self.tr("Microsoft Excel 2007/2010 XML")+" (*.xlsx)")
         patron = ";;".join(patrones)
         self.filename = PathConfig(label, msg=msg, patron=patron)
         self.filename.valueChanged.connect(self.changeSpreadsheet)
         layout.addWidget(self.filename, 1, 1)
-        header = [tr("pychemqt", "Entity"),
-                  tr("pychemqt", "Variable"),
-                  tr("pychemqt", "Unit value"),
-                  tr("pychemqt", "Sheet"),
-                  tr("pychemqt", "Cell")]
+        header = [self.tr("Entity"),
+                  self.tr("Variable"),
+                  self.tr("Unit value"),
+                  self.tr("Sheet"),
+                  self.tr("Cell")]
         self.datamap = Tabla(
             5, filas=1, dinamica=True, horizontalHeader=header,
-            verticalHeader=False, orientacion=QtCore.Qt.AlignmentFlag.AlignLeft,
-            delegate=None, delegateforRow=TableDelegate, parent=self)
+            verticalHeader=False, delegate=None, delegateforRow=TableDelegate,
+            orientacion=QtCore.Qt.AlignmentFlag.AlignLeft, parent=self)
         self.datamap.setEnabled(False)
         self.datamap.cellChanged.connect(self.cellChanged)
         self.datamap.rowFinished.connect(self.addRow)

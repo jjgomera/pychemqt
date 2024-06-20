@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import pi, exp, sqrt, log
 import os
 
-from tools.qt import tr
+from tools.qt import QtWidgets
 
 from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless,
                           Length, Power)
@@ -59,7 +59,7 @@ class Scrubber(Separador_SolidGas):
         modelo_DeltaP:
             0 - Young (1977)
     """
-    title = tr("pychemqt", "Scrubber")
+    title = QtWidgets.QApplication.translate("equipment", "Scrubber")
     help = ""
     kwargs = {"entradaGas": None,
               "entradaLiquido": None,
@@ -77,8 +77,8 @@ class Scrubber(Separador_SolidGas):
     calculateValue = ("deltaP", "rendimiento")
 
     TEXT_TIPO = [
-        tr("pychemqt", "Rating: Calculate efficiency"),
-        tr("pychemqt", "Design: Calculate diameter")]
+        QtWidgets.QApplication.translate("equipment", "Rating: Calculate efficiency"),
+        QtWidgets.QApplication.translate("equipment", "Design: Calculate diameter")]
     TEXT_MODEL = ["Johnstone (1954)",
                   "Calvert (1972)"]
     TEXT_MODEL_DELTAP = ["Calvert (1968)",
@@ -92,26 +92,26 @@ class Scrubber(Separador_SolidGas):
          "title": "The Mean Free Path in Air",
          "ref": "J. Aerosol Sci. 19(2) (1988) 159-166"
                 "19(2):159-166",
-         "doi":  "10.1016/0021-8502(88)90219-4"},
+         "doi": "10.1016/0021-8502(88)90219-4"},
         {"autor": "Calvert, S., Lundgren, D., Mehta, D.S.",
          "title": "Venturi Scrubber Performance",
          "ref": "J. Air Pollution Control Assoc., 22(7) (1972) 529-532",
-         "doi":  "10.1080/00022470.1972.10469674"},
+         "doi": "10.1080/00022470.1972.10469674"},
         {"autor": "Yung, S.-C., Barbarika, H.F., Calvert, S.",
          "title": "Pressure Loss in Venturi Scrubbers",
          "ref": "J. Air Pollution Control Assoc., 27(4) (1977) 348-351",
-         "doi":  "10.1080/00022470.1977.10470432"},
+         "doi": "10.1080/00022470.1977.10470432"},
         {"autor": "Hesketh, H.E.",
          "title": "Fine Particle Collection Efficiency Related to Pressure "
                   "Drop, Scrubbant and Particle Properties, and Contact "
                   "Mechanism",
          "ref": "J. Air Pollution Control Assoc., 24(10) (1974) 939-942",
-         "doi":  "10.1080/00022470.1974.10469992"},
+         "doi": "10.1080/00022470.1974.10469992"},
         {"autor": "Johnstone, H.F., Feild, R.B., Tassler, M.C.",
          "title": "Gas Absorption and Aerosol Collection in a Venturi "
                   "Atomizer",
          "ref": "Ind. Eng. Chemistry 46(8) (1954) 1601-1608",
-         "doi":  "10.1021/ie50536a028"},
+         "doi": "10.1021/ie50536a028"},
     ]
 
     @property
@@ -124,33 +124,28 @@ class Scrubber(Separador_SolidGas):
             self.statusDeltaP = 0
 
         if not self.kwargs["entradaGas"]:
-            self.msg = tr(
-                "pychemqt", "undefined gas stream")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined gas stream")
             self.status = 0
             return
         if not self.kwargs["entradaLiquido"]:
-            self.msg = tr(
-                "pychemqt", "undefined liquid stream")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined liquid stream")
             self.status = 0
             return
         if self.kwargs["tipo_calculo"] == 0 and not self.kwargs["diametro"]:
-            self.msg = tr("pychemqt", "undefined diameter")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined diameter")
             self.status = 0
             return
         elif self.kwargs["tipo_calculo"] == 1 and \
                 not self.kwargs["rendimientoAdmisible"]:
-            self.msg = tr(
-                "pychemqt", "undefined efficiency")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined efficiency")
             self.status = 0
             return
 
         if self.kwargs["modelo_rendimiento"] == 0 and not self.kwargs["k"]:
-            self.msg = tr(
-                "pychemqt", "undefined venturi constant")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined venturi constant")
             self.status = 3
         elif self.kwargs["modelo_rendimiento"] == 1 and not self.kwargs["f"]:
-            self.msg = tr(
-                "pychemqt", "undefined calvert coefficient")
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined calvert coefficient")
             self.status = 3
 
         return True
@@ -297,7 +292,7 @@ class Scrubber(Separador_SolidGas):
         Gas = self.kwargs["entradaGas"]
 
         txt = os.linesep + "#---------------"
-        txt += tr("pychemqt", "Calculate properties")
+        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(13))
         txt += Separador_SolidGas.propTxt(self, 13, Gas)
@@ -305,27 +300,20 @@ class Scrubber(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(tr("pychemqt", "Mode"),
-              ("TEXT_TIPO", "tipo_calculo"), str),
-             (tr("pychemqt", "Model"),
+        l = [(QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
+             (QtWidgets.QApplication.translate("equipment", "Model"),
               ("TEXT_MODEL", "modelo_rendimiento"), str),
-             (tr("pychemqt", "Pressure Loss Model"),
+             (QtWidgets.QApplication.translate("equipment", "Pressure Loss Model"),
               ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
-             (tr("pychemqt", "Throat Diameter"), "Dt",
-              Length),
-             (tr("pychemqt", "Throat Length"), "Lt",
-              Length),
-             (tr(
-                 "pychemqt", "Johnstone method scrubber constant"),
+             (QtWidgets.QApplication.translate("equipment", "Throat Diameter"), "Dt", Length),
+             (QtWidgets.QApplication.translate("equipment", "Throat Length"), "Lt", Length),
+             (QtWidgets.QApplication.translate("equipment", "Johnstone method scrubber constant"),
                  "k", Dimensionless),
-             (tr(
-                 "pychemqt", "Calvert method scrubber constant"),
+             (QtWidgets.QApplication.translate("equipment", "Calvert method scrubber constant"),
                  "f", Dimensionless),
-             (tr("pychemqt", "Drops Diameter"), "dd",
-              Length),
-             (tr("pychemqt", "Throat Cross Area"), "At",
-              Area),
-             (tr("pychemqt", "Throat Speed"), "Vg", Speed)]
+             (QtWidgets.QApplication.translate("equipment", "Drops Diameter"), "dd", Length),
+             (QtWidgets.QApplication.translate("equipment", "Throat Cross Area"), "At", Area),
+             (QtWidgets.QApplication.translate("equipment", "Throat Speed"), "Vg", Speed)]
 
         for prop in Separador_SolidGas.propertiesEquipment():
             l.append(prop)
@@ -349,75 +337,75 @@ class Dryer(equipment):
         deltaP: Perdida de presión del equipo
 
     """
-    title=tr("pychemqt", "Solid dryer")
-    help=""
-    kwargs={"entradaSolido": None,
-            "entradaAire": None,
+    title = QtWidgets.QApplication.translate("equipment", "Solid dryer")
+    help = ""
+    kwargs = {"entradaSolido": None,
+              "entradaAire": None,
 
-            "mode": 0,
-            "HR": 0.0,
-            "TemperaturaSolid": 0.0,
-            "HumedadResidual": 0.0,
-            "Heat": 0.0,
-            "deltaP": 0.0}
+              "mode": 0,
+              "HR": 0.0,
+              "TemperaturaSolid": 0.0,
+              "HumedadResidual": 0.0,
+              "Heat": 0.0,
+              "deltaP": 0.0}
 
     kwargsInput = ("entradaAire", "entradaSolido")
-    kwargsValue=("HR", "TemperaturaSolid", "HumedadResidual", "Heat", "deltaP")
-    kwargsList=("mode", )
-    calculateValue=("CombustibleRequerido", "Heat")
+    kwargsValue = ("HR", "TemperaturaSolid", "HumedadResidual", "Heat", "deltaP")
+    kwargsList = ("mode", )
+    calculateValue= ("CombustibleRequerido", "Heat")
 
     TEXT_MODE=(
-        tr("pychemqt", "Rating, calculate output conditions"),
-        tr("pychemqt", "Design, calculate air flow necessary"))
+        QtWidgets.QApplication.translate("equipment", "Rating, calculate output conditions"),
+        QtWidgets.QApplication.translate("equipment", "Design, calculate air flow necessary"))
 
 
     @property
     def isCalculable(self):
         if not self.kwargs["entradaSolido"]:
-            self.msg=tr("pychemqt", "undefined solid stream input")
-            self.status=0
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined solid stream input")
+            self.status = 0
         elif not self.kwargs["entradaAire"]:
-            self.msg=tr("pychemqt", "undefined air stream input")
-            self.status=0
+            self.msg = QtWidgets.QApplication.translate("equipment", "undefined air stream input")
+            self.status = 0
         elif not self.kwargs["HR"]:
-            self.msg=tr("pychemqt", "using default air output relative humid 100%")
-            self.status=3
+            self.msg = QtWidgets.QApplication.translate("equipment", "using default air output relative humid 100%")
+            self.status = 3
             return True
         else:
             self.msg=""
-            self.status=1
+            self.status = 1
             return True
 
     def cleanOldValues(self, **kwargs):
         """Actualización de los kwargs con los nuevos introducidos si es necesario para cada equipo"""
         if "entrada" in kwargs:
-            kwargs["entradaSolido"]=kwargs["entrada"][0]
-            kwargs["entradaSolido"]=kwargs["entrada"][1]
+            kwargs["entradaSolido"] = kwargs["entrada"][0]
+            kwargs["entradaSolido"] = kwargs["entrada"][1]
             del kwargs["entrada"]
         self.kwargs.update(kwargs)
 
 
     def calculo(self):
         #TODO: De momento, no se implementan las cuestiones de cinetica de intercambio de calor y materia que definirían las dimensiones necesarias del equipo
-        HR=self.kwargs.get("HR", 100)
-        self.Heat=Power(self.kwargs["Heat"])
-        self.deltaP=Pressure(self.kwargs["deltaP"])
-        self.entradaAire=self.kwargs["entradaAire"]
+        HR = self.kwargs.get("HR", 100)
+        self.Heat = Power(self.kwargs["Heat"])
+        self.deltaP = Pressure(self.kwargs["deltaP"])
+        self.entradaAire = self.kwargs["entradaAire"]
 
-        Pout=min(self.kwargs["entradaSolido"].P.atm, self.kwargs["entradaAire"].P.atm)-self.deltaP.atm
+        Pout = min(self.kwargs["entradaSolido"].P.atm, self.kwargs["entradaAire"].P.atm)-self.deltaP.atm
 
-        aguaSolidoSalida=self.kwargs["HumedadResidual"]*self.kwargs["entradaSolido"].solido.caudal.kgh
-        aguaSolidoEntrada=self.kwargs["entradaSolido"].caudalmasico.kgh
-        if self.kwargs["mode"]==0:
-            Caudal_aguaenAireSalida=aguaSolidoEntrada-aguaSolidoSalida+self.entradaAire.caudalMasico.kgh*self.entradaAire.Xw
-            Caudal_airesalida=self.entradaAire.caudalMasico.kgh*self.entradaAire.Xa
-            if self.entradaAire.Hs>Caudal_aguaenAireSalida/Caudal_airesalida:
-                H=Caudal_aguaenAireSalida/Caudal_airesalida
+        aguaSolidoSalida = self.kwargs["HumedadResidual"]*self.kwargs["entradaSolido"].solido.caudal.kgh
+        aguaSolidoEntrada = self.kwargs["entradaSolido"].caudalmasico.kgh
+        if self.kwargs["mode"] == 0:
+            Caudal_aguaenAireSalida = aguaSolidoEntrada-aguaSolidoSalida+self.entradaAire.caudalMasico.kgh*self.entradaAire.Xw
+            Caudal_airesalida = self.entradaAire.caudalMasico.kgh*self.entradaAire.Xa
+            if self.entradaAire.Hs > Caudal_aguaenAireSalida/Caudal_airesalida:
+                H = Caudal_aguaenAireSalida/Caudal_airesalida
             else:
-                H=self.entradaAire.Hs
-                aguaSolidoSalida+=Caudal_aguaenAireSalida/Caudal_airesalida-self.entradaAire.Hs
-            self.SalidaAire=PsychroState(caudal=Caudal_aguaenAireSalida+Caudal_airesalida, tdb=self.entradaAire.Tdb, H=H)
-            self.SalidaSolido=self.kwargs["entradaSolido"].clone(T=self.SalidaAire.Tdb, P=Pout, split=aguaSolidoSalida/aguaSolidoEntrada)
+                H = self.entradaAire.Hs
+                aguaSolidoSalida += Caudal_aguaenAireSalida/Caudal_airesalida-self.entradaAire.Hs
+            self.SalidaAire = PsychroState(caudal=Caudal_aguaenAireSalida+Caudal_airesalida, tdb=self.entradaAire.Tdb, H=H)
+            self.SalidaSolido = self.kwargs["entradaSolido"].clone(T=self.SalidaAire.Tdb, P=Pout, split=aguaSolidoSalida/aguaSolidoEntrada)
         else:
             pass
 

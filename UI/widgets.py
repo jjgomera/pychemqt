@@ -53,7 +53,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from lib.config import conf_dir, IMAGE_PATH
 from lib.corriente import Corriente
 from lib.utilities import representacion
-from tools.qt import QtCore, QtGui, QtWidgets, tr
+from tools.qt import QtCore, QtGui, QtWidgets
 from tools.UI_unitConverter import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
 
@@ -61,12 +61,12 @@ from UI.delegate import CellEditor
 class Status(QtWidgets.QLabel):
     """Widget with status of dialog, equipment, stream, project, ..."""
     status = (
-        (0, tr("pychemqt", "Underspecified"), "yellow"),
-        (1, tr("pychemqt", "Solved"), "green"),
-        (2, tr("pychemqt", "Ignored"), "Light gray"),
-        (3, tr("pychemqt", "Warning"), "green"),
-        (4, tr("pychemqt", "Calculating..."), "Cyan"),
-        (5, tr("pychemqt", "Error"), "red"))
+        (0, QtWidgets.QApplication.translate("widgets", "Underspecified"), "yellow"),
+        (1, QtWidgets.QApplication.translate("widgets", "Solved"), "green"),
+        (2, QtWidgets.QApplication.translate("widgets", "Ignored"), "Light gray"),
+        (3, QtWidgets.QApplication.translate("widgets", "Warning"), "green"),
+        (4, QtWidgets.QApplication.translate("widgets", "Calculating..."), "Cyan"),
+        (5, QtWidgets.QApplication.translate("widgets", "Error"), "red"))
 
     def __init__(self, state=0, text="", parent=None):
         """
@@ -810,28 +810,23 @@ class PathConfig(QtWidgets.QWidget):
         self.path.setFixedHeight(24)
         self.path.textEdited.connect(self.pathEdited)
         layout.addWidget(self.path)
-        self.boton = QtWidgets.QPushButton(
-            tr("pychemqt", "Browse"))
+        self.boton = QtWidgets.QPushButton(self.tr("Browse"))
         self.boton.setFixedHeight(24)
         self.boton.clicked.connect(self.select)
         layout.addWidget(self.boton)
 
         # Define default values for parameters don't defined
         if not patron:
-            patron = tr(
-                "pychemqt", "All files") + "(*)"
+            patron = self.tr("All files") + "(*)"
         elif patron == "exe":
             if sys.platform == "win32":
-                patron = tr(
-                    "pychemqt", "Executable files") + "(*.exe *.bat)"
+                patron = self.tr("Executable files") + "(*.exe *.bat)"
             else:
-                patron = tr(
-                    "pychemqt", "All files") + "(*)"
+                patron = self.tr("All files") + "(*)"
         self.patron = patron
 
         if not msg:
-            msg = tr(
-                "pychemqt", "Select path of file")
+            msg = self.tr("Select path of file")
         self.msg = msg
         self.setText(path)
 
@@ -881,16 +876,16 @@ class LineConfig(QtWidgets.QGroupBox):
         self.Width.setRange(0.1, 5)
         self.Width.setDecimals(1)
         self.Width.setSingleStep(0.1)
-        self.Width.setToolTip(tr("pychemqt", "Line width"))
+        self.Width.setToolTip(self.tr("Line width"))
         lyt1.addWidget(self.Width)
         self.Style = LineStyleCombo()
-        self.Style.setToolTip(tr("pychemqt", "Line style"))
+        self.Style.setToolTip(self.tr("Line style"))
         lyt1.addWidget(self.Style)
         self.Color = ColorSelector(isAlpha=True)
-        self.Color.setToolTip(tr("pychemqt", "Line color"))
+        self.Color.setToolTip(self.tr("Line color"))
         lyt1.addWidget(self.Color)
         self.Marker = MarkerCombo()
-        self.Marker.setToolTip(tr("pychemqt", "Line marker"))
+        self.Marker.setToolTip(self.tr("Line marker"))
         self.Marker.currentIndexChanged.connect(self.changeMarker)
         lyt1.addWidget(self.Marker)
         lyt1.addItem(QtWidgets.QSpacerItem(
@@ -905,10 +900,10 @@ class LineConfig(QtWidgets.QGroupBox):
         self.MarkerSize.setRange(0.1, 5)
         self.MarkerSize.setDecimals(1)
         self.MarkerSize.setSingleStep(0.1)
-        self.MarkerSize.setToolTip(tr("pychemqt", "Marker size"))
+        self.MarkerSize.setToolTip(self.tr("Marker size"))
         lyt2.addWidget(self.MarkerSize)
         self.MarkerColor = ColorSelector()
-        self.MarkerColor.setToolTip(tr("pychemqt", "Marker face color"))
+        self.MarkerColor.setToolTip(self.tr("Marker face color"))
         lyt2.addWidget(self.MarkerColor)
         self.EdgeSize = QtWidgets.QDoubleSpinBox()
         self.EdgeSize.setFixedWidth(60)
@@ -916,10 +911,10 @@ class LineConfig(QtWidgets.QGroupBox):
         self.EdgeSize.setRange(0.1, 5)
         self.EdgeSize.setDecimals(1)
         self.EdgeSize.setSingleStep(0.1)
-        self.EdgeSize.setToolTip(tr("pychemqt", "Marker edge width"))
+        self.EdgeSize.setToolTip(self.tr("Marker edge width"))
         lyt2.addWidget(self.EdgeSize)
         self.EdgeColor = ColorSelector()
-        self.EdgeColor.setToolTip(tr("pychemqt", "Marker edge color"))
+        self.EdgeColor.setToolTip(self.tr("Marker edge color"))
         lyt2.addWidget(self.EdgeColor)
         layout.addLayout(lyt2)
 
@@ -984,13 +979,11 @@ class GridConfig(LineConfig):
         # grid line are useless
         self.Marker.setEnabled(False)
 
-        self.grid = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Show grid"))
+        self.grid = QtWidgets.QCheckBox(self.tr("Show grid"))
         self.layout().insertWidget(0, self.grid)
 
         lyt = QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Which") + ":"))
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Which") + ":"))
         self.gridWhich = QtWidgets.QComboBox()
         for name in self.WHICH:
             self.gridWhich.addItem(name)
@@ -1001,8 +994,7 @@ class GridConfig(LineConfig):
         self.layout().insertLayout(1, lyt)
 
         lyt = QtWidgets.QHBoxLayout()
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Axis") + ":"))
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Axis") + ":"))
         self.gridAxis = QtWidgets.QComboBox()
         for name in self.AXIS:
             self.gridAxis.addItem(name)
@@ -1111,39 +1103,30 @@ class NumericFactor(QtWidgets.QDialog):
     """Numeric format configuration dialog"""
     def __init__(self, config, unit=None, order=0, parent=None):
         super().__init__(parent)
-        self.setWindowTitle(
-            tr("pychemqt", "Format"))
+        self.setWindowTitle(self.tr("Format"))
         layout = QtWidgets.QGridLayout(self)
-        self.checkFixed = QtWidgets.QRadioButton(
-            tr(
-                "pychemqt", "Fixed decimal point"))
+        self.checkFixed = QtWidgets.QRadioButton(self.tr("Fixed decimal point"))
         layout.addWidget(self.checkFixed, 1, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Total digits")), 2, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Total digits")), 2, 2)
         self.TotalDigits = Entrada_con_unidades(
             int, width=45, value=0, boton=False, spinbox=True, min=0, max=12,
             showNull=True)
         layout.addWidget(self.TotalDigits, 2, 3)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Decimal digits")), 3, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Decimal digits")), 3, 2)
         self.DecimalDigits = Entrada_con_unidades(
             int, width=45, value=4, boton=False, spinbox=True, min=1, max=12)
         layout.addWidget(self.DecimalDigits, 3, 3)
         self.checkSignificant = QtWidgets.QRadioButton(
-            tr(
-                "pychemqt", "Significant figures"))
+            self.tr("Significant figures"))
         layout.addWidget(self.checkSignificant, 4, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Figures")), 5, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Figures")), 5, 2)
         self.FiguresSignificatives = Entrada_con_unidades(
             int, width=45, value=5, boton=False, spinbox=True, min=1, max=12)
         layout.addWidget(self.FiguresSignificatives, 5, 3)
         self.checkExp = QtWidgets.QRadioButton(
-            tr(
-                "pychemqt", "Exponential preferred"))
+            self.tr("Exponential preferred"))
         layout.addWidget(self.checkExp, 6, 1, 1, 3)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Figures")), 7, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Figures")), 7, 2)
         self.FiguresExponential = Entrada_con_unidades(
             int, width=45, value=5, boton=False, spinbox=True, min=1, max=12)
         layout.addWidget(self.FiguresExponential, 7, 3)
@@ -1151,21 +1134,18 @@ class NumericFactor(QtWidgets.QDialog):
             30, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 8, 1)
         self.checkExpVariable = QtWidgets.QCheckBox(
-            tr(
-                "pychemqt", "Exponential for big/small values"))
+            self.tr("Exponential for big/small values"))
         layout.addWidget(self.checkExpVariable, 9, 1, 1, 3)
-        self.labelTolerancia = QtWidgets.QLabel(
-            tr("pychemqt", "Tolerance"))
+        self.labelTolerancia = QtWidgets.QLabel(self.tr("Tolerance"))
         layout.addWidget(self.labelTolerancia, 10, 2)
         self.Tolerance = Entrada_con_unidades(
             int, width=45, value=4, boton=False, spinbox=True, min=0, max=12)
         layout.addWidget(self.Tolerance, 10, 3)
-        self.checkSign = QtWidgets.QCheckBox(tr(
-            "pychemqt", "Show sign in positive values"))
+        self.checkSign = QtWidgets.QCheckBox(
+            self.tr("Show sign in positive values"))
         layout.addWidget(self.checkSign, 11, 1, 1, 3)
         self.checkThousand = QtWidgets.QCheckBox(
-            tr(
-                "pychemqt", "Show thousand separator"))
+            self.tr("Show thousand separator"))
         layout.addWidget(self.checkThousand, 12, 1, 1, 3)
 
         self.checkFixed.toggled.connect(self.TotalDigits.setNotReadOnly)
@@ -1234,8 +1214,7 @@ class NumericFactor(QtWidgets.QDialog):
                 20, 10, QtWidgets.QSizePolicy.Policy.Fixed,
                 QtWidgets.QSizePolicy.Policy.Fixed), 15, 1, 1, 3)
             self.muestra = QtWidgets.QLabel()
-            layout.addWidget(QtWidgets.QLabel(tr(
-                "pychemqt", "Convert units")), 16, 1)
+            layout.addWidget(QtWidgets.QLabel(self.tr("Convert units")), 16, 1)
             self.unit = QtWidgets.QComboBox()
             for txt in unit.__text__:
                 self.unit.addItem(txt)
@@ -1253,8 +1232,7 @@ class NumericFactor(QtWidgets.QDialog):
     def updateMuestra(self):
         """Update numeric sample"""
         kwargs = self.args()
-        txt = tr("pychemqt", "Sample") + ": " + \
-            representacion(pi*1e4, **kwargs)
+        txt = self.tr("Sample") + ": " + representacion(pi*1e4, **kwargs)
         self.muestra.setText(txt)
 
     def args(self):
@@ -1388,8 +1366,7 @@ class Table_Graphics(QtWidgets.QWidget):
             else:
                 layout.addWidget(QtWidgets.QLabel(entity.msg))
         else:
-            layout.addWidget(QtWidgets.QLabel(
-                tr("pychemqt", "Undefined")))
+            layout.addWidget(QtWidgets.QLabel(self.tr("Undefined")))
 
 
 def createAction(text, **kw):
@@ -1473,8 +1450,8 @@ def okToContinue(parent, dirty, func, parameters):
 
     dialog = QtWidgets.QMessageBox.question(
         parent,
-        tr("pychemqt", "Unsaved changes"),
-        tr("pychemqt", "Save unsaved changes?"),
+        QtWidgets.QApplication.translate("widgets", "Unsaved changes"),
+        QtWidgets.QApplication.translate("widgets", "Save unsaved changes?"),
         QtWidgets.QMessageBox.StandardButton.Yes
         | QtWidgets.QMessageBox.StandardButton.No
         | QtWidgets.QMessageBox.StandardButton.Cancel,

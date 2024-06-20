@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from functools import partial
 
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 
 from lib.unidades import (Temperature, DeltaT, DeltaP, Power, Area,
                           HeatTransfCoef)
@@ -47,46 +47,39 @@ class UI_equipment(UI_equip):
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Output temperature")), 1, 1)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Output temperature")), 1, 1)
         self.Tout = Entrada_con_unidades(Temperature)
         self.Tout.valueChanged.connect(partial(self.changeParams, "Tout"))
         lyt.addWidget(self.Tout, 1, 2)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Temperature increase")), 2, 1)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Temperature increase")), 2, 1)
         self.DeltaT = Entrada_con_unidades(DeltaT)
         self.DeltaT.valueChanged.connect(partial(self.changeParams, "DeltaT"))
         lyt.addWidget(self.DeltaT, 2, 2)
-        lyt.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Heat Duty")), 3, 1)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Heat Duty")), 3, 1)
         self.Heat = Entrada_con_unidades(Power)
         self.Heat.valueChanged.connect(partial(self.changeParams, "Heat"))
         lyt.addWidget(self.Heat, 3, 2)
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "Heat Transfer"))
+        group = QtWidgets.QGroupBox(self.tr("Heat Transfer"))
         lyt.addWidget(group, 4, 1, 1, 2)
         lyt1 = QtWidgets.QGridLayout(group)
-        lyt1.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Area")), 1, 1)
+        lyt1.addWidget(QtWidgets.QLabel(self.tr("Area")), 1, 1)
         self.A = Entrada_con_unidades(Area)
         self.A.valueChanged.connect(partial(self.changeParams, "A"))
         lyt1.addWidget(self.A, 1, 2)
-        lyt1.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Heat Transfer Coefficient")), 2, 1)
+        lyt1.addWidget(QtWidgets.QLabel(
+            self.tr("Heat Transfer Coefficient")), 2, 1)
         self.U = Entrada_con_unidades(HeatTransfCoef)
         self.U.valueChanged.connect(partial(self.changeParams, "U"))
         lyt1.addWidget(self.U, 2, 2)
-        lyt1.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "External Temperature")), 3, 1)
+        lyt1.addWidget(QtWidgets.QLabel(self.tr("External Temperature")), 3, 1)
         self.Text = Entrada_con_unidades(Temperature)
         self.Text.valueChanged.connect(partial(self.changeParams, "Text"))
         lyt1.addWidget(self.Text, 3, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            5, 0, 1, 3)
-        lyt.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Pressure loss")), 6, 1)
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 0, 1, 3)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Pressure loss")), 6, 1)
         self.DeltaP = Entrada_con_unidades(DeltaP, value=0)
         self.DeltaP.valueChanged.connect(partial(self.changeParams, "DeltaP"))
         lyt.addWidget(self.DeltaP, 6, 2)
@@ -94,24 +87,21 @@ class UI_equipment(UI_equip):
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 7, 0, 1, 3)
 
-        group = QtWidgets.QGroupBox(
-            tr("pychemqt", "Results"))
+        group = QtWidgets.QGroupBox(self.tr("Results"))
         lyt.addWidget(group, 8, 1, 1, 5)
         layout = QtWidgets.QGridLayout(group)
-        layout.addWidget(QtWidgets.QLabel(
-            tr("pychemqt", "Heat Duty")), 0, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Heat Duty")), 0, 1)
         self.HeatCalc = Entrada_con_unidades(Power, retornar=False)
         self.HeatCalc.setReadOnly(True)
         layout.addWidget(self.HeatCalc, 0, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Output Temperature")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Output Temperature")), 1, 1)
         self.ToutCalc = Entrada_con_unidades(Temperature, retornar=False)
         self.ToutCalc.setReadOnly(True)
         layout.addWidget(self.ToutCalc, 1, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
-            0, 0, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed),
-            9, 0, 1, 3)
+            0, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 9, 0, 1, 3)
 
         if equipment:
             self.setEquipment(equipment)

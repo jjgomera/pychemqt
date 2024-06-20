@@ -32,7 +32,7 @@ and its configuration
 
 
 from numpy import logspace
-from tools.qt import QtWidgets, tr
+from tools.qt import QtWidgets
 
 from lib import drag
 from lib.config import Preferences
@@ -44,13 +44,13 @@ from plots.ui import Chart
 
 class Config(QtWidgets.QWidget):
     """Drag sphere chart configuration"""
-    TITLE = tr("pychemqt", "Drag Sphere chart")
-    TITLECONFIG = tr("pychemqt", "Drag sphere diagram configuration")
+    TITLE = QtWidgets.QApplication.translate("Drag", "Drag Sphere chart")
+    TITLECONFIG = QtWidgets.QApplication.translate("Drag", "Drag sphere diagram configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
-        layout.addWidget(QtWidgets.QLabel(tr("pychemqt", "Method:")), 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Method:")), 1, 1)
         self.metodos = QtWidgets.QComboBox()
         for f in drag.f_list:
             self.metodos.addItem(f.__name__)
@@ -60,14 +60,12 @@ class Config(QtWidgets.QWidget):
             QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
 
         self.lineconfig = LineConfig(
-            "line", tr("pychemqt", "Drag coefficient style line"))
+            "line", self.tr("Drag coefficient style line"))
         layout.addWidget(self.lineconfig, 4, 1, 1, 3)
-        self.cruxconfig = LineConfig(
-            "crux", tr("pychemqt", "Crux style line"))
+        self.cruxconfig = LineConfig("crux", self.tr("Crux style line"))
         layout.addWidget(self.cruxconfig, 5, 1, 1, 3)
 
-        self.gridconfig = GridConfig(
-            "grid", tr("pychemqt", "Grid style line"))
+        self.gridconfig = GridConfig("grid", self.tr("Grid style line"))
         layout.addWidget(self.gridconfig, 6, 1, 1, 3)
 
         layout.addItem(QtWidgets.QSpacerItem(
@@ -93,7 +91,7 @@ class Config(QtWidgets.QWidget):
 
 class Drag(Chart):
     """Drag sphere chart dialog"""
-    title = tr("pychemqt", "Drag Sphere")
+    title = QtWidgets.QApplication.translate("Drag", "Drag Sphere")
     widgetConfig = Config
     locLogo = (0.8, 0.85, 0.1, 0.1)
     note = None
@@ -171,8 +169,7 @@ class Drag(Chart):
         self.plt.lx = self.plt.ax.axhline(**kw)  # the horiz line
         self.plt.ly = self.plt.ax.axvline(**kw)  # the vert line
 
-        xlabel = tr("pychemqt", "Reynolds number") + ", " + \
-            r"$Re=\frac{V\rho D}{\mu}$"
+        xlabel = self.tr("Reynolds number") + ", " + r"$Re=\frac{V\rho D}{\mu}$"
         self.plt.ax.set_xlabel(xlabel, ha='center', size='10')
         self.plt.ax.set_ylabel("Drag coefficient, $C_d$, [-]", size='10')
 
@@ -203,10 +200,10 @@ class CalculateDialog(QtWidgets.QDialog):
     """Dialog to calculate a specified point"""
     def __init__(self, parent=None):
         super().__init__(parent)
-        title = tr("pychemqt", "Calculate friction factor")
+        title = self.tr("Calculate friction factor")
         self.setWindowTitle(title)
         layout = QtWidgets.QGridLayout(self)
-        label = QtWidgets.QLabel(tr("pychemqt", "Method:"))
+        label = QtWidgets.QLabel(self.tr("Method:"))
         layout.addWidget(label, 1, 0)
         self.metodos = QtWidgets.QComboBox()
         for f in drag.f_list:

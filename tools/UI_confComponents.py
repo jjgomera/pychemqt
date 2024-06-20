@@ -18,15 +18,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Component list tools
 ###############################################################################
 
+
+from ast import literal_eval as eval2
 import os
-from tools.qt import QtCore, QtGui, QtWidgets, tr
 
-
+from lib.config import IMAGE_PATH
+from tools.qt import QtCore, QtGui, QtWidgets
 from tools.UI_databank import UI_databank_widget
 
 
@@ -36,69 +37,71 @@ class UI_confComponents_widget(QtWidgets.QWidget):
 
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter with project config"""
-        super(UI_confComponents_widget, self).__init__(parent)
+        super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
         self.databank = UI_databank_widget()
         self.databank.BaseDatos.itemSelectionChanged.connect(
             self.comprobarBotones)
         layout.addWidget(self.databank, 1, 1, 17, 1)
 
-        layout.addItem(QtWidgets.QSpacerItem(30, 30, QtWidgets.QSizePolicy.Policy.Expanding,
-                                         QtWidgets.QSizePolicy.Policy.Fixed), 1, 2, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Components list")), 2, 3)
+        layout.addItem(QtWidgets.QSpacerItem(
+            30, 30, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 2, 1, 2)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Components list")), 2, 3)
         self.DeleteComponente = QtWidgets.QToolButton()
-        self.DeleteComponente.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/arrow-left.png")))
+        self.DeleteComponente.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "arrow-left.png"))))
         self.DeleteComponente.clicked.connect(self.Delete)
         layout.addWidget(self.DeleteComponente, 4, 2)
         self.AddComponente = QtWidgets.QToolButton()
-        self.AddComponente.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/arrow-right.png")))
+        self.AddComponente.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "arrow-right.png"))))
         self.AddComponente.clicked.connect(self.Add)
         layout.addWidget(self.AddComponente, 5, 2)
         self.Arriba = QtWidgets.QToolButton()
-        self.Arriba.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/arrow-up.png")))
+        self.Arriba.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "arrow-up.png"))))
         self.Arriba.clicked.connect(self.Up)
         layout.addWidget(self.Arriba, 6, 2)
         self.Abajo = QtWidgets.QToolButton()
-        self.Abajo.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/arrow-down.png")))
+        self.Abajo.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "arrow-down.png"))))
         self.Abajo.clicked.connect(self.Down)
         layout.addWidget(self.Abajo, 7, 2)
         self.clearComp = QtWidgets.QToolButton()
-        self.clearComp.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/clear.png")))
+        self.clearComp.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "clear.png"))))
         self.clearComp.clicked.connect(self.clear)
         layout.addWidget(self.clearComp, 8, 2)
 
         self.ListaComponentes = QtWidgets.QListWidget()
-        self.ListaComponentes.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
-                                            QtWidgets.QSizePolicy.Policy.Expanding)
-        self.ListaComponentes.itemSelectionChanged.connect(self.comprobarBotones)
+        self.ListaComponentes.setSizePolicy(
+            QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding)
+        self.ListaComponentes.itemSelectionChanged.connect(
+            self.comprobarBotones)
         layout.addWidget(self.ListaComponentes, 3, 3, 7, 1)
 
         self.DeleteSolido = QtWidgets.QToolButton()
-        self.DeleteSolido.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/arrow-left.png")))
+        self.DeleteSolido.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "arrow-left.png"))))
         self.DeleteSolido.clicked.connect(self.DeleteSolid)
         layout.addWidget(self.DeleteSolido, 13, 2)
         self.AddSolido = QtWidgets.QToolButton()
-        self.AddSolido.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/arrow-right.png")))
+        self.AddSolido.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "arrow-right.png"))))
         self.AddSolido.clicked.connect(self.AddSolid)
         layout.addWidget(self.AddSolido, 14, 2)
         self.clearSolido = QtWidgets.QToolButton()
-        self.clearSolido.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/clear.png")))
+        self.clearSolido.setIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
+            IMAGE_PATH, "button", "clear.png"))))
         self.clearSolido.clicked.connect(self.clearSolids)
         layout.addWidget(self.clearSolido, 15, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
-                                         QtWidgets.QSizePolicy.Policy.Expanding), 10, 4, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(tr(
-            "pychemqt", "Solids", None)), 11, 3)
+        layout.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 4, 1, 1)
+        layout.addWidget(QtWidgets.QLabel(self.tr("Solids", None)), 11, 3)
         self.ListaSolidos = QtWidgets.QListWidget()
         self.ListaSolidos.setFixedHeight(100)
         self.ListaSolidos.itemSelectionChanged.connect(self.comprobarBotones)
@@ -108,12 +111,9 @@ class UI_confComponents_widget(QtWidgets.QWidget):
         self.solidos = []
 
         if config and config.has_section("Components"):
-            try:
-                self.indices = eval(config.get("Components", "Components"))
-                self.solidos = eval(config.get("Components", "Solids"))
-            except:
-                self.indices = config.get("Components", "Components")
-                self.solidos = config.get("Components", "Solids")
+            self.indices = eval2(config.get("Components", "Components"))
+            self.solidos = eval2(config.get("Components", "Solids"))
+
             for indice in self.indices:
                 self.ListaComponentes.addItem("%03i - %s" % (
                     indice, self.databank.BaseDatos.item(indice-1, 1).text()))
@@ -239,6 +239,7 @@ class UI_confComponents_widget(QtWidgets.QWidget):
 
     @classmethod
     def default(cls, config):
+        """Default configuration"""
         config.add_section("Components")
         config.set("Components", "Components", "[]")
         config.set("Components", "Solids", "[]")
@@ -248,14 +249,14 @@ class UI_confComponents_widget(QtWidgets.QWidget):
 class Dialog(QtWidgets.QDialog):
     """Component list config dialog"""
     def __init__(self, config=None, parent=None):
-        super(Dialog, self).__init__(parent)
-        self.setWindowTitle(tr(
-            "pychemqt", "Define project Components"))
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Define project Components"))
         layout = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confComponents_widget(config)
         layout.addWidget(self.datos)
-        self.buttonBox = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Cancel |
-                                                QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
