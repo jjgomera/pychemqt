@@ -223,8 +223,8 @@ class D2O(MEoS):
                "method": "_thermo0",
                "__name__": "IAPWS (2021)",
                "__doi__": {
-                   "autor": "Kestin, J., Sengers, J.V., Kamgar-Parsi, B., "
-                            "Levelt Sengers, J.M.H.",
+                   "autor": "Huber, M.L., Perkins, R.A., Assael, M.J., "
+                            "Monogenidou, S.A., Hellmann, R., Sengers, J.V.",
                    "title": "New International Formulation for the Thermal "
                             "Conductivity of Heavy Water",
                    "ref": "J. Phys. Chem. Ref. Data 51(1) (2022) 013102",

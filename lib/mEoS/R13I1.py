@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import R134a
+from lib.mEoS.R134a import R134a
 
 
 class R13I1(MEoS):

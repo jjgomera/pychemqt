@@ -153,3 +153,10 @@ class R13(MEoS):
 
     _viscosity = (trnECS, )
     _thermal = (trnECS, )
+
+
+if __name__ == "__main__":
+    st = R13(P=256, T=92)
+    print(st.status, st.msg)
+    print(st.P)
+    print(st.v, st.u)

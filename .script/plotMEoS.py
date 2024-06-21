@@ -117,15 +117,15 @@ if Tmax > 10*Tc:
     extended = np.logspace(np.log10(Tc), np.log10(Tmax), 10)
 else:
     extended = np.linspace(Tc, Tmax, 5)
-#     extended = np.r_[Tc, Tmax]
+    # extended = np.r_[Tc, Tmax]
 isoT = np.concatenate([
     np.linspace(Tmin, Tc, 5, endpoint=False), extended])
 isoT_kw = {"ls": ":", "color": "red", "lw": 0.8}
 
 # Isobar lines to plot
 isoP = np.logspace(np.log10(Pt.P), np.log10(Pmax), 10)
-isoP_PIP = np.r_[0.1, 0.2, 0.5, 1, 2, 5, fluid.Pc.MPa, 15, 20, 25, 30, 35, 50,
-             100, 200, 500, 1000]*1e6
+isoP_PIP = np.r_[0.1, 0.2, 0.5, 1, 2, 5, fluid.Pc.MPa, 15, 20, 25, 30, 35,
+                 50, 100, 200, 500, 1000]*1e6
 isoP_kw = {"ls": ":", "color": "blue", "lw": 0.8}
 
 # # Isoenthalpic lines to plot
@@ -315,7 +315,7 @@ umax += abs(umax * 0.1)
 smax = max(svap)
 smax += abs(smax * 0.1)
 
-# ax_Ideal.set_ylim(bottom=0.01, top=)
+# ax_Ideal.set_ylim(bottom=1e-6)
 ax_PIP.set_ylim(-10, 15)
 ax_PIP.set_xlim(Tmin, min(2*fluid.Tc, Tmax))
 ax_Ph.set_xlim(Pt.h.kJkg, hmax)
@@ -445,9 +445,15 @@ for P in np.concatenate([isoP, isoP_PIP]):
     if P < fluid.Pc:
         sat_pnt = []
         for x in np.linspace(1, 0.1, 10):
-            sat_pnt.append(fluid(P=P, x=x))
+            if sat_pnt and sat_pnt[-1].status == 1:
+                sat_pnt.append(fluid(T=sat_pnt[-1].T, x=x))
+            else:
+                sat_pnt.append(fluid(P=P, x=x))
         for x in np.linspace(0.1, 0, 11):
-            sat_pnt.append(fluid(P=P, x=x))
+            if sat_pnt and sat_pnt[-1].status == 1:
+                sat_pnt.append(fluid(T=sat_pnt[-1].T, x=x))
+            else:
+                sat_pnt.append(fluid(P=P, x=x))
         sat = True
     else:
         sat = False
@@ -457,10 +463,9 @@ for P in np.concatenate([isoP, isoP_PIP]):
         point = fluid(P=P, T=t)
 
         if point.status == 1:
-#             print(t, point.T, point.v, point.u)
 
-#             if point.rhoM > point._constants["rhomax"]:
-#                 continue
+            # if point.rhoM > point._constants["rhomax"]:
+            #     continue
 
             # Discard point below the melting line
             if fluid._melting:
@@ -479,17 +484,18 @@ for P in np.concatenate([isoP, isoP_PIP]):
                 for p in sat_pnt[::-1]:
                     if p.status == 1:
                         pts.append(p)
-#                         print("SAT", t, p.T, p.v, p.u)
+                        # print("SAT", t, p.T, p.v, p.u, p.x)
                 sat = False
+            # print(t, point.T, point.v, point.u, point.x, point.status)
             pts.append(point)
 
     # Clean triple point when create a loop in isotherm
-#     if P == isoP[0]:
-#         for p in pts:
-#             print(p.u, p.v)
-#         for p in sat_pnt:
-#             print("sat", p.uv)
-#         del pts[0]
+    # if P == isoP[0]:
+    #     for p in pts:
+    #         print(p.u, p.v)
+    #     for p in sat_pnt:
+    #         print("sat", p.uv)
+    #     del pts[0]
 
     h = []
     T = []
@@ -501,8 +507,9 @@ for P in np.concatenate([isoP, isoP_PIP]):
         if p.status == 1:
             if p.x in (0, 1):
                 if not PIP and (p.PIP < 0 or p.PIP > 10):
-                    continue
-                PIP.append(p.PIP)
+                    PIP.append(None)
+                else:
+                    PIP.append(p.PIP)
             else:
                 PIP.append(None)
             h.append(p.h.kJkg)
@@ -760,10 +767,10 @@ for curva in ["ideal", "boyle", "joule-thomson", "joule"]:
     for t in T:
         # Optional limits for ideal curves to avoid false values out of range
 #         if curva in ["ideal", "boyle"]:
-#             if t > 5*fluid.Tc:
+#             if t > 3*fluid.Tc:
 #                 continue
 #         if curva == "joule-thomson":
-#             if t > 8*fluid.Tc:
+#             if t > 4.5*fluid.Tc:
 #                 continue
 
         P = fluid()._IdealCurve(curva, t)
