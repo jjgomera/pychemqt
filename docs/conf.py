@@ -45,8 +45,6 @@ from urllib.error import URLError
 
 sys.path.insert(0, os.path.abspath('../'))
 
-autodoc_mock_imports = ['sip', 'PyQt6', 'PyQt6.QtGui', 'PyQt6.QtCore',
-                        'PyQt6.QtWidgets']
 
 # Define pychemqt environment
 os.environ["pychemqt"] = os.path.abspath('../')
