@@ -71,7 +71,7 @@ from iapws.iapws97 import _PSat_T, _Region1, prop0
 
 from numpy import exp, roots, linspace, arange, concatenate
 from numpy.lib.scimath import log
-from tools.qt import QtWidgets
+from tools.qt import translate
 from scipy.optimize import fsolve
 
 # Avoid raise error at import this module if the the optional dependence isn't
@@ -585,12 +585,12 @@ class PsyState():
     msg = "Unknown variables"
 
     TEXT_MODE = [
-        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, Humidity Ratio"),
-        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, Relative humidity"),
-        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, T wet bulb"),
-        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, T dew point"),
-        QtWidgets.QApplication.translate("Psychrometry", "T dew point, Relative humidity"),
-        QtWidgets.QApplication.translate("Psychrometry", "T wet bulb, Relative humidity")
+        translate("Psychrometry", "T dry bulb, Humidity Ratio"),
+        translate("Psychrometry", "T dry bulb, Relative humidity"),
+        translate("Psychrometry", "T dry bulb, T wet bulb"),
+        translate("Psychrometry", "T dry bulb, T dew point"),
+        translate("Psychrometry", "T dew point, Relative humidity"),
+        translate("Psychrometry", "T wet bulb, Relative humidity")
         ]
     VAR_NAME = [
         ("tdb", "w"),
@@ -601,18 +601,18 @@ class PsyState():
         ("twb", "HR")
         ]
 
-#        QtWidgets.QApplication.translate("Psychrometry", "T dry bulb, Enthalpy"))
-#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo seco, Densidad"))
-#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, H absoluta"))
-#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, Entalpia"))
-#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, Densidad"))
-#        QtWidgets.QApplication.translate("Psychrometry", "Tª bulbo húmedo, Tª rocio"))
-#        QtWidgets.QApplication.translate("Psychrometry", "H absoluta, entalpía"))
-#        QtWidgets.QApplication.translate("Psychrometry", "H relativa, entalpía"))
-#        QtWidgets.QApplication.translate("Psychrometry", ""H absoluta, densidad"))
-#        QtWidgets.QApplication.translate("Psychrometry", ""H relativa, densidad"))
-#        QtWidgets.QApplication.translate("Psychrometry", ""Tª rocio, entalpía"))
-#        QtWidgets.QApplication.translate("Psychrometry", ""Tª rocio, densidad"))
+#        translate("Psychrometry", "T dry bulb, Enthalpy"))
+#        translate("Psychrometry", "Tª bulbo seco, Densidad"))
+#        translate("Psychrometry", "Tª bulbo húmedo, H absoluta"))
+#        translate("Psychrometry", "Tª bulbo húmedo, Entalpia"))
+#        translate("Psychrometry", "Tª bulbo húmedo, Densidad"))
+#        translate("Psychrometry", "Tª bulbo húmedo, Tª rocio"))
+#        translate("Psychrometry", "H absoluta, entalpía"))
+#        translate("Psychrometry", "H relativa, entalpía"))
+#        translate("Psychrometry", ""H absoluta, densidad"))
+#        translate("Psychrometry", ""H relativa, densidad"))
+#        translate("Psychrometry", ""Tª rocio, entalpía"))
+#        translate("Psychrometry", ""Tª rocio, densidad"))
 
     def __init__(self, **kwargs):
         self.kwargs = self.__class__.kwargs.copy()
@@ -624,7 +624,7 @@ class PsyState():
         if self.calculable:
             self.status = 1
             self.calculo()
-            logging.debug(QtWidgets.QApplication.translate("Psychrometry", "Calculate psychrometric point"))
+            logging.debug(translate("Psychrometry", "Calculate psychrometric point"))
             logging.debug(self.kwargs)
             self.msg = "Solved"
 

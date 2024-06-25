@@ -30,7 +30,7 @@ import logging
 import os
 
 from scipy.constants import R
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, translate
 
 from lib.physics import R_atml
 from lib import unidades, config
@@ -123,7 +123,7 @@ class Corriente(config.Entity):
               "refprop": None}
 
     status = 0
-    msg = QtWidgets.QApplication.translate("Corriente", "Unknown variables")
+    msg = translate("Corriente", "Unknown variables")
     kwargs_forbidden = ["entrada", "mezcla", "solido"]
     solido = None
 
@@ -250,12 +250,12 @@ class Corriente(config.Entity):
         logging.debug('kwarg; %s' % kw_new)
         if self.calculable:
             statusmsg = (
-                QtWidgets.QApplication.translate("Corriente", "Underspecified"),
-                QtWidgets.QApplication.translate("Corriente", "Solved"),
-                QtWidgets.QApplication.translate("Corriente", "Ignored"),
-                QtWidgets.QApplication.translate("Corriente", "Warning"),
-                QtWidgets.QApplication.translate("Corriente", "Calculating..."),
-                QtWidgets.QApplication.translate("Corriente", "Error"))
+                translate("Corriente", "Underspecified"),
+                translate("Corriente", "Solved"),
+                translate("Corriente", "Ignored"),
+                translate("Corriente", "Warning"),
+                translate("Corriente", "Calculating..."),
+                translate("Corriente", "Error"))
             status = statusmsg[self.status]
             logging.debug('%s %s' % (status, self.msg))
             QtWidgets.QApplication.processEvents()
@@ -727,7 +727,7 @@ class Corriente(config.Entity):
     def txt(self):
         txt = str(self.notasPlain)+os.linesep+os.linesep
         txt += "#---------------"
-        txt += QtWidgets.QApplication.translate("Corriente", "Input properties")
+        txt += translate("Corriente", "Input properties")
         txt += "-----------------#"+os.linesep
         for key, value in list(self.kwargs.items()):
             if value:
@@ -735,151 +735,151 @@ class Corriente(config.Entity):
 
         if self.calculable:
             txt += os.linesep + "#---------------"
-            txt += QtWidgets.QApplication.translate("Corriente", "Global stream")
+            txt += translate("Corriente", "Global stream")
             txt += "-------------------#"+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Temperature"),
+                translate("Corriente", "Temperature"),
                 self.T.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Pressure"),
+                translate("Corriente", "Pressure"),
                 self.P.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Vapor Fraction"),
+                translate("Corriente", "Vapor Fraction"),
                 self.x.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Molar Flow"),
+                translate("Corriente", "Molar Flow"),
                 self.caudalmasico.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Mass Flow"),
+                translate("Corriente", "Mass Flow"),
                 self.caudalmolar.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Volumetric Flow"),
+                translate("Corriente", "Volumetric Flow"),
                 self.Q.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Enthalpy"),
+                translate("Corriente", "Enthalpy"),
                 self.h.str)+os.linesep
             txt += "%-25s\t%s" % ("Tc", self.Tc.str)+os.linesep
             txt += "%-25s\t%s" % ("Pc", self.Pc.str)+os.linesep
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "SG, water=1"),
+                translate("Corriente", "SG, water=1"),
                 self.SG.str)+os.linesep
             txt += os.linesep+"%-25s\t%s" % (
-                QtWidgets.QApplication.translate("Corriente", "Molecular weight"),
+                translate("Corriente", "Molecular weight"),
                 self.M.str)+os.linesep
-            txt += "#"+QtWidgets.QApplication.translate("Corriente", "Molar Composition")
+            txt += "#"+translate("Corriente", "Molar Composition")
             txt += os.linesep
             for cmp, xi in zip(self.componente, self.fraccion):
                 txt += "%-25s\t %0.4f" % (cmp.name, xi)+os.linesep
 
             if self.x > 0:
                 txt += os.linesep+"#---------------"
-                txt += QtWidgets.QApplication.translate("Corriente", "Vapor Only")
+                txt += translate("Corriente", "Vapor Only")
                 txt += "--------------------#"+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Molar Flow"),
+                    translate("Corriente", "Molar Flow"),
                     self.Gas.caudalmasico.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Mass Flow"),
+                    translate("Corriente", "Mass Flow"),
                     self.Gas.caudalmolar.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Volumetric Flow"),
+                    translate("Corriente", "Volumetric Flow"),
                     self.Gas.Q.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Molecular weight"),
+                    translate("Corriente", "Molecular weight"),
                     self.Gas.M.str)+os.linesep
                 txt += os.linesep+"#"
-                txt += QtWidgets.QApplication.translate("Corriente", "Molar Composition")
+                txt += translate("Corriente", "Molar Composition")
                 txt += os.linesep
                 for cmp, xi in zip(self.componente, self.Gas.fraccion):
                     txt += "%-25s\t %0.4f" % (cmp.name, xi)+os.linesep
 
                 txt += os.linesep+"%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Density"),
+                    translate("Corriente", "Density"),
                     self.Gas.rho.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Compresibility"),
+                    translate("Corriente", "Compresibility"),
                     self.Gas.Z.str)+os.linesep
 
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Enthalpy"),
+                    translate("Corriente", "Enthalpy"),
                     self.Gas.h.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Heat Capacity"),
+                    translate("Corriente", "Heat Capacity"),
                     self.Gas.cp.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Viscosity"),
+                    translate("Corriente", "Viscosity"),
                     self.Gas.mu.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Thermal conductivity"),
+                    translate("Corriente", "Thermal conductivity"),
                     self.Gas.k.str)+os.linesep
 
             if self.x < 1:
                 txt += os.linesep+"#---------------"
-                txt += QtWidgets.QApplication.translate("Corriente", "Liquid Only")
+                txt += translate("Corriente", "Liquid Only")
                 txt += "-------------------#"+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Molar Flow"),
+                    translate("Corriente", "Molar Flow"),
                     self.Liquido.caudalmasico.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Mass Flow"),
+                    translate("Corriente", "Mass Flow"),
                     self.Liquido.caudalmolar.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Volumetric Flow"),
+                    translate("Corriente", "Volumetric Flow"),
                     self.Liquido.Q.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Molecular weight"),
+                    translate("Corriente", "Molecular weight"),
                     self.Liquido.M.str)+os.linesep
                 txt += os.linesep+"#"
-                txt += QtWidgets.QApplication.translate("Corriente", "Molar Composition")
+                txt += translate("Corriente", "Molar Composition")
                 txt += os.linesep
                 for cmp, xi in zip(self.componente, self.Liquido.fraccion):
                     txt += "%-25s\t %0.4f" % (cmp.name, xi)+os.linesep
 
                 txt += os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Density"),
+                    translate("Corriente", "Density"),
                     self.Liquido.rho.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Compresibility"),
+                    translate("Corriente", "Compresibility"),
                     self.Liquido.Z.str)+os.linesep
 
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Enthalpy"),
+                    translate("Corriente", "Enthalpy"),
                     self.Liquido.h.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Heat Capacity"),
+                    translate("Corriente", "Heat Capacity"),
                     self.Liquido.cp.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Viscosity"),
+                    translate("Corriente", "Viscosity"),
                     self.Liquido.mu.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Thermal Conductivity"),
+                    translate("Corriente", "Thermal Conductivity"),
                     self.Liquido.k.str)+os.linesep
                 txt += "%-25s\t%s" % (
-                    QtWidgets.QApplication.translate("Corriente", "Surface Tension"),
+                    translate("Corriente", "Surface Tension"),
                     self.Liquido.sigma.str)+os.linesep
 
         else:
             txt += os.linesep+"#---------------"
-            txt += QtWidgets.QApplication.translate("Corriente", "No Fluid Stream")
+            txt += translate("Corriente", "No Fluid Stream")
             txt += "-------------------#"+os.linesep
 
         if self.solido.status:
             txt += os.linesep+"#---------------"
-            txt += QtWidgets.QApplication.translate("Corriente", "Solid")
+            txt += translate("Corriente", "Solid")
             txt += "-------------------#"+os.linesep
             for cmp, G in zip(self.solido.componente, self.solido.caudalUnitario):
                 txt += "%-25s\t%s" % (cmp.name, G.str)+os.linesep
             txt += os.linesep
-            txt += "%-25s\t%s" % (QtWidgets.QApplication.translate("Corriente", "Density"),
+            txt += "%-25s\t%s" % (translate("Corriente", "Density"),
                                   self.solido.rho.str)+os.linesep
-            txt += "%-25s\t%s" % (QtWidgets.QApplication.translate("Corriente", "Mean Diameter"),
+            txt += "%-25s\t%s" % (translate("Corriente", "Mean Diameter"),
                                   self.solido.diametro_medio.str)+os.linesep
             if self.solido.diametros:
                 txt += os.linesep + "#"
-                txt += QtWidgets.QApplication.translate("Corriente", "Particle Size Distribution")
+                txt += translate("Corriente", "Particle Size Distribution")
                 txt += os.linesep
-                txt += "%s, %s \t%s" % (QtWidgets.QApplication.translate("Corriente", "Diameter"), unidades.Length.text("ParticleDiameter"), QtWidgets.QApplication.translate("Corriente", "Fraction"))+os.linesep
+                txt += "%s, %s \t%s" % (translate("Corriente", "Diameter"), unidades.Length.text("ParticleDiameter"), translate("Corriente", "Fraction"))+os.linesep
                 for di, xi in zip(self.solido.diametros, self.solido.fracciones):
                     txt += "%10.4f\t%0.4f\t" % (di.config("ParticleDiameter"),
                                                 xi)+os.linesep
@@ -893,13 +893,13 @@ class Corriente(config.Entity):
             else:
                 param = "%-40s\t%s"
             if self.x == 0:
-                txtphases = "%60s" % QtWidgets.QApplication.translate("Corriente", "Liquid")+os.linesep
+                txtphases = "%60s" % translate("Corriente", "Liquid")+os.linesep
                 phases = [self.Liquido]
             elif self.x == 1:
-                txtphases = "%60s" % QtWidgets.QApplication.translate("Corriente", "Gas")+os.linesep
+                txtphases = "%60s" % translate("Corriente", "Gas")+os.linesep
                 phases = [self.Gas]
             else:
-                txtphases = "%60s\t%20s" % (QtWidgets.QApplication.translate("Corriente", "Liquid"), QtWidgets.QApplication.translate("Corriente", "Gas"))+os.linesep
+                txtphases = "%60s\t%20s" % (translate("Corriente", "Liquid"), translate("Corriente", "Gas"))+os.linesep
                 phases = [self.Liquido, self.Gas]
 
             complejos = ""
@@ -939,10 +939,10 @@ class Corriente(config.Entity):
     def _doc(self):
         """Return a text repr of class with all properties"""
         if self._thermo == "meos":
-            title = QtWidgets.QApplication.translate("Corriente", "Advanced MEoS properties")
+            title = translate("Corriente", "Advanced MEoS properties")
             doc_param = [self.cmp._constants["__doi__"]]
         else:
-            title = QtWidgets.QApplication.translate("Corriente", "Advanced thermo properties")
+            title = translate("Corriente", "Advanced thermo properties")
             doc_param = self.cmp.__doi__
         doc = ""
         for doi in doc_param:
@@ -957,22 +957,22 @@ class Corriente(config.Entity):
     @classmethod
     def propertiesNames(cls):
         list = [
-            (QtWidgets.QApplication.translate("Corriente", "Temperature"), "T", unidades.Temperature),
-            (QtWidgets.QApplication.translate("Corriente", "Pressure"), "P", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Corriente", "Vapor Fraction"), "x", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Corriente", "Molar Flow"), "caudalmolar", unidades.MolarFlow),
-            (QtWidgets.QApplication.translate("Corriente", "Mass Flow"), "caudalmasico", unidades.MassFlow),
-            (QtWidgets.QApplication.translate("Corriente", "Volumetric Flow"), "Q", unidades.VolFlow),
-            (QtWidgets.QApplication.translate("Corriente", "Enthalpy"), "h", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Corriente", "Critic Temperature"), "Tc", unidades.Temperature),
-            (QtWidgets.QApplication.translate("Corriente", "Critic Pressure"), "Pc", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Corriente", "SG, water=1"), "SG", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Corriente", "Molecular weight"), "M", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Corriente", "Molar Composition"), "fraccion", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Corriente", "Mass Composition"), "fraccion_masica", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Corriente", "Molar Component Flow"), "caudalunitariomolar", unidades.MolarFlow),
-            (QtWidgets.QApplication.translate("Corriente", "Mass Component Flow"),  "caudalunitariomasico", unidades.MassFlow),
-            (QtWidgets.QApplication.translate("Corriente", "Notes"), "notasPlain", str)]
+            (translate("Corriente", "Temperature"), "T", unidades.Temperature),
+            (translate("Corriente", "Pressure"), "P", unidades.Pressure),
+            (translate("Corriente", "Vapor Fraction"), "x", unidades.Dimensionless),
+            (translate("Corriente", "Molar Flow"), "caudalmolar", unidades.MolarFlow),
+            (translate("Corriente", "Mass Flow"), "caudalmasico", unidades.MassFlow),
+            (translate("Corriente", "Volumetric Flow"), "Q", unidades.VolFlow),
+            (translate("Corriente", "Enthalpy"), "h", unidades.Enthalpy),
+            (translate("Corriente", "Critic Temperature"), "Tc", unidades.Temperature),
+            (translate("Corriente", "Critic Pressure"), "Pc", unidades.Pressure),
+            (translate("Corriente", "SG, water=1"), "SG", unidades.Dimensionless),
+            (translate("Corriente", "Molecular weight"), "M", unidades.Dimensionless),
+            (translate("Corriente", "Molar Composition"), "fraccion", unidades.Dimensionless),
+            (translate("Corriente", "Mass Composition"), "fraccion_masica", unidades.Dimensionless),
+            (translate("Corriente", "Molar Component Flow"), "caudalunitariomolar", unidades.MolarFlow),
+            (translate("Corriente", "Mass Component Flow"),  "caudalunitariomasico", unidades.MassFlow),
+            (translate("Corriente", "Notes"), "notasPlain", str)]
         return list
 
     def propertiesListTitle(self, index):

@@ -28,7 +28,7 @@ from math import pi
 
 from matplotlib import image
 from numpy import arange, logspace, arctan
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, translate
 
 from lib.config import IMAGE_PATH
 from lib.heatTransfer import (efectividad, TemperatureEffectiveness,
@@ -80,14 +80,14 @@ class ChartHeat(Chart):
 
 class Efectividad(ChartHeat):
     """Heat Exchanger effectiveness plot"""
-    title = QtWidgets.QApplication.translate("Efectividad", "Heat Exchanger effectiveness")
+    title = translate("Efectividad", "Heat Exchanger effectiveness")
     flujo = [
-        (QtWidgets.QApplication.translate("Efectividad", "Counterflow"), "CF"),
-        (QtWidgets.QApplication.translate("Efectividad", "Parallelflow"), "PF"),
-        (QtWidgets.QApplication.translate("Efectividad", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        (QtWidgets.QApplication.translate("Efectividad", "Crossflow, one fluid mixed"), "CrFSMix"),
-        (QtWidgets.QApplication.translate("Efectividad", "Crossflow, both fluids mixed"), "CrFMix"),
-        (QtWidgets.QApplication.translate("Efectividad", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+        (translate("Efectividad", "Counterflow"), "CF"),
+        (translate("Efectividad", "Parallelflow"), "PF"),
+        (translate("Efectividad", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        (translate("Efectividad", "Crossflow, one fluid mixed"), "CrFSMix"),
+        (translate("Efectividad", "Crossflow, both fluids mixed"), "CrFMix"),
+        (translate("Efectividad", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     locImage = (0.7, 0.15, 0.2, 0.2)
     locLogo = (0.13, 0.77, 0.1, 0.1)
@@ -135,24 +135,24 @@ class Efectividad(ChartHeat):
 class TemperatureEfectividad(ChartHeat):
     """Heat exchanger temperature-effectiveness plot"""
 
-    title = QtWidgets.QApplication.translate("TemperatureEfectividad", "Heat Exchanger temperature effectiveness")
+    title = translate("TemperatureEfectividad", "Heat Exchanger temperature effectiveness")
     flujo = [
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "Counterflow"), "CF"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "Parallelflow"), "PF"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "Crossflow, one fluid mixed"), "CrFSMix"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "Crossflow, both fluids mixed"), "CrFMix"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-2 TEMA E"), "1-2TEMAE"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-3 TEMA E"), "1-3TEMAE"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-4 TEMA E"), "1-4TEMAE"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-1 TEMA G"), "1-1TEMAG"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-2 TEMA G"), "1-2TEMAG"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-1 TEMA H"), "1-1TEMAH"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-2 TEMA H"), "1-2TEMAH"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-1 TEMA J"), "1-1TEMAJ"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-2 TEMA J"), "1-2TEMAJ"),
-        (QtWidgets.QApplication.translate("TemperatureEfectividad", "1-4 TEMA J"), "1-4TEMAJ")]
+        (translate("TemperatureEfectividad", "Counterflow"), "CF"),
+        (translate("TemperatureEfectividad", "Parallelflow"), "PF"),
+        (translate("TemperatureEfectividad", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        (translate("TemperatureEfectividad", "Crossflow, one fluid mixed"), "CrFSMix"),
+        (translate("TemperatureEfectividad", "Crossflow, both fluids mixed"), "CrFMix"),
+        (translate("TemperatureEfectividad", "1-2 TEMA E"), "1-2TEMAE"),
+        (translate("TemperatureEfectividad", "1-2 TEMA E, shell fluid divided"), "1-2TEMAE2"),
+        (translate("TemperatureEfectividad", "1-3 TEMA E"), "1-3TEMAE"),
+        (translate("TemperatureEfectividad", "1-4 TEMA E"), "1-4TEMAE"),
+        (translate("TemperatureEfectividad", "1-1 TEMA G"), "1-1TEMAG"),
+        (translate("TemperatureEfectividad", "1-2 TEMA G"), "1-2TEMAG"),
+        (translate("TemperatureEfectividad", "1-1 TEMA H"), "1-1TEMAH"),
+        (translate("TemperatureEfectividad", "1-2 TEMA H"), "1-2TEMAH"),
+        (translate("TemperatureEfectividad", "1-1 TEMA J"), "1-1TEMAJ"),
+        (translate("TemperatureEfectividad", "1-2 TEMA J"), "1-2TEMAJ"),
+        (translate("TemperatureEfectividad", "1-4 TEMA J"), "1-4TEMAJ")]
 
     locImage = (0.13, 0.6, 0.15, 0.15)
     locLogo = (0.13, 0.77, 0.1, 0.1)
@@ -197,13 +197,13 @@ class TemperatureEfectividad(ChartHeat):
 
 class F(ChartHeat):
     """Heat Exchanger correction factor plot"""
-    title = QtWidgets.QApplication.translate("F", "ΔT Correction Factor")
+    title = translate("F", "ΔT Correction Factor")
 
     flujo = [
-        (QtWidgets.QApplication.translate("F", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        (QtWidgets.QApplication.translate("F", "Crossflow, one fluid mixed"), "CrFSMix"),
-        (QtWidgets.QApplication.translate("F", "Crossflow, both fluids mixed"), "CrFMix"),
-        (QtWidgets.QApplication.translate("F", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+        (translate("F", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        (translate("F", "Crossflow, one fluid mixed"), "CrFSMix"),
+        (translate("F", "Crossflow, both fluids mixed"), "CrFMix"),
+        (translate("F", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     locImage = (0.13, 0.6, 0.15, 0.15)
     locLogo = (0.13, 0.77, 0.1, 0.1)
@@ -249,13 +249,13 @@ class F(ChartHeat):
 
 class Phi(ChartHeat):
     """Heat Exchanger correction factor plot"""
-    title = QtWidgets.QApplication.translate("Phi", "ψ")
+    title = translate("Phi", "ψ")
 
     flujo = [
-        # (QtWidgets.QApplication.translate("Phi", "Crossflow, both fluids unmixed"), "CrFunMix"),
-        # (QtWidgets.QApplication.translate("Phi", "Crossflow, one fluid mixed"), "CrFSMix"),
-        # (QtWidgets.QApplication.translate("Phi", "Crossflow, both fluids mixed"), "CrFMix"),
-        (QtWidgets.QApplication.translate("Phi", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
+        # (translate("Phi", "Crossflow, both fluids unmixed"), "CrFunMix"),
+        # (translate("Phi", "Crossflow, one fluid mixed"), "CrFSMix"),
+        # (translate("Phi", "Crossflow, both fluids mixed"), "CrFMix"),
+        (translate("Phi", "1-2 pass shell and tube exchanger"), "1-2TEMAE")]
 
     locImage = (0.75, 0.6, 0.15, 0.15)
     locLogo = (0.8, 0.77, 0.1, 0.1)

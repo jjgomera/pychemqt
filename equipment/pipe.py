@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 import os
 
 from scipy.constants import g, pi
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 from lib import unidades
 from lib.adimensional import Re
@@ -93,7 +93,7 @@ class Pipe(equipment):
     >>> print("%0.4f %6g %6g %6g" % (pipe.Di, pipe.V, pipe.Re, pipe.DeltaP))
     0.1524 0.0626815 9427.99 1.83620
     """
-    title = QtWidgets.QApplication.translate("equipment", "Pipe")
+    title = translate("equipment", "Pipe")
     help = ""
     kwargs = {
         "entrada": None,
@@ -122,16 +122,16 @@ class Pipe(equipment):
     salida = [None]
 
     TEXT_METODO = (
-        QtWidgets.QApplication.translate("equipment", "Single Phase flow"),
-        QtWidgets.QApplication.translate("equipment", "Water (Hazen-Williams)"),
-        QtWidgets.QApplication.translate("equipment", "Steam (Fritzsche)"),
-        QtWidgets.QApplication.translate("equipment", "Isotermic gas flow"),
-        QtWidgets.QApplication.translate("equipment", "Two Phase flow (Baker method)"),
-        QtWidgets.QApplication.translate("equipment", "Two Phase flow (Beggs and Brill method)"))
+        translate("equipment", "Single Phase flow"),
+        translate("equipment", "Water (Hazen-Williams)"),
+        translate("equipment", "Steam (Fritzsche)"),
+        translate("equipment", "Isotermic gas flow"),
+        translate("equipment", "Two Phase flow (Baker method)"),
+        translate("equipment", "Two Phase flow (Beggs and Brill method)"))
     TEXT_THERMAL = (
-        QtWidgets.QApplication.translate("equipment", "Adiabatic"),
-        QtWidgets.QApplication.translate("equipment", "Heat flux"),
-        QtWidgets.QApplication.translate("equipment", "Heat transfer"))
+        translate("equipment", "Adiabatic"),
+        translate("equipment", "Heat flux"),
+        translate("equipment", "Heat transfer"))
 
     @property
     def isCalculable(self):
@@ -147,30 +147,30 @@ class Pipe(equipment):
             self.C_inst = unidades.Currency(None)
 
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
         if not self.kwargs["l"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined pipe length")
+            self.msg = translate("equipment", "undefined pipe length")
             self.status = 0
             return
         if not self.kwargs["material"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined material")
+            self.msg = translate("equipment", "undefined material")
             self.status = 0
             return
 
         if self.kwargs["thermal"] == 1 and not self.kwargs["Q"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined heat flux")
+            self.msg = translate("equipment", "undefined heat flux")
             self.status = 0
             return
         elif self.kwargs["thermal"] == 2 and \
                 (not self.kwargs["T_ext"] or not self.kwargs["U"]):
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined heat transfer conditions")
+            self.msg = translate("equipment", "undefined heat transfer conditions")
             self.status = 0
             return
 
         if self.kwargs["metodo"] == 1 and not self.kwargs["C"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined C William Factor")
+            self.msg = translate("equipment", "undefined C William Factor")
             self.status = 0
             return
 
@@ -413,13 +413,13 @@ class Pipe(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Catalog")
+        txt += translate("equipment", "Catalog")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(9))
 
         if self.kwargs["accesorios"]:
             txt += os.linesep + "#---------------"
-            txt += QtWidgets.QApplication.translate("equipment", "Fittings")
+            txt += translate("equipment", "Fittings")
             txt += "-----------------#"+os.linesep
             txt += self.propertiesToText(9)
             for accesorio in self.kwargs["accesorios"]:
@@ -427,7 +427,7 @@ class Pipe(equipment):
                                            accesorio[2]) + os.linesep
 
         txt += os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(11, 24))
 
@@ -436,7 +436,7 @@ class Pipe(equipment):
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += QtWidgets.QApplication.translate("equipment", "Preliminary Cost Estimation")
+            txt += translate("equipment", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(26, 31))
 
@@ -444,40 +444,40 @@ class Pipe(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Material"), "material", str),
-             (QtWidgets.QApplication.translate("equipment", "Nominal Diameter"), "Dn", str),
-             (QtWidgets.QApplication.translate("equipment", "Length"), "L", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Roughness"), "rugosidad", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Internal Diamter"), "Di", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "External Diamter"), "De", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Thickness"), "w", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Transversal section"), "seccion", unidades.Area),
-             (QtWidgets.QApplication.translate("equipment", "External Area"), "A", unidades.Area),
-             (QtWidgets.QApplication.translate("equipment", "K total"), "K", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Fittings"), "accesorios", None),
-             (QtWidgets.QApplication.translate("equipment", "Method"), ("TEXT_METODO", "metodo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Input Pressure"), "Pin", unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Output Pressure"), "Pout", unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "ΔP Total"), "DeltaP", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "ΔP friction"), "DeltaP_f", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "ΔP fittings"), "DeltaP_ac", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "ΔP elevation"), "DeltaP_h", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "ΔP acceleration"), "DeltaP_v", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "Thermal Condition"),
+        l = [(translate("equipment", "Material"), "material", str),
+             (translate("equipment", "Nominal Diameter"), "Dn", str),
+             (translate("equipment", "Length"), "L", unidades.Length),
+             (translate("equipment", "Roughness"), "rugosidad", unidades.Length),
+             (translate("equipment", "Internal Diamter"), "Di", unidades.Length),
+             (translate("equipment", "External Diamter"), "De", unidades.Length),
+             (translate("equipment", "Thickness"), "w", unidades.Length),
+             (translate("equipment", "Transversal section"), "seccion", unidades.Area),
+             (translate("equipment", "External Area"), "A", unidades.Area),
+             (translate("equipment", "K total"), "K", unidades.Dimensionless),
+             (translate("equipment", "Fittings"), "accesorios", None),
+             (translate("equipment", "Method"), ("TEXT_METODO", "metodo"), str),
+             (translate("equipment", "Input Pressure"), "Pin", unidades.Pressure),
+             (translate("equipment", "Output Pressure"), "Pout", unidades.Pressure),
+             (translate("equipment", "ΔP Total"), "DeltaP", unidades.DeltaP),
+             (translate("equipment", "ΔP friction"), "DeltaP_f", unidades.DeltaP),
+             (translate("equipment", "ΔP fittings"), "DeltaP_ac", unidades.DeltaP),
+             (translate("equipment", "ΔP elevation"), "DeltaP_h", unidades.DeltaP),
+             (translate("equipment", "ΔP acceleration"), "DeltaP_v", unidades.DeltaP),
+             (translate("equipment", "Thermal Condition"),
               ("TEXT_THERMAL", "thermal"), str),
-             (QtWidgets.QApplication.translate("equipment", "Fluid Speed"), "V", unidades.Speed),
-             (QtWidgets.QApplication.translate("equipment", "Reynolds number"), "Re", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Relative roughness"), "eD",
+             (translate("equipment", "Fluid Speed"), "V", unidades.Speed),
+             (translate("equipment", "Reynolds number"), "Re", unidades.Dimensionless),
+             (translate("equipment", "Relative roughness"), "eD",
               unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Factor Friction"), "f", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Output Temperature"), "Tout",
+             (translate("equipment", "Factor Friction"), "f", unidades.Dimensionless),
+             (translate("equipment", "Output Temperature"), "Tout",
               unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Heat Transfer"), "Heat", unidades.Power),
-             (QtWidgets.QApplication.translate("equipment", "Base index"), "Base_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Current index"), "Current_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Install factor"), "f_install", float),
-             (QtWidgets.QApplication.translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
-             (QtWidgets.QApplication.translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
+             (translate("equipment", "Heat Transfer"), "Heat", unidades.Power),
+             (translate("equipment", "Base index"), "Base_index", float),
+             (translate("equipment", "Current index"), "Current_index", float),
+             (translate("equipment", "Install factor"), "f_install", float),
+             (translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
+             (translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
         return l
 
     def propertiesListTitle(self, index):

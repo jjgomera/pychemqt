@@ -43,7 +43,7 @@ from lib.plot import ConfPlot
 from lib.utilities import representacion
 import plots
 from tools.firstrun import which
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, translate
 from tools.qtelemental import Config as ConfigElemental
 from tools.UI_psychrometry import Config as ConfigPsychrometry
 from tools.UI_Tables import prefMEOS
@@ -485,26 +485,26 @@ class ConfApplications(QtWidgets.QDialog):
 class Preferences(QtWidgets.QDialog):
     """Preferences main dialog"""
     classes = [
-        ("pychemqt.png", ConfGeneral, QtWidgets.QApplication.translate("Preferences", "General")),
-        ("button/PFD.png", prefPFD.Widget, QtWidgets.QApplication.translate("Preferences", "PFD")),
+        ("pychemqt.png", ConfGeneral, translate("Preferences", "General")),
+        ("button/PFD.png", prefPFD.Widget, translate("Preferences", "PFD")),
         ("button/tooltip.png", ConfTooltipEntity,
-         QtWidgets.QApplication.translate("Preferences", "Tooltips in PFD")),
+         translate("Preferences", "Tooltips in PFD")),
         ("button/tooltip.png", ConfTooltipUnit,
-         QtWidgets.QApplication.translate("Preferences", "Tooltips in units")),
+         translate("Preferences", "Tooltips in units")),
         ("button/format_numeric.png", ConfFormat,
-         QtWidgets.QApplication.translate("Preferences", "Numeric format")),
+         translate("Preferences", "Numeric format")),
         ("button/oil.png", prefPetro.Widget,
-         QtWidgets.QApplication.translate("Preferences", "Pseudocomponents")),
+         translate("Preferences", "Pseudocomponents")),
         ("button/applications.png", ConfApplications,
-         QtWidgets.QApplication.translate("Preferences", "Applications")),
-        ("button/plot.png", ConfPlot, QtWidgets.QApplication.translate("Preferences", "Plotting")),
+         translate("Preferences", "Applications")),
+        ("button/plot.png", ConfPlot, translate("Preferences", "Plotting")),
         ("button/periodicTable.png", ConfigElemental,
-         QtWidgets.QApplication.translate("Preferences", "Elemental table")),
-        ("button/tables.png", prefMEOS.Widget, QtWidgets.QApplication.translate("Preferences", "mEoS")),
+         translate("Preferences", "Elemental table")),
+        ("button/tables.png", prefMEOS.Widget, translate("Preferences", "mEoS")),
         ("button/psychrometric.png", ConfigPsychrometry,
-         QtWidgets.QApplication.translate("Preferences", "Psychrometric chart")),
-        ("button/moody.png", plots.Pref, QtWidgets.QApplication.translate("Preferences", "Chart")),
-        ("chemistry/grupo18.png", ConfBabel, QtWidgets.QApplication.translate("Preferences", "Openbabel"))]
+         translate("Preferences", "Psychrometric chart")),
+        ("button/moody.png", plots.Pref, translate("Preferences", "Chart")),
+        ("chemistry/grupo18.png", ConfBabel, translate("Preferences", "Openbabel"))]
 
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter to input project config"""

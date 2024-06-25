@@ -2517,6 +2517,30 @@ Crítica</translation>
     </message>
 </context>
 <context>
+    <name>Petro</name>
+    <message>
+        <location filename="../lib/petro.py" line="1434"/>
+        <location filename="../lib/petro.py" line="596"/>
+        <source>Undefined input pair</source>
+        <translation>Parametros de entrada no definidos</translation>
+    </message>
+    <message>
+        <location filename="../lib/petro.py" line="598"/>
+        <source>Molecular weight input out of bounds</source>
+        <translation>Peso molecular fuera del rango de aplicación de la correlación</translation>
+    </message>
+    <message>
+        <location filename="../lib/petro.py" line="600"/>
+        <source>Boiling temperature input out of bounds</source>
+        <translation>Temperatura de ebullición fuera del rango de aplicación de la correlación</translation>
+    </message>
+    <message>
+        <location filename="../lib/petro.py" line="3502"/>
+        <source>Insufficient input</source>
+        <translation>Parámetros insuficientes</translation>
+    </message>
+</context>
+<context>
     <name>Phi</name>
     <message>
         <location filename="../plots/heatTransfer.py" line="252"/>
@@ -3030,22 +3054,22 @@ Crítica</translation>
 <context>
     <name>ShowDependences</name>
     <message>
-        <location filename="../tools/dependences.py" line="60"/>
+        <location filename="../tools/dependences.py" line="56"/>
         <source>External program</source>
         <translation>Programas externos</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="64"/>
+        <location filename="../tools/dependences.py" line="60"/>
         <source>Module</source>
         <translation>Modulo</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="64"/>
+        <location filename="../tools/dependences.py" line="60"/>
         <source>Status</source>
         <translation>Estatus</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="81"/>
+        <location filename="../tools/dependences.py" line="77"/>
         <source>Module not found</source>
         <translation>Módulo no encontrado</translation>
     </message>
@@ -9165,42 +9189,42 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Opcion termodinámica CoolProp deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="35"/>
+        <location filename="../tools/dependences.py" line="34"/>
         <source>refprop thermal option disabled</source>
         <translation>Opción termodinámica RefProp deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="37"/>
+        <location filename="../tools/dependences.py" line="35"/>
         <source>graphic formula disabled</source>
         <translation>Representación gráfica de la fórmula química deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="39"/>
+        <location filename="../tools/dependences.py" line="36"/>
         <source>openoffice/libreoffice interaction disabled</source>
         <translation>Interacción con archivos openoffice/libreoffice deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="41"/>
+        <location filename="../tools/dependences.py" line="38"/>
         <source>Microsoft Excel 2007/2010 interaction disabled</source>
         <translation>Interacción con archivos Microsoft Excel 2007/2010 deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="43"/>
+        <location filename="../tools/dependences.py" line="40"/>
         <source>Microsoft Excel 97/2000/XP/2003 interaction disabled</source>
         <translation>Interacción con archivos de Microsoft Excel 97/2000/XP/2003 deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="45"/>
+        <location filename="../tools/dependences.py" line="42"/>
         <source>Unicode collation algorithm for improved string sorting disabled</source>
         <translation>Algoritmo para ordenación inteligente de cadenas de texto deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="48"/>
+        <location filename="../tools/dependences.py" line="45"/>
         <source>Pdf report exporting disabled</source>
         <translation>Exportación a ficheros PDF deshabilitada</translation>
     </message>
     <message>
-        <location filename="../tools/dependences.py" line="50"/>
+        <location filename="../tools/dependences.py" line="46"/>
         <source>Qscintilla custom module editor disabled</source>
         <translation>Módulo de edición de código Qscintilla deshablitado</translation>
     </message>
@@ -12146,6 +12170,189 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     </message>
 </context>
 <context>
+    <name>meos</name>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="127"/>
+        <source>Fluid</source>
+        <translation>Fluido</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="131"/>
+        <source>Reference State</source>
+        <translation>Estado de referencia</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="132"/>
+        <source>Properties</source>
+        <translation>Propiedades</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="133"/>
+        <source>Configure</source>
+        <translation>Configurar</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="139"/>
+        <source>Calculate</source>
+        <translation>Calcular</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="141"/>
+        <source>Saturation</source>
+        <translation>Saturación</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="145"/>
+        <source>Isoproperty</source>
+        <translation>Isopropiedad</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="150"/>
+        <source>Specified point</source>
+        <translation>Punto especificado</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="157"/>
+        <source>Plot</source>
+        <translation>Gráfico</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="159"/>
+        <source>T-s diagram</source>
+        <translation>Diagrama T-s</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="163"/>
+        <source>T-rho diagram</source>
+        <translation>Diagrama T-rho</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="167"/>
+        <source>P-h diagram</source>
+        <translation>Diagrama P-h</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="171"/>
+        <source>P-v diagram</source>
+        <translation>Diagrama P-v</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="175"/>
+        <source>P-T diagram</source>
+        <translation>Diagrama P-T</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="179"/>
+        <source>h-s diagram</source>
+        <translation>Diagrama h-s</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="183"/>
+        <source>v-u diagram</source>
+        <translation>Diagrama v-u</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="187"/>
+        <source>Other Plots</source>
+        <translation>Otros gráficos</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="191"/>
+        <source>3D Plot</source>
+        <translation>Gráfico 3D</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="309"/>
+        <source>Liquid-Gas Line</source>
+        <translation>Línea Gas-Líquido</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="350"/>
+        <source>Melting Line</source>
+        <translation>Línea de fusión</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="353"/>
+        <source>Sublimation Line</source>
+        <translation>Línea de sublimación</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="379"/>
+        <source>Launch MEoS Isoproperty calculation...</source>
+        <translation>Ejecutar cálculo de isopropiedades de MEoS...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="449"/>
+        <source>Specified state points</source>
+        <translation>Especificar punto de estado</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="556"/>
+        <source>Loading cached data...</source>
+        <translation>Cargando datos guardados...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="564"/>
+        <source>Calculating data, be patient...</source>
+        <translation>Calculando datos, sea paciente...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="576"/>
+        <source>Plotting...</source>
+        <translation>Graficando...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="625"/>
+        <source>Calculating melting line...</source>
+        <translation>Calculando línea de fusión...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="642"/>
+        <source>Calculating sublimation line...</source>
+        <translation>Calculando línea de sublimación...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="664"/>
+        <source>Calculating Liquid-Vapour saturation line...</source>
+        <translation>Calculando línea de saturación Liquido-Vapor...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="682"/>
+        <source>Calculating isoquality lines...</source>
+        <translation>Calculando línea con la misma fracción de vapor...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="743"/>
+        <source>Calculating isotherm lines...</source>
+        <translation>Calculando isotermas...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="756"/>
+        <source>Calculating isobar lines...</source>
+        <translation>Calculando isobaras...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="768"/>
+        <source>Calculating isochor lines...</source>
+        <translation>Calculando isocoras...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="780"/>
+        <source>Calculating isoenthalpic lines...</source>
+        <translation>Calculando isoentálpicas...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="792"/>
+        <source>Calculating isoentropic lines...</source>
+        <translation>Calculando isoentrópicas...</translation>
+    </message>
+    <message>
+        <location filename="../tools/UI_Tables/__init__.py" line="803"/>
+        <source>Calculating 3D mesh data...</source>
+        <translation>Calulando rejilla 3D...</translation>
+    </message>
+</context>
+<context>
     <name>moneda</name>
     <message>
         <location filename="../tools/UI_unitConverter.py" line="156"/>
@@ -12161,6 +12368,36 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
 </context>
 <context>
     <name>newComponent</name>
+    <message>
+        <location filename="../lib/newComponent.py" line="346"/>
+        <source>undefined group</source>
+        <translation>Grupos no definidos</translation>
+    </message>
+    <message>
+        <location filename="../lib/newComponent.py" line="4188"/>
+        <location filename="../lib/newComponent.py" line="2862"/>
+        <location filename="../lib/newComponent.py" line="2685"/>
+        <location filename="../lib/newComponent.py" line="2521"/>
+        <location filename="../lib/newComponent.py" line="1572"/>
+        <source>undefined boiling point</source>
+        <translation>Punto de ebullición no definido</translation>
+    </message>
+    <message>
+        <location filename="../lib/newComponent.py" line="1995"/>
+        <source>Bad definition, check input group and contribution</source>
+        <translation>Definición errónea, revisa grupos y contribuciones</translation>
+    </message>
+    <message>
+        <location filename="../lib/newComponent.py" line="2690"/>
+        <location filename="../lib/newComponent.py" line="2306"/>
+        <source>undefined molecular weight</source>
+        <translation>Peso molecular no definido</translation>
+    </message>
+    <message>
+        <location filename="../lib/newComponent.py" line="2694"/>
+        <source>undefined atoms number of molecule</source>
+        <translation>Número de átomos de la molecula no definido</translation>
+    </message>
     <message>
         <location filename="../UI/newComponent.py" line="52"/>
         <source>Show Details</source>
@@ -12977,189 +13214,6 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     </message>
 </context>
 <context>
-    <name>plugin</name>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="127"/>
-        <source>Fluid</source>
-        <translation>Fluido</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="131"/>
-        <source>Reference State</source>
-        <translation>Estado de referencia</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="132"/>
-        <source>Properties</source>
-        <translation>Propiedades</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="133"/>
-        <source>Configure</source>
-        <translation>Configurar</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="139"/>
-        <source>Calculate</source>
-        <translation>Calcular</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="141"/>
-        <source>Saturation</source>
-        <translation>Saturación</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="145"/>
-        <source>Isoproperty</source>
-        <translation>Isopropiedad</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="150"/>
-        <source>Specified point</source>
-        <translation>Punto especificado</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="157"/>
-        <source>Plot</source>
-        <translation>Gráfico</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="159"/>
-        <source>T-s diagram</source>
-        <translation>Diagrama T-s</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="163"/>
-        <source>T-rho diagram</source>
-        <translation>Diagrama T-rho</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="167"/>
-        <source>P-h diagram</source>
-        <translation>Diagrama P-h</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="171"/>
-        <source>P-v diagram</source>
-        <translation>Diagrama P-v</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="175"/>
-        <source>P-T diagram</source>
-        <translation>Diagrama P-T</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="179"/>
-        <source>h-s diagram</source>
-        <translation>Diagrama h-s</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="183"/>
-        <source>v-u diagram</source>
-        <translation>Diagrama v-u</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="187"/>
-        <source>Other Plots</source>
-        <translation>Otros gráficos</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="191"/>
-        <source>3D Plot</source>
-        <translation>Gráfico 3D</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="309"/>
-        <source>Liquid-Gas Line</source>
-        <translation>Línea Gas-Líquido</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="350"/>
-        <source>Melting Line</source>
-        <translation>Línea de fusión</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="353"/>
-        <source>Sublimation Line</source>
-        <translation>Línea de sublimación</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="379"/>
-        <source>Launch MEoS Isoproperty calculation...</source>
-        <translation>Lanzar cálculo de isopropiedades usando MEoS...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="449"/>
-        <source>Specified state points</source>
-        <translation>Especificar puntos de estado</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="556"/>
-        <source>Loading cached data...</source>
-        <translation>Cargando datos guardados...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="564"/>
-        <source>Calculating data, be patient...</source>
-        <translation>Calculando datos, se paciente...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="576"/>
-        <source>Plotting...</source>
-        <translation>Graficando...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="625"/>
-        <source>Calculating melting line...</source>
-        <translation>Calculando línea de fusión...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="642"/>
-        <source>Calculating sublimation line...</source>
-        <translation>Calculando línea de sublimación...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="664"/>
-        <source>Calculating Liquid-Vapour saturation line...</source>
-        <translation>Calculando línea de saturación liquido-vapor...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="682"/>
-        <source>Calculating isoquality lines...</source>
-        <translation>Calculando isocalidad...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="743"/>
-        <source>Calculating isotherm lines...</source>
-        <translation>Calculando isotermas...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="756"/>
-        <source>Calculating isobar lines...</source>
-        <translation>Calculando isobaras...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="768"/>
-        <source>Calculating isochor lines...</source>
-        <translation>Calculando isocoras...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="780"/>
-        <source>Calculating isoenthalpic lines...</source>
-        <translation>Calculando isoentálpicas...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="792"/>
-        <source>Calculating isoentropic lines...</source>
-        <translation>Calculando isoentrópicas...</translation>
-    </message>
-    <message>
-        <location filename="../tools/UI_Tables/__init__.py" line="803"/>
-        <source>Calculating 3D mesh data...</source>
-        <translation>Calculando datos de la rejilla 3D...</translation>
-    </message>
-</context>
-<context>
     <name>pychemqt</name>
     <message>
         <location filename="../pychemqt.py" line="111"/>
@@ -13517,7 +13571,7 @@ Verde: Gas, g/l</translation>
         <translation>Código de unidad erróneo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2334"/>
+        <location filename="../lib/unidades.py" line="2343"/>
         <location filename="../lib/unidades.py" line="352"/>
         <source>Dimensionless</source>
         <translation>Adimensional</translation>
@@ -14892,367 +14946,367 @@ Verde: Gas, g/l</translation>
         <translation>Taka bangladés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2095"/>
+        <location filename="../lib/unidades.py" line="2096"/>
         <source>Bhutanese ngultrum</source>
         <translation>Ngultrum de bután</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2096"/>
+        <location filename="../lib/unidades.py" line="2097"/>
         <source>Renminbi</source>
         <translation>Renminbi chino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2097"/>
+        <location filename="../lib/unidades.py" line="2101"/>
         <source>Cambodian riel</source>
         <translation>Riel camboyano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2098"/>
+        <location filename="../lib/unidades.py" line="2103"/>
         <source>North Korean won</source>
         <translation>Won norcoreano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2099"/>
+        <location filename="../lib/unidades.py" line="2104"/>
         <source>Hong Kong dollar</source>
         <translation>Dólar honkonés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2100"/>
+        <location filename="../lib/unidades.py" line="2105"/>
         <source>Indian rupee</source>
         <translation>Rupia indú</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2101"/>
+        <location filename="../lib/unidades.py" line="2106"/>
         <source>Indonesian rupiah</source>
         <translation>Rupia indonesa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2102"/>
+        <location filename="../lib/unidades.py" line="2107"/>
         <source>Lao kip</source>
         <translation>Kip de Laos</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2103"/>
+        <location filename="../lib/unidades.py" line="2108"/>
         <source>Macanese pataca</source>
         <translation>Pataca de Macao</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2104"/>
+        <location filename="../lib/unidades.py" line="2109"/>
         <source>Malaysian ringgit</source>
         <translation>Ringgit malayo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2105"/>
+        <location filename="../lib/unidades.py" line="2110"/>
         <source>Mongolian tögrög</source>
         <translation>Tögrög mongol</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2106"/>
+        <location filename="../lib/unidades.py" line="2111"/>
         <source>Myanmar kyat</source>
         <translation>Kyat birmano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2107"/>
+        <location filename="../lib/unidades.py" line="2115"/>
         <source>Nepalese rupee</source>
         <translation>Rupia nepalí</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2108"/>
+        <location filename="../lib/unidades.py" line="2117"/>
         <source>New Taiwan dollar</source>
         <translation>Dólar taiwanés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2109"/>
+        <location filename="../lib/unidades.py" line="2118"/>
         <source>Philippine peso</source>
         <translation>Peso filipino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2110"/>
+        <location filename="../lib/unidades.py" line="2119"/>
         <source>Singapore dollar</source>
         <translation>Dólar de Singapur</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2111"/>
+        <location filename="../lib/unidades.py" line="2120"/>
         <source>South Korean won</source>
         <translation>Won surcoreano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2112"/>
+        <location filename="../lib/unidades.py" line="2121"/>
         <source>Sri Lankan rupee</source>
         <translation>Rupia de Sri Lanka</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2113"/>
+        <location filename="../lib/unidades.py" line="2122"/>
         <source>Thai baht</source>
         <translation>Baht tailandés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2114"/>
+        <location filename="../lib/unidades.py" line="2123"/>
         <source>Vietnamese dong</source>
         <translation>Dong vietnamita</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2118"/>
+        <location filename="../lib/unidades.py" line="2127"/>
         <source>Algerian dinar</source>
         <translation>Dinár argelino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2119"/>
+        <location filename="../lib/unidades.py" line="2128"/>
         <source>Angolan kwanza</source>
         <translation>Kwanza angolano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2120"/>
+        <location filename="../lib/unidades.py" line="2129"/>
         <source>Botswana pula</source>
         <translation>Pula de botswana</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2121"/>
+        <location filename="../lib/unidades.py" line="2130"/>
         <source>Burundian franc</source>
         <translation>Franco de burundi</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2122"/>
+        <location filename="../lib/unidades.py" line="2131"/>
         <source>Cape Verde escudo</source>
         <translation>Escudo de cabo verde</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2123"/>
+        <location filename="../lib/unidades.py" line="2132"/>
         <source>Comoro franc</source>
         <translation>Franco de comoros</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2124"/>
+        <location filename="../lib/unidades.py" line="2133"/>
         <source>Congolese franc</source>
         <translation>Franco congolés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2125"/>
+        <location filename="../lib/unidades.py" line="2134"/>
         <source>Djiboutian franc</source>
         <translation>Franco de Djibouti</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2126"/>
+        <location filename="../lib/unidades.py" line="2135"/>
         <source>Egyptian pound</source>
         <translation>Libra egípcia</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2127"/>
+        <location filename="../lib/unidades.py" line="2136"/>
         <source>Eritrean nakfa</source>
         <translation>Nakfa eritreo</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2128"/>
+        <location filename="../lib/unidades.py" line="2137"/>
         <source>Ethiopian birr</source>
         <translation>Birr etiope</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2129"/>
+        <location filename="../lib/unidades.py" line="2138"/>
         <source>Ghambian dalasi</source>
         <translation>Dalasi gambiano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2130"/>
+        <location filename="../lib/unidades.py" line="2139"/>
         <source>Ghanaian cedi</source>
         <translation>Cedi ganés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2131"/>
+        <location filename="../lib/unidades.py" line="2140"/>
         <source>Guinean franc</source>
         <translation>Frango guineano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2132"/>
+        <location filename="../lib/unidades.py" line="2141"/>
         <source>Kenyan shilling</source>
         <translation>Shilling keniano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2133"/>
+        <location filename="../lib/unidades.py" line="2142"/>
         <source>Lesotho loti</source>
         <translation>Loti de Lesotho</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2134"/>
+        <location filename="../lib/unidades.py" line="2143"/>
         <source>Liberian dollar</source>
         <translation>Dólar liberiano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2135"/>
+        <location filename="../lib/unidades.py" line="2144"/>
         <source>Libyan dinar</source>
         <translation>Dinar libio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2136"/>
+        <location filename="../lib/unidades.py" line="2145"/>
         <source>Mauritanian ouguiya</source>
         <translation>Ouguiya mauritano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2137"/>
+        <location filename="../lib/unidades.py" line="2146"/>
         <source>Mauritian rupee</source>
         <translation>Rupia de Mauricio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2138"/>
+        <location filename="../lib/unidades.py" line="2147"/>
         <source>Malagasy ariary</source>
         <translation>Ariary de Madagascar</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2139"/>
+        <location filename="../lib/unidades.py" line="2148"/>
         <source>Malawian kwacha</source>
         <translation>Kwacha de Malawi</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2140"/>
+        <location filename="../lib/unidades.py" line="2149"/>
         <source>Maldivian rufiyaa</source>
         <translation>Rufiyaa de Islas Maldivas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2141"/>
+        <location filename="../lib/unidades.py" line="2150"/>
         <source>Moroccan dirham</source>
         <translation>Dirham marroquí</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2142"/>
+        <location filename="../lib/unidades.py" line="2151"/>
         <source>Mozambican metical</source>
         <translation>Matical mozambiqueño</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2143"/>
+        <location filename="../lib/unidades.py" line="2152"/>
         <source>Namibian dollar</source>
         <translation>Dólar namibio</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2144"/>
+        <location filename="../lib/unidades.py" line="2153"/>
         <source>Nigerian naira</source>
         <translation>Naira nigeriano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2145"/>
+        <location filename="../lib/unidades.py" line="2154"/>
         <source>Rwandan franc</source>
         <translation>Franco ruandés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2146"/>
+        <location filename="../lib/unidades.py" line="2155"/>
         <source>São Tomé and Príncipe dobra</source>
         <translation>Dobra de Santo Tomé y Principe</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2147"/>
+        <location filename="../lib/unidades.py" line="2156"/>
         <source>Seychelles rupee</source>
         <translation>Rupia de las Islas Seychelles</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2148"/>
+        <location filename="../lib/unidades.py" line="2157"/>
         <source>Sierra Leonean leone</source>
         <translation>Leona de Sierra Leona</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2149"/>
+        <location filename="../lib/unidades.py" line="2158"/>
         <source>Somali shilling</source>
         <translation>Shilling somalí</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2150"/>
+        <location filename="../lib/unidades.py" line="2159"/>
         <source>South African rand</source>
         <translation>Rand sudafricano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2151"/>
+        <location filename="../lib/unidades.py" line="2160"/>
         <source>Sudanese pound</source>
         <translation>Libra sudanesa</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2152"/>
+        <location filename="../lib/unidades.py" line="2161"/>
         <source>Swazi lilangeni</source>
         <translation>Lilangeni de Suazilandia</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2153"/>
+        <location filename="../lib/unidades.py" line="2162"/>
         <source>Tanzanian shilling</source>
         <translation>Shilling tanzano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2154"/>
+        <location filename="../lib/unidades.py" line="2163"/>
         <source>Tunisian dinar</source>
         <translation>Dínar tunecino</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2155"/>
+        <location filename="../lib/unidades.py" line="2164"/>
         <source>Ugandan shilling</source>
         <translation>Shilling ugandés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2156"/>
+        <location filename="../lib/unidades.py" line="2165"/>
         <source>Zambian kwacha</source>
         <translation>Kwacha zambiano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2157"/>
+        <location filename="../lib/unidades.py" line="2166"/>
         <source>Zimbabwean dollar</source>
         <translation>Dolar zimbagués</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2158"/>
+        <location filename="../lib/unidades.py" line="2167"/>
         <source>Central AFrican CFA franc</source>
         <translation>Franco CFA centroafricano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2159"/>
+        <location filename="../lib/unidades.py" line="2168"/>
         <source>West African CFA franc</source>
         <translation>Franco CFA de África occidental</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2163"/>
+        <location filename="../lib/unidades.py" line="2172"/>
         <source>Fiji dollar</source>
         <translation>Dólar de Fiji</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2164"/>
+        <location filename="../lib/unidades.py" line="2173"/>
         <source>New Zealand dollar</source>
         <translation>Dólar neozelandés</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2165"/>
+        <location filename="../lib/unidades.py" line="2174"/>
         <source>Papua New Guinean kina</source>
         <translation>Kina de Papua Nueva Guinea</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2166"/>
+        <location filename="../lib/unidades.py" line="2175"/>
         <source>Salomon Islands dollar</source>
         <translation>Dólar de las Islas Salomón</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2167"/>
+        <location filename="../lib/unidades.py" line="2176"/>
         <source>Samoan tala</source>
         <translation>Tala samoano</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2168"/>
+        <location filename="../lib/unidades.py" line="2177"/>
         <source>Tongan pa&apos;anga</source>
         <translation>Pa&apos;anga de tonga</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2169"/>
+        <location filename="../lib/unidades.py" line="2178"/>
         <source>Tuvalu dollar</source>
         <translation>Dólar de Tuvalu</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2170"/>
+        <location filename="../lib/unidades.py" line="2179"/>
         <source>Vanuatu vatu</source>
         <translation>Vatu de Vanuatu</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2171"/>
+        <location filename="../lib/unidades.py" line="2180"/>
         <source>CFP franc</source>
         <translation>Franco CFP</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2288"/>
+        <location filename="../lib/unidades.py" line="2297"/>
         <source>Supported units</source>
         <translation>Unidades soportadas</translation>
     </message>
     <message>
-        <location filename="../lib/unidades.py" line="2301"/>
+        <location filename="../lib/unidades.py" line="2310"/>
         <source>default</source>
         <translation>por defecto</translation>
     </message>

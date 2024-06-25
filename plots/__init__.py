@@ -25,13 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from plots import drag, moody, standing
 from plots.heatTransfer import chartHE
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 
 _all = {
-    QtWidgets.QApplication.translate("Plots", "Petro"): (standing.Standing_Katz, ),
-    QtWidgets.QApplication.translate("Plots", "Fluid Flow"): (moody.Moody, drag.Drag),
-    QtWidgets.QApplication.translate("Plots", "Heat Exchanger"): chartHE}
+    translate("Plots", "Petro"): (standing.Standing_Katz, ),
+    translate("Plots", "Fluid Flow"): (moody.Moody, drag.Drag),
+    translate("Plots", "Heat Exchanger"): chartHE}
 
 __all__ = ["moody", "drag", "standing", "chartHE"]
 

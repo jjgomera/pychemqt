@@ -103,7 +103,7 @@ import logging
 import os
 
 import scipy.constants as k
-from tools.qt import QtCore, QtWidgets
+from tools.qt import QtCore, translate
 
 from lib.config import conf_dir, getMainWindowConfig
 from lib.utilities import representacion
@@ -273,7 +273,7 @@ class unidad(float):
         try:
             conversion = cls.rates[unit]
         except KeyError:
-            raise ValueError(QtWidgets.QApplication.translate("unidades", "Wrong input code"))
+            raise ValueError(translate("unidades", "Wrong input code"))
 
         data *= conversion
         return data
@@ -349,7 +349,7 @@ class unidad(float):
 class Dimensionless(float):
     """Dummy class to integrate dimensionless magnitudes
 with support for class unidad operations: txt, config. func."""
-    __title__ = QtWidgets.QApplication.translate("unidades", "Dimensionless")
+    __title__ = translate("unidades", "Dimensionless")
     __text__ = []
     _magnitudes = []
 
@@ -398,7 +398,7 @@ with support for class unidad operations: txt, config. func."""
 
 
 class Temperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Temperature")
+    __title__ = translate("unidades", "Temperature")
     __text__ = ['K', 'ºC', 'ºR', 'ºF', 'ºRe']
     __units__ = ['K', 'C', 'R', 'F', 'Re']
     __tooltip__ = ['Kelvin', 'Celsius', 'Rankine', 'Fahrenheit', 'Reaumur']
@@ -435,7 +435,7 @@ class Temperature(unidad):
         elif unit == "Re":
             self._data = Re2K(data)
         else:
-            raise ValueError(QtWidgets.QApplication.translate("unidades", "Wrong input code"))
+            raise ValueError(translate("unidades", "Wrong input code"))
 
         self.K = self._data
         self.C = K2C(self._data)
@@ -466,13 +466,13 @@ class Temperature(unidad):
         elif unit == "Re":
             data = Re2K(data)
         elif unit != "K":
-            raise ValueError(QtWidgets.QApplication.translate("unidades", "Wrong input code"))
+            raise ValueError(translate("unidades", "Wrong input code"))
 
         return data
 
 
 class DeltaT(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Temperature increase")
+    __title__ = translate("unidades", "Temperature increase")
     rates = {"K": 1.,
              "C": 1.,
              "F": k.Rankine,
@@ -488,7 +488,7 @@ class DeltaT(unidad):
 
 
 class Angle(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Angle")
+    __title__ = translate("unidades", "Angle")
     rates = {"rad": 1.,
              "deg": 2*k.pi/360,
              "min": 2*k.pi/360/60,
@@ -496,11 +496,11 @@ class Angle(unidad):
              "grad": 2*k.pi/400}
     __text__ = ["rad", "º deg", "'", '"', "grad"]
     __units__ = ["rad", "deg", "min", "sec", "grad"]
-    __tooltip__ = [QtWidgets.QApplication.translate("unidades", "Radian"),
-                   QtWidgets.QApplication.translate("unidades", "Degree"),
-                   QtWidgets.QApplication.translate("unidades", "Arcminute"),
-                   QtWidgets.QApplication.translate("unidades", "Arcsecond"),
-                   QtWidgets.QApplication.translate("unidades", "Gradian")]
+    __tooltip__ = [translate("unidades", "Radian"),
+                   translate("unidades", "Degree"),
+                   translate("unidades", "Arcminute"),
+                   translate("unidades", "Arcsecond"),
+                   translate("unidades", "Gradian")]
     __units_set__ = {"altsi": "rad", "si": "rad", "metric": "rad",
                      "cgs": "rad", "english": "rad"}
     __test__ = [{"input": {"value": 25, "unit": "deg"},
@@ -508,7 +508,7 @@ class Angle(unidad):
 
 
 class Length(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Length")
+    __title__ = translate("unidades", "Length")
     rates = {"m": 1.,
              "cm": k.centi,
              "mm": k.milli,
@@ -525,24 +525,24 @@ class Length(unidad):
                 "M", "pm", "Å"]
     __units__ = ['m', 'cm', 'mm', 'micra', 'km', 'inch', 'ft', 'yd', 'milla',
                  "milla_nau", "pm", "A"]
-    __tooltip__ = [QtWidgets.QApplication.translate("unidades", "meter"),
-                   QtWidgets.QApplication.translate("unidades", "centimeter"),
-                   QtWidgets.QApplication.translate("unidades", "milimeter"),
-                   QtWidgets.QApplication.translate("unidades", "micra"),
-                   QtWidgets.QApplication.translate("unidades", "kilometer"),
-                   QtWidgets.QApplication.translate("unidades", "inch"),
-                   QtWidgets.QApplication.translate("unidades", "foot"),
-                   QtWidgets.QApplication.translate("unidades", "yard"),
-                   QtWidgets.QApplication.translate("unidades", "mile"),
-                   QtWidgets.QApplication.translate("unidades", "nautical mile"),
-                   QtWidgets.QApplication.translate("unidades", "picometer"),
+    __tooltip__ = [translate("unidades", "meter"),
+                   translate("unidades", "centimeter"),
+                   translate("unidades", "milimeter"),
+                   translate("unidades", "micra"),
+                   translate("unidades", "kilometer"),
+                   translate("unidades", "inch"),
+                   translate("unidades", "foot"),
+                   translate("unidades", "yard"),
+                   translate("unidades", "mile"),
+                   translate("unidades", "nautical mile"),
+                   translate("unidades", "picometer"),
                    "Ångström"]
     _magnitudes = [
-        ("Length", QtWidgets.QApplication.translate("unidades", "Length")),
-        ("ParticleDiameter", QtWidgets.QApplication.translate("unidades", "Particle Diameter")),
-        ("Thickness", QtWidgets.QApplication.translate("unidades", "Thickness")),
-        ("PipeDiameter", QtWidgets.QApplication.translate("unidades", "Pipe Diameter")),
-        ("Head", QtWidgets.QApplication.translate("unidades", "Head"))]
+        ("Length", translate("unidades", "Length")),
+        ("ParticleDiameter", translate("unidades", "Particle Diameter")),
+        ("Thickness", translate("unidades", "Thickness")),
+        ("PipeDiameter", translate("unidades", "Pipe Diameter")),
+        ("Head", translate("unidades", "Head"))]
     __units_set__ = {
         "Length": {"altsi": "m", "si": "m", "metric": "m", "cgs": "cm",
                    "english": "ft"},
@@ -559,7 +559,7 @@ class Length(unidad):
 
 
 class Area(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Area")
+    __title__ = translate("unidades", "Area")
     rates = {"m2": 1.,
              "cm2": k.centi**2,
              "mm2": k.milli**2,
@@ -573,15 +573,15 @@ class Area(unidad):
                 'ha', 'acre']
     __units__ = ['m2', 'cm2', 'mm2', 'km2', 'inch2', 'ft2', 'yd2', 'ha',
                  "acre"]
-    __tooltip__ = [QtWidgets.QApplication.translate("unidades", "square meter"),
-                   QtWidgets.QApplication.translate("unidades", "square centimeter"),
-                   QtWidgets.QApplication.translate("unidades", "square milimeter"),
-                   QtWidgets.QApplication.translate("unidades", "square kilometer"),
-                   QtWidgets.QApplication.translate("unidades", "square inch"),
-                   QtWidgets.QApplication.translate("unidades", "square foot"),
-                   QtWidgets.QApplication.translate("unidades", "square yard"),
-                   QtWidgets.QApplication.translate("unidades", "hectarea"),
-                   QtWidgets.QApplication.translate("unidades", "acre")]
+    __tooltip__ = [translate("unidades", "square meter"),
+                   translate("unidades", "square centimeter"),
+                   translate("unidades", "square milimeter"),
+                   translate("unidades", "square kilometer"),
+                   translate("unidades", "square inch"),
+                   translate("unidades", "square foot"),
+                   translate("unidades", "square yard"),
+                   translate("unidades", "hectarea"),
+                   translate("unidades", "acre")]
     __units_set__ = {"altsi": "m2", "si": "m2", "metric": "m2", "cgs": "cm2",
                      "english": "ft2"}
     __test__ = [{"input": {"value": 1, "unit": "ft2"},
@@ -589,7 +589,7 @@ class Area(unidad):
 
 
 class Volume(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Volume")
+    __title__ = translate("unidades", "Volume")
     rates = {"m3": 1.,
              "cc": k.centi**3,
              "l": k.deci**3,
@@ -614,19 +614,19 @@ class Volume(unidad):
                  'bbl', 'bblUS', "bblUK", 'onz', 'onzUK']
     __tooltip__ = [
         'm³', 'cm³',
-        QtWidgets.QApplication.translate("unidades", "liter"),
+        translate("unidades", "liter"),
         'yd³', 'ft³', 'inch³',
-        QtWidgets.QApplication.translate("unidades", "US liquid gallon"),
-        QtWidgets.QApplication.translate("unidades", "Imperial gallon"),
-        QtWidgets.QApplication.translate("unidades", "US fluid barrel"),
-        QtWidgets.QApplication.translate("unidades", "UK fluid barrel"),
-        QtWidgets.QApplication.translate("unidades", "Oil barrel"),
-        QtWidgets.QApplication.translate("unidades", "US customary fluid ounce"),
-        QtWidgets.QApplication.translate("unidades", "Imperial fluid ounce")]
+        translate("unidades", "US liquid gallon"),
+        translate("unidades", "Imperial gallon"),
+        translate("unidades", "US fluid barrel"),
+        translate("unidades", "UK fluid barrel"),
+        translate("unidades", "Oil barrel"),
+        translate("unidades", "US customary fluid ounce"),
+        translate("unidades", "Imperial fluid ounce")]
     _magnitudes = [
-        ("Volume", QtWidgets.QApplication.translate("unidades", "Volume")),
-        ("VolLiq", QtWidgets.QApplication.translate("unidades", "Liquid Volume")),
-        ("VolGas", QtWidgets.QApplication.translate("unidades", "Gas Volume"))]
+        ("Volume", translate("unidades", "Volume")),
+        ("VolLiq", translate("unidades", "Liquid Volume")),
+        ("VolGas", translate("unidades", "Gas Volume"))]
     __units_set__ = {
         "Volume": {"altsi": "m3", "si": "m3", "metric": "m3", "cgs": "cc",
                    "english": "ft3"},
@@ -640,7 +640,7 @@ class Volume(unidad):
 
 
 class Time(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Time")
+    __title__ = translate("unidades", "Time")
     rates = {"s": 1.,
              "min": k.minute,
              "h": k.hour,
@@ -648,11 +648,11 @@ class Time(unidad):
              "year": k.year}
     __text__ = ['s', 'min', 'h', 'day', 'year']
     __units__ = ['s', 'min', 'h', 'day', 'year']
-    __tooltip__ = [QtWidgets.QApplication.translate("unidades", "second"),
-                   QtWidgets.QApplication.translate("unidades", "minute"),
-                   QtWidgets.QApplication.translate("unidades", "hour"),
-                   QtWidgets.QApplication.translate("unidades", "day"),
-                   QtWidgets.QApplication.translate("unidades", "year")]
+    __tooltip__ = [translate("unidades", "second"),
+                   translate("unidades", "minute"),
+                   translate("unidades", "hour"),
+                   translate("unidades", "day"),
+                   translate("unidades", "year")]
     __units_set__ = {"altsi": "h", "si": "h", "metric": "h", "cgs": "s",
                      "english": "h"}
     __test__ = [{"input": {"value": 1, "unit": "day"},
@@ -660,7 +660,7 @@ class Time(unidad):
 
 
 class Frequency(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Frequency")
+    __title__ = translate("unidades", "Frequency")
     rates = {"rpm": 1.,
              "rph": 1./60,
              "rps": 60.,
@@ -677,7 +677,7 @@ class Frequency(unidad):
 
 
 class Speed(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Speed")
+    __title__ = translate("unidades", "Speed")
     rates = {"ms": 1.,
              "cms": k.centi,
              "mms": k.milli,
@@ -701,7 +701,7 @@ class Speed(unidad):
                  'kmh', 'kmday', 'mph', 'kt']
     __tooltip__ = ['m/s', 'cm/s', 'mm/s', 'km/s', 'ft/s', 'ft/min', 'm/min',
                    'km/min', 'km/h', 'km/day', 'mph',
-                   QtWidgets.QApplication.translate("unidades", "Knot")]
+                   translate("unidades", "Knot")]
     __units_set__ = {"altsi": "ms", "si": "ms", "metric": "ms", "cgs": "cms",
                      "english": "fts"}
     __test__ = [{"input": {"value": 1, "unit": "ms"},
@@ -709,7 +709,7 @@ class Speed(unidad):
 
 
 class Acceleration(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Acceleration")
+    __title__ = translate("unidades", "Acceleration")
     rates = {"ms2": 1.,
              "cms2": k.centi,
              "fts2": k.foot,
@@ -731,7 +731,7 @@ class Acceleration(unidad):
 
 
 class Mass(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Mass")
+    __title__ = translate("unidades", "Mass")
     rates = {"kg": 1.,
              "g": 1./k.kilo,
              "mg": 1./k.mega,
@@ -748,16 +748,16 @@ class Mass(unidad):
                 'TonUS']
     __units__ = ['kg', 'g', 'mg', 'Ton', 'lb', 'grain', 'oz', 'slug', 'TonUK',
                  'TonUS']
-    __tooltip__ = [QtWidgets.QApplication.translate("unidades", "kilogram"),
-                   QtWidgets.QApplication.translate("unidades", "gram"),
-                   QtWidgets.QApplication.translate("unidades", "miligram"),
-                   QtWidgets.QApplication.translate("unidades", "ton"),
-                   QtWidgets.QApplication.translate("unidades", "pound"),
-                   QtWidgets.QApplication.translate("unidades", "grain"),
-                   QtWidgets.QApplication.translate("unidades", "ounce"),
-                   QtWidgets.QApplication.translate("unidades", "slug"),
-                   QtWidgets.QApplication.translate("unidades", "long ton (UK)"),
-                   QtWidgets.QApplication.translate("unidades", "short ton (US)")]
+    __tooltip__ = [translate("unidades", "kilogram"),
+                   translate("unidades", "gram"),
+                   translate("unidades", "miligram"),
+                   translate("unidades", "ton"),
+                   translate("unidades", "pound"),
+                   translate("unidades", "grain"),
+                   translate("unidades", "ounce"),
+                   translate("unidades", "slug"),
+                   translate("unidades", "long ton (UK)"),
+                   translate("unidades", "short ton (US)")]
     __units_set__ = {"altsi": "kg", "si": "kg", "metric": "kg", "cgs": "g",
                      "english": "lb"}
     __test__ = [{"input": {"value": 1, "unit": "lb"},
@@ -765,7 +765,7 @@ class Mass(unidad):
 
 
 class Mol(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Mol")
+    __title__ = translate("unidades", "Mol")
     rates = {"kmol": 1.,
              "mol": 1./k.kilo,
              "milimol": 1./k.mega,
@@ -779,7 +779,7 @@ class Mol(unidad):
 
 
 class SpecificVolume(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Specific Volume")
+    __title__ = translate("unidades", "Specific Volume")
     rates = {"m3kg": 1.,
              "lg": 1.,
              "lkg": k.liter,
@@ -813,7 +813,7 @@ class SpecificVolume(unidad):
 
 
 class SpecificVolume_square(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Third virial coefficient")
+    __title__ = translate("unidades", "Third virial coefficient")
     rates = {"m3kg": 1.,
              "lg": 1.,
              "lkg": k.liter**2,
@@ -850,7 +850,7 @@ class SpecificVolume_square(unidad):
 
 
 class MolarVolume(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Molar Volume")
+    __title__ = translate("unidades", "Molar Volume")
     rates = {"m3kmol": 1.,
              "lmol": 1.,
              "lkmol": k.liter,
@@ -871,7 +871,7 @@ class MolarVolume(unidad):
 
 
 class Density(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Density")
+    __title__ = translate("unidades", "Density")
     rates = {"kgm3": 1.,
              "gl": 1.,
              "kgl": 1./k.liter,
@@ -899,9 +899,9 @@ class Density(unidad):
                  'lbgalUS', 'lbbbl', 'tonUKft3', 'tonUSft3', 'slugft3',
                  'ozft3', 'ozin3', 'ozgalUK', 'ozgalUS']
     _magnitudes = [
-        ("Density", QtWidgets.QApplication.translate("unidades", "Density")),
-        ("DenLiq", QtWidgets.QApplication.translate("unidades", "Liquid Density")),
-        ("DenGas", QtWidgets.QApplication.translate("unidades", "Gas Density"))]
+        ("Density", translate("unidades", "Density")),
+        ("DenLiq", translate("unidades", "Liquid Density")),
+        ("DenGas", translate("unidades", "Gas Density"))]
     __units_set__ = {
         "Density": {"altsi": "kgm3", "si": "kgm3", "metric": "kgm3",
                     "cgs": "gcc", "english": "lbft3"},
@@ -914,7 +914,7 @@ class Density(unidad):
 
 
 class MolarDensity(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Molar Density")
+    __title__ = translate("unidades", "Molar Density")
     rates = {"kmolm3": 1.,
              "moll": 1.,
              "molcc": 1./k.liter,
@@ -933,7 +933,7 @@ class MolarDensity(unidad):
 
 
 class Force(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Force")
+    __title__ = translate("unidades", "Force")
     rates = {"N": 1.,
              "kN": k.kilo,
              "dyn": k.dyn,
@@ -949,10 +949,10 @@ class Force(unidad):
     __units__ = ["N", "kN", "dyn", "kgf", "gf", "lbf", "ozf", "pdl", "TonfUK",
                  "TonfUS"]
     __tooltip__ = ["Newton", "Kilonewton", "Dyna",
-                   QtWidgets.QApplication.translate("unidades", "Kilogram force"),
-                   QtWidgets.QApplication.translate("unidades", "Gram force"),
-                   QtWidgets.QApplication.translate("unidades", "Pound force"),
-                   QtWidgets.QApplication.translate("unidades", "Ounze force"),
+                   translate("unidades", "Kilogram force"),
+                   translate("unidades", "Gram force"),
+                   translate("unidades", "Pound force"),
+                   translate("unidades", "Ounze force"),
                    "Poundal", "TonfUK", "TonfUS"]
     __units_set__ = {"altsi": "kN", "si": "N", "metric": "N", "cgs": "dyn",
                      "english": "lbf"}
@@ -962,7 +962,7 @@ class Force(unidad):
 
 
 class Pressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Pressure")
+    __title__ = translate("unidades", "Pressure")
     rates = {"Pa": 1.,
              "MPa": k.mega,
              "hPa": k.hecto,
@@ -996,25 +996,25 @@ class Pressure(unidad):
                  'mH2O', 'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg',
                  'lbcm2', 'lbft2', 'dyncm2']
     __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
-                   QtWidgets.QApplication.translate("unidades", "Bar gauge"),
+                   translate("unidades", "Bar gauge"),
                    "Milibar", "Kilobar",
-                   QtWidgets.QApplication.translate("unidades", "Pound per square inch"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square inch gauge"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere technical, kg/cm²"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere technical gauge, kg/cm²g"),
-                   QtWidgets.QApplication.translate("unidades", "Milimeter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Centimeter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Meter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Inch of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Foot of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Milimeter of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Centimeter of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Inch of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Foot of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square centimeter"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square foot"),
-                   QtWidgets.QApplication.translate("unidades", "Dyn per square centimeter")]
+                   translate("unidades", "Pound per square inch"),
+                   translate("unidades", "Pound per square inch gauge"),
+                   translate("unidades", "Atmosphere"),
+                   translate("unidades", "Atmosphere technical, kg/cm²"),
+                   translate("unidades", "Atmosphere technical gauge, kg/cm²g"),
+                   translate("unidades", "Milimeter of water column"),
+                   translate("unidades", "Centimeter of water column"),
+                   translate("unidades", "Meter of water column"),
+                   translate("unidades", "Inch of water column"),
+                   translate("unidades", "Foot of water column"),
+                   translate("unidades", "Milimeter of mercury column"),
+                   translate("unidades", "Centimeter of mercury column"),
+                   translate("unidades", "Inch of mercury column"),
+                   translate("unidades", "Foot of mercury column"),
+                   translate("unidades", "Pound per square centimeter"),
+                   translate("unidades", "Pound per square foot"),
+                   translate("unidades", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
     __test__ = [{"input": {"value": 760, "unit": "mmHg"},
@@ -1078,13 +1078,13 @@ class Pressure(unidad):
             data = data * cls.rates[unit]
         else:
             raise ValueError(
-                QtWidgets.QApplication.translate("unidades", "Wrong input code"))
+                translate("unidades", "Wrong input code"))
 
         return data
 
 
 class DeltaP(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Pressure increase")
+    __title__ = translate("unidades", "Pressure increase")
     rates = {"Pa": 1.,
              "MPa": k.mega,
              "hPa": k.hecto,
@@ -1120,24 +1120,24 @@ class DeltaP(unidad):
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
     __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
-                   QtWidgets.QApplication.translate("unidades", "Bar gauge"), "Milibar",
-                   QtWidgets.QApplication.translate("unidades", "Pound per square inch"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square inch gauge"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere technical, kg/cm²"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere technical gauge, kg/cm²g"),
-                   QtWidgets.QApplication.translate("unidades", "Milimeter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Centimeter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Meter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Inch of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Foot of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Milimeter of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Centimeter of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Inch of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Foot of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square centimeter"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square foot"),
-                   QtWidgets.QApplication.translate("unidades",
+                   translate("unidades", "Bar gauge"), "Milibar",
+                   translate("unidades", "Pound per square inch"),
+                   translate("unidades", "Pound per square inch gauge"),
+                   translate("unidades", "Atmosphere"),
+                   translate("unidades", "Atmosphere technical, kg/cm²"),
+                   translate("unidades", "Atmosphere technical gauge, kg/cm²g"),
+                   translate("unidades", "Milimeter of water column"),
+                   translate("unidades", "Centimeter of water column"),
+                   translate("unidades", "Meter of water column"),
+                   translate("unidades", "Inch of water column"),
+                   translate("unidades", "Foot of water column"),
+                   translate("unidades", "Milimeter of mercury column"),
+                   translate("unidades", "Centimeter of mercury column"),
+                   translate("unidades", "Inch of mercury column"),
+                   translate("unidades", "Foot of mercury column"),
+                   translate("unidades", "Pound per square centimeter"),
+                   translate("unidades", "Pound per square foot"),
+                   translate("unidades",
                "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
@@ -1147,7 +1147,7 @@ class DeltaP(unidad):
 
 
 class Energy(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Energy")
+    __title__ = translate("unidades", "Energy")
     rates = {"J": 1.,
              "kJ": k.kilo,
              "MJ": k.mega,
@@ -1177,30 +1177,30 @@ class Energy(unidad):
                  'MBtu', 'Wh', 'kWh', 'MWh', 'HPh', 'kgfm', 'lbfft',
                  'TNT', 'CVh', 'GeV', 'oil', 'toe', 'tce']
     _magnitudes = [
-        ("Energy", QtWidgets.QApplication.translate("unidades", "Energy")),
-        ("Work", QtWidgets.QApplication.translate("unidades", "Work"))]
+        ("Energy", translate("unidades", "Energy")),
+        ("Work", translate("unidades", "Work"))]
     __tooltip__ = [
-        QtWidgets.QApplication.translate("unidades", "Joule"),
-        QtWidgets.QApplication.translate("unidades", "Kilojoule"),
-        QtWidgets.QApplication.translate("unidades", "Megajoule"),
-        QtWidgets.QApplication.translate("unidades", "Calorie"),
-        QtWidgets.QApplication.translate("unidades", "Kilocalorie"),
-        QtWidgets.QApplication.translate("unidades", "Calorie international"),
-        QtWidgets.QApplication.translate("unidades", "Erg"),
-        QtWidgets.QApplication.translate("unidades", "Btu"),
-        QtWidgets.QApplication.translate("unidades", "KiloBtu"),
-        QtWidgets.QApplication.translate("unidades", "MegaBtu"),
-        QtWidgets.QApplication.translate("unidades", "Watt-hour"),
-        QtWidgets.QApplication.translate("unidades", "Kilowatt-hour"),
-        QtWidgets.QApplication.translate("unidades", "Megawatt-hour"),
-        QtWidgets.QApplication.translate("unidades", "Horsepower-hour"),
+        translate("unidades", "Joule"),
+        translate("unidades", "Kilojoule"),
+        translate("unidades", "Megajoule"),
+        translate("unidades", "Calorie"),
+        translate("unidades", "Kilocalorie"),
+        translate("unidades", "Calorie international"),
+        translate("unidades", "Erg"),
+        translate("unidades", "Btu"),
+        translate("unidades", "KiloBtu"),
+        translate("unidades", "MegaBtu"),
+        translate("unidades", "Watt-hour"),
+        translate("unidades", "Kilowatt-hour"),
+        translate("unidades", "Megawatt-hour"),
+        translate("unidades", "Horsepower-hour"),
         'kgf/m', 'lbf/ft',
-        QtWidgets.QApplication.translate("unidades", "Ton TNT equivalent"),
-        QtWidgets.QApplication.translate("unidades", "Metric horsepower-hour"),
-        QtWidgets.QApplication.translate("unidades", "Gigaelectronvolt"),
-        QtWidgets.QApplication.translate("unidades", "Barrel petrol"),
-        QtWidgets.QApplication.translate("unidades", "Tonne of oil equivalent"),
-        QtWidgets.QApplication.translate("unidades", "Tonne of coal equivalent")]
+        translate("unidades", "Ton TNT equivalent"),
+        translate("unidades", "Metric horsepower-hour"),
+        translate("unidades", "Gigaelectronvolt"),
+        translate("unidades", "Barrel petrol"),
+        translate("unidades", "Tonne of oil equivalent"),
+        translate("unidades", "Tonne of coal equivalent")]
     __units_set__ = {
         "Energy": {"altsi": "MJ", "si": "MJ", "metric": "J", "cgs": "erg",
                    "english": "MBtu"},
@@ -1211,7 +1211,7 @@ class Energy(unidad):
 
 
 class Enthalpy(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Enthalpy")
+    __title__ = translate("unidades", "Enthalpy")
     rates = {"Jkg": 1.,
              "kJkg": k.kilo,
              "Jg": k.kilo,
@@ -1235,7 +1235,7 @@ class Enthalpy(unidad):
 
 
 class MolarEnthalpy(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Molar Enthalpy")
+    __title__ = translate("unidades", "Molar Enthalpy")
     rates = {"Jkmol": 1.,
              "kJkmol": k.kilo,
              "Jmol": k.kilo,
@@ -1259,7 +1259,7 @@ class MolarEnthalpy(unidad):
 
 
 class Entropy(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Entropy")
+    __title__ = translate("unidades", "Entropy")
     rates = {"JK": 1.,
              "kJK": k.kilo,
              "MJK": k.mega,
@@ -1284,7 +1284,7 @@ class Entropy(unidad):
 
 
 class SpecificHeat(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Specific Heat")
+    __title__ = translate("unidades", "Specific Heat")
     rates = {"JkgK": 1.,
              "kJkgK": k.kilo,
              "JgK": k.kilo,
@@ -1294,8 +1294,8 @@ class SpecificHeat(unidad):
              "kWhkgK": k.kilo*k.hour,
              "BtulbF": k.Btu/k.lb/k.Rankine}
     _magnitudes = [
-        ("SpecificHeat", QtWidgets.QApplication.translate("unidades", "Specific Heat")),
-        ("SpecificEntropy", QtWidgets.QApplication.translate("unidades",
+        ("SpecificHeat", translate("unidades", "Specific Heat")),
+        ("SpecificEntropy", translate("unidades",
     "Specific Entropy"))]
     __text__ = ['J/kg·K', 'kJ/kg·K', 'kcal/kg·K', 'cal/g·K', 'kcal/g·K',
                 'kWh/kg·K', 'Btu/lb·F']
@@ -1311,7 +1311,7 @@ class SpecificHeat(unidad):
 
 
 class MolarSpecificHeat(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Molar Specific Heat")
+    __title__ = translate("unidades", "Molar Specific Heat")
     rates = {"JkmolK": 1.,
              "kJkmolK": k.kilo,
              "kJmolK": k.kilo*k.kilo,
@@ -1332,7 +1332,7 @@ class MolarSpecificHeat(unidad):
 
 
 class Power(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Power")
+    __title__ = translate("unidades", "Power")
     rates = {"W": 1.,
              "kW": k.kilo,
              "MW": k.mega,
@@ -1358,25 +1358,25 @@ class Power(unidad):
                  'MJh', 'ergs', 'Btus', 'Btumin', 'Btuh', 'MBtuh', 'ftlbfs',
                  'ftlbfmin', 'ftlbfh']
     __tooltip__ = [
-        QtWidgets.QApplication.translate("unidades", "Watt"),
-        QtWidgets.QApplication.translate("unidades", "Kilowatt"),
-        QtWidgets.QApplication.translate("unidades", "Megawatt"),
-        QtWidgets.QApplication.translate("unidades", "Horsepower"),
-        QtWidgets.QApplication.translate("unidades", "Metric horsepower"),
-        QtWidgets.QApplication.translate("unidades", "Calorie per second"),
-        QtWidgets.QApplication.translate("unidades", "Kilocalorie per hour"),
-        QtWidgets.QApplication.translate("unidades", "Joule per hour"),
-        QtWidgets.QApplication.translate("unidades", "Kilojoule per hour"),
-        QtWidgets.QApplication.translate("unidades", "Megajoule per hour"),
-        QtWidgets.QApplication.translate("unidades", "Erg per second"),
-        QtWidgets.QApplication.translate("unidades", "Btu per second"),
-        QtWidgets.QApplication.translate("unidades", "Btu per minute"),
-        QtWidgets.QApplication.translate("unidades", "Btu per hour"),
-        QtWidgets.QApplication.translate("unidades", "MegaBtu per hour"),
+        translate("unidades", "Watt"),
+        translate("unidades", "Kilowatt"),
+        translate("unidades", "Megawatt"),
+        translate("unidades", "Horsepower"),
+        translate("unidades", "Metric horsepower"),
+        translate("unidades", "Calorie per second"),
+        translate("unidades", "Kilocalorie per hour"),
+        translate("unidades", "Joule per hour"),
+        translate("unidades", "Kilojoule per hour"),
+        translate("unidades", "Megajoule per hour"),
+        translate("unidades", "Erg per second"),
+        translate("unidades", "Btu per second"),
+        translate("unidades", "Btu per minute"),
+        translate("unidades", "Btu per hour"),
+        translate("unidades", "MegaBtu per hour"),
         'ft/lbf·s', 'ft/lbf·min', 'ft/lbf·h']
     _magnitudes = [
-        ("EnergyFlow", QtWidgets.QApplication.translate("unidades", "Energy Flow")),
-        ("Power", QtWidgets.QApplication.translate("unidades", "Power"))]
+        ("EnergyFlow", translate("unidades", "Energy Flow")),
+        ("Power", translate("unidades", "Power"))]
     __units_set__ = {
         "EnergyFlow": {"altsi": "MJh", "si": "kJh", "metric": "Jh",
                        "cgs": "ergs", "english": "MBtuh"},
@@ -1388,7 +1388,7 @@ class Power(unidad):
 
 
 class MassFlow(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Mass Flow")
+    __title__ = translate("unidades", "Mass Flow")
     rates = {"kgs": 1.,
              "kgmin": 1./k.minute,
              "kgh": 1./k.hour,
@@ -1422,7 +1422,7 @@ class MassFlow(unidad):
 
 
 class MolarFlow(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Molar Flow")
+    __title__ = translate("unidades", "Molar Flow")
     rates = {"kmols": 1.,
              "kmolmin": 1./k.minute,
              "kmolh": 1./k.hour,
@@ -1444,7 +1444,7 @@ class MolarFlow(unidad):
 
 
 class VolFlow(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Volumetric Flow")
+    __title__ = translate("unidades", "Volumetric Flow")
     rates = {"m3s": 1.,
              "m3min": 1./k.minute,
              "m3h": 1./k.hour,
@@ -1480,9 +1480,9 @@ class VolFlow(unidad):
                  'galUKh', 'galUSh', 'galUKmin', 'galUSmin', 'galUKs',
                  'galUSs', 'bbls', 'bblmin', 'bblh', 'bblday']
     _magnitudes = [
-        ("VolFlow", QtWidgets.QApplication.translate("unidades", "Volumetric Flow")),
-        ("QLiq", QtWidgets.QApplication.translate("unidades", "Liquid Flow")),
-        ("QGas", QtWidgets.QApplication.translate("unidades", "Gas Flow"))]
+        ("VolFlow", translate("unidades", "Volumetric Flow")),
+        ("QLiq", translate("unidades", "Liquid Flow")),
+        ("QGas", translate("unidades", "Gas Flow"))]
     __units_set__ = {
         "VolFlow": {"altsi": "m3h", "si": "m3h", "metric": "m3s", "cgs": "ccs",
                     "english": "ft3h"},
@@ -1496,7 +1496,7 @@ class VolFlow(unidad):
 
 
 class Diffusivity(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Diffusivity")
+    __title__ = translate("unidades", "Diffusivity")
     rates = {"m2s": 1.,
              "cm2s": k.centi**2,
              "mm2s": k.milli**2,
@@ -1512,8 +1512,8 @@ class Diffusivity(unidad):
     __units__ = ["m2s", "cm2s", "mm2s", "ft2s", "inch2s", "m2h", "ft2h",
                  "inch2h", "St", "cSt"]
     _magnitudes = [
-        ("Diffusivity", QtWidgets.QApplication.translate("unidades", "Diffusivity")),
-        ("KViscosity", QtWidgets.QApplication.translate("unidades", "Kinematic viscosity"))]
+        ("Diffusivity", translate("unidades", "Diffusivity")),
+        ("KViscosity", translate("unidades", "Kinematic viscosity"))]
     __tooltip__ = ["m²/s", "cm²/s", "mm²/s", "ft²/s", "inch²/s", "m²/h",
                    "ft²/h", "inch²/h", "Stokes", "Centistokes"]
     __units_set__ = {
@@ -1526,7 +1526,7 @@ class Diffusivity(unidad):
 
 
 class HeatFlux(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Heat Flux")
+    __title__ = translate("unidades", "Heat Flux")
     rates = {"Wm2": 1.,
              "kWm2": k.kilo,
              "calhm2": k.calorie/k.hour,
@@ -1545,7 +1545,7 @@ class HeatFlux(unidad):
 
 
 class ThermalConductivity(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Thermal Conductivity")
+    __title__ = translate("unidades", "Thermal Conductivity")
     rates = {"WmK": 1.,
              "mWmK": 1./k.kilo,
              "kWmK": k.kilo,
@@ -1570,7 +1570,7 @@ class ThermalConductivity(unidad):
 
 
 class UA(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "UA")
+    __title__ = translate("unidades", "UA")
     rates = {"WK": 1.,
              "kWK": k.kilo,
              "mWK": k.milli,
@@ -1593,7 +1593,7 @@ class UA(unidad):
 
 
 class HeatTransfCoef(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Heat Transfer Coefficient")
+    __title__ = translate("unidades", "Heat Transfer Coefficient")
     rates = {"Wm2K": 1.,
              "kWm2K": k.kilo,
              "Jhm2K": 1./k.hour,
@@ -1619,7 +1619,7 @@ class HeatTransfCoef(unidad):
 
 
 class Fouling(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Fouling Factor")
+    __title__ = translate("unidades", "Fouling Factor")
     rates = {"m2KW": 1.,
              "m2KkW": 1./k.kilo,
              "hm2KJ": k.hour,
@@ -1645,7 +1645,7 @@ class Fouling(unidad):
 
 
 class Tension(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Surface Tension")
+    __title__ = translate("unidades", "Surface Tension")
     rates = {"Nm": 1.,
              "mNm": k.milli,
              "dyncm": k.dyn/k.centi,
@@ -1659,7 +1659,7 @@ class Tension(unidad):
 
 
 class Viscosity(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Viscosity")
+    __title__ = translate("unidades", "Viscosity")
     rates = {"Pas": 1.,
              "mPas": k.milli,
              "muPas": k.micro,
@@ -1676,9 +1676,9 @@ class Viscosity(unidad):
                 'reyn', 'lb/ft·s', 'lbf/ft²', 'lbf/in²', 'lb/ft·h']
     __units__ = ['Pas', 'mPas', 'muPas', 'P', 'cP', 'dynscm2', 'microP',
                  'reyn', 'lbfts', 'lbfft2', 'lbfinch2', 'lbfth']
-    __tooltip__ = [QtWidgets.QApplication.translate("unidades", "Pascal per second"),
-                   QtWidgets.QApplication.translate("unidades", "Milipascal per second"),
-                   QtWidgets.QApplication.translate("unidades", "Micropascal per second"),
+    __tooltip__ = [translate("unidades", "Pascal per second"),
+                   translate("unidades", "Milipascal per second"),
+                   translate("unidades", "Micropascal per second"),
                    "Poise", "Centipoise", 'dyn/s·cm²', 'microPoise',
                    "Reyn", 'lb/ft·s', 'lbf/ft²', 'lbf/in²', 'lb/ft·h']
     __units_set__ = {"altsi": "muPas", "si": "Pas", "metric": "Pas",
@@ -1688,7 +1688,7 @@ class Viscosity(unidad):
 
 
 class SolubilityParameter(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Solubility Parameter")
+    __title__ = translate("unidades", "Solubility Parameter")
     rates = {"Jm3": 1.,
              "calcc": (k.calorie*k.mega)**0.5,
              "Btuft3": (k.Btu*k.foot**-3)**0.5}
@@ -1701,7 +1701,7 @@ class SolubilityParameter(unidad):
 
 
 class PotencialElectric(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Electric Potencial")
+    __title__ = translate("unidades", "Electric Potencial")
     rates = {"Vm": 1.,
              "kVm": k.kilo,
              "MVm": k.mega,
@@ -1721,12 +1721,12 @@ class PotencialElectric(unidad):
 
 
 class DipoleMoment(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Dipole Moment")
+    __title__ = translate("unidades", "Dipole Moment")
     rates = {"Cm": 1.,
              "Debye": k.debye}
     __text__ = ['C·m', 'Debye']
     __units__ = ['Cm', 'Debye']
-    __tooltip__ = [QtWidgets.QApplication.translate("unidades", "Coulomb per meter"),
+    __tooltip__ = [translate("unidades", "Coulomb per meter"),
                    "Debye"]
     __units_set__ = {"altsi": "Cm", "si": "Cm", "metric": "Cm", "cgs": "Cm",
                      "english": "Debye"}
@@ -1735,7 +1735,7 @@ class DipoleMoment(unidad):
 
 
 class CakeResistance(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Cake Resistance")
+    __title__ = translate("unidades", "Cake Resistance")
     rates = {"mkg": 1.,
              "cmg": k.centi/k.kilo,
              "ftlb": k.foot/k.pound}
@@ -1748,7 +1748,7 @@ class CakeResistance(unidad):
 
 
 class PackingDP(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Packing Pressure drop")
+    __title__ = translate("unidades", "Packing Pressure drop")
     rates = {"mmH2Om": 1.,
              "inH2Oft": k.inch/k.milli/k.foot}
     __text__ = ['mmH2O/m', 'inH2O/ft']
@@ -1760,7 +1760,7 @@ class PackingDP(unidad):
 
 
 class V2V(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Gas-Oil ratio")
+    __title__ = translate("unidades", "Gas-Oil ratio")
     rates = {"m3m3": 1.,
              "ft3ft3": 1.,
              "ll": 1.,
@@ -1775,7 +1775,7 @@ class V2V(unidad):
 
 
 class InvTemperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Temperature inverse")
+    __title__ = translate("unidades", "Temperature inverse")
     rates = {"K": 1.,
              "C": 1.,
              "F": 1./k.Rankine,
@@ -1792,7 +1792,7 @@ class InvTemperature(unidad):
 
 
 class InvPressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Pressure inverse")
+    __title__ = translate("unidades", "Pressure inverse")
     rates = {"Pa": 1.,
              "MPa": 1./k.mega,
              "hPa": 1./k.hecto,
@@ -1829,24 +1829,24 @@ class InvPressure(unidad):
                  'inH2O', 'ftH2O', 'mmHg', 'cmHg', 'inHg', 'ftHg', 'lbcm2',
                  'lbft2', 'dyncm2']
     __tooltip__ = ["Pascal", "Hectopascal", "Kilopascal", "Megapascal", "bar",
-                   QtWidgets.QApplication.translate("unidades", "Bar gauge"), "Milibar",
-                   QtWidgets.QApplication.translate("unidades", "Pound per square inch"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square inch gauge"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere technical, kg/cm²"),
-                   QtWidgets.QApplication.translate("unidades", "Atmosphere technical gauge, kg/cm²g"),
-                   QtWidgets.QApplication.translate("unidades", "Milimeter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Centimeter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Meter of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Inch of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Foot of water column"),
-                   QtWidgets.QApplication.translate("unidades", "Milimeter of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Centimeter of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Inch of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Foot of mercury column"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square centimeter"),
-                   QtWidgets.QApplication.translate("unidades", "Pound per square foot"),
-                   QtWidgets.QApplication.translate("unidades", "Dyn per square centimeter")]
+                   translate("unidades", "Bar gauge"), "Milibar",
+                   translate("unidades", "Pound per square inch"),
+                   translate("unidades", "Pound per square inch gauge"),
+                   translate("unidades", "Atmosphere"),
+                   translate("unidades", "Atmosphere technical, kg/cm²"),
+                   translate("unidades", "Atmosphere technical gauge, kg/cm²g"),
+                   translate("unidades", "Milimeter of water column"),
+                   translate("unidades", "Centimeter of water column"),
+                   translate("unidades", "Meter of water column"),
+                   translate("unidades", "Inch of water column"),
+                   translate("unidades", "Foot of water column"),
+                   translate("unidades", "Milimeter of mercury column"),
+                   translate("unidades", "Centimeter of mercury column"),
+                   translate("unidades", "Inch of mercury column"),
+                   translate("unidades", "Foot of mercury column"),
+                   translate("unidades", "Pound per square centimeter"),
+                   translate("unidades", "Pound per square foot"),
+                   translate("unidades", "Dyn per square centimeter")]
     __units_set__ = {"altsi": "bar", "si": "Pa", "metric": "Pa",
                      "cgs": "dyncm2", "english": "psi"}
     __test__ = [{"input": {"value": 1, "unit": "mmHg"},
@@ -1854,7 +1854,7 @@ class InvPressure(unidad):
 
 
 class EnthalpyPressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Enthalpy per pressure")
+    __title__ = translate("unidades", "Enthalpy per pressure")
     rates = {"JkgPa": 1.,
              "kJkgkPa": 1.,
              "kJkgMPa": k.milli,
@@ -1872,7 +1872,7 @@ class EnthalpyPressure(unidad):
 
 
 class EnthalpyDensity(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Enthalpy per density")
+    __title__ = translate("unidades", "Enthalpy per density")
     rates = {"Jkgkgm3": 1.,
              "kJkgkgm3": k.kilo,
              "Btulb2ft3": k.Btu/k.pound**2*k.foot**3}
@@ -1885,7 +1885,7 @@ class EnthalpyDensity(unidad):
 
 
 class TemperaturePressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Temperature per pressure")
+    __title__ = translate("unidades", "Temperature per pressure")
     rates = {"KPa": 1.,
              "KkPa": k.milli,
              "Kbar": 1e-5,
@@ -1901,7 +1901,7 @@ class TemperaturePressure(unidad):
 
 
 class PressureTemperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Pressure per Temperature")
+    __title__ = translate("unidades", "Pressure per Temperature")
     rates = {"PaK": 1.,
              "kPaK": k.kilo,
              "barK": 1e5,
@@ -1917,7 +1917,7 @@ class PressureTemperature(unidad):
 
 
 class PressureDensity(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Pressure per density")
+    __title__ = translate("unidades", "Pressure per density")
     rates = {"Pakgm3": 1.,
              "kPakgm3": k.kilo,
              "barkgm3": 1e5,
@@ -1936,7 +1936,7 @@ class PressureDensity(unidad):
 
 
 class DensityPressure(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Density per pressure")
+    __title__ = translate("unidades", "Density per pressure")
     rates = {"kgm3Pa": 1.,
              "kgm3kPa": k.milli,
              "kgm3bar": 1/1e5,
@@ -1956,7 +1956,7 @@ class DensityPressure(unidad):
 
 
 class DensityTemperature(unidad):
-    __title__ = QtWidgets.QApplication.translate("unidades", "Density per temperature")
+    __title__ = translate("unidades", "Density per temperature")
     rates = {"kgm3K": 1.,
              "gccK": 1./k.liter,
              "lbft3F": k.pound/k.foot**3/k.Rankine}
@@ -1985,199 +1985,199 @@ class Currency(unidad):
         rates = json.load(archivo)
     archivo.close
     date = rates.pop("date")
-    __title__ = QtWidgets.QApplication.translate("unidades", "Currency")
+    __title__ = translate("unidades", "Currency")
 
     # Main currencies
     _uMain = [
-      ("usd", QtWidgets.QApplication.translate("unidades", "United States dollar"), "$"),
-      ("eur", QtWidgets.QApplication.translate("unidades", "Euro"), "€"),
-      ("gbp", QtWidgets.QApplication.translate("unidades", "Pound sterling"), "£"),
-      ("jpy", QtWidgets.QApplication.translate("unidades", "Japanese yen"), "¥"),
-      ("cny", QtWidgets.QApplication.translate("unidades", "Chinese yuan"), "¥"),
-      ("rub", QtWidgets.QApplication.translate("unidades", "Russian rouble"), "руб"),
-      ("aud", QtWidgets.QApplication.translate("unidades", "Australian dollar"), "A$"),
-      ("brl", QtWidgets.QApplication.translate("unidades", "Brazilian real"), "R$"),
-      ("cad", QtWidgets.QApplication.translate("unidades", "Canadian dollar"), "C$"),
-      ("chf", QtWidgets.QApplication.translate("unidades", "Swiss franc"), "Fr.")]
+      ("usd", translate("unidades", "United States dollar"), "$"),
+      ("eur", translate("unidades", "Euro"), "€"),
+      ("gbp", translate("unidades", "Pound sterling"), "£"),
+      ("jpy", translate("unidades", "Japanese yen"), "¥"),
+      ("cny", translate("unidades", "Chinese yuan"), "¥"),
+      ("rub", translate("unidades", "Russian rouble"), "руб"),
+      ("aud", translate("unidades", "Australian dollar"), "A$"),
+      ("brl", translate("unidades", "Brazilian real"), "R$"),
+      ("cad", translate("unidades", "Canadian dollar"), "C$"),
+      ("chf", translate("unidades", "Swiss franc"), "Fr.")]
 
     # Europe
     _uEurope = [
-      ("dkk", QtWidgets.QApplication.translate("unidades", "Danish krone"), "kr"),
-      ("isk", QtWidgets.QApplication.translate("unidades", "Icelandic króna"), "Íkr"),
-      ("nok", QtWidgets.QApplication.translate("unidades", "Norwegian krone"), "kr"),
-      ("sek", QtWidgets.QApplication.translate("unidades", "Swedish krona"), "kr"),
-      ("all", QtWidgets.QApplication.translate("unidades", "Albanian lek"), "L"),
-      ("bgn", QtWidgets.QApplication.translate("unidades", "Bulgarian lev"), "лв"),
-      ("czk", QtWidgets.QApplication.translate("unidades", "Czech koruna"), "Kč"),
-      ("huf", QtWidgets.QApplication.translate("unidades", "Hungarian forint"), "Ft"),
-      ("pln", QtWidgets.QApplication.translate("unidades", "Polish złoty"), "zł"),
-      ("ron", QtWidgets.QApplication.translate("unidades", "Romanian new leu"), "RON"),
-      ("bam", QtWidgets.QApplication.translate("unidades", "Bosnia and Herzebgovina convertible mark"), "KM"),
-      ("hrk", QtWidgets.QApplication.translate("unidades", "Croatian kuna"), "kn"),
-      ("mkd", QtWidgets.QApplication.translate("unidades", "Macedonian denar"), "ден"),
-      ("mdl", QtWidgets.QApplication.translate("unidades", "Moldovan leu"), "lei"),
-      ("rsd", QtWidgets.QApplication.translate("unidades", "Serbian dinar"), "дин."),
-      ("byn", QtWidgets.QApplication.translate("unidades", "Belarusian ruble"), "p."),
-      ("uah", QtWidgets.QApplication.translate("unidades", "Ukrainian hryvnia"), "₴"),
-      ("try", QtWidgets.QApplication.translate("unidades", "Turkish lira"), "TL")]
+      ("dkk", translate("unidades", "Danish krone"), "kr"),
+      ("isk", translate("unidades", "Icelandic króna"), "Íkr"),
+      ("nok", translate("unidades", "Norwegian krone"), "kr"),
+      ("sek", translate("unidades", "Swedish krona"), "kr"),
+      ("all", translate("unidades", "Albanian lek"), "L"),
+      ("bgn", translate("unidades", "Bulgarian lev"), "лв"),
+      ("czk", translate("unidades", "Czech koruna"), "Kč"),
+      ("huf", translate("unidades", "Hungarian forint"), "Ft"),
+      ("pln", translate("unidades", "Polish złoty"), "zł"),
+      ("ron", translate("unidades", "Romanian new leu"), "RON"),
+      ("bam", translate("unidades", "Bosnia and Herzebgovina convertible mark"), "KM"),
+      ("hrk", translate("unidades", "Croatian kuna"), "kn"),
+      ("mkd", translate("unidades", "Macedonian denar"), "ден"),
+      ("mdl", translate("unidades", "Moldovan leu"), "lei"),
+      ("rsd", translate("unidades", "Serbian dinar"), "дин."),
+      ("byn", translate("unidades", "Belarusian ruble"), "p."),
+      ("uah", translate("unidades", "Ukrainian hryvnia"), "₴"),
+      ("try", translate("unidades", "Turkish lira"), "TL")]
 
     # America
     _uAmerica = [
-      ("ars", QtWidgets.QApplication.translate("unidades", "Argentine peso"), "$"),
-      ("bob", QtWidgets.QApplication.translate("unidades", "Bolivian boliviano"), "Bs"),
-      ("clf", QtWidgets.QApplication.translate("unidades", "Chilean Unit of Account"), "UF"),
-      ("clp", QtWidgets.QApplication.translate("unidades", "Chilean peso"), "$"),
-      ("cop", QtWidgets.QApplication.translate("unidades", "Colombian peso"), "$"),
-      ("crc", QtWidgets.QApplication.translate("unidades", "Costa Rican colon"), "₡"),
-      ("cuc", QtWidgets.QApplication.translate("unidades", "Cuban convertible peso"), "CUC$"),
-      ("cup", QtWidgets.QApplication.translate("unidades", "Cuban peso"), "₱"),
-      ("dop", QtWidgets.QApplication.translate("unidades", "Dominican peso"), "RD$"),
-      ("gtq", QtWidgets.QApplication.translate("unidades", "Guatemalan quetzal"), "Q"),
-      ("hnl", QtWidgets.QApplication.translate("unidades", "Honduran lempira"), "L"),
-      ("mxn", QtWidgets.QApplication.translate("unidades", "Mexican peso"), "$"),
-      ("mxv", QtWidgets.QApplication.translate("unidades", "Mexican UDI"), "$"),
-      ("nio", QtWidgets.QApplication.translate("unidades", "Nicaraguan córdoba"), "C$"),
-      ("pab", QtWidgets.QApplication.translate("unidades", "Panamanian balboa"), "฿"),
-      ("pyg", QtWidgets.QApplication.translate("unidades", "Paraguayan guaraní"), "₲"),
-      ("pen", QtWidgets.QApplication.translate("unidades", "Peruvian nuevo sol"), "S/."),
-      ("svc", QtWidgets.QApplication.translate("unidades", "Salvadoran colón"), "₡"),
-      ("uyu", QtWidgets.QApplication.translate("unidades", "Uruguayan peso"), "$U"),
-      # ("vef", QtWidgets.QApplication.translate("unidades", "Venezuelan bolívar"), "Bs"),
-      ("ved", QtWidgets.QApplication.translate("unidades", "Venezuelan digital bolívar"), "Bs.D"),
-      ("ves", QtWidgets.QApplication.translate("unidades", "Venezuelan sovereign bolívar"), "Bs.S"),
+      ("ars", translate("unidades", "Argentine peso"), "$"),
+      ("bob", translate("unidades", "Bolivian boliviano"), "Bs"),
+      ("clf", translate("unidades", "Chilean Unit of Account"), "UF"),
+      ("clp", translate("unidades", "Chilean peso"), "$"),
+      ("cop", translate("unidades", "Colombian peso"), "$"),
+      ("crc", translate("unidades", "Costa Rican colon"), "₡"),
+      ("cuc", translate("unidades", "Cuban convertible peso"), "CUC$"),
+      ("cup", translate("unidades", "Cuban peso"), "₱"),
+      ("dop", translate("unidades", "Dominican peso"), "RD$"),
+      ("gtq", translate("unidades", "Guatemalan quetzal"), "Q"),
+      ("hnl", translate("unidades", "Honduran lempira"), "L"),
+      ("mxn", translate("unidades", "Mexican peso"), "$"),
+      ("mxv", translate("unidades", "Mexican UDI"), "$"),
+      ("nio", translate("unidades", "Nicaraguan córdoba"), "C$"),
+      ("pab", translate("unidades", "Panamanian balboa"), "฿"),
+      ("pyg", translate("unidades", "Paraguayan guaraní"), "₲"),
+      ("pen", translate("unidades", "Peruvian nuevo sol"), "S/."),
+      ("svc", translate("unidades", "Salvadoran colón"), "₡"),
+      ("uyu", translate("unidades", "Uruguayan peso"), "$U"),
+      # ("vef", translate("unidades", "Venezuelan bolívar"), "Bs"),
+      ("ved", translate("unidades", "Venezuelan digital bolívar"), "Bs.D"),
+      ("ves", translate("unidades", "Venezuelan sovereign bolívar"), "Bs.S"),
 
-      ("awg", QtWidgets.QApplication.translate("unidades", "Aruban florin"), "Afl."),
-      ("bsd", QtWidgets.QApplication.translate("unidades", "Bahamian dollar"), "B$"),
-      ("bbd", QtWidgets.QApplication.translate("unidades", "Barbados dollar"), "Bds$"),
-      ("bzd", QtWidgets.QApplication.translate("unidades", "Belize dollar"), "BZ$"),
-      ("bmd", QtWidgets.QApplication.translate("unidades", "Bermudean dollar"), "BD$"),
-      ("kyd", QtWidgets.QApplication.translate("unidades", "Cayman Islands dollar"), "CI$"),
-      ("xcd", QtWidgets.QApplication.translate("unidades", "East Caribbean dollar"), "EC$"),
-      ("gyd", QtWidgets.QApplication.translate("unidades", "Guyanese dollar"), "GY$"),
-      ("htg", QtWidgets.QApplication.translate("unidades", "Haitian gourde"), "G"),
-      ("jmd", QtWidgets.QApplication.translate("unidades", "Jamaican dollar"), "J$"),
-      ("ang", QtWidgets.QApplication.translate("unidades", "Netherlands Antillean guilder"), "f"),
-      ("srd", QtWidgets.QApplication.translate("unidades", "Surinamese dollar"), "$"),
-      ("ttd", QtWidgets.QApplication.translate("unidades", "Trinidad and Tobago dollar"),
+      ("awg", translate("unidades", "Aruban florin"), "Afl."),
+      ("bsd", translate("unidades", "Bahamian dollar"), "B$"),
+      ("bbd", translate("unidades", "Barbados dollar"), "Bds$"),
+      ("bzd", translate("unidades", "Belize dollar"), "BZ$"),
+      ("bmd", translate("unidades", "Bermudean dollar"), "BD$"),
+      ("kyd", translate("unidades", "Cayman Islands dollar"), "CI$"),
+      ("xcd", translate("unidades", "East Caribbean dollar"), "EC$"),
+      ("gyd", translate("unidades", "Guyanese dollar"), "GY$"),
+      ("htg", translate("unidades", "Haitian gourde"), "G"),
+      ("jmd", translate("unidades", "Jamaican dollar"), "J$"),
+      ("ang", translate("unidades", "Netherlands Antillean guilder"), "f"),
+      ("srd", translate("unidades", "Surinamese dollar"), "$"),
+      ("ttd", translate("unidades", "Trinidad and Tobago dollar"),
           "TT$")]
 
     # Asia
     _uAsia = [
-      ("afn", QtWidgets.QApplication.translate("unidades", "Afghan afghani"), "Af"),
-      ("bhd", QtWidgets.QApplication.translate("unidades", "Bahraini dinar"), "BD"),
-      ("bnd", QtWidgets.QApplication.translate("unidades", "Brunei dollar"), "B$"),
-      ("ils", QtWidgets.QApplication.translate("unidades", "Israeli new shekel"), "₪"),
-      ("iqd", QtWidgets.QApplication.translate("unidades", "Iraqi dinar"), "د.ع"),
-      ("irr", QtWidgets.QApplication.translate("unidades", "Iranian rial"), "﷼"),
-      ("jod", QtWidgets.QApplication.translate("unidades", "Jordanian dinar"), "JD"),
-      ("kwd", QtWidgets.QApplication.translate("unidades", "Kuwaiti dinar"), "د.ك"),
-      ("lbp", QtWidgets.QApplication.translate("unidades", "Lebanese pound"), "ل.ل."),
-      ("omr", QtWidgets.QApplication.translate("unidades", "Omani rial"), "﷼"),
-      ("pkr", QtWidgets.QApplication.translate("unidades", "Pakistani rupee"), "Rs"),
-      ("qar", QtWidgets.QApplication.translate("unidades", "Qatari riyal"), "QR"),
-      ("sar", QtWidgets.QApplication.translate("unidades", "Saudi riyal"), "ر.س"),
-      ("syp", QtWidgets.QApplication.translate("unidades", "Syrian pound"), "£S"),
-      ("aed", QtWidgets.QApplication.translate("unidades", "United Arab Emirates dirham"), "إ.د"),
-      ("yer", QtWidgets.QApplication.translate("unidades", "Yemeni rial"), "﷼"),
+      ("afn", translate("unidades", "Afghan afghani"), "Af"),
+      ("bhd", translate("unidades", "Bahraini dinar"), "BD"),
+      ("bnd", translate("unidades", "Brunei dollar"), "B$"),
+      ("ils", translate("unidades", "Israeli new shekel"), "₪"),
+      ("iqd", translate("unidades", "Iraqi dinar"), "د.ع"),
+      ("irr", translate("unidades", "Iranian rial"), "﷼"),
+      ("jod", translate("unidades", "Jordanian dinar"), "JD"),
+      ("kwd", translate("unidades", "Kuwaiti dinar"), "د.ك"),
+      ("lbp", translate("unidades", "Lebanese pound"), "ل.ل."),
+      ("omr", translate("unidades", "Omani rial"), "﷼"),
+      ("pkr", translate("unidades", "Pakistani rupee"), "Rs"),
+      ("qar", translate("unidades", "Qatari riyal"), "QR"),
+      ("sar", translate("unidades", "Saudi riyal"), "ر.س"),
+      ("syp", translate("unidades", "Syrian pound"), "£S"),
+      ("aed", translate("unidades", "United Arab Emirates dirham"), "إ.د"),
+      ("yer", translate("unidades", "Yemeni rial"), "﷼"),
 
-      ("amd", QtWidgets.QApplication.translate("unidades", "Armenian dram"), "֏"),
-      ("azn", QtWidgets.QApplication.translate("unidades", "Azerbaijan manat"), "₼"),
-      ("gel", QtWidgets.QApplication.translate("unidades", "Georgian lari"), "ლ"),
-      ("kzt", QtWidgets.QApplication.translate("unidades", "Kazakhstani tenge"), "₸"),
-      ("kgs", QtWidgets.QApplication.translate("unidades", "Kyrgyzstani som"), "som"),
-      ("tjs", QtWidgets.QApplication.translate("unidades", "Tajikistani somoni"), "som"),
-      ("tmt", QtWidgets.QApplication.translate("unidades", "Turkmenistan manat"), "T"),
-      ("uzs", QtWidgets.QApplication.translate("unidades", "Uzbekistan som"), "som"),
+      ("amd", translate("unidades", "Armenian dram"), "֏"),
+      ("azn", translate("unidades", "Azerbaijan manat"), "₼"),
+      ("gel", translate("unidades", "Georgian lari"), "ლ"),
+      ("kzt", translate("unidades", "Kazakhstani tenge"), "₸"),
+      ("kgs", translate("unidades", "Kyrgyzstani som"), "som"),
+      ("tjs", translate("unidades", "Tajikistani somoni"), "som"),
+      ("tmt", translate("unidades", "Turkmenistan manat"), "T"),
+      ("uzs", translate("unidades", "Uzbekistan som"), "som"),
 
       # Disabling bangladeshi taka symbol because raise opentype warning
-      # ("bdt", QtWidgets.QApplication.translate("unidades", "Bangladeshi taka"), "৳"),
-      ("bdt", QtWidgets.QApplication.translate("unidades", "Bangladeshi taka"), "bdt"),
+      # ("bdt", translate("unidades", "Bangladeshi taka"), "৳"),
+      ("bdt", translate("unidades", "Bangladeshi taka"), "bdt"),
 
-      ("btn", QtWidgets.QApplication.translate("unidades", "Bhutanese ngultrum"), "Nu."),
-      ("cnh", QtWidgets.QApplication.translate("unidades", "Renminbi"), "¥"),
+      ("btn", translate("unidades", "Bhutanese ngultrum"), "Nu."),
+      ("cnh", translate("unidades", "Renminbi"), "¥"),
 
       # Disabling cambodian riel symbol because raise opentype warning
-      # ("khr", QtWidgets.QApplication.translate("unidades", "Cambodian riel"), "៛"),
-      ("khr", QtWidgets.QApplication.translate("unidades", "Cambodian riel"), "khr"),
+      # ("khr", translate("unidades", "Cambodian riel"), "៛"),
+      ("khr", translate("unidades", "Cambodian riel"), "khr"),
 
-      ("kpw", QtWidgets.QApplication.translate("unidades", "North Korean won"), "₩"),
-      ("hkd", QtWidgets.QApplication.translate("unidades", "Hong Kong dollar"), "HK$"),
-      ("inr", QtWidgets.QApplication.translate("unidades", "Indian rupee"), "₨"),
-      ("idr", QtWidgets.QApplication.translate("unidades", "Indonesian rupiah"), "Rp"),
-      ("lak", QtWidgets.QApplication.translate("unidades", "Lao kip"), "₭"),
-      ("mop", QtWidgets.QApplication.translate("unidades", "Macanese pataca"), "MOP$"),
-      ("myr", QtWidgets.QApplication.translate("unidades", "Malaysian ringgit"), "RM"),
-      ("mnt", QtWidgets.QApplication.translate("unidades", "Mongolian tögrög"), "₮"),
-      ("mmk", QtWidgets.QApplication.translate("unidades", "Myanmar kyat"), "K"),
+      ("kpw", translate("unidades", "North Korean won"), "₩"),
+      ("hkd", translate("unidades", "Hong Kong dollar"), "HK$"),
+      ("inr", translate("unidades", "Indian rupee"), "₨"),
+      ("idr", translate("unidades", "Indonesian rupiah"), "Rp"),
+      ("lak", translate("unidades", "Lao kip"), "₭"),
+      ("mop", translate("unidades", "Macanese pataca"), "MOP$"),
+      ("myr", translate("unidades", "Malaysian ringgit"), "RM"),
+      ("mnt", translate("unidades", "Mongolian tögrög"), "₮"),
+      ("mmk", translate("unidades", "Myanmar kyat"), "K"),
 
       # Disabling nepalese rupee symbol because raise opentype warning
-      # ("npr", QtWidgets.QApplication.translate("unidades", "Nepalese rupee"), "रु"),
-      ("npr", QtWidgets.QApplication.translate("unidades", "Nepalese rupee"), "npr"),
+      # ("npr", translate("unidades", "Nepalese rupee"), "रु"),
+      ("npr", translate("unidades", "Nepalese rupee"), "npr"),
 
-      ("twd", QtWidgets.QApplication.translate("unidades", "New Taiwan dollar"), "NT$"),
-      ("php", QtWidgets.QApplication.translate("unidades", "Philippine peso"), "PhP"),
-      ("sgd", QtWidgets.QApplication.translate("unidades", "Singapore dollar"), "S$"),
-      ("krw", QtWidgets.QApplication.translate("unidades", "South Korean won"), "₩"),
-      ("lkr", QtWidgets.QApplication.translate("unidades", "Sri Lankan rupee"), "₨"),
-      ("thb", QtWidgets.QApplication.translate("unidades", "Thai baht"), "฿"),
-      ("vnd", QtWidgets.QApplication.translate("unidades", "Vietnamese dong"), "₫")]
+      ("twd", translate("unidades", "New Taiwan dollar"), "NT$"),
+      ("php", translate("unidades", "Philippine peso"), "PhP"),
+      ("sgd", translate("unidades", "Singapore dollar"), "S$"),
+      ("krw", translate("unidades", "South Korean won"), "₩"),
+      ("lkr", translate("unidades", "Sri Lankan rupee"), "₨"),
+      ("thb", translate("unidades", "Thai baht"), "฿"),
+      ("vnd", translate("unidades", "Vietnamese dong"), "₫")]
 
     # Africa
     _uAfrica = [
-      ("dzd", QtWidgets.QApplication.translate("unidades", "Algerian dinar"), "دج"),
-      ("aoa", QtWidgets.QApplication.translate("unidades", "Angolan kwanza"), "Kz"),
-      ("bwp", QtWidgets.QApplication.translate("unidades", "Botswana pula"), "P"),
-      ("bif", QtWidgets.QApplication.translate("unidades", "Burundian franc"), "FBu"),
-      ("cve", QtWidgets.QApplication.translate("unidades", "Cape Verde escudo"), "$"),
-      ("kmf", QtWidgets.QApplication.translate("unidades", "Comoro franc"), "CF"),
-      ("cdf", QtWidgets.QApplication.translate("unidades", "Congolese franc"), "FC"),
-      ("djf", QtWidgets.QApplication.translate("unidades", "Djiboutian franc"), "Fdj"),
-      ("egp", QtWidgets.QApplication.translate("unidades", "Egyptian pound"), "E£"),
-      ("ern", QtWidgets.QApplication.translate("unidades", "Eritrean nakfa"), "Nfk"),
-      ("etb", QtWidgets.QApplication.translate("unidades", "Ethiopian birr"), "Br"),
-      ("gmd", QtWidgets.QApplication.translate("unidades", "Ghambian dalasi"), "D"),
-      ("ghs", QtWidgets.QApplication.translate("unidades", "Ghanaian cedi"), "GH₵"),
-      ("gnf", QtWidgets.QApplication.translate("unidades", "Guinean franc"), "GFr"),
-      ("kes", QtWidgets.QApplication.translate("unidades", "Kenyan shilling"), "KSh"),
-      ("lsl", QtWidgets.QApplication.translate("unidades", "Lesotho loti"), "L"),
-      ("lrd", QtWidgets.QApplication.translate("unidades", "Liberian dollar"), "L$"),
-      ("lyd", QtWidgets.QApplication.translate("unidades", "Libyan dinar"), "ل.د"),
-      ("mru", QtWidgets.QApplication.translate("unidades", "Mauritanian ouguiya"), "UM"),
-      ("mur", QtWidgets.QApplication.translate("unidades", "Mauritian rupee"), "₨"),
-      ("mga", QtWidgets.QApplication.translate("unidades", "Malagasy ariary"), "Ar"),
-      ("mwk", QtWidgets.QApplication.translate("unidades", "Malawian kwacha"), "MK"),
-      ("mvr", QtWidgets.QApplication.translate("unidades", "Maldivian rufiyaa"), "MRf"),
-      ("mad", QtWidgets.QApplication.translate("unidades", "Moroccan dirham"), "درهم"),
-      ("mzn", QtWidgets.QApplication.translate("unidades", "Mozambican metical"), "MT"),
-      ("nad", QtWidgets.QApplication.translate("unidades", "Namibian dollar"), "N$"),
-      ("ngn", QtWidgets.QApplication.translate("unidades", "Nigerian naira"), "₦"),
-      ("rwf", QtWidgets.QApplication.translate("unidades", "Rwandan franc"), "FRw"),
-      ("stn", QtWidgets.QApplication.translate("unidades", "São Tomé and Príncipe dobra"), "Db"),
-      ("scr", QtWidgets.QApplication.translate("unidades", "Seychelles rupee"), "SR"),
-      ("sll", QtWidgets.QApplication.translate("unidades", "Sierra Leonean leone"), "Le"),
-      ("sos", QtWidgets.QApplication.translate("unidades", "Somali shilling"), "Sh.So."),
-      ("zar", QtWidgets.QApplication.translate("unidades", "South African rand"), "R"),
-      ("sdg", QtWidgets.QApplication.translate("unidades", "Sudanese pound"), "ج.س"),
-      ("szl", QtWidgets.QApplication.translate("unidades", "Swazi lilangeni"), "L"),
-      ("tzs", QtWidgets.QApplication.translate("unidades", "Tanzanian shilling"), "TSh"),
-      ("tnd", QtWidgets.QApplication.translate("unidades", "Tunisian dinar"), "د.ت"),
-      ("ugx", QtWidgets.QApplication.translate("unidades", "Ugandan shilling"), "USh"),
-      ("zmw", QtWidgets.QApplication.translate("unidades", "Zambian kwacha"), "ZK"),
-      ("zwl", QtWidgets.QApplication.translate("unidades", "Zimbabwean dollar"), "Z$"),
-      ("xaf", QtWidgets.QApplication.translate("unidades", "Central AFrican CFA franc"), "FCFA"),
-      ("xof", QtWidgets.QApplication.translate("unidades", "West African CFA franc"), "CFA")]
+      ("dzd", translate("unidades", "Algerian dinar"), "دج"),
+      ("aoa", translate("unidades", "Angolan kwanza"), "Kz"),
+      ("bwp", translate("unidades", "Botswana pula"), "P"),
+      ("bif", translate("unidades", "Burundian franc"), "FBu"),
+      ("cve", translate("unidades", "Cape Verde escudo"), "$"),
+      ("kmf", translate("unidades", "Comoro franc"), "CF"),
+      ("cdf", translate("unidades", "Congolese franc"), "FC"),
+      ("djf", translate("unidades", "Djiboutian franc"), "Fdj"),
+      ("egp", translate("unidades", "Egyptian pound"), "E£"),
+      ("ern", translate("unidades", "Eritrean nakfa"), "Nfk"),
+      ("etb", translate("unidades", "Ethiopian birr"), "Br"),
+      ("gmd", translate("unidades", "Ghambian dalasi"), "D"),
+      ("ghs", translate("unidades", "Ghanaian cedi"), "GH₵"),
+      ("gnf", translate("unidades", "Guinean franc"), "GFr"),
+      ("kes", translate("unidades", "Kenyan shilling"), "KSh"),
+      ("lsl", translate("unidades", "Lesotho loti"), "L"),
+      ("lrd", translate("unidades", "Liberian dollar"), "L$"),
+      ("lyd", translate("unidades", "Libyan dinar"), "ل.د"),
+      ("mru", translate("unidades", "Mauritanian ouguiya"), "UM"),
+      ("mur", translate("unidades", "Mauritian rupee"), "₨"),
+      ("mga", translate("unidades", "Malagasy ariary"), "Ar"),
+      ("mwk", translate("unidades", "Malawian kwacha"), "MK"),
+      ("mvr", translate("unidades", "Maldivian rufiyaa"), "MRf"),
+      ("mad", translate("unidades", "Moroccan dirham"), "درهم"),
+      ("mzn", translate("unidades", "Mozambican metical"), "MT"),
+      ("nad", translate("unidades", "Namibian dollar"), "N$"),
+      ("ngn", translate("unidades", "Nigerian naira"), "₦"),
+      ("rwf", translate("unidades", "Rwandan franc"), "FRw"),
+      ("stn", translate("unidades", "São Tomé and Príncipe dobra"), "Db"),
+      ("scr", translate("unidades", "Seychelles rupee"), "SR"),
+      ("sll", translate("unidades", "Sierra Leonean leone"), "Le"),
+      ("sos", translate("unidades", "Somali shilling"), "Sh.So."),
+      ("zar", translate("unidades", "South African rand"), "R"),
+      ("sdg", translate("unidades", "Sudanese pound"), "ج.س"),
+      ("szl", translate("unidades", "Swazi lilangeni"), "L"),
+      ("tzs", translate("unidades", "Tanzanian shilling"), "TSh"),
+      ("tnd", translate("unidades", "Tunisian dinar"), "د.ت"),
+      ("ugx", translate("unidades", "Ugandan shilling"), "USh"),
+      ("zmw", translate("unidades", "Zambian kwacha"), "ZK"),
+      ("zwl", translate("unidades", "Zimbabwean dollar"), "Z$"),
+      ("xaf", translate("unidades", "Central AFrican CFA franc"), "FCFA"),
+      ("xof", translate("unidades", "West African CFA franc"), "CFA")]
 
     # Oceania
     _uOceania = [
-      ("fjd", QtWidgets.QApplication.translate("unidades", "Fiji dollar"), "FJ$"),
-      ("nzd", QtWidgets.QApplication.translate("unidades", "New Zealand dollar"), "NZ$"),
-      ("pgk", QtWidgets.QApplication.translate("unidades", "Papua New Guinean kina"), "K"),
-      ("sbd", QtWidgets.QApplication.translate("unidades", "Salomon Islands dollar"), "SI$"),
-      ("wst", QtWidgets.QApplication.translate("unidades", "Samoan tala"), "WS$"),
-      ("top", QtWidgets.QApplication.translate("unidades", "Tongan pa'anga"), "T$"),
-      ("tvd", QtWidgets.QApplication.translate("unidades", "Tuvalu dollar"), "TV$"),
-      ("vuv", QtWidgets.QApplication.translate("unidades", "Vanuatu vatu"), "VT"),
-      ("xpf", QtWidgets.QApplication.translate("unidades", "CFP franc"), "F")]
+      ("fjd", translate("unidades", "Fiji dollar"), "FJ$"),
+      ("nzd", translate("unidades", "New Zealand dollar"), "NZ$"),
+      ("pgk", translate("unidades", "Papua New Guinean kina"), "K"),
+      ("sbd", translate("unidades", "Salomon Islands dollar"), "SI$"),
+      ("wst", translate("unidades", "Samoan tala"), "WS$"),
+      ("top", translate("unidades", "Tongan pa'anga"), "T$"),
+      ("tvd", translate("unidades", "Tuvalu dollar"), "TV$"),
+      ("vuv", translate("unidades", "Vanuatu vatu"), "VT"),
+      ("xpf", translate("unidades", "CFP franc"), "F")]
 
     # Crypto
     _uCrypto = [
@@ -2292,9 +2292,9 @@ else:
 for _clas in _all:
     if _clas.__doc__:
         continue
-    doc = QtWidgets.QApplication.translate("unidades", "Class to model a %s measure" % _clas.__title__)
+    doc = translate("unidades", "Class to model a %s measure" % _clas.__title__)
     doc += os.linesep + os.linesep
-    doc += QtWidgets.QApplication.translate("unidades", "Supported units") + "::"
+    doc += translate("unidades", "Supported units") + "::"
     doc += os.linesep
     default = True
     for i, key in enumerate(_clas.__units__):
@@ -2307,7 +2307,7 @@ for _clas in _all:
 
         # Mark the default unit
         if default:
-            doc += " (%s)" % QtWidgets.QApplication.translate("unidades", "default")
+            doc += " (%s)" % translate("unidades", "default")
             default = False
         doc += os.linesep + os.linesep
 
@@ -2340,7 +2340,7 @@ for unit in _all:
     for magnitud in unit.magnitudes():
         MAGNITUDES.append(magnitud+(unit, ))
 MAGNITUDES.append(("Dimensionless",
-                    QtWidgets.QApplication.translate("unidades", "Dimensionless"),
+                    translate("unidades", "Dimensionless"),
                     Dimensionless))
 
 unit_set = {}

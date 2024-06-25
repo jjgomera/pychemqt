@@ -35,7 +35,7 @@ from math import ceil, floor
 import os
 
 from numpy import delete, insert
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, translate
 
 from lib import meos, mEoS, coolProp, unidades, config
 from lib.thermo import ThermoAdvanced
@@ -77,9 +77,9 @@ def createTabla(conf, title, fluidos=None, parent=None):
         for i in range(len(propiedades)-1, -1, -1):
             if keys[i] in ThermoAdvanced.propertiesPhase():
                 txt = [propiedades[i]]
-                prefix = QtWidgets.QApplication.translate("UI_Tables", "Liquid")
+                prefix = translate("UI_Tables", "Liquid")
                 txt.append(prefix+os.linesep+propiedades[i])
-                prefix = QtWidgets.QApplication.translate("UI_Tables", "Vapour")
+                prefix = translate("UI_Tables", "Vapour")
                 txt.append(prefix+os.linesep+propiedades[i])
                 propiedades[i:i+1] = txt
                 units[i:i+1] = [units[i]]*3
@@ -124,7 +124,7 @@ def createTabla(conf, title, fluidos=None, parent=None):
 
         tabla = TablaMEoS(len(propiedades), filas=1, **kw)
 
-    prefix = QtWidgets.QApplication.translate("UI_Tables", "Table")
+    prefix = translate("UI_Tables", "Table")
     tabla.setWindowTitle(prefix+": "+title)
     tabla.resizeColumnsToContents()
 
@@ -868,13 +868,13 @@ class Ui_Saturation(QtWidgets.QDialog):
 class Ui_Isoproperty(QtWidgets.QDialog):
     """Dialog to define input for isoproperty table calculations"""
     propiedades = [
-        QtWidgets.QApplication.translate("UI_Tables", "Temperature"),
-        QtWidgets.QApplication.translate("UI_Tables", "Pressure"),
-        QtWidgets.QApplication.translate("UI_Tables", "Density"),
-        QtWidgets.QApplication.translate("UI_Tables", "Volume"),
-        QtWidgets.QApplication.translate("UI_Tables", "Enthalpy"),
-        QtWidgets.QApplication.translate("UI_Tables", "Entropy"),
-        QtWidgets.QApplication.translate("UI_Tables", "Internal Energy")]
+        translate("UI_Tables", "Temperature"),
+        translate("UI_Tables", "Pressure"),
+        translate("UI_Tables", "Density"),
+        translate("UI_Tables", "Volume"),
+        translate("UI_Tables", "Enthalpy"),
+        translate("UI_Tables", "Entropy"),
+        translate("UI_Tables", "Internal Energy")]
     unidades = [unidades.Temperature, unidades.Pressure, unidades.Density,
                 unidades.SpecificVolume, unidades.Enthalpy,
                 unidades.SpecificHeat, unidades.Enthalpy, float]

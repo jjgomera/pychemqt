@@ -27,7 +27,7 @@ from math import exp, log
 import sqlite3
 
 from scipy.optimize import fsolve
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 from lib import unidades
 from lib.sql import databank_name
@@ -37,7 +37,7 @@ class Reaction(object):
     """Chemical reaction object"""
 
     status = 0
-    msg = QtWidgets.QApplication.translate("reaction", "undefined")
+    msg = translate("reaction", "undefined")
     error = 0
 
     kwargs = {"comp": [],
@@ -57,16 +57,16 @@ class Reaction(object):
     calculateValue = ("DeltaP", "DeltaP_f", "DeltaP_ac", "DeltaP_h",
                       "DeltaP_v", "DeltaP_100ft", "V", "f", "Re", "Tout")
 
-    TEXT_TYPE = [QtWidgets.QApplication.translate("reaction", "Estequiometric"),
-                 QtWidgets.QApplication.translate("reaction", "Equilibrium"),
-                 QtWidgets.QApplication.translate("reaction", "Kinetic"),
-                 QtWidgets.QApplication.translate("reaction", "Catalitic")]
-    TEXT_PHASE = [QtWidgets.QApplication.translate("reaction", "Global"),
-                  QtWidgets.QApplication.translate("reaction", "Liquid"),
-                  QtWidgets.QApplication.translate("reaction", "Gas")]
-    TEXT_BASE = [QtWidgets.QApplication.translate("reaction", "Mole"),
-                 QtWidgets.QApplication.translate("reaction", "Mass"),
-                 QtWidgets.QApplication.translate("reaction", "Partial pressure")]
+    TEXT_TYPE = [translate("reaction", "Estequiometric"),
+                 translate("reaction", "Equilibrium"),
+                 translate("reaction", "Kinetic"),
+                 translate("reaction", "Catalitic")]
+    TEXT_PHASE = [translate("reaction", "Global"),
+                  translate("reaction", "Liquid"),
+                  translate("reaction", "Gas")]
+    TEXT_BASE = [translate("reaction", "Mole"),
+                 translate("reaction", "Mass"),
+                 translate("reaction", "Partial pressure")]
 
     def __init__(self, **kwargs):
         """constructor, kwargs keys can be:
@@ -110,20 +110,21 @@ class Reaction(object):
         self.msg = ""
         self.status = 1
         if not self.kwargs["comp"]:
-            self.msg = QtWidgets.QApplication.translate("reaction", "undefined components")
+            self.msg = translate("reaction", "undefined components")
             self.status = 0
             return
         if not self.kwargs["coef"]:
-            self.msg = QtWidgets.QApplication.translate("reaction", "undefined stequiometric")
+            self.msg = translate("reaction", "undefined stequiometric")
             self.status = 0
             return
         if self.kwargs["tipo"] == 0:
             if self.kwargs["conversion"] is None:
-                self.msg = QtWidgets.QApplication.translate("reaction", "undefined conversion")
+                self.msg = translate("reaction", "undefined conversion")
                 self.status = 3
         elif self.kwargs["tipo"] == 1:
             if self.kwargs["keq"] is None:
-                self.msg = QtWidgets.QApplication.translate("reaction", "undefined equilibrium constants")
+                self.msg = translate(
+                    "reaction", "undefined equilibrium constants")
                 self.status = 3
         elif self.kwargs["tipo"] == 2:
             pass

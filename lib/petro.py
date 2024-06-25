@@ -98,7 +98,7 @@ from numpy.linalg import solve
 from scipy.interpolate import interp1d
 from scipy.optimize import fsolve, leastsq, newton
 
-from tools.qt import QtWidgets
+from tools.qt import translate
 from lib import unidades
 from lib.physics import R_atml, R_Btu
 from lib.newComponent import newComponente
@@ -593,11 +593,11 @@ def prop_Riazi_Daubert(tita1, val1, tita2, val2):
         val1, val2 = val2, val1
 
     if tita1 not in p1 or tita2 not in p2:
-        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Undefined input pair"))
+        raise NotImplementedError(translate("Petro", "Undefined input pair"))
     elif tita1 == "M" and (val1 < 70 or val1 > 300):
-        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Molecular weight input out of bounds"))
+        raise NotImplementedError(translate("Petro", "Molecular weight input out of bounds"))
     elif tita1 == "Tb" and (val1 < 300 or val1 > 620):
-        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Boiling temperature input out of bounds"))
+        raise NotImplementedError(translate("Petro", "Boiling temperature input out of bounds"))
 
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     if tita1 == "Tb":
@@ -1431,7 +1431,7 @@ def prop_Riazi(SG, tita, val):
     """
 
     if tita not in ["M", "Tb"]:
-        raise NotImplementedError(QtWidgets.QApplication.translate("Petro", "Undefined input pair"))
+        raise NotImplementedError(translate("Petro", "Undefined input pair"))
 
     # Convert input Tb in Kelvin to Rankine to use in the correlation
     if tita == "Tb":
@@ -3499,7 +3499,7 @@ class Petroleo(newComponente):
         9   -   curva de destilación
         """
         self.status = 0
-        self.msg = QtWidgets.QApplication.translate("Petro", "Insufficient input")
+        self.msg = translate("Petro", "Insufficient input")
 
         self.hasSG = self.kwargs["SG"] or self.kwargs["API"] or \
             (self.kwargs["Kw"] and self.kwargs["Tb"])

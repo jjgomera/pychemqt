@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 ###############################################################################
 
 
-from tools.qt import QtWidgets
+from tools.qt import translate
 from iapws._utils import getphase
 from lib import unidades
 
@@ -136,16 +136,16 @@ class Thermo():
             phase: direct msg
             Tc, Pc, T, P, x, region: to calculate by iapws"""
         data = {
-            "Supercritical fluid": QtWidgets.QApplication.translate("Thermo", "Supercritical fluid"),
-            "Gas": QtWidgets.QApplication.translate("Thermo", "Gas"),
-            "Compressible liquid": QtWidgets.QApplication.translate("Thermo", "Compressible liquid"),
-            "Critical point": QtWidgets.QApplication.translate("Thermo", "Critical point"),
-            "Saturated vapor": QtWidgets.QApplication.translate("Thermo", "Saturated vapor"),
-            "Saturated liquid": QtWidgets.QApplication.translate("Thermo", "Saturated liquid"),
-            "Two phases": QtWidgets.QApplication.translate("Thermo", "Two phases"),
-            "Vapour": QtWidgets.QApplication.translate("Thermo", "Vapour"),
-            "Liquid": QtWidgets.QApplication.translate("Thermo", "Liquid"),
-            "Unknown": QtWidgets.QApplication.translate("Thermo", "Unknown")}
+            "Supercritical fluid": translate("Thermo", "Supercritical fluid"),
+            "Gas": translate("Thermo", "Gas"),
+            "Compressible liquid": translate("Thermo", "Compressible liquid"),
+            "Critical point": translate("Thermo", "Critical point"),
+            "Saturated vapor": translate("Thermo", "Saturated vapor"),
+            "Saturated liquid": translate("Thermo", "Saturated liquid"),
+            "Two phases": translate("Thermo", "Two phases"),
+            "Vapour": translate("Thermo", "Vapour"),
+            "Liquid": translate("Thermo", "Liquid"),
+            "Unknown": translate("Thermo", "Unknown")}
 
         if "phase" in kwargs:
             phase = kwargs["phase"]
@@ -156,77 +156,77 @@ class Thermo():
     @classmethod
     def properties(cls):
         l = [
-            (QtWidgets.QApplication.translate("Thermo", "Temperature"), "T", unidades.Temperature),
-            (QtWidgets.QApplication.translate("Thermo", "Reduced temperature"), "Tr", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Pressure"), "P", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Thermo", "Reduced Pressure"), "Pr", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Quality"), "x", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Density"), "rho", unidades.Density),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Density"), "rhoM", unidades.MolarDensity),
-            (QtWidgets.QApplication.translate("Thermo", "Volume"), "v", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("Thermo", "Enthalpy"), "h", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Enthalpy"), "hM", unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Entropy"), "s", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Entropy"), "sM", unidades.MolarSpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Internal Energy"), "u", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Internal Energy"), "uM", unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Helmholtz Free Energy"), "a", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Helmholtz Free Energy"), "aM", unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Gibbs Free Energy"), "g", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Gibbs Free Energy"), "gM", unidades.MolarEnthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Specific isochoric heat capacity"), "cv",
+            (translate("Thermo", "Temperature"), "T", unidades.Temperature),
+            (translate("Thermo", "Reduced temperature"), "Tr", unidades.Dimensionless),
+            (translate("Thermo", "Pressure"), "P", unidades.Pressure),
+            (translate("Thermo", "Reduced Pressure"), "Pr", unidades.Dimensionless),
+            (translate("Thermo", "Quality"), "x", unidades.Dimensionless),
+            (translate("Thermo", "Density"), "rho", unidades.Density),
+            (translate("Thermo", "Molar Density"), "rhoM", unidades.MolarDensity),
+            (translate("Thermo", "Volume"), "v", unidades.SpecificVolume),
+            (translate("Thermo", "Enthalpy"), "h", unidades.Enthalpy),
+            (translate("Thermo", "Molar Enthalpy"), "hM", unidades.MolarEnthalpy),
+            (translate("Thermo", "Entropy"), "s", unidades.SpecificHeat),
+            (translate("Thermo", "Molar Entropy"), "sM", unidades.MolarSpecificHeat),
+            (translate("Thermo", "Internal Energy"), "u", unidades.Enthalpy),
+            (translate("Thermo", "Molar Internal Energy"), "uM", unidades.MolarEnthalpy),
+            (translate("Thermo", "Helmholtz Free Energy"), "a", unidades.Enthalpy),
+            (translate("Thermo", "Molar Helmholtz Free Energy"), "aM", unidades.MolarEnthalpy),
+            (translate("Thermo", "Gibbs Free Energy"), "g", unidades.Enthalpy),
+            (translate("Thermo", "Molar Gibbs Free Energy"), "gM", unidades.MolarEnthalpy),
+            (translate("Thermo", "Specific isochoric heat capacity"), "cv",
              unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Specific isochoric heat capacity"), "cvM",
+            (translate("Thermo", "Molar Specific isochoric heat capacity"), "cvM",
              unidades.MolarSpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Specific isobaric heat capacity"), "cp",
+            (translate("Thermo", "Specific isobaric heat capacity"), "cp",
              unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Molar Specific isobaric heat capacity"), "cpM",
+            (translate("Thermo", "Molar Specific isobaric heat capacity"), "cpM",
              unidades.MolarSpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Heat capacities ratio"), "cp_cv", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Speed sound"), "w", unidades.Speed),
-            (QtWidgets.QApplication.translate("Thermo", "Compresibility"), "Z", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Fugacity coefficient"), "fi", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Fugacity"), "f", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Thermo", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
+            (translate("Thermo", "Heat capacities ratio"), "cp_cv", unidades.Dimensionless),
+            (translate("Thermo", "Speed sound"), "w", unidades.Speed),
+            (translate("Thermo", "Compresibility"), "Z", unidades.Dimensionless),
+            (translate("Thermo", "Fugacity coefficient"), "fi", unidades.Dimensionless),
+            (translate("Thermo", "Fugacity"), "f", unidades.Pressure),
+            (translate("Thermo", "Isoentropic exponent"), "gamma", unidades.Dimensionless),
             # 1/V dV/dt = -1/D dD/dt
-            (QtWidgets.QApplication.translate("Thermo", "Volume Expansivity"), "alfav", unidades.InvTemperature),
+            (translate("Thermo", "Volume Expansivity"), "alfav", unidades.InvTemperature),
             # -1/V (dV/dP)T = 1/D (dD/dP)T
-            (QtWidgets.QApplication.translate("Thermo", "Isothermal compresibility"), "kappa", unidades.InvPressure),
+            (translate("Thermo", "Isothermal compresibility"), "kappa", unidades.InvPressure),
             # -1/V (dV/dP)s = 1/D (dD/dP)s
-            (QtWidgets.QApplication.translate("Thermo", "Adiabatic compresibility"), "kappas", unidades.InvPressure),
-            (QtWidgets.QApplication.translate("Thermo", "Relative pressure coefficient"), "alfap",
+            (translate("Thermo", "Adiabatic compresibility"), "kappas", unidades.InvPressure),
+            (translate("Thermo", "Relative pressure coefficient"), "alfap",
              unidades.InvTemperature),  # 1/P (dP/dT)v
             # -1/P (dP/dv)T = 1/P (dP/dD)T
-            (QtWidgets.QApplication.translate("Thermo", "Isothermal stress coefficient"), "betap", unidades.Density),
-            (QtWidgets.QApplication.translate("Thermo", "Joule-Thomson coefficient"), "joule",
+            (translate("Thermo", "Isothermal stress coefficient"), "betap", unidades.Density),
+            (translate("Thermo", "Joule-Thomson coefficient"), "joule",
              unidades.TemperaturePressure),
-            (QtWidgets.QApplication.translate("Thermo", "Isothermal throttling coefficient"), "deltat",
+            (translate("Thermo", "Isothermal throttling coefficient"), "deltat",
              unidades.EnthalpyPressure),
-            (QtWidgets.QApplication.translate("Thermo", "Vaporization heat"), "Hvap", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Vaporization entropy"), "Svap", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Viscosity"), "mu", unidades.Viscosity),
-            (QtWidgets.QApplication.translate("Thermo", "Thermal conductivity"), "k", unidades.ThermalConductivity),
-            (QtWidgets.QApplication.translate("Thermo", "Kinematic viscosity"), "nu", unidades.Diffusivity),
-            (QtWidgets.QApplication.translate("Thermo", "Thermal diffusivity"), "alfa", unidades.Diffusivity),
-            (QtWidgets.QApplication.translate("Thermo", "Surface tension"), "sigma", unidades.Tension),
-            (QtWidgets.QApplication.translate("Thermo", "Prandtl number"), "Prandt", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific volume"), "v0", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Density"), "rho0", unidades.Density),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific enthalpy"), "h0", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific internal energy"), "u0",
+            (translate("Thermo", "Vaporization heat"), "Hvap", unidades.Enthalpy),
+            (translate("Thermo", "Vaporization entropy"), "Svap", unidades.SpecificHeat),
+            (translate("Thermo", "Viscosity"), "mu", unidades.Viscosity),
+            (translate("Thermo", "Thermal conductivity"), "k", unidades.ThermalConductivity),
+            (translate("Thermo", "Kinematic viscosity"), "nu", unidades.Diffusivity),
+            (translate("Thermo", "Thermal diffusivity"), "alfa", unidades.Diffusivity),
+            (translate("Thermo", "Surface tension"), "sigma", unidades.Tension),
+            (translate("Thermo", "Prandtl number"), "Prandt", unidades.Dimensionless),
+            (translate("Thermo", "Ideal gas Specific volume"), "v0", unidades.SpecificVolume),
+            (translate("Thermo", "Ideal gas Density"), "rho0", unidades.Density),
+            (translate("Thermo", "Ideal gas Specific enthalpy"), "h0", unidades.Enthalpy),
+            (translate("Thermo", "Ideal gas Specific internal energy"), "u0",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific entropy"), "s0", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific Helmholtz free energy"), "a0",
+            (translate("Thermo", "Ideal gas Specific entropy"), "s0", unidades.SpecificHeat),
+            (translate("Thermo", "Ideal gas Specific Helmholtz free energy"), "a0",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific Gibbs free energy"), "g0",
+            (translate("Thermo", "Ideal gas Specific Gibbs free energy"), "g0",
              unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific isobaric heat capacity"), "cp0",
+            (translate("Thermo", "Ideal gas Specific isobaric heat capacity"), "cp0",
                 unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Specific isochoric heat capacity"), "cv0",
+            (translate("Thermo", "Ideal gas Specific isochoric heat capacity"), "cv0",
                 unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas heat capacities ratio"), "cp0_cv",
+            (translate("Thermo", "Ideal gas heat capacities ratio"), "cp0_cv",
                 unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Ideal gas Isoentropic exponent"), "gamma0",
+            (translate("Thermo", "Ideal gas Isoentropic exponent"), "gamma0",
                 unidades.Dimensionless)]
         return l
 
@@ -273,7 +273,7 @@ class Thermo():
         properties
         corriente: instance of corriente to populate"""
         for prop in self.propertiesGlobal():
-            setattr(corriente, prop, getatQtWidgets.QApplication.translate(self, prop))
+            setattr(corriente, prop, getattranslate(self, prop))
 
     def _writeGlobalState(self, corriente, state):
         """Procedure to populate a state dict with the global advanced
@@ -296,15 +296,15 @@ class Thermo():
         """Fill properties in null phase with a explicative msg"""
         fase._bool = False
         if self.x == 0:
-            txt = QtWidgets.QApplication.translate("Thermo", "Subcooled")
+            txt = translate("Thermo", "Subcooled")
         elif self.Tr < 1 and self.Pr < 1:
-            txt = QtWidgets.QApplication.translate("Thermo", "Superheated")
+            txt = translate("Thermo", "Superheated")
         elif self.Tr == 1 and self.Pr == 1:
-            txt = QtWidgets.QApplication.translate("Thermo", "Critic point")
+            txt = translate("Thermo", "Critic point")
         elif self.Tr > 1 and self.Pr > 1:
-            txt = QtWidgets.QApplication.translate("Thermo", "Supercritical")
+            txt = translate("Thermo", "Supercritical")
         else:
-            txt = QtWidgets.QApplication.translate("Thermo", "Undefined")
+            txt = translate("Thermo", "Undefined")
 
         for key in self.__class__.propertiesPhase():
             setattr(fase, key, txt)
@@ -431,8 +431,8 @@ class ThermoWater(Thermo):
     def properties(cls):
         prop = Thermo.properties()[:]
         l = [
-           (QtWidgets.QApplication.translate("Thermo", "Dielectric constant"), "epsilon", unidades.Dimensionless),
-           (QtWidgets.QApplication.translate("Thermo", "Refractive index"), "n", unidades.Dimensionless)]
+           (translate("Thermo", "Dielectric constant"), "epsilon", unidades.Dimensionless),
+           (translate("Thermo", "Refractive index"), "n", unidades.Dimensionless)]
         for p in l:
             prop.insert(-11, p)
         return prop
@@ -458,11 +458,11 @@ class ThermoAdvanced(Thermo):
     def properties(cls):
         prop = Thermo.properties()[:]
         l = [
-            (QtWidgets.QApplication.translate("Thermo", "Isentropic temperature-pressure"), "betas",
+            (translate("Thermo", "Isentropic temperature-pressure"), "betas",
              unidades.TemperaturePressure),
-            (QtWidgets.QApplication.translate("Thermo", "Gruneisen parameter"), "Gruneisen", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "2nd virial coefficient"), "virialB", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("Thermo", "3er virial coefficient"), "virialC",
+            (translate("Thermo", "Gruneisen parameter"), "Gruneisen", unidades.Dimensionless),
+            (translate("Thermo", "2nd virial coefficient"), "virialB", unidades.SpecificVolume),
+            (translate("Thermo", "3er virial coefficient"), "virialC",
              unidades.SpecificVolume_square),
             ("(dp/dT)_rho", "dpdT_rho", unidades.PressureTemperature),
             ("(dp/drho)_T", "dpdrho_T", unidades.PressureDensity),
@@ -473,18 +473,18 @@ class ThermoAdvanced(Thermo):
             ("(dh/dT)_P", "dhdT_P", unidades.SpecificHeat),
             ("(dh/drho)_T", "dhdrho_T", unidades.EnthalpyDensity),
             ("(dh/dP)_rho", "dhdP_rho", unidades.EnthalpyPressure),
-            (QtWidgets.QApplication.translate("Thermo", "Isothermal expansion coefficient"), "kt",
+            (translate("Thermo", "Isothermal expansion coefficient"), "kt",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Isentropic expansion coefficient"), "ks",
+            (translate("Thermo", "Isentropic expansion coefficient"), "ks",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Adiabatic bulk modulus"), "Ks", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Thermo", "Isothermal bulk modulus"), "Kt", unidades.Pressure),
+            (translate("Thermo", "Adiabatic bulk modulus"), "Ks", unidades.Pressure),
+            (translate("Thermo", "Isothermal bulk modulus"), "Kt", unidades.Pressure),
             #        Z_rho     -   (Z-1) over the density, m³/kg
-            (QtWidgets.QApplication.translate("Thermo", "Internal pressure"), "IntP", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Thermo", "Negative reciprocal temperature"), "invT",
+            (translate("Thermo", "Internal pressure"), "IntP", unidades.Pressure),
+            (translate("Thermo", "Negative reciprocal temperature"), "invT",
              unidades.InvTemperature),
-            (QtWidgets.QApplication.translate("Thermo", "Specific heat input"), "hInput", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Dielectric constant"), "epsilon", unidades.Dimensionless)]
+            (translate("Thermo", "Specific heat input"), "hInput", unidades.Enthalpy),
+            (translate("Thermo", "Dielectric constant"), "epsilon", unidades.Dimensionless)]
 
         for p in l:
             prop.insert(34, p)
@@ -563,42 +563,42 @@ class ThermoRefProp(ThermoAdvanced):
     def properties(cls):
         prop = ThermoAdvanced.properties()[:]
         l = [
-            (QtWidgets.QApplication.translate("Thermo", "Ideal Pressure"), "P0", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Thermo", "Residual Pressure"), "P_Pideal", unidades.Pressure),
-            (QtWidgets.QApplication.translate("Thermo", "K value"), "K", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Heat Capacity along the saturation line"), "csat",
+            (translate("Thermo", "Ideal Pressure"), "P0", unidades.Pressure),
+            (translate("Thermo", "Residual Pressure"), "P_Pideal", unidades.Pressure),
+            (translate("Thermo", "K value"), "K", unidades.Dimensionless),
+            (translate("Thermo", "Heat Capacity along the saturation line"), "csat",
              unidades.SpecificHeat),
             ("dP/dT [sat]", "dpdt_sat", unidades.PressureTemperature),
-            (QtWidgets.QApplication.translate("Thermo", "Cv two phases"), "cv2p", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Excess volume"), "vE", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("Thermo", "Excess internal energy"), "uE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Excess enthalpy"), "hE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Excess entropy"), "sE", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Excess Helmholtz energy"), "aE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Excess Gibbs energy"), "gE", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Residual pressure"), "pr", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("Thermo", "Residual internal energy"), "ur", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Residual enthalpy"), "hr", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Residual entropy"), "sr", unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Residual Helmholtz energy"), "ar", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Residual Gibbs energy"), "gr", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Residual isobaric heat capacity"), "cpr",
+            (translate("Thermo", "Cv two phases"), "cv2p", unidades.SpecificHeat),
+            (translate("Thermo", "Excess volume"), "vE", unidades.SpecificVolume),
+            (translate("Thermo", "Excess internal energy"), "uE", unidades.Enthalpy),
+            (translate("Thermo", "Excess enthalpy"), "hE", unidades.Enthalpy),
+            (translate("Thermo", "Excess entropy"), "sE", unidades.SpecificHeat),
+            (translate("Thermo", "Excess Helmholtz energy"), "aE", unidades.Enthalpy),
+            (translate("Thermo", "Excess Gibbs energy"), "gE", unidades.Enthalpy),
+            (translate("Thermo", "Residual pressure"), "pr", unidades.SpecificVolume),
+            (translate("Thermo", "Residual internal energy"), "ur", unidades.Enthalpy),
+            (translate("Thermo", "Residual enthalpy"), "hr", unidades.Enthalpy),
+            (translate("Thermo", "Residual entropy"), "sr", unidades.SpecificHeat),
+            (translate("Thermo", "Residual Helmholtz energy"), "ar", unidades.Enthalpy),
+            (translate("Thermo", "Residual Gibbs energy"), "gr", unidades.Enthalpy),
+            (translate("Thermo", "Residual isobaric heat capacity"), "cpr",
              unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Residual isochoric heat capacity"), "cvr",
+            (translate("Thermo", "Residual isochoric heat capacity"), "cvr",
              unidades.SpecificHeat),
-            (QtWidgets.QApplication.translate("Thermo", "Supercompressibility factor"), "fpv", unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Chemical potential"), "chempot", unidades.Enthalpy),
-            (QtWidgets.QApplication.translate("Thermo", "Fourth virial coefficient"), "virialD",
+            (translate("Thermo", "Supercompressibility factor"), "fpv", unidades.Dimensionless),
+            (translate("Thermo", "Chemical potential"), "chempot", unidades.Enthalpy),
+            (translate("Thermo", "Fourth virial coefficient"), "virialD",
              unidades.Dimensionless),
-            (QtWidgets.QApplication.translate("Thermo", "Second acoustic virial coefficient"), "virialBa",
+            (translate("Thermo", "Second acoustic virial coefficient"), "virialBa",
              unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("Thermo", "Third acoustic virial coefficient"), "virialCa",
+            (translate("Thermo", "Third acoustic virial coefficient"), "virialCa",
              unidades.SpecificVolume_square),
             ("dC/dT", "dCdt", unidades.Dimensionless),
             ("d²C/dT²", "dCdt2", unidades.Dimensionless),
             ("dB/dT", "dBdt", unidades.Dimensionless),
             ("b12", "b12", unidades.SpecificVolume),
-            (QtWidgets.QApplication.translate("Thermo", "Critical flow factor"), "cstar", unidades.Dimensionless)]
+            (translate("Thermo", "Critical flow factor"), "cstar", unidades.Dimensionless)]
 
         for p in l:
             prop.append(p)

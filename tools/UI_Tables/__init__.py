@@ -98,7 +98,7 @@ from scipy.optimize import fsolve
 from lib import config, meos, mEoS, unidades
 from lib.thermo import ThermoAdvanced
 from UI.widgets import createAction
-from tools.qt import QtGui, QtWidgets, QtCore
+from tools.qt import QtGui, QtWidgets, QtCore, translate
 
 from tools.UI_Tables.chooseFluid import Ui_ChooseFluid
 from tools.UI_Tables.library import N_PROP, KEYS, UNITS
@@ -111,7 +111,7 @@ from tools.UI_Tables.reference import Ui_ReferenceState, Ui_Properties
 from tools.UI_Tables.table import Ui_Saturation, Ui_Isoproperty, createTabla
 
 
-class plugin(QtCore.QObject):
+class plugin():
     """Common functionality to add to menu and dialog in main window"""
 
     def _txt(self):
@@ -124,71 +124,71 @@ class plugin(QtCore.QObject):
         if self.config.has_option("MEoS", "fluid"):
             fTxt = mEoS.__all__[self.config.getint("MEoS", "fluid")].name
         else:
-            fTxt = self.tr("Fluid")
+            fTxt = translate("meos", "Fluid")
         if self.config.has_option("MEoS", "reference"):
             refTxt = self.config.get("MEoS", "reference")
         else:
-            refTxt = self.tr("Reference State")
-        propTxt = self.tr("Properties")
-        confTxt = self.tr("Configure")
+            refTxt = translate("meos", "Reference State")
+        propTxt = translate("meos", "Properties")
+        confTxt = translate("meos", "Configure")
 
         return fTxt, refTxt, propTxt, confTxt
 
     def _menuCalculate(self):
         """QMenu for table actions"""
-        menu = QtWidgets.QMenu(self.tr("Calculate"), parent=self)
+        menu = QtWidgets.QMenu(translate("meos", "Calculate"), parent=self)
         saturationAction = createAction(
-            self.tr("Saturation"),
+            translate("meos", "Saturation"),
             slot=self.showSaturation, parent=self)
         menu.addAction(saturationAction)
         IsopropertyAction = createAction(
-            self.tr("Isoproperty"),
+            translate("meos", "Isoproperty"),
             slot=self.showIsoproperty, parent=self)
         menu.addAction(IsopropertyAction)
         menu.addSeparator()
         SpecifyAction = createAction(
-            self.tr("Specified point"),
+            translate("meos", "Specified point"),
             slot=self.addTableSpecified, parent=self)
         menu.addAction(SpecifyAction)
         return menu
 
     def _menuPlot(self):
         """QMenu for plot actions"""
-        menu = QtWidgets.QMenu(self.tr("Plot"), parent=self)
+        menu = QtWidgets.QMenu(translate("meos", "Plot"), parent=self)
         Plot_T_s_Action = createAction(
-            self.tr("T-s diagram"),
+            translate("meos", "T-s diagram"),
             slot=partial(self.plot, "s", "T"), parent=self)
         menu.addAction(Plot_T_s_Action)
         Plot_T_rho_Action = createAction(
-            self.tr("T-rho diagram"),
+            translate("meos", "T-rho diagram"),
             slot=partial(self.plot, "rho", "T"), parent=self)
         menu.addAction(Plot_T_rho_Action)
         Plot_P_h_Action = createAction(
-            self.tr("P-h diagram"),
+            translate("meos", "P-h diagram"),
             slot=partial(self.plot, "h", "P"), parent=self)
         menu.addAction(Plot_P_h_Action)
         Plot_P_v_Action = createAction(
-            self.tr("P-v diagram"),
+            translate("meos", "P-v diagram"),
             slot=partial(self.plot, "v", "P"), parent=self)
         menu.addAction(Plot_P_v_Action)
         Plot_P_T_Action = createAction(
-            self.tr("P-T diagram"),
+            translate("meos", "P-T diagram"),
             slot=partial(self.plot, "T", "P"), parent=self)
         menu.addAction(Plot_P_T_Action)
         Plot_h_s_Action = createAction(
-            self.tr("h-s diagram"),
+            translate("meos", "h-s diagram"),
             slot=partial(self.plot, "s", "h"), parent=self)
         menu.addAction(Plot_h_s_Action)
         Plot_v_u_Action = createAction(
-            self.tr("v-u diagram"),
+            translate("meos", "v-u diagram"),
             slot=partial(self.plot, "u", "v"), parent=self)
         menu.addAction(Plot_v_u_Action)
         Plot2DAction = createAction(
-            self.tr("Other Plots"), slot=self.plot2D, parent=self)
+            translate("meos", "Other Plots"), slot=self.plot2D, parent=self)
         menu.addAction(Plot2DAction)
         menu.addSeparator()
         Plot3DAction = createAction(
-            self.tr("3D Plot"), slot=self.plot3D, parent=self)
+            translate("meos", "3D Plot"), slot=self.plot3D, parent=self)
         menu.addAction(Plot3DAction)
         return menu
 
@@ -306,7 +306,7 @@ class plugin(QtCore.QObject):
             fluidos = []
             if dlg.VL.isChecked():
                 # Liquid-Gas line
-                txt = self.tr("Liquid-Gas Line")
+                txt = translate("meos", "Liquid-Gas Line")
                 if dlg.VariarTemperatura.isChecked():
                     # Changing temperature
                     for val in value:
@@ -347,10 +347,10 @@ class plugin(QtCore.QObject):
                 # internal method
                 if dlg.SL.isChecked():
                     func = fluid._Melting_Pressure
-                    txt = self.tr("Melting Line")
+                    txt = translate("meos", "Melting Line")
                 elif dlg.SV.isChecked():
                     func = fluid._Sublimation_Pressure
-                    txt = self.tr("Sublimation Line")
+                    txt = translate("meos", "Sublimation Line")
 
                 if dlg.VariarTemperatura.isChecked():
                     for val in value:
@@ -367,7 +367,7 @@ class plugin(QtCore.QObject):
                             "%s: %s=%0.2f, %s" % (fluid.name, "P", p, txt))
                         QtWidgets.QApplication.processEvents()
 
-            title = self.tr("Table %s: %s changing %s (%s)" % (
+            title = translate("meos", "Table %s: %s changing %s (%s)" % (
                     fluid.name, txt, "T", method))
             self.addTable(fluidos, title)
             self.parent().statusBar().clearMessage()
@@ -376,7 +376,7 @@ class plugin(QtCore.QObject):
         """Show dialog to define input for isoproperty table calculations"""
         dlg = Ui_Isoproperty(self.parent())
         if dlg.exec():
-            self.parent().updateStatus(self.tr(
+            self.parent().updateStatus(translate("meos",
         "Launch MEoS Isoproperty calculation..."))
 
             # Get data from dialog
@@ -420,7 +420,7 @@ class plugin(QtCore.QObject):
                 QtWidgets.QApplication.processEvents()
                 fluidos.append(fluid._new(**kwarg))
             unitX = dlg.unidades[i].text()
-            title = self.tr("%s: %s =%s %s changing %s (%s)" % (
+            title = translate("meos", "%s: %s =%s %s changing %s (%s)" % (
                     fluid.name, X, v1conf, unitX, meos.propiedades[j],
                     method.upper()))
             self.addTable(fluidos, title)
@@ -446,7 +446,7 @@ class plugin(QtCore.QObject):
         fluid = getClassFluid(method, index)
         name = fluid.name
         method = getMethod()
-        title = "%s: %s (%s)" % (name, self.tr(
+        title = "%s: %s (%s)" % (name, translate("meos",
     "Specified state points"), method.upper())
         tabla = createTabla(self.config, title, None, self.parent())
         tabla.Point = fluid
@@ -515,11 +515,11 @@ class plugin(QtCore.QObject):
         filename = "%s-%s.json" % (method, fluid.name.lower())
 
         if z:
-            title = self.tr(
+            title = translate("meos",
         "Plot %s: %s=f(%s,%s)" % (fluid.name, z, y, x))
             dim = 3
         else:
-            title = self.tr("Plot %s: %s=f(%s)" % (fluid.name, y, x))
+            title = translate("meos", "Plot %s: %s=f(%s)" % (fluid.name, y, x))
             dim = 2
         grafico = PlotMEoS(dim=dim, parent=self.parent(), filename=filename)
         grafico.setWindowTitle(title)
@@ -553,7 +553,7 @@ class plugin(QtCore.QObject):
                 ztxt = "%s" % z
             grafico.plot.ax.set_zlabel(ztxt)
 
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Loading cached data..."))
         QtWidgets.QApplication.processEvents()
         data = grafico._getData()
@@ -561,7 +561,7 @@ class plugin(QtCore.QObject):
             self.parent().progressBar.setValue(0)
             self.parent().progressBar.setVisible(True)
             self.parent().statusBar().showMessage(
-                self.tr("Calculating data, be patient..."))
+                translate("meos", "Calculating data, be patient..."))
             QtWidgets.QApplication.processEvents()
             data = self.calculatePlot(fluid)
             conf = {}
@@ -573,7 +573,7 @@ class plugin(QtCore.QObject):
             data["config"] = conf
             grafico._saveData(data)
             self.parent().progressBar.setVisible(False)
-        self.parent().statusBar().showMessage(self.tr("Plotting..."))
+        self.parent().statusBar().showMessage(translate("meos", "Plotting..."))
         QtWidgets.QApplication.processEvents()
         grafico.config = data["config"]
         grafico.changeStatusThermo(data["config"])
@@ -622,7 +622,7 @@ class plugin(QtCore.QObject):
             # Calculate melting line
             if fluid._melting:
                 self.parent().statusBar().showMessage(
-                    self.tr("Calculating melting line..."))
+                    translate("meos", "Calculating melting line..."))
                 T = linspace(fluid._melting["Tmin"], fluid._melting["Tmax"],
                              points)
                 fluidos = []
@@ -639,7 +639,7 @@ class plugin(QtCore.QObject):
             # Calculate sublimation line
             if fluid._sublimation:
                 self.parent().statusBar().showMessage(
-                    self.tr("Calculating sublimation line..."))
+                    translate("meos", "Calculating sublimation line..."))
                 T = linspace(fluid._sublimation["Tmin"],
                              fluid._sublimation["Tmax"], points)
                 fluidos = []
@@ -661,7 +661,7 @@ class plugin(QtCore.QObject):
             del T[points*i]
 
         # Calculate saturation
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating Liquid-Vapour saturation line..."))
         for fase in [0, 1]:
             fluidos = []
@@ -679,7 +679,7 @@ class plugin(QtCore.QObject):
 
         # Calculate isoquality lines
         data["x"] = {}
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating isoquality lines..."))
         values = self.LineList("Isoquality", config.Preferences)
         for i, value in enumerate(values):
@@ -740,7 +740,7 @@ class plugin(QtCore.QObject):
 
         # Calculate isotherm lines
         data["T"] = {}
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating isotherm lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isotherm", config.Preferences, fluid)
@@ -753,7 +753,7 @@ class plugin(QtCore.QObject):
 
         # Calculate isobar lines
         data["P"] = {}
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating isobar lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isobar", config.Preferences, fluid)
@@ -765,7 +765,7 @@ class plugin(QtCore.QObject):
 
         # Calculate isochor lines
         data["v"] = {}
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating isochor lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isochor", config.Preferences, fluid)
@@ -777,7 +777,7 @@ class plugin(QtCore.QObject):
 
         # Calculate isoenthalpic lines
         data["h"] = {}
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating isoenthalpic lines..."))
         QtWidgets.QApplication.processEvents()
         vals = self.LineList("Isoenthalpic", config.Preferences, fluid)
@@ -789,7 +789,7 @@ class plugin(QtCore.QObject):
 
         # Calculate isoentropic lines
         data["s"] = {}
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating isoentropic lines..."))
         QtWidgets.QApplication.processEvents()
         values = self.LineList("Isoentropic", config.Preferences, fluid)
@@ -800,7 +800,7 @@ class plugin(QtCore.QObject):
             data["s"][value] = saveProperties(fluidos)
 
         # Calculate 3D mesh
-        self.parent().statusBar().showMessage(self.tr(
+        self.parent().statusBar().showMessage(translate("meos",
     "Calculating 3D mesh data..."))
         QtWidgets.QApplication.processEvents()
         fluidos = calcMesh(fluid, self.config, T, P)

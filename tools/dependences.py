@@ -24,30 +24,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 import os
 
-from tools.qt import QtGui, QtWidgets, __qt__
+from tools.qt import QtGui, QtWidgets, __qt__, translate
 
 
 optional_modules = (
-    ("freesteam", QtWidgets.QApplication.translate(
+    ("freesteam", translate(
         "dependences", "freesteam thermal option disabled")),
-    ("CoolProp", QtWidgets.QApplication.translate(
-        "dependences", "coolprop thermal option disabled")),
-    ("refprop", QtWidgets.QApplication.translate(
-        "dependences", "refprop thermal option disabled")),
-    ("openbabel", QtWidgets.QApplication.translate(
-        "dependences", "graphic formula disabled")),
-    ("ezodf", QtWidgets.QApplication.translate(
+    ("CoolProp", translate("dependences", "coolprop thermal option disabled")),
+    ("refprop", translate("dependences", "refprop thermal option disabled")),
+    ("openbabel", translate("dependences", "graphic formula disabled")),
+    ("ezodf", translate(
         "dependences", "openoffice/libreoffice interaction disabled")),
-    ("openpyxl", QtWidgets.QApplication.translate(
+    ("openpyxl", translate(
         "dependences", "Microsoft Excel 2007/2010 interaction disabled")),
-    ("xlwt", QtWidgets.QApplication.translate(
+    ("xlwt", translate(
         "dependences", "Microsoft Excel 97/2000/XP/2003 interaction disabled")),
-    ("icu", QtWidgets.QApplication.translate(
+    ("icu", translate(
         "dependences", "Unicode collation algorithm for improved string "
         "sorting disabled")),
-    ("reportlab", QtWidgets.QApplication.translate(
-        "dependences", "Pdf report exporting disabled")),
-    ("Qsci", QtWidgets.QApplication.translate(
+    ("reportlab", translate("dependences", "Pdf report exporting disabled")),
+    ("Qsci", translate(
         "dependences", "Qscintilla custom module editor disabled")))
 
 

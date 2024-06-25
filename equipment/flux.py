@@ -33,7 +33,7 @@ from scipy.optimize import fsolve
 from equipment.parents import equipment
 from lib import unidades
 from lib.corriente import Corriente
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 
 class Divider(equipment):
@@ -61,7 +61,7 @@ class Divider(equipment):
     360.0
     """
 
-    title = QtWidgets.QApplication.translate("equipment", "Divider")
+    title = translate("equipment", "Divider")
     kwargs = {"entrada": None,
               "criterio": 0,
               "salidas": 0,
@@ -72,8 +72,8 @@ class Divider(equipment):
     kwargsValue = ("deltaP", )
 
     TEXT_CRITERIO = [
-        QtWidgets.QApplication.translate("equipment", "Flux ratio"),
-        QtWidgets.QApplication.translate(
+        translate("equipment", "Flux ratio"),
+        translate(
             "equipment", "Flowrate (overwrite input flow)")]
 
     @property
@@ -90,15 +90,15 @@ class Divider(equipment):
             self.kwargs["split"] = [1.]
 
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "undefined input")
             self.status = 0
         elif not self.kwargs["split"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "undefined split fraction")
             self.status = 0
         elif self.kwargs["salidas"] != len(self.kwargs["split"]):
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "incomplete split fraction")
             self.status = 0
         else:
@@ -144,27 +144,27 @@ class Divider(equipment):
     def propTxt(self):
         """Text format for report"""
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate(
+        txt += translate(
             "equipment", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(0)
         for i, salida in enumerate(self.salida):
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate(
+                translate(
                     "equipment", "Output stream")+str(i),
                 salida.caudalmolar.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(1)
         for i, salida in enumerate(self.salida):
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate(
+                translate(
                     "equipment", "Output stream")+str(i),
                 salida.caudalmasico.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(2)
         for i, salida in enumerate(self.salida):
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate(
+                translate(
                     "equipment", "Output stream")+str(i),
                 salida.Q.str)+os.linesep
         txt += os.linesep
@@ -174,23 +174,23 @@ class Divider(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QtWidgets.QApplication.translate("equipment", "Feed Molar Flow"),
+        l = [(translate("equipment", "Feed Molar Flow"),
               "inputMolarFlow", unidades.MolarFlow),
-             (QtWidgets.QApplication.translate("equipment", "Feed Mass Flow"),
+             (translate("equipment", "Feed Mass Flow"),
               "inputMassFlow", unidades.MassFlow),
-             (QtWidgets.QApplication.translate(
+             (translate(
                  "equipment", "Feed Volumetric Flow"),
               "inputVolFlow", unidades.VolFlow),
-             (QtWidgets.QApplication.translate("equipment", "Feed Temperature"),
+             (translate("equipment", "Feed Temperature"),
               "inputT", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Feed Pressure"),
+             (translate("equipment", "Feed Pressure"),
               "inputP", unidades.Pressure),
-             (QtWidgets.QApplication.translate(
+             (translate(
                  "equipment", "Number of Product Streams"),
               "output", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Split Fractions"),
+             (translate("equipment", "Split Fractions"),
               "split", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Pressure Loss"),
+             (translate("equipment", "Pressure Loss"),
               "deltaP", unidades.DeltaP)]
         return l
 
@@ -253,7 +253,7 @@ class Mixer(equipment):
     >>> print(mezclador.salida[0].T)
     341.6818851215901
     """
-    title = QtWidgets.QApplication.translate("equipment", "Mixer")
+    title = translate("equipment", "Mixer")
     help = ""
     kwargs = {"entrada": [],
               "id_entrada": 0,
@@ -264,9 +264,9 @@ class Mixer(equipment):
     kwargsList = ("criterio", )
 
     TEXT_METODO = [
-        QtWidgets.QApplication.translate("equipment", "Inputs minimum pressure"),
-        QtWidgets.QApplication.translate("equipment", "Inputs mean pressure"),
-        QtWidgets.QApplication.translate("equipment", "Custom")]
+        translate("equipment", "Inputs minimum pressure"),
+        translate("equipment", "Inputs mean pressure"),
+        translate("equipment", "Custom")]
 
     @property
     def isCalculable(self):
@@ -282,20 +282,20 @@ class Mixer(equipment):
             Some input stream have a warning status definitions
         """
         if self.kwargs["criterio"] == 2 and not self.kwargs["Pout"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "pressure output not defined")
             self.status = 0
         elif not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "undefined input")
             self.status = 0
         elif sum([s.status for s in self.kwargs["entrada"]]) == 0:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "undefined input")
             self.status = 0
         elif len(self.kwargs["entrada"]) != sum(
                 [s.status for s in self.kwargs["entrada"]]):
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "some input stream isn't defined")
             self.status = 3
             return True
@@ -375,7 +375,7 @@ class Mixer(equipment):
     def propTxt(self):
         """Text format for report"""
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate(
+        txt += translate(
             "equipment", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(3))
@@ -384,26 +384,26 @@ class Mixer(equipment):
         txt += self.propertiesToText(3)
         for i, entrada in enumerate(self.kwargs["entrada"]):
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate(
+                translate(
                     "equipment", "Input stream")+str(i),
                 entrada.caudalmolar.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(4)
         for i, entrada in enumerate(self.kwargs["entrada"]):
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate(
+                translate(
                     "equipment", "Input stream")+str(i),
                 entrada.caudalmasico.str)+os.linesep
         txt += os.linesep
         txt += self.propertiesToText(5)
         for i, entrada in enumerate(self.kwargs["entrada"]):
             txt += "%-25s\t%s" % (
-                QtWidgets.QApplication.translate(
+                translate(
                     "equipment", "Input stream")+str(i),
                 entrada.Q.str)+os.linesep
 
         txt += os.linesep+"#"
-        txt += QtWidgets.QApplication.translate(
+        txt += translate(
             "equipment", "Output Molar Composition")
         txt += os.linesep
         for comp, x in zip(self.salida[0].componente, self.salida[0].fraccion):
@@ -414,17 +414,17 @@ class Mixer(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QtWidgets.QApplication.translate("equipment", "Output Temperature"),
+        l = [(translate("equipment", "Output Temperature"),
               "outT", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Output Pressure"),
+             (translate("equipment", "Output Pressure"),
               "Pout", unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Output vapor fraction"),
+             (translate("equipment", "Output vapor fraction"),
               "outX", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Output Molar Flow"),
+             (translate("equipment", "Output Molar Flow"),
               "outMolarFlow", unidades.MolarFlow),
-             (QtWidgets.QApplication.translate("equipment", "Output Mass Flow"),
+             (translate("equipment", "Output Mass Flow"),
               "outMassFlow", unidades.MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Output Volumetric Flow"),
+             (translate("equipment", "Output Volumetric Flow"),
               "outVolFlow", unidades.VolFlow)]
         return l
 
@@ -477,7 +477,7 @@ class Valve(equipment):
     2.0
     """
 
-    title = QtWidgets.QApplication.translate("equipment", "Valve")
+    title = translate("equipment", "Valve")
     help = ""
     kwargs = {"entrada": None,
               "off": 0,
@@ -490,9 +490,9 @@ class Valve(equipment):
     kwargsList = ("off", )
 
     TEXT_WORKING = [
-        QtWidgets.QApplication.translate("equipment", "Totally open"),
-        QtWidgets.QApplication.translate("equipment", "Partially open"),
-        QtWidgets.QApplication.translate("equipment", "Close")]
+        translate("equipment", "Totally open"),
+        translate("equipment", "Partially open"),
+        translate("equipment", "Close")]
 
     @property
     def isCalculable(self):
@@ -504,7 +504,7 @@ class Valve(equipment):
         """
         if self.kwargs["off"] == 1:
             if not self.kwargs["entrada"]:
-                self.msg = QtWidgets.QApplication.translate(
+                self.msg = translate(
                     "equipment", "undefined input")
                 self.status = 0
             elif self.kwargs["Pout"] or self.kwargs["DeltaP"] or \
@@ -513,7 +513,7 @@ class Valve(equipment):
                 self.msg = ""
                 return True
             else:
-                self.msg = QtWidgets.QApplication.translate(
+                self.msg = translate(
                     "equipment", "undefined exit condition")
                 self.status = 0
         elif self.kwargs["off"] == 2:
@@ -522,7 +522,7 @@ class Valve(equipment):
             return True
         else:
             if not self.kwargs["entrada"]:
-                self.msg = QtWidgets.QApplication.translate(
+                self.msg = translate(
                     "equipment", "undefined input")
                 self.status = 0
             else:
@@ -588,7 +588,7 @@ class Valve(equipment):
     def propTxt(self):
         """Text format for report"""
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate(
+        txt += translate(
             "equipment", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(4))
@@ -597,13 +597,13 @@ class Valve(equipment):
     @classmethod
     def propertiesEquipment(cls):
         """Properties availables to show in report"""
-        l = [(QtWidgets.QApplication.translate("equipment", "Output Temperature"),
+        l = [(translate("equipment", "Output Temperature"),
               "outT", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Output Pressure"),
+             (translate("equipment", "Output Pressure"),
               "Pout", unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Output vapor fraction"),
+             (translate("equipment", "Output vapor fraction"),
               "outX", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Working Condition"),
+             (translate("equipment", "Working Condition"),
               ("TEXT_WORKING", "off"), str)]
         return l
 

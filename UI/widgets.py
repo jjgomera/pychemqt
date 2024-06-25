@@ -53,7 +53,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from lib.config import conf_dir, IMAGE_PATH
 from lib.corriente import Corriente
 from lib.utilities import representacion
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, translate
 from tools.UI_unitConverter import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
 
@@ -61,12 +61,12 @@ from UI.delegate import CellEditor
 class Status(QtWidgets.QLabel):
     """Widget with status of dialog, equipment, stream, project, ..."""
     status = (
-        (0, QtWidgets.QApplication.translate("widgets", "Underspecified"), "yellow"),
-        (1, QtWidgets.QApplication.translate("widgets", "Solved"), "green"),
-        (2, QtWidgets.QApplication.translate("widgets", "Ignored"), "Light gray"),
-        (3, QtWidgets.QApplication.translate("widgets", "Warning"), "green"),
-        (4, QtWidgets.QApplication.translate("widgets", "Calculating..."), "Cyan"),
-        (5, QtWidgets.QApplication.translate("widgets", "Error"), "red"))
+        (0, translate("widgets", "Underspecified"), "yellow"),
+        (1, translate("widgets", "Solved"), "green"),
+        (2, translate("widgets", "Ignored"), "Light gray"),
+        (3, translate("widgets", "Warning"), "green"),
+        (4, translate("widgets", "Calculating..."), "Cyan"),
+        (5, translate("widgets", "Error"), "red"))
 
     def __init__(self, state=0, text="", parent=None):
         """
@@ -1450,8 +1450,8 @@ def okToContinue(parent, dirty, func, parameters):
 
     dialog = QtWidgets.QMessageBox.question(
         parent,
-        QtWidgets.QApplication.translate("widgets", "Unsaved changes"),
-        QtWidgets.QApplication.translate("widgets", "Save unsaved changes?"),
+        translate("widgets", "Unsaved changes"),
+        translate("widgets", "Save unsaved changes?"),
         QtWidgets.QMessageBox.StandardButton.Yes
         | QtWidgets.QMessageBox.StandardButton.No
         | QtWidgets.QMessageBox.StandardButton.Cancel,

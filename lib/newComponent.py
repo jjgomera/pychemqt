@@ -45,7 +45,7 @@ from math import exp, log
 import time
 
 from scipy.constants import R
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 from lib import unidades
 from lib.compuestos import atomic_decomposition, facent_LeeKesler, RhoL_Rackett
@@ -343,7 +343,7 @@ class GroupContribution(newComponente):
         """Procedure to define the status of input parameter"""
         self.group = self._group()
         if not self.kwargs["group"] or not self.kwargs["contribution"]:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "undefined group")
+            self.msg = translate("newComponent", "undefined group")
             self.status = 0
         else:
             self.status = 1
@@ -1569,7 +1569,7 @@ class Wilson(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "undefined boiling point")
+            self.msg = translate("newComponent", "undefined boiling point")
             self.status = 0
         else:
             return GroupContribution.isCalculable(self)
@@ -1992,7 +1992,9 @@ class Marrero(GroupContribution):
             resto += r
 
         if resto:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "Bad definition, check input group and contribution")
+            self.msg = translate(
+                "newComponent",
+                "Bad definition, check input group and contribution")
             self.status = 0
         else:
             self.msg = ""
@@ -2301,7 +2303,7 @@ class Elliott(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["M"]:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "undefined molecular weight")
+            self.msg = translate("newComponent", "undefined molecular weight")
             self.status = 0
         else:
             return GroupContribution.isCalculable(self)
@@ -2516,7 +2518,7 @@ class Ambrose(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "undefined boiling point")
+            self.msg = translate("newComponent", "undefined boiling point")
             self.status = 0
         else:
             return GroupContribution.isCalculable(self)
@@ -2680,15 +2682,17 @@ class Klincewicz(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "undefined boiling point")
+            self.msg = translate("newComponent", "undefined boiling point")
             self.status = 0
         elif self.kwargs["nogroup"]:
             self.group = []
             if not self.kwargs["M"]:
-                self.msg = QtWidgets.QApplication.translate("newComponent", "undefined molecular weight")
+                self.msg = translate(
+                    "newComponent", "undefined molecular weight")
                 self.status = 0
             elif not self.kwargs["atoms"]:
-                self.msg = QtWidgets.QApplication.translate("newComponent", "undefined atoms number of molecule")
+                self.msg = translate(
+                    "newComponent", "undefined atoms number of molecule")
                 self.status = 0
             else:
                 self.status = 1
@@ -2855,7 +2859,7 @@ class Lydersen(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "undefined boiling point")
+            self.msg = translate("newComponent", "undefined boiling point")
             self.status = 0
         else:
             return GroupContribution.isCalculable(self)
@@ -4181,7 +4185,7 @@ class Li(GroupContribution):
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
         if not self.kwargs["Tb"]:
-            self.msg = QtWidgets.QApplication.translate("newComponent", "undefined boiling point")
+            self.msg = translate("newComponent", "undefined boiling point")
             self.status = 0
         else:
             return GroupContribution.isCalculable(self)

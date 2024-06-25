@@ -48,7 +48,7 @@ from lib.psycrometry import PsyState, PsychroState, _Pbar, _height
 from lib.unidades import (Temperature, Pressure, Length, Mass,
                           SpecificVolume, Enthalpy)
 from lib.utilities import formatLine
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, translate
 from tools.UI_Tables.prefMEOS import Isolinea
 from UI.widgets import Entrada_con_unidades, LineConfig
 
@@ -520,11 +520,11 @@ class UI_Psychrometry(QtWidgets.QDialog):
 class Config(QtWidgets.QWidget):
     """Phychrometric chart configuration"""
     lineas = [
-        ("IsoTdb", Temperature, QtWidgets.QApplication.translate("Psychrometry", "Iso dry bulb temperature")),
-        ("IsoW", float, QtWidgets.QApplication.translate("Psychrometry", "Iso absolute humidity")),
-        ("IsoHR", float, QtWidgets.QApplication.translate("Psychrometry", "Iso relative humidity")),
-        ("IsoTwb", Temperature, QtWidgets.QApplication.translate("Psychrometry", "Iso wet bulb temperature")),
-        ("Isochor", SpecificVolume, QtWidgets.QApplication.translate("Psychrometry", "Isochor"))]
+        ("IsoTdb", Temperature, translate("Psychrometry", "Iso dry bulb temperature")),
+        ("IsoW", float, translate("Psychrometry", "Iso absolute humidity")),
+        ("IsoHR", float, translate("Psychrometry", "Iso relative humidity")),
+        ("IsoTwb", Temperature, translate("Psychrometry", "Iso wet bulb temperature")),
+        ("Isochor", SpecificVolume, translate("Psychrometry", "Isochor"))]
 
     def __init__(self, config, parent=None):
         """constructor, config optional parameter to input project config"""

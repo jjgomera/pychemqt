@@ -42,7 +42,7 @@ from matplotlib.patches import ConnectionPatch
 from lib.config import conf_dir, Preferences
 from lib.friction import f_list, eD
 from lib.utilities import formatLine, representacion
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, translate
 from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
 from plots.ui import Chart
@@ -87,8 +87,8 @@ def calculate(config):
 
 class Config(QtWidgets.QWidget):
     """Moody chart configuration"""
-    TITLE = QtWidgets.QApplication.translate("Moody", "Moody chart")
-    TITLECONFIG = QtWidgets.QApplication.translate("Moody", "Moody diagram configuration")
+    TITLE = translate("Moody", "Moody chart")
+    TITLECONFIG = translate("Moody", "Moody diagram configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -148,7 +148,7 @@ class Config(QtWidgets.QWidget):
 
 class Moody(Chart):
     """Moody chart dialog"""
-    title = QtWidgets.QApplication.translate("Moody", "Moody Diagram")
+    title = translate("Moody", "Moody Diagram")
     widgetConfig = Config
     locLogo = (0.3, 0.15, 0.1, 0.1)
     note = None

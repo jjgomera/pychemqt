@@ -43,7 +43,7 @@ from lib.config import conf_dir, Preferences
 from lib.crude import Z_list
 from lib.plot import PlotWidget
 from lib.utilities import formatLine
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, translate
 from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
 from plots.ui import Chart
@@ -105,8 +105,8 @@ def calculate(config, dat=None):
 
 class Config(QtWidgets.QWidget):
     """Standing-Katz chart configuration"""
-    TITLE = QtWidgets.QApplication.translate("Standing_Katz", "Standing-Katz chart")
-    TITLECONFIG = QtWidgets.QApplication.translate("Standing_Katz", "Standing-Katz chart configuration")
+    TITLE = translate("Standing_Katz", "Standing-Katz chart")
+    TITLECONFIG = translate("Standing_Katz", "Standing-Katz chart configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -162,7 +162,7 @@ class Config(QtWidgets.QWidget):
 
 class Standing_Katz(Chart):
     """Standing-Katz chart dialog"""
-    title = QtWidgets.QApplication.translate("Standing_Katz", "Standing and Katz compressivitity factors "
+    title = translate("Standing_Katz", "Standing and Katz compressivitity factors "
                "chart for natural gas")
     widgetConfig = Config
     locLogo = (0.8, 0.12, 0.1, 0.1)

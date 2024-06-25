@@ -32,7 +32,7 @@ and its configuration
 
 
 from numpy import logspace
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, translate
 
 from lib import drag
 from lib.config import Preferences
@@ -44,8 +44,8 @@ from plots.ui import Chart
 
 class Config(QtWidgets.QWidget):
     """Drag sphere chart configuration"""
-    TITLE = QtWidgets.QApplication.translate("Drag", "Drag Sphere chart")
-    TITLECONFIG = QtWidgets.QApplication.translate("Drag", "Drag sphere diagram configuration")
+    TITLE = translate("Drag", "Drag Sphere chart")
+    TITLECONFIG = translate("Drag", "Drag sphere diagram configuration")
 
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
@@ -91,7 +91,7 @@ class Config(QtWidgets.QWidget):
 
 class Drag(Chart):
     """Drag sphere chart dialog"""
-    title = QtWidgets.QApplication.translate("Drag", "Drag Sphere")
+    title = translate("Drag", "Drag Sphere")
     widgetConfig = Config
     locLogo = (0.8, 0.85, 0.1, 0.1)
     note = None

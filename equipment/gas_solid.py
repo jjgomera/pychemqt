@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 import os
 from math import exp, sqrt, ceil
 
-from tools.qt import QtWidgets
+from tools.qt import translate
 from numpy import roots
 from scipy.constants import pi, g, e, epsilon_0
 from scipy.optimize import fsolve
@@ -85,7 +85,7 @@ class Separador_SolidGas(equipment):
             entrada = self.kwargs["entrada"]
 
         txt = os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Separation efficiency")
+        txt += translate("equipment", "Separation efficiency")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(i+2, i+8)) + os.linesep
         txt += self.propertiesToText(i) + os.linesep
@@ -102,19 +102,19 @@ class Separador_SolidGas(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Input Pressure"), "Pin", Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Output Pressure"), "Pout", Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Pressure Loss"), "deltaP", DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "Global Efficiency"),
+        l = [(translate("equipment", "Input Pressure"), "Pin", Pressure),
+             (translate("equipment", "Output Pressure"), "Pout", Pressure),
+             (translate("equipment", "Pressure Loss"), "deltaP", DeltaP),
+             (translate("equipment", "Global Efficiency"),
               "rendimiento", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Partial Efficiency"),
+             (translate("equipment", "Partial Efficiency"),
               "rendimiento_parcial", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Input Solid Mass Flow"), "Min", MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Input Solid Mean Diameter"), "Dmin", Length),
-             (QtWidgets.QApplication.translate("equipment", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Gas Output Solid Mean Diameter"), "Dmr", Length),
-             (QtWidgets.QApplication.translate("equipment", "Solid Output Mass Flow"), "Ms", MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Solid Output Mean Diameter"), "Dms", Length)]
+             (translate("equipment", "Input Solid Mass Flow"), "Min", MassFlow),
+             (translate("equipment", "Input Solid Mean Diameter"), "Dmin", Length),
+             (translate("equipment", "Gas Output Solid Mass Flow"), "Mr", MassFlow),
+             (translate("equipment", "Gas Output Solid Mean Diameter"), "Dmr", Length),
+             (translate("equipment", "Solid Output Mass Flow"), "Ms", MassFlow),
+             (translate("equipment", "Solid Output Mean Diameter"), "Dms", Length)]
         return l
 
     def writeStatetoJSON(self, state):
@@ -180,7 +180,7 @@ class GravityChamber(Separador_SolidGas):
     0.8611 0.3439
     """
 
-    title = QtWidgets.QApplication.translate("equipment", "Gravity settling chamber")
+    title = translate("equipment", "Gravity settling chamber")
     kwargs = {"entrada": None,
               "metodo": 0,
               "modelo": 0,
@@ -197,16 +197,16 @@ class GravityChamber(Separador_SolidGas):
     kwargsList = ("metodo", "modelo")
     calculateValue = ("Q", "LCalc", "WCalc", "HCalc", "Vgas",  "rendimiento")
 
-    TEXT_TIPO = [QtWidgets.QApplication.translate("equipment", "Rating"),
-                 QtWidgets.QApplication.translate("equipment", "Design")]
+    TEXT_TIPO = [translate("equipment", "Rating"),
+                 translate("equipment", "Design")]
     TEXT_MODEL = [
-        QtWidgets.QApplication.translate("equipment", "Plug flow without vertical mix"),
-        QtWidgets.QApplication.translate("equipment", "Vertical mix")]
+        translate("equipment", "Plug flow without vertical mix"),
+        translate("equipment", "Vertical mix")]
 
     @property
     def isCalculable(self):
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
 
@@ -216,18 +216,18 @@ class GravityChamber(Separador_SolidGas):
                 self.status = 1
                 return True
             else:
-                self.msg = QtWidgets.QApplication.translate("equipment", "undefined efficiency")
+                self.msg = translate("equipment", "undefined efficiency")
                 self.status = 0
         else:
             if not self.kwargs["W"]:
-                self.msg = QtWidgets.QApplication.translate("equipment", "undefined width")
+                self.msg = translate("equipment", "undefined width")
                 self.status = 0
             elif self.kwargs["W"] and self.kwargs["H"] and self.kwargs["L"]:
                 self.msg = ""
                 self.status = 1
                 return True
             elif not self.kwargs["H"]:
-                self.msg = QtWidgets.QApplication.translate("equipment", "height undefined, using default")
+                self.msg = translate("equipment", "height undefined, using default")
                 self.status = 3
                 return True
             else:
@@ -303,7 +303,7 @@ class GravityChamber(Separador_SolidGas):
 
     def propTxt(self):
         txt = os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(10))
 
@@ -312,13 +312,13 @@ class GravityChamber(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_TIPO", "metodo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Model"), ("TEXT_MODEL", "modelo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Height"), "HCalc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Width"), "WCalc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Length"), "LCalc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Gas Speed"), "Vgas", Speed),
-             (QtWidgets.QApplication.translate("equipment", "Gas Volumetric Flow"), "Q", VolFlow)
+        l = [(translate("equipment", "Mode"), ("TEXT_TIPO", "metodo"), str),
+             (translate("equipment", "Model"), ("TEXT_MODEL", "modelo"), str),
+             (translate("equipment", "Height"), "HCalc", Length),
+             (translate("equipment", "Width"), "WCalc", Length),
+             (translate("equipment", "Length"), "LCalc", Length),
+             (translate("equipment", "Gas Speed"), "Vgas", Speed),
+             (translate("equipment", "Gas Volumetric Flow"), "Q", VolFlow)
              ]
 
         for prop in Separador_SolidGas.propertiesEquipment():
@@ -409,7 +409,7 @@ class Ciclon(Separador_SolidGas):
     >>> print("%0.2f %0.2f" % (ciclon.C_instTotal, ciclon.C_adqTotal))
     7597.86 5427.04
     """
-    title = QtWidgets.QApplication.translate("equipment", "Cyclone")
+    title = translate("equipment", "Cyclone")
     help = os.environ["pychemqt"] + "doc/Ciclones.htm"
     kwargs = {"entrada": None,
               "tipo_calculo": 0,
@@ -438,25 +438,25 @@ class Ciclon(Separador_SolidGas):
     indiceCostos = 2
 
     TEXT_TIPO = [
-        QtWidgets.QApplication.translate("equipment", "Rating"),
-        QtWidgets.QApplication.translate("equipment", "Design")]
+        translate("equipment", "Rating"),
+        translate("equipment", "Design")]
     TEXT_MODEL = ["Rossin, Rammler & Intelmann", "Leith & Licht"]
     TEXT_MODEL_DELTAP = [
-        QtWidgets.QApplication.translate("equipment", "Standart"),
+        translate("equipment", "Standart"),
         "Casal & Martinez-Benet", "Leith & Licht",
         "Sheferd, Lapple & Ter Linden"]
     TEXT_MODEL_CICLON = [
-        "Stairmand ("+QtWidgets.QApplication.translate("equipment", "High η")+")",
-        "Swift ("+QtWidgets.QApplication.translate("equipment", "High η")+")",
-        "Lapple ("+QtWidgets.QApplication.translate("equipment", "Low η")+")",
-        "Swift ("+QtWidgets.QApplication.translate("equipment", "Low η")+")",
-        "Peterson/Whitby ("+QtWidgets.QApplication.translate("equipment", "Low η")+")",
+        "Stairmand ("+translate("equipment", "High η")+")",
+        "Swift ("+translate("equipment", "High η")+")",
+        "Lapple ("+translate("equipment", "Low η")+")",
+        "Swift ("+translate("equipment", "Low η")+")",
+        "Peterson/Whitby ("+translate("equipment", "Low η")+")",
         "Lorenz I", "Lorenz II", "Lorenz III",
-        QtWidgets.QApplication.translate("equipment", "Custom")]
+        translate("equipment", "Custom")]
     TEXT_COST = [
-        QtWidgets.QApplication.translate("equipment", "Heavy duty"),
-        QtWidgets.QApplication.translate("equipment", "Standard dury"),
-        QtWidgets.QApplication.translate("equipment", "Multicyclone")]
+        translate("equipment", "Heavy duty"),
+        translate("equipment", "Standard dury"),
+        translate("equipment", "Multicyclone")]
 
     @property
     def isCalculable(self):
@@ -467,7 +467,7 @@ class Ciclon(Separador_SolidGas):
             self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
 
@@ -479,7 +479,7 @@ class Ciclon(Separador_SolidGas):
                     self.status = 1
                     return True
                 else:
-                    self.msg = QtWidgets.QApplication.translate("equipment", "undefined cyclone dimension")
+                    self.msg = translate("equipment", "undefined cyclone dimension")
                     self.status = 0
             else:
                 if (self.kwargs["DeltaPAdmisible"] or
@@ -489,10 +489,10 @@ class Ciclon(Separador_SolidGas):
                     self.status = 1
                     return True
                 elif self.kwargs["rendimientoAdmisible"]:
-                    self.msg = QtWidgets.QApplication.translate("equipment", "undefined efficiency")
+                    self.msg = translate("equipment", "undefined efficiency")
                     self.status = 0
                 else:
-                    self.msg = QtWidgets.QApplication.translate(
+                    self.msg = translate(
                         "equipment", "undefined loss pressure specification")
                     self.status = 0
 
@@ -502,10 +502,10 @@ class Ciclon(Separador_SolidGas):
                 self.status = 1
                 return True
             elif self.kwargs["Dc"]:
-                self.msg = QtWidgets.QApplication.translate("equipment", "undefined cyclone number")
+                self.msg = translate("equipment", "undefined cyclone number")
                 self.status = 0
             else:
-                self.msg = QtWidgets.QApplication.translate("equipment", "undefined cyclone diameter")
+                self.msg = translate("equipment", "undefined cyclone diameter")
                 self.status = 0
 
     def calculo(self):
@@ -745,13 +745,13 @@ class Ciclon(Separador_SolidGas):
 
     def propTxt(self):
         txt = os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(8))
         txt += self.propertiesToText(range(17, 20))
 
         txt += os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Cyclone Dimensions")
+        txt += translate("equipment", "Cyclone Dimensions")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(8, 17))
 
@@ -759,7 +759,7 @@ class Ciclon(Separador_SolidGas):
 
         if self.statusCoste:
             txt += os.linesep + "#---------------"
-            txt += QtWidgets.QApplication.translate("equipment", "Preliminary Cost Estimation")
+            txt += translate("equipment", "Preliminary Cost Estimation")
             txt += "-----------------#"+os.linesep
             txt += self.propertiesToText(range(27, 33))
 
@@ -767,32 +767,32 @@ class Ciclon(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Model"),
+        l = [(translate("equipment", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
+             (translate("equipment", "Model"),
               ("TEXT_MODEL", "modelo_rendimiento"), str),
-             (QtWidgets.QApplication.translate("equipment", "Pressure Loss Model"),
+             (translate("equipment", "Pressure Loss Model"),
               ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
-             (QtWidgets.QApplication.translate("equipment", "Ciclon Model"),
+             (translate("equipment", "Ciclon Model"),
               ("TEXT_MODEL_CICLON", "modelo_ciclon"), str),
-             (QtWidgets.QApplication.translate("equipment", "Critic Particle Diameter"), "dc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Gas Internal Cycles"), "N", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Gas Speed"), "V", Speed),
-             (QtWidgets.QApplication.translate("equipment", "Gas Volumetric Flow"), "Q", VolFlow),
-             (QtWidgets.QApplication.translate("equipment", "Cyclone number"), "num_ciclones", int),
-             (QtWidgets.QApplication.translate("equipment", "Ciclon Diameter"), "Dc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Inlet Height"), "Hc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Inlet Width"), "Bc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Solid Output Diameter"), "Jc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Cylinder Cyclone Section Length"), "Lc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Conical Cyclone Section Length"), "Zc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Clean Gas Output Diameter"), "De", Length),
-             (QtWidgets.QApplication.translate("equipment", "Clean Gas Inlet Orifice Length"), "Sc", Length),
-             (QtWidgets.QApplication.translate("equipment", "Base index"), "Base_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Current index"), "Current_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Install factor"), "f_install", float),
-             (QtWidgets.QApplication.translate("equipment", "Cost Mode"), ("TEXT_COST", "tipo_costo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Purchase Cost"), "C_adq", Currency),
-             (QtWidgets.QApplication.translate("equipment", "Installed Cost"), "C_inst", Currency)]
+             (translate("equipment", "Critic Particle Diameter"), "dc", Length),
+             (translate("equipment", "Gas Internal Cycles"), "N", Dimensionless),
+             (translate("equipment", "Gas Speed"), "V", Speed),
+             (translate("equipment", "Gas Volumetric Flow"), "Q", VolFlow),
+             (translate("equipment", "Cyclone number"), "num_ciclones", int),
+             (translate("equipment", "Ciclon Diameter"), "Dc", Length),
+             (translate("equipment", "Inlet Height"), "Hc", Length),
+             (translate("equipment", "Inlet Width"), "Bc", Length),
+             (translate("equipment", "Solid Output Diameter"), "Jc", Length),
+             (translate("equipment", "Cylinder Cyclone Section Length"), "Lc", Length),
+             (translate("equipment", "Conical Cyclone Section Length"), "Zc", Length),
+             (translate("equipment", "Clean Gas Output Diameter"), "De", Length),
+             (translate("equipment", "Clean Gas Inlet Orifice Length"), "Sc", Length),
+             (translate("equipment", "Base index"), "Base_index", float),
+             (translate("equipment", "Current index"), "Current_index", float),
+             (translate("equipment", "Install factor"), "f_install", float),
+             (translate("equipment", "Cost Mode"), ("TEXT_COST", "tipo_costo"), str),
+             (translate("equipment", "Purchase Cost"), "C_adq", Currency),
+             (translate("equipment", "Installed Cost"), "C_inst", Currency)]
 
         for prop in Separador_SolidGas.propertiesEquipment()[-1::-1]:
             l.insert(17, prop)
@@ -882,7 +882,7 @@ class Baghouse(Separador_SolidGas):
     >>> print("%0.4f %0.4f" % (filtro.floorArea, filtro.Vgas.ftmin))
     7.2464 0.1462
     """
-    title = QtWidgets.QApplication.translate("equipment", "Baghouse")
+    title = translate("equipment", "Baghouse")
     kwargs = {"entrada": None,
               "metodo": 0,
               "num_filtros": 0,
@@ -904,46 +904,46 @@ class Baghouse(Separador_SolidGas):
                       "tiempoCalc", "deltaPCalc")
 
     TEXT_TIPO = [
-        QtWidgets.QApplication.translate("equipment", "Calculate Pressure drop"),
-        QtWidgets.QApplication.translate("equipment", "Calculate time of filtration"),
-        QtWidgets.QApplication.translate("equipment", "Calculate number of cells")]
+        translate("equipment", "Calculate Pressure drop"),
+        translate("equipment", "Calculate time of filtration"),
+        translate("equipment", "Calculate number of cells")]
 
     @property
     def isCalculable(self):
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
 
         if self.kwargs["metodo"] == 0 and (not self.kwargs["num_filtros"] or
                                            not self.kwargs["tiempo"]):
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined values")
+            self.msg = translate("equipment", "undefined values")
             self.status = 0
             return
         elif self.kwargs["metodo"] == 1 and (not self.kwargs["num_filtros"] or
                                              not self.kwargs["deltaP"]):
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined values")
+            self.msg = translate("equipment", "undefined values")
             self.status = 0
             return
         elif self.kwargs["metodo"] == 2 and (not self.kwargs["tiempo"] or
                                              not self.kwargs["deltaP"]):
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined values")
+            self.msg = translate("equipment", "undefined values")
             self.status = 0
             return
 
         if self.kwargs["metodo"] == 2 and \
                 self.kwargs["limpieza"] >= self.kwargs["num_filtros"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "All filters cleaned")
+            self.msg = translate("equipment", "All filters cleaned")
             self.status = 0
             return
 
         if not self.kwargs["rendimientos"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default efficiency")
+            self.msg = translate("equipment", "using default efficiency")
             self.status = 3
             return True
         if len(self.kwargs["rendimientos"]) != \
                 len(self.kwargs["entrada"].solido.diametros):
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default efficiency")
+            self.msg = translate("equipment", "using default efficiency")
             self.status = 3
             return True
 
@@ -1052,11 +1052,11 @@ class Baghouse(Separador_SolidGas):
 
     def propTxt(self):
         txt = os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(3))
 
-        suf = " (%s)" % QtWidgets.QApplication.translate("equipment", "stimated")
+        suf = " (%s)" % translate("equipment", "stimated")
         txt += self.propertiesToText(range(3, 9), kwCheck=True, kwValue=0,
                                      kwSuffix=suf)
         txt += self.propertiesToText(range(9, 14))
@@ -1066,19 +1066,19 @@ class Baghouse(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_TIPO", "metodo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Filter Number"), "num_filtros", int),
-             (QtWidgets.QApplication.translate("equipment", "Operation Time"), "tiempo", Time),
-             (QtWidgets.QApplication.translate("equipment", "Cloth resistence"),
+        l = [(translate("equipment", "Mode"), ("TEXT_TIPO", "metodo"), str),
+             (translate("equipment", "Filter Number"), "num_filtros", int),
+             (translate("equipment", "Operation Time"), "tiempo", Time),
+             (translate("equipment", "Cloth resistence"),
               "resistenciaFiltro", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Cake resistence"),
+             (translate("equipment", "Cake resistence"),
               "resistenciaTorta", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Cells cleaned"), "limpieza", int),
-             (QtWidgets.QApplication.translate("equipment", "Bags per cell"), "membranasFiltro", int),
-             (QtWidgets.QApplication.translate("equipment", "Bag diameter"), "diametroMembrana", Length),
-             (QtWidgets.QApplication.translate("equipment", "Area per bag"), "areaMembrana", Area),
-             (QtWidgets.QApplication.translate("equipment", "Speed"), "Vgas", Speed),
-             (QtWidgets.QApplication.translate("equipment", "Surface"), "floorArea", Area)]
+             (translate("equipment", "Cells cleaned"), "limpieza", int),
+             (translate("equipment", "Bags per cell"), "membranasFiltro", int),
+             (translate("equipment", "Bag diameter"), "diametroMembrana", Length),
+             (translate("equipment", "Area per bag"), "areaMembrana", Area),
+             (translate("equipment", "Speed"), "Vgas", Speed),
+             (translate("equipment", "Surface"), "floorArea", Area)]
 
         for prop in Separador_SolidGas.propertiesEquipment():
             l.append(prop)
@@ -1145,7 +1145,7 @@ class ElectricPrecipitator(Separador_SolidGas):
     >>> print("%0.2f %0.2f" % (elec.areaCalculada, elec.rendimiento))
     242.02 0.90
     """
-    title = QtWidgets.QApplication.translate("equipment", "Electrostatic precipitator")
+    title = translate("equipment", "Electrostatic precipitator")
     kwargs = {"entrada": None,
               "metodo": 0,
               "potencialCarga": 0.0,
@@ -1161,37 +1161,37 @@ class ElectricPrecipitator(Separador_SolidGas):
     calculateValue = ("areaCalculada", "rendimiento")
 
     TEXT_TIPO = [
-        QtWidgets.QApplication.translate("equipment", "Rating: Calculate efficiency"),
-        QtWidgets.QApplication.translate("equipment",
+        translate("equipment", "Rating: Calculate efficiency"),
+        translate("equipment",
            "Design: Calculate dimensions to fit a requerid efficiency")]
 
     @property
     def isCalculable(self):
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
 
         if self.kwargs["metodo"] == 0 and not self.kwargs["area"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined area")
+            self.msg = translate("equipment", "undefined area")
             self.status = 0
             return
         elif self.kwargs["metodo"] == 1 and \
                 not self.kwargs["rendimientoAdmisible"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined efficiency")
+            self.msg = translate("equipment", "undefined efficiency")
             self.status = 0
             return
 
         if not self.kwargs["potencialCarga"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default charging field")
+            self.msg = translate("equipment", "using default charging field")
             self.status = 3
             return True
         if not self.kwargs["potencialDescarga"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default collecting field")
+            self.msg = translate("equipment", "using default collecting field")
             self.status = 3
             return True
         if not self.kwargs["epsilon"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default dielectric constant")
+            self.msg = translate("equipment", "using default dielectric constant")
             self.status = 3
             return True
 
@@ -1248,11 +1248,11 @@ class ElectricPrecipitator(Separador_SolidGas):
 
     def propTxt(self):
         txt = os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(0)
 
-        suf = " (%s)" % QtWidgets.QApplication.translate("equipment", "stimated")
+        suf = " (%s)" % translate("equipment", "stimated")
         txt += self.propertiesToText(range(1, 4), kwCheck=True, kwValue=0,
                                      kwSuffix=suf)
         txt += self.propertiesToText(range(4, 8))
@@ -1262,13 +1262,13 @@ class ElectricPrecipitator(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_TIPO", "metodo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Charging field"),
+        l = [(translate("equipment", "Mode"), ("TEXT_TIPO", "metodo"), str),
+             (translate("equipment", "Charging field"),
               "potencialCarga", PotencialElectric),
-             (QtWidgets.QApplication.translate("equipment", "Collecting field"),
+             (translate("equipment", "Collecting field"),
               "potencialDescarga", PotencialElectric),
-             (QtWidgets.QApplication.translate("equipment", "Dielectric constant"), "epsilon", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Area"), "areaCalculada", Area)]
+             (translate("equipment", "Dielectric constant"), "epsilon", Dimensionless),
+             (translate("equipment", "Area"), "areaCalculada", Area)]
 
         for prop in Separador_SolidGas.propertiesEquipment():
             l.append(prop)

@@ -32,7 +32,7 @@ import os
 
 from matplotlib import colormaps
 from numpy import arange
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, translate
 
 from lib import unidades
 from lib.utilities import representacion
@@ -252,12 +252,12 @@ class Isolinea(QtWidgets.QDialog):
 class Widget(QtWidgets.QDialog):
     """Config mEoS parameter dialog"""
     lineas = [
-        ("Isotherm", unidades.Temperature, QtWidgets.QApplication.translate("UI_Tables", "Isotherm")),
-        ("Isobar", unidades.Pressure, QtWidgets.QApplication.translate("UI_Tables", "Isobar")),
-        ("Isoenthalpic", unidades.Enthalpy, QtWidgets.QApplication.translate("UI_Tables", "Isoenthalpic")),
-        ("Isoentropic", unidades.SpecificHeat, QtWidgets.QApplication.translate("UI_Tables", "Isoentropic")),
-        ("Isochor", unidades.SpecificVolume, QtWidgets.QApplication.translate("UI_Tables", "Isochor")),
-        ("Isoquality", float, QtWidgets.QApplication.translate("UI_Tables", "Isoquality"))]
+        ("Isotherm", unidades.Temperature, translate("UI_Tables", "Isotherm")),
+        ("Isobar", unidades.Pressure, translate("UI_Tables", "Isobar")),
+        ("Isoenthalpic", unidades.Enthalpy, translate("UI_Tables", "Isoenthalpic")),
+        ("Isoentropic", unidades.SpecificHeat, translate("UI_Tables", "Isoentropic")),
+        ("Isochor", unidades.SpecificVolume, translate("UI_Tables", "Isochor")),
+        ("Isoquality", float, translate("UI_Tables", "Isoquality"))]
 
     def __init__(self, config, parent=None):
         """constructor, config optional parameter to input project config"""

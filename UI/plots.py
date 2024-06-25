@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 ###Módulo que define los dialogos de definición de gráficos
 
-from tools.qt import QtCore, QtWidgets
+from tools.qt import QtCore, QtWidgets, translate
 
 from numpy import arange, transpose
 
@@ -32,7 +32,7 @@ from lib.mezcla import Mezcla
 from UI.widgets import Tabla
 
 class Binary_distillation(QtWidgets.QDialog):
-    title=QtWidgets.QApplication.translate("Binary_distillation", "x-y Distillation")
+    title=translate("Binary_distillation", "x-y Distillation")
     def __init__(self, indices=None, nombres=None, x=None, y=None, parent=None):
         super(Binary_distillation, self).__init__(parent)
         self.setWindowTitle(self.title)
@@ -126,7 +126,7 @@ class Binary_distillation(QtWidgets.QDialog):
 
 
 class Plot_Distribucion(PlotWidget):
-    title=QtWidgets.QApplication.translate("Plot_Distribucion", "Solid Distribution")
+    title=translate("Plot_Distribucion", "Solid Distribution")
     def __init__(self, id, solido, parent=None):
         super(Plot_Distribucion, self).__init__(parent)
         self.setWindowTitle(self.tr("Stream")+" "+str(id)+" - "+self.title)

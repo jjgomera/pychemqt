@@ -32,6 +32,8 @@ import os
 import random
 from math import exp
 
+from tools.qt import translate
+
 
 def representacion(number, fmt=0, total=0, decimales=4, eng=False, tol=5,
                    signo=False, thousand=False):
@@ -151,7 +153,7 @@ def exportTable(matrix, fname, ext, title=None):
     title : list, optional
         list with column title
     """
-    sheetTitle = QtWidgets.QApplication.translate("Table")
+    sheetTitle = translate("Table")
     if fname.split(".")[-1] != ext:
         fname += ".%s" % ext
 
@@ -237,7 +239,7 @@ def exportTable(matrix, fname, ext, title=None):
         spreadsheet.save(filename=fname)
 
     else:
-        raise ValueError(QtWidgets.QApplication.translate("Unsopported format") + " " + ext)
+        raise ValueError(translate("Unsopported format") + " " + ext)
 
 
 def spreadsheetColumn(index):

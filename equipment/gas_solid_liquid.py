@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from math import pi, exp, sqrt, log
 import os
 
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 from lib.unidades import (Pressure, DeltaP, Area, Speed, Dimensionless,
                           Length, Power)
@@ -59,7 +59,7 @@ class Scrubber(Separador_SolidGas):
         modelo_DeltaP:
             0 - Young (1977)
     """
-    title = QtWidgets.QApplication.translate("equipment", "Scrubber")
+    title = translate("equipment", "Scrubber")
     help = ""
     kwargs = {"entradaGas": None,
               "entradaLiquido": None,
@@ -77,8 +77,8 @@ class Scrubber(Separador_SolidGas):
     calculateValue = ("deltaP", "rendimiento")
 
     TEXT_TIPO = [
-        QtWidgets.QApplication.translate("equipment", "Rating: Calculate efficiency"),
-        QtWidgets.QApplication.translate("equipment", "Design: Calculate diameter")]
+        translate("equipment", "Rating: Calculate efficiency"),
+        translate("equipment", "Design: Calculate diameter")]
     TEXT_MODEL = ["Johnstone (1954)",
                   "Calvert (1972)"]
     TEXT_MODEL_DELTAP = ["Calvert (1968)",
@@ -124,28 +124,28 @@ class Scrubber(Separador_SolidGas):
             self.statusDeltaP = 0
 
         if not self.kwargs["entradaGas"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined gas stream")
+            self.msg = translate("equipment", "undefined gas stream")
             self.status = 0
             return
         if not self.kwargs["entradaLiquido"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined liquid stream")
+            self.msg = translate("equipment", "undefined liquid stream")
             self.status = 0
             return
         if self.kwargs["tipo_calculo"] == 0 and not self.kwargs["diametro"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined diameter")
+            self.msg = translate("equipment", "undefined diameter")
             self.status = 0
             return
         elif self.kwargs["tipo_calculo"] == 1 and \
                 not self.kwargs["rendimientoAdmisible"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined efficiency")
+            self.msg = translate("equipment", "undefined efficiency")
             self.status = 0
             return
 
         if self.kwargs["modelo_rendimiento"] == 0 and not self.kwargs["k"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined venturi constant")
+            self.msg = translate("equipment", "undefined venturi constant")
             self.status = 3
         elif self.kwargs["modelo_rendimiento"] == 1 and not self.kwargs["f"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined calvert coefficient")
+            self.msg = translate("equipment", "undefined calvert coefficient")
             self.status = 3
 
         return True
@@ -292,7 +292,7 @@ class Scrubber(Separador_SolidGas):
         Gas = self.kwargs["entradaGas"]
 
         txt = os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(13))
         txt += Separador_SolidGas.propTxt(self, 13, Gas)
@@ -300,20 +300,20 @@ class Scrubber(Separador_SolidGas):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Model"),
+        l = [(translate("equipment", "Mode"), ("TEXT_TIPO", "tipo_calculo"), str),
+             (translate("equipment", "Model"),
               ("TEXT_MODEL", "modelo_rendimiento"), str),
-             (QtWidgets.QApplication.translate("equipment", "Pressure Loss Model"),
+             (translate("equipment", "Pressure Loss Model"),
               ("TEXT_MODEL_DELTAP", "modelo_DeltaP"), str),
-             (QtWidgets.QApplication.translate("equipment", "Throat Diameter"), "Dt", Length),
-             (QtWidgets.QApplication.translate("equipment", "Throat Length"), "Lt", Length),
-             (QtWidgets.QApplication.translate("equipment", "Johnstone method scrubber constant"),
+             (translate("equipment", "Throat Diameter"), "Dt", Length),
+             (translate("equipment", "Throat Length"), "Lt", Length),
+             (translate("equipment", "Johnstone method scrubber constant"),
                  "k", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Calvert method scrubber constant"),
+             (translate("equipment", "Calvert method scrubber constant"),
                  "f", Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Drops Diameter"), "dd", Length),
-             (QtWidgets.QApplication.translate("equipment", "Throat Cross Area"), "At", Area),
-             (QtWidgets.QApplication.translate("equipment", "Throat Speed"), "Vg", Speed)]
+             (translate("equipment", "Drops Diameter"), "dd", Length),
+             (translate("equipment", "Throat Cross Area"), "At", Area),
+             (translate("equipment", "Throat Speed"), "Vg", Speed)]
 
         for prop in Separador_SolidGas.propertiesEquipment():
             l.append(prop)
@@ -337,7 +337,7 @@ class Dryer(equipment):
         deltaP: Perdida de presión del equipo
 
     """
-    title = QtWidgets.QApplication.translate("equipment", "Solid dryer")
+    title = translate("equipment", "Solid dryer")
     help = ""
     kwargs = {"entradaSolido": None,
               "entradaAire": None,
@@ -355,20 +355,20 @@ class Dryer(equipment):
     calculateValue= ("CombustibleRequerido", "Heat")
 
     TEXT_MODE=(
-        QtWidgets.QApplication.translate("equipment", "Rating, calculate output conditions"),
-        QtWidgets.QApplication.translate("equipment", "Design, calculate air flow necessary"))
+        translate("equipment", "Rating, calculate output conditions"),
+        translate("equipment", "Design, calculate air flow necessary"))
 
 
     @property
     def isCalculable(self):
         if not self.kwargs["entradaSolido"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined solid stream input")
+            self.msg = translate("equipment", "undefined solid stream input")
             self.status = 0
         elif not self.kwargs["entradaAire"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined air stream input")
+            self.msg = translate("equipment", "undefined air stream input")
             self.status = 0
         elif not self.kwargs["HR"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default air output relative humid 100%")
+            self.msg = translate("equipment", "using default air output relative humid 100%")
             self.status = 3
             return True
         else:

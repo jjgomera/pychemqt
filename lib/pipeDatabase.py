@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 import os
 import sqlite3
 
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 
 # Standard pipe database
@@ -48,18 +48,18 @@ databank = sqlite3.connect(path).cursor()
 databank.execute("select * from Materials")
 CATALOG = databank.fetchall()
 CATALOG_TRANSLATE = {
-    "Cast Iron (Asphalt Dipped)": QtWidgets.QApplication.translate(
+    "Cast Iron (Asphalt Dipped)": translate(
         "pipeDatabase", 'Cast Iron (Asphalt Dipped)'),
-    "Cast Iron": QtWidgets.QApplication.translate("pipeDatabase", "Cast Iron"),
-    "Copper": QtWidgets.QApplication.translate("pipeDatabase", "Copper"),
-    "Drains, Waste, Vents": QtWidgets.QApplication.translate("pipeDatabase", "Drains, Waste, Vents"),
-    "Refrigeration Service": QtWidgets.QApplication.translate("pipeDatabase", "Refrigeration Service"),
-    "Copper Tube": QtWidgets.QApplication.translate("pipeDatabase", "Copper Tube"),
-    "PVC (Iron pipe size)": QtWidgets.QApplication.translate("pipeDatabase", "PVC (Iron pipe size"),
-    "PVC (Sewer pipe)": QtWidgets.QApplication.translate("pipeDatabase", "PVC (Sewer pipe"),
-    "Steel (ANSI)": QtWidgets.QApplication.translate("pipeDatabase", "Steel (ANSI)"),
-    "Steel Galvanised (ANSI)": QtWidgets.QApplication.translate("pipeDatabase", "Steel Galvanised (ANSI)"),
-    "Stainless Steel (ANSI)": QtWidgets.QApplication.translate("pipeDatabase", "Stainless Steel (ANSI)")}
+    "Cast Iron": translate("pipeDatabase", "Cast Iron"),
+    "Copper": translate("pipeDatabase", "Copper"),
+    "Drains, Waste, Vents": translate("pipeDatabase", "Drains, Waste, Vents"),
+    "Refrigeration Service": translate("pipeDatabase", "Refrigeration Service"),
+    "Copper Tube": translate("pipeDatabase", "Copper Tube"),
+    "PVC (Iron pipe size)": translate("pipeDatabase", "PVC (Iron pipe size"),
+    "PVC (Sewer pipe)": translate("pipeDatabase", "PVC (Sewer pipe"),
+    "Steel (ANSI)": translate("pipeDatabase", "Steel (ANSI)"),
+    "Steel Galvanised (ANSI)": translate("pipeDatabase", "Steel Galvanised (ANSI)"),
+    "Stainless Steel (ANSI)": translate("pipeDatabase", "Stainless Steel (ANSI)")}
 
 
 # Pipe fitting K values
@@ -76,34 +76,34 @@ path = os.environ["pychemqt"]+"dat/pipeDatabase.db"
 databank.execute("select * from Fitting")
 FITTING = databank.fetchall()
 FITTING_DESC = {
-    "SB": QtWidgets.QApplication.translate("pipeDatabase", 'Standard Bend'),
-    "LB": QtWidgets.QApplication.translate("pipeDatabase", 'Long Bend'),
-    "PB": QtWidgets.QApplication.translate("pipeDatabase", 'Pipe Bend'),
-    'MB90': QtWidgets.QApplication.translate("pipeDatabase", "Mitre bend") + " 90\xb0",
-    "E45": QtWidgets.QApplication.translate("pipeDatabase", 'Elbow') + " 90\xb0",
-    'MB45': QtWidgets.QApplication.translate("pipeDatabase", "Mitre bend")+" 45\xb0",
-    'RB': QtWidgets.QApplication.translate("pipeDatabase", "Return bend"),
-    'TT': QtWidgets.QApplication.translate("pipeDatabase", "Through Tee"),
-    'BT': QtWidgets.QApplication.translate("pipeDatabase", "Branch Tee"),
-    'St': QtWidgets.QApplication.translate("pipeDatabase", "Strainer"),
-    'Open': QtWidgets.QApplication.translate("pipeDatabase", "Open pipe Exit"),
-    'ExitCon': QtWidgets.QApplication.translate("pipeDatabase", "Pipe Exit to Container"),
-    'EntSharp': QtWidgets.QApplication.translate("pipeDatabase", "Pipe Entry Sharp Edged"),
-    'EntProj': QtWidgets.QApplication.translate("pipeDatabase", "Pipe Entry Projecting"),
-    'Plug': QtWidgets.QApplication.translate("pipeDatabase", "Plug Valve Straightway"),
-    'Globe': QtWidgets.QApplication.translate("pipeDatabase", "Globe Valve"),
-    'Gate': QtWidgets.QApplication.translate("pipeDatabase", "Gate Valve"),
-    'Bfly': QtWidgets.QApplication.translate("pipeDatabase", "Butterfly Valve"),
-    'BallRB': QtWidgets.QApplication.translate("pipeDatabase", "Ball Valve Reduced Bore"),
-    'BallFB': QtWidgets.QApplication.translate("pipeDatabase", "Ball Valve Full Bore"),
-    'Foot': QtWidgets.QApplication.translate("pipeDatabase", "Foot Valve with Strainer"),
-    'Hinged': QtWidgets.QApplication.translate("pipeDatabase", "Hinged Foot Valve with Strainer"),
-    'ChWaf': QtWidgets.QApplication.translate("pipeDatabase", "Wafer Check Valve"),
-    'ChSw': QtWidgets.QApplication.translate("pipeDatabase", "Check Swing Valve"),
-    'TiltCh': QtWidgets.QApplication.translate("pipeDatabase", "Tilting Disk Check"),
-    'LiftCh': QtWidgets.QApplication.translate("pipeDatabase", "Lift Check Valve"),
-    'Angle': QtWidgets.QApplication.translate("pipeDatabase", "Globe Valve Angled"),
-    'AngCh': QtWidgets.QApplication.translate("pipeDatabase", "Lift Check Angled")}
+    "SB": translate("pipeDatabase", 'Standard Bend'),
+    "LB": translate("pipeDatabase", 'Long Bend'),
+    "PB": translate("pipeDatabase", 'Pipe Bend'),
+    'MB90': translate("pipeDatabase", "Mitre bend") + " 90\xb0",
+    "E45": translate("pipeDatabase", 'Elbow') + " 90\xb0",
+    'MB45': translate("pipeDatabase", "Mitre bend")+" 45\xb0",
+    'RB': translate("pipeDatabase", "Return bend"),
+    'TT': translate("pipeDatabase", "Through Tee"),
+    'BT': translate("pipeDatabase", "Branch Tee"),
+    'St': translate("pipeDatabase", "Strainer"),
+    'Open': translate("pipeDatabase", "Open pipe Exit"),
+    'ExitCon': translate("pipeDatabase", "Pipe Exit to Container"),
+    'EntSharp': translate("pipeDatabase", "Pipe Entry Sharp Edged"),
+    'EntProj': translate("pipeDatabase", "Pipe Entry Projecting"),
+    'Plug': translate("pipeDatabase", "Plug Valve Straightway"),
+    'Globe': translate("pipeDatabase", "Globe Valve"),
+    'Gate': translate("pipeDatabase", "Gate Valve"),
+    'Bfly': translate("pipeDatabase", "Butterfly Valve"),
+    'BallRB': translate("pipeDatabase", "Ball Valve Reduced Bore"),
+    'BallFB': translate("pipeDatabase", "Ball Valve Full Bore"),
+    'Foot': translate("pipeDatabase", "Foot Valve with Strainer"),
+    'Hinged': translate("pipeDatabase", "Hinged Foot Valve with Strainer"),
+    'ChWaf': translate("pipeDatabase", "Wafer Check Valve"),
+    'ChSw': translate("pipeDatabase", "Check Swing Valve"),
+    'TiltCh': translate("pipeDatabase", "Tilting Disk Check"),
+    'LiftCh': translate("pipeDatabase", "Lift Check Valve"),
+    'Angle': translate("pipeDatabase", "Globe Valve Angled"),
+    'AngCh': translate("pipeDatabase", "Lift Check Angled")}
 
 
 # Thermal Conductivity of material, W/mK a 0ºC

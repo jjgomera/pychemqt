@@ -32,7 +32,7 @@ import os
 from numpy import linspace
 from numpy.lib.scimath import log10
 from scipy.optimize import fsolve
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 from equipment.parents import equipment
 from equipment.heatExchanger import Heat_Exchanger
@@ -80,7 +80,7 @@ class Flash(equipment):
         fraccionMolar=[.3, 0.25, 0.05, 0.15, 0.25], **kw)
     >>> flash = Flash(entrada=entrada)
     """
-    title = QtWidgets.QApplication.translate("equipment", "Flash Separator")
+    title = translate("equipment", "Flash Separator")
     help = ""
     kwargs = {
         "entrada": None,
@@ -107,24 +107,24 @@ class Flash(equipment):
     indiceCostos = 3
 
     TEXT_FLASH = [
-        QtWidgets.QApplication.translate("equipment", "Use P and T from input stream")]
-    TEXT_ORIENTATION = [QtWidgets.QApplication.translate("equipment", "Horizontal"),
-                        QtWidgets.QApplication.translate("equipment", "Vertical")]
+        translate("equipment", "Use P and T from input stream")]
+    TEXT_ORIENTATION = [translate("equipment", "Horizontal"),
+                        translate("equipment", "Vertical")]
     TEXT_MATERIAL = [
-        QtWidgets.QApplication.translate("equipment", "Carbon steel"),
-        QtWidgets.QApplication.translate("equipment", "Stainless steel 304"),
-        QtWidgets.QApplication.translate("equipment", "Stainless steel 316"),
-        QtWidgets.QApplication.translate("equipment", "Carpenter 20CB-3"),
-        QtWidgets.QApplication.translate("equipment", "Nickel 200"),
-        QtWidgets.QApplication.translate("equipment", "Monel 400"),
-        QtWidgets.QApplication.translate("equipment", "Inconel 600"),
-        QtWidgets.QApplication.translate("equipment", "Incoloy 825"),
-        QtWidgets.QApplication.translate("equipment", "Titanium")]
+        translate("equipment", "Carbon steel"),
+        translate("equipment", "Stainless steel 304"),
+        translate("equipment", "Stainless steel 316"),
+        translate("equipment", "Carpenter 20CB-3"),
+        translate("equipment", "Nickel 200"),
+        translate("equipment", "Monel 400"),
+        translate("equipment", "Inconel 600"),
+        translate("equipment", "Incoloy 825"),
+        translate("equipment", "Titanium")]
     TEXT_HEAD = [
-        QtWidgets.QApplication.translate("equipment", "Ellipsoidal"),
-        QtWidgets.QApplication.translate("equipment", "Hemispherical"),
-        QtWidgets.QApplication.translate("equipment", "Bumped"),
-        QtWidgets.QApplication.translate("equipment", "Flat")]
+        translate("equipment", "Ellipsoidal"),
+        translate("equipment", "Hemispherical"),
+        translate("equipment", "Bumped"),
+        translate("equipment", "Flat")]
 
     @property
     def isCalculable(self):
@@ -136,7 +136,7 @@ class Flash(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
 
@@ -258,47 +258,47 @@ class Flash(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(3)) + os.linesep
 
         txt += self.propertiesToText(range(3, 6))
-        txt += QtWidgets.QApplication.translate("equipment", "Vapor Output Molar Composition") + os.linesep
+        txt += translate("equipment", "Vapor Output Molar Composition") + os.linesep
         for cmp, xi in zip(self.salida[0].componente, self.salida[0].fraccion):
             txt += "    %-21s\t %0.4f" % (cmp.nombre, xi) + os.linesep
 
         txt += os.linesep
         txt += self.propertiesToText(range(8, 11))
-        txt += QtWidgets.QApplication.translate("equipment", "Liquid Output Molar Composition") + os.linesep
+        txt += translate("equipment", "Liquid Output Molar Composition") + os.linesep
         for cmp, xi in zip(self.salida[1].componente, self.salida[1].fraccion):
             txt += "    %-21s\t %0.4f" % (cmp.nombre, xi) + os.linesep
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_FLASH", "flash"), str),
-             (QtWidgets.QApplication.translate("equipment", "Output Temperature"), "Tout",
+        l = [(translate("equipment", "Mode"), ("TEXT_FLASH", "flash"), str),
+             (translate("equipment", "Output Temperature"), "Tout",
               unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Output Pressure"), "Pout", unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Vapor Output Molar Flow"), "VaporMolarFlow",
+             (translate("equipment", "Output Pressure"), "Pout", unidades.Pressure),
+             (translate("equipment", "Vapor Output Molar Flow"), "VaporMolarFlow",
               unidades.MolarFlow),
-             (QtWidgets.QApplication.translate("equipment", "Vapor Output Mass Flow"), "VaporMassFlow",
+             (translate("equipment", "Vapor Output Mass Flow"), "VaporMassFlow",
               unidades.MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Vapor Output Volumetric Flow"), "VaporVolFlow",
+             (translate("equipment", "Vapor Output Volumetric Flow"), "VaporVolFlow",
               unidades.VolFlow),
-             (QtWidgets.QApplication.translate("equipment", "Vapor Output Molar Composition"),
+             (translate("equipment", "Vapor Output Molar Composition"),
               "VaporMolarComposition", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Vapor Output Mass Composition"),
+             (translate("equipment", "Vapor Output Mass Composition"),
               "VaporMassComposition", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Liquid Output Molar Flow"), "LiquidMolarFlow",
+             (translate("equipment", "Liquid Output Molar Flow"), "LiquidMolarFlow",
               unidades.MolarFlow),
-             (QtWidgets.QApplication.translate("equipment", "Liquid Output Mass Flow"), "LiquidMassFlow",
+             (translate("equipment", "Liquid Output Mass Flow"), "LiquidMassFlow",
               unidades.MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Liquid Output Volumetric Flow"),
+             (translate("equipment", "Liquid Output Volumetric Flow"),
               "LiquidVolFlow", unidades.VolFlow),
-             (QtWidgets.QApplication.translate("equipment", "Liquid Output Molar Composition"),
+             (translate("equipment", "Liquid Output Molar Composition"),
               "LiquidMolarComposition", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Liquid Output Mass Composition"),
+             (translate("equipment", "Liquid Output Mass Composition"),
               "LiquidMassComposition", unidades.Dimensionless)]
         return l
 
@@ -350,7 +350,7 @@ class Flash(equipment):
 
 class Tower(equipment):
     """Class to define the common functionality of distillation units"""
-    title = QtWidgets.QApplication.translate("equipment", "Distillation Tower")
+    title = translate("equipment", "Distillation Tower")
 
     Condenser = Heat_Exchanger()
     Reboiler = Heat_Exchanger()
@@ -359,26 +359,26 @@ class Tower(equipment):
                        "C_adq", "C_inst")
 
     TEXT_PROCESS = [
-        QtWidgets.QApplication.translate("equipment", "Destillation"),
-        QtWidgets.QApplication.translate("equipment", "Absortion")]
+        translate("equipment", "Destillation"),
+        translate("equipment", "Absortion")]
     TEXT_COLUMN = [
-        QtWidgets.QApplication.translate("equipment", "Tray column"),
-        QtWidgets.QApplication.translate("equipment", "Packed column")]
+        translate("equipment", "Tray column"),
+        translate("equipment", "Packed column")]
     TEXT_MATERIAL = [
-        QtWidgets.QApplication.translate("equipment", "Carbon steel"),
-        QtWidgets.QApplication.translate("equipment", "Stainless steel 304"),
-        QtWidgets.QApplication.translate("equipment", "Stainless steel 316"),
-        QtWidgets.QApplication.translate("equipment", "Carpenter 20CB-3"),
-        QtWidgets.QApplication.translate("equipment", "Nickel 200"),
-        QtWidgets.QApplication.translate("equipment", "Monel 400"),
-        QtWidgets.QApplication.translate("equipment", "Inconel 600"),
-        QtWidgets.QApplication.translate("equipment", "Incoloy 825"),
-        QtWidgets.QApplication.translate("equipment", "Titanium")]
+        translate("equipment", "Carbon steel"),
+        translate("equipment", "Stainless steel 304"),
+        translate("equipment", "Stainless steel 316"),
+        translate("equipment", "Carpenter 20CB-3"),
+        translate("equipment", "Nickel 200"),
+        translate("equipment", "Monel 400"),
+        translate("equipment", "Inconel 600"),
+        translate("equipment", "Incoloy 825"),
+        translate("equipment", "Titanium")]
     TEXT_TRAY = [
-        QtWidgets.QApplication.translate("equipment", "Valve tray"),
-        QtWidgets.QApplication.translate("equipment", "Grid tray"),
-        QtWidgets.QApplication.translate("equipment", "Bubble cap tray"),
-        QtWidgets.QApplication.translate("equipment", "Sieve tray")]
+        translate("equipment", "Valve tray"),
+        translate("equipment", "Grid tray"),
+        translate("equipment", "Bubble cap tray"),
+        translate("equipment", "Sieve tray")]
 
     def isCalculable(self):
         if self.kwargs["tipo"]:
@@ -443,13 +443,13 @@ class Tower(equipment):
         dialog = PlotDialog()
         dialog.plot.ax.grid(True)
         dialog.plot.ax.set_title(
-            QtWidgets.QApplication.translate("equipment", "x-y Diagram for")
+            translate("equipment", "x-y Diagram for")
             + "{:s}/{:s} P={:s}".format(A, B, P.str), size="x-large")
         dialog.plot.ax.set_xlabel(
-            QtWidgets.QApplication.translate("equipment", "Liquid Mole Fraction")
+            translate("equipment", "Liquid Mole Fraction")
             + " {:s}".format(A), size="x-large")
         dialog.plot.ax.set_ylabel(
-            QtWidgets.QApplication.translate("equipment", "Vapor Mole Fraction")
+            translate("equipment", "Vapor Mole Fraction")
             + " {:s}".format(B), size="x-large")
         dialog.plot.ax.set_xticks(linspace(0, 1.0, 21))
         dialog.plot.ax.set_yticks(linspace(0.05, 1.0, 20))
@@ -605,7 +605,7 @@ class ColumnFUG(Tower):
         W: Cover width
         Wb: Cover width at botom head
     """
-    title = QtWidgets.QApplication.translate("equipment", "Column (Shortcut method)")
+    title = translate("equipment", "Column (Shortcut method)")
     kwargs = {"entrada": None,
               "feed": 0,
               "LK": 0,
@@ -639,8 +639,8 @@ class ColumnFUG(Tower):
     indiceCostos = 3
 
     TEXT_FEED = ["Kirkbride", "Fenske"]
-    TEXT_CONDENSER = [QtWidgets.QApplication.translate("equipment", "Total"),
-                      QtWidgets.QApplication.translate("equipment", "Partial")]
+    TEXT_CONDENSER = [translate("equipment", "Total"),
+                      translate("equipment", "Partial")]
 
     def cleanOldValues(self, **kwargs):
         if "R" in kwargs:
@@ -660,36 +660,36 @@ class ColumnFUG(Tower):
             self.statusMcCabe = False
 
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
 
         if not self.kwargs["R"] and not self.kwargs["R_Rmin"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined reflux ratio condition")
+            self.msg = translate("equipment", "undefined reflux ratio condition")
             self.status = 0
             return
 
         if not self.kwargs["LKsplit"]:
-            self.msg = QtWidgets.QApplication.translate("equipment",
+            self.msg = translate("equipment",
                 "undefined light key component recuperation in top product")
             self.status = 0
             return
         if not self.kwargs["HKsplit"]:
-            self.msg = QtWidgets.QApplication.translate("equipment",
+            self.msg = translate("equipment",
                 "undefined heavy key component recuperation in bottom product")
             self.status = 0
             return
         if self.kwargs["LK"] == -1:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined light key component")
+            self.msg = translate("equipment", "undefined light key component")
             self.status = 0
             return
         if self.kwargs["HK"] == -1:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined heavy key component")
+            self.msg = translate("equipment", "undefined heavy key component")
             self.status = 0
             return
 
         if self.kwargs["HK"] <= self.kwargs["LK"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "key component bad specified")
+            self.msg = translate("equipment", "key component bad specified")
             self.status = 0
             return
 
@@ -824,66 +824,66 @@ class ColumnFUG(Tower):
         return Tower.McCabe(self, self.kwargs["LK"], self.kwargs["HK"])
 
     def propTxt(self):
-        txt="#---------------"+QtWidgets.QApplication.translate("equipment", "Calculate properties")+"-----------------#"+os.linesep
-        txt+=os.linesep+"%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Top Output Temperature"), self.salida[0].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Top Output Pressure"), self.salida[0].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Top Output Mass Flow"), self.salida[0].caudalmolar.str)+os.linesep
-        txt+="#"+QtWidgets.QApplication.translate("equipment", "Top Output Molar Composition")+os.linesep
+        txt="#---------------"+translate("equipment", "Calculate properties")+"-----------------#"+os.linesep
+        txt+=os.linesep+"%-25s\t%s" %(translate("equipment", "Top Output Temperature"), self.salida[0].T.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Top Output Pressure"), self.salida[0].P.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Top Output Mass Flow"), self.salida[0].caudalmolar.str)+os.linesep
+        txt+="#"+translate("equipment", "Top Output Molar Composition")+os.linesep
         for componente, fraccion in zip(self.salida[0].componente, self.salida[0].fraccion):
             txt+="%-25s\t %0.4f" %(componente.nombre, fraccion)+os.linesep
 
-        txt+=os.linesep+"%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Bottom Output Temperature"), self.salida[1].T.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Bottom Output Pressure"), self.salida[1].P.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Bottom Output Mass Flow"), self.salida[1].caudalmolar.str)+os.linesep
-        txt+="#"+QtWidgets.QApplication.translate("equipment", "Bottom Output Molar Composition")+os.linesep
+        txt+=os.linesep+"%-25s\t%s" %(translate("equipment", "Bottom Output Temperature"), self.salida[1].T.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Bottom Output Pressure"), self.salida[1].P.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Bottom Output Mass Flow"), self.salida[1].caudalmolar.str)+os.linesep
+        txt+="#"+translate("equipment", "Bottom Output Molar Composition")+os.linesep
         for componente, fraccion in zip(self.salida[1].componente, self.salida[1].fraccion):
             txt+="%-25s\t %0.4f" %(componente.nombre, fraccion)+os.linesep
 
-        txt+=os.linesep+"%-25s\t %s" %(QtWidgets.QApplication.translate("equipment", "Feed Calculate method"), self.TEXT_FEED[self.kwargs["feed"]])+os.linesep
-        txt+="%-25s\t %s" %(QtWidgets.QApplication.translate("equipment", "Condenser type"), self.TEXT_CONDENSER[self.kwargs["condenser"]])+os.linesep
-        txt+="%-25s\t %s" %(QtWidgets.QApplication.translate("equipment", "Light Key Component"), self.salida[0].componente[self.kwargs["LK"]].nombre)+os.linesep
-        txt+="%-25s\t %s" %(QtWidgets.QApplication.translate("equipment", "Heavy Key Component"), self.salida[0].componente[self.kwargs["HK"]].nombre)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Minimum Reflux Ratio"), self.Rmin.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Reflux Ratio"), self.RCalculada.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Stage Number"), self.NTray.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Feed Stage"), self.N_feed.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Condenser Duty"), self.DutyCondenser.str)+os.linesep
-        txt+="%-25s\t%s" %(QtWidgets.QApplication.translate("equipment", "Reboiler Duty"), self.DutyReboiler.str)+os.linesep
+        txt+=os.linesep+"%-25s\t %s" %(translate("equipment", "Feed Calculate method"), self.TEXT_FEED[self.kwargs["feed"]])+os.linesep
+        txt+="%-25s\t %s" %(translate("equipment", "Condenser type"), self.TEXT_CONDENSER[self.kwargs["condenser"]])+os.linesep
+        txt+="%-25s\t %s" %(translate("equipment", "Light Key Component"), self.salida[0].componente[self.kwargs["LK"]].nombre)+os.linesep
+        txt+="%-25s\t %s" %(translate("equipment", "Heavy Key Component"), self.salida[0].componente[self.kwargs["HK"]].nombre)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Minimum Reflux Ratio"), self.Rmin.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Reflux Ratio"), self.RCalculada.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Stage Number"), self.NTray.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Feed Stage"), self.N_feed.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Condenser Duty"), self.DutyCondenser.str)+os.linesep
+        txt+="%-25s\t%s" %(translate("equipment", "Reboiler Duty"), self.DutyReboiler.str)+os.linesep
 
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Top Output Temperature"), "DestiladoT",
+        l = [(translate("equipment", "Top Output Temperature"), "DestiladoT",
               unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Top Output Pressure"), "DestiladoP",
+             (translate("equipment", "Top Output Pressure"), "DestiladoP",
               unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Top Output Mass Flow"), "DestiladoMassFlow",
+             (translate("equipment", "Top Output Mass Flow"), "DestiladoMassFlow",
               unidades.MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Top Output Molar Composition"),
+             (translate("equipment", "Top Output Molar Composition"),
               "DestiladoMolarComposition", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Bottom Output Temperature"), "ResiduoT",
+             (translate("equipment", "Bottom Output Temperature"), "ResiduoT",
               unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Bottom Output Pressure"), "ResiduoP",
+             (translate("equipment", "Bottom Output Pressure"), "ResiduoP",
               unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Bottom Output Mass Flow"), "ResiduoMassFlow",
+             (translate("equipment", "Bottom Output Mass Flow"), "ResiduoMassFlow",
               unidades.MassFlow),
-             (QtWidgets.QApplication.translate("equipment", "Bottom Output Molar Composition"),
+             (translate("equipment", "Bottom Output Molar Composition"),
               "ResiduoMolarComposition", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Feed Calculate method"),
+             (translate("equipment", "Feed Calculate method"),
               ("TEXT_FEED", "feed"), str),
-             (QtWidgets.QApplication.translate("equipment", "Condenser type"),
+             (translate("equipment", "Condenser type"),
               ("TEXT_CONDENSER", "condenser"), str),
-             (QtWidgets.QApplication.translate("equipment", "Light Key Component"), "LKName", str),
-             (QtWidgets.QApplication.translate("equipment", "Heavy Key Component"), "HKName", str),
-             (QtWidgets.QApplication.translate("equipment", "Minimum Reflux Ratio"), "Rmin",
+             (translate("equipment", "Light Key Component"), "LKName", str),
+             (translate("equipment", "Heavy Key Component"), "HKName", str),
+             (translate("equipment", "Minimum Reflux Ratio"), "Rmin",
               unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Reflux Ratio"), "RCalculada",
+             (translate("equipment", "Reflux Ratio"), "RCalculada",
               unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Stage Number"), "NTray", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Feed Stage"), "N_feed", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Condenser Duty"), "DutyCondenser", unidades.Power),
-             (QtWidgets.QApplication.translate("equipment", "Reboiler Duty"), "DutyReboiler", unidades.Power)]
+             (translate("equipment", "Stage Number"), "NTray", unidades.Dimensionless),
+             (translate("equipment", "Feed Stage"), "N_feed", unidades.Dimensionless),
+             (translate("equipment", "Condenser Duty"), "DutyCondenser", unidades.Power),
+             (translate("equipment", "Reboiler Duty"), "DutyReboiler", unidades.Power)]
         return l
 
     def propertiesListTitle(self, index):

@@ -60,6 +60,7 @@ except ImportError:
     QtGui.QActionGroup = QtWidgets.QActionGroup
     QtGui.QShortcut = QtWidgets.QShortcut
 
+translate = QtWidgets.QApplication.translate
 
 __all__ = ["QtCore", "QtGui", "QtWidgets", "QtSvg", "QtSvgWidgets",
            "QtWebEngineWidgets", "Qsci"]

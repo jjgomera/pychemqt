@@ -177,7 +177,7 @@ from lib.mezcla import Mezcla
 from lib.physics import Collision_Neufeld
 from lib.thermo import ThermoAdvanced
 from lib.utilities import SimpleEq, refDoc
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 
 __doi__ = {
@@ -1101,7 +1101,7 @@ class MEoS(ThermoAdvanced):
               "rho0": 0,
               "T0": 0}
     status = 0
-    msg = QtWidgets.QApplication.translate("MEoS", "Unknown Variables")
+    msg = translate("MEoS", "Unknown Variables")
 
     def __init__(self, **kwargs):
         """
@@ -1378,7 +1378,7 @@ class MEoS(ThermoAdvanced):
 
             if not converge:
                 self.status = 5
-                self.msg = QtWidgets.QApplication.translate("MEoS", "Solution don´t converge")
+                self.msg = translate("MEoS", "Solution don´t converge")
                 msg = "%s state don't converge" % (self.__class__.__name__)
                 logging.debug(msg)
 
@@ -2571,7 +2571,7 @@ class MEoS(ThermoAdvanced):
 
         if self._mode == "T-rho" and self.kwargs["rho"] == 0:
             self.status = 3
-            self.msg = QtWidgets.QApplication.translate("MEoS", "Ideal condition at zero pressure")
+            self.msg = translate("MEoS", "Ideal condition at zero pressure")
         elif self._constants["Tmin"] <= T <= self._constants["Tmax"] and \
                 0 < rho:  # <= self._constants["rhomax"]*self.M:
             self.status = 1
@@ -2582,7 +2582,7 @@ class MEoS(ThermoAdvanced):
 #             self.msg = "Point out of limit of range of equation"
         else:
             self.status = 5
-            self.msg = QtWidgets.QApplication.translate("MEoS", "input out of range")
+            self.msg = translate("MEoS", "input out of range")
             return
 
         if x == 0:
@@ -2618,7 +2618,7 @@ class MEoS(ThermoAdvanced):
 
         if P > self._constants["Pmax"]*1000:
             self.status = 3
-            self.msg = QtWidgets.QApplication.translate("MEoS", "State with pressure above maximum")
+            self.msg = translate("MEoS", "State with pressure above maximum")
 
         self.T = unidades.Temperature(T)
         self.Tr = unidades.Dimensionless(T/self.Tc)
@@ -5978,7 +5978,7 @@ class MEoS(ThermoAdvanced):
 
                 if contribution:
                     return kr+ke
-                # print(kg, kr)
+
                 k = kg+kr+kc+ke
 
             elif coef["eq"] == 2:
@@ -6401,6 +6401,7 @@ class MEoS(ThermoAdvanced):
             # Hardcoded method
             method = self.__getattribute__(self._thermal["critical"])
             tc = method(rho, T, fase)
+
         return tc
 
     @refDoc(__doi__, [21], tab=8)

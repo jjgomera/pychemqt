@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 from numpy import log, exp, r_
 from scipy.optimize import leastsq
 from scipy.special import erf
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 from lib.compuestos import Componente
 from lib.config import Entity, getMainWindowConfig
@@ -58,7 +58,7 @@ class Solid(Entity):
               "solids": None}
 
     status = 0
-    msg = QtWidgets.QApplication.translate("Solid", "undefined")
+    msg = translate("Solid", "undefined")
 
     def __call__(self, **kwargs):
         """All equipment are callables, so we can instance or add/change

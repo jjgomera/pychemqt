@@ -33,7 +33,7 @@ import os
 from numpy import arccos, sin, cos, tanh
 from scipy.constants import g, pi
 from scipy.optimize import fsolve
-from tools.qt import QtWidgets
+from tools.qt import translate
 
 from equipment.parents import equipment
 from lib import unidades
@@ -61,7 +61,7 @@ class Heat_Exchanger(equipment):
     >>> print("%6g" % Cambiador.HeatCalc.MJh)
     753.063
     """
-    title = QtWidgets.QApplication.translate("equipment", "Heat Exchanger")
+    title = translate("equipment", "Heat Exchanger")
     help = ""
     kwargs = {
         "entrada": None,
@@ -108,7 +108,7 @@ class Heat_Exchanger(equipment):
             3 - known heat exchanger characteristic, calculate output stream
         """
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             self.modo = 0
             return
@@ -120,7 +120,7 @@ class Heat_Exchanger(equipment):
         elif self.kwargs["Tout"] or self.kwargs["DeltaT"]:
             self.modo = 1
         else:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "undefined output temperature specification")
             self.status = 0
             self.modo = 0
@@ -165,21 +165,21 @@ class Heat_Exchanger(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(5))
         return txt
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Input Temperature"),
+        l = [(translate("equipment", "Input Temperature"),
               "Tin", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Output Temperature"),
+             (translate("equipment", "Output Temperature"),
               "ToutCalc", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Temperature increase"),
+             (translate("equipment", "Temperature increase"),
               "deltaT", unidades.DeltaT),
-             (QtWidgets.QApplication.translate("equipment", "Pressure increase"), "deltaP", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "Heat"), "HeatCalc", unidades.Power)]
+             (translate("equipment", "Pressure increase"), "deltaP", unidades.DeltaP),
+             (translate("equipment", "Heat"), "HeatCalc", unidades.Power)]
         return l
 
     def writeStatetoJSON(self, state):
@@ -242,7 +242,7 @@ class Fired_Heater(equipment):
     >>> print("%6g" % cambiador.Heat.MJh)
     357.685
     """
-    title = QtWidgets.QApplication.translate("equipment", "Fired Heater")
+    title = translate("equipment", "Fired Heater")
     help = os.environ["pychemqt"] + "doc/fireHeater.htm"
     kwargs = {
         "entrada": None,
@@ -270,18 +270,18 @@ class Fired_Heater(equipment):
     indiceCostos = 3
     salida = [None]
 
-    TEXT_TIPO = [QtWidgets.QApplication.translate("equipment", "Box Type"),
-                 QtWidgets.QApplication.translate("equipment", "Cylindrical type")]
+    TEXT_TIPO = [translate("equipment", "Box Type"),
+                 translate("equipment", "Cylindrical type")]
     TEXT_SUBTIPOBOX = [
-        QtWidgets.QApplication.translate("equipment", "Process heater"),
-        QtWidgets.QApplication.translate("equipment", "Pyrolysis"),
-        QtWidgets.QApplication.translate("equipment", "Reforme without catalysis")]
+        translate("equipment", "Process heater"),
+        translate("equipment", "Pyrolysis"),
+        translate("equipment", "Reforme without catalysis")]
     TEXT_SUBTIPOCYLINDRICAL = [
-        QtWidgets.QApplication.translate("equipment", "Cylindrical"),
-        QtWidgets.QApplication.translate("equipment", "Dowtherm")]
-    TEXT_MATERIAL = [QtWidgets.QApplication.translate("equipment", "Carbon steel"),
-                     QtWidgets.QApplication.translate("equipment", "Cr-Mo steel"),
-                     QtWidgets.QApplication.translate("equipment", "Stainless steel")]
+        translate("equipment", "Cylindrical"),
+        translate("equipment", "Dowtherm")]
+    TEXT_MATERIAL = [translate("equipment", "Carbon steel"),
+                     translate("equipment", "Cr-Mo steel"),
+                     translate("equipment", "Stainless steel")]
 
     @property
     def isCalculable(self):
@@ -292,25 +292,25 @@ class Fired_Heater(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entrada"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined input")
+            self.msg = translate("equipment", "undefined input")
             self.status = 0
             return
 
         if not self.kwargs["Tout"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined output temperature condition")
+            self.msg = translate("equipment", "undefined output temperature condition")
             self.status = 0
             return
         if self.kwargs["Tout"] <= self.kwargs["entrada"].T:
-            self.msg = QtWidgets.QApplication.translate("equipment", "bad output temperature condition")
+            self.msg = translate("equipment", "bad output temperature condition")
             self.status = 0
             return
 
         if not self.kwargs["eficiencia"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default efficiency")
+            self.msg = translate("equipment", "using default efficiency")
             self.status = 3
             return True
         if not self.kwargs["poderCalorifico"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "using default fuel calorific value")
+            self.msg = translate("equipment", "using default fuel calorific value")
             self.status = 3
             return True
 
@@ -419,11 +419,11 @@ class Fired_Heater(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#"+os.linesep
         txt += self.propertiesToText(range(5))
 
-        stimated = " (%s)" % QtWidgets.QApplication.translate("equipment", "stimated")
+        stimated = " (%s)" % translate("equipment", "stimated")
         txt += self.propertiesToText(5, kwCheck=True, kwSuffix=stimated,
                                      kwKey="eficiencia", kwValue=0.0)
         txt += self.propertiesToText(6, kwCheck=True, kwSuffix=stimated,
@@ -432,7 +432,7 @@ class Fired_Heater(equipment):
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += QtWidgets.QApplication.translate("equipment", "Preliminary Cost Estimation")
+            txt += translate("equipment", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(8, 18))
 
@@ -440,32 +440,32 @@ class Fired_Heater(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Input Temperature"),
+        l = [(translate("equipment", "Input Temperature"),
               "Tin", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Output Temperature"),
+             (translate("equipment", "Output Temperature"),
               "Tout", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Temperature increase"),
+             (translate("equipment", "Temperature increase"),
               "deltaT", unidades.DeltaT),
-             (QtWidgets.QApplication.translate("equipment", "Pressure increase"), "deltaP", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "Maximum heat"), "Hmax", unidades.Power),
-             (QtWidgets.QApplication.translate("equipment", "Thermal Efficiency"),
+             (translate("equipment", "Pressure increase"), "deltaP", unidades.DeltaP),
+             (translate("equipment", "Maximum heat"), "Hmax", unidades.Power),
+             (translate("equipment", "Thermal Efficiency"),
               "eficiencia", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Fuel Heating Value"),
+             (translate("equipment", "Fuel Heating Value"),
               "poderCalorifico", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Required Fuel"),
+             (translate("equipment", "Required Fuel"),
               "CombustibleRequerido", unidades.VolFlow),
-             (QtWidgets.QApplication.translate("equipment", "Base index"), "Base_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Current index"), "Current_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Install factor"), "f_install", float),
-             (QtWidgets.QApplication.translate("equipment", "FireHeater type"), ("TEXT_TIPO", "tipo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Cylindrical type"),
+             (translate("equipment", "Base index"), "Base_index", float),
+             (translate("equipment", "Current index"), "Current_index", float),
+             (translate("equipment", "Install factor"), "f_install", float),
+             (translate("equipment", "FireHeater type"), ("TEXT_TIPO", "tipo"), str),
+             (translate("equipment", "Cylindrical type"),
               ("TEXT_SUBTIPOCYLINDRICAL", "subtipoCylindrical"), str),
-             (QtWidgets.QApplication.translate("equipment", "Box type"),
+             (translate("equipment", "Box type"),
               ("TEXT_SUBTIPOBOX", "subtipoBox"), str),
-             (QtWidgets.QApplication.translate("equipment", "Material"), ("TEXT_MATERIAL", "material"), str),
-             (QtWidgets.QApplication.translate("equipment", "Design Pressure"), "P_dis", unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
-             (QtWidgets.QApplication.translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
+             (translate("equipment", "Material"), ("TEXT_MATERIAL", "material"), str),
+             (translate("equipment", "Design Pressure"), "P_dis", unidades.Pressure),
+             (translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
+             (translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
         return l
 
     def writeStatetoJSON(self, state):
@@ -584,7 +584,7 @@ class Hairpin(equipment):
     >>> print("%6g %6g" % (Cambiador.hTube.kWm2K, Cambiador.hAnnulli.kWm2K))
     1555.53 52.8267
     """
-    title = QtWidgets.QApplication.translate("equipment", "Hairpin Heat Exchanger")
+    title = translate("equipment", "Hairpin Heat Exchanger")
     help = ""
     kwargs = {
         "entradaTubo": None,
@@ -641,19 +641,19 @@ class Hairpin(equipment):
     indiceCostos = 2
 
     TEXT_MODO = [
-        QtWidgets.QApplication.translate("equipment", "Design"),
-        QtWidgets.QApplication.translate("equipment", "Rating")]
+        translate("equipment", "Design"),
+        translate("equipment", "Rating")]
     TEXT_FLUJO = [
-        QtWidgets.QApplication.translate("equipment", "Counterflow"),
-        QtWidgets.QApplication.translate("equipment", "Parallelflow")]
+        translate("equipment", "Counterflow"),
+        translate("equipment", "Parallelflow")]
     TEXT_ORIENTACION = [
-        QtWidgets.QApplication.translate("equipment", "Horizontal"),
-        QtWidgets.QApplication.translate("equipment", "Vertical, (in down)"),
-        QtWidgets.QApplication.translate("equipment", "Vertical, (in up)")]
+        translate("equipment", "Horizontal"),
+        translate("equipment", "Vertical, (in down)"),
+        translate("equipment", "Vertical, (in up)")]
     TEXT_MATERIAL = [
-        QtWidgets.QApplication.translate("equipment", "Carbon steel/carbon steel"),
-        QtWidgets.QApplication.translate("equipment", "Carbon steel/304 stainless"),
-        QtWidgets.QApplication.translate("equipment", "Carbon steel/316 stainless")]
+        translate("equipment", "Carbon steel/carbon steel"),
+        translate("equipment", "Carbon steel/304 stainless"),
+        translate("equipment", "Carbon steel/316 stainless")]
     CODE_FLUJO = ("CF", "PF")
 
     @property
@@ -667,16 +667,16 @@ class Hairpin(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entradaTubo"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined internal stream input")
+            self.msg = translate("equipment", "undefined internal stream input")
             self.status = 0
             return
         if not self.kwargs["entradaExterior"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined external stream input")
+            self.msg = translate("equipment", "undefined external stream input")
             self.status = 0
             return
 
         if not self.kwargs["DeeTube"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined pipe external diameter")
+            self.msg = translate("equipment", "undefined pipe external diameter")
             self.status = 0
             return
 
@@ -688,31 +688,31 @@ class Hairpin(equipment):
         elif self.kwargs["DiTube"] and self.kwargs["wTube"]:
             self.statusPipe = 3
         else:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined pipe diameters")
+            self.msg = translate("equipment", "undefined pipe diameters")
             self.status = 0
             return
 
         if not self.kwargs["kTube"]:
-            self.msg = QtWidgets.QApplication.translate(
+            self.msg = translate(
                 "equipment", "undefined pipe material thermal conductivity")
             self.status = 0
             return
 
         self.statusFinned = 0
-        self.tubefinned = QtWidgets.QApplication.translate("equipment", "Bare Tube")
+        self.tubefinned = translate("equipment", "Bare Tube")
         if self.kwargs["tubeFinned"]:
-            self.tubefinned = QtWidgets.QApplication.translate("equipment", "Finned Tube")
+            self.tubefinned = translate("equipment", "Finned Tube")
             if self.kwargs["hFin"] and (self.kwargs["thicknessBaseFin"] or
                                         self.kwargs["thicknessTopFin"]):
                 self.statusFinned = 1
                 self.msg = ""
             else:
-                self.msg = QtWidgets.QApplication.translate("equipment", "fin not specified, using bare tube")
+                self.msg = translate("equipment", "fin not specified, using bare tube")
                 self.status = 3
 
         if self.kwargs["modo"]:
             if not self.kwargs["LTube"]:
-                self.msg = QtWidgets.QApplication.translate("equipment", "undefined pipe length")
+                self.msg = translate("equipment", "undefined pipe length")
                 self.status = 0
                 return
         else:
@@ -726,7 +726,7 @@ class Hairpin(equipment):
             elif o2:
                 self.statusOut = 3
             else:
-                self.msg = QtWidgets.QApplication.translate("equipment", "undefined output condition")
+                self.msg = translate("equipment", "undefined output condition")
                 self.status = 0
                 return
         return True
@@ -744,7 +744,7 @@ class Hairpin(equipment):
             self.Di = unidades.Length(self.kwargs["DiTube"])
             self.w = unidades.Length((self.De-self.Di)/2)
             if self.kwargs["wTube"] and w != self.kwargs["wTube"]:
-                self.msg = QtWidgets.QApplication.translate("equipment", "Pipe thickness discard")
+                self.msg = translate("equipment", "Pipe thickness discard")
                 self.status = 3
         elif self.statusPipe == 2:
             self.De = unidades.Length(self.kwargs["DeTube"])
@@ -1101,7 +1101,7 @@ class Hairpin(equipment):
 
     def propTxt(self):
         txt = "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Catalog")
+        txt += translate("equipment", "Catalog")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(11))
 
@@ -1109,7 +1109,7 @@ class Hairpin(equipment):
             txt += "\t" + self.propertiesToText(range(11, 17))
 
         txt += os.linesep + "#---------------"
-        txt += QtWidgets.QApplication.translate("equipment", "Calculate properties")
+        txt += translate("equipment", "Calculate properties")
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(17, 20)) + os.linesep
         txt += self.propertiesToText(range(20, 29)) + os.linesep  # Tube
@@ -1118,7 +1118,7 @@ class Hairpin(equipment):
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
-            txt += QtWidgets.QApplication.translate("equipment", "Preliminary Cost Estimation")
+            txt += translate("equipment", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
             txt += self.propertiesToText(range(41, 48))
 
@@ -1126,77 +1126,77 @@ class Hairpin(equipment):
 
     @classmethod
     def propertiesEquipment(cls):
-        l = [(QtWidgets.QApplication.translate("equipment", "Length"), "L", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Pipe Internal Diameter"), "Di", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Pipe External Diameter"), "De", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Annulli External Diameter"),
+        l = [(translate("equipment", "Length"), "L", unidades.Length),
+             (translate("equipment", "Pipe Internal Diameter"), "Di", unidades.Length),
+             (translate("equipment", "Pipe External Diameter"), "De", unidades.Length),
+             (translate("equipment", "Annulli External Diameter"),
               "Dee", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Thickness"), "w", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Roughness"), "rugosidad", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "External Area"), "A", unidades.Area),
-             (QtWidgets.QApplication.translate("equipment", "Thermal Conductivity"), "k",
+             (translate("equipment", "Thickness"), "w", unidades.Length),
+             (translate("equipment", "Roughness"), "rugosidad", unidades.Length),
+             (translate("equipment", "External Area"), "A", unidades.Area),
+             (translate("equipment", "Thermal Conductivity"), "k",
               unidades.ThermalConductivity),
-             (QtWidgets.QApplication.translate("equipment", "Internal Fouling"), "fi", unidades.Fouling),
-             (QtWidgets.QApplication.translate("equipment", "External Fouling"), "fo", unidades.Fouling),
-             (QtWidgets.QApplication.translate("equipment", "Finned Tube"), "tubefinned", str),
-             (QtWidgets.QApplication.translate("equipment", "Fin height"), "hFin", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Thickness at bottom of fin"),
+             (translate("equipment", "Internal Fouling"), "fi", unidades.Fouling),
+             (translate("equipment", "External Fouling"), "fo", unidades.Fouling),
+             (translate("equipment", "Finned Tube"), "tubefinned", str),
+             (translate("equipment", "Fin height"), "hFin", unidades.Length),
+             (translate("equipment", "Thickness at bottom of fin"),
               "thicknessBaseFin", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Thickness at top of fin"),
+             (translate("equipment", "Thickness at top of fin"),
               "thicknessTopFin", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "External diameter at bottom of fin"),
+             (translate("equipment", "External diameter at bottom of fin"),
               "rootDoFin", unidades.Length),
-             (QtWidgets.QApplication.translate("equipment", "Fin thermal conductivity"),
+             (translate("equipment", "Fin thermal conductivity"),
               "kFin", unidades.ThermalConductivity),
-             (QtWidgets.QApplication.translate("equipment", "Fin count per meter"),
+             (translate("equipment", "Fin count per meter"),
               "nFin", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Mode"), ("TEXT_MODO", "modo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Arrangement Flow"),
+             (translate("equipment", "Mode"), ("TEXT_MODO", "modo"), str),
+             (translate("equipment", "Arrangement Flow"),
               ("TEXT_FLUJO", "flujo"), str),
-             (QtWidgets.QApplication.translate("equipment", "Layout"),
+             (translate("equipment", "Layout"),
               ("TEXT_ORIENTACION", "orientacion"), str),
-             (QtWidgets.QApplication.translate("equipment", "Tube Mechanism"), "phaseTube", str),
-             (QtWidgets.QApplication.translate("equipment", "Tube Fluid Speed"), "VTube", unidades.Speed),
-             (QtWidgets.QApplication.translate("equipment", "Tube Reynolds"), "ReTube",
+             (translate("equipment", "Tube Mechanism"), "phaseTube", str),
+             (translate("equipment", "Tube Fluid Speed"), "VTube", unidades.Speed),
+             (translate("equipment", "Tube Reynolds"), "ReTube",
               unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Tube In Temperature"),
+             (translate("equipment", "Tube In Temperature"),
               "TinTube", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Tube In Quality"),
+             (translate("equipment", "Tube In Quality"),
               "XinTube", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Tube Out Temperature"),
+             (translate("equipment", "Tube Out Temperature"),
               "ToutTube", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Tube Out Quality"),
+             (translate("equipment", "Tube Out Quality"),
               "XoutTube", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "ΔP Tube"), "deltaPTube", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "Tube heat transfer"),
+             (translate("equipment", "ΔP Tube"), "deltaPTube", unidades.DeltaP),
+             (translate("equipment", "Tube heat transfer"),
               "hTube", unidades.HeatTransfCoef),
-             (QtWidgets.QApplication.translate("equipment", "Annulli Mechanism"), "phaseAnnulli", str),
-             (QtWidgets.QApplication.translate("equipment", "Annulli Fluid Speed"),
+             (translate("equipment", "Annulli Mechanism"), "phaseAnnulli", str),
+             (translate("equipment", "Annulli Fluid Speed"),
               "VAnnulli", unidades.Speed),
-             (QtWidgets.QApplication.translate("equipment", "Annulli Reynolds"),
+             (translate("equipment", "Annulli Reynolds"),
               "ReAnnulli", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Annulli In Temperature"),
+             (translate("equipment", "Annulli In Temperature"),
               "TinAnnulli", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Annulli In Quality"),
+             (translate("equipment", "Annulli In Quality"),
               "XinAnnulli", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Annulli Out Temperature"),
+             (translate("equipment", "Annulli Out Temperature"),
               "ToutAnnulli", unidades.Temperature),
-             (QtWidgets.QApplication.translate("equipment", "Annulli Out Quality"),
+             (translate("equipment", "Annulli Out Quality"),
               "XoutAnnulli", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "ΔP Annulli", None),
+             (translate("equipment", "ΔP Annulli", None),
               "deltaPAnnulli", unidades.DeltaP),
-             (QtWidgets.QApplication.translate("equipment", "Annulli heat transfer"),
+             (translate("equipment", "Annulli heat transfer"),
               "hAnnulli", unidades.HeatTransfCoef),
-             (QtWidgets.QApplication.translate("equipment", "U"), "U", unidades.HeatTransfCoef),
-             (QtWidgets.QApplication.translate("equipment", "Clean Factor"), "CF", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Over Surface"), "OS", unidades.Dimensionless),
-             (QtWidgets.QApplication.translate("equipment", "Base index"), "Base_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Current index"), "Current_index", float),
-             (QtWidgets.QApplication.translate("equipment", "Install factor"), "f_install", float),
-             (QtWidgets.QApplication.translate("equipment", "Material"), ("TEXT_MATERIAL", "material"), str),
-             (QtWidgets.QApplication.translate("equipment", "Design Pressure"), "P_dis", unidades.Pressure),
-             (QtWidgets.QApplication.translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
-             (QtWidgets.QApplication.translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
+             (translate("equipment", "U"), "U", unidades.HeatTransfCoef),
+             (translate("equipment", "Clean Factor"), "CF", unidades.Dimensionless),
+             (translate("equipment", "Over Surface"), "OS", unidades.Dimensionless),
+             (translate("equipment", "Base index"), "Base_index", float),
+             (translate("equipment", "Current index"), "Current_index", float),
+             (translate("equipment", "Install factor"), "f_install", float),
+             (translate("equipment", "Material"), ("TEXT_MATERIAL", "material"), str),
+             (translate("equipment", "Design Pressure"), "P_dis", unidades.Pressure),
+             (translate("equipment", "Purchase Cost"), "C_adq", unidades.Currency),
+             (translate("equipment", "Installed Cost"), "C_inst", unidades.Currency)]
         return l
 
     def writeStatetoJSON(self, state):
@@ -1428,7 +1428,7 @@ class Shell_Tube(equipment):
         P_dis: Presión de diseño, si no se especifica se usará la máxima presión del las corrientes del proceso
     """
 
-    title = QtWidgets.QApplication.translate("equipment", "Shell and Tube Heat Exchanger")
+    title = translate("equipment", "Shell and Tube Heat Exchanger")
     help = ""
     kwargs = {
         "entrada": [],
@@ -1501,58 +1501,58 @@ class Shell_Tube(equipment):
     TEXT_METHOD_SHELL = ["Stream analysis", "Bell-Delaware", "Kern"]
     TEXT_CLASS = ["TEMA R", "TEMA B", "TEMA C"]
     TEXT_FRONTHEAD = [
-        "A - " + QtWidgets.QApplication.translate("equipment", "Channel & Removable Cover"),
-        "B - " + QtWidgets.QApplication.translate("equipment", "Bonnet"),
-        "C - " + QtWidgets.QApplication.translate("equipment", "Removable Bundle"),
-        "D - " + QtWidgets.QApplication.translate("equipment", "Special High Pressure Closure"),
-        "N - " + QtWidgets.QApplication.translate("equipment", "Channel with Tubesheet & Removable Cover")]
+        "A - " + translate("equipment", "Channel & Removable Cover"),
+        "B - " + translate("equipment", "Bonnet"),
+        "C - " + translate("equipment", "Removable Bundle"),
+        "D - " + translate("equipment", "Special High Pressure Closure"),
+        "N - " + translate("equipment", "Channel with Tubesheet & Removable Cover")]
     TEXT_SHELL = [
-        "E - " + QtWidgets.QApplication.translate("equipment", "One Pass"),
-        "F - " + QtWidgets.QApplication.translate("equipment", "Two Pass"),
-        "G - " + QtWidgets.QApplication.translate("equipment", "Split Flow"),
-        "H - " + QtWidgets.QApplication.translate("equipment", "Double Split Flow"),
-        "J - " + QtWidgets.QApplication.translate("equipment", "Divided Flow"),
-        "K - " + QtWidgets.QApplication.translate("equipment", "Kettle Reboiler"),
-        "X - " + QtWidgets.QApplication.translate("equipment", "Cross Flow")]
+        "E - " + translate("equipment", "One Pass"),
+        "F - " + translate("equipment", "Two Pass"),
+        "G - " + translate("equipment", "Split Flow"),
+        "H - " + translate("equipment", "Double Split Flow"),
+        "J - " + translate("equipment", "Divided Flow"),
+        "K - " + translate("equipment", "Kettle Reboiler"),
+        "X - " + translate("equipment", "Cross Flow")]
     TEXT_REARHEAD = [
-        "L - " + QtWidgets.QApplication.translate("equipment", "Fixed Tubesheet (A head)"),
-        "M - " + QtWidgets.QApplication.translate("equipment", "Fixed Tubesheet (B head)"),
-        "N - " + QtWidgets.QApplication.translate("equipment", "Fixed Tubesheet (N head)"),
-        "P - " + QtWidgets.QApplication.translate("equipment", "Outside Packed Flt Head"),
-        "S - " + QtWidgets.QApplication.translate("equipment", "Flt Head with Backing Dev"),
-        "T - " + QtWidgets.QApplication.translate("equipment", "Pull Throught Flt Heat"),
-        "U - " + QtWidgets.QApplication.translate("equipment", "U-Tube Bundle"),
-        "W - " + QtWidgets.QApplication.translate("equipment", "Exit Sealed Flt Tubesheet")]
+        "L - " + translate("equipment", "Fixed Tubesheet (A head)"),
+        "M - " + translate("equipment", "Fixed Tubesheet (B head)"),
+        "N - " + translate("equipment", "Fixed Tubesheet (N head)"),
+        "P - " + translate("equipment", "Outside Packed Flt Head"),
+        "S - " + translate("equipment", "Flt Head with Backing Dev"),
+        "T - " + translate("equipment", "Pull Throught Flt Heat"),
+        "U - " + translate("equipment", "U-Tube Bundle"),
+        "W - " + translate("equipment", "Exit Sealed Flt Tubesheet")]
     TEXT_ORIENTATION = [
-        QtWidgets.QApplication.translate("equipment", "Horizontal"),
-        QtWidgets.QApplication.translate("equipment", "Vertical")]
+        translate("equipment", "Horizontal"),
+        translate("equipment", "Vertical")]
     TEXT_DISTRIBUTION_TUBE = [
-        QtWidgets.QApplication.translate("equipment", "Triangular")+", 30º",
-        QtWidgets.QApplication.translate("equipment", "Diamond")+", 45º",
-        QtWidgets.QApplication.translate("equipment", "Rotated Triangular")+", 60º",
-        QtWidgets.QApplication.translate("equipment", "Square")+", 90º"]
+        translate("equipment", "Triangular")+", 30º",
+        translate("equipment", "Diamond")+", 45º",
+        translate("equipment", "Rotated Triangular")+", 60º",
+        translate("equipment", "Square")+", 90º"]
     TEXT_BAFFLE_TYPE = [
-        QtWidgets.QApplication.translate("equipment", "Single segmental"),
-        QtWidgets.QApplication.translate("equipment", "Double segmental"),
-        QtWidgets.QApplication.translate("equipment", "Triple segmental"),
-        QtWidgets.QApplication.translate("equipment", "No tubes in window"),
-        QtWidgets.QApplication.translate("equipment", "Disk & donut"),
-        QtWidgets.QApplication.translate("equipment", "Rod")]
+        translate("equipment", "Single segmental"),
+        translate("equipment", "Double segmental"),
+        translate("equipment", "Triple segmental"),
+        translate("equipment", "No tubes in window"),
+        translate("equipment", "Disk & donut"),
+        translate("equipment", "Rod")]
     TEXT_COST_TYPE = [
-        QtWidgets.QApplication.translate("equipment", "Fixed Head"),
-        QtWidgets.QApplication.translate("equipment", "Kettle Reboiler"),
-        QtWidgets.QApplication.translate("equipment", "U-Tube")]
+        translate("equipment", "Fixed Head"),
+        translate("equipment", "Kettle Reboiler"),
+        translate("equipment", "U-Tube")]
     TEXT_COST_MATERIAL = [
-        QtWidgets.QApplication.translate("equipment", "Carbon Steel"),
-        QtWidgets.QApplication.translate("equipment", "Stainless Steel 316"),
-        QtWidgets.QApplication.translate("equipment", "Stainless Steel 304"),
-        QtWidgets.QApplication.translate("equipment", "Stainless Steel 347"),
-        QtWidgets.QApplication.translate("equipment", "Nickel 200"),
-        QtWidgets.QApplication.translate("equipment", "Monel 400"),
-        QtWidgets.QApplication.translate("equipment", "Inconel 600"),
-        QtWidgets.QApplication.translate("equipment", "Incoloy 825"),
-        QtWidgets.QApplication.translate("equipment", "Titanium"),
-        QtWidgets.QApplication.translate("equipment", "Hastelloy")]
+        translate("equipment", "Carbon Steel"),
+        translate("equipment", "Stainless Steel 316"),
+        translate("equipment", "Stainless Steel 304"),
+        translate("equipment", "Stainless Steel 347"),
+        translate("equipment", "Nickel 200"),
+        translate("equipment", "Monel 400"),
+        translate("equipment", "Inconel 600"),
+        translate("equipment", "Incoloy 825"),
+        translate("equipment", "Titanium"),
+        translate("equipment", "Hastelloy")]
 
     @property
     def isCalculable(self):
@@ -1563,11 +1563,11 @@ class Shell_Tube(equipment):
             self.statusCoste = False
 
         if not self.kwargs["entradaTubo"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined tubeside input")
+            self.msg = translate("equipment", "undefined tubeside input")
             self.status = 0
             return
         if not self.kwargs["entradaCarcasa"]:
-            self.msg = QtWidgets.QApplication.translate("equipment", "undefined shellside input")
+            self.msg = translate("equipment", "undefined shellside input")
             self.status = 0
             return
 

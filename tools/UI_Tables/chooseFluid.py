@@ -36,7 +36,7 @@ import os
 from lib import meos, mEoS, unidades
 from lib.config import IMAGE_PATH
 from tools.codeEditor import SimplePythonEditor
-from tools.qt import QtCore, QtGui, QtWidgets
+from tools.qt import QtCore, QtGui, QtWidgets, translate
 from UI.widgets import Entrada_con_unidades, Tabla, QLabelMath
 
 
@@ -206,15 +206,15 @@ class Ui_ChooseFluid(QtWidgets.QDialog):
 class DialogFilterFluid(QtWidgets.QDialog):
     """Dialog for filter compounds family to show"""
     text = {
-        "Nobles": QtWidgets.QApplication.translate("UI_Tables", "Noble gases"),
-        "Gases": QtWidgets.QApplication.translate("UI_Tables", "Gases"),
-        "Alkanes": QtWidgets.QApplication.translate("UI_Tables", "Alkanes"),
-        "Naphthenes": QtWidgets.QApplication.translate("UI_Tables", "Naphthenes"),
-        "Alkenes": QtWidgets.QApplication.translate("UI_Tables", "Alkenes"),
-        "Heteroatom": QtWidgets.QApplication.translate("UI_Tables", "Heteroatom"),
-        "CFCs": QtWidgets.QApplication.translate("UI_Tables", "CFCs"),
-        "Siloxanes": QtWidgets.QApplication.translate("UI_Tables", "Siloxanes"),
-        "PseudoCompounds": QtWidgets.QApplication.translate("UI_Tables", "Pseudo Compounds")}
+        "Nobles": translate("UI_Tables", "Noble gases"),
+        "Gases": translate("UI_Tables", "Gases"),
+        "Alkanes": translate("UI_Tables", "Alkanes"),
+        "Naphthenes": translate("UI_Tables", "Naphthenes"),
+        "Alkenes": translate("UI_Tables", "Alkenes"),
+        "Heteroatom": translate("UI_Tables", "Heteroatom"),
+        "CFCs": translate("UI_Tables", "CFCs"),
+        "Siloxanes": translate("UI_Tables", "Siloxanes"),
+        "PseudoCompounds": translate("UI_Tables", "Pseudo Compounds")}
     classOrder = ["Nobles", "Gases", "Alkanes", "Naphthenes", "Alkenes",
                   "Heteroatom", "CFCs", "Siloxanes", "PseudoCompounds"]
 

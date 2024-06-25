@@ -47,7 +47,7 @@ from numpy import concatenate, linspace, logspace, transpose, log, nan, array
 from matplotlib import colormaps as cm
 from matplotlib.backends.backend_qtagg import NavigationToolbar2QT
 from matplotlib.font_manager import FontProperties
-from tools.qt import QtCore, QtGui, QtWidgets, __qt__
+from tools.qt import QtCore, QtGui, QtWidgets, __qt__, translate
 
 from lib import meos, unidades, plot, config
 from lib.thermo import ThermoAdvanced
@@ -1281,14 +1281,14 @@ class EditPlot(QtWidgets.QDialog):
 
 class AddLine(QtWidgets.QDialog):
     """Dialog to add new isoline to plot"""
-    lineas = [(QtWidgets.QApplication.translate("UI_Tables", "Isotherm"), unidades.Temperature, None),
-              (QtWidgets.QApplication.translate("UI_Tables", "Isobar"), unidades.Pressure, None),
-              (QtWidgets.QApplication.translate("UI_Tables", "Isoenthalpic"), unidades.Enthalpy, None),
-              (QtWidgets.QApplication.translate("UI_Tables", "Isoentropic"), unidades.SpecificHeat,
+    lineas = [(translate("UI_Tables", "Isotherm"), unidades.Temperature, None),
+              (translate("UI_Tables", "Isobar"), unidades.Pressure, None),
+              (translate("UI_Tables", "Isoenthalpic"), unidades.Enthalpy, None),
+              (translate("UI_Tables", "Isoentropic"), unidades.SpecificHeat,
                "SpecificEntropy"),
-              (QtWidgets.QApplication.translate("UI_Tables", "Isochor"), unidades.SpecificVolume, None),
-              (QtWidgets.QApplication.translate("UI_Tables", "Isodensity"), unidades.Density, None),
-              (QtWidgets.QApplication.translate("UI_Tables", "Isoquality"), float, None)]
+              (translate("UI_Tables", "Isochor"), unidades.SpecificVolume, None),
+              (translate("UI_Tables", "Isodensity"), unidades.Density, None),
+              (translate("UI_Tables", "Isoquality"), float, None)]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -1730,11 +1730,11 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None, mesh=False, typemesh=0):
     # Plot saturation lines
     fmt = getLineFormat(Preferences, "saturation")
     if x == "P" and y == "T":
-        satLines = (QtWidgets.QApplication.translate("Saturation Line"),)
+        satLines = (translate("Saturation Line"),)
     else:
         satLines = [
-            QtWidgets.QApplication.translate("Liquid Saturation Line"),
-            QtWidgets.QApplication.translate("Vapor Saturation Line")]
+            translate("Liquid Saturation Line"),
+            translate("Vapor Saturation Line")]
     for fase, label in enumerate(satLines):
         xsat = list(map(functionx, data["saturation_{fase}"][x]))
         ysat = list(map(functiony, data["saturation_{fase}"][y]))
@@ -1746,7 +1746,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None, mesh=False, typemesh=0):
 
     # Plot melting and sublimation lines
     if "melting" in data:
-        label = QtWidgets.QApplication.translate("Melting Line")
+        label = translate("Melting Line")
         xmel = list(map(functionx, data["melting"][x]))
         ymel = list(map(functiony, data["melting"][y]))
         if z:
@@ -1757,7 +1757,7 @@ def plot2D3D(grafico, data, Preferences, x, y, z=None, mesh=False, typemesh=0):
     if "sublimation" in data:
         xsub = list(map(functionx, data["sublimation"][x]))
         ysub = list(map(functiony, data["sublimation"][y]))
-        label = QtWidgets.QApplication.translate("Sublimation Line")
+        label = translate("Sublimation Line")
         if z:
             zmel = list(map(functionz, data["melting"][z]))
             grafico.plot.ax.plot(xmel, ymel, zmel, label=label, **fmt)
