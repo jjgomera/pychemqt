@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Library to pdf viewer functionality
 
     * :class:`PDFWidget`: Internal viewer using a QWebEngineView
-    * :def:`openPDF`: Show a viewer with a pdf file
+    * :func:`openPDF`: Show a viewer with a pdf file
 '''
 
 

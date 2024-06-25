@@ -208,10 +208,10 @@ class Ui_CostIndex(QtWidgets.QDialog):
 class CostData(QtWidgets.QWidget):
     """Common widget to equipment with cost section
     It have property to easy access to properties:
-        factor: install factor
-        base: base index (January 1982)
-        actual: current index
-        values: a tuple with all properties, (factor, base,actual)
+        * factor: install factor
+        * base: base index (January 1982)
+        * actual: current index
+        * values: a tuple with all properties, (factor, base,actual)
     """
     valueChanged = QtCore.pyqtSignal(str, float)
 
