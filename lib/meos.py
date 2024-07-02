@@ -2787,7 +2787,7 @@ class MEoS(ThermoAdvanced):
                         twophas = False
 
                     if 0 < rho < self._constants.get("rhomax", 1e5)*self.M \
-                            and abs(f(rho)) < 1e-5 and not twophas \
+                            and abs(f(rho)) < 1e-3 and not twophas \
                             and rinput.converged:
                         converge = True
                         break

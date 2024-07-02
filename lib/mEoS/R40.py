@@ -22,7 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
-from lib.mEoS import R134a
+from lib.mEoS.R134a import R134a
 
 
 class R40(MEoS):
@@ -62,7 +62,7 @@ class R40(MEoS):
         "cp": Fi1,
         "ref": "OTO",
 
-        "Tmin": 175.0, "Tmax": 630.0, "Pmax": 100000.0, "rhomax": 21.78756,
+        "Tmin": 230.0, "Tmax": 630.0, "Pmax": 100000.0, "rhomax": 21.78756,
 
         "nr1": [.274572058, .104235924e-1, -.125727710e1, 2.25609199e-3,
                 -3.31830421e-2, .918440878e-1, .261059608e-2],
