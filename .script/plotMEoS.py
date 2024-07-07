@@ -139,7 +139,7 @@ isos_kw = {"ls": ":", "color": "brown", "lw": 0.8}
 
 # Isochor lines to plot
 isov = np.logspace(
-    np.log10(1/fluid()._constants["rhomax"]/fluid.M), np.log10(Vmin.v), 10)
+    np.log10(1/fluid()._constants.get("rhomax", 1000*fluid.M)/fluid.M), np.log10(Vmin.v), 10)
 # isov = np.r_[1e-4, 2e-4, 5e-4, 1e-3, 2e-3, 5e-3, 1e-2, 2e-2, 5e-2, 0.1, 0.2,
 #              0.5, 1, 2, 5, 10, 20, 50]
 isov_kw = {"ls": ":", "color": "darkgreen", "lw": 0.8}
@@ -445,12 +445,12 @@ for P in np.concatenate([isoP, isoP_PIP]):
     if P < fluid.Pc:
         sat_pnt = []
         for x in np.linspace(1, 0.1, 10):
-            if sat_pnt and sat_pnt[-1].status == 1:
+            if sat_pnt and sat_pnt[-1].status == 1 and sat_pnt[-1].T < fluid.Tc:
                 sat_pnt.append(fluid(T=sat_pnt[-1].T, x=x))
             else:
                 sat_pnt.append(fluid(P=P, x=x))
         for x in np.linspace(0.1, 0, 11):
-            if sat_pnt and sat_pnt[-1].status == 1:
+            if sat_pnt and sat_pnt[-1].status == 1 and sat_pnt[-1].T < fluid.Tc:
                 sat_pnt.append(fluid(T=sat_pnt[-1].T, x=x))
             else:
                 sat_pnt.append(fluid(P=P, x=x))
@@ -766,12 +766,12 @@ for curva in ["ideal", "boyle", "joule-thomson", "joule"]:
     pmin = Pmin
     for t in T:
         # Optional limits for ideal curves to avoid false values out of range
-#         if curva in ["ideal", "boyle"]:
-#             if t > 3*fluid.Tc:
-#                 continue
-#         if curva == "joule-thomson":
-#             if t > 4.5*fluid.Tc:
-#                 continue
+        # if curva in ["ideal", "boyle"]:
+        #     if t > 2.1*fluid.Tc:
+        #         continue
+        # if curva == "joule-thomson":
+        #     if t > 3.9*fluid.Tc:
+        #         continue
 
         P = fluid()._IdealCurve(curva, t)
         if P is None or P < 0:
