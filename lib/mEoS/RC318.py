@@ -60,7 +60,7 @@ class RC318(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
-        "Tmin": Tt, "Tmax": 623.0, "Pmax": 60000.0, "rhomax": 8.6452,
+        "Tmin": Tt, "Tmax": 623.0, "Pmax": 60000.0, "rhomax": 9,
 
         "nr1": [-0.104729119796e1, 0.138034128822e1, -0.333625769594,
                 0.109415569278e1, -0.268265237178e1, 0.173403063905e1,
@@ -78,7 +78,7 @@ class RC318(MEoS):
         "c2": [2]*6,
         "gamma2": [0.99943992]*6}
 
-    eq = platzer,
+    eq = (platzer, )
 
     _surface = {"sigma": [0.0507], "exp": [1.25]}
     _vapor_Pressure = {
