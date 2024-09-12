@@ -284,7 +284,7 @@ if __name__ == "__main__":
     import sys
     from lib import unidades
     app = QtWidgets.QApplication(sys.argv)
-    hHeader = ["T", "\mu"]
+    hHeader = ["T", r"\mu"]
     ui = InputTableDialog(
         title="titulo", horizontalHeader=hHeader,
         unit=[unidades.Temperature, unidades.Viscosity])

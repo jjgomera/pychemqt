@@ -490,8 +490,8 @@ class GroupContribution(newComponente):
         return V/(5.7+1611/self.Tc)  # cm3/mol
 
     def _SolubilityParameter(self):
-        """Calculation procedure for solubility parameter when the compound has
-        no defined value for that using the definition equation:
+        r"""Calculation procedure for solubility parameter when the compound
+        has no defined value for that using the definition equation:
 
         .. math::
             \delta=\sqrt{\Delta H_{v}-\frac{RT}{M}}\rho

@@ -241,7 +241,8 @@ These are the options you must expecific next:<br>
         page4_transport = QtWidgets.QWizardPage()
         page4_transport.setTitle(self.tr("Define transport procedures"))
         page4_transport.setSubTitle(self.tr(
-            "The transport properties are important too for good \ simulation results"))
+            "The transport properties are important too for good simulation "
+            "results"))
         page4_transport.setPixmap(QtWidgets.QWizard.WizardPixmap.LogoPixmap, QtGui.QPixmap(
             os.path.join(os.environ["pychemqt"], "images", "pychemqt_98.png")))
         lyt = QtWidgets.QVBoxLayout(page4_transport)
