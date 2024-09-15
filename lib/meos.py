@@ -1816,8 +1816,8 @@ class MEoS(ThermoAdvanced):
         def f2(parr):
             T, rhol, rhog, x = parr
             # print("f2", parr)
-            if T < 1:
-                T = 1
+            if T <= 0:
+                T = 0.1
             if rhol < 0:
                 rhol = 1e-9
             if rhog < 0:
@@ -2807,7 +2807,7 @@ class MEoS(ThermoAdvanced):
                     else:
                         twophas = False
                     t = self._constants["Tmin"] <= T <= self._constants["Tmax"]
-                    if t and abs(f(T)) < 1e-5 and not twophas \
+                    if t and abs(f(T)) < 1e-3 and not twophas \
                             and rinput.converged:
                         converge = True
                         break
@@ -4460,7 +4460,8 @@ class MEoS(ThermoAdvanced):
     def _Vapor_Pressure(self, T):
         """Vapor Pressure ancillary equation"""
         if self._vapor_Pressure:
-            Pr = SimpleEq(self.Tc, T, self._vapor_Pressure)
+            Tc = self._vapor_Pressure.get("Tc", self.Tc)
+            Pr = SimpleEq(Tc, T, self._vapor_Pressure)
             Pv = unidades.Pressure(Pr*self.Pc)
         else:
             # If no available data use the Lee-Kesler correlation
@@ -6554,12 +6555,12 @@ class MEoS(ThermoAdvanced):
                 return prop["firdt"]
 
         if rho0 is None and T < self.Tc:
-            rho0 = self._Liquid_Density(self._constants["Tmin"])
-#             rho0 = self._Liquid_Density(T)
+#             rho0 = self._Liquid_Density(self._constants["Tmin"])
+            rho0 = self._Liquid_Density(T)
 #         elif rho0 is None and T < self.Tc:
 #             rho0 = self.rhoc
         elif rho0 is None:
-            rho0 = self.rhoc/3
+            rho0 = self.rhoc/5
 
         try:
             rho, rinput = newton(f, rho0, full_output=True)

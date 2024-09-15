@@ -34,7 +34,7 @@ class LJ(MEoS):
     _coolPropName = ""
     rhoc = unidades.Density(0.31)
     Tc = unidades.Temperature(1.32)
-    Pc = unidades.Pressure(0.13006, "MPa")
+    Pc = unidades.Pressure(0.13006, "kPa")
     M = 1  # g/mol
     Tt = unidades.Temperature(0.6)
     Tb = unidades.Temperature(0.8)
@@ -91,7 +91,7 @@ class LJ(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.54000e1, 0.44704, -0.18530e1, 0.19890, -0.11250e1],
+        "n": [-5.4, 0.44704, -1.853, 0.1989, -1.125],
         "t": [1, 1.5, 4.7, 2.5, 21.4]}
     _liquid_Density = {
         "eq": 1,
