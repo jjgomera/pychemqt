@@ -72,7 +72,7 @@ class Air(MEoSBlend):
             "title": "Thermodynamic Properties of Air and Mixtures of "
                      "Nitrogen, Argon, and Oxygen From 60 to 2000 K at "
                      "Pressures to 2000 MPa",
-            "ref": "J. Phys. Chem. Ref. Data 29, 331 (2000)",
+            "ref": "J. Phys. Chem. Ref. Data 29(3) (2000) 331-385",
             "doi": "10.1063/1.1285884"},
 
         "R": 8.31451,
@@ -113,7 +113,7 @@ class Air(MEoSBlend):
             "autor": "Jacobsen, R.T, Penoncello, S.G., Beyerlein, S.W., "
                      "Clarke, W.P., Lemmon, E.W.",
             "title": "A Thermodynamic Property Formulation for Air",
-            "ref": "Fluid Phase Equilibria, 79:113-124, 1992.",
+            "ref": "Fluid Phase Equilibria, 79 (1992) 113-124",
             "doi": "10.1016/0378-3812(92)85124-Q"},
 
         "R": 8.31451,

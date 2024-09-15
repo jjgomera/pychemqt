@@ -61,7 +61,7 @@ class R507a(MEoSBlend):
         "cp": Fi1,
         "ref": "IIR",
 
-        "Tmin": Tt, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.13,
+        "Tmin": 200, "Tmax": 500.0, "Pmax": 50000.0, "rhomax": 14.13,
 
         "Tj": 343.765, "Pj": 3.7049,
         "dew": {"i": [1*2, 1.5*2, 2.1*2, 4.7*2],

@@ -166,7 +166,7 @@ ax_Ideal.set_ylabel("Pr")
 ax_PIP = fig.add_subplot(4, 2, 2)
 ax_PIP.set_title("Phase Identification Parameter")
 ax_PIP.set_xlabel("T, K")
-ax_PIP.set_ylabel("$\Pi$")
+ax_PIP.set_ylabel(r"$\Pi$")
 
 ax_Ph = fig.add_subplot(4, 2, 3)
 ax_Ph.set_yscale("log")
@@ -703,6 +703,7 @@ for v in isov:
                     # Function to find the intersection between isochor line
                     def f_v(ti):
                         ti = min(ti, fluid.eq[0]["Tmax"])
+                        ti = max(ti, fluid.eq[0]["Tmin"])
                         pm = fluid()._Melting_Pressure(ti)
                         if pm > 0:
                             return fluid(T=ti, P=pm).v-v
