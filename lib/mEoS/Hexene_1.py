@@ -49,7 +49,7 @@ class Hexene_1(MEoS):
     betken = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for 1-hexene of Betken et al."
-                    "(2022)",
+                    "(2023)",
         "__doi__": {"autor": "Betken, B., Beckmüller, R., Javed, M.A., "
                              "Baumhögger, E., Span, R. Vrabec, J., Thol, M.",
                     "title": "Thermodynamic properties fo 1-hexene - "

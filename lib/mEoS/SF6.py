@@ -203,6 +203,13 @@ class SF6(MEoS):
 
     eq = guder, reuck, shortSpan, polt
 
+    # EoS in unorthodox format
+    # Scalabrin, G, Bettio, L., Marchi, P. Stringari, P.
+    # A Fundamental Equation of State for Sulfur Hexafluoride (SF&) in Extended
+    # Equation of State Format
+    # J. Phys. Chem. Ref. Data 36(2) (2007) 617-662
+    # doi: 10.1063/1.2716004
+
     _surface = {"sigma": [0.0538, -4.064e-5], "exp": [1.271, 0.2116]}
     _melting = {
         "eq": 2,
