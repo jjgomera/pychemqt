@@ -269,8 +269,8 @@ if fluid is not IAPWS95 and fluid._melting:
 
 # Calculate saturation line
 print("Calculating saturation lines...")
-liq = [fluid(T=t, x=0) for t in Ts]
-vap = [fluid(T=t, x=1) for t in Ts]
+liq = fluid.from_list("x", 0, "T", Ts)
+vap = fluid.from_list("x", 1, "T", Ts)
 
 xliq = [line.T / Tc if line.status == 1 else None for line in liq]
 yliq = [line.P / fluid.Pc if line.status == 1 else None for line in liq]
@@ -350,7 +350,7 @@ print("Calculating isoquality lines...")
 for q in isoq:
     txt = f"x: {q:0.5g}"
     print("    %s" % txt)
-    pts = [fluid(T=t, x=q) for t in Ts]
+    pts = fluid.from_list("x", q, "T", Ts)
 
     x = [p.h.kJkg for p in pts]
     y = [p.P.MPa for p in pts]
@@ -685,7 +685,7 @@ for v in isov:
     txt = "v: %0.5g m³/kg" % v
     print("    %s" % txt)
 
-    pts = [fluid(T=t, v=v) for t in Tl]
+    pts = fluid.from_list("v", v, "T", Tl)
 
     h = []
     T = []

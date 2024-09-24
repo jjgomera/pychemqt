@@ -157,8 +157,8 @@ Other functions used in iteration calculation to try to speed up it:
 
 '''
 
-
-from itertools import product
+from concurrent.futures import ProcessPoolExecutor
+from itertools import product, repeat
 import json
 import logging
 import os
@@ -1005,6 +1005,12 @@ def _PR_phirt(tau, delta, **kw):
     return firt
 
 
+def _instanceBuilder(p2val, *args):
+    """Instance builder function"""
+    cls, p1name, p1val, p2name = args
+    return cls(**{p1name: p1val, p2name: p2val})
+
+
 class MEoS(ThermoAdvanced):
     r"""General class for implement multiparameter equation of state
     Each child class must define the parameters for the calculations
@@ -1102,6 +1108,37 @@ class MEoS(ThermoAdvanced):
               "T0": 0}
     status = 0
     msg = translate("MEoS", "Unknown Variables")
+
+    @classmethod
+    def from_list(cls, p1name, p1val, p2name, p2val):
+        """Speed up method using multiprocessing for multiple point calculation
+        with a fixed input and changing other input parameter
+
+        Parameters
+        ----------
+        p1name : str
+            string with name of fixed input parameter
+        p1val : float
+            fixed input parameter value
+        p2name : str
+            string with name of changing input parameter
+        p2val : list
+            iterable with values of changing input parameter
+
+        Returns
+        -------
+        states : list
+            list with calculated states
+        """
+        lst = []
+        with ProcessPoolExecutor() as executor:
+            states = executor.map(
+                _instanceBuilder, *(p2val, repeat(cls), repeat(p1name),
+                                    repeat(p1val), repeat(p2name)))
+
+        for state in states:
+            lst.append(state)
+        return lst
 
     def __init__(self, **kwargs):
         """
@@ -5294,7 +5331,7 @@ class MEoS(ThermoAdvanced):
                 ki = (c[0] + c[1]*psi1 + c[2]*psi2) * Gamma            # Eq 31
                 kii = (C[0] + C[1]*psi1 + C[2]*psi2) * Gamma**3        # Eq 32
 
-                # All parameteres has pressure units of bar
+                # All parameters has pressure units of bar
                 Patt = -fase.IntP.bar
                 Prep = T*fase.dpdT_rho.barK
                 Pid = rho*self.R*self.T/1e5
