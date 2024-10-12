@@ -345,6 +345,12 @@ __doi__ = {
          "ref": "Environ Eartth Sci 70(8) (2013) 3497-3503",
          "doi": "10.1007/s12665-013-2394-z"},
     28:
+        {"autor": "Piazza, L., Span, R.",
+         "title": "An equation of state for acetic acid including the "
+                  "association term of SAFT",
+         "ref": "Fluid Phase Equilib. 303 (2011) 134-149",
+         "doi": "10.1016/j.fluid.2011.01.008"},
+    29:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -433,6 +439,23 @@ def _Helmholtz_phir(tau, delta, coef):
                     nr_ass, d5, t5, a5, e5, bt5, g5, b5):
                 expr = exp(-a*(delta-e)**2+1/(bt*(tau-g)**2+b))
                 fir += n*delta**d*tau**t * expr
+
+        # Associative term from Piazza correlations
+        if "type_ass" in coef:
+            m = coef.get("m_ass")
+            vn = coef.get("v_ass")
+            kappa = coef.get("k_ass")
+            epsilon = coef.get("e_ass")
+
+            nu = vn*delta
+            gnu = (2-nu)/2/(1-nu)**3
+            Delta = gnu*(exp(epsilon*tau)-1)*kappa
+            X = (-1 + (1+4*Delta*delta)**0.5)/2/Delta/delta
+
+            fass = log(X) - X/2 + 0.5
+            if coef.get("type_ass") == "2B":
+                fass *= 2
+            fir += m*fass
 
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr_saul" in coef:
@@ -541,6 +564,28 @@ def _Helmholtz_phird(tau, delta, coef):
                 expr2 = d*delta**(d-1)-2*a*(delta-e)*delta**d
                 fird += n*tau**t * expr * expr2
 
+        # Associative term from Piazza correlations
+        if "type_ass" in coef:
+            m = coef.get("m_ass")
+            vn = coef.get("v_ass")
+            kappa = coef.get("k_ass")
+            epsilon = coef.get("e_ass")
+
+            nu = vn*delta
+            gnu = (2-nu)/2/(1-nu)**3
+            Delta = gnu*(exp(epsilon*tau)-1)*kappa
+            X = (-1 + (1+4*Delta*delta)**0.5)/2/Delta/delta
+
+            dgnu = 0.5*(5-2*nu)/(1-nu)**4
+
+            alfa = dgnu * (exp(epsilon*tau)-1)*kappa*vn            # Eq A35
+            Xd = -X**2/(2*Delta*delta*X+1)*(Delta+delta*alfa)      # Eq A36
+
+            fassd = (1/X-0.5)*Xd
+            if coef.get("type_ass") == "2B":
+                fassd *= 2
+            fird += m*fassd
+
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr_saul" in coef:
             if delta < 0.2:
@@ -647,6 +692,26 @@ def _Helmholtz_phirt(tau, delta, coef):
                 expr = exp(-a*(delta-e)**2+1/(bt*(tau-g)**2+b))
                 expr2 = t/tau - 2*bt*(tau-g)/(bt*(tau-g)**2+b)**2
                 firt += n*delta**d*tau**t * expr * expr2
+
+        # Associative term from Piazza correlations
+        if "type_ass" in coef:
+            m = coef.get("m_ass")
+            vn = coef.get("v_ass")
+            kappa = coef.get("k_ass")
+            epsilon = coef.get("e_ass")
+
+            nu = vn*delta
+            gnu = (2-nu)/2/(1-nu)**3
+            Delta = gnu*(exp(epsilon*tau)-1)*kappa
+            X = (-1 + (1+4*Delta*delta)**0.5)/2/Delta/delta
+
+            beta = gnu*kappa*exp(epsilon*tau)*epsilon              # Eq A55
+            Xt = -delta*X**2/(2*Delta*delta*X+1)*beta              # Eq A56
+
+            fasst = (1/X-0.5)*Xt
+            if coef.get("type_ass") == "2B":
+                fasst *= 2
+            firt += m*fasst
 
         # Special form from Saul-Wagner Water 58 coefficient equation
         if "nr_saul" in coef:
@@ -2931,7 +2996,10 @@ class MEoS(ThermoAdvanced):
         fase.M = unidades.Dimensionless(self.M)
         fase.v = unidades.SpecificVolume(estado["v"])
         fase.rho = unidades.Density(1/fase.v)
-        fase.Z = unidades.Dimensionless(self.P*fase.v/self.T/self.R)
+        if fase.rho:
+            fase.Z = unidades.Dimensionless(self.P*fase.v/self.T/self.R)
+        else:
+            fase.Z = 1
 
         tau = estado["tau"]
         delta = estado["delta"]
@@ -4098,6 +4166,74 @@ class MEoS(ThermoAdvanced):
                     B += n*tau**t * expr_ * expr_d0
                     C += n*tau**t * expr_ * expr_dd0
                     D += n*tau**t * expr_ * expr_ddd0
+
+            # Associative term from Piazza correlations
+            if "type_ass" in self._constants:
+                m = self._constants["m_ass"]
+                vn = self._constants["v_ass"]
+                kappa = self._constants["k_ass"]
+                epsilon = self._constants["e_ass"]
+
+                nu = vn*delta
+                gnu = (2-nu)/2/(1-nu)**3
+                Delta = gnu*(exp(epsilon*tau)-1)*kappa
+                X = (-1 + (1+4*Delta*delta)**0.5)/2/Delta/delta
+
+                fass = log(X) - X/2 + 0.5
+
+                dgnu = 0.5*(5-2*nu)/(1-nu)**4
+                d2gnu = 3*(3-nu)/(1-nu)**5
+
+                alfa = dgnu * (exp(epsilon*tau)-1)*kappa*vn            # Eq A35
+                Xd = -X**2/(2*Delta*delta*X+1)*(Delta+delta*alfa)      # Eq A36
+                fassd = (1/X-0.5)*Xd
+
+                beta = gnu*kappa*exp(epsilon*tau)*epsilon              # Eq A55
+                Xt = -delta*X**2/(2*Delta*delta*X+1)*beta              # Eq A56
+                fasst = (1/X-0.5)*Xt
+
+                gamma = d2gnu * (exp(epsilon*tau)-1)*kappa*vn**2       # Eq A76
+                # Eq A77
+                Xdd = X**2*(2*Delta**2*X-alfa)/(2*delta*Delta*X+1)**2 \
+                    + 2*Delta*X**2*(Delta+alfa*delta)*(Delta*delta*X**2+X) \
+                    / (2*delta*Delta*X+1)**3 \
+                    + 2*delta*X**2*(Delta+alfa*delta)*(Delta*delta*X**2+X) \
+                    * alfa / (2*delta*Delta*X+1)**3 \
+                    + X**2*(2*delta**2*X*alfa-1)*alfa/(2*delta*Delta*X+1)**2 \
+                    - delta*X**2*gamma/(2*delta*Delta*X+1)
+
+                fassdd = (1/X-0.5)*Xdd - Xd**2/X**2
+
+                eta = gnu*kappa*exp(epsilon*tau)*epsilon**2            # Eq A83
+                # Eq A84
+                Xtt = -2*beta*delta*X*(Delta*delta*X+1)/(1+2*Delta*delta*X)**2 \
+                    * (-delta*X**2/(2*Delta*delta*X+1))*beta \
+                    + 2*delta**2*X**3/(1+2*Delta*delta*X)**2 * beta**2 \
+                    - delta*X**2/(2*Delta*delta*X+1)*eta
+                fasstt = (1/X-0.5)*Xtt - Xt**2/X**2
+
+                teta = dgnu*exp(epsilon*tau)*epsilon*kappa*vn          # Eq A89
+                # Eq A90
+                Xdt = 2*delta*X**2*(Delta+delta*alfa)*(Delta*delta*X**2+X) \
+                    * beta / (2*delta*Delta*X+1)**3 \
+                    + X**2*(2*delta**2*X*alfa-1)*beta/(2*delta*Delta*X+1)**2 \
+                    - delta*X**2*teta/(2*delta*Delta*X+1)
+                fassdt = -Xt/X**2*Xd + Xdt*(1/X-0.5)
+
+                if self._constants["type_ass"] == "2B":
+                    fass *= 2
+                    fassd *= 2
+                    fasst *= 2
+                    fassdd *= 2
+                    fasstt *= 2
+                    fassdt *= 2
+
+                fir += m*fass
+                fird += m*fassd
+                firt += m*fasst
+                firdd += m*fassdd
+                firtt += m*fasstt
+                firdt += m*fassdt
 
             # Special form from Saul-Wagner Water 58 coefficient equation
             if "nr_saul" in self._constants:
