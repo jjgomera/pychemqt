@@ -51,7 +51,7 @@ class AceticAcid(MEoS):
 
     piazza = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for acetic acid of de Piazza "
+        "__name__": "Helmholtz equation of state for acetic acid of Piazza "
                     "(2011)",
         "__doi__": {
             "autor": "Piazza, L., Span, R.",

@@ -45,6 +45,13 @@ class Methanol(MEoS):
     momentoDipolar = unidades.DipoleMoment(1.7, "Debye")
     id = 117
 
+    Fi1 = {"ao_log": [1, 3.1950423807804],
+           "pow": [0, 1, -1, -2, -3],
+           "ao_pow": [13.9864114647, 3.2006369296e3, -1.14289818828912e-3,
+                      -2.62687155181005e-7, 6.42610441977784e-11],
+           "titao": [3.7664265756],
+           "ao_exp": [4.70118076896145]}
+
     CP1 = {"ao": 3.9007912,
            "ao_exp": [0.10992677e2, 0.18336830e2, -0.16366004e2, -0.62332348e1,
                       0.28035363e1, 0.10778099e1, 0.96965697],
@@ -55,6 +62,47 @@ class Methanol(MEoS):
            "an": [0.532325e-4/8.3143*32., 0.672819e-5/8.3143*32.,
                   -0.768411e-8/8.3143*32., 0.275220e-11/8.3143*32.],
            "pow": [1, 2, 3, 4]}
+
+    piazza = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for acetic acid of Piazza "
+                    "(2013)",
+        "__doi__": {
+            "autor": "Piazza, L., Span, R.",
+            "title": "An equation of state for methanol including the "
+                     "association term of SAFT",
+            "ref": "Fluid Phase Equilib. 349 (2013) 12-24",
+            "doi": "10.1016/j.fluid.2013.03.024"},
+
+        "R": 8.314472,
+        # Error in Cp ideal gas parameters in paper
+        # "cp": Fi1,
+        "cp": CP1,
+        "ref": "OTO",
+        "Tc": 512.5, "rhoc": 273/32.04186, "M": 32.04186,
+
+        "Tmin": Tt, "Tmax": 540.0, "Pmax": 30000.0, "rhomax": 35.57,
+
+        "nr1": [0.096352729792779, -1.0848826325874, 0.029919647090261,
+                -0.0017963419593895, 0.000047354317752015],
+        "d1": [1, 1, 4, 5, 7],
+        "t1": [-0.125, 1.5, 0, -0.875, 1.25],
+
+        "nr2": [1.0013578850486, -1.2555691488591, 0.85469725717500,
+                -0.058295570793694, 0.026935675584229, 0.11504892676606,
+                -0.0051081766133636, 0.0019167368789348, -0.28618221186953,
+                0.48168213019845, -0.33081091251828, 0.092842083313630,
+                -0.035936470747247],
+        "d2": [1, 1, 3, 4, 5, 1, 7, 9, 2, 3, 4, 6, 7],
+        "t2": [0.25, 2, 1.75, 2.5, 2.375, 6.875, 5.875, 5, 18.5, 19, 17.5, 14, 12],
+        "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3],
+        "gamma2": [1]*13,
+
+        "type_ass": "2B",
+        "m_ass": 0.977118832,
+        "v_ass": 0.204481952,
+        "k_ass": 0.148852832e-2,
+        "e_ass": 5.46341463}
 
     reuck = {
         "__type__": "Helmholtz",
@@ -173,7 +221,7 @@ class Methanol(MEoS):
         "c2": [2]*6,
         "gamma2": [0.591872]*6}
 
-    eq = reuck, sun, polt
+    eq = reuck, piazza, sun, polt
 
     _surface = {"sigma": [0.22421, -0.21408, 0.083233],
                 "exp": [1.3355, 1.677, 4.4402]}
@@ -396,3 +444,78 @@ class Test(TestCase):
         self.assertEqual(round(Methanol(T=400, rho=2).k.mWmK, 3), 25.803)
         self.assertEqual(round(Methanol(T=400, rho=690).k.mWmK, 2), 183.57)
         self.assertEqual(round(Methanol(T=500, rho=10).k.mWmK, 3), 40.495)
+
+    def test_Piazza(self):
+        """Table 4, Pag 22"""
+
+        st = Methanol(T=180, rho=6e-6, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 10), 0.2802e-6)
+        self.assertEqual(round(st.Z, 5), 0.99982)
+        # self.assertEqual(round(st.h.kJkg, 5), -151.44350)
+        # self.assertEqual(round(st.s.kJkgK, 5), 3.27504)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 0.96241)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 1.22336)
+        # self.assertEqual(round(st.w, 5), 243.62052)
+
+        st = Methanol(T=180, rho=910, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 3), 20.184)
+        self.assertEqual(round(st.Z, 5), 0.47486)
+        # self.assertEqual(round(st.h.kJkg, 5), -1442.54846)
+        # self.assertEqual(round(st.s.kJkgK, 5), -4.69592)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 1.77392)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 2.17984)
+        # self.assertEqual(round(st.w, 5), 1624.82189)
+
+        st = Methanol(T=180, rho=1000, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 2), 299.59)
+        self.assertEqual(round(st.Z, 5), 6.41420)
+        # self.assertEqual(round(st.h.kJkg, 5), -1192.49438)
+        # self.assertEqual(round(st.s.kJkgK, 5), -4.92516)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 1.81615)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 2.11901)
+        # self.assertEqual(round(st.w, 5), 2200.22161)
+
+        st = Methanol(T=180, rho=1040, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 2), 487.06)
+        self.assertEqual(round(st.Z, 5), 10.02671)
+        # self.assertEqual(round(st.h.kJkg, 5), -1028.09811)
+        # self.assertEqual(round(st.s.kJkgK, 5), -5.03225)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 1.82635)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 2.09866)
+        # self.assertEqual(round(st.w, 5), 2455.69417)
+
+        st = Methanol(T=450, rho=10, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 4), 1.0641)
+        self.assertEqual(round(st.Z, 5), 0.91132)
+        # self.assertEqual(round(st.h.kJkg, 5), 184.85996)
+        # self.assertEqual(round(st.s.kJkgK, 5), -0.068334)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 1.99022)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 2.53739)
+        # self.assertEqual(round(st.w, 5), 348.93454)
+
+        st = Methanol(T=450, rho=25, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 4), 2.2321)
+        self.assertEqual(round(st.Z, 5), 0.76463)
+        # self.assertEqual(round(st.h.kJkg, 5), 84.80645)
+        # self.assertEqual(round(st.s.kJkgK, 5), -0.45469)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 3.71647)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 5.95074)
+        # self.assertEqual(round(st.w, 5), 309.79673)
+
+        st = Methanol(T=450, rho=610, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 4), 4.5142)
+        self.assertEqual(round(st.Z, 5), 0.06337)
+        # self.assertEqual(round(st.h.kJkg, 5), -697.62906)
+        # self.assertEqual(round(st.s.kJkgK, 5), -2.22522)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 3.00081)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 4.23642)
+        # self.assertEqual(round(st.w, 5), 622.75228)
+
+        st = Methanol(T=450, rho=900, eq="piazza")
+        self.assertEqual(round(st.P.MPa, 2), 456.15)
+        self.assertEqual(round(st.Z, 5), 4.34045)
+        # self.assertEqual(round(st.h.kJkg, 5), -364.62474)
+        # self.assertEqual(round(st.s.kJkgK, 5), -2.73998)
+        # self.assertEqual(round(st.cv.kJkgK, 5), 2.66908)
+        # self.assertEqual(round(st.cp.kJkgK, 5), 3.10135)
+        # self.assertEqual(round(st.w, 5), 2047.99620)
