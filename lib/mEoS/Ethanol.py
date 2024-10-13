@@ -48,11 +48,61 @@ class Ethanol(MEoS):
            "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
            "titao": [420.4/Tc, 1334/Tc, 1958/Tc, 4420/Tc]}
 
+    Fi2 = {"ao_log": [1, 3.43069],
+           "pow": [0, 1],
+           "ao_pow": [-12.7531, 9.39094],
+           "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
+           "titao": [0.816771, 2.59175, 3.80408, 8.58736]}
+
     CP1 = {"ao": 6.4112,
            "an": [], "pow": [],
            "ao_exp": [1.95988750679, 7.60084166080, 3.89583440622,
                       4.23238091363],
            "exp": [694, 1549, 2911, 4659]}
+
+    estela = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for acetic acid of of Estela"
+                    "(2017)",
+        "__doi__": {
+            "autor": "Estela-Uribe, J.F.",
+            "title": "Fundamental multiparameter and association equation of "
+                     "state for ethanol",
+            "ref": "Fluid Phase Equilib. 452 (2017) 74-93",
+            "doi": "10.1016/j.fluid.2017.08.018"},
+
+        "R": 8.314472,
+        "cp": Fi2,
+        "ref": "OTO",
+
+        "Tmin": Tt, "Tmax": 650.0, "Pmax": 30000.0, "rhomax": 35.57,
+
+        "nr1": [0.058076841, 0.95027142, -0.81131363, 0.55519585, -1.4263337,
+                0.13457647],
+        "d1": [4, 1, 1, 2, 2, 3],
+        "t1": [1, 1.04, 2.72, 1.174, 1.329, 0.1947],
+
+        "nr2": [0.43377024, -1.1744528, -0.92299658, 0.35022078, -0.90037719,
+                -0.15886731, 0.21091557, -0.22015255, -0.0066400390],
+        "d2": [1, 1, 1, 3, 3, 2, 6, 6, 8],
+        "t2": [2.433, 1.273, 4.176, 3.3, 4.179, 0.8749, 2.02, 1.606, 0.8603],
+        "c2": [1, 1, 2, 1, 2, 2, 1, 1, 1],
+        "gamma2": [1]*9,
+
+        "nr3": [0.75814688, 0.11016546, -0.071562238, -0.25084535, 0.026659790,
+                -0.12846254, -0.090312570, -0.37800110],
+        "d3": [1, 1, 2, 3, 3, 2, 2, 1],
+        "t3": [2.497, 3.72, 1.188, 3.251, 3.018, 1.723, 1.017, 1.161],
+        "alfa3": [1.075, .463, .876, 1.108, .741, 2.453, 2.3, 3.143],
+        "beta3": [1.207, .0895, .581, .947, 2.356, 4.542, 1.287, 3.09],
+        "gamma3": [1.194, 1.986, 1.583, 0.756, 0.495, 1.077, 1.493, 1.542],
+        "epsilon3": [.779, .805, 1.869, .694, 1.312, .441, .793, .313],
+
+        "type_ass": "2B",
+        "m_ass": -0.00013077183,
+        "v_ass": 0.0017053506,
+        "k_ass": 0.000099547609,
+        "e_ass": 9.1757929}
 
     schroeder = {
         "__type__": "Helmholtz",
@@ -163,7 +213,7 @@ class Ethanol(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = schroeder, dillon, sun
+    eq = schroeder, estela, dillon, sun
 
     _surface = {"sigma": [0.05], "exp": [0.952]}
 
@@ -347,6 +397,47 @@ class Ethanol(MEoS):
 
 class Test(TestCase):
     """Testing"""
+
+    def test_estela(self):
+        st = Ethanol(T=300, P=1e5, eq="estela")
+        self.assertEqual(round(st.rhoM, 4), 17.0123)
+        # self.assertEqual(round(st.cvM.JmolK, 4), 94.2690)
+        # self.assertEqual(round(st.cpM.JmolK, 4), 112.7737)
+        self.assertEqual(round(st.hM.Jmol, 1), 12114.3)
+        self.assertEqual(round(st.sM.JmolK, 4), 56.1780)
+        # self.assertEqual(round(st.w, 2), 1135.13)
+
+        st = Ethanol(T=450, P=1e7, eq="estela")
+        self.assertEqual(round(st.rhoM, 4), 13.7262)
+        # self.assertEqual(round(st.cvM.JmolK, 4), 134.9369)
+        # self.assertEqual(round(st.cpM.JmolK, 4), 181.4789)
+        self.assertEqual(round(st.hM.Jmol, 1), 34226.4)
+        self.assertEqual(round(st.sM.JmolK, 4), 113.3201)
+        # self.assertEqual(round(st.w, 3), 700.588)
+
+        st = Ethanol(T=450, P=2e7, eq="estela")
+        self.assertEqual(round(st.rhoM, 4), 14.2289)
+        # self.assertEqual(round(st.cvM.JmolK, 4), 132.8673)
+        # self.assertEqual(round(st.cpM.JmolK, 4), 173.8662)
+        self.assertEqual(round(st.hM.Jmol, 1), 34232.0)
+        self.assertEqual(round(st.sM.JmolK, 4), 111.7441)
+        # self.assertEqual(round(st.w, 3), 811.069)
+
+        st = Ethanol(T=515, P=8e6, eq="estela")
+        self.assertEqual(round(st.rhoM, 4), 9.8205)
+        # self.assertEqual(round(st.cvM.JmolK, 4), 149.0677)
+        # self.assertEqual(round(st.cpM.JmolK, 4), 310.3419)
+        self.assertEqual(round(st.hM.Jmol, 2), 48486.07)
+        self.assertEqual(round(st.sM.JmolK, 4), 143.0998)
+        # self.assertEqual(round(st.w, 3), 295.239)
+
+        st = Ethanol(T=550, P=5e5, eq="estela")
+        self.assertEqual(round(st.rhoM, 4), 0.1112)
+        # self.assertEqual(round(st.cvM.JmolK, 4), 94.6651)
+        # self.assertEqual(round(st.cpM.JmolK, 4), 104.1390)
+        self.assertEqual(round(st.hM.Jmol, 2), 75290.28)
+        self.assertEqual(round(st.sM.JmolK, 4), 213.4634)
+        # self.assertEqual(round(st.w, 3), 324.750)
 
     def test_schroeder(self):
         """Table 30, Pag 38"""
