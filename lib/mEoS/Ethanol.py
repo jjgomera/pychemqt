@@ -48,12 +48,6 @@ class Ethanol(MEoS):
            "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
            "titao": [420.4/Tc, 1334/Tc, 1958/Tc, 4420/Tc]}
 
-    Fi2 = {"ao_log": [1, 3.43069],
-           "pow": [0, 1],
-           "ao_pow": [-12.7531, 9.39094],
-           "ao_exp": [2.14326, 5.09206, 6.60138, 5.70777],
-           "titao": [0.816771, 2.59175, 3.80408, 8.58736]}
-
     CP1 = {"ao": 6.4112,
            "an": [], "pow": [],
            "ao_exp": [1.95988750679, 7.60084166080, 3.89583440622,
@@ -72,7 +66,7 @@ class Ethanol(MEoS):
             "doi": "10.1016/j.fluid.2017.08.018"},
 
         "R": 8.314472,
-        "cp": Fi2,
+        "cp": Fi1,
         "ref": "OTO",
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 30000.0, "rhomax": 35.57,
@@ -95,8 +89,8 @@ class Ethanol(MEoS):
         "t3": [2.497, 3.72, 1.188, 3.251, 3.018, 1.723, 1.017, 1.161],
         "alfa3": [1.075, .463, .876, 1.108, .741, 2.453, 2.3, 3.143],
         "beta3": [1.207, .0895, .581, .947, 2.356, 4.542, 1.287, 3.09],
-        "gamma3": [1.194, 1.986, 1.583, 0.756, 0.495, 1.077, 1.493, 1.542],
         "epsilon3": [.779, .805, 1.869, .694, 1.312, .441, .793, .313],
+        "gamma3": [1.194, 1.986, 1.583, 0.756, 0.495, 1.077, 1.493, 1.542],
 
         "type_ass": "2B",
         "m_ass": -0.00013077183,
@@ -427,7 +421,7 @@ class Test(TestCase):
         self.assertEqual(round(st.rhoM, 4), 9.8205)
         # self.assertEqual(round(st.cvM.JmolK, 4), 149.0677)
         # self.assertEqual(round(st.cpM.JmolK, 4), 310.3419)
-        self.assertEqual(round(st.hM.Jmol, 2), 48486.07)
+        self.assertEqual(round(st.hM.Jmol, 2), 48486.06)
         self.assertEqual(round(st.sM.JmolK, 4), 143.0998)
         # self.assertEqual(round(st.w, 3), 295.239)
 
@@ -435,7 +429,7 @@ class Test(TestCase):
         self.assertEqual(round(st.rhoM, 4), 0.1112)
         # self.assertEqual(round(st.cvM.JmolK, 4), 94.6651)
         # self.assertEqual(round(st.cpM.JmolK, 4), 104.1390)
-        self.assertEqual(round(st.hM.Jmol, 2), 75290.28)
+        self.assertEqual(round(st.hM.Jmol, 2), 75290.27)
         self.assertEqual(round(st.sM.JmolK, 4), 213.4634)
         # self.assertEqual(round(st.w, 3), 324.750)
 
