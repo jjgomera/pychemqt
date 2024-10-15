@@ -67,7 +67,7 @@ class Ethanol(MEoS):
 
         "R": 8.314472,
         "cp": Fi1,
-        "ref": "OTO",
+        "ref": "IIR",
 
         "Tmin": Tt, "Tmax": 650.0, "Pmax": 30000.0, "rhomax": 35.57,
 
