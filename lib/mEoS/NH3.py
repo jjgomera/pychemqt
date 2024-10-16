@@ -65,13 +65,12 @@ class NH3(MEoS):
     gao = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Gao (2023)",
-        "__doi__": {"autor": "Gao, K., Wu, J., Bell, I.H., Harvey, A.H., "
-                             "Lemmon E.W.",
-                    "title": "A Reference Equation of State with an "
-                             "Associating Term for the Thermodynamic "
-                             "Properties of Ammonia",
-                    "ref": "J. Phys. Chem. Ref. Data 52 (2023) 013102",
-                    "doi": "10.1063/5.0128269"},
+        "__doi__": {
+            "autor": "Gao, K., Wu, J., Bell, I.H., Harvey, A.H., Lemmon E.W.",
+            "title": "A Reference Equation of State with an Associating Term "
+                     "for the Thermodynamic Properties of Ammonia",
+            "ref": "J. Phys. Chem. Ref. Data 52 (2023) 013102",
+            "doi": "10.1063/5.0128269"},
 
         "R": 8.314462618,
         "M": 17.03052, "Tc": 405.56, "Pc": 11363.4, "rhoc": 13.696,
@@ -118,12 +117,13 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Baehr and "
                     "Tillner-Roth (1993)",
-        "__doi__": {"autor": "Baehr, H.D., Tillner-Roth, R.",
-                    "title": "Thermodynamic Properties of Environmentally "
-                             "Acceptable Refrigerants: Equations of State and "
-                             "Tables for Ammonia, R22, R134a, R152a, and R123",
-                    "ref": "Springer-Verlag, Berlin, 1994.",
-                    "doi": "10.1007/978-3-642-79400-1"},
+        "__doi__": {
+            "autor": "Baehr, H.D., Tillner-Roth, R.",
+            "title": "Thermodynamic Properties of Environmentally Acceptable "
+                     "Refrigerants: Equations of State and Tables for "
+                     "Ammonia, R22, R134a, R152a, and R123",
+            "ref": "Springer-Verlag, Berlin, 1994.",
+            "doi": "10.1007/978-3-642-79400-1"},
 
         "R": 8.314471,
         "cp": Fi1,
@@ -149,10 +149,11 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for ammonia of Ahrendts "
                     "and Baehr (1979)",
-        "__doi__": {"autor": "Ahrendts, J., Baehr, H.D.",
-                    "title": "The Thermodynamic Properties of Ammonia",
-                    "ref": "VDI-Forsch., Number 596, 1979.",
-                    "doi": ""},
+        "__doi__": {
+            "autor": "Ahrendts, J., Baehr, H.D.",
+            "title": "The Thermodynamic Properties of Ammonia",
+            "ref": "VDI-Forsch., Number 596, 1979.",
+            "doi": ""},
 
         "R": 8.31434,
         "M": 17.03026, "Tc": 405.4, "Pc": 11333, "rhoc": 13.212,
@@ -185,11 +186,12 @@ class NH3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for ammonia of Span "
                     "and Wagner (2003)",
-        "__doi__": {"autor": "Span, R., Wagner, W.",
-                    "title": "Equations of State for Technical Applications. "
-                             "III. Results for Polar Fluids",
-                    "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
-                    "doi": "10.1023/A:1022362231796"},
+        "__doi__": {
+            "autor": "Span, R., Wagner, W.",
+            "title": "Equations of State for Technical Applications. III. "
+                     "Results for Polar Fluids",
+            "ref": "Int. J. Thermophys., 24(1) (2003) 111-162",
+            "doi": "10.1023/A:1022362231796"},
 
         "R": 8.31451,
         "cp": Fi1,

@@ -154,11 +154,11 @@ class CO(MEoS):
 
     _melting = {
         "eq": 1,
-        "__doi__": {"autor": "Barreiros, S.F., Calado, J.C.G., Nunes da "
-                             "Ponte, M.",
-                    "title": "The melting curve of carbon monoxide",
-                    "ref": "J. Chem. Thermodynamics 14 (1982) 1197-1198",
-                    "doi": "10.1016/0021-9614(82)90044-1"},
+        "__doi__": {
+            "autor": "Barreiros, S.F., Calado, J.C.G., Nunes da Ponte, M.",
+            "title": "The melting curve of carbon monoxide",
+            "ref": "J. Chem. Thermodynamics 14 (1982) 1197-1198",
+            "doi": "10.1016/0021-9614(82)90044-1"},
 
         "Tmin": Tt, "Tmax": 1000.0,
         "Tref": 1, "Pref": 1e6,
