@@ -93,11 +93,15 @@ class nC22(MEoS):
                     "doi": "10.1063/5.0048675"},
         "sigma": [0.0522], "exp": [1.25]}
 
-    # FIXME: Vapor Pressure ancillary equation don't fit the values at low T
+    # Vapor Pressure ancillary equation don't fit the values at low T, using
+    # REFPROP correlation
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-12.3834, 2.8818, -11.6292, -2.7357, -7.3103, 1188.9117],
-        "t": [1.0, 1.5, 2.7, 5.5, 14.1, 52.1]}
+        # "n": [-12.3834, 2.8818, -11.6292, -2.7357, -7.3103, 1188.9117],
+        # "t": [1.0, 1.5, 2.7, 5.5, 14.1, 52.1]}
+        "n": [-12.833, 12.329, -11.667, -8.0806, -5.7157],
+        "t": [1.0, 1.5, 1.85, 3.6, 10.5]}
+
     _liquid_Density = {
         "eq": 1,
         "n": [6.6254, -11.0123, 13.6452, -8.8244, 3.1241],
