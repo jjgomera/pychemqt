@@ -96,6 +96,7 @@ from lib.mEoS.Hexene_1 import Hexene_1
 from lib.mEoS.Acetylene import Acetylene
 from lib.mEoS.Propyne import Propyne
 from lib.mEoS.Butyne_1 import Butyne_1
+from lib.mEoS.Cyclobutene import Cyclobutene
 from lib.mEoS.C1Oleate import C1Oleate
 from lib.mEoS.C1Linolenate import C1Linolenate
 from lib.mEoS.C1Linoleate import C1Linoleate
@@ -203,7 +204,8 @@ Naphthenes = [Cyclopropane, Cyclopentane, Cyclohexane, C1Cyclohexane,
 Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
            Ethylene, Propylene, Butene_1, Butadiene13, iButene, Cis_2_butene,
            Trans_2_butene, Pentene_1, Hexene_1, Acetylene, Propyne, Butyne_1,
-           C1Oleate, C1Linolenate, C1Linoleate, C1Palmitate, C1Stearate]
+           Cyclobutene, C1Oleate, C1Linolenate, C1Linoleate, C1Palmitate,
+           C1Stearate]
 Heteroatom = [Methanol, Ethanol, Acetone, EthyOxide, PropylenGlycol,
               AceticAcid, DME, DEE, DMC, NF3, SF6, HCl]
 CFCs = [R13I1, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41, R113, R114,
