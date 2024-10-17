@@ -108,6 +108,7 @@ from lib.mEoS.Methanol import Methanol
 from lib.mEoS.Ethanol import Ethanol
 from lib.mEoS.Acetone import Acetone
 from lib.mEoS.EthyOxide import EthyOxide
+from lib.mEoS.EthylenGlycol import EthylenGlycol
 from lib.mEoS.PropylenGlycol import PropylenGlycol
 from lib.mEoS.AceticAcid import AceticAcid
 from lib.mEoS.DME import DME
@@ -207,8 +208,8 @@ Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
            Trans_2_butene, Pentene_1, Hexene_1, Acetylene, Propyne, Butyne_1,
            Cyclobutene, C1Oleate, C1Linolenate, C1Linoleate, C1Palmitate,
            C1Stearate]
-Heteroatom = [Methanol, Ethanol, Acetone, EthyOxide, PropylenGlycol,
-              AceticAcid, DME, DEE, DEA, DMC, NF3, SF6, HCl]
+Heteroatom = [Methanol, Ethanol, Acetone, EthyOxide, EthylenGlycol,
+              PropylenGlycol, AceticAcid, DME, DEE, DEA, DMC, NF3, SF6, HCl]
 CFCs = [R13I1, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41, R113, R114,
         R115, R116, R123, R124, R125, R134a, R141b, R142b, R143a, R150, R152a,
         R161, R218, R227ea, R236ea, R236fa, R245ca, R245fa, R365mfc, RC318,
