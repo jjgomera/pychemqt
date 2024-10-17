@@ -29,7 +29,7 @@ from lib.meos import MEoS
 
 class Methanol(MEoS):
     """Multiparameter equation of state for methanol"""
-    name = "methanol"
+    name = "Methanol"
     CASNumber = "67-56-1"
     formula = "CH3OH"
     synonym = ""
@@ -62,47 +62,6 @@ class Methanol(MEoS):
            "an": [0.532325e-4/8.3143*32., 0.672819e-5/8.3143*32.,
                   -0.768411e-8/8.3143*32., 0.275220e-11/8.3143*32.],
            "pow": [1, 2, 3, 4]}
-
-    piazza = {
-        "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for acetic acid of Piazza "
-                    "(2013)",
-        "__doi__": {
-            "autor": "Piazza, L., Span, R.",
-            "title": "An equation of state for methanol including the "
-                     "association term of SAFT",
-            "ref": "Fluid Phase Equilib. 349 (2013) 12-24",
-            "doi": "10.1016/j.fluid.2013.03.024"},
-
-        "R": 8.314472,
-        # Error in Cp ideal gas parameters in paper
-        # "cp": Fi1,
-        "cp": CP1,
-        "ref": "OTO",
-        "Tc": 512.5, "rhoc": 273/32.04186, "M": 32.04186,
-
-        "Tmin": Tt, "Tmax": 540.0, "Pmax": 30000.0, "rhomax": 35.57,
-
-        "nr1": [0.096352729792779, -1.0848826325874, 0.029919647090261,
-                -0.0017963419593895, 0.000047354317752015],
-        "d1": [1, 1, 4, 5, 7],
-        "t1": [-0.125, 1.5, 0, -0.875, 1.25],
-
-        "nr2": [1.0013578850486, -1.2555691488591, 0.85469725717500,
-                -0.058295570793694, 0.026935675584229, 0.11504892676606,
-                -0.0051081766133636, 0.0019167368789348, -0.28618221186953,
-                0.48168213019845, -0.33081091251828, 0.092842083313630,
-                -0.035936470747247],
-        "d2": [1, 1, 3, 4, 5, 1, 7, 9, 2, 3, 4, 6, 7],
-        "t2": [0.25, 2, 1.75, 2.5, 2.375, 6.875, 5.875, 5, 18.5, 19, 17.5, 14, 12],
-        "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3],
-        "gamma2": [1]*13,
-
-        "type_ass": "2B",
-        "m_ass": 0.977118832,
-        "v_ass": 0.204481952,
-        "k_ass": 0.148852832e-2,
-        "e_ass": 5.46341463}
 
     reuck = {
         "__type__": "Helmholtz",
@@ -161,6 +120,47 @@ class Methanol(MEoS):
         "epsilon3": [0]*8,
         "exp1": [2, 3, 2, 4, 2, 3, 2, 4],
         "exp2": [1]*8}
+
+    piazza = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for acetic acid of Piazza "
+                    "(2013)",
+        "__doi__": {
+            "autor": "Piazza, L., Span, R.",
+            "title": "An equation of state for methanol including the "
+                     "association term of SAFT",
+            "ref": "Fluid Phase Equilib. 349 (2013) 12-24",
+            "doi": "10.1016/j.fluid.2013.03.024"},
+
+        "R": 8.314472,
+        # Error in Cp ideal gas parameters in paper
+        # "cp": Fi1,
+        "cp": CP1,
+        "ref": "OTO",
+        "Tc": 512.5, "rhoc": 273/32.04186, "M": 32.04186,
+
+        "Tmin": Tt, "Tmax": 540.0, "Pmax": 30000.0, "rhomax": 35.57,
+
+        "nr1": [0.096352729792779, -1.0848826325874, 0.029919647090261,
+                -0.0017963419593895, 0.000047354317752015],
+        "d1": [1, 1, 4, 5, 7],
+        "t1": [-0.125, 1.5, 0, -0.875, 1.25],
+
+        "nr2": [1.0013578850486, -1.2555691488591, 0.85469725717500,
+                -0.058295570793694, 0.026935675584229, 0.11504892676606,
+                -0.0051081766133636, 0.0019167368789348, -0.28618221186953,
+                0.48168213019845, -0.33081091251828, 0.092842083313630,
+                -0.035936470747247],
+        "d2": [1, 1, 3, 4, 5, 1, 7, 9, 2, 3, 4, 6, 7],
+        "t2": [0.25, 2, 1.75, 2.5, 2.375, 6.875, 5.875, 5, 18.5, 19, 17.5, 14, 12],
+        "c2": [1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 3, 3],
+        "gamma2": [1]*13,
+
+        "type_ass": "2B",
+        "m_ass": 0.977118832,
+        "v_ass": 0.204481952,
+        "k_ass": 0.148852832e-2,
+        "e_ass": 5.46341463}
 
     sun = {
         "__type__": "Helmholtz",
@@ -223,8 +223,13 @@ class Methanol(MEoS):
 
     eq = reuck, piazza, sun, polt
 
-    _surface = {"sigma": [0.22421, -0.21408, 0.083233],
-                "exp": [1.3355, 1.677, 4.4402]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Sanjuán, E.L.",
+                    "title": "Surface Tension of Alcohols. Data Selection and "
+                             "Recommended Correlations",
+                    "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033104",
+                    "doi": "10.1063/1.4927858"},
+        "sigma": [0.0759, -2.449, 2.47], "exp": [1.134, 3.508, -3.58]}
 
     _melting = {
         "eq": 1,

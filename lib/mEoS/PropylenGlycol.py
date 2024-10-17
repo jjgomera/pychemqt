@@ -88,6 +88,14 @@ class PropylenGlycol(MEoS):
 
     eq = (eisenbach, )
 
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Sanjuán, E.L.",
+                    "title": "Surface Tension of Alcohols. Data Selection and "
+                             "Recommended Correlations",
+                    "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033104",
+                    "doi": "10.1063/1.4927858"},
+        "sigma": [0.3038, -0.2619], "exp": [1.215, 1.451]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-10.12, 3.15, -5.60, -0.337, -2.39],

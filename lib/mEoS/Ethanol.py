@@ -54,6 +54,47 @@ class Ethanol(MEoS):
                       4.23238091363],
            "exp": [694, 1549, 2911, 4659]}
 
+    schroeder = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for ethanol of Schroeder "
+                    "(2011).",
+        "__doi__": {
+            "autor": "Schroeder, J.A.; Penoncello, S.G.; Schroeder, J.S.",
+            "title": "A Fundamental Equation of State for Ethanol",
+            "ref": "J. Phys. Chem. Ref. Data 43(4) (2014) 043102",
+            "doi": "10.1063/1.4895394"},
+
+        # The paper report a diferent value for R, but the program verification
+        # table work with this ancient value
+        "R": 8.314472,
+        "cp": Fi1,
+        "ref": "IIR",
+
+        "Tmin": 159.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.74,
+
+        "nr1": [0.58200796e-1, 0.94391227, -0.80941908, 0.55359038,
+                -0.14269032e1, 0.13448717],
+        "d1": [4, 1, 1, 2, 2, 3],
+        "t1": [1, 1.04, 2.72, 1.174, 1.329, 0.195],
+
+        "nr2": [0.42671978, -0.11700261e1, -0.92405872, 0.34891808,
+                -0.9132772, 0.22629481e-1, -0.15513423, 0.21055146,
+                -0.2199769, -0.65857238e-2],
+        "d2": [1, 1, 1, 3, 3, 2, 2, 6, 6, 8],
+        "t2": [2.43, 1.274, 4.16, 3.3, 4.177, 2.5, 0.81, 2.02, 1.606, 0.86],
+        "c2": [1, 1, 2, 1, 2, 1, 2, 1, 1, 1],
+        "gamma2": [1]*10,
+
+        "nr3": [.75564749, .1069411, -.69533844e-1, -.24947395, .27177891e-1,
+                -0.9053953e-3, -0.12310953, -0.8977971e-1, -0.39512601],
+        "d3": [1, 1, 2, 3, 3, 2, 2, 2, 1],
+        "t3": [2.5, 3.72, 1.19, 3.25, 3, 2, 2, 1, 1],
+        "alfa3": [1.075, .463, .876, 1.108, .741, 4.032, 2.453, 2.3, 3.143],
+        "beta3": [1.207, .0895, .581, .947, 2.356, 27.01, 4.542, 1.287, 3.09],
+        "gamma3": [1.194, 1.986, 1.583, 0.756, 0.495, 1.002, 1.077, 1.493,
+                   1.542],
+        "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313]}
+
     estela = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for acetic acid of of Estela"
@@ -97,47 +138,6 @@ class Ethanol(MEoS):
         "v_ass": 0.0017053506,
         "k_ass": 0.000099547609,
         "e_ass": 9.1757929}
-
-    schroeder = {
-        "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ethanol of Schroeder "
-                    "(2011).",
-        "__doi__": {
-            "autor": "Schroeder, J.A.; Penoncello, S.G.; Schroeder, J.S.",
-            "title": "A Fundamental Equation of State for Ethanol",
-            "ref": "J. Phys. Chem. Ref. Data 43(4) (2014) 043102",
-            "doi": "10.1063/1.4895394"},
-
-        # The paper report a diferent value for R, but the program verification
-        # table work with this ancient value
-        "R": 8.314472,
-        "cp": Fi1,
-        "ref": "IIR",
-
-        "Tmin": 159.0, "Tmax": 650.0, "Pmax": 280000.0, "rhomax": 19.74,
-
-        "nr1": [0.58200796e-1, 0.94391227, -0.80941908, 0.55359038,
-                -0.14269032e1, 0.13448717],
-        "d1": [4, 1, 1, 2, 2, 3],
-        "t1": [1, 1.04, 2.72, 1.174, 1.329, 0.195],
-
-        "nr2": [0.42671978, -0.11700261e1, -0.92405872, 0.34891808,
-                -0.9132772, 0.22629481e-1, -0.15513423, 0.21055146,
-                -0.2199769, -0.65857238e-2],
-        "d2": [1, 1, 1, 3, 3, 2, 2, 6, 6, 8],
-        "t2": [2.43, 1.274, 4.16, 3.3, 4.177, 2.5, 0.81, 2.02, 1.606, 0.86],
-        "c2": [1, 1, 2, 1, 2, 1, 2, 1, 1, 1],
-        "gamma2": [1]*10,
-
-        "nr3": [.75564749, .1069411, -.69533844e-1, -.24947395, .27177891e-1,
-                -0.9053953e-3, -0.12310953, -0.8977971e-1, -0.39512601],
-        "d3": [1, 1, 2, 3, 3, 2, 2, 2, 1],
-        "t3": [2.5, 3.72, 1.19, 3.25, 3, 2, 2, 1, 1],
-        "alfa3": [1.075, .463, .876, 1.108, .741, 4.032, 2.453, 2.3, 3.143],
-        "beta3": [1.207, .0895, .581, .947, 2.356, 27.01, 4.542, 1.287, 3.09],
-        "gamma3": [1.194, 1.986, 1.583, 0.756, 0.495, 1.002, 1.077, 1.493,
-                   1.542],
-        "epsilon3": [.779, .805, 1.869, .694, 1.312, 2.054, .441, .793, .313]}
 
     dillon = {
         "__type__": "Helmholtz",
@@ -209,7 +209,14 @@ class Ethanol(MEoS):
 
     eq = schroeder, estela, dillon, sun
 
-    _surface = {"sigma": [0.05], "exp": [0.952]}
+    _surface = {
+        "__doi__": {"autor": "Mulero, A., Cachadiña, I., Sanjuán, E.L.",
+                    "title": "Surface Tension of Alcohols. Data Selection and "
+                             "Recommended Correlations",
+                    "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033104",
+                    "doi": "10.1063/1.4927858"},
+        "sigma": [0.0628594, -29.4308, 29.4913],
+        "exp": [1.04726, 4.34139, 4.34996]}
 
     _melting = {
         "eq": 1,
