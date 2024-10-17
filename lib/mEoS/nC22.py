@@ -35,7 +35,7 @@ class nC22(MEoS):
     _coolPropName = ""
     rhoc = unidades.Density(224.564523)
     Tc = unidades.Temperature(792.2)
-    Pc = unidades.Pressure(1.174, "MPa")
+    Pc = unidades.Pressure(1174., "kPa")
     M = 310.601  # g/mol
     Tt = unidades.Temperature(587.6)
     Tb = unidades.Temperature(641.75)
@@ -52,14 +52,14 @@ class nC22(MEoS):
     romeo = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for n-docosane of Romeo "
-                    "(2018).",
-        "__doi__": {"autor": "Romeo, R.",
-                    "title": "Density measurements in subcooled water at "
-                             "presures up to 400 MPa",
-                    "ref": "Doctoral thesis, Politecnico di Torino, 2018",
-                    "doi": "10.6092_polito_porto_2652785"},
+                    "(2022).",
+        "__doi__": {"autor": "Romeo, R., Lemmon, E.W.",
+                    "title": "Equations of State for n-Hexadecane and "
+                             "n-Docosane",
+                    "ref": "Int. J. Thermophys. 43 (2022) 146",
+                    "doi": "10.1007/s10765-022-03059-0"},
 
-        "R": 8.3144621,
+        "R": 8.314462618,
         "cp": Fi1,
         "ref": "OTO",
 

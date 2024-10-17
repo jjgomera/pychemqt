@@ -38,7 +38,7 @@ class Cyclobutene(MEoS):
     Pc = unidades.Pressure(5149.5, "kPa")
     M = 54.09044  # g/mol
     Tt = unidades.Temperature(150)
-    Tb = unidades.Temperature(200)
+    Tb = unidades.Temperature(275.73)
     f_acent = 0.163
     momentoDipolar = unidades.DipoleMoment(0, "Debye")
     # id =

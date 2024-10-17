@@ -88,8 +88,7 @@ class DME(MEoS):
         "alfa3": [0.965336, 1.508580, 0.963855, 9.726430],
         "beta3": [1.287190, 0.806235, 0.777942, 197.681000],
         "gamma3": [1.277720, 0.430750, 0.429607, 1.138490],
-        "epsilon3": [0.672698, 0.924246, 0.750815, 0.800022],
-        "nr4": []}
+        "epsilon3": [0.672698, 0.924246, 0.750815, 0.800022]}
 
     ihmels = {
         "__type__": "Helmholtz",
@@ -157,8 +156,6 @@ class DME(MEoS):
               "gr": [0, 0, 1, 1, 1, 1, 1, 0, 1, 0],
               "cr": [0, 0, 1, 1, 2, 1, 1, 0, 2, 0]}
 
-    _viscosity = (visco0, )
-
     trnECS = {"__name__": "Huber (2018)",
 
               "__doi__": {
@@ -186,7 +183,7 @@ class DME(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
               "Xio": 0.189e-9, "gam0": 0.057, "qd": 0.54e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = (trnECS, )
+    _viscosity = (visco0, trnECS)
     _thermal = (trnECS, )
 
 
@@ -195,7 +192,7 @@ class Test(TestCase):
 
     def test_Huber(self):
         """Table 7, pag 266"""
-        st = DME(T=360.3, rhom=12.001)
+        st = DME(T=360.3, rhom=12.001, visco=1)
         # self.assertEqual(round(st.mu.muPas, 5), 83.3511)
         self.assertEqual(round(st.mu.muPas, 5), 83.3514)
         self.assertEqual(round(st.k.mWmK, 4), 99.1164)

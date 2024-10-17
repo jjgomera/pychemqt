@@ -42,23 +42,23 @@ class nC16(MEoS):
     momentoDipolar = unidades.DipoleMoment(0.0, "Debye")
     id = 20
 
-    Fi1 = {"ao_log": [1, 22],
+    Fi1 = {"ao_log": [1, 22.03],
            "pow": [0, 1],
            "ao_pow": [45.96, -26.19],
-           "ao_exp": [18.9, 76.2],
+           "ao_exp": [18.91, 76.23],
            "titao": [420/Tc, 1860/Tc]}
 
     romeo = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for n-hexadecane of Romeo "
-                    "(2018).",
-        "__doi__": {"autor": "Romeo, R.",
-                    "title": "Density measurements in subcooled water at "
-                             "presures up to 400 MPa",
-                    "ref": "Doctoral thesis, Politecnico di Torino, 2018",
-                    "doi": "10.6092_polito_porto_2652785"},
+                    "(2022).",
+        "__doi__": {"autor": "Romeo, R., Lemmon, E.W.",
+                    "title": "Equations of State for n-Hexadecane and "
+                             "n-Docosane",
+                    "ref": "Int. J. Thermophys. 43 (2022) 146",
+                    "doi": "10.1007/s10765-022-03059-0"},
 
-        "R": 8.3144621,
+        "R": 8.314462618,
         "cp": Fi1,
         "ref": "OTO",
 
@@ -99,11 +99,10 @@ class nC16(MEoS):
         "eq": 1,
         "n": [3.43, -4.008, 8.4779, -7.894, 3.4824],
         "t": [0.39, 0.84, 1.27, 1.72, 2.26]}
-
     _vapor_Density = {
         "eq": 2,
-        "n": [-5.0096, 0.9061, -61.4138, -143.5222, -369.0229],
-        "t": [0.44, 2.32, 1.75, 4.4, 9.97]}
+        "n": [-5.0096, 0.9061, -15.2865, -61.4138, -143.5222, -369.0229],
+        "t": [0.44, 2.32, 1.75, 4.4, 9.97, 20.9]}
 
     visco0 = {"__name__": "Meng (2018)",
               "__doi__": {
