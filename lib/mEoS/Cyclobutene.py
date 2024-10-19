@@ -50,7 +50,7 @@ class Cyclobutene(MEoS):
 
     refprop = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for 1,3-butadiene (2022)",
+        "__name__": "Helmholtz equation of state for cyclobutene (2022)",
         "__doi__": {
             "autor": "Huber, M.L., Lemmon, E.W., Bell, I.H., McLinden, M.O.",
             "title": "The NIST REFPROP Database for Highly Accurate Properties"

@@ -67,6 +67,10 @@ class nC7(MEoS):
            "ao_exp": [15.29994054, 31.86604737, 14.10640675],
            "exp": [401.5547607, 1813.365387, 5041.869289]}
 
+    CP6 = {"ao": 4,
+           "ao_exp": [11.36, 18.82, 29.14],
+           "exp": [190.0, 3800.0, 1500.0]}
+
     shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for heptane of Span "
@@ -95,6 +99,41 @@ class nC7(MEoS):
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
+
+    refprop = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for n-Hexane (2022)",
+        "__doi__": {
+            "autor": "Huber, M.L., Lemmon, E.W., Bell, I.H., McLinden, M.O.",
+            "title": "The NIST REFPROP Database for Highly Accurate Properties"
+                     " of Industrially Importants Fluids",
+            "ref": "Ind. Eng. Chem. Res. 61(42) (2022) 15449-15472",
+            "doi": "10.1021/acs.iecr.2c01427"},
+
+        "R": 8.3144598,
+        "cp": CP6,
+        "ref": "IIR",
+        "Tc": 540.2, "rhoc": 2.33,
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 35.57,
+
+        "nr1": [0.04021974, 1.417638, -1.822198, -0.8536007, 0.265174],
+        "d1": [4.0, 1.0, 1.0, 2.0, 3.0],
+        "t1": [1.0, 0.208, 0.87, 1.036, 0.574],
+
+        "nr2": [-1.968992, -1.420553, 0.8501985, -1.516957, -0.02581013],
+        "d2": [1.0, 3.0, 2.0, 2.0, 7.0],
+        "t2": [2.0, 2.26, 1.1, 1.87, 0.985],
+        "c2": [2.0, 2.0, 1.0, 2.0, 1.0],
+        "gamma2": [1]*5,
+
+        "nr3": [2.810547, -0.008215312, -0.8616429, -0.2926342],
+        "d3": [1.0, 1.0, 3.0, 2.0],
+        "t3": [0.73, 1.13, 1.23, 1.4],
+        "alfa3": [1.017, 5.3, 1.135, 1.227],
+        "beta3": [1.41, 83.0, 1.54, 1.405],
+        "gamma3": [1.35, 1.14, 1.04, 1.26],
+        "epsilon3": [0.9, 0.92, 0.52, 1.236]}
 
     GERG = {
         "__type__": "Helmholtz",
@@ -215,7 +254,7 @@ class nC7(MEoS):
               3.57524917645, 3.27649699126e3, -1.15729200586e-1,
               3.93007045330e1, 3.88225605345e3]}
 
-    eq = shortSpan, GERG, polt, starling   # ratanapisit
+    eq = shortSpan, refprop, GERG, polt, starling   # ratanapisit
     _PR = [0.0074, -19.6376]
 
     _surface = {
