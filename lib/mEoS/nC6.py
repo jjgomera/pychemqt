@@ -64,6 +64,10 @@ class nC6(MEoS):
            "ao_sinh": [2.3738446e8/8.3159524*4.184], "sinh": [1.71849e3],
            "ao_cosh": [3.5806766e7/8.3159524*4.184], "cosh": [8.02069e2]}
 
+    CP2 = {"ao": 4,
+           "ao_exp": [9.21, 6.04, 25.3, 10.96],
+           "exp": [190.0, 3000.0, 1500.0, 4500.0]}
+
     shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for hexane of Span and "
@@ -92,6 +96,40 @@ class nC6(MEoS):
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
+
+    refprop = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for n-Heptane (2022)",
+        "__doi__": {
+            "autor": "Huber, M.L., Lemmon, E.W., Bell, I.H., McLinden, M.O.",
+            "title": "The NIST REFPROP Database for Highly Accurate Properties"
+                     " of Industrially Importants Fluids",
+            "ref": "Ind. Eng. Chem. Res. 61(42) (2022) 15449-15472",
+            "doi": "10.1021/acs.iecr.2c01427"},
+
+        "R": 8.3144598,
+        "cp": CP2,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 600.0, "Pmax": 100000.0, "rhomax": 35.57,
+
+        "nr1": [0.0446249, 1.740621, -2.050688, -0.7724346, 0.2116422],
+        "d1": [4.0, 1.0, 1.0, 2.0, 3.0],
+        "t1": [1.0, 0.303, 0.845, 1.055, 0.523],
+
+        "nr2": [-3.187864, -1.134719, 0.6817086, -1.111314, -0.02377251],
+        "d2": [1.0, 3.0, 2.0, 2.0, 7.0],
+        "t2": [1.48, 2.06, 1.19, 1.883, 0.98],
+        "c2": [2.0, 2.0, 1.0, 2.0, 1.0],
+        "gamma2": [1]*5,
+
+        "nr3": [3.744662, -0.4322223, -0.8054799, -1.055577, -0.02932639],
+        "d3": [1.0, 3.0, 2.0, 2.0, 1.0],
+        "t3": [0.94, 1.47, 1.11, 0.895, 1.73],
+        "alfa3": [0.864, 1.094, 0.751, 1.062, 6.6],
+        "beta3": [0.7, 0.52, 0.69, 0.88, 180.0],
+        "gamma3": [1.21, 1.13, 1.0, 0.82, 1.14],
+        "epsilon3": [0.767, 0.707, 0.692, 0.46, 0.92]}
 
     GERG = {
         "__type__": "Helmholtz",
@@ -211,7 +249,7 @@ class nC6(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 3],
         "gamma2": [1]*8}
 
-    eq = shortSpan, GERG, polt, starling, sun
+    eq = shortSpan, refprop, GERG, polt, starling, sun
     _PR = [-0.0051, -19.3689]
 
     _surface = {
