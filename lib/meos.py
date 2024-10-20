@@ -164,7 +164,7 @@ import logging
 import os
 
 from numpy import sin, tan, sinh, cosh, tanh, arctan, arccos, exp, log
-from scipy.constants import Boltzmann, pi, Avogadro, R, u
+from scipy.constants import Boltzmann, pi, Avogadro, R, u, epsilon_0
 from scipy.optimize import fsolve, newton
 
 from lib import unidades
@@ -351,6 +351,12 @@ __doi__ = {
          "ref": "Fluid Phase Equilib. 303 (2011) 134-149",
          "doi": "10.1016/j.fluid.2011.01.008"},
     29:
+        {"autor": "Harvey, A.H., Mountain, R.D.",
+         "title": "Correlations for the Dielectric Constants of H2S, SO2 "
+                  "and SF6",
+         "ref": "Int. J. Thermophys. 38 (2017) 147",
+         "doi": "10.1007/s10765-017-2279-6"},
+    30:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -4704,7 +4710,7 @@ class MEoS(ThermoAdvanced):
             sigma = None
         return sigma
 
-    @refDoc(__doi__, [24], tab=8)
+    @refDoc(__doi__, [24, 29], tab=8)
     def _Dielectric(self, rho, T):
         r"""Calculate the dielectric constant as explain in [24]_.
 
@@ -4752,11 +4758,40 @@ class MEoS(ThermoAdvanced):
         epsilon : float
             Static dielectric constant, [-]
         """
+        # Discard calculation in fluids with no available correlation
+        if not self._dielectric:
+            return unidades.Dimensionless(None)
+
         # density in mol/cc
         rhom = rho/self.M/1000
 
-        if self._dielectric:
-            if rho:
+        if rho:
+            if self._dielectric["eq"] == 3:
+                alfa = unidades.Volume(self._dielectric["alfa"], "cc")
+                mu = unidades.DipoleMoment(self._dielectric["mu"], "Debye")
+                Tc = self._dielectric["Tc"]
+                rhoc = self._dielectric["rhoc"]
+                cu = self._dielectric["cu"]
+                au = self._dielectric["au"]
+                nu = self._dielectric["nu"]
+                cg = self._dielectric["cg"]
+                a1 = self._dielectric["a1"]
+                n1 = self._dielectric["n1"]
+                a2 = self._dielectric["a2"]
+                n2 = self._dielectric["n2"]
+
+                Tr = T/Tc
+                rhor = rhom/rhoc
+                fu = cu*(1-exp(-au*rhor**nu))                            # Eq 6
+                g1 = exp(-a1*Tr**n1)                                     # Eq 7
+                g2 = 1 - exp(-a2*rhor**n2)                               # Eq 8
+                g = 1 + cg*g1*g2                                         # Eq 4
+                mueff = mu*(1+fu)                                        # Eq 3
+                Au_eff = Avogadro*mueff**2/9/epsilon_0/Boltzmann
+                P = rhom*1e6*(4*pi*Avogadro*alfa/3 + g*Au_eff/T)         # Eq 2
+                e = 0.25*(1+9*P+3*(9*P**2+2*P+1)**0.5)
+
+            else:
                 ai = self._dielectric["a"]
                 bi = self._dielectric["b"]
                 ci = self._dielectric["c"]
@@ -4777,10 +4812,8 @@ class MEoS(ThermoAdvanced):
                 elif self._dielectric["eq"] == 2:
                     # Kirwood expression, for polar fluid
                     e = 0.25*(1+9*P+3*(9*P**2+2*P+1)**0.5)
-            else:
-                e = 1
         else:
-            e = None
+            e = 1
 
         return unidades.Dimensionless(e)
 

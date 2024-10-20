@@ -159,6 +159,18 @@ class SO2(MEoS):
 
     _surface = {"sigma": [0.0803, 0.0139, -0.0114],
                 "exp": [0.928, 1.57, 0.364]}
+    _dielectric = {
+        "__doi__": {
+            "autor": "Harvey, A.H., Mountain, R.D.",
+            "title": "Correlations for the Dielectric Constants of H2S, SO2 "
+                     "and SF6",
+            "ref": "Int. J. Thermophys. 38 (2017) 147",
+            "doi": "10.1007/s10765-017-2279-6"},
+        "eq": 3,
+
+        "alfa": 4.09e-24, "mu": 1.63308, "Tc": 450, "rhoc": 0.025,
+        "cu": 0.335, "au": 1.018, "nu": 0.75, "cg": 2.516,
+        "a1": 0.8972, "n1": 0.98, "a2": 0.5264, "n2": 1.2}
 
     _vapor_Pressure = {
         "eq": 3,
@@ -259,3 +271,6 @@ class Test(TestCase):
         # self.assertEqual(round(st.mu.muPas, 4), 127.4105)
         self.assertEqual(round(st.mu.muPas, 4), 127.4117)
         self.assertEqual(round(st.k.mWmK, 4), 115.4211)
+
+    def test_dielectric(self):
+        self.assertEqual(round(SO2(T=400, rhom=30).epsilon, 4), 14.7444)

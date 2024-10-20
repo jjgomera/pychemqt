@@ -211,6 +211,17 @@ class SF6(MEoS):
     # doi: 10.1063/1.2716004
 
     _surface = {"sigma": [0.0538, -4.064e-5], "exp": [1.271, 0.2116]}
+    _dielectric = {
+        "__doi__": {
+            "autor": "Harvey, A.H., Mountain, R.D.",
+            "title": "Correlations for the Dielectric Constants of H2S, SO2 "
+                     "and SF6",
+            "ref": "Int. J. Thermophys. 38 (2017) 147",
+            "doi": "10.1007/s10765-017-2279-6"},
+        "eq": 1,
+        "a": [16.5, 0], "b": [69.2, 38.8], "c": [-177.9, -171.9],
+        "Au": 0, "D": 1.2}
+
     _melting = {
         "eq": 2,
         "__doi__": {
@@ -222,7 +233,6 @@ class SF6(MEoS):
         "Tmin": Tt, "Tmax": 625,
         "Tref": Tt, "Pref": 231429,
         "a2": [223.7e6], "exp2": [1.555]}
-
     _sublimation = {
         "eq": 2,
         "__doi__": guder["__doi__"],
@@ -527,3 +537,6 @@ class Test(TestCase):
         self.assertEqual(round(SF6(T=310, rho=0).k.mWmK, 2), 13.83)
         self.assertEqual(round(SF6(T=310, rho=1200).k.mWmK, 2), 48.70)
         self.assertEqual(round(SF6(T=480, rho=100).k.mWmK, 2), 28.85)
+
+    def test_dielectric(self):
+        self.assertEqual(round(SF6(T=300, rhom=10).epsilon, 5), 1.59326)
