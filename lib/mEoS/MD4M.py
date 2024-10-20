@@ -56,7 +56,7 @@ class MD4M(MEoS):
     thol = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for "
-                    "decamethylcyclopentasiloxane of Thol (2019).",
+                    "tetradecamethylcyclohexasiloxane of Thol (2019).",
         "__doi__": {
             "autor": "Thol, M., Javed, M.A., Baumhögger, E., Span, R., "
                      "Vrabec, J.",
