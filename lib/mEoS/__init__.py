@@ -87,6 +87,7 @@ from lib.mEoS.EthylBenzene import EthylBenzene
 from lib.mEoS.Ethylene import Ethylene
 from lib.mEoS.Propylene import Propylene
 from lib.mEoS.Butene_1 import Butene_1
+from lib.mEoS.Propadiene import Propadiene
 from lib.mEoS.Butadiene13 import Butadiene13
 from lib.mEoS.iButene import iButene
 from lib.mEoS.Cis_2_butene import Cis_2_butene
@@ -205,10 +206,10 @@ Alkanes = [CH4, C2, C3, nC4, iC4, nC5, neoC5, iC5, nC6, iC6, nC7, nC8, iC8,
 Naphthenes = [Cyclopropane, Cyclopentane, Cyclohexane, C1Cyclohexane,
               C3Cyclohexane]
 Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
-           Ethylene, Propylene, Butene_1, Butadiene13, iButene, Cis_2_butene,
-           Trans_2_butene, Pentene_1, Hexene_1, Acetylene, Propyne, Butyne_1,
-           Cyclobutene, C1Oleate, C1Linolenate, C1Linoleate, C1Palmitate,
-           C1Stearate]
+           Ethylene, Propylene, Butene_1, Propadiene, Butadiene13, iButene,
+           Cis_2_butene, Trans_2_butene, Pentene_1, Hexene_1, Acetylene,
+           Propyne, Butyne_1, Cyclobutene, C1Oleate, C1Linolenate, C1Linoleate,
+           C1Palmitate, C1Stearate]
 Heteroatom = [Methanol, Ethanol, Acetone, EthyOxide, EthylenGlycol,
               PropylenGlycol, AceticAcid, DME, DEE, DEA, MEA, DMC, NF3, SF6,
               HCl]

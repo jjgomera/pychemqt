@@ -90,13 +90,13 @@ class C3(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for propane of Lemmon et al. "
                     "(2009)",
-        "__doi__": {"autor": "Lemmon, E.W., McLinden, M.O., Wagner, W.",
-                    "title": "Thermodynamic Properties of Propane.  III.  A "
-                             "Reference Equation of State for Temperatures "
-                             "from the Melting Line to 650 K and Pressures up "
-                             "to 1000 MPa",
-                    "ref": "J. Chem. Eng. Data, 54(12) (2009) 3141-3180",
-                    "doi": "10.1021/je900217v"},
+        "__doi__": {
+            "autor": "Lemmon, E.W., McLinden, M.O., Wagner, W.",
+            "title": "Thermodynamic Properties of Propane.  III.  A Reference "
+                     "Equation of State for Temperatures from the Melting "
+                     "Line to 650 K and Pressures up to 1000 MPa",
+            "ref": "J. Chem. Eng. Data, 54(12) (2009) 3141-3180",
+            "doi": "10.1021/je900217v"},
 
         "R": 8.314472,
         "cp": Fi1,
