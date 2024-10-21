@@ -89,6 +89,16 @@ class Novec649(MEoS):
 
     eq = (mclinden, )
 
+    _surface = {
+        "__doi__": {
+            "autor": "Cui, J., Yan, S., Bi, S., Wu, J.",
+            "title": "Saturated Liquid Dynamic Viscosity and Surface Tension "
+                     "of trans-1-Chloro-3,3,3-trifluropropene and "
+                     "Dodecafluoro-2-methylpentan-3-one",
+            "ref": "J. Chem. Eng. Data 63(3) (2018) 751-756",
+            "doi": "10.1063/1.4848698"},
+        "sigma": [0.043655], "exp": [1.2556]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-8.4411, 2.711, -3.6354, -5.3872, -8.1641],
