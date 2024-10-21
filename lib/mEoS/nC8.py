@@ -70,13 +70,12 @@ class nC8(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Fundamental Helmholtz equation of state for octane of "
                     "Beckmüller et al. (2022)",
-        "__doi__": {"autor": "Beckmüller, R., Span, R., Lemmon, E.W., "
-                             "Thol, M.",
-                    "title": "A Fundamental Equation of State for the "
-                             "Calculation of Themodynamic Properties of "
-                             "n-Octane",
-                    "ref": "J. Phys. Chem. Ref. Data 51 (2022) 043103",
-                    "doi": "10.1063/5.0104661"},
+        "__doi__": {
+            "autor": "Beckmüller, R., Span, R., Lemmon, E.W., Thol, M.",
+            "title": "A Fundamental Equation of State for the Calculation of "
+                     "Themodynamic Properties of n-Octane",
+            "ref": "J. Phys. Chem. Ref. Data 51 (2022) 043103",
+            "doi": "10.1063/5.0104661"},
 
         # Using several constants rounded as in fld supplementary data.
         "R": 8.3144598,

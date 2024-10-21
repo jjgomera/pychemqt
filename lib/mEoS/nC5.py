@@ -67,6 +67,10 @@ class nC5(MEoS):
            "ao_exp": [9.751560716, 22.71445741, 11.65392685],
            "exp": [404.8796661, 1785.491483, 4504.430788]}
 
+    CP4 = {"ao": 4,
+           "ao_exp": [6.618, 15.97, 15.29],
+           "exp": [154.0, 1324.0, 2634.0]}
+
     shortSpan = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for pentane of Span "
@@ -95,6 +99,41 @@ class nC5(MEoS):
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
         "gamma2": [1]*6}
+
+    refprop = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for n-pentane (2022)",
+        "__doi__": {
+            "autor": "Huber, M.L., Lemmon, E.W., Bell, I.H., McLinden, M.O.",
+            "title": "The NIST REFPROP Database for Highly Accurate Properties"
+                     " of Industrially Importants Fluids",
+            "ref": "Ind. Eng. Chem. Res. 61(42) (2022) 15449-15472",
+            "doi": "10.1021/acs.iecr.2c01427"},
+
+        "R": 8.3144598,
+        "cp": CP4,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 750.0, "Pmax": 780000.0, "rhomax": 35.57,
+
+        "nr1": [0.042952795, 2.4923999, -2.603872, -0.83829913, 0.19223378],
+        "d1": [4.0, 1.0, 1.0, 2.0, 3.0],
+        "t1": [1.0, 0.367, 0.704, 1.04, 0.494],
+
+        "nr2": [-3.0778196, -0.000324816, -1.6781976, 0.6416425, -1.7300934,
+                -0.017585046],
+        "d2": [1.0, 1.0, 3.0, 2.0, 2.0, 7.0],
+        "t2": [1.34, 0.688, 1.688, 0.88, 1.357, 1.021],
+        "c2": [2.0, 3.0, 2.0, 1.0, 2.0, 1.0],
+        "gamma2": [1]*5,
+
+        "nr3": [4.5708883, -0.0758188, -0.62122633, -0.42413043, -2.0418443],
+        "d3": [1.0, 1.0, 3.0, 2.0, 2.0],
+        "t3": [0.979, 2.966, 1.35, 0.664, 0.937],
+        "alfa3": [1.01, 4.77, 1.13, 1.08, 1.12],
+        "beta3": [0.583, 31.6, 0.52, 0.654, 0.75],
+        "gamma3": [1.06, 1.37, 1.09, 1.19, 0.83],
+        "epsilon3": [0.927, 0.968, 0.735, 1.196, 0.617]}
 
     GERG = {
         "__type__": "Helmholtz",
@@ -243,7 +282,7 @@ class nC5(MEoS):
               -3.85316416299, 2.65416349789e3, 4.76643876980e-3,
               -8.37595968663, -1.35160880503e3]}
 
-    eq = shortSpan, GERG, polt, starling, sun, ratanapisit
+    eq = shortSpan, refprop, GERG, polt, starling, sun, ratanapisit
     _PR = [-0.0752, -17.5]
 
     _surface = {
