@@ -77,14 +77,14 @@ class N2(MEoS):
     span = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for nitrogen of Span (2000)",
-        "__doi__": {"autor": "Span, R., Lemmon, E.W., Jacobsen, R.T, Wagner, "
-                             "W., Yokozeki, A.",
-                    "title": "A Reference Equation of State for the "
-                             "Thermodynamic Properties of Nitrogen for "
-                             "Temperatures from 63.151 to 1000 K and "
-                             "Pressures to 2200 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data 29(6) (2000) 1361-1433",
-                    "doi": "10.1063/1.1349047"},
+        "__doi__": {
+            "autor": "Span, R., Lemmon, E.W., Jacobsen, R.T, Wagner, W., "
+                     "Yokozeki, A.",
+            "title": "A Reference Equation of State for the Thermodynamic "
+                     "Properties of Nitrogen for Temperatures from 63.151 to "
+                     "1000 K and Pressures to 2200 MPa",
+            "ref": "J. Phys. Chem. Ref. Data 29(6) (2000) 1361-1433",
+            "doi": "10.1063/1.1349047"},
 
         "R": 8.31451,
         "cp": Fi1,
@@ -185,10 +185,7 @@ class N2(MEoS):
         "t2": [0.625, 2.625, 2.75, 2.125, 2, 1.75, 4.5, 4.75, 5, 4, 4.5, 7.5,
                14, 11.5, 26, 28, 30, 16],
         "c2": [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 6, 6, 6, 6],
-        "gamma2": [1]*18,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*18}
 
     jacobsen = {
         "__type__": "Helmholtz",
@@ -252,10 +249,7 @@ class N2(MEoS):
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12],
         "c2": [1, 1, 2, 2, 3, 3],
-        "gamma2": [1]*6,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*6}
 
     sun = {
         "__type__": "Helmholtz",

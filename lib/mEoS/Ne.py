@@ -36,9 +36,9 @@ class Ne(MEoS):
     synonym = "R-720"
     _refPropName = "NEON"
     _coolPropName = "Neon"
-    rhoc = unidades.Density(481.914888)
-    Tc = unidades.Temperature(44.4918)
-    Pc = unidades.Pressure(2678.6, "kPa")
+    rhoc = unidades.Density(486.3139)
+    Tc = unidades.Temperature(44.4)
+    Pc = unidades.Pressure(2661.63, "kPa")
     M = 20.179  # g/mol
     Tt = unidades.Temperature(24.556)
     Tb = unidades.Temperature(27.104)
@@ -47,6 +47,42 @@ class Ne(MEoS):
     id = 107
 
     CP1 = {"ao": 2.5}
+
+    refprop = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for Neon (2022)",
+        "__doi__": {
+            "autor": "Huber, M.L., Lemmon, E.W., Bell, I.H., McLinden, M.O.",
+            "title": "The NIST REFPROP Database for Highly Accurate Properties"
+                     " of Industrially Importants Fluids",
+            "ref": "Ind. Eng. Chem. Res. 61(42) (2022) 15449-15472",
+            "doi": "10.1021/acs.iecr.2c01427"},
+
+        "R": 8.3144598,
+        "cp": CP1,
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 725.0, "Pmax": 1000000.0, "rhomax": 155.57,
+
+        "nr1": [0.031522418, 3.7716418, -4.27399448, -0.756466758, .066679921],
+        "d1": [4.0, 1.0, 1.0, 2.0, 3.0],
+        "t1": [1.0, 0.431, 0.592, 1.105, 0.49],
+
+        "nr2": [-0.356928434, -0.053124761, 0.9407234, -0.969302374,
+                0.461243234, 0.008184422],
+        "d2": [1.0, 3.0, 2.0, 2.0, 4.0, 7.0],
+        "t2": [2.3, 3.18, 1.36, 2.0, 0.5, 1.12],
+        "c2": [2.0, 2.0, 1.0, 2.0, 1.0, 1.0],
+        "gamma2": [1]*6,
+
+        "nr3": [7.84771604, 6.39604094, -1.27480579, -5.51887999, -8.76652276,
+                -0.351732709],
+        "d3": [1.0, 1.0, 3.0, 2.0, 1.0, 2.0],
+        "t3": [0.41, 0.64, 0.579, 0.6, 0.52, 0.655],
+        "alfa3": [0.76, 2.126, 2.168, 2.033, 0.743, 4.38],
+        "beta3": [0.537, 0.765, 0.883, 0.751, 0.531, 11.4],
+        "gamma3": [1.997, 1.782, 1.663, 1.837, 1.953, 1.658],
+        "epsilon3": [0.5775, 0.9137, 0.7895, 0.6229, 0.4992, 0.869]}
 
     katti = {
         "__type__": "Helmholtz",
@@ -83,7 +119,7 @@ class Ne(MEoS):
         "c2": [3, 2, 2, 4, 6, 6, 2, 2, 2, 2, 2],
         "gamma2": [1]*11}
 
-    eq = (katti, )
+    eq = (refprop, katti)
 
     _surface = {"sigma": [0.012254, 0.02728, -0.025715],
                 "exp": [1.4136, 1.4517, 1.6567]}
@@ -184,7 +220,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = Ne(T=40, rhom=45.956)
-        # self.assertEqual(round(st.mu.muPas, 5), 46.73723)
-        # self.assertEqual(round(st.k.mWmK, 4), 59.3183)
-        self.assertEqual(round(st.mu.muPas, 5), 46.58067)
-        self.assertEqual(round(st.k.mWmK, 4), 59.2589)
+        self.assertEqual(round(st.mu.muPas, 5), 46.73723)
+        self.assertEqual(round(st.k.mWmK, 4), 59.3180)

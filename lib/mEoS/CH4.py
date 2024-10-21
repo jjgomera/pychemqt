@@ -72,13 +72,13 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Setzmann and "
                     "Wagner (1991)",
-        "__doi__": {"autor": "Setzmann, U., Wagner, W.",
-                    "title": "A New Equation of State and Tables of "
-                             "Thermodynamic Properties for Methane Covering "
-                             "the Range from the Melting Line to 625 K at "
-                             "Pressures up to 1000 MPa",
-                    "ref": "J. Phys. Chem. Ref. Data, 20(6) (1991) 1061-1155",
-                    "doi": "10.1063/1.555898"},
+        "__doi__": {
+            "autor": "Setzmann, U., Wagner, W.",
+            "title": "A New Equation of State and Tables of Thermodynamic "
+                     "Properties for Methane Covering the Range from the "
+                     "Melting Line to 625 K at Pressures up to 1000 MPa",
+            "ref": "J. Phys. Chem. Ref. Data, 20(6) (1991) 1061-1155",
+            "doi": "10.1063/1.555898"},
 
         "R": 8.31451,
         "cp": Fi1,
@@ -122,12 +122,12 @@ class CH4(MEoS):
         "__type__": "MBWR",
         "__name__": "MBWR equation of state for ethane of Younglove and Ely "
                     "(1987)",
-        "__doi__": {"autor": "Younglove, B.A., Ely, J.F.",
-                    "title": "Thermophysical Properties of Fluids. II. "
-                             "Methane, Ethane, Propane, Isobutane, and Normal "
-                             "Butane",
-                    "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
-                    "doi": "10.1063/1.555785"},
+        "__doi__": {
+            "autor": "Younglove, B.A., Ely, J.F.",
+            "title": "Thermophysical Properties of Fluids. II. Methane, "
+                     "Ethane, Propane, Isobutane, and Normal Butane",
+            "ref": "J. Phys. Chem. Ref. Data 16(4) (1987) 577-798",
+            "doi": "10.1063/1.555785"},
 
         "Tmin": 90.68, "Tmax": 600.0, "Pmax": 200000.0, "rhomax": 36.2029,
 
@@ -151,12 +151,13 @@ class CH4(MEoS):
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for methane of Kunz and "
                     "Wagner (2004).",
-        "__doi__": {"autor": "Kunz, O., Wagner, W.",
-                    "title": "The GERG-2008 Wide-Range Equation of State for "
-                             "Natural Gases and Other Mixtures: An Expansion "
-                             "of GERG-2004",
-                    "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
-                    "doi": "10.1021/je300655b"},
+        "__doi__": {
+            "autor": "Kunz, O., Wagner, W.",
+            "title": "The GERG-2008 Wide-Range Equation of State for Natural "
+                     "Gases and Other Mixtures: An Expansion of GERG-2004",
+            "ref": "J. Chem.Eng. Data 57(11) (2012) 3032-3091",
+            "doi": "10.1021/je300655b"},
+
         "R": 8.314472,
         "cp": Fi2,
         "ref": "OTO",
