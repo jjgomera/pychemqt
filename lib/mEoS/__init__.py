@@ -257,16 +257,20 @@ for obj in __all__:
 # TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
 
-# Fluid in REFPROP 10 missing
+# Correlation in REFPROP missing
 
-# Gao, K. H.; Wu, J. T.; Lemmon, E. W. Unpublished Helmholtz Equation of State
-# 1,3-butadiene
-# 1-Butyne
-# 1-Pentene
-# Acetylene
-# Cyclobutene
-# Propadiene
-# Propylene oxide
+# R113
+# Huber, M. L. Unpublished fluid-specific correlations for the viscosity and
+# thermal conductivity for R113, 2003.
+
+# R115
+# Huber, M. L. Unpublished ECS correlations for the viscosity and thermal
+# conductivity of R115, 2003
+
+# R116
+# Huber, M. L. Unpublished fluid-specific correlations for the viscosity and
+# thermal conductivity of R116, 2003.
+
 
 # Gao, K. H.; Wu, J. T.; Bell, I. H.; Harvey, A. H.; Lemmon, E. W.
 # Ammonia

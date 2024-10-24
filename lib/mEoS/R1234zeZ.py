@@ -152,7 +152,7 @@ class R1234zeZ(MEoS):
               "ek": 336.11, "sigma": 0.5096, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.85,
 
-              "psi": [0.829337, 0.04476201], "psi_d": [0, 1],
+              "psi": [0.829337, 0.0476201], "psi_d": [0, 1],
               "fint": [0.00162], "fint_t": [0],
               "chi": [1.10592, -0.0471388], "chi_d": [0, 1],
 
@@ -205,8 +205,8 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJmolK, 4), 10.1999)
         self.assertEqual(round(st.w, 4), 82.9160)
 
-#     def test_Huber(self):
-#         """Table 7, pag 266"""
-#         st = R1234zeZ(T=380.9, rhom=8.511)
-#         self.assertEqual(round(st.mu.muPas, 4), 105.4503)
-#         self.assertEqual(round(st.k.mWmK, 4), 65.5442)
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R1234zeZ(T=380.9, rhom=8.511)
+        self.assertEqual(round(st.mu.muPas, 4), 105.4508)
+        self.assertEqual(round(st.k.mWmK, 4), 65.5442)

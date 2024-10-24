@@ -59,7 +59,7 @@ class R161(MEoS):
 
     qi = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R-161 of Qi (2012)",
+        "__name__": "Helmholtz equation of state for R-161 of Qi (2016)",
         "__doi__": {"autor": "Qi, H., Fang, D., Gao, K., Meng, X., Wu, J.",
                     "title": "Compressed Liquid Densities and Helmholtz Energy"
                              " Equation of State for Fluoroethane (R161)",

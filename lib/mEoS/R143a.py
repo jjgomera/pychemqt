@@ -250,7 +250,7 @@ class R143a(MEoS):
 
                "critical": 3,
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
-               "Xio": 0.198e-9, "gam0": 0.054, "qd": 0.588e-9, "Tcref": Tc*1.5}
+               "Xio": 0.193e-9, "gam0": 0.055, "qd": 0.230e-9, "Tcref": Tc*1.5}
 
     _thermal = (thermo0, )
 
@@ -481,11 +481,8 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         self.assertEqual(round(
-            # R143a(T=311.3, rhom=10.627).mu.muPas, 4), 103.2252)
             R143a(T=311.3, rhom=10.627).mu.muPas, 4), 103.2256)
 
         # Table 9, pag 271
-        # Critical enhancement give a really high value in paper, maybe a typo
-        # there or but in pychemqt
-        # self.assertEqual(round(
-        #     R143a(T=311.27, rhom=10.6289).k.mWmK, 4), 65.5116)
+        self.assertEqual(round(
+            R143a(T=311.27, rhom=10.6289).k.mWmK, 4), 65.5116)

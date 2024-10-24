@@ -53,7 +53,7 @@ class R115(MEoS):
     lemmon = {
         "__type__": "Helmholtz",
         "__name__": "short Helmholtz equation of state for R-115 of Lemmon "
-                    "and Span (2013)",
+                    "and Span (2015)",
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
                     "title": "Thermodynamic Properties of R-227ea, R-365mfc, "
                              "R-115, and R-13I1",

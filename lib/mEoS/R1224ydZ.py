@@ -28,14 +28,14 @@ from lib.mEoS import R134a
 class R1224ydZ(MEoS):
     """Multiparameter equation of state for R1224yd(Z)"""
     name = "cis-1-chloro-2,3,3,3-tetrafluoropropene"
-    CASNumber = "677-21-4"
+    CASNumber = "111512-60-8"
     formula = "CHCl=CFCF3"
     synonym = "R-1224yd(Z)"
     rhoc = unidades.Density(527.127785)
     Tc = unidades.Temperature(428.69)
     Pc = unidades.Pressure(3337, "kPa")
     M = 148.4867  # g/mol
-    Tt = unidades.Temperature(0)
+    Tt = unidades.Temperature(263)
     Tb = unidades.Temperature(287.767)
     f_acent = 0.322
     momentoDipolar = unidades.DipoleMoment(1.47, "Debye")
@@ -119,7 +119,7 @@ class R1224ydZ(MEoS):
               "ref": R134a,
 
               "ek": 340.42, "sigma": 0.53, "omega": 6,
-              "n_chapman": 26.692e-3, "Fc": 1,
+              "n_chapman": 26.692e-3, "Fc": 0.92,
 
               "psi": [0.712387, 0.186976, -0.0316058], "psi_d": [0, 1, 2],
               "fint": [0.00125], "fint_t": [0],
@@ -136,11 +136,11 @@ class R1224ydZ(MEoS):
 class Test(TestCase):
     """Test class"""
 
-#     def test_Huber(self):
-#         """Table 7, pag 266"""
-#         st = R1224ydZ(T=385.8, rhom=7.275)
-#         self.assertEqual(round(st.mu.muPas, 4), 113.9872)
-#         self.assertEqual(round(st.k.mWmK, 4), 53.9324)
+    def test_Huber(self):
+        """Table 7, pag 266"""
+        st = R1224ydZ(T=385.8, rhom=7.275)
+        self.assertEqual(round(st.mu.muPas, 4), 113.9877)
+        self.assertEqual(round(st.k.mWmK, 4), 53.9324)
 
     def test_Surface(self):
         """Table 10, pag 271"""

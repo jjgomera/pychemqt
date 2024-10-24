@@ -101,7 +101,6 @@ class R14(MEoS):
                   "doi": "10.1021/ie0300880"},
 
               "eq": "ecs",
-
               "ref": N2,
 
               "ek": 164.44, "sigma": 0.4543, "omega": 5,
@@ -114,5 +113,5 @@ class R14(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03, "Xio": 0.194e-9,
               "gam0": 0.0496, "qd": 2.26566e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = trnECS,
-    _thermal = trnECS,
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
