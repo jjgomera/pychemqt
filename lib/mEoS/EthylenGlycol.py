@@ -171,20 +171,60 @@ class EthylenGlycol(MEoS):
         return mur
 
     _viscosity = (visco0, trnECS)
-    _thermal = (trnECS,)
+
+    thermo0 = {"__name__": "Mebelli (2021)",
+               "__doi__": {
+                   "autor": "Mebelli, M., Velliadou, D., Assael, M.J., "
+                            "Antoniadis, K.D., Huber, M.L.",
+                   "title": "Reference Correlations for the Thermal "
+                            "Conductivity of Ethane-1,2-diol (Ethylene Glycol)"
+                            " from the Triple Point to 475 K and Pressures up "
+                            "to 100 MPa",
+                   "ref": "Int. J. Thermophysics 42(11) (2021) 151",
+                   "doi": "10.1007/s10765-021-02904-y"},
+
+               "eq": 1,
+
+               "Toref": Tc, "koref": 1e-3,
+               "no": [-0.59047, -29.94381, 212.14796, -142.01157, 32.40568],
+               "to": [0, 1, 2, 3, 4],
+
+               "Tref_res": Tc, "rhoref_res": rhoc, "kref_res": 1,
+               "nr": [-7.569160e-2, 1.013690e-1, 5.117180e-1, -4.43549e-1,
+                      -5.127560e-1, 4.196610e-1, 1.858730e-1, -1.358010e-1,
+                      -2.240910e-2, 1.467970e-2],
+               "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+               "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.166e-9, "gam0": 0.073, "qd": 0.542e-9, "Tcref": 1078.5}
+
+    _thermal = (thermo0, trnECS)
 
 
 class Test(TestCase):
     """Testing"""
 
-    def test_Mebelli(self):
-        self.assertEqual(round(EthylenGlycol(T=350, rho=0).mu.muPas, 3), 9.522)
-        self.assertEqual(round(EthylenGlycol(T=350, rho=0.01).mu.muPas, 3), 9.525)
-        self.assertEqual(round(EthylenGlycol(T=350, rho=1100).mu.muPas, 2), 4246.78)
+    def test_MebelliVisco(self):
+        """Data in section 3"""
+        self.assertEqual(round(
+            EthylenGlycol(T=350, rho=0).mu.muPas, 3), 9.522)
+        self.assertEqual(round(
+            EthylenGlycol(T=350, rho=0.01).mu.muPas, 3), 9.525)
+        self.assertEqual(round(
+            EthylenGlycol(T=350, rho=1100).mu.muPas, 2), 4246.78)
+
+    def test_MebelliThermo(self):
+        """Data in section 4"""
+        self.assertEqual(round(
+            EthylenGlycol(T=350, rho=0).k.mWmK, 3), 20.543)
+        self.assertEqual(round(
+            EthylenGlycol(T=350, rho=1100).k.mWmK, 1), 269.60)
 
     def test_Huber(self):
         """Table 7, pag 266"""
-        st = EthylenGlycol(T=647.1, rhom=12.365, visco=1, thermal=0)
+        st = EthylenGlycol(T=647.1, rhom=12.365, visco=1, thermal=1)
         # self.assertEqual(round(st.mu.muPas, 4), 124.6233)
         self.assertEqual(round(st.mu.muPas, 4), 124.6256)
         self.assertEqual(round(st.k.mWmK, 4), 204.0773)
