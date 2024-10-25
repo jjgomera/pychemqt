@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from math import exp
 from unittest import TestCase
 
 from lib import unidades
@@ -133,16 +134,57 @@ class EthylenGlycol(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
               "Xio": 0.166e-9, "gam0": 0.073, "qd": 0.542e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = (trnECS, )
-    _thermal = (trnECS, )
+    visco0 = {"__name__": "Mebelli (2021)",
+              "__doi__": {
+                  "autor": "Mebelli, M., Velliadou, D., Assael, M.J., "
+                           "Huber, M.L.",
+                  "title": "Reference Correlations for the Viscosity of "
+                           "Ethane-1,2-diol (Ethylene Glycol) from the Triple "
+                           "Point to 465 K and up to 100 MPa",
+                  "ref": "Int. J. Thermophys. 42(8) (2021) 116",
+                  "doi": "10.1007/s10765-021-02867-0"},
+
+              "eq": 1, "omega": 0,
+              "ek": 570.9, "sigma": 0.4482,
+
+              "Toref": Tc,
+              "no": [0.414421, 16.9125, 4.88979, -2.46114],
+              "to": [0, 1, 2, 3],
+
+              "Tref_virial": 570.9,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Mebelli correlation"""
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+
+        # Eq 9
+        mur = rhor**(2/3)*Tr**0.5 * exp(
+            2.5357387 + 1.8519087*rhor + 0.069643296*rhor/Tr**2
+            + 1.9804739e-3*rhor**4/Tr**3 - 1.5781297*Tr - 0.18187941*rhor**2)
+        return mur
+
+    _viscosity = (visco0, trnECS)
+    _thermal = (trnECS,)
 
 
 class Test(TestCase):
     """Testing"""
 
+    def test_Mebelli(self):
+        self.assertEqual(round(EthylenGlycol(T=350, rho=0).mu.muPas, 3), 9.522)
+        self.assertEqual(round(EthylenGlycol(T=350, rho=0.01).mu.muPas, 3), 9.525)
+        self.assertEqual(round(EthylenGlycol(T=350, rho=1100).mu.muPas, 2), 4246.78)
+
     def test_Huber(self):
         """Table 7, pag 266"""
-        st = EthylenGlycol(T=647.1, rhom=12.365)
+        st = EthylenGlycol(T=647.1, rhom=12.365, visco=1, thermal=0)
         # self.assertEqual(round(st.mu.muPas, 4), 124.6233)
         self.assertEqual(round(st.mu.muPas, 4), 124.6256)
         self.assertEqual(round(st.k.mWmK, 4), 204.0773)
