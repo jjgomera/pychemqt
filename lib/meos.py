@@ -5621,10 +5621,19 @@ class MEoS(ThermoAdvanced):
                 den = 1
             muo += num/den
 
+        if "no_exp" in coef:
+            term = 0
+            for n, t in zip(coef["no_exp"], coef["to_exp"]):
+                term += n*log(tau)**t
+            muo += exp(term)
+
         # Special hardcoded method:
         if "special0" in coef:
             method = self.__getattribute__(coef["special0"])
             muo += method(T)
+
+        if "muo_ref" in coef:
+            muo *= coef["muo_ref"]
 
         return muo
 
