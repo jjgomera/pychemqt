@@ -311,7 +311,38 @@ class N2(MEoS):
         "n": [-1.70127164, -3.70402649, 1.29859383, -0.561424977, -2.68505381],
         "t": [0.34, 5/6, 7/6, 13/6, 14/3]}
 
-    visco0 = {"__name__": "Lemmon (2004)",
+    visco0 = {"__name__": "Huber (2024)",
+              "__doi__": {
+                  "autor": "Huber, M.L., Perkins, R.A., Lemmon, E.W.",
+                  "title": "Reference Correlationo for the Viscosity of "
+                           "Nitrogen from the Triple Point to 1000 K and "
+                           "Pressures up to 2200 MPa",
+                  "ref": "Int. J. Thermophys., 45(10) (2024) 146",
+                  "doi": "10.1007/s10765-024-03440-1"},
+
+              "eq": 1, "omega": 0,
+
+              "Toref": 298.15, "muo_ref": 17.7494,
+              "no_exp": [7.734578e-1, -9.310761e-2, 2.716958e-2, 6.175553e-3,
+                         -7.201594e-3, 2.094372e-3, 1.922676e-4, -3.454323e-4,
+                         1.051771e-4, -1.126739e-5],
+              "to_exp": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+
+              "nr": [9.955235691668, -6.165266404871, 0.213120936996,
+                     -8.473713006806, 10.013103356639, 0.638966874603,
+                     0.311620258213, 9.241856768911, -5.252828814854,
+                     -0.667072279228],
+              "tr": [0.77512218631, 2.00109608805, 5.81445500000,
+                     0.67602596996, 0, 0.71613185456, 1.14069399597,
+                     2.36525835980, 2.54636992550, 1.00794034515],
+              "dr": [1, 1, 2, 2, 2, 6.96423363249, 8.38651257501,
+                     2.99224857471, 3.42744617975, 7.97371767411],
+
+              "critical": 1, "Xic": 0.06e-9,
+              "xu": 0.068, "gnu": 0.63, "gamma": 1.239, "Xio": 0.16e-9,
+              "gam0": 0.075, "qc": 1.81e-9, "qd": 0.8e-9, "Tcref": 1.5*Tc}
+
+    visco1 = {"__name__": "Lemmon (2004)",
               "__doi__": {
                   "autor": "Lemmon, E.W., Jacobsen, R.T.",
                   "title": "Viscosity and Thermal Conductivity Equations for "
@@ -329,7 +360,7 @@ class N2(MEoS):
               "gr": [0, 1, 1, 1, 1],
               "cr": [0, 1, 1, 2, 3]}
 
-    visco1 = {"__name__": "Younglove (1982)",
+    visco2 = {"__name__": "Younglove (1982)",
               "__doi__": {
                   "autor": "Younglove, B.A.",
                   "title": "Thermophysical Properties of Fluids. I. Argon, "
@@ -351,7 +382,7 @@ class N2(MEoS):
                     -8.088980118e2, 68.46443564, -2.1241135912],
               "rhoc": 0.315*1000/28.013}
 
-    visco2 = {"__name__": "Stephan (1987)",
+    visco3 = {"__name__": "Stephan (1987)",
               "__doi__": {
                   "autor": "Stephan, K., Krauss, R., Laesecke, A.",
                   "title": "Viscosity and Thermal Conductivity of Nitrogen "
@@ -376,7 +407,7 @@ class N2(MEoS):
               "tr_den": [0, 0],
               "dr_den": [1, 0]}
 
-    _viscosity = visco0, visco1, visco2
+    _viscosity = visco0, visco1, visco2, visco3
 
     thermo0 = {"__name__": "Lemmon (2004)",
                "__doi__": {
@@ -470,7 +501,7 @@ class N2(MEoS):
             cv = 8.31434*(sum1+sum2-1)
             return cv
 
-        muo = self._Visco0(T, self.visco2)
+        muo = self._Visco0(T, self.visco3)
         F = Boltzmann*Avogadro*muo/M                                     # Eq 9
         ltr = 2.5*F*(1.5-X1)                                             # Eq 7
         lint = F*X2*(cv(T)/Boltzmann/Avogadro+X1)                        # Eq 8
@@ -672,7 +703,7 @@ class Test(TestCase):
         # The pressure and density in saturation is calculate in tables using
         # the ancillary equation used in paper so the calculated point differ
         # of implement eq
-        kw = {"eq": "younglove", "visco": 1, "thermal": 1}
+        kw = {"eq": "younglove", "visco": 2, "thermal": 1}
 
         st = N2(T=N2.Tt, x=0.5, **kw)
         self.assertEqual(round(st.P.MPa, 5), 0.01268)
@@ -1350,23 +1381,56 @@ class Test(TestCase):
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 41.82)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.31053)
 
+    def test_Huber(self):
+        """Table 7, Pag 34"""
+        st = N2(T=90, rho=0)
+        self.assertEqual(round(st.P.MPa, 5), 0)
+        self.assertEqual(round(st.mu.muPas, 8), 6.07115583)
+
+        # Disable critical enhancement for this point
+        st = N2(T=90, rho=756, viscocritical=False)
+        self.assertEqual(round(st.P.MPa, 5), 3.24893)
+        self.assertEqual(round(st.mu.muPas, 8), 108.42550781)
+
+        st = N2(T=300, rho=0)
+        self.assertEqual(round(st.P.MPa, 5), 0)
+        self.assertEqual(round(st.mu.muPas, 8), 17.83446070)
+
+        st = N2(T=300, rho=28)
+        self.assertEqual(round(st.P.MPa, 5), 2.48533)
+        self.assertEqual(round(st.mu.muPas, 8), 18.23478803)
+
+        st = N2(T=300, rho=560)
+        self.assertEqual(round(st.P.MPa, 4), 95.2619)
+        self.assertEqual(round(st.mu.muPas, 8), 50.59605975)
+
+        # Table 8, Critical enhancement
+        self.assertEqual(round(N2(T=126.192, rho=265).mu.muPas, 8), 16.16045420)
+        self.assertEqual(round(N2(T=126.212, rho=333).mu.muPas, 8), 21.25319077)
+        self.assertEqual(round(N2(T=126.952, rho=300).mu.muPas, 8), 17.98075591)
+
     def test_LemmonTransport(self):
         """Table V, pag 28"""
+
+        kw = {"visco": 1}
+
         # Viscosity
-        self.assertEqual(round(N2(rhom=0, T=100).mu.muPas, 5), 6.90349)
-        self.assertEqual(round(N2(rhom=0, T=300).mu.muPas, 4), 17.8771)
-        self.assertEqual(round(N2(rhom=25, T=100).mu.muPas, 4), 79.7418)
-        self.assertEqual(round(N2(rhom=10, T=200).mu.muPas, 4), 21.0810)
-        self.assertEqual(round(N2(rhom=5, T=300).mu.muPas, 4), 20.7430)
-        self.assertEqual(round(N2(rhom=11.18, T=126.195).mu.muPas, 4), 18.2978)
+        self.assertEqual(round(N2(rhom=0, T=100, **kw).mu.muPas, 5), 6.90349)
+        self.assertEqual(round(N2(rhom=0, T=300, **kw).mu.muPas, 4), 17.8771)
+        self.assertEqual(round(N2(rhom=25, T=100, **kw).mu.muPas, 4), 79.7418)
+        self.assertEqual(round(N2(rhom=10, T=200, **kw).mu.muPas, 4), 21.0810)
+        self.assertEqual(round(N2(rhom=5, T=300, **kw).mu.muPas, 4), 20.7430)
+        self.assertEqual(round(
+            N2(rhom=11.18, T=126.195, **kw).mu.muPas, 4), 18.2978)
 
         # Thermal Conductivity
-        self.assertEqual(round(N2(rhom=0, T=100).k.mWmK, 5), 9.27749)
-        self.assertEqual(round(N2(rhom=0, T=300).k.mWmK, 4), 25.9361)
-        self.assertEqual(round(N2(rhom=25, T=100).k.mWmK, 3), 103.834)
-        self.assertEqual(round(N2(rhom=10, T=200).k.mWmK, 4), 36.0099)
-        self.assertEqual(round(N2(rhom=5, T=300).k.mWmK, 4), 32.7694)
-        self.assertEqual(round(N2(rhom=11.18, T=126.195).k.mWmK, 1), 675.8)
+        self.assertEqual(round(N2(rhom=0, T=100, **kw).k.mWmK, 5), 9.27749)
+        self.assertEqual(round(N2(rhom=0, T=300, **kw).k.mWmK, 4), 25.9361)
+        self.assertEqual(round(N2(rhom=25, T=100, **kw).k.mWmK, 3), 103.834)
+        self.assertEqual(round(N2(rhom=10, T=200, **kw).k.mWmK, 4), 36.0099)
+        self.assertEqual(round(N2(rhom=5, T=300, **kw).k.mWmK, 4), 32.7694)
+        self.assertEqual(round(
+            N2(rhom=11.18, T=126.195, **kw).k.mWmK, 1), 675.8)
 
     def test_stephan(self):
         """Table A1, Pag 1013"""
@@ -1380,7 +1444,7 @@ class Test(TestCase):
         # So using TP as input parameter may differ, specially in region near
         # critical point
 
-        kw = {"visco": 2, "thermal": 2}
+        kw = {"visco": 3, "thermal": 2}
 
         self.assertEqual(round(N2(T=80, P=1e5, **kw).mu.muPas, 2), 5.24)
         self.assertEqual(round(N2(T=300, P=1e6, **kw).mu.muPas, 2), 18.03)
