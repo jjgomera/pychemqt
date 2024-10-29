@@ -64,6 +64,9 @@ from lib.mEoS.nC9 import nC9
 from lib.mEoS.nC10 import nC10
 from lib.mEoS.nC11 import nC11
 from lib.mEoS.nC12 import nC12
+from lib.mEoS.nC13 import nC13
+from lib.mEoS.nC14 import nC14
+from lib.mEoS.nC15 import nC15
 from lib.mEoS.nC16 import nC16
 from lib.mEoS.nC22 import nC22
 from lib.mEoS.C3_pentane import C3_pentane
@@ -202,8 +205,8 @@ Nobles = [He, Ne, Ar, Kr, Xe]
 Gases = [H2, D2, pD2, oD2, pH2, oH2, N2, O2, F2, Cl2, H2O, D2O, CO2, CO, N2O,
          SO2, COS, NH3, H2S]
 Alkanes = [CH4, C2, C3, nC4, iC4, nC5, neoC5, iC5, nC6, iC6, nC7, nC8, iC8,
-           nC9, nC10, nC11, nC12, nC16, nC22, C3_pentane, C22_butane,
-           C23_butane]
+           nC9, nC10, nC11, nC12, nC13, nC14, nC15, nC16, nC22, C3_pentane,
+           C22_butane, C23_butane]
 Naphthenes = [Cyclopropane, Cyclopentane, Cyclohexane, C1Cyclohexane,
               C3Cyclohexane]
 Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
@@ -271,21 +274,14 @@ for obj in __all__:
 # Huber, M. L. Unpublished fluid-specific correlations for the viscosity and
 # thermal conductivity of R116, 2003.
 
+# R21
+# Huber, M. L. Unpublished ECS correlations for viscosity and thermal
+# conductivity of R21, 2003.
 
-# Gao, K. H.; Wu, J. T.; Bell, I. H.; Harvey, A. H.; Lemmon, E. W.
-# Ammonia
+# R32
+# Huber, M. L. Unpublished fluid-specific correlation for the thermal
+# conductivity of R32, 2005.
 
-# Thol, M.; Alexandrov, I. S.; Lemmon, E. W.
-# Chlorobenzene
-
-# Herrig, S.; Thol, M.; Kortmann, M.; Lemmon, E. W.; Span, R.
-# Diethanolamine, DEA
-
-# Zhou, Y.; Lemmon, E. W.
-# Ethylene Glycol
-
-# Herrig, S.; Thol, M.; Span, R
-# Monoethanolamine, MEA
 
 # Missing references
 

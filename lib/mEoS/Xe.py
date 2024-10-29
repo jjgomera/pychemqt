@@ -145,7 +145,7 @@ class Xe(MEoS):
                            "Assael, M.J., Perkins, R.A., Huber, M.L.,",
                   "title": "Reference Correlation for the Viscosity of Xenon "
                            "from the Triple Point to 750 K and up to 86 MPa",
-                  "ref": "Int. J. Thermophysics 42 (2021) 74",
+                  "ref": "Int. J. Thermophysics 42(5) (2021) 74",
                   "doi": "10.1007/s10765-021-02818-9"},
 
               "eq": 1, "omega": 0,
@@ -198,7 +198,7 @@ class Xe(MEoS):
                    "title": "Reference Correlations for the Thermal "
                             "Conductivity of Xenon from the Triple Point to "
                             "606 K and Pressures up to 400 MPa",
-                   "ref": "Int. J. Thermophysics 42 (2021) 51",
+                   "ref": "Int. J. Thermophysics 42(4) (2021) 51",
                    "doi": "10.1007/s10765-021-02803-2"},
 
                "eq": 1,
