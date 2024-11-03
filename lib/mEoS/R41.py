@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R41(MEoS):
@@ -152,6 +153,48 @@ class R41(MEoS):
         "eq": 2,
         "n": [-26.966, 54.303, -.36361e2, -.17816e2, -.48535e2, -.86727e2],
         "t": [0.59, 0.72, 0.86, 3.2, 7.0, 15.0]}
+
+    trnECS = {"__name__": "Klein (1997)",
+
+              "__doi__": {
+                  "autor": "Klein, S.A., McLinden, M.O., Laesecke, A.",
+                  "title": "An improved extended corresponding states method "
+                           "for estimation of viscosity of pure refrigerants "
+                           "and mixtures",
+                  "ref": "Int. J. Refrig. 20(3) (1997) 208-217",
+                  "doi": "10.1016/s0140-7007(96)00073-4"},
+
+              # Themal conductivity correlation from
+              # McLinden, M.O., Klein, S.A., Perkins, R.A.
+              # An Extended corresponding states model for the thermal
+              # conductivity of refrigerants and refrigerant mixtures
+              # Int. J. Refrigeration 23 (2000) 43-63
+              # 10.1016/s0140-7007(99)00024-9
+
+              # Parameters updated to upgrades thermal conductivity of
+              # reference fluid R134a and reported in refprop
+              # Lemmon, E.W., Huber, M.L., McLinden, M.O.
+              # NIST Standard Reference Database 23:  Reference Fluid
+              # Thermodynamic and Transport Properties-REFPROP, Version 9.1,
+              # National Institute of Standards and Technology, Standard
+              # Reference Data Program, Gaithersburg, 2013.
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 244.88, "sigma": 0.4123, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.32e-3], "psi_d": [0],
+              "fint": [1], "fint_t": [0],
+              "chi": [1], "chi_d": [0],
+
+              "critical": 3,
+              "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
+              "Xio": 0.194e-9, "gam0": 0.0496, "qd": 0.5e-9, "Tcref": 475.92}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):

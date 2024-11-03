@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R11(MEoS):
@@ -162,6 +163,44 @@ class R11(MEoS):
         "eq": 2,
         "n": [-3.0296, -6.0723, -15.890, -63.024, 87.167, -157.15],
         "t": [0.417, 1.25, 3.1, 6.8, 10.0, 12.0]}
+
+    trnECS = {"__name__": "Klein (1997)",
+
+              "__doi__": {
+                  "autor": "Klein, S.A., McLinden, M.O., Laesecke, A.",
+                  "title": "An improved extended corresponding states method "
+                           "for estimation of viscosity of pure refrigerants "
+                           "and mixtures",
+                  "ref": "Int. J. Refrig. 20(3) (1997) 208-217",
+                  "doi": "10.1016/s0140-7007(96)00073-4"},
+
+              # Themal conductivity correlation from
+              # McLinden, M.O., Klein, S.A., Perkins, R.A.
+              # An Extended corresponding states model for the thermal
+              # conductivity of refrigerants and refrigerant mixtures
+              # Int. J. Refrigeration 23 (2000) 43-63
+              # 10.1016/s0140-7007(99)00024-9
+
+              # Parameters updated to upgrades thermal conductivity of
+              # reference fluid R134a and reported in refprop
+              # Lemmon, E.W., Huber, M.L., McLinden, M.O.
+              # NIST Standard Reference Database 23:  Reference Fluid
+              # Thermodynamic and Transport Properties-REFPROP, Version 9.1,
+              # National Institute of Standards and Technology, Standard
+              # Reference Data Program, Gaithersburg, 2013.
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 363.609, "sigma": 0.5447, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.4e-3], "psi_d": [0],
+              "fint": [1.0653851, -0.0250121], "fint_t": [0, 1],
+              "chi": [1.0724, -2.2672e-2], "chi_d": [0, 1]}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):

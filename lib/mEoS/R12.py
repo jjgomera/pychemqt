@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R12(MEoS):
@@ -138,6 +139,43 @@ class R12(MEoS):
         "n": [-3.153, -6.4734, -17.346, -15.918, -32.492, -120.72],
         "t": [0.418, 1.32, 3.3, 6.6, 7.0, 15.0]}
 
+    trnECS = {"__name__": "Klein (1997)",
+
+              "__doi__": {
+                  "autor": "Klein, S.A., McLinden, M.O., Laesecke, A.",
+                  "title": "An improved extended corresponding states method "
+                           "for estimation of viscosity of pure refrigerants "
+                           "and mixtures",
+                  "ref": "Int. J. Refrig. 20(3) (1997) 208-217",
+                  "doi": "10.1016/s0140-7007(96)00073-4"},
+
+              # Themal conductivity correlation from
+              # McLinden, M.O., Klein, S.A., Perkins, R.A.
+              # An Extended corresponding states model for the thermal
+              # conductivity of refrigerants and refrigerant mixtures
+              # Int. J. Refrigeration 23 (2000) 43-63
+              # 10.1016/s0140-7007(99)00024-9
+
+              # Parameters updated to upgrades thermal conductivity of
+              # reference fluid R134a and reported in refprop
+              # Lemmon, E.W., Huber, M.L., McLinden, M.O.
+              # NIST Standard Reference Database 23:  Reference Fluid
+              # Thermodynamic and Transport Properties-REFPROP, Version 9.1,
+              # National Institute of Standards and Technology, Standard
+              # Reference Data Program, Gaithersburg, 2013.
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 297.24, "sigma": 0.5186, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [1.344e-3], "psi_d": [0],
+              "fint": [1.0524907, -0.0252897], "fint_t": [0, 1],
+              "chi": [0.99103, 2.9509e-3], "chi_d": [0, 1]}
+
+    _viscosity = (trnECS, )
+
     thermo0 = {"__name__": "Krauss (1989)",
                "__doi__": {
                    "autor": "Krauss, R., Stephan, K.",
@@ -162,7 +200,7 @@ class R12(MEoS):
                "tr": [0, 0, 0, 0, 0],
                "dr": [1, 2, 3, 4, 5]}
 
-    _thermal = (thermo0, )
+    _thermal = (thermo0, trnECS)
 
 
 class Test(TestCase):

@@ -22,6 +22,7 @@ from unittest import TestCase
 
 from lib import unidades
 from lib.meos import MEoS
+from lib.mEoS import R134a
 
 
 class R22(MEoS):
@@ -169,6 +170,44 @@ class R22(MEoS):
         "eq": 2,
         "n": [-2.3231, -5.9231, -16.331, -49.343, -25.662, -89.335],
         "t": [0.353, 1.06, 2.9, 6.4, 12.0, 15.0]}
+
+    trnECS = {"__name__": "Klein (1997)",
+
+              "__doi__": {
+                  "autor": "Klein, S.A., McLinden, M.O., Laesecke, A.",
+                  "title": "An improved extended corresponding states method "
+                           "for estimation of viscosity of pure refrigerants "
+                           "and mixtures",
+                  "ref": "Int. J. Refrig. 20(3) (1997) 208-217",
+                  "doi": "10.1016/s0140-7007(96)00073-4"},
+
+              # Themal conductivity correlation from
+              # McLinden, M.O., Klein, S.A., Perkins, R.A.
+              # An Extended corresponding states model for the thermal
+              # conductivity of refrigerants and refrigerant mixtures
+              # Int. J. Refrigeration 23 (2000) 43-63
+              # 10.1016/s0140-7007(99)00024-9
+
+              # Parameters updated to upgrades thermal conductivity of
+              # reference fluid R134a and reported in refprop
+              # Lemmon, E.W., Huber, M.L., McLinden, M.O.
+              # NIST Standard Reference Database 23:  Reference Fluid
+              # Thermodynamic and Transport Properties-REFPROP, Version 9.1,
+              # National Institute of Standards and Technology, Standard
+              # Reference Data Program, Gaithersburg, 2013.
+
+              "eq": "ecs",
+              "ref": R134a,
+
+              "ek": 284.7242, "sigma": 0.4666, "omega": 6,
+              "n_chapman": 26.692e-3, "Fc": 1,
+
+              "psi": [7.7817e-4, 1.2636e-6], "psi_d": [0, 1],
+              "fint": [1.0272423, -0.0198493], "fint_t": [0, 1],
+              "chi": [1.075, -3.8574e-2], "chi_d": [0, 1]}
+
+    _viscosity = (trnECS, )
+    _thermal = (trnECS, )
 
 
 class Test(TestCase):
