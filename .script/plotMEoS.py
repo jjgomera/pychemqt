@@ -795,6 +795,10 @@ for curva in ["ideal", "boyle", "joule-thomson", "joule"]:
                 if curva == "boyle":
                     continue
 
+        if curva == "joule":
+            if P <= Pmax:
+                continue
+
         if 0 < P <= Pm:
             T_line.append(t/Tc)
             P_line.append(P/fluid.Pc)

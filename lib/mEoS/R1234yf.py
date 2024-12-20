@@ -31,12 +31,12 @@ class R1234yf(MEoS):
     formula = "CF3CF=CH2"
     synonym = "R-1234yf"
     _refPropName = "R1234YF"
-    rhoc = unidades.Density(475.553441976)
+    rhoc = unidades.Density(476.693888)
     Tc = unidades.Temperature(367.85)
-    Pc = unidades.Pressure(3382.2, "kPa")
-    M = 114.04159  # g/mol
-    Tt = unidades.Temperature(220.)
-    Tb = unidades.Temperature(243.7)
+    Pc = unidades.Pressure(3384.4, "kPa")
+    M = 114.0416  # g/mol
+    Tt = unidades.Temperature(121.6)
+    Tb = unidades.Temperature(243.692)
     f_acent = 0.276
     momentoDipolar = unidades.DipoleMoment(2.48, "Debye")
 
@@ -52,6 +52,49 @@ class R1234yf(MEoS):
            "ao_exp": [5.2829, 6.96022, 7.04266],
            "titao": [354/Tc, 965/Tc, 1981/Tc]}
 
+    Fi3 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-12.081525543189, 8.52896238365],
+           "ao_exp": [8.65, 9.75, 2.11],
+           "titao": [512/Tc, 1570/Tc, 4500/Tc]}
+
+    lemmon = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1234yf of Lemmon (2022)",
+        "__doi__": {"autor": "Lemmon, E.W., Akasaka, R.",
+                    "title": "An International Standard Formulation for "
+                             "2,3,3,3-Tetrafluoroprop-1-ene (R1234yf) Covering"
+                             " Temperatures from the Triple Point Temperature "
+                             "to 410 K and Pressures Up to 100 MPa",
+                    "ref": "Int. J. Thermophys. 43(8) (2022) 119",
+                    "doi": "10.1007/s10765-022-03015-y"},
+
+        "R": 8.314462618,
+        "cp": Fi3,
+        "ref": "IIR",
+
+        "Tmin": 250, "Tmax": 410.0, "Pmax": 100000.0, "rhomax": 25,
+
+        "nr1": [0.0340387, 1.912859, -2.1984719881617, -0.8147645305033,
+                0.2288282],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.222, 0.61, 1.122, 0.5],
+
+        "nr2": [-1.65436, -1.446628, 0.5961722, -0.6148209, -0.0180069],
+        "d2": [1, 3, 2, 2, 7],
+        "t2": [2.14, 2.284, 1.05, 2.33, 0.778],
+        "c2": [2, 2, 1, 2, 1],
+        "gamma2": [1]*5,
+
+        "nr3": [0.2845275, -0.3050809, 2.198935, -0.4270329, -0.4015581,
+                0.1179587, -0.3141002],
+        "d3": [1, 1, 1, 1, 1, 1, 1],
+        "t3": [1, 2, 1.236, 1.6, 1.85, 0.7, 1.75],
+        "alfa3": [28.1, 28, 1.307, 1.96, 1.25, 1, 2.2],
+        "beta3": [1016, 1000, 1.16, 1.2, 1.26, 1.6, 0.87],
+        "gamma3": [1.061, 1.062, 1.3, 1.04, 1, 1.14, 1.1],
+        "epsilon3": [0.96, 0.96, 0.853, 1.15, 1.3, 1.5, 0.762]}
+
     richter = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1234yf of Richter "
@@ -66,6 +109,7 @@ class R1234yf(MEoS):
         "R": 8.314472,
         "cp": Fi1,
         "ref": "IIR",
+        "M": 114.04159, "rhoc": 4.17,
 
         "Tmin": Tt, "Tmax": 410.0, "Pmax": 30000.0, "rhomax": 11.64,
 
@@ -102,6 +146,7 @@ class R1234yf(MEoS):
         "R": 8.314472,
         "cp": Fi2,
         "ref": "IIR",
+        "M": 114.042, "rhoc": 478/114.042,
 
         "Tmin": 240., "Tmax": 400.0, "Pmax": 40000.0, "rhomax": 11.64,
 
@@ -119,7 +164,7 @@ class R1234yf(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = richter, akasaka
+    eq = lemmon, richter, akasaka
 
     # Unorthodox formulation
     # Rykov, V.A., Rykov, S.V., Sverdlov, A.V.
@@ -130,16 +175,16 @@ class R1234yf(MEoS):
     _surface = {"sigma": [0.06274], "exp": [1.394]}
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-0.74697e1, 0.27915e1, -0.21312e1, -0.29531e1],
-        "t": [1.0, 1.5, 1.8, 3.8]}
+        "n": [-7.4507, 2.164, -1.674, -3.318, -1.617],
+        "t": [1.0, 1.5, 2, 4, 9]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.19083e1, -0.21383e1, 0.93653e1, -0.98659e1, 0.35859e1],
-        "t": [0.32, 0.56, 0.8, 1.0, 1.3]}
+        "n": [3.392, -4.119, 8.932, -8.525, 3.384],
+        "t": [0.4, 0.7, 1.1, 1.5, 2.1]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-0.23511e1, -0.11515e2, -0.53984e1, -0.37937e2],
-        "t": [0.355, 2.45, 1.0, 5.1]}
+        "n": [-3.616, -74.91, 197.7, -152.76, -61.062, -115.53],
+        "t": [0.426, 2, 2.4, 2.7, 7.5, 15]}
 
     visco0 = {"__name__": "Huber (2016)",
               "__doi__": {
@@ -211,28 +256,68 @@ class R1234yf(MEoS):
 class Test(TestCase):
     """Testing"""
 
+    def test_lemmon(self):
+        """Table 7, pag 27"""
+        st = R1234yf(T=280, rhom=0)
+        self.assertEqual(round(st.P.MPa, 6), 0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 89.2037)
+        self.assertEqual(round(st.cpM.JmolK, 4), 97.5182)
+        self.assertEqual(round(st.w, 3), 149.388)
+
+        st = R1234yf(T=280, rhom=11)
+        self.assertEqual(round(st.P.MPa, 5), 28.95760)
+        self.assertEqual(round(st.cvM.JmolK, 3), 101.930)
+        self.assertEqual(round(st.cpM.JmolK, 3), 139.307)
+        self.assertEqual(round(st.w, 3), 738.905)
+
+        st = R1234yf(T=280, rhom=0.1)
+        self.assertEqual(round(st.P.MPa, 7), 0.2185345)
+        self.assertEqual(round(st.cvM.JmolK, 4), 91.3497)
+        self.assertEqual(round(st.cpM.JmolK, 3), 102.623)
+        self.assertEqual(round(st.w, 3), 141.882)
+
+        st = R1234yf(T=340, rhom=8)
+        self.assertEqual(round(st.P.MPa, 6), 2.309798)
+        self.assertEqual(round(st.cvM.JmolK, 3), 113.805)
+        self.assertEqual(round(st.cpM.JmolK, 3), 195.748)
+        self.assertEqual(round(st.w, 3), 265.888)
+
+        st = R1234yf(T=340, rhom=1)
+        self.assertEqual(round(st.P.MPa, 6), 1.855076)
+        self.assertEqual(round(st.cvM.JmolK, 3), 113.479)
+        self.assertEqual(round(st.cpM.JmolK, 3), 168.646)
+        self.assertEqual(round(st.w, 3), 114.354)
+
+        st = R1234yf(T=368, rhom=4.2)
+        self.assertEqual(round(st.P.MPa, 6), 3.394716)
+        self.assertEqual(round(st.cvM.JmolK, 3), 149.703)
+        self.assertEqual(round(st.cpM.JmolK, 1), 48981.3)
+        self.assertEqual(round(st.w, 4), 76.3597)
+
     def test_Perkins(self):
         """Table 2, Pag 4872"""
         # Critical enhancement fail because viscosity correlation
-        st = R1234yf(T=250, P=5e4)
+        st = R1234yf(T=250, P=5e4, eq=1)
         self.assertEqual(round(st.rho, 5), 2.80006)
         self.assertEqual(round(st.k, 7), 0.0098482)
 
-        st = R1234yf(T=300, P=1e5)
+        st = R1234yf(T=300, P=1e5, eq=1)
         self.assertEqual(round(st.rho, 6), 4.671553)
         self.assertEqual(round(st.k, 6), 0.013996)
 
-        st = R1234yf(T=250, P=2e7)
+        st = R1234yf(T=250, P=2e7, eq=1)
         self.assertEqual(round(st.rho, 2), 1299.50)
         self.assertEqual(round(st.k, 6), 0.088580)
 
-        st = R1234yf(T=300, P=2e7)
+        st = R1234yf(T=300, P=2e7, eq=1)
         self.assertEqual(round(st.rho, 2), 1182.05)
         self.assertEqual(round(st.k, 6), 0.075254)
 
     def test_Huber(self):
         """Section 2.4"""
-        self.assertEqual(round(R1234yf(T=300, rhom=0).mu.muPas, 3), 11.579)
-        self.assertEqual(round(R1234yf(T=300, rhom=0.044).mu.muPas, 3), 11.549)
         self.assertEqual(round(
-            R1234yf(T=300, rhom=10.522).mu.muPas, 3), 217.97)
+            R1234yf(T=300, rhom=0, eq=1).mu.muPas, 3), 11.579)
+        self.assertEqual(round(
+            R1234yf(T=300, rhom=0.044, eq=1).mu.muPas, 3), 11.549)
+        self.assertEqual(round(
+            R1234yf(T=300, rhom=10.522, eq=1).mu.muPas, 3), 217.97)

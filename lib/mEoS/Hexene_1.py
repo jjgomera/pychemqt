@@ -55,7 +55,6 @@ class Hexene_1(MEoS):
                     "title": "Thermodynamic properties fo 1-hexene - "
                              "Measurements and Modeling",
                     "ref": "J. Chem. Thermo., 176 (2023) 106881",
-                    # Find final article
                     "doi": "10.1016/j.jct.2022.106881"},
 
         "R": 8.314462618,
@@ -175,7 +174,7 @@ class Test(TestCase):
     """Testing"""
 
     def test_betken(self):
-        """Table 17, Pag 25"""
+        """Table 17, Pag 20"""
         st = Hexene_1(T=300, rhom=0.001)
         self.assertEqual(round(st.P.MPa, 9), 0.002490162)
         self.assertEqual(round(st.cpM.kJkmolK, 7), 130.2264437)
