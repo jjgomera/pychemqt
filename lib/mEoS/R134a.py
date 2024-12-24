@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from math import exp
 from unittest import TestCase
 
 from lib import unidades
@@ -284,7 +285,53 @@ class R134a(MEoS):
         "n": [-0.29174e1, -0.72542e1, -0.23306e2, 0.59840e1, -0.71821e2],
         "t": [0.383, 1.21, 3.3, 5.6, 7.0]}
 
-    visco0 = {"__name__": "Huber (2003)",
+    visco0 = {"__name__": "Velliadou (2022)",
+              "__doi__": {
+                  "autor": "Velliadou, D., Assael, M.J., Huber, M.L.",
+                  "title": "Reference Correlation for the Viscosity of "
+                           "1,1,1,2-Tetrafluoroethane (R-134a) from the "
+                           "Triple Point to 438 K and up to 70 MPa",
+                  "ref": "Int. J. Thermophys. 43(7) (2022) 105",
+                  "doi": "10.1007/s10765-022-03029-6"},
+
+              "eq": 1, "omega": 0,
+              "sigma": 0.48499,
+
+              "special0": "_visco0",
+
+              "Tref_virial": 277.99,
+              "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                           -3375.1717, 2491.6597, -787.26086, 14.085455,
+                           -0.34664158],
+              "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+              "special": "_mur"}
+
+    def _visco0(self, T):
+        """Special dilute-gas limit viscosity term"""
+        f1 = -17.2940
+        f2 = 11.15987
+        f3 = 292.165
+        f4 = -0.296506
+        T3 = T**(1/3)
+
+        # Eq 3
+        G = f1*T*exp(-2*T3) + (f2+f3*exp(-T3))/T3 + f4*exp(-1/T3)
+
+        return T**0.5/G
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Velliadou correlation"""
+        Tr = T/374.21
+        rhor = rho/511.9
+
+        # Eq 7
+        mur = rhor**(2/3)*Tr**0.5 * (
+            - 0.19049809 + 14.914096*rhor
+            + 2.1132461*rhor**4/Tr + 1.8611635e-5*rhor**14/Tr**2)
+        return mur
+
+    visco1 = {"__name__": "Huber (2003)",
               "__doi__": {
                   "autor": "Huber, M.L., Laesecke, A., Perkins, R.A.",
                   "title": "Model for the Viscosity and Thermal Conductivity "
@@ -326,7 +373,7 @@ class R134a(MEoS):
         muCP = c7/(delta0-delta) - c7/delta0
         return muCP * 1000
 
-    visco1 = {"__name__": "Quiñones-Cisneros (2006)",
+    visco2 = {"__name__": "Quiñones-Cisneros (2006)",
               "__doi__": {
                   "autor": "Quiñones-Cisneros, S.E., Deiters, U.K.",
                   "title": "Generalization of the Friction Theory for "
@@ -347,7 +394,7 @@ class R134a(MEoS):
               "B": [1.35594e-8, 0.0, 3.17550e-10],
               "C": [0.0, 4.81769e-7, -1.17149e-7]}
 
-    _viscosity = visco0, visco1
+    _viscosity = visco0, visco1, visco2
 
     thermo0 = {"__name__": "Perkins (2000)",
                "__doi__": {
@@ -675,3 +722,9 @@ class Test(TestCase):
         st2 = R134a(T=600, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 181.97)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.41386)
+
+    def test_Velliadou(self):
+        """Values given in section 3"""
+        self.assertEqual(round(R134a(T=350, rho=0).mu.muPas, 5), 13.77874)
+        self.assertEqual(round(R134a(T=350, rho=100).mu.muPas, 5), 14.70183)
+        self.assertEqual(round(R134a(T=350, rho=1000).mu.muPas, 5), 107.98464)
