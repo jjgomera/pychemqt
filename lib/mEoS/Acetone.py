@@ -92,6 +92,74 @@ class Acetone(MEoS):
         "n": [-.25200e1, -.66065e1, -.25751e2, .78120e1, -.53778e2, -116.84],
         "t": [0.36, 1.05, 3.2, 4.0, 6.5, 14.0]}
 
+    visco0 = {
+        "__name__": "Sotiriadou (2025)",
+        "__doi__": {
+            "autor": "Sotiriadou, S.G., Ntonti, E., Assael, M.J., Huber, M.L.",
+            "title": "Reference Correlation for the Viscosity and Thermal "
+                     "Conductivity of Acetone from the Triple Point to High "
+                     "Temperatures and Pressures",
+            "ref": "Int. J. Thermophys. 46(1) (2025) 3",
+            "doi": "10.1007/s10765-024-03465-6"},
+
+        "eq": 1, "omega": 0,
+        "sigma": 0.49,
+
+        "Toref": Tc,
+        "no_num": [0.931015, 13.4773, -6.84412, 3.30874, 4.78248, -1.45555,
+                   0.149281],
+        "to_num": [0, 1, 2, 3, 4, 5, 6],
+        "no_den": [1.46335, -1.36059, 1],
+        "to_den": [0, 1, 2],
+
+        "Tref_virial": 432,
+        "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                     -3375.1717, 2491.6597, -787.26086, 14.085455,
+                     -0.34664158],
+        "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+        "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Sotiriadou correlation"""
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+
+        # Eq 7
+        mur = rhor**(2/3)*Tr**0.5 * (
+            6.2435628350 * rhor
+            + (0.16610522013 + 8.9088278828*rhor + 0.16610522013*rhor**5
+               + 0.0069857927082*Tr**2*rhor**8)/(Tr -0.088521102246*rhor))
+        return mur
+
+    thermo0 = {
+        "__name__": "Sotiriadou (2025)",
+        "__doi__": {
+            "autor": "Sotiriadou, S.G., Ntonti, E., Assael, M.J., Huber, M.L.",
+            "title": "Reference Correlation for the Viscosity and Thermal "
+                     "Conductivity of Acetone from the Triple Point to High "
+                     "Temperatures and Pressures",
+            "ref": "Int. J. Thermophys. 46(1) (2025) 3",
+            "doi": "10.1007/s10765-024-03465-6"},
+
+        "eq": 1,
+
+        "Toref": Tc, "koref": 1e-3,
+        "no_num": [-5.98797, 46.9565, -149.748, 241.207, -43.1278, 3.52029],
+        "to_num": [0, 1, 2, 3, 4, 5],
+        "no_den": [-0.614176, 2.57584, 1],
+        "to_den": [0, 1, 2],
+
+        "Tref_res": Tc, "rhoref_res": rhoc, "kref_res": 1e-3,
+        "nr": [149.900120, -59.8846154, -223.191952, 117.823591, 130.528948,
+               -70.7635055, -29.0922187, 14.9380192, 2.14538883, -0.506124251],
+        "tr": [0, -1, 0, -1, 0, -1, 0, -1, 0, -1],
+        "dr": [1, 1, 2, 2, 3, 3, 4, 4, 5, 5],
+
+        "critical": 3,
+        "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+        "Xio": 0.196e-9, "gam0": 0.052, "qd": 0.586e-9, "Tcref": 762.15}
+
     trnECS = {"__name__": "Huber (2018)",
 
               "__doi__": {
@@ -117,8 +185,8 @@ class Acetone(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
               "Xio": 0.196e-9, "gam0": 0.052, "qd": 0.586e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = (trnECS, )
-    _thermal = (trnECS, )
+    _viscosity = (visco0, trnECS)
+    _thermal = (thermo0, trnECS)
 
 
 class Test(TestCase):
@@ -133,9 +201,20 @@ class Test(TestCase):
         self.assertEqual(round(st.cpM.kJkmolK, 3), 3766.619)
         self.assertEqual(round(st.w, 3), 125.351)
 
+    def test_Sotiriadou(self):
+        """Checking values given in section 4.2"""
+        st = Acetone(T=300, rho=0)
+        self.assertEqual(round(st.mu.muPas, 4), 7.6011)
+        self.assertEqual(round(st.k.mWmK, 3), 11.306)
+
+        st = Acetone(T=300, rho=785)
+        self.assertEqual(round(st.mu.muPas, 2), 309.65)
+        self.assertEqual(round(st.k.mWmK, 2), 157.63)
+
+
     def test_Huber(self):
         """Table 7, pag 266"""
-        st = Acetone(T=457.3, rhom=9.8)
+        st = Acetone(T=457.3, rhom=9.8, visco=1, thermal=1)
         # self.assertEqual(round(st.mu.muPas, 5), 99.01729)
         # self.assertEqual(round(st.k.mWmK, 4), 96.5053)
         self.assertEqual(round(st.mu.muPas, 5), 99.02148)

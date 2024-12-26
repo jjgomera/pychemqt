@@ -138,7 +138,3 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.kJkmolK, 4), 91.0108)
         self.assertEqual(round(st.cpM.kJkmolK, 1), 29733.5)
         self.assertEqual(round(st.w, 3), 124.897)
-
-
-if __name__ == "__main__":
-    st = RE1132(T=270, rhom=0.2)
