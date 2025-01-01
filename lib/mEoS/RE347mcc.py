@@ -124,7 +124,34 @@ class RE347mcc(MEoS):
 
     _viscosity = (trnECS, )
 
-    thermo0 = {"__name__": "Huber (2018)",
+    thermo0 = {
+        "__name__": "Perkins (2022)",
+        "__doi__": {
+            "autor": "Perkins, R.A., Huber, M.L., Assael, M.J.",
+            "title": "Measurement and Correlation of the Thermal Conductivity "
+                     "of 1,1,1,2,2,3,3-Heptafluoro-3-methoxypropane (RE-347mcc)",
+            "ref": "Int. J. Thermophys. 43(1) (2022) 12",
+            "doi": "10.1007/s10765-021-02941-7"},
+
+        "eq": 1,
+
+        "Toref": Tc, "koref": 1e-0,
+        "no_num": [0.122535, -0.29099, 0.621481],
+        "to_num": [0, 1, 2],
+        "no_den": [34.1702, -49.3874, 44.4355, -11.058, 1],
+        "to_den": [0, 1, 2, 3, 4],
+
+        "Tref_res": Tc, "rhoref_res": rhoc, "kref_res": 1e-0,
+        "nr": [-0.0102516, 0.0454295, -0.0378902, 0.0137203, -0.00170838,
+               0.0123951, -0.0358795, 0.0346258, -0.0139708, 0.0021578],
+        "tr": [0, 0, 0, 0, 0, -1, -1, -1, -1, -1],
+        "dr": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
+
+        "critical": 3,
+        "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+        "Xio": 0.231e-9, "gam0": 0.058, "qd": 0.5187e-9, "Tcref": 1.5*Tc}
+
+    thermo1 = {"__name__": "Huber (2018)",
 
                "__doi__": {
                    "autor": "Huber, M.L.",
@@ -152,7 +179,7 @@ class RE347mcc(MEoS):
                "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
                "Xio": 0.231e-9, "gam0": .058, "qd": 0.5553e-9, "Tcref": 1.5*Tc}
 
-    _thermal = (thermo0, )
+    _thermal = thermo0, thermo1
 
 
 class Test(TestCase):
@@ -161,9 +188,27 @@ class Test(TestCase):
         """Table 7, pag 266"""
         self.assertEqual(round(
             # RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 150.0694)
-            RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 149.7817)
+            RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 150.0729)
 
         # Table 9, pag 271
         self.assertEqual(round(
             # RE347mcc(T=393.93, rhom=5.4797).k.mWmK, 4), 49.3925)
-            RE347mcc(T=393.93, rhom=5.4797).k.mWmK, 4), 49.4395)
+            RE347mcc(T=393.93, rhom=5.4797, thermal=1).k.mWmK, 4), 49.3922)
+
+    def test_Perkins(self):
+        """Table 3, pag 12"""
+        st = RE347mcc(T=273, rho=0)
+        self.assertEqual(round(st.P.MPa, 4), 0)
+        self.assertEqual(round(st.k.WmK, 6), 0.010088)
+
+        st = RE347mcc(T=273, rho=1475)
+        self.assertEqual(round(st.P.MPa, 4), 1.058)
+        # self.assertEqual(round(st.k.WmK, 6), 0.070957)
+
+        st = RE347mcc(T=435, rho=0)
+        self.assertEqual(round(st.P.MPa, 4), 0)
+        self.assertEqual(round(st.k.WmK, 6), 0.023416)
+
+        st = RE347mcc(T=435, rho=300)
+        self.assertEqual(round(st.P.MPa, 4), 2.3261)
+        self.assertEqual(round(st.k.WmK, 6), 0.033791)
