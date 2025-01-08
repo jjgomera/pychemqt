@@ -44,7 +44,8 @@ Third virial coefficient correlations:
 from numpy import exp, zeros
 from numpy.lib.scimath import log
 from scipy.constants import R
-from scipy.misc import derivative
+
+from numdifftools import Derivative
 
 from lib.eos import EoS
 from lib.utilities import refDoc
@@ -549,8 +550,8 @@ def B_Tsonopoulos(T, Tc, Pc, w, mu=None):
         return f*R*Tc/Pc*1e3
 
     B = f(T)
-    B1 = derivative(f, T, n=1)
-    B2 = derivative(f, T, n=2)
+    B1 = Derivative(f, n=1)(T)
+    B2 = Derivative(f, n=2)(T)
     return B, B1, B2
 
 
@@ -626,8 +627,8 @@ def B_IglesiasSilva(T, Tc, Pc, Vc, w, D):
             (Bc/bo/((TB/Tc)**.2-TB/Tc))**((Tc/T)**n)
 
     B = f(T)
-    B1 = derivative(f, T, n=1)
-    B2 = derivative(f, T, n=2)
+    B1 = Derivative(f, n=1)(T)
+    B2 = Derivative(f, n=2)(T)
 
     return B, B1, B2
 
@@ -705,8 +706,8 @@ def B_Meng(T, Tc, Pc, w, D):
     # doi: 10.1016/j.fluid.2007.05.010
 
     B = f(T)
-    B1 = derivative(f, T, n=1)
-    B2 = derivative(f, T, n=2)
+    B1 = Derivative(f, n=1)(T)
+    B2 = Derivative(f, n=2)(T)
 
     return B, B1, B2
 
@@ -854,8 +855,8 @@ def B_Orbey(T, Tc, Pc, w, id=None):
         return f*R*Tc/Pc*1e3
 
     B = f(T)
-    B1 = derivative(f, T, n=1)
-    B2 = derivative(f, T, n=2)
+    B1 = Derivative(f, n=1)(T)
+    B2 = Derivative(f, n=2)(T)
     return B, B1, B2
 
 
@@ -1036,8 +1037,8 @@ def B_Tarakad(T, Tc, Pc, id):
         return B*R*Tc/Pc*1e3
 
     B = f(T)
-    B1 = derivative(f, T, n=1)
-    B2 = derivative(f, T, n=2)
+    B1 = Derivative(f, n=1)(T)
+    B2 = Derivative(f, n=2)(T)
     return B, B1, B2
 
 
@@ -1093,8 +1094,8 @@ def C_OrbeyVera(T, Tc, Pc, w):
         return g*R**2*Tc**2/Pc**2
 
     C = f(T)
-    C1 = derivative(f, T, n=1)
-    C2 = derivative(f, T, n=2)
+    C1 = Derivative(f, n=1)(T)
+    C2 = Derivative(f, n=2)(T)
 
     return C, C1, C2
 
@@ -1154,8 +1155,8 @@ def C_LiuXiang(T, Tc, Pc, w, Zc):
         return g*R**2*Tc**2/Pc**2*1e-1
 
     C = f(T)
-    C1 = derivative(f, T, n=1)
-    C2 = derivative(f, T, n=2)
+    C1 = Derivative(f, n=1)(T)
+    C2 = Derivative(f, n=2)(T)
 
     return C, C1, C2
 
@@ -1209,8 +1210,8 @@ def C_Meng(T, Tc, Pc, D, B):
         return Cr/Pc**2*R**2*Tc**2
 
     C = f(T, B[0])
-    C1 = derivative(f, T, n=1, args=(T, B[1]))
-    C2 = derivative(f, T, n=2, args=(T, B[2]))
+    C1 = Derivative(f, n=1)(T, B[1])
+    C2 = Derivative(f, n=2)(T, B[2])
 
     return C, C1, C2
 

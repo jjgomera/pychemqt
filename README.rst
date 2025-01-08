@@ -27,10 +27,12 @@ pychemqt is intended to be a free software tool for calculation and design of un
 Dependencies
 ============
 
-* `python3 <http://www.python.org/>`__, version 3.x required
-* `pyqt binding <http://www.riverbankcomputing.co.uk/news>`__, support both PyQt5 and PyQt6
-* `Numpy-scipy <http://scipy.org/Download>`__: python library for mathematical computation
-* `matplotlib <http://matplotlib.sourceforge.net/>`__: python library for graphical representation of data
+* `python3 <https://www.python.org/>`__, version 3.x required
+* `pyqt binding <https://riverbankcomputing.com/software/pyqt>`__, support both PyQt5 and PyQt6
+* `Numpy <https://numpy.org/>`__: python library for numerical computation
+* `Scipy <https://scipy.org/>`__: python library for mathematical computation
+* `matplotlib <https://matplotlib.org/>`__: python library for plotting
+* `numdifftools <https://github.com/pbrod/numdifftools>`__: python library for numerical differentiation
 * `iapws <https://github.com/jjgomera/iapws/>`__: python library for thermodynamic properties of water by IAPWS standards
 
 Optional applications that are required for pychemqt to work with full functionality:

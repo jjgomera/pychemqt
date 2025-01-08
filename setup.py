@@ -51,10 +51,11 @@ setup(
                   },
     exclude_package_data={'docs': ['*.mEoS.*.rst', "*_ref.rst"]},
 
-    install_requires=['scipy>=0.14',
-                      'numpy>=1.8',
-                      'matplotlib>=1.4',
-                      'iapws>=1.3'],
+    install_requires=['scipy>=1.14',
+                      'numpy>=1.26',
+                      'matplotlib>=3.8',
+                      'iapws>=1.5',
+                      'numdifftools'],
     extras_require={
         'CoolProp': ["CoolProp>=6.1.0"],
         'openbabel': ["openbabel>=2.4.1"],
