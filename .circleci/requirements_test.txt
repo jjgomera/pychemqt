@@ -6,3 +6,4 @@ iapws
 coverage
 coveralls
 codecov
+numdifftools
