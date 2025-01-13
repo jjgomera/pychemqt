@@ -273,6 +273,45 @@ class R32(MEoS):
         "n": [-.22002e1, -.5972e1, -.14571e2, -.42598e2, .42686e1, -.73373e2],
         "t": [0.336, 0.98, 2.7, 5.7, 6.5, 11.0]}
 
+    visco0 = {
+        "__name__": "Velliadou (2022)",
+        "__doi__": {
+            "autor": "Velliadou, D., Antoniadis, K.D., Assael, M.J., "
+                     "Huber, M.L.",
+            "title": "Reference Correlation for the Viscosity of "
+                     "Difluoromethane (R-32) from the Triple Point to 425 K "
+                     "and up to 70 MPa",
+            "ref": "Int. J. Thermophys. 43(8) (2022) 129",
+            "doi": "10.1007/s10765-022-03050-9"},
+
+        "eq": 1, "omega": 0,
+        "sigma": 0.411,
+
+        "Toref": Tc,
+        "no_num": [0.577885, 10.2498, -4.95882, 14.1485, -0.816434],
+        "to_num": [0, 1, 2, 3, 4],
+        "no_den": [0.896478, -0.595706, 1],
+        "to_den": [0, 1, 2],
+
+        "Tref_virial": 290,
+        "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                     -3375.1717, 2491.6597, -787.26086, 14.085455,
+                     -0.34664158],
+        "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+        "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Velliadou correlation"""
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+
+        # Eq 7
+        mur = rhor**(2/3)*Tr**0.5 * (
+            1.24655 + 8.85264*rhor + 0.587282*rhor**4/Tr
+            + 2.81507e-6*rhor**14/Tr + 4.4106*rhor**2/Tr**2)
+        return mur
+
     trnECS = {"__name__": "Huber (2003)",
 
               "__doi__": {
@@ -299,7 +338,7 @@ class R32(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.03,
               "Xio": 0.194e-9, "gam0": 0.0496, "qd": 5e-10, "Tcref": 1.5*Tc}
 
-    _viscosity = (trnECS, )
+    _viscosity = (visco0, trnECS)
     _thermal = (trnECS, )
 
 
@@ -527,3 +566,9 @@ class Test(TestCase):
         st2 = R32(T=600, rho=100, eq="shortSpan")
         self.assertEqual(round(st2.h.kJkg-st.h.kJkg, 2), 235.82)
         self.assertEqual(round(st2.s.kJkgK-st.s.kJkgK, 5), 0.59788)
+
+    def test_Velliadou(self):
+        """Checking values given in section 3"""
+        self.assertEqual(round(R32(T=300, rho=0).mu.muPas, 4), 12.6170)
+        self.assertEqual(round(R32(T=300, rho=10).mu.muPas, 4), 12.6333)
+        self.assertEqual(round(R32(T=300, rho=1100).mu.muPas, 3), 173.432)

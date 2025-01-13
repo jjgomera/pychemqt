@@ -211,7 +211,6 @@ class Test(TestCase):
         self.assertEqual(round(st.mu.muPas, 2), 309.65)
         self.assertEqual(round(st.k.mWmK, 2), 157.63)
 
-
     def test_Huber(self):
         """Table 7, pag 266"""
         st = Acetone(T=457.3, rhom=9.8, visco=1, thermal=1)
