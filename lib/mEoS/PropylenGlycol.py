@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from unittest import TestCase
 
+from numpy import exp
+
 from lib import unidades
 from lib.meos import MEoS
 
@@ -109,6 +111,46 @@ class PropylenGlycol(MEoS):
         "n": [-2.0507, -6.8362, -19.835, -10.097, -55.772, -144.55],
         "t": [0.32, 0.9, 2.5, 4.2, 5.7, 12.0]}
 
+    visco0 = {
+        "__name__": "Velliadou (2022)",
+        "__doi__": {
+            "autor": "Velliadou, D., Antoniadis, K.D., Assael, M.J., "
+                     "Huber, M.L.",
+            "title": "Reference Correlation for the Viscosity of "
+                     "Propane-1,2-diol (Propylene Glycol) from the Triple "
+                     "Point to 452 K and up to 245 MPa",
+            "ref": "Int. J. Thermophys. 43(3) (2022) 42",
+            "doi": "10.1007/s10765-021-02970-2"},
+
+        "eq": 1, "omega": 0,
+        "sigma": 0.4915,
+
+        "Toref": Tc,
+        "no": [1.15331, 10.6228, 13.1421, -9.37974, 2.08103],
+        "to": [0, 1, 2, 3, 4],
+
+        "Tref_virial": 535.2,
+        "n_virial": [-19.572881, 219.73999, -1015.3226, 2471.0125,
+                     -3375.1717, 2491.6597, -787.26086, 14.085455,
+                     -0.34664158],
+        "t_virial": [0, -0.25, -0.5, -0.75, -1, -1.25, -1.5, -2.5, -5.5],
+
+        "special": "_mur"}
+
+    def _mur(self, rho, T, fase):
+        """Special term of residual viscosity for Velliadou correlation"""
+        Tr = T/self.Tc
+        rhor = rho/self.rhoc
+
+        # Eq 9
+        mur = rhor**(2/3)*Tr**0.5 * exp(
+            6.17070938 + 3.15366627*rhor - 0.68768625*rhor**2/Tr
+            + 0.0879750441*rhor**3/Tr**2 - 10.2553117*Tr + 4.36659437*Tr**2)
+
+        return mur
+
+    _viscosity = (visco0, )
+
 
 class Test(TestCase):
     """Testing"""
@@ -154,3 +196,14 @@ class Test(TestCase):
         self.assertEqual(round(st.hM.Jmol, 3), 80765.269)
         self.assertEqual(round(st.sM.JmolK, 6), 81.467593)
         self.assertEqual(round(st.aM.Jmol, 4), -7751.8504)
+
+    def test_Velliadou(self):
+        """Checking values given in section 2.4"""
+        self.assertEqual(round(
+            PropylenGlycol(T=350, rho=0).mu.muPas, 6), 9.051368)
+        self.assertEqual(round(
+            PropylenGlycol(T=350, rho=0.02).mu.muPas, 6), 9.058162)
+
+        # Tiny variation because a different value of Avogadro used in paper
+        self.assertEqual(round(
+            PropylenGlycol(T=350, rho=1000).mu.muPas, 6), 5135.986415)
