@@ -6,17 +6,16 @@
 # Run each year for update date and other possible uses
 
 
-from glob import glob
+import sys
+from pathlib import Path
+
 from tools import firstrun
 
 
 old = firstrun.__doc__
 
-files = glob("/home/jjgomera/Programacion/pychemqt/**/*.py", recursive=True)
-files.append("/home/jjgomera/Programacion/pychemqt/pychemqt.py")
-
 new = """Pychemqt, Chemical Engineering Process simulator
-Copyright (C) 2009-2023, Juan José Gómez Romera <jjgomera@gmail.com>
+Copyright (C) 2009-2025, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -32,15 +31,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
+# Find all python files in project folder
+files = Path(sys.argv[0]).parent.parent.absolute().glob("**/*.py")
+
 for archivo in files:
 
-    with open(archivo, "r") as readfile:
+    with open(archivo, "r", encoding="utf-8") as readfile:
         code = "".join(readfile.readlines())
 
     try:
         code.index(old)
     except ValueError:
-        print("Error in %s" % archivo)
+        print(f"Docs don't found in {archivo}")
 
-    with open(archivo, "w") as writefile:
+    with open(archivo, "w", encoding="utf-8") as writefile:
         writefile.write(code.replace(old, new))
