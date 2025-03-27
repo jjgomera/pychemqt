@@ -228,6 +228,17 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
     objects = {"txt": [], "square": [], "ellipse": [], "stream": {}, "in": {},
                "out": {}, "equip": {}}
 
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.popup = Table_Graphics()
+        proxy = QtWidgets.QGraphicsProxyWidget()
+        proxy.setWidget(self.popup)
+        self.addItem(proxy)
+        # self.popup.move(0, -self.popup.height())
+        self.popup.hide()
+
+
     def mousePressEvent(self, event):
         """Save event pos to locate item"""
         QtWidgets.QGraphicsScene.mousePressEvent(self, event)
@@ -411,8 +422,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         self.addObj = True
         self.views()[0].viewport().setCursor(
             QtGui.QCursor(QtCore.Qt.CursorShape.CrossCursor))
-        self.parent().statusBar().showMessage(self.tr(
-    "Click in desire text position in screen"))
+        self.parent().statusBar().showMessage(
+            self.tr("Click in desire text position in screen"))
         clickCollector = WaitforClick(numClick, self)
         clickCollector.finished.connect(self.click)
         clickCollector.start()
@@ -1036,7 +1047,6 @@ class TextItem(QtWidgets.QGraphicsTextItem):
 
 class GraphicsEntity():
     """Class with common functionality for Entity in PFD"""
-    tabla = None
 
     def view(self):
         """Generate text report with properties calculated of entity"""
@@ -1142,7 +1152,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
     tipo = "stream"
 
     def __init__(self, parent=None):
-        super(StreamItem, self).__init__()
+        super().__init__()
         self.parent = parent
         self.setPen(self._pen())
         qp = QtGui.QPainterPath()
@@ -1208,20 +1218,18 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 
     def hoverEnterEvent(self, event):
         if not (self.scene().addObj and self.scene().addType == "stream"):
-            self.tabla = Table_Graphics(self.corriente, self.id, Preferences)
-            self.tabla.move(event.screenPos())
-            self.tabla.show()
+            self.scene().popup.populate(self.corriente, self.id, Preferences)
+            point = self.mapToParent(event.scenePos())
+            self.scene().popup.move(int(point.x()), int(point.y()))
+            self.scene().popup.show()
 
     def hoverLeaveEvent(self, event):
-        if self.tabla and not (self.scene().addObj and
-                               self.scene().addType == "stream"):
-            self.tabla.hide()
-            self.tabla.deleteLater()
-            self.tabla = None
+        self.scene().popup.hide()
 
-            #    def hoverMoveEvent(self, event):
-            #        self.tabla.move(event.screenPos())
-            #        self.tabla.show()
+    def hoverMoveEvent(self, event):
+        point = self.mapToParent(event.scenePos())
+        self.scene().popup.move(int(point.x()), int(point.y()))
+        self.scene().popup.show()
 
     def contextMenu(self):
         ViewAction = createAction(
@@ -1534,29 +1542,25 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             self.showInput(True)
         else:
             if self.dialogoId != None:
-                self.tabla = Table_Graphics(self.equipment, self.id, Preferences)
+                self.scene().popup.populate(self.equipment, self.id, Preferences)
             else:
                 if self.output:
-                    self.tabla = Table_Graphics(
+                    self.scene().popup.populate(
                         self.down[0].corriente, self.down[0].id, Preferences)
                 else:
-                    self.tabla = Table_Graphics(
+                    self.scene().popup.populate(
                         self.up[0].corriente, self.up[0].id, Preferences)
-            self.tabla.move(event.screenPos())
-            self.tabla.show()
+            point = event.scenePos()
+            self.scene().popup.move(int(point.x()), int(point.y()))
+            self.scene().popup.show()
 
     def hoverLeaveEvent(self, event):
         self.showInput(False)
-        if self.tabla and not (self.scene().addObj and \
-                               self.scene().addType == "stream"):
-            self.tabla.hide()
-            self.tabla.deleteLater()
-            self.tabla = None
+        self.scene().popup.hide()
 
-            #    def hoverMoveEvent(self, event):
-            #        self.tabla.move(event.screenPos())
-            #        self.tabla.show()
-            #
+    def hoverMoveEvent(self, event):
+        point = event.scenePos()
+        self.scene().popup.move(int(point.x()), int(point.y()))
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key.Key_Delete or \

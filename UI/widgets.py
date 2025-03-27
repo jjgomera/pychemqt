@@ -1339,21 +1339,35 @@ class Table_Graphics(QtWidgets.QWidget):
     """Custom widget to implement as popup in PFD when mouse over stream and
     equipment graphic item, to show the status of entity and the properties
     desired if availables"""
-    def __init__(self, entity, idx, preferences, parent=None):
+    def __init__(self, entity=None, idx=None, preferences=None, parent=None):
         super().__init__(parent)
         self.setWindowFlags(QtCore.Qt.WindowType.Popup)
-        layout = QtWidgets.QVBoxLayout(self)
+        QtWidgets.QVBoxLayout(self)
+
+        if entity and idx and preferences:
+            self.populate(entity, idx, preferences)
+
+    def clear(self):
+        """Clear content of widget"""
+        for i in reversed(range(self.layout().count())):
+            self.layout().itemAt(i).widget().setParent(None)
+
+    def populate(self, entity, idx, preferences):
+        """Populate the widget with the new values"""
+
+        self.clear()
+
         if isinstance(entity, Corriente):
             title = f"Stream {idx}"
         else:
             title = f"Equipment {idx}"
         label = QtWidgets.QLabel(title)
         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(label)
+        self.layout().addWidget(label)
         line = QtWidgets.QFrame()
         line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
-        layout.addWidget(line)
+        self.layout().addWidget(line)
         if entity:
             if entity.status:
                 textos = entity.popup(preferences)
@@ -1362,12 +1376,11 @@ class Table_Graphics(QtWidgets.QWidget):
                     label.setToolTip(tooltip)
                     if j:
                         label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
-                    layout.addWidget(label)
+                    self.layout().addWidget(label)
             else:
-                layout.addWidget(QtWidgets.QLabel(entity.msg))
+                self.layout().addWidget(QtWidgets.QLabel(entity.msg))
         else:
-            layout.addWidget(QtWidgets.QLabel(self.tr("Undefined")))
-
+            self.layout().addWidget(QtWidgets.QLabel(self.tr("Undefined")))
 
 def createAction(text, **kw):
     """Create a QAction and a QToolButton if its requested
