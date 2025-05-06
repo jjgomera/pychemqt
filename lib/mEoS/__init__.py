@@ -160,6 +160,7 @@ from lib.mEoS.R245fa import R245fa
 from lib.mEoS.R365mfc import R365mfc
 from lib.mEoS.RC318 import RC318
 from lib.mEoS.R1123 import R1123
+from lib.mEoS.R1130 import R1130
 from lib.mEoS.R1234yf import R1234yf
 from lib.mEoS.R1234zeE import R1234zeE
 from lib.mEoS.R1234zeZ import R1234zeZ
@@ -221,9 +222,9 @@ Heteroatom = [Methanol, Ethanol, Acetone, EthyOxide, PropylenOxide,
 CFCs = [R13I1, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41, R113, R114,
         R115, R116, R123, R124, R125, R134a, R141b, R142b, R143a, R150, R152a,
         R161, R218, R227ea, R236ea, R236fa, R245ca, R245fa, R365mfc, RC318,
-        R1123, R1234yf, R1234zeE, R1234zeZ, R1243zf, R1216, R1233zd, R1336mzzE,
-        R1336mzzZ, RE1132, RE143a, RE245cb2, RE245fa2, RE347mcc, Novec649,
-        VinylCl, ClBenzene, C4F10, C5F12, C6F14]
+        R1123, R1130, R1234yf, R1234zeE, R1234zeZ, R1243zf, R1216, R1233zd,
+        R1336mzzE, R1336mzzZ, RE1132, RE143a, RE245cb2, RE245fa2, RE347mcc,
+        Novec649, VinylCl, ClBenzene, C4F10, C5F12, C6F14]
 Siloxanes = [D4, D5, D6, MDM, MD2M, MD3M, MD4M, MM]
 PseudoCompounds = [Air, R404a, R407c, R410a, R507a]
 Others = [LJ]
