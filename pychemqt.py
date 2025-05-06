@@ -127,7 +127,7 @@ except ImportError as err:
     print(msg)
     raise err
 mayor, minor = map(int, np.version.version.split(".")[:2])
-if mayor < 1 or minor < 8:
+if mayor < 1 or (mayor < 2 and minor < 8):
     msg = translate(
         "pychemqt", "Your version of numpy is too old, you must update it.")
     raise ImportError(msg)
