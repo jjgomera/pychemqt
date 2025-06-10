@@ -44,6 +44,7 @@ from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
                    doi, dependences)
 
 __version__ = "0.1.0"
+year = config.__doc__.split()[7][:-1]
 
 other_window = (plots.Binary_distillation, UI_Tables.table.TablaMEoS,
                 UI_Tables.PlotMEoS)
@@ -63,15 +64,15 @@ class TabWidget(QtWidgets.QTabWidget):
             rectImage = QtCore.QRect(25, rect.center().y()-50, 100, 100)
             painter.drawImage(rectImage, image)
             txt = self.tr(
-        """Welcome to pychemqt,
-a software for simulating Chemical Engineering units operations,
-
-Copyright © 2020 Juan José Gómez Romera (jjgomera)
-Licenced with GPL.v3
-This software is distributed in the hope that it will be useful,
-but without any warranty, it is provided "as is" without warranty of any kind
-
-You can start by creating a new project or opening an existing project.""")
+                "Welcome to pychemqt, \n"
+                "a software for simulating Chemical Engineering units operations\n"
+                "\n"
+                f"Copyright © {year} Juan José Gómez Romera (jjgomera)\n"
+                "Licenced with GPL.v3\n"
+                "This software is distributed in the hope that it will be useful,\n"
+                "but without any warranty, it is provided 'as is' without warranty of any kind\n"
+                "\n"
+                "You can start by creating a new project or opening an existing project.")
             rect.setLeft(150)
             painter.drawText(rect, QtCore.Qt.AlignmentFlag.AlignVCenter, txt)
 
@@ -1743,11 +1744,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self,
             self.tr("About pychemqt"),
             """<b>pychemqt</b> v %s
-            <p>Copyright &copy; 2012 Juan José Gómez Romera (jjgomera)<br>
+            <p>Copyright &copy; %s Juan José Gómez Romera (jjgomera)<br>
             Licenced with GPL.v3
             <p>%s
             <p>Python %s - Qt %s - PyQt %s on %s""" % (
-                __version__, txt, platform.python_version(),
+                __version__, year, txt, platform.python_version(),
                 QtCore.QT_VERSION_STR, QtCore.PYQT_VERSION_STR,
                 platform.system()))
 
