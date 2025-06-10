@@ -115,3 +115,11 @@ pip3 install ezodf lxml
 pip3 install openpyxl
 pip3 install xlwt
 pip3 install openbabel  # work too with python3-openbabel in debian bullseye
+
+
+###########################################################################
+# Other optional dependences
+
+###########################################################################
+
+apt install python3-icu

@@ -45,6 +45,7 @@ To install both we are going to use the cmd terminal and using the command:
 
 Remerber it can use TAB to autocomplete command. Respect the order because scipy depend numpy, first install numpy wheel.
 
+
 Optional dependences:
 The spreedsheet support is easy to get, running the command:
 
@@ -52,6 +53,9 @@ The spreedsheet support is easy to get, running the command:
     * py -m pip install openpyxl
     * py -m pip install xlwt
     * py -m pip install openbabel
+
+Sort with non-ascii characters
+    * py -m pip install pyicu
 
 
 Get pychemqt code
