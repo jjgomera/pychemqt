@@ -70,7 +70,7 @@ from UI.widgets import createAction, Table_Graphics, PathConfig, ClickableLabel
 from equipment import flux, spreadsheet, UI_equipments
 from equipment.parents import equipment
 from tools import UI_confResolution, UI_confThermo
-from tools.qt import QtCore, QtGui, QtSvgWidgets, QtWidgets
+from tools.qt import QtCore, QtGui, QtSvgWidgets, QtWidgets, translate
 
 
 # Value for keyboard navigation, unnecessary add to configuration
@@ -1168,6 +1168,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
         self.idLabel = TextItem("S%i" % self.id, self, selectable=False)
         self.idLabel.setZValue(2)
         self.setAcceptHoverEvents(True)
+        self.tr = partial(translate, "StreamItem")
 
     @property
     def corriente(self):
