@@ -294,8 +294,8 @@ class PlotMEoS(QtWidgets.QWidget):
             if fluido and fluido.status and \
                     Tmin <= fluido.T <= Tmax and \
                     0 < fluido.P.kPa <= Pmax:
-                self.plot.lx.set_ydata(event.ydata)
-                self.plot.ly.set_xdata(event.xdata)
+                self.plot.lx.set_ydata([event.ydata])
+                self.plot.ly.set_xdata([event.xdata])
                 self.plot.lx.set_visible(True)
                 self.plot.ly.set_visible(True)
                 self.showPointData(fluido)

@@ -100,17 +100,17 @@ class PsychroPlot(PlotWidget):
         """Update horizontal and vertical lines to show click point"""
         self.state = state
         if chart:
-            self.lx.set_ydata(state.w)
-            self.ly.set_xdata(state.tdb.config())
+            self.lx.set_ydata([state.w])
+            self.ly.set_xdata([state.tdb.config()])
         else:
-            self.lx.set_ydata(state.tdb.config())
-            self.ly.set_xdata(state.w)
+            self.lx.set_ydata([state.tdb.config()])
+            self.ly.set_xdata([state.w])
         self.showPointData(state, chart)
 
     def clearCrux(self):
         """Clear crux lines for click interaction in plot"""
-        self.lx.set_ydata(0)
-        self.ly.set_xdata(0)
+        self.lx.set_ydata([0])
+        self.ly.set_xdata([0])
 
     def showPointData(self, state, chart=True):
         """Update data of current cursor point in plot annotates"""

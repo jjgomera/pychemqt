@@ -205,8 +205,8 @@ class Moody(Chart):
         if f and Re:
             txt = self._txt(Re, f, ed)
 
-        self.plt.lx.set_ydata(f)
-        self.plt.ly.set_xdata(Re)
+        self.plt.lx.set_ydata([f])
+        self.plt.ly.set_xdata([Re])
         if self.note:
             self.note.remove()
             self.note = None
