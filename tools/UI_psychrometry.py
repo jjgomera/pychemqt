@@ -280,7 +280,6 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.setWindowTitle(self.tr("Psychrometric chart"))
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"] + "/images/button/psychrometric.png")))
-        self.showMaximized()
 
         layout = QtWidgets.QGridLayout(self)
         self.plt = PsychroPlot(parent=self, width=100, height=1, dpi=90)
@@ -330,6 +329,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.Preferences.read(conf_dir+"pychemqtrc")
         self.plot()
         logging.info(self.tr("Started psychrometric chart tool"))
+        self.showMaximized()
 
     def configure(self):
         """Show configuration dialog"""
