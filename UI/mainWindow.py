@@ -441,7 +441,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             icon=os.path.join("button", "showPrograms.png"),
             tip=self.tr("Show External Programs Status"),
             parent=self)
-        saveAsImage = createAction(
+        self.saveAsImage = createAction(
             self.tr("Save PFD as image"),
             slot=self.savePFDImage,
             icon=os.path.join("button", "image.png"),
@@ -884,20 +884,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosTools.addAction(actionSpreadsheet)
 
         self.menuPFD = QtWidgets.QMenu(self.tr("&PFD"))
-        self.actionResolution = createAction(
-            self.tr("Resolution"),
-            slot=partial(self.dialogConfig, UI_confResolution),
-            tip=self.tr("Defining PFD resolution dialog"),
-            parent=self)
-        self.menuPFD.addAction(self.actionResolution)
-        self.menuPFD.addSeparator()
-        self.menuPFD.addAction(self.menuObjetosGraficos.menuAction())
-        self.menuPFD.addAction(self.menuObjetosFlujo.menuAction())
-        self.menuPFD.addAction(self.menuObjetosBasics.menuAction())
-        self.menuPFD.addAction(self.menuObjetosSolids.menuAction())
-        self.menuPFD.addAction(self.menuObjetosTools.menuAction())
-        self.menuPFD.addSeparator()
-        self.menuPFD.addAction(saveAsImage)
+        self.menuPFD.aboutToShow.connect(self.aboutToShow_MenuPFD)
         self.menubar.addAction(self.menuPFD.menuAction())
 
         self.menuPlot = QtWidgets.QMenu(
@@ -1129,9 +1116,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     # Menus configuration
     def aboutToShow_MenuEdit(self):
         self.menuEditar.clear()
-        if self.currentScene:
-            self.currentScene.addActions(self.menuEditar)
-        self.menuEditar.addSeparator()
         self.menuEditar.addAction(self.actionWizard)
         self.menuEditar.addSeparator()
         self.menuEditar.addAction(self.actionComponentList)
@@ -1141,6 +1125,19 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuEditar.addAction(self.actioncostIndex)
         self.menuEditar.addSeparator()
         self.menuEditar.addAction(self.actionPreferencias)
+
+    def aboutToShow_MenuPFD(self):
+        self.menuPFD.clear()
+        if self.currentScene:
+            self.currentScene.addActions(self.menuPFD)
+
+        self.menuPFD.addAction(self.menuObjetosGraficos.menuAction())
+        self.menuPFD.addAction(self.menuObjetosFlujo.menuAction())
+        self.menuPFD.addAction(self.menuObjetosBasics.menuAction())
+        self.menuPFD.addAction(self.menuObjetosSolids.menuAction())
+        self.menuPFD.addAction(self.menuObjetosTools.menuAction())
+        self.menuPFD.addSeparator()
+        self.menuPFD.addAction(self.saveAsImage)
 
     def aboutToShow_MenuWindow(self):
         self.menuVentana.clear()
