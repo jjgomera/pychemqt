@@ -1808,6 +1808,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         # dialog.show()
 
     def savePFDImage(self):
+        """Save PFD screenshot in a file"""
         if self.filename[self.idTab]:
             folder = os.path.dirname(str(self.filename[self.idTab]))
         else:
@@ -1817,9 +1818,11 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.tr("Save PFD as image"),
             folder, "Portable Network Graphics (*.png)")[0]
         if fname:
+            if fname.split(".")[-1] != "png":
+                fname += ".png"
             rect = self.currentScene.sceneRect()
             img = QtGui.QImage(
-                rect.width(), rect.height(),
+                int(rect.width()), int(rect.height()),
                 QtGui.QImage.Format.Format_ARGB32_Premultiplied)
             p = QtGui.QPainter(img)
             self.currentScene.render(p)
