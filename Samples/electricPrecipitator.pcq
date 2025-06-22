@@ -200,6 +200,7 @@
             "thcondlmix": "0",
             "thcondgmix": "0",
             "corr_thcondgmix": "0",
+            "rholeos": "false",
             "corr_rhol": "0",
             "corr_thcondl": "0",
             "corr_thcondg": "0",

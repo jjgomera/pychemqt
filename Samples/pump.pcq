@@ -469,6 +469,7 @@
             "thcondlmix": "0",
             "thcondgmix": "0",
             "corr_thcondgmix": "0",
+            "rholeos": "false",
             "pv": "0",
             "f_acent": "0",
             "corr_rhol": "0"
