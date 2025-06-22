@@ -1562,7 +1562,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 flujo.EquipmentItem.id = 0
             self.clearWindow()
 
-# Configuration
+    # Configuration
     def wizard(self):
         dialog = wizard.Wizard(self.config[self.idTab])
         if dialog.exec():

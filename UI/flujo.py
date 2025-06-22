@@ -297,6 +297,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         for item in items:
             menuEl = item.contextMenu()
             menu.addAction(menuEl.menuAction())
+        menu.addSeparator()
 
         return menu
 
@@ -1625,10 +1626,12 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
         #            contextMenu.addAction("Run", self.mouseDoubleClickEvent)
 
         else:
-            if self.output:
+            if self.output and self.down:
                 contextMenu = self.down[0].contextMenu()
-            else:
+            elif not self.output and self.up:
                 contextMenu = self.up[0].contextMenu()
+            else:
+                contextMenu = QtWidgets.QMenu()
 
         self.menuTransform = QtWidgets.QMenu(self.tr("Transform"))
         self.menuTransform.addAction(
