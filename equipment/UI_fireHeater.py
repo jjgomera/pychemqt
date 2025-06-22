@@ -51,7 +51,7 @@ class UI_equipment(UI_equip):
         self.Tout.valueChanged.connect(partial(self.changeParams, "Tout"))
         layout.addWidget(self.Tout, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy. Fixed,
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 2, 0, 1, 6)
         layout.addWidget(QtWidgets.QLabel(self.tr("Pressure drop")), 3, 1)
         self.deltaP = Entrada_con_unidades(Pressure)
