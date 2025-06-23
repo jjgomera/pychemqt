@@ -126,8 +126,8 @@ class Drag(Chart):
 
     def clearCrux(self):
         """Remove crux and note if exist"""
-        self.plt.lx.set_ydata(0)
-        self.plt.ly.set_xdata(0)
+        self.plt.lx.set_ydata([0])
+        self.plt.ly.set_xdata([0])
         if self.note:
             self.note.remove()
             self.note = None
@@ -139,8 +139,8 @@ class Drag(Chart):
         self.clearCrux()
         txt = self._txt(Re, Cd)
 
-        self.plt.lx.set_ydata(Cd)
-        self.plt.ly.set_xdata(Re)
+        self.plt.lx.set_ydata([Cd])
+        self.plt.ly.set_xdata([Re])
 
         self.note = self.plt.fig.text(0.92, 0.05, txt, size="8", va="top")
         self.plt.draw()

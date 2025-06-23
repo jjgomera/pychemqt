@@ -379,14 +379,14 @@ class Standing_Katz(Chart):
         if Pr < 8:
             self.plt.lx.set_visible(True)
             self.plt.ly.set_visible(True)
-            self.plt.ly.set_xdata(Pr)
-            self.plt.lx.set_ydata(Z)
+            self.plt.ly.set_xdata([Pr])
+            self.plt.lx.set_ydata([Z])
 
         if Pr > 7:
             self.plt2.lx.set_visible(True)
             self.plt2.ly.set_visible(True)
-            self.plt2.ly.set_xdata(Pr)
-            self.plt2.lx.set_ydata(Z)
+            self.plt2.ly.set_xdata([Pr])
+            self.plt2.lx.set_ydata([Z])
 
         if Tr:
             txt = f"$T_r$: {Tr:0.4g}\n$P_r$: {Pr:0.4g}\nZ: {Z:0.4g}"

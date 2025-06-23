@@ -100,17 +100,17 @@ class PsychroPlot(PlotWidget):
         """Update horizontal and vertical lines to show click point"""
         self.state = state
         if chart:
-            self.lx.set_ydata(state.w)
-            self.ly.set_xdata(state.tdb.config())
+            self.lx.set_ydata([state.w])
+            self.ly.set_xdata([state.tdb.config()])
         else:
-            self.lx.set_ydata(state.tdb.config())
-            self.ly.set_xdata(state.w)
+            self.lx.set_ydata([state.tdb.config()])
+            self.ly.set_xdata([state.w])
         self.showPointData(state, chart)
 
     def clearCrux(self):
         """Clear crux lines for click interaction in plot"""
-        self.lx.set_ydata(0)
-        self.ly.set_xdata(0)
+        self.lx.set_ydata([0])
+        self.ly.set_xdata([0])
 
     def showPointData(self, state, chart=True):
         """Update data of current cursor point in plot annotates"""
@@ -280,7 +280,6 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.setWindowTitle(self.tr("Psychrometric chart"))
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"] + "/images/button/psychrometric.png")))
-        self.showMaximized()
 
         layout = QtWidgets.QGridLayout(self)
         self.plt = PsychroPlot(parent=self, width=100, height=1, dpi=90)
@@ -330,6 +329,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         self.Preferences.read(conf_dir+"pychemqtrc")
         self.plot()
         logging.info(self.tr("Started psychrometric chart tool"))
+        self.showMaximized()
 
     def configure(self):
         """Show configuration dialog"""
