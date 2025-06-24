@@ -21,6 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .. include:: moody.rst
 
 
+API Reference
+-------------
+
 The module include all related moody chart functionality
     * :class:`Moody`: Chart dialog
     * :func:`calculate`: Calculate procedure
