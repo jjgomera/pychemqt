@@ -1102,7 +1102,11 @@ class Baghouse(Separador_SolidGas):
     def readStatefromJSON(self, state):
         """Load instance parameter from saved file"""
         self.num_filtros = state["num_filtros"]
+        self.num_filtrosCalc = self.num_filtros
         self.tiempo = Time(state["tiempo"])
+        self.tiempoCalc = self.tiempo
+        self.deltaP = state["deltaP"]
+        self.deltaPCalc = self.deltaP
         self.resistenciaFiltro = Dimensionless(state["resistenciaFiltro"])
         self.resistenciaTorta = Dimensionless(state["resistenciaTorta"])
         self.limpieza = state["limpieza"]
