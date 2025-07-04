@@ -155,7 +155,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
             Config.read(conf_dir+"unitrc")
         else:
             Config.add_section("units")
-        Config.set("units", str(self.nombre.text()), lista)
+        Config.set("units", str(self.nombre.text()), str(lista))
         with open(conf_dir+"unitrc", "w") as unit_file:
             Config.write(unit_file)
         self.actualizar_lista_perfiles()
