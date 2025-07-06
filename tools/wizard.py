@@ -61,10 +61,10 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
 
     GERG_available = True
     REFPROP_available = True
-    for id in components:
-        if id not in gerg.id_GERG:
+    for idx in components:
+        if idx not in gerg.id_GERG:
             GERG_available = False
-        if id not in refProp.__all__:
+        if idx not in refProp.__all__:
             REFPROP_available = False
 
     if len(components) == 1 and components[0] == 62:
@@ -132,7 +132,7 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
         config.set("Thermo", "k", str(id))
 
     else:
-        id = EoS.K.index(EoS.Grayson_Stread)
+        id = EoS.K.index(EoS.Grayson_Streed)
         config.set("Thermo", "k", str(id))
 
     return config
@@ -263,12 +263,12 @@ These are the options you must expecific next:<br>
         self.addPage(page5_units)
         self.currentIdChanged.connect(self.checkComponents)
 
-    def checkComponents(self, id):
+    def checkComponents(self, idx):
         """Component window can be only passed with any added components"""
-        if id == 1:
+        if idx == 1:
             self.button(QtWidgets.QWizard.WizardButton.NextButton).setEnabled(len(
                 self.componentes.indices) != 0)
-        self.button(QtWidgets.QWizard.WizardButton.CustomButton1).setVisible(id == 2)
+        self.button(QtWidgets.QWizard.WizardButton.CustomButton1).setVisible(idx == 2)
 
     def auto(self):
         """Dialog to define project parameter to auto thermal configuration"""
