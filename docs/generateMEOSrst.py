@@ -98,7 +98,7 @@ for mod in __all__:
                 txt += ", http://dx.doi.org/%s" % rf["doi"]
             txt += os.linesep + os.linesep
 
-    imageFname = "docs/images/%s.png" % mod.__name__
+    imageFname = os.path.join("docs", "images", "MEoS", f"{mod.__name__}.png")
     if os.path.isfile(imageFname):
         txt += os.linesep + "Calculation example" + os.linesep
         txt += "-------------------"
@@ -106,7 +106,7 @@ for mod in __all__:
         txt += "Using the first option for equation of state, we can get this "
         txt += "diagram plots with the liquid-gas saturation region:"
         txt += os.linesep + os.linesep
-        txt += ".. image:: images/%s.png" % mod.__name__
+        txt += ".. image:: images/MEoS/%s.png" % mod.__name__
         txt += os.linesep + os.linesep
         txt += "The diagram is generated with "
         txt += ":download:`this module <../.script/plotMEoS.py>` "
