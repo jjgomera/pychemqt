@@ -15,12 +15,29 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Units config tools
-###############################################################################
+Dialog to define the units used in the projects. Allows you to select the \
+preferred unit for each of the magnitudes used in the program. The main \
+measurement systems (SI, british, AltSI, Metric, CGS) that can be directly \
+selected also have predefined. Also allow to save and then load personalized \
+units profiles. That profiles are saved in unitrc file in the main program \
+config folder.
+
+.. image:: images/UI_confUnits.png
+    :alt: UI_confUnits
+
+The module include all related prefered units functionality:
+
+* :class:`UI_confUnits_widget`: Units configuration widget, to use in \
+whatever need, dialog, wizard...
+* :class:`Dialog`: Standalone dialog
+
+
+API reference
+-------------
+'''
 
 
 from ast import literal_eval
