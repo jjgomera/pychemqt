@@ -15,23 +15,31 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with wizard project configuration
-# when it creates a new pychemqt project it execute this wizard to configure:
-#   -Component list
-#   -Thermodynamic properties methods
-#   -Transport properties methods
-#   -Units prefered
-# The wizard can be launch whanever you want using its menu entry
-#
-# -auto: Function to calculate autovalues for thermo calculation
-# -AutoDialog: Dialog to define values for auto function, this dialog can be
-# launch in thermo page of wizard to autoselect a good stimation of values
-###############################################################################
+Module with wizard project configuration, it's launched when it creates a new
+pychemqt project to configure:
 
+* :doc:`Component list </tools.UI_confComponents>`
+* :doc:`Thermodynamic properties methods </tools.UI_confThermo>`
+* :doc:`Transport properties methods </tools.UI_confTransport>`
+* :doc:`Units prefered </tools.UI_confUnits>`
+
+The wizard can be launch whanever you want using its menu entry
+
+The module include all related wizard functionality:
+
+* :func:`auto`: Function to calculate autovalues for thermo calculation
+* :class:`AutoDialog`: Dialog to define values for auto function, this \
+dialog can be launch in thermo page of wizard to autoselect a good stimation \
+of values
+* :class:`Wizard`: Wizard dialog for project configuration
+
+
+API reference
+-------------
+'''
 
 from configparser import ConfigParser
 import os
@@ -49,13 +57,15 @@ from tools.qt import QtGui, QtWidgets
 from UI.widgets import Entrada_con_unidades
 
 
-def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
+def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=None):
     """Function to calculate autovalues for thermo calculation
         tmin: Stimated minimum temperature from project
         tmax: Stimated maximum temperature from project
         pmin: Stimated minimum pressure from project
         pmax: Stimated maximum pressure from project
         Components: array with ids numbers component from project"""
+    if components is None:
+        components = []
     config = ConfigParser()
     config = UI_confThermo.UI_confThermo_widget.default(config)
 
@@ -122,18 +132,18 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=[]):
         bip_bwrs = count_nonzero(Kij(ids, EOS="BWRS"))
 
         if bip_bwrs > max(bip_apisrk, bip_srk, bip_pr):
-            id = EoS.K.index(EoS.BWRS.BWRS)
+            idx = EoS.K.index(EoS.BWRS.BWRS)
         elif bip_apisrk > max(bip_srk, bip_pr):
-            id = EoS.K.index(EoS.Cubic.SRKAPI)
+            idx = EoS.K.index(EoS.Cubic.SRKAPI)
         elif bip_srk > bip_pr:
-            id = EoS.K.index(EoS.Cubic.SRK)
+            idx = EoS.K.index(EoS.Cubic.SRK)
         else:
-            id = EoS.K.index(EoS.Cubic.PR)
-        config.set("Thermo", "k", str(id))
+            idx = EoS.K.index(EoS.Cubic.PR)
+        config.set("Thermo", "k", str(idx))
 
     else:
-        id = EoS.K.index(EoS.Grayson_Streed)
-        config.set("Thermo", "k", str(id))
+        idx = EoS.K.index(EoS.Grayson_Streed)
+        config.set("Thermo", "k", str(idx))
 
     return config
 
@@ -283,6 +293,7 @@ These are the options you must expecific next:<br>
 
     @property
     def value(self):
+        """Return config dict defined in wizard"""
         config = self.componentes.value(self.config)
         config = self.thermo.value(config)
         config = self.transport.value(config)
@@ -297,6 +308,7 @@ These are the options you must expecific next:<br>
 
     @classmethod
     def default(cls):
+        """Set default config"""
         config = ConfigParser()
         config = UI_confComponents.UI_confComponents_widget.default(config)
         config = UI_confThermo.UI_confThermo_widget.default(config)
