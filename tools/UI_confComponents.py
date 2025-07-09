@@ -15,12 +15,26 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Component list tools
-###############################################################################
+Dialog to define the chemical compounds used in the project, both normal \
+fluids and solids
+
+.. image:: images/UI_confComponents.png
+    :alt: UI_confComponents
+
+The module include all related widget for components configuration:
+
+* :class:`UI_confComponents_widget`: Components list widget, to use in \
+whatever need, dialog, wizard...
+* :class:`Dialog`: Standalone dialog
+
+
+API reference
+-------------
+
+'''
 
 
 from ast import literal_eval as eval2
@@ -115,11 +129,11 @@ class UI_confComponents_widget(QtWidgets.QWidget):
             self.solidos = eval2(config.get("Components", "Solids"))
 
             for indice in self.indices:
-                self.ListaComponentes.addItem("%03i - %s" % (
-                    indice, self.databank.BaseDatos.item(indice-1, 1).text()))
+                name = self.databank.BaseDatos.item(indice-1, 1).text()
+                self.ListaComponentes.addItem(f"{indice:03} - {name}")
             for solido in self.solidos:
-                self.ListaSolidos.addItem("%03i - %s" % (
-                    solido, self.databank.BaseDatos.item(solido-1, 1).text()))
+                name = self.databank.BaseDatos.item(solido-1, 1).text()
+                self.ListaSolidos.addItem(f"{solido:03} - {name}")
 
         self.comprobarBotones()
 
@@ -129,8 +143,8 @@ class UI_confComponents_widget(QtWidgets.QWidget):
         indice = self.databank.currentRow()+1
         if indice not in self.indices + self.solidos:
             self.indices.insert(insertar, indice)
-            self.ListaComponentes.insertItem(insertar, "%03i - %s" % (
-                indice, self.databank.BaseDatos.item(indice-1, 1).text()))
+            name = self.databank.BaseDatos.item(indice-1, 1).text()
+            self.ListaComponentes.insertItem(insertar, f"{indice:03} - {name}")
             self.comprobarBotones()
             self.ListaComponentes.setCurrentRow(insertar)
             self.componentChanged.emit(bool(self.indices))
@@ -166,8 +180,8 @@ class UI_confComponents_widget(QtWidgets.QWidget):
         indice = self.databank.currentRow()+1
         if indice not in self.indices+self.solidos:
             self.solidos.insert(insertar, indice)
-            self.ListaSolidos.insertItem(insertar, "%03i - %s" % (
-                indice, self.databank.BaseDatos.item(indice-1, 1).text()))
+            name = self.databank.BaseDatos.item(indice-1, 1).text()
+            self.ListaSolidos.insertItem(insertar, f"{indice:03} - {name}")
             self.comprobarBotones()
             self.ListaSolidos.setCurrentRow(insertar)
 
