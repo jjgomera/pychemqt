@@ -15,13 +15,30 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+Dialog to define the units used in the projects. Allows you to select the \
+preferred unit for each of the magnitudes used in the program. The main \
+measurement systems (SI, british, AltSI, Metric, CGS) that can be directly \
+selected also have predefined. Also allow to save and then load personalized \
+units profiles. That profiles are saved in unitrc file in the main program \
+config folder.
 
-###############################################################################
-# Units config tools
-###############################################################################
+.. image:: images/UI_confUnits.png
+    :alt: UI_confUnits
+
+The module include all related prefered units functionality:
+
+* :class:`UI_confUnits_widget`: Units configuration widget, to use in \
+whatever need, dialog, wizard...
+* :class:`Dialog`: Standalone dialog
+
+
+API reference
+-------------
+'''
+
 
 from ast import literal_eval
 from configparser import ConfigParser
@@ -40,11 +57,11 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         """Constructor, opcional config paramater with project config"""
         super().__init__(parent)
 
-        layout = QtWidgets.QGridLayout(self)
+        lyt = QtWidgets.QGridLayout(self)
         systems = QtWidgets.QGroupBox(self.tr("Systems of measurement"))
         systems.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
                               QtWidgets.QSizePolicy.Policy.Fixed)
-        layout.addWidget(systems, 1, 1, 1, 2)
+        lyt.addWidget(systems, 1, 1, 1, 2)
         lytSystems = QtWidgets.QHBoxLayout(systems)
         self.SI = QtWidgets.QRadioButton(self.tr("SI"))
         self.SI.toggled.connect(partial(self.load, "si"))
@@ -61,21 +78,21 @@ class UI_confUnits_widget(QtWidgets.QWidget):
         self.CGS = QtWidgets.QRadioButton(self.tr("CGS"))
         self.CGS.toggled.connect(partial(self.load, "cgs"))
         lytSystems.addWidget(self.CGS)
-        layout.addItem(QtWidgets.QSpacerItem(
+        lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 2)
 
-        self.tabla = QtWidgets.QTableWidget()
-        layout.addWidget(self.tabla, 3, 1, 5, 1)
-        self.tabla.setRowCount(len(unidades.MAGNITUDES)-1)
-        self.tabla.setColumnCount(1)
-        self.tabla.horizontalHeader().setVisible(False)
+        table = QtWidgets.QTableWidget()
+        lyt.addWidget(table, 3, 1, 5, 1)
+        table.setRowCount(len(unidades.MAGNITUDES)-1)
+        table.setColumnCount(1)
+        table.horizontalHeader().setVisible(False)
 
         self.combos = []
         for i, magnitud in enumerate(unidades.MAGNITUDES[:-1]):
-            self.tabla.setVerticalHeaderItem(
+            table.setVerticalHeaderItem(
                 i, QtWidgets.QTableWidgetItem(magnitud[1]))
-            self.tabla.setRowHeight(i, 24)
+            table.setRowHeight(i, 24)
             combo = QtWidgets.QComboBox()
             if magnitud[0] == "Currency":
                 for texto, unidad in zip(magnitud[2].__text__,
@@ -87,30 +104,30 @@ class UI_confUnits_widget(QtWidgets.QWidget):
                 for unidad in magnitud[2].__text__:
                     combo.addItem(unidad)
             self.combos.append(combo)
-            self.tabla.setCellWidget(i, 0, combo)
-        self.tabla.resizeColumnToContents(0)
+            table.setCellWidget(i, 0, combo)
+        table.resizeColumnToContents(0)
 
-        self.tabla.setFixedWidth(self.tabla.verticalHeader().sizeHint().width()
-                                 + self.tabla.columnWidth(0) + 20)
+        table.setFixedWidth(table.verticalHeader().sizeHint().width()
+                            + table.columnWidth(0) + 20)
 
-        self.nombre = QtWidgets.QLineEdit()
-        self.nombre.textChanged.connect(self.nameChanged)
-        layout.addWidget(self.nombre, 3, 2)
+        self.name = QtWidgets.QLineEdit()
+        self.name.textChanged.connect(self.nameChanged)
+        lyt.addWidget(self.name, 3, 2)
         self.Guardar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/fileSave.png")),
+            os.path.join(IMAGE_PATH, "button", "fileSave.png"))),
             self.tr("Save profile"))
         self.Guardar.setEnabled(False)
-        self.Guardar.clicked.connect(self.guardar)
-        layout.addWidget(self.Guardar, 4, 2)
-        self.perfiles = QtWidgets.QComboBox()
-        layout.addWidget(self.perfiles, 6, 2)
-        self.Cargar = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/fileOpen.png")),
+        self.Guardar.clicked.connect(self.save)
+        lyt.addWidget(self.Guardar, 4, 2)
+        self.profiles = QtWidgets.QComboBox()
+        lyt.addWidget(self.profiles, 6, 2)
+        self.loadButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "fileOpen.png"))),
             self.tr("Load profile"))
-        self.Cargar.clicked.connect(self.load)
-        layout.addWidget(self.Cargar, 7, 2)
+        self.loadButton.clicked.connect(self.load)
+        lyt.addWidget(self.loadButton, 7, 2)
 
-        self.actualizar_lista_perfiles()
+        self.updateProfileList()
         if config and config.has_section("Units"):
             if config.getint("Units", "System") == 0:
                 self.SI.setChecked(True)
@@ -131,21 +148,21 @@ class UI_confUnits_widget(QtWidgets.QWidget):
             for combo, magnitud in zip(self.combos, unidades.MAGNITUDES[:-1]):
                 combo.setCurrentIndex(config.getint("Units", magnitud[0]))
 
-    def actualizar_lista_perfiles(self):
+    def updateProfileList(self):
         """Update custom units profile list"""
-        self.perfiles.clear()
+        self.profiles.clear()
         if os.path.isfile(conf_dir+"unitrc"):
             Config = ConfigParser()
             Config.read(conf_dir+"unitrc")
             for i in Config.options("units"):
-                self.perfiles.addItem(self.tr(i))
-            self.perfiles.setEnabled(True)
-            self.Cargar.setEnabled(True)
+                self.profiles.addItem(self.tr(i))
+            self.profiles.setEnabled(True)
+            self.loadButton.setEnabled(True)
         else:
-            self.perfiles.setEnabled(False)
-            self.Cargar.setEnabled(False)
+            self.profiles.setEnabled(False)
+            self.loadButton.setEnabled(False)
 
-    def guardar(self):
+    def save(self):
         """Save units profile to a file"""
         lista = []
         for combo in self.combos:
@@ -155,10 +172,10 @@ class UI_confUnits_widget(QtWidgets.QWidget):
             Config.read(conf_dir+"unitrc")
         else:
             Config.add_section("units")
-        Config.set("units", str(self.nombre.text()), lista)
+        Config.set("units", str(self.name.text()), str(lista))
         with open(conf_dir+"unitrc", "w") as unit_file:
             Config.write(unit_file)
-        self.actualizar_lista_perfiles()
+        self.updateProfileList()
 
     def nameChanged(self, name):
         """Update state of boton Guardar"""
@@ -173,7 +190,7 @@ class UI_confUnits_widget(QtWidgets.QWidget):
             Config = ConfigParser()
             Config.read(conf_dir+"unitrc")
             lista = literal_eval(
-                Config.get("units", str(self.perfiles.currentText())))
+                Config.get("units", str(self.profiles.currentText())))
         for combo, indice in zip(self.combos, lista):
             combo.setCurrentIndex(indice)
 
@@ -214,15 +231,15 @@ class Dialog(QtWidgets.QDialog):
     def __init__(self, config=None, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Units"))
-        layout = QtWidgets.QVBoxLayout(self)
+        lyt = QtWidgets.QVBoxLayout(self)
         self.datos = UI_confUnits_widget(config)
-        layout.addWidget(self.datos)
+        lyt.addWidget(self.datos)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Cancel
             | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
+        lyt.addWidget(self.buttonBox)
 
     def value(self, config):
         """Function to wizard result"""

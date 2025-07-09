@@ -15,12 +15,29 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Transport properties config section
-###############################################################################
+Dialog to configure the methods used in project to calculate the transport \
+properties of stream
+
+.. image:: images/UI_confTransport.png
+    :alt: UI_confTransport
+
+The methods are defined in the :doc:`lib.compuestos` for pure fluid and \
+in :doc:`lib.mezcla` para mezclas
+
+The module include all related transport properties configuration:
+
+* :class:`UI_confTransport_widget`: Transport properties widget, to use in \
+whatever need, dialog, wizard...
+* :class:`Dialog`: Standalone dialog
+
+
+API reference
+-------------
+
+'''
 
 
 from tools.qt import QtCore, QtWidgets

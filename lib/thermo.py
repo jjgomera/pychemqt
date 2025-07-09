@@ -273,7 +273,7 @@ class Thermo():
         properties
         corriente: instance of corriente to populate"""
         for prop in self.propertiesGlobal():
-            setattr(corriente, prop, getattranslate(self, prop))
+            setattr(corriente, prop, getattr(self, prop))
 
     def _writeGlobalState(self, corriente, state):
         """Procedure to populate a state dict with the global advanced

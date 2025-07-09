@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-"""Pychemqt, Chemical Engineering Process simulator
+'''Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2025, Juan José Gómez Romera <jjgomera@gmail.com>
 
 This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,34 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Thermal method calculation config
-###############################################################################
+Dialog to configure the methods used in project to calculate the \
+thermodynamic properties of stream
+
+.. image:: images/UI_confThermo.png
+    :alt: UI_confThermo
+
+The dialog let user define the method to calculate the distribution \
+coefficient between phases including the binary interaction parameters if \
+it's available. Its possible use too any of advanced methods availables.
+For enthalpy calculation let to choose too the method desired from the list.
+
+For more details about the methods available see the :doc:`lib.eos` \
+documentation.
+
+The module include all related thermodynamic properties configuration:
+
+* :class:`UI_confThermo_widget`: Thermal properties widget, to use in \
+whatever need, dialog, wizard...
+* :class:`Dialog`: Standalone dialog
+
+
+API reference
+-------------
+
+'''
 
 
 from ast import literal_eval

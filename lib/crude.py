@@ -1086,7 +1086,8 @@ class Crudo(Petroleo):
 
     Notes
     -----
-    The resultant instancecan be used as hypotetical component as Petroleo.
+    The resultant instance can be used as hypotetical component as Petroleo
+    in main program component list
     """
     kwargs = Petroleo.kwargs.copy()
     kwarg = {"index": 0,
@@ -1111,11 +1112,11 @@ class Crudo(Petroleo):
             return True
         else:
             self.status = 0
-            self.msg = translate("Undefined petrol")
+            self.msg = translate("Crude", "Undefined petrol")
 
     def calculo(self):
-        id = self.kwargs["index"]
-        databank.execute("SELECT * FROM CrudeOil WHERE id=='%i'" % id)
+        idx = self.kwargs["index"]
+        databank.execute(f"SELECT * FROM CrudeOil WHERE id=={idx}")
         prop = databank.fetchone()
 
         API = prop[4]

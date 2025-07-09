@@ -199,11 +199,11 @@ if __name__ == "__main__":
                  54e-6, 60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
     fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
                   0.05, 0.03, 0.02]
-    # solido = Solid(caudalSolido=[0.1], distribucion_diametro=diametros,
-                   # distribucion_fraccion=fracciones)
-    # corriente = Corriente(T=300, P=101325, caudalMasico=1.,
-                          # fraccionMolar=[1.], solido=solido)
-    # filtro = Baghouse(entrada=corriente, metodo=0, num_filtros=4, tiempo=3600)
-    dialogo = UI_equipment()
+    solido = Solid(caudalSolido=[0.1], distribucion_diametro=diametros,
+                   distribucion_fraccion=fracciones)
+    corriente = Corriente(T=300, P=101325, caudalMasico=1.,
+                          fraccionMolar=[1.], solido=solido)
+    filtro = Baghouse(entrada=corriente, metodo=0, num_filtros=4, tiempo=3600)
+    dialogo = UI_equipment(filtro)
     dialogo.show()
     sys.exit(app.exec())

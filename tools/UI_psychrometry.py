@@ -124,14 +124,16 @@ class PsychroPlot(PlotWidget):
             loc = "upper left"
         else:
             loc = "lower right"
-        self.ax.table(cellText=txt, loc=loc, cellLoc="left", colLoc="left")
+        self.ax.table(cellText=txt, loc=loc, cellLoc="left", colLoc="left",
+                      edges="open", fontsize=8)
         self.ax.tables[0].auto_set_column_width(0)
+        self.ax.tables[0].auto_set_font_size(True)
         self.draw()
 
     def clearPointData(self):
         """Delete point data from plot"""
         while self.ax.tables:
-            self.ax.tables.pop()
+            self.ax.tables[0].remove()
         self.draw()
 
 

@@ -94,7 +94,7 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 	* `High quality calculation of properties using multi-parameter equations <tools.UI_Tables.html>`__
 	* Introspection support with a python shell (Linux only)
 
-* Configurable: Units system, property correlation, EoS to use...
+* `Configurable <tools.wizard.html>`__: Units system, property correlation, EoS to use...
 * Internationalization support: english, spanish.
 
 

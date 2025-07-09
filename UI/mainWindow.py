@@ -37,8 +37,8 @@ from tools.qt import QtCore, QtGui, QtWidgets
 from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
                    UI_confThermo, UI_confUnits, UI_confResolution, UI_databank,
                    UI_Tables, UI_unitConverter, UI_psychrometry, costIndex,
-                   doi, dependences, terminal, qtelemental)
-from UI import newComponent, flujo, wizard, plots, viewComponents
+                   doi, dependences, terminal, qtelemental, wizard)
+from UI import newComponent, flujo, plots, viewComponents
 from UI.prefPFD import BrushCombo
 from UI.petro import Definicion_Petro
 from UI.widgets import createAction
