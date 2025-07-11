@@ -15,14 +15,26 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library with costindex functionality
-#   -UI_CostIndex: Dialog to configure costindex values
-#   -CostData: Common widget to equipment with cost section
-###############################################################################
+Pychemqt include a basic cost stimation utility for equipments. The cost are \
+updated using the Chemical Engineering Plant Cost Index (CEPCI) update \
+monthly at https://www.chemengonline.com. The index define several kind of \
+equipments with different update values.
+
+.. image:: images/costIndex.png
+    :alt: costIndex
+
+The module include all related cost index functionality:
+
+* :class:`UI_CostIndex`: Dialog to show/configure costindex values
+* :class:`CostData`: Common widget for equipment with cost support
+
+
+API reference
+-------------
+'''
 
 
 from functools import partial
@@ -206,7 +218,7 @@ class Ui_CostIndex(QtWidgets.QDialog):
 
 
 class CostData(QtWidgets.QWidget):
-    """Common widget to equipment with cost section
+    """Common widget for equipment with cost support
     It have property to easy access to properties:
         * factor: install factor
         * base: base index (January 1982)
@@ -216,9 +228,10 @@ class CostData(QtWidgets.QWidget):
     valueChanged = QtCore.pyqtSignal(str, float)
 
     def __init__(self, equipment, parent=None):
-        """constructor
+        """
         equipment: equipment class where the widget have to be put, define
-        indiceCostos as a index in costIndex"""
+        indiceCostos as a index in costIndex
+        """
         super().__init__(parent)
         self.indice = equipment.indiceCostos
         factor = equipment.kwargs["f_install"]
