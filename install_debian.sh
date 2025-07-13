@@ -10,8 +10,11 @@
 #Mandatory dependences
 ########################################################################
 apt-get install python3 python3-numpy python3-scipy python3-matplotlib 
-apt-get install python3-pyqt5 
+apt-get install python3-pyqt6 python3-pyqt6.qtsvg python3-pyqt6.qtwebengine
+#apt-get install python3-pyqt5 python3-pyqt5.qtsvg python3-pyqt5.qtwebengine
 
+# numdifftools
+pip3 install numdifftools
 
 
 ########################################################################
@@ -29,7 +32,8 @@ pip3 install https://github.com/jjgomera/iapws/archive/master.zip
 # pagkage to show code
 ########################################################################
 
-apt-get python3-pyqt5.qsci
+apt-get python3-pyqt6.qsci
+#apt-get python3-pyqt5.qsci
 
 
 ########################################################################
@@ -111,10 +115,10 @@ cp python3.2/rptest.py /usr/local/lib/python3.5/dist-packages
 ########################################################################
 #lxml is a required dependendence of ezodf don't configured in setup
 #so we need install too
-pip3 install ezodf lxml
-pip3 install openpyxl
-pip3 install xlwt
-pip3 install openbabel  # work too with python3-openbabel in debian bullseye
+pip3 install ezodf
+apt install python3-openpyxl
+apt install python3-xlwt
+apt install python3-openbabel
 
 
 ###########################################################################
