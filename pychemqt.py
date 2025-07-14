@@ -161,6 +161,14 @@ if iapws.__version__ < "1.5.3":
         "pychemqt", "Your version of iapws is too old, you must update it.")
     raise ImportError(msg)
 
+# numdifftools
+try:
+    import numdifftools
+except ImportError as err:
+    msg = translate(
+        "pychemqt", "numdifftools could not be found, you must install it.")
+    print(msg)
+    raise err
 
 # TODO: Disable python-graph external dependence, functional mock up in
 # project yet useless

@@ -508,25 +508,25 @@ class CoolProp(ThermoAdvanced):
         """Return fluid phase with translation support"""
         phase = estado.phase()
         if phase == CP.iphase_supercritical:
-            msg = translate("Supercritical fluid")
+            msg = translate("CoolProp", "Supercritical fluid")
             x = 1
         elif phase == CP.iphase_supercritical_liquid:
-            msg = translate("Supercritical liquid")
+            msg = translate("CoolProp", "Supercritical liquid")
             x = 1
         elif phase == CP.iphase_supercritical_gas:
-            msg = translate("Supercritical gas")
+            msg = translate("CoolProp", "Supercritical gas")
             x = 1
         elif phase == CP.iphase_gas:
-            msg = translate("Vapor")
+            msg = translate("CoolProp", "Vapor")
             x = 1
         elif phase == CP.iphase_liquid:
-            msg = translate("Liquid")
+            msg = translate("CoolProp", "Liquid")
             x = 0
         elif phase == CP.iphase_twophase:
-            msg = translate("Two phases")
+            msg = translate("CoolProp", "Two phases")
             x = estado.Q()
         elif phase == CP.iphase_critical_point:
-            msg = translate("Critical point")
+            msg = translate("CoolProp", "Critical point")
             x = 1
 
         return msg, x
