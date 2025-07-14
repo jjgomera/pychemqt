@@ -18,6 +18,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
+.. include:: UI_Preferences.rst
+
 Library to show/configure pychemqt general preferences
 
     * :class:`ConfGeneral`: General configuration options
@@ -25,6 +27,15 @@ Library to show/configure pychemqt general preferences
     * :class:`ConfFormat`: Numeric format configuration
     * :class:`ConfApplications`: External applications configuration
     * :class:`ConfTooltipEntity`: Entity properties in popup configuration
+
+In addition to other tabs defined in other modules:
+
+    * :class:`lib.plot.ConfPlot`: Matplotlib configuration
+    * :class:`lib.openbabel.ConfBabel`: Openbabel image generation configuration
+    * :class:`tools.UI_Tables.prefMEOS.Widget`: mEoS parameter configuration
+    * :class:`UI.prefPFD.Widget`: Flow Diagram configuration
+    * :class:`UI.prefPetro.Widget`: Petro new component configuration
+    * :class:`tools.UI_psychrometry.Config`: Phychrometric chart configuration
 '''
 
 

@@ -94,7 +94,9 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 	* `High quality calculation of properties using multi-parameter equations <tools.UI_Tables.html>`__
 	* Introspection support with a python shell (Linux only)
 
-* `Configurable <tools.wizard.html>`__: Units system, property correlation, EoS to use...
+* `Calculation method fully configurable <tools.wizard.html>`__: Units system, property correlation, EoS to use...
+* `Complete set of preferences <tools.UI_Preferences.html>`__: For adjust the gui to the user preferences
+* Basic `cost estimation <tools.costIndex.html>`__ utility
 * Internationalization support: english, spanish.
 
 
