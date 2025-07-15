@@ -86,13 +86,17 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 	* ElectricPrecipitator
 	* Baghouse
 	* Spreadsheet equipment (ods,xlsx)
-* Tools
+* Tools:
 	* `Units converter <tools.UI_unitConverter.html>`__
 	* Currency converter
 	* `Periodic table of elements <tools.qtelemental.html>`__
 	* `Psychometric chart <tools.UI_psychrometry.html>`__
 	* `High quality calculation of properties using multi-parameter equations <tools.UI_Tables.html>`__
 	* Introspection support with a python shell (Linux only)
+	* Tiny plot
+		* `Moody chart <plots.moody.html>`__
+		* `Drag sphere chart <plots.drag.html>`__
+		* `Standing-Katz chart <plots.standing.html>`__
 
 * `Calculation method fully configurable <tools.wizard.html>`__: Units system, property correlation, EoS to use...
 * `Complete set of preferences <tools.UI_Preferences.html>`__: For adjust the gui to the user preferences

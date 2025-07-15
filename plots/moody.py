@@ -27,10 +27,8 @@ API Reference
 The module include all related moody chart functionality
     * :class:`Moody`: Chart dialog
     * :func:`calculate`: Calculate procedure
-    * :class:`CalculateDialog`: Dialog to calculate a specified point
-
+    * :class:`CalculateDialog`: Dialog to calculate a specified point \
 and its configuration
-
     * :class:`Config`: Moody chart configuration
 '''
 
