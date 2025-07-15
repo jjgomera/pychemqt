@@ -382,13 +382,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             tip=self.tr("Show/Hide item list"),
             checkable=True, parent=self)
 
-        calculatorAction = createAction(
+        self.calculatorAction = createAction(
             self.tr("&Calculator"),
             slot=self.calculator,
             icon=os.path.join("button", "calculator.png"),
             shortcut="F2",
             tip=self.tr("Open system calculator"),
             parent=self)
+
         terminalAction = createAction(
             self.tr("Python Shell"),
             shortcut="F3",
@@ -507,7 +508,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.tr("Tools"), self)
         self.BarraHerramientas.setObjectName("BarraHerramientas")
         self.BarraHerramientas.setIconSize(QtCore.QSize(16, 16))
-        self.BarraHerramientas.addAction(calculatorAction)
+        self.BarraHerramientas.addAction(self.calculatorAction)
         self.BarraHerramientas.addAction(terminalAction)
         self.BarraHerramientas.addAction(conversorUnidadesAction)
         self.BarraHerramientas.addAction(currencyAction)
@@ -924,7 +925,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.tr("Component database"), self.verComponentes)
         self.menuHerramientas.addAction(self.menuAddComponent.menuAction())
         self.menuHerramientas.addSeparator()
-        self.menuHerramientas.addAction(calculatorAction)
+        self.menuHerramientas.addAction(self.calculatorAction)
         self.menuHerramientas.addAction(terminalAction)
         self.menuHerramientas.addAction(conversorUnidadesAction)
         self.menuHerramientas.addAction(currencyAction)
@@ -1649,6 +1650,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                     stl = BrushCombo.BRUSH[Preferences.getint("PFD", "brush")]
                     subwindow.widget().setBackgroundBrush(
                         QtGui.QBrush(QtGui.QColor(brushColor), stl))
+
+        # Check availability of system calculator
+        calculator = str(Preferences.get("Applications", 'Calculator'))
+        self.calculatorAction.setEnabled(bool(calculator))
 
     def activeControl(self, boolean):
         self.fileSaveAsAction.setEnabled(boolean)
