@@ -32,7 +32,7 @@ import tempfile
 
 from numpy import array, linspace
 from scipy import optimize
-from tools.qt import QtCore, QtGui, QtWidgets, QtSvg, QtSvgWidgets
+from tools.qt import QtCore, QtGui, QtWidgets
 
 from lib.plot import PlotDialog
 from lib.compuestos import (Componente, MuL_Parametric, Pv_Antoine, Pv_Wagner,
@@ -882,7 +882,7 @@ class View_Component(QtWidgets.QDialog):
 
         labelFormula2 = QtWidgets.QLabel(self.tr("Expanded Formula"))
         lytGeneral.addWidget(labelFormula2, 5, 1)
-        self.formula2 = QtSvgWidgets.QSvgWidget()
+        self.formula2 = QtWidgets.QLabel()
         lytGeneral.addWidget(self.formula2, 6, 1, 5, 3,
                              QtCore.Qt.AlignmentFlag.AlignCenter)
         if os.environ["openbabel"] != "True":
@@ -1675,13 +1675,10 @@ class View_Component(QtWidgets.QDialog):
         if self.cmp.smile and os.environ["openbabel"] == "True":
             self.smile.setText(self.cmp.smile)
 
-            imageFile = tempfile.NamedTemporaryFile("w", suffix=".svg")
+            imageFile = tempfile.NamedTemporaryFile("w", suffix=".png")
             imageFromSmile(self.cmp.smile, imageFile.name, Preferences)
 
-            renderer = QtSvg.QSvgRenderer(imageFile.name)
-            self.formula2.load(imageFile.name)
-            self.formula2.renderer().setViewBox(QtCore.QRect(0, 0, 200, 200))
-            self.formula2.setFixedSize(renderer.defaultSize())
+            self.formula2.setPixmap(QtGui.QPixmap(imageFile.name))
 
         if self.cmp.UNIFAC != []:
             self.UNIFAC.setRowCount(len(self.cmp.UNIFAC))

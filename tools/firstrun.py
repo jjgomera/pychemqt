@@ -589,7 +589,7 @@ def Preferences():
     conf.add_section("Openbabel")
     conf.set("Openbabel", "BondColor", "#000000")
     conf.set("Openbabel", "BackgroundColor", "#ffffff")
-    conf.set("Openbabel", "BackColorAlpha", "0")
+    conf.set("Openbabel", "BackColorTransparent", "True")
     conf.set("Openbabel", "AtomsColor", "True")
     conf.set("Openbabel", "AtomsAll", "False")
     conf.set("Openbabel", "AtomsEnd", "True")
@@ -597,7 +597,6 @@ def Preferences():
     conf.set("Openbabel", "AtomsIndex", "False")
     conf.set("Openbabel", "TighBond", "False")
     conf.set("Openbabel", "AsymetricDouble", "True")
-    conf.set("Openbabel", "AtomIndex", "False")
 
     return conf
 

@@ -30,7 +30,7 @@ from configparser import ConfigParser
 import tempfile
 import os
 
-from tools.qt import QtCore, QtWidgets, QtSvg, QtSvgWidgets, QtGui
+from tools.qt import QtCore, QtWidgets, QtGui
 
 try:
     from openbabel.pybel import readstring
@@ -55,35 +55,36 @@ def imageFromSmile(smile, fname, conf):
 
     # Get dict parameters for exported image configuration
     # Parameters available from openbabel documentation
-    # https://openbabel.org/docs/current/FileFormats/SVG_2D_depiction.html
+    # https://openbabel.org/docs/current/FileFormats/PNG_2D_depiction.html
 
+    # - p <num>: px Image size, default 300
+    # - w <pixels>: image width (or from image size)
+    # - h <pixels>: image height (or from image size)
+    # - c <num>: number of columns in table
+    # - r <num>: number of rows in table
+    # - N <num>:max number objects to be output
     # + u: no element-specific atom coloring
     # - U: can define alternate color to internally-specified
     # + b: background color
     # + C: Do not draw terminal C (and H) explicitly
     # + a: draw all carbon atoms
     # - d: do not display molecule name
+    # - m: do not add margins to the image
     # + s: use asymmetric double bonds
     # + t: use thicker lines
-    # - e: embed molecule as CML
-    # - p <num>: px Scale to bond length(single mol only)
-    # - P <num>:px Single mol in defined size image
-    # - c <num>: number of columns in table
-    # - cols <num>: number of columns in table(not displayed in GUI)
-    # - r <num>: number of rows in table
-    # - rows <num>: number of rows in table(not displayed in GUI)
-    # - N <num>:max number objects to be output
-    # - l: draw grid lines
-    # + i: add index to each atom
-    # - j: do not embed javascript
-    # - x: omit XML declaration (not displayed in GUI)
     # - A: display aliases, if present
+    # - O <format ID>: Format of embedded text. For example, molfile or smi.
+    #                  If there is no parameter, input format is used.
+    # - y <additional chunk ID>: Write to a chunk with specified ID
 
     opt = {}
+    opt["m"] = None
 
     opt["B"] = conf.get("Openbabel", 'BondColor')
-    alpha = conf.getint("Openbabel", "BackColorAlpha")
+    alpha = conf.getboolean("Openbabel", "BackColorTransparent")
     if alpha:
+        opt["b"] = "none"
+    else:
         opt["b"] = conf.get("Openbabel", 'BackgroundColor')
 
     if not conf.getboolean("Openbabel", 'AtomsColor'):
@@ -100,24 +101,10 @@ def imageFromSmile(smile, fname, conf):
     if conf.getboolean("Openbabel", 'AsymetricDouble'):
         opt["s"] = None
 
-    if conf.getboolean("Openbabel", 'AtomIndex'):
-        opt["i"] = None
+    opt["x"] = None
 
     mol = readstring("smi", smile)
-    mol.write("svg", filename=fname, overwrite=True, opt=opt)
-
-    # Edit the generated file to edit the rect viewBox to fill all the image
-    with open(fname, 'r') as file:
-        data = file.read()
-
-    # Add too transparence to the background color
-    opacity = f' fill-opacity="{alpha/255:0.2f}"'
-    data = data.replace(
-        '<rect x="0" y="0" width="100" height="100"',
-        '<rect x="0" y="0" width="200" height="200"' + opacity)
-
-    with open(fname, 'w') as file:
-        file.write(data)
+    mol.write("_png2", filename=fname, overwrite=True, opt=opt)
 
 
 class ConfBabel(QtWidgets.QDialog):
@@ -131,12 +118,13 @@ class ConfBabel(QtWidgets.QDialog):
         self.BondColor.valueChanged.connect(self.updateImage)
         layout.addWidget(self.BondColor, 1, 2)
         layout.addWidget(QtWidgets.QLabel(self.tr("Background color:")), 2, 1)
-        self.BackColor = ColorSelector(isAlpha=True)
+        self.BackColor = ColorSelector()
         self.BackColor.valueChanged.connect(self.updateImage)
         layout.addWidget(self.BackColor, 2, 2)
-        self.checkColor = QtWidgets.QCheckBox(self.tr("Heteroatom in color"))
-        self.checkColor.stateChanged.connect(self.updateImage)
-        layout.addWidget(self.checkColor, 3, 1, 1, 2)
+        self.BackColorTransparent = QtWidgets.QCheckBox(
+            self.tr("Transparent background color"))
+        self.BackColorTransparent.stateChanged.connect(self.updateImage)
+        layout.addWidget(self.BackColorTransparent, 3, 1, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
@@ -157,22 +145,22 @@ class ConfBabel(QtWidgets.QDialog):
         layout.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 6, 1, 1, 2)
+        self.checkColor = QtWidgets.QCheckBox(self.tr("Heteroatom in color"))
+        self.checkColor.stateChanged.connect(self.updateImage)
+        layout.addWidget(self.checkColor, 7, 1, 1, 2)
         self.checkTighBond = QtWidgets.QCheckBox(self.tr("Thicker bond lines"))
         self.checkTighBond.stateChanged.connect(self.updateImage)
-        layout.addWidget(self.checkTighBond, 7, 1, 1, 2)
+        layout.addWidget(self.checkTighBond, 8, 1, 1, 2)
         self.checkAsym = QtWidgets.QCheckBox(self.tr("Asymetric double bond"))
         self.checkAsym.stateChanged.connect(self.updateImage)
-        layout.addWidget(self.checkAsym, 8, 1, 1, 2)
-        self.checkIndex = QtWidgets.QCheckBox(self.tr("Show atoms index"))
-        self.checkIndex.stateChanged.connect(self.updateImage)
-        layout.addWidget(self.checkIndex, 9, 1, 1, 2)
+        layout.addWidget(self.checkAsym, 9, 1, 1, 2)
 
         if os.environ["openbabel"] == "False":
             self.example = QtWidgets.QLabel(
                 self.tr("Openbabel library don´t found"))
             self.example.setStyleSheet("color: red")
         else:
-            self.example = QtSvgWidgets.QSvgWidget()
+            self.example = QtWidgets.QLabel()
         layout.addWidget(self.example, 13, 1, 1, 2,
                          QtCore.Qt.AlignmentFlag.AlignCenter)
 
@@ -183,9 +171,10 @@ class ConfBabel(QtWidgets.QDialog):
         if config and config.has_section("Openbabel"):
             self.BondColor.setColor(config.get("Openbabel", 'BondColor'))
 
-            alpha = config.getint("Openbabel", 'BackColorAlpha')
+            self.BackColorTransparent.setChecked(
+                config.getboolean("Openbabel", 'BackColorTransparent'))
             self.BackColor.setColor(
-                config.get("Openbabel", 'BackgroundColor'), alpha)
+                config.get("Openbabel", 'BackgroundColor'))
             self.checkColor.setChecked(
                 config.getboolean("Openbabel", 'AtomsColor'))
             self.radioAll.setChecked(
@@ -198,12 +187,11 @@ class ConfBabel(QtWidgets.QDialog):
                 config.getboolean("Openbabel", 'TighBond'))
             self.checkAsym.setChecked(
                 config.getboolean("Openbabel", 'AsymetricDouble'))
-            self.checkIndex.setChecked(
-                config.getboolean("Openbabel", 'AtomIndex'))
 
             self.updateImage(config)
 
     def updateImage(self, config=None):
+        """Update image shown when changing some of the parameters"""
         if os.environ["openbabel"] == "False":
             return
 
@@ -211,14 +199,11 @@ class ConfBabel(QtWidgets.QDialog):
             config = ConfigParser()
             config = self.value(config)
 
-        imageFile = tempfile.NamedTemporaryFile("w", suffix=".svg")
-        smile = "C=CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
-        imageFromSmile(smile, imageFile.name, config)
+        with tempfile.NamedTemporaryFile("w", suffix=".png") as imageFile:
+            smile = "C=CN1C=NC2=C1C(=O)N(C(=O)N2C)C"
+            imageFromSmile(smile, imageFile.name, config)
 
-        renderer = QtSvg.QSvgRenderer(imageFile.name)
-        self.example.load(imageFile.name)
-        self.example.renderer().setViewBox(QtCore.QRect(0, 0, 200, 200))
-        self.example.setFixedSize(renderer.defaultSize())
+            self.example.setPixmap(QtGui.QPixmap(imageFile.name))
 
     def value(self, config):
         """Update ConfigParser instance with the config"""
@@ -227,8 +212,8 @@ class ConfBabel(QtWidgets.QDialog):
         config.set("Openbabel", "BondColor", self.BondColor.color.name())
         config.set("Openbabel", "BackgroundColor",
                    self.BackColor.color.name(QtGui.QColor.NameFormat.HexRgb))
-        config.set("Openbabel", "BackColorAlpha",
-                   str(self.BackColor.color.alpha()))
+        config.set("Openbabel", "BackColorTransparent",
+                   str(self.BackColorTransparent.isChecked()))
         config.set("Openbabel", "AtomsColor", str(self.checkColor.isChecked()))
         config.set("Openbabel", "AtomsAll", str(self.radioAll.isChecked()))
         config.set("Openbabel", "AtomsEnd", str(self.radioEnd.isChecked()))
@@ -237,5 +222,4 @@ class ConfBabel(QtWidgets.QDialog):
                    str(self.checkTighBond.isChecked()))
         config.set("Openbabel", "AsymetricDouble",
                    str(self.checkAsym.isChecked()))
-        config.set("Openbabel", "AtomIndex", str(self.checkIndex.isChecked()))
         return config
