@@ -299,7 +299,13 @@ def getElement(indice):
         db = sqlite3.connect(databank_name).cursor()
         db.execute(f"select * from compuestos where id=={indice}")
         componente = db.fetchone()
-    return componente
+
+    # Change none values for 0s
+    componente = list(componente)
+    while None in componente:
+        componente[componente.index(None)] = 0
+
+    return tuple(componente)
 
 
 def copyElement(indice):
