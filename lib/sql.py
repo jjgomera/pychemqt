@@ -15,18 +15,22 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Module with actions to manipulate compound database
 
-###############################################################################
-# Module for properties database function
-#   -transformElement
-#   -inserElementsFromArray: Insert element to a database
-#   -updateElement: Update element with indice in database
-#   -deleteElement: Delete Element with indice from custom Database
-#   -getElement: Get element from database
-#   -copyElement: Create a copy of element of indice in custom Database
-###############################################################################
+    * :func:`transformElement`: Transform values from dialog in valid list to \
+save in databank
+    * :func:`inserElementsFromArray`: Insert element to a database
+    * :func:`updateElement`: Update element with indice in database
+    * :func:`deleteElement`: Delete Element with indice from custom Database
+    * :func:`getElement`: Get element from database
+    * :func:`copyElement`: Create a copy of element of indice in custom Database
+
+API reference
+-------------
+
+'''
 
 
 import os
@@ -49,6 +53,7 @@ else:
 
 
 def transformElement(elemento):
+    """Transform list generated in dialog in valid list to save in database"""
     vals = []
     vals.append(str(elemento[0]))   # formula
     vals.append(str(elemento[1]))   # name
@@ -161,7 +166,7 @@ def transformElement(elemento):
     vals.append(elemento[33])       # Tf
     vals.append(str(elemento[34]))  # CAS
     vals.append(str(elemento[35]))  # alternateFormula
-    vals.append(elemento[36])  # UNIFAC
+    vals.append(elemento[36])       # UNIFAC
     vals.append(elemento[37])       # Dm
     vals.append(elemento[38])       # Eps_k
     vals.append(elemento[39])       # UNIQUAC_area
@@ -261,15 +266,15 @@ def updateElement(elemento, indice):
     curs = conn.cursor()
     for variable, valor in zip(variables, vals):
         if isinstance(valor, int):
-            curs.execute('UPDATE compuestos SET %s=%i WHERE id==%i'
-                         % (variable, valor, indice))
+            curs.execute(
+                f'UPDATE compuestos SET {variable}={valor} WHERE id=={indice}')
         elif isinstance(valor, float):
-            curs.execute('UPDATE compuestos SET %s=%f WHERE id==%i'
-                         % (variable, valor, indice))
+            curs.execute(
+                f'UPDATE compuestos SET {variable}={valor} WHERE id=={indice}')
         elif isinstance(valor, str):
             valor = '"'+valor+'"'
-            curs.execute('UPDATE compuestos SET %s=%s WHERE id==%i'
-                         % (variable, valor, indice))
+            curs.execute(
+                f'UPDATE compuestos SET {variable}={valor} WHERE id=={indice}')
     conn.commit()
     conn.close()
 
@@ -278,7 +283,7 @@ def deleteElement(indice):
     """Delete Element with indice from custom Database"""
     conn = sqlite3.connect(databank_Custom_name)
     curs = conn.cursor()
-    curs.execute("DELETE FROM compuestos WHERE id=%i" % indice)
+    curs.execute(f"DELETE FROM compuestos WHERE id={indice}")
     conn.commit()
     conn.close()
 
@@ -288,11 +293,11 @@ def getElement(indice):
     indice: index in databank of element"""
     if indice > 10000:
         db_Custom = sqlite3.connect(databank_Custom_name).cursor()
-        db_Custom.execute("select * from compuestos where id==%i" % indice)
+        db_Custom.execute(f"select * from compuestos where id=={indice}")
         componente = db_Custom.fetchone()
     else:
         db = sqlite3.connect(databank_name).cursor()
-        db.execute("select * from compuestos where id==%i" % indice)
+        db.execute(f"select * from compuestos where id=={indice}")
         componente = db.fetchone()
     return componente
 

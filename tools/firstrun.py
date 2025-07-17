@@ -596,7 +596,6 @@ def Preferences():
     conf.set("Openbabel", "AtomsAll", "False")
     conf.set("Openbabel", "AtomsEnd", "True")
     conf.set("Openbabel", "AtomsNone", "False")
-    conf.set("Openbabel", "AtomsIndex", "False")
     conf.set("Openbabel", "TighBond", "False")
     conf.set("Openbabel", "AsymetricDouble", "True")
 
