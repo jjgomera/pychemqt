@@ -46,6 +46,7 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.buttonNew.clicked.connect(self.newComponent)
         layoutTitle.addWidget(self.buttonNew)
         self.buttonCopy = QtWidgets.QToolButton(self)
+        self.buttonCopy.setEnabled(False)
         self.buttonCopy.setToolTip(self.tr("Clone this element"))
         self.buttonCopy.setIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/editCopy.png")))
@@ -139,6 +140,7 @@ class UI_databank_widget(QtWidgets.QWidget):
 
     def checkButton(self, indice):
         """Edit action are only available in custom database elements"""
+        self.buttonCopy.setEnabled(indice>=0)
         if indice >= sql.N_comp:
             self.buttonDelete.setEnabled(True)
         else:
