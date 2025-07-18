@@ -651,9 +651,9 @@ class Parametric_widget(QtWidgets.QGroupBox):
             string += "{%0.2g}{T}%+0.2g\\cdot\\lnT%+0.2g\\cdot T%+0.2g$" % args
 
         elif eq == "wagner":
-            string = "$Tr\\lnPr="
+            string = "$P_{v}=\\frac{P_{c}}{Tr}e^{"
             string += "%0.2g\\tau%+0.2g\\tau^{1.5}%+0.2g\\tau^3%+0.2g" % args
-            string += "\\tau^6$"
+            string += "\\tau^6}$"
 
         return string
 
