@@ -54,7 +54,7 @@ Features
 The development is slow, so the software in in pre-alpha status, with many bugs and with only a few features implemented:
 
 * UI with support for flow diagrams
-* Database with 800 components
+* `Database with 1000 predefined components <tools.UI_databank.html>`__
 * Definition of custom compounds
 * Stream definition with temperature, pressure and composition
 * Thermodynamic EoS:
