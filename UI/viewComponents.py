@@ -1527,13 +1527,13 @@ class View_Component(QtWidgets.QDialog):
 
     def change(self, index):
         if index == "-1":
-            if self.index == 1001:
+            if self.index == 10001:
                 index = sql.N_comp
             else:
                 index = self.index-1
         elif index == "+1":
             if self.index == sql.N_comp:
-                index = 1001
+                index = 10001
             else:
                 index = self.index+1
         elif index == "last":
