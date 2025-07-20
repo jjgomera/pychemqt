@@ -15,15 +15,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module to view/edit component in database
-#   -View_Component: Dialog to view/edit compounds of database
-#   -DIPPR_widget: DIPPR equation composite widget
-#   -Parametric_widget: Parametric equation composite widget
-###############################################################################
+Module with widgets for view/edit component properties in database
+
+    * :class:`View_Component`: Dialog to view/edit compounds of database
+    * :class:`DIPPR_widget`: DIPPR equation composite widget
+    * :class:`Parametric_widget`: Parametric equation composite widget
+
+
+API reference
+-------------
+
+'''
 
 
 from functools import partial
