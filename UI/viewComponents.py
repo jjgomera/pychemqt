@@ -100,7 +100,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             List of DIPPR equation representation in format
             [eq, A, B, C, D, E, Tmin, Tmax]
         """
-        super(DIPPR_widget, self).__init__(title, parent)
+        super().__init__(title, parent)
         self.prop = prop
 
         self.proptex = self.dict_proptex[prop]
@@ -187,6 +187,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             self.eqformula.setVisible(True)
             self.btnPlot.setEnabled(True)
             self.equation = array[0]
+        self.btnFit.setEnabled(self.parent.index >= 10001)
 
     def setReadOnly(self, bool):
         """Set widget readOnly state"""
@@ -453,7 +454,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
             List of DIPPR equation representation in format
             [eq, A, B, C, D, E, Tmin, Tmax]
         """
-        super(Parametric_widget, self).__init__(title, parent)
+        super().__init__(title, parent)
         self.prop = prop
         self.unit = unit
         self.id = id
@@ -544,6 +545,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         # Use local variable enabled to enable the btnPlot button if the
         # parameters are available
         enabled = False
+        self.btnFit.setEnabled(self.parent.index >= 10001)
 
         self.array = array
         for input, value in zip(self.coeff, array):
@@ -797,7 +799,7 @@ class View_Component(QtWidgets.QDialog):
             can copy the compound and edit it
           - > 10000:  Compound added by user"""
 
-        super(View_Component, self).__init__(parent)
+        super().__init__(parent)
         lyt = QtWidgets.QVBoxLayout(self)
 
         lytTitle = QtWidgets.QHBoxLayout()
