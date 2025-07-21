@@ -15,15 +15,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module to implement new component by group contribution methods UI
-#   -newComponent: Main dialog class with common functionality
-#   -UI_Contribution: Definition for group contribution
-#   -View_Contribution: Dialog to show the properties of a group contribution
-###############################################################################
+Module to implement new component by group contribution methods UI interfaces
+
+    * :class:`newComponent`: Main dialog class with common functionality
+    * :class:`UI_Contribution`: Definition for group contribution
+    * :class:`View_Contribution`: Dialog to show the properties of a group \
+    contribution
+'''
 
 
 import os
@@ -34,8 +35,8 @@ from tools.qt import QtCore, QtGui, QtWidgets
 from lib.config import IMAGE_PATH
 from lib import sql
 from lib.newComponent import _methods
-from lib.unidades import (Temperature, Pressure, SpecificVolume, Enthalpy,
-                          SolubilityParameter)
+from lib.unidades import (Enthalpy, Pressure, SolubilityParameter,
+                          SpecificVolume, Temperature)
 from UI.delegate import SpinEditor
 from UI.viewComponents import View_Component
 from UI.widgets import Entrada_con_unidades, Status
@@ -554,6 +555,6 @@ class Ui_Contribution(newComponent):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = Ui_Contribution("MarreroGani")
+    Dialog = Ui_Contribution("Constantinou")
     Dialog.show()
     sys.exit(app.exec())

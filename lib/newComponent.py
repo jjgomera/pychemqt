@@ -18,21 +18,27 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Module to implement new component by group contribution methods
-    * :func:`newComponente`: Base class for new component definition
-    * :func:`GroupContribution`: Common group contribution functionality
-    * :func:`Joback`: Group contribution method of Joback
-    * :func:`Constantinou`: Group contribution method of Constaninou and Gani
-    * :func:`Wilson`: Group contribution method of Wilson and Jasperson
-    * :func:`Marrero`: Group contribution method of Marrero and Pardillo
-    * :func:`Elliott`: Group contribution method of Elliott
-    * :func:`Ambrose`: Group contribution method of Ambrose
-    * :func:`Klincewicz`: Group contribution method of Klincewicz
-    * :func:`Lydersen`: Group contribution method of Lydersen
-    * :func:`Valderrama`: Group contribution method of Valderrama
-    * :func:`Nannoolal`: Group contribution method of Nannoolal
-    * :func:`Wen`: Group contribution method of Wen-Qiang
-    * :func:`Li`: Group contribution method of Li-Xia-Xiang
+.. include:: newComponent.rst
+
+
+Base classes with common functionality
+    * :class:`newComponente`: Base class for new component definition
+    * :class:`GroupContribution`: Common group contribution functionality
+
+List of classes with the implemented methods:
+    * :class:`Joback`: Group contribution method of Joback
+    * :class:`Constantinou`: Group contribution method of Constaninou and Gani
+    * :class:`Wilson`: Group contribution method of Wilson and Jasperson
+    * :class:`Marrero`: Group contribution method of Marrero and Pardillo
+    * :class:`Elliott`: Group contribution method of Elliott
+    * :class:`Ambrose`: Group contribution method of Ambrose
+    * :class:`Klincewicz`: Group contribution method of Klincewicz
+    * :class:`Lydersen`: Group contribution method of Lydersen
+    * :class:`Valderrama`: Group contribution method of Valderrama
+    * :class:`Nannoolal`: Group contribution method of Nannoolal
+    * :class:`Wen`: Group contribution method of Wen-Qiang
+    * :class:`Li`: Group contribution method of Li-Xia-Xiang
+    * :class:`MarreroGani`: Group contribution method of Marrero-Gani
 
 Other methods:
     * :func:`cpLS_Hurst`: Liquid-Solid heat capacities using the Hurst-Harrison
