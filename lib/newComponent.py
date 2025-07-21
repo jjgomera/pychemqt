@@ -281,18 +281,12 @@ class newComponente():
         ele.append(0)
 
         ele.append("")
-        ele.append(0)
-        ele.append(0)
-        ele.append(0)
 
         ele.append(0)
         ele.append(0)
         ele.append(0)
         ele.append(0)
 
-        ele.append(0)
-        ele.append(0)
-        ele.append(0)
         ele.append("")
 
         # Add antoine and wagner parameters for vapor pressure
