@@ -51,7 +51,7 @@ class Lydersen(GroupContribution):
 
     Examples
     --------
-    Example 2 in [11]_ pag 2-343, 2-butanol critical properties
+    Example 2 in [1]_ pag 2-343, 2-butanol critical properties
 
     >>> cmp = Lydersen(Tb=372.7, group=[0, 1, 2, 18],
     ... contribution=[2, 1, 1, 1])

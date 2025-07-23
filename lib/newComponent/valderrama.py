@@ -49,7 +49,7 @@ class Valderrama(GroupContribution):
 
     Examples
     --------
-    Example from in [14]_ Table 8, phenantrene
+    Example from in [1]_ Table 8, phenantrene
 
     >>> cmp = Valderrama(Tb=372.7, group=[30, 32], contribution=[10, 4])
     >>> "%0.0f %0.1f %0.2f" % (cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
@@ -70,7 +70,7 @@ class Valderrama(GroupContribution):
                   "Parameters to Evaluate the Critical Properties of Simple "
                   "and Complex Molecules",
          "ref": "Can. J. Chem. Eng. 84(4) (2006) 431-446",
-         "doi": "10.1002/cjce.5450840404"})
+         "doi": "10.1002/cjce.5450840404"}, )
 
     _coeff = {
         # Table III

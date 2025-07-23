@@ -76,7 +76,7 @@ class Klincewicz(GroupContribution):
          "title": "Estimation of Critical Properties with Group Contribution "
                   "Methods",
          "ref": "AIChE J. 30(1) (1984) 137-142",
-         "doi": "10.1002/aic.690300119"})
+         "doi": "10.1002/aic.690300119"}, )
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["nogroup"] = False

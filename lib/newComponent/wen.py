@@ -50,7 +50,7 @@ class Wen(GroupContribution):
 
     Examples
     --------
-    Example 1 in [19]_, Tc of n-Butylaniline
+    Example 1 in [1]_, Tc of n-Butylaniline
     The last group containing a carbon-adjacent atom pair has a typo, must be
     =C<[r]/>N-
 
@@ -61,13 +61,13 @@ class Wen(GroupContribution):
     >>> cmp.formula
     'C10H15N'
 
-    Example 2 in [19]_, Pc of Benzoic acid
+    Example 2 in [1]_, Pc of Benzoic acid
 
     >>> cmp = Wen(group=[87, 93, 96, 114], contribution=[10, 1, 1, 1])
     >>> "%0.3f" % cmp.Pc.MPa
     '4.547'
 
-    Example 3 in [19]_, Vc of chloropentafluorobenzene
+    Example 3 in [1]_, Vc of chloropentafluorobenzene
 
     >>> cmp = Wen(group=[96, 101, 102], contribution=[12, 5, 1])
     >>> "%0.1f" % (cmp.Vc.ccg*cmp.M)
@@ -82,7 +82,7 @@ class Wen(GroupContribution):
          "title": "A New Group Contribution Method for Estimating Critical "
                   "Properties of Orgnic Compounds",
          "ref": "Ind. Eng. Chem. Res. 40(26) (2001) 6245-6250.",
-         "doi": "10.1021/ie010374g"})
+         "doi": "10.1021/ie010374g"},)
 
     _coeff = {
         # Table III

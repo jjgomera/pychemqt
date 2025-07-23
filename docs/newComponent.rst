@@ -15,3 +15,13 @@ Clicking the save button add the created compound to the user database
 
 API reference
 -------------
+
+Base classes with common functionality
+    * :class:`newComponente <lib.newComponent._base.newComponente>`: Base class for new component definition
+    * :class:`GroupContribution <lib.newComponent._base.GroupContribution>`: Common group contribution functionality
+
+Other methods:
+    * :func:`cpLS_Hurst <lib.newComponent._base.cpLS_Hurst>`: Liquid-Solid heat capacities using the Hurst-Harrison method
+
+
+The group contribution methods available include:

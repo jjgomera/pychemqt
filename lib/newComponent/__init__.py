@@ -15,41 +15,7 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-
-.. include:: newComponent.rst
-
-
-Base classes with common functionality
-    * :class:`newComponente`: Base class for new component definition
-    * :class:`GroupContribution`: Common group contribution functionality
-
-List of classes with the implemented methods:
-    * :class:`Joback`: Group contribution method of Joback
-    * :class:`Constantinou`: Group contribution method of Constaninou and Gani
-    * :class:`Wilson`: Group contribution method of Wilson and Jasperson
-    * :class:`Marrero`: Group contribution method of Marrero and Pardillo
-    * :class:`Elliott`: Group contribution method of Elliott
-    * :class:`Ambrose`: Group contribution method of Ambrose
-    * :class:`Klincewicz`: Group contribution method of Klincewicz
-    * :class:`Lydersen`: Group contribution method of Lydersen
-    * :class:`Valderrama`: Group contribution method of Valderrama
-    * :class:`Nannoolal`: Group contribution method of Nannoolal
-    * :class:`Wen`: Group contribution method of Wen-Qiang
-    * :class:`Li`: Group contribution method of Li-Xia-Xiang
-    * :class:`MarreroGani`: Group contribution method of Marrero-Gani
-
-Other methods:
-    * :func:`cpLS_Hurst`: Liquid-Solid heat capacities using the Hurst-Harrison
-    method
-'''
-
-
-###############################################################################
-# lib.newComponent module
-# module with group contribution methods of definition of custom compound
-###############################################################################
+along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 import glob

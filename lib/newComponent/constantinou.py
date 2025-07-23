@@ -49,7 +49,7 @@ class Constantinou(GroupContribution):
 
     Examples
     --------
-    Example from 3_ to distinguish between isomers, dimethylhexanes
+    Example from [2]_ to distinguish between isomers, dimethylhexanes
     1st order only
 
     >>> cmp = Constantinou(group=[0, 1, 2], contribution=[4, 2, 2])
@@ -66,7 +66,7 @@ class Constantinou(GroupContribution):
     >>> "%0.2f %0.2f %0.2f" % (c23.Tb, c24.Tb, c25.Tb)
     '391.41 382.32 378.64'
 
-    Examples from Table 15a and 15b and 16 in 3_
+    Examples from Table 15a and 15b and 16 in [2]_
 
     >>> cmp1 = Constantinou(
     ... group=[0, 1, 2, 3, 15], contribution=[3, 1, 1, 1, 2])
@@ -85,7 +85,7 @@ class Constantinou(GroupContribution):
     ... cmp1.Gf.kJg*cmp1.M, cmp2.Gf.kJg*cmp2.M, cmp3.Gf.kJg*cmp3.M)
     '150.47 131.007 144.965'
 
-    Examples from Table A1, A2 and A3 in [4]_
+    Examples from Table A1, A2 and A3 in [3]_
 
     >>> cmp1 = Constantinou(group=[0, 2], contribution=[5, 3])
     >>> cmp2 = Constantinou(group=[0, 17, 1, 2], contribution=[2, 1, 1, 1])
@@ -179,7 +179,7 @@ class Constantinou(GroupContribution):
     ... b2._Cp0(298).JgK*b2.M)
     '110.5 109.8 111.9 111.7'
 
-    Example in [11]_ pag. 2-471, 2,6-dimethylpyridine
+    Example in [4]_ pag. 2-471, 2,6-dimethylpyridine
 
     >>> cmp = Constantinou(group=[0, 36, 86], contribution=[2, 1, 1])
     >>> "%0.0f" % cmp.Tf

@@ -51,7 +51,7 @@ class Li(GroupContribution):
 
     Examples
     --------
-    Example A.1 in [21]_, critical temperature of hexanal
+    Example A.1 in [1]_, critical temperature of hexanal
 
     >>> cmp = Li(Tb=401.45, group=[0, 1, 2, 10, 14, 17],
     ... contribution=[6, 12, 1, 5, 1, 12])
@@ -60,21 +60,21 @@ class Li(GroupContribution):
     >>> cmp.formula
     'C6H12O'
 
-    Example A.2 in [21]_, critical temperature of chlorotrimethylsilane
+    Example A.2 in [1]_, critical temperature of chlorotrimethylsilane
 
     >>> cmp = Li(Tb=330.75, group=[0, 1, 6, 9, 24, 25, 17],
     ... contribution=[3, 9, 1, 1, 3, 1, 9])
     >>> "%0.2f" % cmp.Tc
     '497.69'
 
-    Example A.3 in [21]_, critical pressure of n-propyl formate
+    Example A.3 in [1]_, critical pressure of n-propyl formate
 
     >>> cmp = Li(Tb=353.97, group=[0, 1, 2, 10, 14, 17, 13],
     ... contribution=[4, 8, 2, 2, 1, 8, 2])
     >>> "%0.3f" % cmp.Pc.MPa
     '4.033'
 
-    Example A.4 in [21]_, critical volume of acetic acid
+    Example A.4 in [1]_, critical volume of acetic acid
     The paper has a bug, the calculated value is erroneous
 
     >>> cmp = Li(Tb=351.44, group=[0, 1, 2, 10, 14, 17, 16],
@@ -89,7 +89,7 @@ class Li(GroupContribution):
          "title": "A New Method Based on Elements and Chemical Bonds for "
                   "Organic Compounds Critical Properties Estimation",
          "ref": "Fluid Phase Equil. 417 (2016) 1-6",
-         "doi": "10.1016/j.fluid.2016.01.008"})
+         "doi": "10.1016/j.fluid.2016.01.008"}, )
 
     _coeff = {
         "tc": [-0.0003, -0.0016, -0.0472, -0.0533, 0.0179, -0.0478, -0.0380,

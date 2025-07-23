@@ -96,28 +96,28 @@ class Marrero(GroupContribution):
     >>> "%0.2f %0.2f %0.2f %0.2f %0.2f" % (c7.Tb, mc6.Tb, ec5.Tb, c5.Tb, t5.Tb)
     '377.53 375.85 384.47 374.17 374.17'
 
-    Table 8a in [6]_ for 1,3,5-Trichlorotrifluorobenzene
+    Table 8a in [2]_ for 1,3,5-Trichlorotrifluorobenzene
 
     >>> cmp = Marrero(group=[138, 140, 144, 145], contribution=[3, 3, 3, 3])
     >>> "%0.1f %0.1f %0.1f %0.1f" % (
     ... cmp.Tb, cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '471.9 685.0 32.4 452.3'
 
-    Table 8b in [6]_ for ethyl acrylate
+    Table 8b in [2]_ for ethyl acrylate
 
     >>> cmp = Marrero(group=[84, 1, 46, 100], contribution=[1, 1, 1, 1])
     >>> "%0.1f %0.1f %0.1f %0.1f" % (
     ... cmp.Tb, cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '373.9 553.6 36.6 325.1'
 
-    Table 8c in [6]_ for isoquinoline
+    Table 8c in [2]_ for isoquinoline
 
     >>> cmp = Marrero(group=[129, 138, 131, 136, 132, 133],
     ... contribution=[3, 1, 1, 1, 1, 4])
     >>> "%0.1f %0.1f %0.1f" % (cmp.Tb, cmp.Tc, cmp.Vc.ccg*cmp.M)
     '519.5 787.3 405.1'
 
-    Table 8d in [6]_ for m-Terphenyl
+    Table 8d in [2]_ for m-Terphenyl
 
     >>> cmp = Marrero(group=[129, 130, 141, 132, 133],
     ... contribution=[5, 4, 2, 5, 4], Tb=638)
@@ -125,7 +125,7 @@ class Marrero(GroupContribution):
     ... cmp.Tb, cmp.Tc, cmp.Pc.bar, cmp.Vc.ccg*cmp.M)
     '638.0 907.3 33.9 764.3'
 
-    Table 3 in [7]_ for o-phthalate
+    Table 3 in [3]_ for o-phthalate
 
     >>> cmp = Marrero(group=[129, 132, 133, 138, 153, 46, 28, 1],
     ... contribution=[2, 1, 2, 1, 2, 2, 4, 2])
@@ -151,7 +151,7 @@ class Marrero(GroupContribution):
          "doi": "10.1016/s1385-8947(99)00173-4"})
 
     _coeff = {
-        # Table 5 from [6]_
+        # Table 5 from [2]_
         "tc": [-0.0213, -0.0227, -0.0223, -0.0189, 0.8526, 0.1792, 0.3818,
                -0.0214, 0.1117, 0.0987, -0.0370, -0.9141, -0.9166, -0.9146,
                -0.0876, -0.0205, -0.0362, -0.0606, -0.0890, 0.0267, -0.0974,
@@ -239,7 +239,7 @@ class Marrero(GroupContribution):
                1012.51, 382.25, 385.36, 387.17, 1022.45, 298.12, 673.59,
                597.59],
 
-        # Table 1 and 2 from [7]_
+        # Table 1 and 2 from [3]_
         "mu": [0.4712, 0.2588, 0.2472, 0.1833, 0.0834, 0.1670, 0, -0.0926, 0,
                0.0314, 0, 0.6294, 0.7161, 0.6086, 2.6902, 0.4020, 0.5475,
                1.3881, 2.6110, 0.6410, 0.5904, 0, 1.3476, 0.1695, 1.9082,

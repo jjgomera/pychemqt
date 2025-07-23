@@ -51,7 +51,7 @@ class MarreroGani(GroupContribution):
 
     Examples
     --------
-    Example 1 from [22]_, Tb of N-phenyl-1,4-benzenodiamine
+    Example 1 from [1]_, Tb of N-phenyl-1,4-benzenodiamine
 
     >>> c1 = MarreroGani(group=[61, 62, 17, 14], contribution=[1, 1, 1, 9])
     >>> c2 = MarreroGani(group=[61, 62, 17, 14, 287],
@@ -61,21 +61,21 @@ class MarreroGani(GroupContribution):
     >>> "%0.2f %0.2f %0.2f" % (c1.Tb, c2.Tb, c3.Tb)
     '614.62 616.03 623.94'
 
-    Example 2 from [22]_, Tb of pyrene
+    Example 2 from [1]_, Tb of pyrene
 
     >>> c1 = MarreroGani(group=[15, 14], contribution=[6, 10])
     >>> c3 = MarreroGani(group=[15, 14, 361, 365], contribution=[6, 10, 2, 2])
     >>> "%0.2f %0.2f" % (c1.Tb, c3.Tb)
     '652.43 673.96'
 
-    Example 3 from [22]_, Tb of 4-aminobutanol
+    Example 3 from [1]_, Tb of 4-aminobutanol
 
     >>> c1 = MarreroGani(group=[28, 53, 1], contribution=[1, 1, 3])
     >>> c3 = MarreroGani(group=[28, 53, 1, 306], contribution=[1, 1, 3, 1])
     >>> "%0.2f %0.2f" % (c1.Tb, c3.Tb)
     '448.64 478.42'
 
-    Example 4 from [22]_, Tm of 3,3'-methylenebis-4-hydroxycoumarin
+    Example 4 from [1]_, Tm of 3,3'-methylenebis-4-hydroxycoumarin
 
     >>> c1 = MarreroGani(group=[28, 16, 14, 172, 179, 178, 1],
     ... contribution=[2, 4, 8, 2, 2, 2, 1])
@@ -84,7 +84,7 @@ class MarreroGani(GroupContribution):
     >>> "%0.2f %0.2f" % (c1.Tf, c3.Tf)
     '475.46 552.34'
 
-    Example 5 from [22]_, Tm of flutemazepan
+    Example 5 from [1]_, Tm of flutemazepan
     The third order example has a undocumented contribution, using value from
     AROMFUSED[2]s2 contribution
 
@@ -101,7 +101,7 @@ class MarreroGani(GroupContribution):
     >>> "%0.2f %0.2f %0.2f" % (c1.Tf, c2.Tf, c3.Tf)
     '469.19 473.37 419.63'
 
-    Example 6 from [22]_, Tm of 1,9-nonadiol
+    Example 6 from [1]_, Tm of 1,9-nonadiol
 
     >>> c1 = MarreroGani(group=[28, 1], contribution=[2, 9])
     >>> c3 = MarreroGani(group=[28, 1, 307], contribution=[2, 9, 1])
@@ -115,7 +115,7 @@ class MarreroGani(GroupContribution):
          "title": "Group-contribution based estimation of pure component "
                   "properties",
          "ref": "Fluid Phase Equilib. 183-184 (2001), 183-208.",
-         "doi": "10.1016_s0378-3812(01)00431-9"})
+         "doi": "10.1016_s0378-3812(01)00431-9"},)
 
     # Table 6-8
     _coeff = {
