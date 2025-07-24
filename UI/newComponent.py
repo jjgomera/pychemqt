@@ -68,8 +68,8 @@ class newComponent(QtWidgets.QDialog):
         """Save new componente in user database"""
         elemento = self.unknown.export2Component()
         sql.inserElementsFromArray(sql.databank_Custom_name, [elemento])
-        Dialog = View_Component(10001+sql.N_comp_Custom)
-        Dialog.show()
+        dlg = View_Component(10001+sql.N_comp_Custom)
+        dlg.show()
         QtWidgets.QDialog.accept(self)
 
     def changeParams(self, parametro, valor):
@@ -94,7 +94,7 @@ class View_Contribution(QtWidgets.QDialog):
     def __init__(self, cmp=None, parent=None):
         """Constructor
         cmp: optional new component to show the properties"""
-        super(View_Contribution, self).__init__(parent)
+        super().__init__(parent)
         self.setWindowTitle(self.tr("Group Contribution new component"))
         layout = QtWidgets.QGridLayout(self)
 
@@ -402,6 +402,9 @@ class Ui_Contribution(newComponent):
             labelTb.setEnabled(False)
             self.Tb.setEnabled(False)
 
+        elif metodo in ("Lydersen", "Li"):
+            self.Tb.setResaltado(True)
+
         elif metodo == "Wilson":
             self.Tb.setResaltado(True)
             layout.addWidget(QtWidgets.QLabel(self.tr("Rings")), 16, 0)
@@ -443,7 +446,7 @@ class Ui_Contribution(newComponent):
 
         newComponent.loadUI(self)
 
-        for i, nombre in enumerate(self.unknown._coeff["txt"]):
+        for nombre in self.unknown._coeff["txt"]:
             self.groupContributions.addItem(nombre[0])
 
         if self.unknown.SecondOrder:
