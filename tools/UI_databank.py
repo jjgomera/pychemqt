@@ -15,17 +15,29 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Database tools
-###############################################################################
+.. include:: UI_databank.rst
+
+
+Module with chemical compounds database management
+
+    * :class:`UI_databank_widget`: Database widget, to use in whatever need: \
+    database dialog, proyect component list definition
+    * :class:`UI_databank`: Database dialog
+
+API reference
+-------------
+
+"""
+
 
 import os
 
 from tools.qt import QtGui, QtWidgets
 
+from lib.config import IMAGE_PATH
 from lib import sql
 from UI import viewComponents
 
@@ -42,20 +54,20 @@ class UI_databank_widget(QtWidgets.QWidget):
         self.buttonNew = QtWidgets.QToolButton(self)
         self.buttonNew.setToolTip(self.tr("Create new element"))
         self.buttonNew.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/fileNew.png")))
+            os.path.join(IMAGE_PATH, "button", "fileNew.png"))))
         self.buttonNew.clicked.connect(self.newComponent)
         layoutTitle.addWidget(self.buttonNew)
         self.buttonCopy = QtWidgets.QToolButton(self)
         self.buttonCopy.setEnabled(False)
         self.buttonCopy.setToolTip(self.tr("Clone this element"))
         self.buttonCopy.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/editCopy.png")))
+            os.path.join(IMAGE_PATH, "button", "editCopy.png"))))
         self.buttonCopy.clicked.connect(self.copyComponent)
         layoutTitle.addWidget(self.buttonCopy)
         self.buttonDelete = QtWidgets.QToolButton(self)
         self.buttonDelete.setToolTip(self.tr("Delete element"))
         self.buttonDelete.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/editDelete.png")))
+            os.path.join(IMAGE_PATH, "button", "editDelete.png"))))
         self.buttonDelete.clicked.connect(self.deleteComponent)
         self.buttonDelete.setEnabled(False)
         layoutTitle.addWidget(self.buttonDelete)

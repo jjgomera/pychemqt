@@ -1733,7 +1733,7 @@ def Pv_Lee_Kesler(T, Tc, Pc, w):
 
 
 @refDoc(__doi__, [6, 1, 5, 7])
-def Pv_Wagner(T, Tc, Pc, args):
+def Pv_Wagner(T, args, Tc, Pc):
     r"""Calculates vapor pressure of a fluid using the Wagner correlation
 
     .. math::
@@ -5496,7 +5496,7 @@ class Componente(object):
                 self._dipprPv[6] <= T <= self._dipprPv[7]:
             return DIPPR("Pv", T, self._dipprPv[:-2], M=self.M, Tc=self.Tc)
         elif method == 1 and self.wagner[0]:
-            return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
+            return Pv_Wagner(T, self.wagner, self.Tc, self.Pc)
         elif method == 2 and self.antoine[0]:
             return Pv_Antoine(T, self.antoine, Tc=self.Tc)
         elif method == 3 and self.Pc and self.Tc and self.f_acent:
@@ -5513,7 +5513,7 @@ class Componente(object):
             if self._dipprPv and self._dipprPv[6] <= T <= self._dipprPv[7]:
                 return DIPPR("Pv", T, self._dipprPv[:-2], M=self.M, Tc=self.Tc)
             elif self.wagner[0]:
-                return Pv_Wagner(T, self.Tc, self.Pc, self.wagner)
+                return Pv_Wagner(T, self.wagner, self.Tc, self.Pc)
             elif self.antoine[0]:
                 return Pv_Antoine(T, self.antoine, Tc=self.Tc)
             elif self.Pc and self.Tc and self.f_acent:

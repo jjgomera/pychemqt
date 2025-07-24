@@ -42,7 +42,7 @@ import os
 
 from numpy import arctan
 
-from lib.config import conf_dir
+from lib.config import conf_dir, IMAGE_PATH
 from lib.plot import PlotWidget
 from lib.psycrometry import PsyState, PsychroState, _Pbar, _height
 from lib.unidades import (Temperature, Pressure, Length, Mass,
@@ -281,7 +281,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Psychrometric chart"))
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"] + "/images/button/psychrometric.png")))
+            os.path.join(IMAGE_PATH, "button", "psychrometric.png"))))
 
         layout = QtWidgets.QGridLayout(self)
         self.plt = PsychroPlot(parent=self, width=100, height=1, dpi=90)

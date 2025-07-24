@@ -448,3 +448,6 @@ def Autogenerate_MEoS(app):
     print('cd .. && python3 docs/generateEoSrst.py')
     subprocess.check_output(
         ['bash', '-c', 'cd .. && python3 docs/generateEoSrst.py'])
+    print('cd .. && python3 docs/generatenewComponentrst.py')
+    subprocess.check_output(
+        ['bash', '-c', 'cd .. && python3 docs/generatenewComponentrst.py'])
