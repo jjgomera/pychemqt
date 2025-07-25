@@ -27,10 +27,12 @@ from lib.newComponent._base import GroupContribution
 class Li(GroupContribution):
     """
     Group contribution for definition of unknown component using the
-    Li-Xia-Xiang procedure (2016)
+    Li-Xia-Xiang procedure (2016). This method is able to calculate the
+    critical properties.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -91,7 +93,7 @@ class Li(GroupContribution):
          "ref": "Fluid Phase Equil. 417 (2016) 1-6",
          "doi": "10.1016/j.fluid.2016.01.008"}, )
 
-    _coeff = {
+    __coeff__ = {
         "tc": [-0.0003, -0.0016, -0.0472, -0.0533, 0.0179, -0.0478, -0.0380,
                0.0071, 0.0091, 0.0224, -0.0168, -0.0080, -0.0079, 0.0059,
                0.0200, 0, -0.0114, -0.0001, 0.0285, 0.0358, 0.0071, 0.0091,
@@ -177,9 +179,9 @@ class Li(GroupContribution):
 
         tc, pc, vc = 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self._coeff["tc"][i]
-            pc += c*self._coeff["Pc"][i]
-            vc += c*self._coeff["vc"][i]
+            tc += c*self.__coeff__["tc"][i]
+            pc += c*self.__coeff__["Pc"][i]
+            vc += c*self.__coeff__["vc"][i]
 
         self.Tc = unidades.Temperature(self.Tb*(1.5530+tc)+18.9999)
         self.Pc = unidades.Pressure(self.M/(1.2220+pc)**2, "MPa")

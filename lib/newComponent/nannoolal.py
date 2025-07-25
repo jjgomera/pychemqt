@@ -28,10 +28,12 @@ from lib.newComponent._base import GroupContribution
 class Nannoolal(GroupContribution):
     """
     Group contribution for definition of unknown component using the Nannoolal
-    procedure (2007)
+    procedure (2007). This method can calculate critical properties, boiling
+    temperature, and vapor presssure.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -217,12 +219,12 @@ class Nannoolal(GroupContribution):
          "doi": "10.1016/j.fluid.2008.04.020"},
         {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D.",
          "title": "Estimation of Pure Component Properties 4. Estimation of "
-                  "the Saturted Liquid Viscosity of Non-Electrolyte Organic "
+                  "the Saturated Liquid Viscosity of Non-Electrolyte Organic "
                   "Compounds Via Group Contributions and Group Interactions",
          "ref": "Fluid Phase Equilib., 281 (2009) 97-119",
          "doi": "10.1016/j.fluid.2009.02.016"})
 
-    _coeff = {
+    __coeff__ = {
         # Be careful, there are several changes in group between Tb paper and
         # the other paper and several index ajust
         #   - 78 : Two different group with equal parameter but different M,
@@ -643,13 +645,13 @@ class Nannoolal(GroupContribution):
 
         tb, tc, pc, vc, pv, dbv, tv = 0, 0, 0, 0, 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb += c*self._coeff["tb"][i]
-            tc += c*self._coeff["tc"][i]*1e-3
-            pc += c*self._coeff["Pc"][i]*1e-4
-            vc += c*self._coeff["vc"][i]
-            pv += c*self._coeff["Pv"][i]*1e-3
-            dbv += c*self._coeff["dBv"][i]*1e-3
-            tv += c*self._coeff["Tv"][i]
+            tb += c*self.__coeff__["tb"][i]
+            tc += c*self.__coeff__["tc"][i]*1e-3
+            pc += c*self.__coeff__["Pc"][i]*1e-4
+            vc += c*self.__coeff__["vc"][i]
+            pv += c*self.__coeff__["Pv"][i]*1e-3
+            dbv += c*self.__coeff__["dBv"][i]*1e-3
+            tv += c*self.__coeff__["Tv"][i]
 
         # Group interaction calculation
         GI = []

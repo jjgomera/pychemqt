@@ -39,7 +39,7 @@ class Elliott(GroupContribution):
     """
     __title__ = "UNIFAC (1999)"
 
-    _coeff = {
+    __coeff__ = {
         "tc": [0.135, 0.131, 0.077, 0.073, 0.070, -0.015, 0.070, 0.169, 0.169,
                0.169, 0.169, 0.169, 0.338, 0.069, 0.099, 0.221, 0.207, 0.136,
                0.554, 0.0, 0.0, 0.278, 0.387, 0.383, 0.299, 0.457, 0.453,
@@ -124,6 +124,7 @@ class Elliott(GroupContribution):
                0.0, 0.0, 0.0, 0.0, 0.0, 13.322, 0.0, 0.0, 8.301, 0.0, 0.0, 0.0,
                0.0, 0.0, 0.0, 51.787, 0.0, 0.0, 0.0, 0.0, 0.0, 16.921, 17.117,
                13.265, 0.0, 0.0, 27.966, 0.0, 0.0],
+
         "txt": [("CH3-",),
                 ("CH2<",),
                 ("RCH2<",),
@@ -251,13 +252,13 @@ class Elliott(GroupContribution):
         self.M = self.kwargs["M"]
         tc = Pc = vc = tb = hv = gf = hf = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb += c*self._coeff["tb"][i]
-            tc += c*self._coeff["tc"][i]
-            Pc += c*self._coeff["Pc"][i]
-            vc += c*self._coeff["vc"][i]
-            hv += c*self._coeff["hv"][i]
-            gf += c*self._coeff["gf"][i]
-            hf += c*self._coeff["hf"][i]
+            tb += c*self.__coeff__["tb"][i]
+            tc += c*self.__coeff__["tc"][i]
+            Pc += c*self.__coeff__["Pc"][i]
+            vc += c*self.__coeff__["vc"][i]
+            hv += c*self.__coeff__["hv"][i]
+            gf += c*self.__coeff__["gf"][i]
+            hf += c*self.__coeff__["hf"][i]
 
         if self.kwargs["Tb"]:
             Tb = self.kwargs["Tb"]

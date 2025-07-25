@@ -218,7 +218,7 @@ class GroupContribution(newComponente):
         else:
             self.SG = self._SG()
 
-        self.Kw = self.Tb.R**(1./3)/self.SG
+        self.Kw = self.Tb.R**(1/3)/self.SG
         if isinstance(self.Kw, complex):
             self.Kw = 0
 
@@ -275,7 +275,7 @@ class GroupContribution(newComponente):
             if i < self.FirstOrder:
                 # Clean additional comment of group, ring flag and other,
                 # separated of main group by spaces
-                cmp = self._coeff["txt"][i][0]
+                cmp = self.__coeff__["txt"][i][0]
                 if " " in cmp:
                     cmp = cmp.split(" ")[0]
 
@@ -329,7 +329,9 @@ class GroupContribution(newComponente):
         """Método de cálculo del calor de vaporización,
         ref. chemcad pag 60"""
         tbr = self.Tb/self.Tc
-        return unidades.Enthalpy(1.093*R*1000*self.Tc*(tbr*(log(self.Pc.atm)-1)/(0.930-tbr))/self.M, "calg")
+        return unidades.Enthalpy(
+            1.093*R*1e3*self.Tc*(tbr*(log(self.Pc.atm)-1)/(0.93-tbr))/self.M,
+            "calg")
 
     def _Rackett(self):
         """ref 64"""

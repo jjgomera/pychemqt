@@ -26,10 +26,11 @@ from lib.newComponent._base import GroupContribution
 class Wen(GroupContribution):
     """
     Group contribution for definition of unknown component using the Wen-Qiang
-    procedure (2001)
+    procedure (2001). This method is able to calculate the critical properties.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -84,7 +85,7 @@ class Wen(GroupContribution):
          "ref": "Ind. Eng. Chem. Res. 40(26) (2001) 6245-6250.",
          "doi": "10.1021/ie010374g"},)
 
-    _coeff = {
+    __coeff__ = {
         # Table III
         "tc": [-2.885, 2.424, 0.048, 22.766, -3.404, 2.495, 2.275, 2.602,
                -1.601, 0.000, 35.848, 2.124, -0.708, 22.576, -3.085, 1.578,
@@ -317,10 +318,10 @@ class Wen(GroupContribution):
 
         tc, pc, vc, tc_ = 0, 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self._coeff["tc"][i]
-            tc_ += c*self._coeff["tc_"][i]
-            pc += c*self._coeff["Pc"][i]
-            vc += c*self._coeff["vc"][i]
+            tc += c*self.__coeff__["tc"][i]
+            tc_ += c*self.__coeff__["tc_"][i]
+            pc += c*self.__coeff__["Pc"][i]
+            vc += c*self.__coeff__["vc"][i]
 
         if self.kwargs["Tb"]:
             self.Tb = unidades.Temperature(self.kwargs["Tb"])
@@ -340,9 +341,9 @@ class Wen(GroupContribution):
         group = []
         rest = {}
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            if "&" in self._coeff["txt"][i][0]:
-                grp = self._coeff["txt"][i][0].split(" & ")[0]
-                second = self._coeff["txt"][i][0].split(" & ")[1]
+            if "&" in self.__coeff__["txt"][i][0]:
+                grp = self.__coeff__["txt"][i][0].split(" & ")[0]
+                second = self.__coeff__["txt"][i][0].split(" & ")[1]
 
                 # Discard second term with carbons and add the heteroatoms term
                 grp2 = atomic_decomposition(second)
@@ -351,7 +352,7 @@ class Wen(GroupContribution):
                     for x in range(c):
                         group.append(grp2)
             else:
-                grp = self._coeff["txt"][i][0]
+                grp = self.__coeff__["txt"][i][0]
 
             for x in range(c):
                 cmp = grp

@@ -27,10 +27,11 @@ from lib.newComponent._base import GroupContribution
 class Lydersen(GroupContribution):
     """
     Group contribution for definition of unknown component using the Lydersen
-    procedure (1955)
+    procedure (1955). This method is able to calculate the critical properties.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -79,7 +80,7 @@ class Lydersen(GroupContribution):
                 "Rept. 3, Madison, WI (1955)",
          "doi": ""})
 
-    _coeff = {
+    __coeff__ = {
         # Table III
         "tc": [0.020, 0.020, 0.012, 0.00, 0.018, 0.018, 0.00, 0.00, 0.005,
                0.005, 0.013, 0.012, -0.007, 0.011, 0.011, 0.011, 0.066, 0.066,
@@ -173,9 +174,9 @@ class Lydersen(GroupContribution):
 
         tc, pc, vc = 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self._coeff["tc"][i]
-            pc += c*self._coeff["Pc"][i]
-            vc += c*self._coeff["vc"][i]
+            tc += c*self.__coeff__["tc"][i]
+            pc += c*self.__coeff__["Pc"][i]
+            vc += c*self.__coeff__["vc"][i]
 
         self.Tc = unidades.Temperature(self.Tb/(0.567+tc-tc**2))
         self.Pc = unidades.Pressure(self.M/(0.34+pc)**2, "atm")
