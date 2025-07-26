@@ -71,7 +71,7 @@ class Thermo():
     def __call__(self, **kwargs):
         self.cleanOldValues(**kwargs)
 
-        if self.calculable():
+        if self.calculable:
             self.status = 1
             self.msg = "Solved"
             self.calculo()
@@ -83,6 +83,7 @@ class Thermo():
     def cleanOldKwargs(self, **kwargs):
         """Convert alternative input parameters"""
 
+    @property
     def calculable(self):
         """Check input parameter to define calculation posibility"""
 
