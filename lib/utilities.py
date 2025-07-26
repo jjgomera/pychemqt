@@ -30,6 +30,10 @@ Module with miscelaneous utilities used in other parts of program:
          like the ancillary equation in mEoS
   * :func:`refDoc`: Function decorator used to automatic addiction of \
          References section to documentation of procedures
+
+API reference
+-------------
+
 '''
 
 

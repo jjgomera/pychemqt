@@ -16,23 +16,28 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with common thermal utilities:
-#   - Thermo: Class with common functionality for special thermo model
-#   - ThermoAdvanced: Thermo subclass with additional properties for advanced
-#       meos model, coolprop, meos
-#   - ThermoWater: Thermo subclass with water specific properties, for iapws as
-#       iapws and freesteam
-#   - ThermoRefProp: Thermo subclass with specific properties availables in
-#       refprop
-###############################################################################
+Module with common thermodynamic utilities:
 
+    * :class:`Thermo`: Class with common functionality for special thermo model
+    * :class:`ThermoWater`: Thermo subclass with water specific properties, \
+            for iapws and freesteam
+    * :class:`ThermoAdvanced`: Thermo subclass with additional properties for \
+            advanced model like coolprop, meos
+    * :class:`ThermoRefProp`: Thermo subclass with specific properties \
+            availables in refprop
+
+API reference
+-------------
+
+"""
+
+
+from iapws._utils import getphase
 
 from tools.qt import translate
-from iapws._utils import getphase
 from lib import unidades
 
 
@@ -66,7 +71,7 @@ class Thermo():
     def __call__(self, **kwargs):
         self.cleanOldValues(**kwargs)
 
-        if self.calculable:
+        if self.calculable():
             self.status = 1
             self.msg = "Solved"
             self.calculo()
@@ -155,6 +160,8 @@ class Thermo():
 
     @classmethod
     def properties(cls):
+        """Return list with calculated properties availables in tuple format
+        with name, key, unit"""
         l = [
             (translate("Thermo", "Temperature"), "T", unidades.Temperature),
             (translate("Thermo", "Reduced temperature"), "Tr", unidades.Dimensionless),
@@ -232,14 +239,17 @@ class Thermo():
 
     @classmethod
     def propertiesName(cls):
+        """Extract name from properties available"""
         return [prop[0] for prop in cls.properties()]
 
     @classmethod
     def propertiesKey(cls):
+        """Extract keys from properties available"""
         return [prop[1] for prop in cls.properties()]
 
     @classmethod
     def propertiesUnit(cls):
+        """Extract units from properties available"""
         return [prop[2] for prop in cls.properties()]
 
     @classmethod
@@ -310,6 +320,7 @@ class Thermo():
             setattr(fase, key, txt)
 
     def writeStatetoJSON(self, state, fase):
+        """Write current instance state to JSON format to save to file"""
         fluid = {}
         if self._bool:
             fluid["M"] = self.M
@@ -356,6 +367,7 @@ class Thermo():
         state[fase] = fluid
 
     def readStatefromJSON(self, fluid):
+        """Read state from JSON and populate instance"""
         if fluid:
             self._bool = True
 

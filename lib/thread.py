@@ -23,6 +23,9 @@ Library for work with thread in pychemqt for improve UI response
   * :class:`Evaluate`: Thread to insolate entity calculation from gui, used \
             in streams equipment, and project
 
+API reference
+-------------
+
 '''
 
 
