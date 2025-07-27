@@ -66,13 +66,14 @@ class Valderrama(GroupContribution):
     """
     __title__ = "Valderrama (2006)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Valderrama, J.O., Álvarez, V.H.",
          "title": "A New Group Contribution Method Based on Equation of State "
                   "Parameters to Evaluate the Critical Properties of Simple "
                   "and Complex Molecules",
          "ref": "Can. J. Chem. Eng. 84(4) (2006) 431-446",
-         "doi": "10.1002/cjce.5450840404"}, )
+         "doi": "10.1002/cjce.5450840404"}}
 
     __coeff__ = {
         # Table III

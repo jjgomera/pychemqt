@@ -190,25 +190,29 @@ class Constantinou(GroupContribution):
     '278'
     """
     __title__ = "Constantinou-Gani (1995)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Constantinou, L., Gani, R.",
          "title": "New Group Controbution Method for Estimating Properties of "
                   "Pure Compounds",
          "ref": "AIChE J. 40(10) (1994) 1697-1710",
          "doi": "10.1002/aic.690401011"},
+      3:
         {"autor": "Constantinou, L., Gani, R., O’Connell, J.P.",
          "title": "Estimation of the Acentric Factor and the Liquid Molar "
                   "Volume at 298K Using a New Group Contribution Method",
          "ref": "Fluid Phase Equilibria 103 (1995) 11-22",
          "doi": "10.1016/0378-3812(94)02593-p"},
+      4:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
-         "doi": ""})
+         "doi": ""}}
 
     __coeff__ = {
         # The Second order term are append to the first order in each table

@@ -199,30 +199,34 @@ class Nannoolal(GroupContribution):
     """
     __title__ = "Nannoolal (2007)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D., Cordes, W.",
          "title": "Estimation of Pure Component Properties 1. Estimation of "
                   "the Normal Boiling Point of Non-electrolyte Organic "
                   "Compounds Via Group Contributions and Group Interactions",
          "ref": "Fluid Phase Equilib., 226 (2004) 45-63",
          "doi": "10.1016/j.fluid.2004.09.001"},
+      2:
         {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D.",
          "title": "Estimation of Pure Component Properties 2. Estimation of "
                   "Critical Property Data by Group Contribution",
          "ref": "Fluid Phase Equilib., 252 (2007) 1-27",
          "doi": "10.1016/j.fluid.2006.11.014"},
+      3:
         {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D.",
          "title": "Estimation of Pure Component Properties 3. Estimation of "
                   "the Vapor Pressure of Non-Electrolyte Organic Compounds "
                   "Via Group Contributions and Group Interactions",
          "ref": "Fluid Phase Equilib., 269 (2008) 117-133",
          "doi": "10.1016/j.fluid.2008.04.020"},
+      4:
         {"autor": "Nannoolal, Y., Rarey, J., Ramjugernath, D.",
          "title": "Estimation of Pure Component Properties 4. Estimation of "
                   "the Saturated Liquid Viscosity of Non-Electrolyte Organic "
                   "Compounds Via Group Contributions and Group Interactions",
          "ref": "Fluid Phase Equilib., 281 (2009) 97-119",
-         "doi": "10.1016/j.fluid.2009.02.016"})
+         "doi": "10.1016/j.fluid.2009.02.016"}}
 
     __coeff__ = {
         # Be careful, there are several changes in group between Tb paper and

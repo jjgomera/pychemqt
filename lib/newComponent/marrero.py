@@ -135,22 +135,25 @@ class Marrero(GroupContribution):
     '18.58'
     """
     __title__ = "Marrero-Pardillo (1999)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Marrero-Morejón, J., Pardillo-Fontdevila, F.",
          "title": "Estimation of Pure Compound Properties Using "
                   "Group-Interaction C9ontributions",
          "ref": "AIChE J., 45(3) (1999) 615-621",
          "doi": "10.1002/aic.690450318"},
+      3:
         {"autor": "Marrero-Morejon, J., Pardillo-Fontdevila, E.",
          "title": "Estimation of Liquid Viscosity at Ambient Temperature of "
                   "Pure Organic Compounds by Using Group-Interaction "
                   "Contributions",
          "ref": "Chemical Engineering Journal 79 (2000) 69-72",
-         "doi": "10.1016/s1385-8947(99)00173-4"})
+         "doi": "10.1016/s1385-8947(99)00173-4"}}
 
     __coeff__ = {
         # Table 5 from [2]_

@@ -86,12 +86,13 @@ class Li(GroupContribution):
     """
     __title__ = "Li-Xia-Xiang (2016)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Li, J., Xia, L., Xiang, S.",
          "title": "A New Method Based on Elements and Chemical Bonds for "
                   "Organic Compounds Critical Properties Estimation",
          "ref": "Fluid Phase Equil. 417 (2016) 1-6",
-         "doi": "10.1016/j.fluid.2016.01.008"}, )
+         "doi": "10.1016/j.fluid.2016.01.008"}}
 
     __coeff__ = {
         "tc": [-0.0003, -0.0016, -0.0472, -0.0533, 0.0179, -0.0478, -0.0380,

@@ -69,17 +69,19 @@ class Wilson(GroupContribution):
     'C8H10O'
     """
     __title__ = "Wilson-Jasperson (1996)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Wilson, G.M. Jasperson, L.V.",
          "title": "Critical constants Tc and Pc, estimation based on zero, "
                   "first and second order methods",
          "ref": "Paper given at AIChE Spring National Meeting, New Orleans, "
                 "LA, USA, February 25-29, 1996.",
-         "doi": ""})
+         "doi": ""}}
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["ring"] = 0

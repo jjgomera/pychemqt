@@ -113,12 +113,13 @@ class MarreroGani(GroupContribution):
     """
     __title__ = "Marrero-Gani (2001)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Marrero, J.; Gani, R.",
          "title": "Group-contribution based estimation of pure component "
                   "properties",
          "ref": "Fluid Phase Equilib. 183-184 (2001), 183-208.",
-         "doi": "10.1016_s0378-3812(01)00431-9"},)
+         "doi": "10.1016_s0378-3812(01)00431-9"}}
 
     # Table 6-8
     __coeff__ = {

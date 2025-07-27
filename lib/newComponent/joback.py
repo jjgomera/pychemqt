@@ -127,20 +127,23 @@ class Joback(GroupContribution):
     '534.1 44.33 272.5'
     """
     __title__ = "Joback-Reid (1987)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Joback, K.G., Reid, R.C.",
          "title": "Estimation of Pure-Component Properties from "
                   "Group-Contributions.",
          "ref": "Chemical Engineering Communications, 57 (1987) 233-243",
          "doi": "10.1080/00986448708960487"},
+      3:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
-         "doi": ""})
+         "doi": ""}}
 
     __coeff__ = {
         # Table III

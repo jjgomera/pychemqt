@@ -78,12 +78,13 @@ class Wen(GroupContribution):
     """
     __title__ = "Wen-Qiang (2001)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Wen, X., Quiang, Y.",
          "title": "A New Group Contribution Method for Estimating Critical "
                   "Properties of Orgnic Compounds",
          "ref": "Ind. Eng. Chem. Res. 40(26) (2001) 6245-6250.",
-         "doi": "10.1021/ie010374g"},)
+         "doi": "10.1021/ie010374g"}}
 
     __coeff__ = {
         # Table III

@@ -109,27 +109,31 @@ class Ambrose(GroupContribution):
     '543.0 25.63 455.8'
     """
     __title__ = "Ambrose (1980)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Ambrose, D.",
          "title": "Correlation and Estimation of Vapor-Liquid Critical "
                   "Properties: I. Critical Temperatures of Organic Compounds",
          "ref": "National Physical Laboratory, Teddington, NPL Rep. Chern.  "
                 "92, 1978, corrected 1980.",
          "doi": ""},
+      2:
         {"autor": "Ambrose, D.",
          "title": "Correlation and Estimation of Vapor-Liquid Critical "
                   "Properties: II. Critical Pressures and Volumes of Organic "
                   "Compounds",
          "ref": "National Physical Laboratory, Teddington, NPL Rep. 98, 1979",
          "doi": ""},
+      3:
         {"autor": "API",
          "title": "Technical Data book: Petroleum Refining 6th Edition",
          "ref": "",
          "doi": ""},
+      4:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
-         "doi": ""})
+         "doi": ""}}
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["platt"] = 0

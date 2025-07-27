@@ -206,7 +206,7 @@ class ShowReference(QtWidgets.QDialog):
                                 itemSubModule2.addChild(item)
 
                     # Special case for submodules
-                    elif "EoS" in library:
+                    elif library in ["EoS", "mEoS", "newComponent"]:
                         itemSubModule = QtWidgets.QTreeWidgetItem([key])
                         itemModule.addChildren([itemSubModule])
                         for key2 in sorted(module.__doi__[key].keys()):
@@ -214,6 +214,8 @@ class ShowReference(QtWidgets.QDialog):
                             if key == "lib.EoS.Cubic":
                                 title = key2
                             elif library == "EoS":
+                                title = ""
+                            elif library == "newComponent":
                                 title = ""
                             else:
                                 title = key2.replace("_", "")

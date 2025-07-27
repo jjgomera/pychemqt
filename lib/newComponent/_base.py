@@ -154,6 +154,7 @@ class GroupContribution(newComponente):
     status = 0
     _bool = False
     msg = ""
+    __doi__ = {}
 
     FirstOrder = 0
     SecondOrder = 0

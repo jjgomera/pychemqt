@@ -69,16 +69,18 @@ class Lydersen(GroupContribution):
     """
     __title__ = "Lydersen (1955)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
          "doi": ""},
+      2:
         {"autor": "Lydersen, A. L.",
          "title": "Estimation of Critical Properties of Organic Compounds",
          "ref": "Coll. Eng. Univ. Wisconsin, Engineering Experimental Station "
                 "Rept. 3, Madison, WI (1955)",
-         "doi": ""})
+         "doi": ""}}
 
     __coeff__ = {
         # Table III

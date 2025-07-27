@@ -35,6 +35,12 @@ for file in files:
 
 _methods = GroupContribution.__subclasses__()
 
+# Add references from equation hardcoded in __doi__ property
+__doi__ = {}
+for obj in _methods:
+    for ref in obj.__doi__:
+        __doi__[obj.__title__] = obj.__doi__
+
 
 # Other methods not implement, poor accuracy
 

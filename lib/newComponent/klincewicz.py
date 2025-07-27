@@ -73,12 +73,13 @@ class Klincewicz(GroupContribution):
     """
     __title__ = "Klincewicz (1984)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Klincewicz, K.M., Reid, R.C.",
          "title": "Estimation of Critical Properties with Group Contribution "
                   "Methods",
          "ref": "AIChE J. 30(1) (1984) 137-142",
-         "doi": "10.1002/aic.690300119"}, )
+         "doi": "10.1002/aic.690300119"}}
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["nogroup"] = False
