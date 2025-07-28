@@ -104,6 +104,7 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 * `Complete set of preferences <tools.UI_Preferences.html>`__: For adjust the gui to the user preferences
 * Basic `cost estimation <tools.costIndex.html>`__ utility
 * Internationalization support: english, spanish.
+* `Tools to show references <tools.doi.html>`__ for academic purposes
 
 
 TODO
