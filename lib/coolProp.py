@@ -15,24 +15,22 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library to multiparameter equation of state calculation using coolprop
-# http://coolprop.sourceforge.net/index.html
-# optional method to meos tools calculations and to multicomponent streams
-###############################################################################
+Library to multiparameter equation of state calculation using coolprop \
+http://coolprop.sourceforge.net/index.html
 
+If available, this is a optional speed up method for mEoS internal library
 
-__doi__ = {
-    1:
-        {"autor": "Bell, I.H., Wronski, J., Quoilin, S., Lemort, V.",
-         "title": "Pure and Pseudo-pure Fluid Thermophysical Property"
-                  "Evaluation and the Open-Source Thermophysical Property"
-                  "Library CoolProp",
-         "ref": "Ind. Eng. Chem. Res. 53(6) (2014) 2498-2508",
-         "doi": "10.1021/ie4033999"}}
+All the functionality is included in the main class:
+
+  * :class:`CoolProp`: Stream definition using coolProp external library
+
+API reference
+-------------
+
+"""
 
 
 import os
@@ -45,8 +43,18 @@ except ImportError as e:
     pass
 
 from lib import unidades, mEoS
-from lib.thermo import ThermoAdvanced
 from lib.compuestos import Componente
+from lib.thermo import ThermoAdvanced
+
+
+__doi__ = {
+    1:
+        {"autor": "Bell, I.H., Wronski, J., Quoilin, S., Lemort, V.",
+         "title": "Pure and Pseudo-pure Fluid Thermophysical Property"
+                  "Evaluation and the Open-Source Thermophysical Property"
+                  "Library CoolProp",
+         "ref": "Ind. Eng. Chem. Res. 53(6) (2014) 2498-2508",
+         "doi": "10.1021/ie4033999"}}
 
 
 # Automatic loading of coolProp name from meos subclass _coolPropName property
@@ -94,12 +102,12 @@ class CoolProp(ThermoAdvanced):
         self.kwargs.update(kwargs)
 
         if self.calculable:
-            # try:
+            try:
                 self.calculo()
-            # except ValueError as e:
-                # self.msg = e
-                # self.status = 0
-            # else:
+            except ValueError as e:
+                self.msg = e
+                self.status = 0
+            else:
                 self.status = 1
                 self.msg = "Solved"
 
