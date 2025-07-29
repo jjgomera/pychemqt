@@ -16,12 +16,43 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Pseudocomponent definition from crude database
-###############################################################################
+Pseudocomponent definition from crude database
+
+:class:`Crude`: Petroleo subclass definition from a defined crude oil
+
+This module include too the methods implemented to calculate the compression \
+factor of a natural gas:
+
+  * :func:`Z_Hall_Yarborough`: Hall & Yarborough (1973)
+  * :func:`Z_Papay`: Papay (1985)
+  * :func:`Z_Dranchuk_Abu_Kassem`: Dranchuk-Abu-Kassem (1975)
+  * :func:`Z_Dranchuk_Purvis_Robinson`: Dranchuk-Purvis-Robinson (1974)
+  * :func:`Z_ShellOil`: Shell Oil Company correlation (2004)
+  * :func:`Z_Brill_Beggs`: Brill-Beggs (1974)
+  * :func:`Z_Sarem`: Sarem (1969)
+  * :func:`Z_Gopal`: Gopal (1974)
+  * :func:`Z_Leung`: Leung (1964)
+  * :func:`Z_Burnett`: Burnett (1979)
+  * :func:`Z_Sanjari_Lay`: Sanjari-Lay (2012)
+  * :func:`Z_Heidaryan_Salarabadi`: Heidaryan-Salarabadi-Moghadasi (2010)
+  * :func:`Z_Heidaryan_Moghadasi`: Heidaryan-Moghadasi-Rahimi (2010)
+  * :func:`Z_Azizi`: Azizi-Behbahani-Isazadeh (2010)
+  * :func:`Z_Shokir`: Shokir-Awad-Quraishi (2012)
+  * :func:`Z_Bahadori`: Bahadori-Mokhatab-Towler (2007)
+  * :func:`Z_Londono_DAK`: Londono-Archer-Blasingame (2007), \
+  Dranckuk-Abu-Kassem optimized version
+  * :func:`Z_Londono_NS`: Londono-Archer-Blasingame (2007), \
+  Nishiumi-Saito optimized version
+  * :func:`Z_Elsharkawy`: Elsharkawy (2003)
+  * :func:`Z_Hall_Iglesias`: Hall-Iglesias (2007)
+
+API reference
+-------------
+
+'''
 
 
 from math import pi, exp, log, sin
