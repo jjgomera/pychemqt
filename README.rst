@@ -56,7 +56,7 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 * UI with support for flow diagrams
 * `Database with 1000 predefined components <tools.UI_databank.html>`__
 * Definition of custom compounds
-	* `Petroleum fraction pseudocomponent <UI.petro.html>`__
+	* `Petroleum fraction pseudocomponent <pseudocomponent.html>`__
 	* `Group contribution methods <lib.newComponent.html>`__
 * Stream definition with temperature, pressure and composition
 * Thermodynamic EoS:

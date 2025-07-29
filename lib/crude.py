@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Pseudocomponent definition from crude database
 
-:class:`Crude`: Petroleo subclass definition from a defined crude oil
+:class:`Crudo`: Petroleo subclass definition from a defined crude oil
 
 This module include too the methods implemented to calculate the compression \
 factor of a natural gas:

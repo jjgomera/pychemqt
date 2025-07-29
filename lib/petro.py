@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Petroleum fractions hypotethical pseudocomponent definition
 
-:func:`Petroleo`: The main class with all integrated functionality
+:class:`Petroleo`: The main class with all integrated functionality
 
 Correlation for calculation of properties:
 

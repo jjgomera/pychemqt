@@ -15,14 +15,19 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with petroleum fraction pseudocomponent definition UI interfaces
-#   -Definicion_Petro: Definition of crude and oil fraction
-#   -View_Petro: Dialog to show the properties of a petroleum fraction
-###############################################################################
+Module with petroleum fraction pseudocomponent definition UI interfaces
+
+    * :class:`Definicion_Petro`: Definition of crude and oil fraction
+    * :class:`View_Petro`: Dialog to show the properties of a petroleum fraction
+
+
+API reference
+-------------
+
+'''
 
 
 import os
@@ -518,7 +523,8 @@ if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     # petroleo = Petroleo(name="Petroleo", API=22.5, M=339.7)
-    petrol = Petroleo(name="Petroleo", Nc=20)
-    Dialog = View_Petro(petrol)
+    # petrol = Petroleo(name="Petroleo", Nc=20)
+    # Dialog = View_Petro(petrol)
+    Dialog = Definicion_Petro()
     Dialog.show()
     sys.exit(app.exec())
