@@ -371,7 +371,7 @@ def SimpleEq(Tc, T, coef):
     return pr
 
 
-def refDoc(doi, refs, tab=4):
+def refDoc(doi, refs, tab=0):
     """Function decorator used to automatic addiction of References section
     to documentation of procedures
 
