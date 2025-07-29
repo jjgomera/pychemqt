@@ -15,27 +15,32 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library to use freesteam library to calculate water properties with
-# IAPWS-IF97 to meos calculation or in stream calculations.
-# http://freesteam.sourceforge.net/
-# This library is optional, pychemqt has a python implementation for IAPWS-IF97
-# in file lib/iapws97.py, but if freesteam is available in your system this is
-# faster because is implemented in c++
+Library to use freesteam library to calculate water properties with IAPWS-IF97 \
+to meos calculation or in stream calculations, http://freesteam.sourceforge.net
 
-#   - Freesteam: Class with properties calculations
-###############################################################################
+This library is optional, pychemqt has a python implementation for IAPWS-IF97 \
+in file lib/iapws97.py, but if freesteam is available in your system this is \
+faster because is implemented in c++.
+
+All the functionality is included in the main class:
+
+  * :class:`Freesteam`: Stream definition using freesteam external library
+
+API reference
+-------------
+
+"""
 
 
 from math import exp
 import os
 
-from scipy.constants import R
 import iapws
 from iapws.iapws97 import prop0
+from scipy.constants import R
 
 try:
     import freesteam
@@ -44,6 +49,16 @@ except:
 
 from lib import unidades, mEoS
 from lib.thermo import ThermoWater
+
+
+__doi__ = {
+    1:
+        {"autor": "John Pye",
+         "title": "Open source steam property routines in C. Implements the "
+                  "IAPWS-IF97 steam tables from the International Association "
+                  "for the Properties of Water and Steam ",
+         "ref": "https://sourceforge.net/projects/freesteam/",
+         "doi": ""}}
 
 
 class Freesteam(ThermoWater):
@@ -72,12 +87,6 @@ class Freesteam(ThermoWater):
               "s": 0.0,
               "v": 0.0,
               "l": 0.5893}
-    __doi__ = [
-        {"autor": "Freesteam",
-         "title": "Revised Release on the IAPWS Industrial Formulation 1997 "
-                  "for the Thermodynamic Properties of Water and Steam",
-         "ref": "",
-         "doi": ""}]
 
     M = unidades.Dimensionless(iapws._iapws.M)
     if os.environ["freesteam"] == "True":
