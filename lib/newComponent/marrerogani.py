@@ -27,10 +27,13 @@ from lib.newComponent._base import GroupContribution
 class MarreroGani(GroupContribution):
     """
     Group contribution for definition of unknown component using the
-    Marrero-Gani procedure (2001)
+    Marrero-Gani procedure (2001). This method is fairly complete, can
+    calculate critical properties, boiling and melting temperature, enthalpy
+    and gibbs free energy of formation, vaporization and melting heat.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -110,15 +113,16 @@ class MarreroGani(GroupContribution):
     """
     __title__ = "Marrero-Gani (2001)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Marrero, J.; Gani, R.",
          "title": "Group-contribution based estimation of pure component "
                   "properties",
          "ref": "Fluid Phase Equilib. 183-184 (2001), 183-208.",
-         "doi": "10.1016_s0378-3812(01)00431-9"},)
+         "doi": "10.1016_s0378-3812(01)00431-9"}}
 
     # Table 6-8
-    _coeff = {
+    __coeff__ = {
         "tf": [0.6953, 0.2515, -0.3730, 0.0256, 1.1728, 0.9460, 0.7662, 0.1732,
                0.3928, 1.7036, 1.5453, 1.2850, 2.2276, 2.0516, 0.5860, 1.8955,
                1.2065, 0.9176, 2.0438, 1.0068, 0.1065, -0.5197, -0.1041,
@@ -868,15 +872,15 @@ class MarreroGani(GroupContribution):
         hv = 11.733
         hm = -2.806
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tf += c*self._coeff["tf"][i]
-            tb += c*self._coeff["tb"][i]
-            tc += c*self._coeff["tc"][i]
-            pc += c*self._coeff["pc"][i]
-            vc += c*self._coeff["vc"][i]
-            gf += c*self._coeff["gf"][i]
-            hf += c*self._coeff["hf"][i]
-            hv += c*self._coeff["hv"][i]
-            hm += c*self._coeff["hm"][i]
+            tf += c*self.__coeff__["tf"][i]
+            tb += c*self.__coeff__["tb"][i]
+            tc += c*self.__coeff__["tc"][i]
+            pc += c*self.__coeff__["pc"][i]
+            vc += c*self.__coeff__["vc"][i]
+            gf += c*self.__coeff__["gf"][i]
+            hf += c*self.__coeff__["hf"][i]
+            hv += c*self.__coeff__["hv"][i]
+            hm += c*self.__coeff__["hm"][i]
 
         # Equations of Table 1
         self.Tf = unidades.Temperature(147.45*log(tf))

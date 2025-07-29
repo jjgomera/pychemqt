@@ -27,10 +27,12 @@ from lib.newComponent._base import GroupContribution
 class Klincewicz(GroupContribution):
     """
     Group contribution for definition of unknown component using the
-    Klincewicz-Reid procedure (1984)
+    Klincewicz-Reid procedure (1984). This method is able to calculate the
+    critical properties.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -71,18 +73,19 @@ class Klincewicz(GroupContribution):
     """
     __title__ = "Klincewicz (1984)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Klincewicz, K.M., Reid, R.C.",
          "title": "Estimation of Critical Properties with Group Contribution "
                   "Methods",
          "ref": "AIChE J. 30(1) (1984) 137-142",
-         "doi": "10.1002/aic.690300119"}, )
+         "doi": "10.1002/aic.690300119"}}
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["nogroup"] = False
     kwargs["atoms"] = 0
 
-    _coeff = {
+    __coeff__ = {
         # Table 6
         "tc": [-2.433, 0.353, 4.253, 6.266, -0.335, 16.416, 12.435, -0.991,
                3.786, 3.373, 7.169, 7.169, 5.623, -4.561, 7.341, -28.930,
@@ -188,9 +191,9 @@ class Klincewicz(GroupContribution):
         else:
             Pc = tc = vc = 0
             for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-                tc += c*self._coeff["tc"][i]
-                Pc += c*self._coeff["Pc"][i]
-                vc += c*self._coeff["vc"][i]
+                tc += c*self.__coeff__["tc"][i]
+                Pc += c*self.__coeff__["Pc"][i]
+                vc += c*self.__coeff__["vc"][i]
 
             # Eq 10-12
             self.Tc = unidades.Temperature(45.4-0.77*self.M+1.55*self.Tb+tc)

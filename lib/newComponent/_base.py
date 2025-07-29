@@ -154,6 +154,7 @@ class GroupContribution(newComponente):
     status = 0
     _bool = False
     msg = ""
+    __doi__ = {}
 
     FirstOrder = 0
     SecondOrder = 0
@@ -177,7 +178,12 @@ class GroupContribution(newComponente):
         self.kwargs.update(kwargs)
         self._bool = True
         if self.isCalculable():
-            self.calculo()
+            try:
+                self.calculo()
+            except TypeError:
+                self.status = 0
+                self.msg = translate("newComponent", "Incomplete definition")
+
 
     def isCalculable(self):
         """Procedure to define the status of input parameter"""
@@ -212,7 +218,11 @@ class GroupContribution(newComponente):
             self.SG = self.kwargs["SG"]
         else:
             self.SG = self._SG()
-        self.Kw = self.Tb.R**(1./3)/self.SG
+
+        self.Kw = self.Tb.R**(1/3)/self.SG
+        if isinstance(self.Kw, complex):
+            self.Kw = 0
+
         if "Vc" not in self.__dict__:
             self.Vc = self._Vc()
         if "cp" not in self.__dict__:
@@ -266,7 +276,7 @@ class GroupContribution(newComponente):
             if i < self.FirstOrder:
                 # Clean additional comment of group, ring flag and other,
                 # separated of main group by spaces
-                cmp = self._coeff["txt"][i][0]
+                cmp = self.__coeff__["txt"][i][0]
                 if " " in cmp:
                     cmp = cmp.split(" ")[0]
 
@@ -284,9 +294,11 @@ class GroupContribution(newComponente):
 
     def _SG(self):
         # FIXME: Don't work
-        # volumen = self.Vliq*(5.7+3*288.71/self.Tc)
-        # return 1/volumen*18
-        return 1
+        if self.Vliq:
+            volumen = self.Vliq*(5.7+3*288.71/self.Tc)
+            return 1/volumen*18
+        else:
+            return 1
 
     def _cp(self):
         """Default method to calculate the temperature dependence of ideal
@@ -318,7 +330,9 @@ class GroupContribution(newComponente):
         """Método de cálculo del calor de vaporización,
         ref. chemcad pag 60"""
         tbr = self.Tb/self.Tc
-        return unidades.Enthalpy(1.093*R*1000*self.Tc*(tbr*(log(self.Pc.atm)-1)/(0.930-tbr))/self.M, "calg")
+        return unidades.Enthalpy(
+            1.093*R*1e3*self.Tc*(tbr*(log(self.Pc.atm)-1)/(0.93-tbr))/self.M,
+            "calg")
 
     def _Rackett(self):
         """ref 64"""
@@ -327,7 +341,10 @@ class GroupContribution(newComponente):
     def _VLiq(self):
         Tr = 298.15/self.Tc
         V = R_atml*1000*self.Tc/self.Pc.atm*self.rackett**(1+(1-Tr)**(2/7))
-        return V/(5.7+1611/self.Tc)  # cm3/mol
+        if isinstance(V, complex):
+            return 0
+        else:
+            return V/(5.7+1611/self.Tc)  # cm3/mol
 
     def _SolubilityParameter(self):
         r"""Calculation procedure for solubility parameter when the compound

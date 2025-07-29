@@ -27,10 +27,14 @@ from lib.newComponent._base import GroupContribution
 class Constantinou(GroupContribution):
     """
     Group contribution for definition of unknown component using the
-    Constantinou-Gani procedure (1994)
+    Constantinou-Gani procedure (1994). This method is fairly complete, can
+    calculate critical properties, boiling and melting temperature, enthalpy
+    and gibbs free energy of formation, vaporization heat, acentric factor and
+    ideal gas heat capacity dependence with temperature.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -186,27 +190,31 @@ class Constantinou(GroupContribution):
     '278'
     """
     __title__ = "Constantinou-Gani (1995)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Constantinou, L., Gani, R.",
          "title": "New Group Controbution Method for Estimating Properties of "
                   "Pure Compounds",
          "ref": "AIChE J. 40(10) (1994) 1697-1710",
          "doi": "10.1002/aic.690401011"},
+      3:
         {"autor": "Constantinou, L., Gani, R., O’Connell, J.P.",
          "title": "Estimation of the Acentric Factor and the Liquid Molar "
                   "Volume at 298K Using a New Group Contribution Method",
          "ref": "Fluid Phase Equilibria 103 (1995) 11-22",
          "doi": "10.1016/0378-3812(94)02593-p"},
+      4:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
-         "doi": ""})
+         "doi": ""}}
 
-    _coeff = {
+    __coeff__ = {
         # The Second order term are append to the first order in each table
 
         # Table 1 in [3]_
@@ -559,19 +567,19 @@ class Constantinou(GroupContribution):
 
         tc = Pc = tf = tb = vc = w = gf = hf = hv = vliq = cpa = cpb = cpc = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self._coeff["tc"][i]
-            Pc += c*self._coeff["Pc"][i]
-            vc += c*self._coeff["vc"][i]
-            tf += c*self._coeff["tf"][i]
-            tb += c*self._coeff["tb"][i]
-            hf += c*self._coeff["hf"][i]
-            gf += c*self._coeff["gf"][i]
-            hv += c*self._coeff["hv"][i]
-            w += c*self._coeff["w"][i]
-            vliq += c*self._coeff["vliq"][i]
-            cpa += c*self._coeff["cpa"][i]
-            cpb += c*self._coeff["cpb"][i]
-            cpc += c*self._coeff["cpc"][i]
+            tc += c*self.__coeff__["tc"][i]
+            Pc += c*self.__coeff__["Pc"][i]
+            vc += c*self.__coeff__["vc"][i]
+            tf += c*self.__coeff__["tf"][i]
+            tb += c*self.__coeff__["tb"][i]
+            hf += c*self.__coeff__["hf"][i]
+            gf += c*self.__coeff__["gf"][i]
+            hv += c*self.__coeff__["hv"][i]
+            w += c*self.__coeff__["w"][i]
+            vliq += c*self.__coeff__["vliq"][i]
+            cpa += c*self.__coeff__["cpa"][i]
+            cpb += c*self.__coeff__["cpb"][i]
+            cpc += c*self.__coeff__["cpc"][i]
 
         # Table 5 with functions
         self.Tc = unidades.Temperature(181.128*log(tc))

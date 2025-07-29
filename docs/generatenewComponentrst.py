@@ -75,7 +75,7 @@ for fname, mod in zip(__all__, _methods):
 
         count = 1
 
-        for lnk in doi:
+        for lnk in doi.values():
             ref = f".. [{count}] {lnk['autor']}; {lnk['title']}, {lnk['ref']}"
             if lnk["doi"]:
                 ref += f", http://dx.doi.org/{lnk['doi']}"

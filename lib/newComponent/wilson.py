@@ -29,10 +29,12 @@ from lib.newComponent._base import GroupContribution
 class Wilson(GroupContribution):
     """
     Group contribution for definition of unknown component using the
-    Wilson-Jasperson procedure (1994)
+    Wilson-Jasperson procedure (1994). This method is able to calculate only
+    critical temperature and pressure.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -67,22 +69,24 @@ class Wilson(GroupContribution):
     'C8H10O'
     """
     __title__ = "Wilson-Jasperson (1996)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Wilson, G.M. Jasperson, L.V.",
          "title": "Critical constants Tc and Pc, estimation based on zero, "
                   "first and second order methods",
          "ref": "Paper given at AIChE Spring National Meeting, New Orleans, "
                 "LA, USA, February 25-29, 1996.",
-         "doi": ""})
+         "doi": ""}}
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["ring"] = 0
 
-    _coeff = {
+    __coeff__ = {
         "tc": [0.002793, 0.320000, 0.019000, 0.008532, 0.019181, 0.020341,
                0.008810, 0.036400, 0.088000, 0.020000, 0.012000, 0.007271,
                0.011151, 0.016800, 0.014000, 0.018600, 0.059000, 0.031000,
@@ -177,8 +181,8 @@ class Wilson(GroupContribution):
 
         tc = Pc = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self._coeff["tc"][i]
-            Pc += c*self._coeff["Pc"][i]
+            tc += c*self.__coeff__["tc"][i]
+            Pc += c*self.__coeff__["Pc"][i]
 
         Nr = self.kwargs["ring"]
         self.Tc = unidades.Temperature(self.Tb/(0.048271-0.019846*Nr+tc)**0.2)

@@ -27,10 +27,14 @@ from lib.newComponent._base import GroupContribution
 class Joback(GroupContribution):
     """
     Group contribution for definition of unknown component using the Joback
-    procedure (1987)
+    procedure (1987). This method is fairly complete, can calculate critical
+    properties, boiling and melting temperature, enthalpy and gibbs free energy
+    of formation, vaporization and melting heat, ideal gas heat capacity
+    dependence with temperature and viscosity.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -123,22 +127,25 @@ class Joback(GroupContribution):
     '534.1 44.33 272.5'
     """
     __title__ = "Joback-Reid (1987)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Joback, K.G., Reid, R.C.",
          "title": "Estimation of Pure-Component Properties from "
                   "Group-Contributions.",
          "ref": "Chemical Engineering Communications, 57 (1987) 233-243",
          "doi": "10.1080/00986448708960487"},
+      3:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
-         "doi": ""})
+         "doi": ""}}
 
-    _coeff = {
+    __coeff__ = {
         # Table III
         "tc": [0.0141, 0.0189, 0.0164, 0.0067, 0.0113, 0.0129, 0.0117, 0.0026,
                0.0027, 0.002, 0.01, 0.0122, 0.0042, 0.0082, 0.0143, 0.0111,
@@ -276,7 +283,7 @@ class Joback(GroupContribution):
             Tb = self.kwargs["Tb"]
         else:
             # Eq 2
-            Tb = 198.2+sum([c*self._coeff["tb"][i] for i, c in zip(
+            Tb = 198.2+sum([c*self.__coeff__["tb"][i] for i, c in zip(
                 self.kwargs["group"], self.kwargs["contribution"])])
         self.Tb = unidades.Temperature(Tb)
 
@@ -294,20 +301,20 @@ class Joback(GroupContribution):
         cpd = 2.06e-7
         mua, mub = 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            Tf += c*self._coeff["tf"][i]                                # Eq 3
-            tcsuma += c*self._coeff["tc"][i]                            # Eq 4
-            pcsuma += c*self._coeff["Pc"][i]                            # Eq 5
-            vcsuma += c*self._coeff["vc"][i]                            # Eq 6
-            Hf += c*self._coeff["hf"][i]                                # Eq 7
-            Gf += c*self._coeff["gf"][i]                                # Eq 8
-            Hv += c*self._coeff["hv"][i]*0.004184                       # Eq 10
-            Hm += c*self._coeff["hm"][i]*0.004184                       # Eq 11
-            cpa += c*self._coeff["cpa"][i]
-            cpb += c*self._coeff["cpb"][i]
-            cpc += c*self._coeff["cpc"][i]
-            cpd += c*self._coeff["cpd"][i]
-            mua += c*self._coeff["mua"][i]
-            mub += c*self._coeff["mub"][i]
+            Tf += c*self.__coeff__["tf"][i]                             # Eq 3
+            tcsuma += c*self.__coeff__["tc"][i]                         # Eq 4
+            pcsuma += c*self.__coeff__["Pc"][i]                         # Eq 5
+            vcsuma += c*self.__coeff__["vc"][i]                         # Eq 6
+            Hf += c*self.__coeff__["hf"][i]                             # Eq 7
+            Gf += c*self.__coeff__["gf"][i]                             # Eq 8
+            Hv += c*self.__coeff__["hv"][i]*0.004184                    # Eq 10
+            Hm += c*self.__coeff__["hm"][i]*0.004184                    # Eq 11
+            cpa += c*self.__coeff__["cpa"][i]
+            cpb += c*self.__coeff__["cpb"][i]
+            cpc += c*self.__coeff__["cpc"][i]
+            cpd += c*self.__coeff__["cpd"][i]
+            mua += c*self.__coeff__["mua"][i]
+            mub += c*self.__coeff__["mub"][i]
         self.Tf = unidades.Temperature(Tf)
         self.Tc = unidades.Temperature(self.Tb/(0.584+0.965*tcsuma-tcsuma**2))
         self.Pc = unidades.Pressure((0.113+0.0032*self.Na-pcsuma)**-2, "bar")

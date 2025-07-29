@@ -28,10 +28,12 @@ class Ambrose(GroupContribution):
     """
     Group contribution for definition of unknown component using the Ambrose
     procedure as use in API Technical Databook, procedure 4A1.1 with aditional
-    term from Perry's Handbook
+    term from Perry's Handbook. This method is able to calculate the critical
+    properties.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -107,32 +109,36 @@ class Ambrose(GroupContribution):
     '543.0 25.63 455.8'
     """
     __title__ = "Ambrose (1980)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Ambrose, D.",
          "title": "Correlation and Estimation of Vapor-Liquid Critical "
                   "Properties: I. Critical Temperatures of Organic Compounds",
          "ref": "National Physical Laboratory, Teddington, NPL Rep. Chern.  "
                 "92, 1978, corrected 1980.",
          "doi": ""},
+      2:
         {"autor": "Ambrose, D.",
          "title": "Correlation and Estimation of Vapor-Liquid Critical "
                   "Properties: II. Critical Pressures and Volumes of Organic "
                   "Compounds",
          "ref": "National Physical Laboratory, Teddington, NPL Rep. 98, 1979",
          "doi": ""},
+      3:
         {"autor": "API",
          "title": "Technical Data book: Petroleum Refining 6th Edition",
          "ref": "",
          "doi": ""},
+      4:
         {"autor": "Maloney, J.O.",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
-         "doi": ""})
+         "doi": ""}}
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["platt"] = 0
 
-    _coeff = {
+    __coeff__ = {
         "Pc": [0.2260, 0.2260, 0.22, 0.1960, 0.1935, 0.1935, 0.1875, 0.1610,
                0.1410, 0.1410, 0.1820, 0.1820, 0.1820, 0.1820, 0.1495, 0.1495,
                0.1170, 0.9240, 0.8940, 0.9440, 0.9440, 0.8640, 0.9140, 0.8340,
@@ -239,7 +245,7 @@ class Ambrose(GroupContribution):
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
             # Only the first order term count for this
             if i < self.FirstOrder:
-                grp = self._coeff["txt"][i][1]
+                grp = self.__coeff__["txt"][i][1]
                 for x in range(c):
                     group.append(grp)
         return group
@@ -266,9 +272,9 @@ class Ambrose(GroupContribution):
                 Pc += 0.1-0.013*n
                 vc += 0
             else:
-                tc += c*self._coeff["tc"][i]
-                Pc += c*self._coeff["Pc"][i]
-                vc += c*self._coeff["vc"][i]
+                tc += c*self.__coeff__["tc"][i]
+                Pc += c*self.__coeff__["Pc"][i]
+                vc += c*self.__coeff__["vc"][i]
 
         Pt = self.kwargs["platt"]
         self.Tc = unidades.Temperature(self.Tb*(1+1/(1.242+tc-0.023*Pt)))

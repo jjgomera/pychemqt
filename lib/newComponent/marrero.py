@@ -30,10 +30,12 @@ from lib.newComponent._base import GroupContribution
 class Marrero(GroupContribution):
     """
     Group contribution for definition of unknown component using the
-    Marrero-Pardillo procedure (1999)
+    Marrero-Pardillo procedure (1999). This method is able to calculate the
+    critical properties, boiling temperature and viscosity.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -133,24 +135,27 @@ class Marrero(GroupContribution):
     '18.58'
     """
     __title__ = "Marrero-Pardillo (1999)"
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Poling, B.E, Prausnitz, J.M, O'Connell, J.P",
          "title": "The Properties of Gases and Liquids 5th Edition",
          "ref": "McGraw-Hill, New York, 2001",
          "doi": ""},
+      2:
         {"autor": "Marrero-Morejón, J., Pardillo-Fontdevila, F.",
          "title": "Estimation of Pure Compound Properties Using "
                   "Group-Interaction C9ontributions",
          "ref": "AIChE J., 45(3) (1999) 615-621",
          "doi": "10.1002/aic.690450318"},
+      3:
         {"autor": "Marrero-Morejon, J., Pardillo-Fontdevila, E.",
          "title": "Estimation of Liquid Viscosity at Ambient Temperature of "
                   "Pure Organic Compounds by Using Group-Interaction "
                   "Contributions",
          "ref": "Chemical Engineering Journal 79 (2000) 69-72",
-         "doi": "10.1016/s1385-8947(99)00173-4"})
+         "doi": "10.1016/s1385-8947(99)00173-4"}}
 
-    _coeff = {
+    __coeff__ = {
         # Table 5 from [2]_
         "tc": [-0.0213, -0.0227, -0.0223, -0.0189, 0.8526, 0.1792, 0.3818,
                -0.0214, 0.1117, 0.0987, -0.0370, -0.9141, -0.9166, -0.9146,
@@ -455,7 +460,7 @@ class Marrero(GroupContribution):
         group = []
         rest = {}
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            A, B = self._coeff["txt"][i][0].split(" & ")
+            A, B = self.__coeff__["txt"][i][0].split(" & ")
             for x in range(c):
                 for grp in (A, B):
                     # Remove the optional corchetes in multiple link definition
@@ -512,11 +517,11 @@ class Marrero(GroupContribution):
 
         tc = Pc = vc = tb = mu = 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tb += c*self._coeff["tb"][i]
-            tc += c*self._coeff["tc"][i]
-            Pc += c*self._coeff["Pc"][i]
-            vc += c*self._coeff["vc"][i]
-            mu += c*self._coeff["mu"][i]
+            tb += c*self.__coeff__["tb"][i]
+            tc += c*self.__coeff__["tc"][i]
+            Pc += c*self.__coeff__["Pc"][i]
+            vc += c*self.__coeff__["vc"][i]
+            mu += c*self.__coeff__["mu"][i]
 
         # Table 1 equations in [6]_
         if self.kwargs["Tb"]:

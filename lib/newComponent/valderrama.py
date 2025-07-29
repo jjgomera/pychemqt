@@ -25,10 +25,12 @@ from lib.newComponent._base import GroupContribution
 class Valderrama(GroupContribution):
     """
     Group contribution for definition of unknown component using the Valderrama
-    procedure (2006)
+    procedure (2006). This method is able to calculate the critical
+    properties.
 
     The resulting instance has all the necessary properties to use in PFD as a
-    predefined compound.
+    predefined compound, using general properties for calculation of other
+    mandatory properties don't defined by the method.
 
     Parameters
     ----------
@@ -64,15 +66,16 @@ class Valderrama(GroupContribution):
     """
     __title__ = "Valderrama (2006)"
 
-    __doi__ = (
+    __doi__ = {
+      1:
         {"autor": "Valderrama, J.O., Álvarez, V.H.",
          "title": "A New Group Contribution Method Based on Equation of State "
                   "Parameters to Evaluate the Critical Properties of Simple "
                   "and Complex Molecules",
          "ref": "Can. J. Chem. Eng. 84(4) (2006) 431-446",
-         "doi": "10.1002/cjce.5450840404"}, )
+         "doi": "10.1002/cjce.5450840404"}}
 
-    _coeff = {
+    __coeff__ = {
         # Table III
         "tc": [8.26, 20.07, 27.11, 35.81, 3.27, 18.81, 26.64, 15.40, 6.46,
                6.46, 11.21, 9.93, 34.18, 21.98, 50.52, 40.07, 28.83, -7.64,
@@ -149,9 +152,9 @@ class Valderrama(GroupContribution):
 
         tc, pc, vc = 0, 0, 0
         for i, c in zip(self.kwargs["group"], self.kwargs["contribution"]):
-            tc += c*self._coeff["tc"][i]
-            pc += c*self._coeff["Pc"][i]
-            vc += c*self._coeff["vc"][i]
+            tc += c*self.__coeff__["tc"][i]
+            pc += c*self.__coeff__["Pc"][i]
+            vc += c*self.__coeff__["vc"][i]
 
         g1 = 38.91+tc**0.88
         g2 = 5.84+pc**1.27
