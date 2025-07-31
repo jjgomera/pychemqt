@@ -58,7 +58,7 @@ The development is slow, so the software in in pre-alpha status, with many bugs 
 * Definition of custom compounds
 	* `Petroleum fraction pseudocomponent <pseudocomponent.html>`__
 	* `Group contribution methods <lib.newComponent.html>`__
-* Stream definition with temperature, pressure and composition
+* `Stream definition <UI.UI_corriente.html>`__ with temperature, pressure and composition
 * Thermodynamic EoS:
 	* Redlich-Kwong (RK)
 	* Soave-Redlich-Kwong (SRK)

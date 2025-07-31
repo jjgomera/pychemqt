@@ -15,20 +15,24 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with stream UI utilities
-#   -Ui_corriente: Widget for general stream input
-#   -Corriente_Dialog: QDialog for stream input
-#   -StreamDefinition: Stream definition with P,T,x,composition input
-#   -PsychroDefinition: Stream definition as humid air input
-#   -StreamProperties: Table for show stream properties
-#   -SolidDefinition: Solid particle stream definition
-#   -SolidDistribution: Dialog for define particle solid distribution
-###############################################################################
+.. include:: UI_corriente.rst
 
+
+Module with UI utilities
+
+  * :class:`Ui_corriente`: Widget for general stream input
+  * :class:`Corriente_Dialog`: QDialog for stream input
+  * :class:`StreamDefinition`: Stream definition with P,T,x,composition input
+  * :class:`PsychroDefinition`: Stream definition as humid air input
+  * :class:`StreamProperties`: Table for show stream properties
+  * :class:`SolidDefinition`: Solid particle stream definition
+  * :class:`SolidDistribution`: Dialog for define particle solid distribution
+
+The module with library is in `<lib.corriente.html>`__
+"""
 
 from functools import partial
 from math import exp, log
@@ -1123,8 +1127,15 @@ if __name__ == "__main__":
     # diametros=[17.5e-5, 22.4e-5, 26.2e-5, 31.8e-5, 37e-5, 42.4e-5, 48e-5, 54e-5, 60e-5, 69e-5, 81.3e-5, 96.5e-5, 109e-5, 127e-5]
     # fracciones=[0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.05, 0.03, 0.02]
     # solido=Solid(caudalSolido=[0.01], distribucion_diametro=diametros, distribucion_fraccion=fracciones)
-    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.], **kw)
-    dialogo = Corriente_Dialog()
+    dm = [17.5e-6, 22.4e-6, 26.2e-6, 31.8e-6, 37e-6, 42.4e-6, 48e-6, 54e-6,
+          60e-6, 69e-6, 81.3e-6, 96.5e-6, 109e-6, 127e-6]
+    fracciones = [0.02, 0.03, 0.05, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                  0.05, 0.03, 0.02]
+    sol = Solid(caudalSolido=[0.1], distribucion_diametro=dm,
+                distribucion_fraccion=fracciones, solids=[638])
+    corriente=Corriente(T=300., x=0.8, caudalMasico=1., fraccionMolar=[1.],
+                        solido=sol, **kw)
+    dialogo = Corriente_Dialog(corriente)
     dialogo.show()
 
     # corriente=Corriente(ids=[10, 38, 22, 61], fraccionMolar=[.0, 0.5, 0.35, 0.15])
