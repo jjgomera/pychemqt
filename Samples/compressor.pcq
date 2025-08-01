@@ -6,13 +6,13 @@
                 "caudalVolumetrico": 0.027777777777777776,
                 "MEoS": true,
                 "mix": "van der Waals",
-                "K": "van der Waals",
+                "K": "vdW",
                 "P": 100000.0,
                 "alfa": "Original",
                 "fraccionMolar": [
                     1.0
                 ],
-                "H": "van der Waals",
+                "H": "vdW",
                 "T": 423.15
             },
             "msg": "",
@@ -165,13 +165,13 @@
                 "caudalVolumetrico": 0.027777777777777776,
                 "MEoS": true,
                 "mix": "van der Waals",
-                "K": "van der Waals",
+                "K": "vdW",
                 "P": 500000.0,
                 "alfa": "Original",
                 "fraccionMolar": [
                     1.0
                 ],
-                "H": "van der Waals",
+                "H": "vdW",
                 "T": 629.0136387636334
             },
             "msg": "",
@@ -324,13 +324,13 @@
                 "caudalVolumetrico": 0.1,
                 "MEoS": true,
                 "mix": "van der Waals",
-                "K": "van der Waals",
+                "K": "vdW",
                 "P": 1000000.0,
                 "alfa": "Original",
                 "fraccionMolar": [
                     1.0
                 ],
-                "H": "van der Waals",
+                "H": "vdW",
                 "T": 773.15
             },
             "msg": "",
@@ -483,13 +483,13 @@
                 "caudalVolumetrico": 0.1,
                 "MEoS": true,
                 "mix": "van der Waals",
-                "K": "van der Waals",
+                "K": "vdW",
                 "P": 200000.0,
                 "alfa": "Original",
                 "fraccionMolar": [
                     1.0
                 ],
-                "H": "van der Waals",
+                "H": "vdW",
                 "T": 540.193653387345
             },
             "msg": "",

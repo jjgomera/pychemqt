@@ -7,8 +7,8 @@
             "kwarg": {
                 "MEoS": true,
                 "mix": "van der Waals",
-                "H": "van der Waals",
-                "K": "van der Waals",
+                "H": "vdW",
+                "K": "vdW",
                 "P": 100000.0,
                 "caudalMasico": 0.027777777777777776,
                 "T": 293.15,
@@ -167,8 +167,8 @@
             "kwarg": {
                 "MEoS": true,
                 "alfa": "Original",
-                "H": "van der Waals",
-                "K": "van der Waals",
+                "H": "vdW",
+                "K": "vdW",
                 "P": 500000.0,
                 "caudalMasico": 0.027777777777777776,
                 "T": 293.15,

@@ -3,7 +3,7 @@
         "1": {
             "kwarg": {
                 "mix": "van der Waals",
-                "H": "van der Waals",
+                "H": "vdW",
                 "MEoS": true,
                 "P": 100000.0,
                 "caudalMasico": 1.0,
@@ -11,7 +11,7 @@
                     1.0
                 ],
                 "T": 298.15,
-                "K": "van der Waals",
+                "K": "vdW",
                 "alfa": "Original"
             },
             "external_dependences": "",
@@ -163,7 +163,7 @@
         "2": {
             "kwarg": {
                 "mix": "van der Waals",
-                "H": "van der Waals",
+                "H": "vdW",
                 "MEoS": true,
                 "alfa": "Original",
                 "caudalMasico": 1.0,
@@ -171,7 +171,7 @@
                     1.0
                 ],
                 "T": 298.15,
-                "K": "van der Waals",
+                "K": "vdW",
                 "P": 99403.32391536867
             },
             "external_dependences": "",

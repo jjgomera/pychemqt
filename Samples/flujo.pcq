@@ -3,10 +3,10 @@
         "1": {
             "notasPlain": "Air stream with meos thermodynamic",
             "kwarg": {
-                "H": "van der Waals",
+                "H": "vdW",
                 "T": 316.4833333333333,
                 "mix": "van der Waals",
-                "K": "van der Waals",
+                "K": "vdW",
                 "alfa": "Original",
                 "caudalVolumetrico": 3.146316287999999e-05,
                 "fraccionMolar": [
@@ -163,14 +163,14 @@
         "2": {
             "notasPlain": "",
             "kwarg": {
-                "H": "van der Waals",
+                "H": "vdW",
                 "mix": "van der Waals",
                 "alfa": "Original",
                 "T": 316.4833333333333,
                 "fraccionMolar": [
                     1.0
                 ],
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "caudalVolumetrico": 3.146316287999999e-05,
                 "P": 103421.3593975254
@@ -323,14 +323,14 @@
         "3": {
             "notasPlain": "",
             "kwarg": {
-                "H": "van der Waals",
+                "H": "vdW",
                 "mix": "van der Waals",
                 "alfa": "Original",
                 "T": 316.4833333333333,
                 "fraccionMolar": [
                     1.0
                 ],
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "caudalVolumetrico": 3.146316287999999e-05,
                 "P": 103421.3593975254
@@ -483,14 +483,14 @@
         "4": {
             "notasPlain": "",
             "kwarg": {
-                "H": "van der Waals",
+                "H": "vdW",
                 "mix": "van der Waals",
                 "alfa": "Original",
                 "T": 316.4833333333333,
                 "fraccionMolar": [
                     1.0
                 ],
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "caudalVolumetrico": 3.146316287999999e-05,
                 "P": 93421.3593975254
