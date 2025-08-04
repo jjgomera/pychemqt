@@ -391,12 +391,12 @@ class Corriente(config.Entity):
                 compuesto = class_(P=P, x=x)
         elif self._thermo == "eos":
             if self.kwargs["K"]:
-                index = EoS.K_status.index(self.kwargs["K"])
+                index = EoS.K_name.index(self.kwargs["K"])
                 K = EoS.K[index]
             else:
                 K = EoS.K[Config.getint("Thermo", "K")]
             if self.kwargs["H"]:
-                index = EoS.H_status.index(self.kwargs["H"])
+                index = EoS.H_name.index(self.kwargs["H"])
                 H = EoS.H[index]
             else:
                 H = EoS.H[Config.getint("Thermo", "H")]

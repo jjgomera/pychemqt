@@ -48,7 +48,7 @@ API reference
 from ast import literal_eval
 import os
 
-from tools.qt import QtWidgets
+from tools.qt import QtCore, QtWidgets
 
 from lib.EoS import K, H, alfa, mix, cp_ideal, K_name, H_name, K_status
 from lib.bip import EoSBIP
@@ -59,6 +59,8 @@ from UI import BIP
 
 class UI_confThermo_widget(QtWidgets.QWidget):
     """Widget to config thermal method calculations"""
+    changed = QtCore.pyqtSignal()
+
     def __init__(self, config=None, parent=None):
         """Constructor, opcional config parameter with proyect configuration"""
         super().__init__(parent)
@@ -68,6 +70,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         for eq in K:
             self.K.addItem(eq.__title__)
         self.K.currentIndexChanged.connect(self.updateBIP)
+        self.K.currentIndexChanged.connect(self.changed.emit)
         layout.addWidget(self.K, 0, 2)
         self.bipButton = QtWidgets.QPushButton(self.tr("BIP"))
         self.bipButton.clicked.connect(self.showBIP)
@@ -83,6 +86,7 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         self.mixing_rule = QtWidgets.QComboBox()
         for m in mix:
             self.mixing_rule.addItem(m)
+        self.mixing_rule.currentIndexChanged.connect(self.changed.emit)
         layout.addWidget(self.mixing_rule, 2, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
@@ -91,36 +95,44 @@ class UI_confThermo_widget(QtWidgets.QWidget):
         self.H = QtWidgets.QComboBox()
         for h in H:
             self.H.addItem(h.__title__)
+        self.H.currentIndexChanged.connect(self.changed.emit)
         layout.addWidget(self.H, 4, 2, 1, 2)
         layout.addWidget(QtWidgets.QLabel(
             self.tr("Ideal heat capacity:")), 5, 0, 1, 2)
         self.Cp_ideal = QtWidgets.QComboBox()
         for cp in cp_ideal:
             self.Cp_ideal.addItem(cp)
+        self.Cp_ideal.currentIndexChanged.connect(self.changed.emit)
         layout.addWidget(self.Cp_ideal, 5, 2, 1, 2)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 6, 0, 1, 4)
         self.MEoS = QtWidgets.QCheckBox(
             self.tr("Use MEoS for single compounds if it's available"))
+        self.MEoS.toggled.connect(self.changed.emit)
         layout.addWidget(self.MEoS, 7, 0, 1, 4)
         self.coolProp = QtWidgets.QCheckBox(
             self.tr("Use external library coolProp (faster)"))
         self.coolProp.setEnabled(False)
+        self.coolProp.toggled.connect(self.changed.emit)
         layout.addWidget(self.coolProp, 8, 1, 1, 3)
         self.refprop = QtWidgets.QCheckBox(
             self.tr("Use external library refprop (fastest)"))
         self.refprop.setEnabled(False)
+        self.refprop.toggled.connect(self.changed.emit)
         layout.addWidget(self.refprop, 9, 1, 1, 3)
 
         self.iapws = QtWidgets.QCheckBox(self.tr("Use IAPWS97 for water"))
+        self.iapws.toggled.connect(self.changed.emit)
         layout.addWidget(self.iapws, 10, 0, 1, 4)
         self.freesteam = QtWidgets.QCheckBox(
             self.tr("Use freesteam library (faster)"))
         self.freesteam.setEnabled(False)
+        self.freesteam.toggled.connect(self.changed.emit)
         layout.addWidget(self.freesteam, 11, 1, 1, 3)
         self.GERG = QtWidgets.QCheckBox(
             self.tr("Use GERG EoS for mix if it's posible"))
+        self.GERG.toggled.connect(self.changed.emit)
         layout.addWidget(self.GERG, 12, 0, 1, 4)
         layout.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
@@ -183,10 +195,10 @@ class UI_confThermo_widget(QtWidgets.QWidget):
     def kwargs(self):
         """Return dict with kwarg"""
         kw = {}
-        kw["K"] = self.K.currentText().split(" (")[0]
+        kw["K"] = K_name[self.K.currentIndex()]
         kw["alfa"] = self.alfa.currentText()
         kw["mix"] = self.mixing_rule.currentText()
-        kw["H"] = self.H.currentText().split(" (")[0]
+        kw["H"] = H_name[self.H.currentIndex()]
         kw["Cp_ideal"] = self.Cp_ideal.currentIndex()
         kw["MEoS"] = self.MEoS.isChecked()
         kw["iapws"] = self.iapws.isChecked()

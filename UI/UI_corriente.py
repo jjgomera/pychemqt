@@ -90,6 +90,7 @@ class Ui_corriente(QtWidgets.QWidget):
 
         # Configuration per stream
         self.pageConfig = UI_confThermo_widget()
+        self.pageConfig.changed.connect(self.calculo)
         self.toolBox.addTab(
             self.pageConfig,
             QtGui.QIcon(config.IMAGE_PATH + "button/configure.png"),
@@ -174,12 +175,13 @@ class Ui_corriente(QtWidgets.QWidget):
                 self.Changed.emit(self.corriente)
             self.semaforo.release(1)
 
-    def calculo(self, variable, valor):
+    def calculo(self, variable=None, valor=None):
         if self.semaforo.available() > 0:
             if isinstance(self, QtWidgets.QDialog):
                 self.status.setState(4)
             kwargs = self.pageConfig.kwargs
-            kwargs[variable] = valor
+            if variable:
+                kwargs[variable] = valor
             self.salida(**kwargs)
 
     def clear(self):
