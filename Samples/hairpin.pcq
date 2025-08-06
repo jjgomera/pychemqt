@@ -68,6 +68,7 @@
                 "De": 0.0603,
                 "C_inst": 9664.999168372184,
                 "phaseTube": "Latent-Liquid",
+                "Q": 5853.494,
                 "kFin": 0.0
             }
         }
