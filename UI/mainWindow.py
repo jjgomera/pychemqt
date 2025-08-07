@@ -1524,6 +1524,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             os.path.join(IMAGE_PATH, "button", "PFD.png"))))
         PFD.zoomChanged.connect(self.zoomValue.setValue)
         mdiarea.addSubWindow(PFD)
+        mdiarea.subWindowList()[-1].setWindowFlags(
+            QtCore.Qt.WindowType.CustomizeWindowHint
+            | QtCore.Qt.WindowType.WindowTitleHint
+            | QtCore.Qt.WindowType.WindowMinMaxButtonsHint)
         PFD.show()
 
     def changeWindow(self, window):
