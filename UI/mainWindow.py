@@ -362,7 +362,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             icon=os.path.join("button", "zoomOut.png"),
             shortcut=QtGui.QKeySequence.StandardKey.ZoomOut,
             parent=self)
-        actionOverviewWindow = createAction(
+        self.actionOverviewWindow = createAction(
             self.tr("Overview window"),
             slot=self.overview, parent=self)
         actionVerStatus = createAction(
@@ -833,7 +833,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuVer.addAction(self.actionZoomOut)
         self.menuVer.addAction(self.actionZoom)
         self.menuVer.addAction(self.actionZoomIn)
-        self.menuVer.addAction(actionOverviewWindow)
+        self.menuVer.addAction(self.actionOverviewWindow)
         self.menuVer.addSeparator()
         self.menuVer.addAction(actionVerStatus)
         self.menuVer.addAction(self.actionVerToolbar)
@@ -1123,6 +1123,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuEditar.addAction(self.actionThermo)
         self.menuEditar.addAction(self.actionTransporte)
         self.menuEditar.addAction(self.actionUnidades)
+        self.menuEditar.addSeparator()
         self.menuEditar.addAction(self.actioncostIndex)
         self.menuEditar.addSeparator()
         self.menuEditar.addAction(self.actionPreferencias)
@@ -1864,13 +1865,35 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.currentView.zoom(value)
 
     def overview(self):
-        """Show a overview window of PFD"""
+        """Show a overview window of PFD or hide if exist"""
+
+        # Check if overview window is loaded
+        for window in self.currentMdi.subWindowList():
+            if window.windowTitle() == self.tr("Overview Window"):
+                window.close()
+
+                # Remove menu entry check icon
+                self.actionOverviewWindow.setIcon(QtGui.QIcon(QtGui.QPixmap()))
+                return False
+
         PFD = flujo.GraphicsView(False, self)
-        # Usea a custom 20% zoom out
-        PFD.zoom(20)
         PFD.setWindowTitle(self.tr("Overview Window"))
         PFD.setScene(self.currentScene)
-        self.centralWidget().currentWidget().addSubWindow(PFD)
+
+        # Use a custom 20% zoom out
+        PFD.zoom(20)
+
+        self.currentMdi.addSubWindow(PFD)
+
+        # Addd check icon to menu entry
+        self.actionOverviewWindow.setIcon(QtGui.QIcon(QtGui.QPixmap(
+            os.path.join(IMAGE_PATH, "button", "ok.png"))))
+
+        # Disable close button in subwindow titlebar
+        self.currentMdi.subWindowList()[-1].setWindowFlags(
+            QtCore.Qt.WindowType.CustomizeWindowHint
+            | QtCore.Qt.WindowType.WindowTitleHint
+            | QtCore.Qt.WindowType.WindowMinMaxButtonsHint)
         PFD.show()
 
     def selectionChanged(self):
