@@ -48,8 +48,19 @@ __doi__ = {
                   "Convection from a Vertical Plate",
          "ref": "Int. J. Heat Mass Transfer 18(11) (1975) 1323-29",
          "doi": "10.1016/0017-9310(75)90243-4"},
-
+    4:
+        {"autor": "Shah, R.K., Sekulić, D.P.",
+         "title": "Fundamentals of Heat Exchanger Design",
+         "ref": "John Wiley & Sons",
+         "doi": ""},
     5:
+        {"autor": "Triboix, A.",
+         "title": "Exact and approximate formulas for cross flow heat "
+                  "exchangers with unmixed fluids",
+         "ref": "Int. Comm. Heat Mass Transfer 36(2) (2009)",
+         "doi": "10.1016/j.icheatmasstransfer.2008.10.012"},
+
+    6:
         {"autor": "",
          "title": "",
          "ref": "",
