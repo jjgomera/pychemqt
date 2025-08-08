@@ -364,7 +364,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             parent=self)
         self.actionOverviewWindow = createAction(
             self.tr("Overview window"),
-            slot=self.overview, parent=self)
+            slot=self.overview, checkable=True, parent=self)
         actionVerStatus = createAction(
             self.tr("Status"),
             shortcut="Ctrl+Alt+S",
@@ -833,17 +833,19 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuVer.addAction(self.actionZoomOut)
         self.menuVer.addAction(self.actionZoom)
         self.menuVer.addAction(self.actionZoomIn)
-        self.menuVer.addAction(self.actionOverviewWindow)
         self.menuVer.addSeparator()
+        self.menuVer.addAction(self.actionOverviewWindow)
         self.menuVer.addAction(actionVerStatus)
         self.menuVer.addAction(self.actionVerToolbar)
         self.menuVer.addAction(self.actionVerItem)
         self.menubar.addAction(self.menuVer.menuAction())
 
+        self.menuObjetos = QtWidgets.QMenu(self.tr("Insert component"))
         self.menuObjetosGraficos = QtWidgets.QMenu(self.tr("Plot"))
         self.menuObjetosGraficos.addAction(actionTexto)
         self.menuObjetosGraficos.addAction(actionCuadrado)
         self.menuObjetosGraficos.addAction(actionCircle)
+        self.menuObjetos.addAction(self.menuObjetosGraficos.menuAction())
 
         self.menuObjetosFlujo = QtWidgets.QMenu(self.tr("Flux"))
         self.menuObjetosFlujo.addAction(actionEntrada)
@@ -856,6 +858,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosFlujo.addAction(actionTurbine)
         self.menuObjetosFlujo.addAction(actionPump)
         self.menuObjetosFlujo.addAction(actionValve)
+        self.menuObjetos.addAction(self.menuObjetosFlujo.menuAction())
 
         self.menuObjetosBasics = QtWidgets.QMenu(self.tr("Basics"))
         self.menuObjetosBasics.addAction(actionTorreFUG)
@@ -866,6 +869,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosBasics.addAction(actionShellTube)
         self.menuObjetosBasics.addAction(actionFireHeater)
         self.menuObjetosBasics.addAction(actionReactor)
+        self.menuObjetos.addAction(self.menuObjetosBasics.menuAction())
 
         self.menuObjetosSolids = QtWidgets.QMenu(self.tr("Solids"))
         self.menuObjetosSolids.addAction(actionBaghouse)
@@ -878,21 +882,23 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosSolids.addAction(actionVacuum)
         self.menuObjetosSolids.addAction(actionScrubber)
         self.menuObjetosSolids.addAction(actionGravityChandler)
+        self.menuObjetos.addAction(self.menuObjetosSolids.menuAction())
 
         self.menuObjetosTools = QtWidgets.QMenu(self.tr("Tools"))
         self.menuObjetosTools.addAction(actionControler)
         self.menuObjetosTools.addAction(actionControlValve)
         self.menuObjetosTools.addAction(actionSpreadsheet)
+        self.menuObjetos.addAction(self.menuObjetosTools.menuAction())
 
         self.menuPFD = QtWidgets.QMenu(self.tr("&PFD"))
         self.menuPFD.aboutToShow.connect(self.aboutToShow_MenuPFD)
         self.menubar.addAction(self.menuPFD.menuAction())
 
-        self.menuPlot = QtWidgets.QMenu(
-            self.tr("Pl&ot"))
-        for indice, grafico in enumerate(plots.__all__):
-            self.menuPlot.addAction(grafico.title, partial(self.plot, indice))
-        self.menubar.addAction(self.menuPlot.menuAction())
+        # self.menuPlot = QtWidgets.QMenu(
+            # self.tr("Pl&ot"))
+        # for indice, grafico in enumerate(plots.__all__):
+            # self.menuPlot.addAction(grafico.title, partial(self.plot, indice))
+        # self.menubar.addAction(self.menuPlot.menuAction())
 
         self.menuCharts = QtWidgets.QMenu(
             self.tr("Charts"), self)
@@ -935,8 +941,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuHerramientas.addAction(psychrometricChartAction)
         self.menuHerramientas.addSeparator()
         self.menuHerramientas.addAction(self.menuCharts.menuAction())
-        self.menuHerramientas.addSeparator()
-        self.menuHerramientas.addAction(externalProgramAction)
         self.menubar.addAction(self.menuHerramientas.menuAction())
 
         self.menuVentana = QtWidgets.QMenu(self.tr("&Window"))
@@ -945,8 +949,10 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         self.menuAyuda = QtWidgets.QMenu(self.tr("&Help"))
         self.menuAyuda.addAction(actionAyuda)
-        self.menuAyuda.addAction(actionDocum)
         self.menuAyuda.addAction(actionLog)
+        self.menuAyuda.addSeparator()
+        self.menuAyuda.addAction(actionDocum)
+        self.menuAyuda.addAction(externalProgramAction)
         self.menuAyuda.addSeparator()
         self.menuAyuda.addAction(actionAcerca_de)
         self.menuAyuda.addAction(actionAcerca_deQt)
@@ -1133,11 +1139,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         if self.currentScene:
             self.currentScene.addActions(self.menuPFD)
 
-        self.menuPFD.addAction(self.menuObjetosGraficos.menuAction())
-        self.menuPFD.addAction(self.menuObjetosFlujo.menuAction())
-        self.menuPFD.addAction(self.menuObjetosBasics.menuAction())
-        self.menuPFD.addAction(self.menuObjetosSolids.menuAction())
-        self.menuPFD.addAction(self.menuObjetosTools.menuAction())
+        self.menuPFD.addAction(self.menuObjetos.menuAction())
         self.menuPFD.addSeparator()
         self.menuPFD.addAction(self.saveAsImage)
 
@@ -1192,10 +1194,15 @@ class UI_pychemqt(QtWidgets.QMainWindow):
                 partial(self.windowSelect, i))
         self.menuVentana.addSeparator()
 
-        self.menuVentana.addAction(
-            QtGui.QIcon(IMAGE_PATH + "button/fileClose.png"),
+        actionClose = createAction(
             self.tr("&Close window"),
-            self.windowClose)
+            icon=os.path.join("button", "fileClose.png"),
+            slot=self.windowClose, parent=self)
+        mdiwindow = self.currentMdi.activeSubWindow()
+        if mdiwindow.windowTitle() in (
+                self.tr("Overview Window"), self.tr("Flow Diagram")):
+            actionClose.setEnabled(False)
+        self.menuVentana.addAction(actionClose)
 
     def windowClose(self):
         self.currentMdi.closeActiveSubWindow()
@@ -1674,7 +1681,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.actionZoomOut.setEnabled(boolean)
         self.zoomValue.setEnabled(boolean)
         self.menuPFD.setEnabled(boolean)
-        self.menuPlot.setEnabled(boolean)
+        # self.menuPlot.setEnabled(boolean)
         self.menuVentana.setEnabled(boolean)
         self.menuMEoS.setEnabled(boolean)
         self.toolboxItem.setEnabled(boolean)
@@ -1710,6 +1717,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     # Help
     def help(self):
+        """Open pychemqt documentation"""
         # First search for a local documentation build
         # By default in docs/_build/html/
         path = os.path.join(os.environ["pychemqt"], "docs") + os.sep
@@ -1721,15 +1729,19 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         QtGui.QDesktopServices.openUrl(url)
 
     def documentation(self):
+        """Open tools/doi app with scientific references"""
         dialog = doi.ShowReference()
         dialog.exec()
 
     def log(self):
+        """Open log file"""
         command = Preferences.get("Applications", 'TextViewer')
         logfile = os.path.join(conf_dir, "pychemqt.log")
         subprocess.Popen([command, logfile])
 
     def acerca(self):
+        """Show basic information about pychemqt including version of
+        library used"""
         txt = self.tr(
             "Software for simulate units operations in Chemical Engineering")
         QtWidgets.QMessageBox.about(
@@ -1875,9 +1887,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         for window in self.currentMdi.subWindowList():
             if window.windowTitle() == self.tr("Overview Window"):
                 window.close()
-
-                # Remove menu entry check icon
-                self.actionOverviewWindow.setIcon(QtGui.QIcon(QtGui.QPixmap()))
                 return False
 
         PFD = flujo.GraphicsView(False, self)
@@ -1888,10 +1897,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         PFD.zoom(20)
 
         self.currentMdi.addSubWindow(PFD)
-
-        # Addd check icon to menu entry
-        self.actionOverviewWindow.setIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.path.join(IMAGE_PATH, "button", "ok.png"))))
 
         # Disable close button in subwindow titlebar
         self.currentMdi.subWindowList()[-1].setWindowFlags(
