@@ -216,7 +216,7 @@ class Divider(equipment):
     def readStatefromJSON(self, state):
         """Load instance parameter from saved file"""
         self.criterio = state["criterio"]
-        self.split = (unidades.Dimensionless(x) for x in state["split"])
+        self.split = [unidades.Dimensionless(x) for x in state["split"]]
         self.deltaP = unidades.DeltaP(state["deltaP"])
         self.inputMolarFlow = unidades.MolarFlow(state["inputMolarFlow"])
         self.inputMassFlow = unidades.MassFlow(state["inputMassFlow"])
