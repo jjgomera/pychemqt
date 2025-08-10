@@ -128,7 +128,7 @@ class Divider(equipment):
                 self.salida.append(self.entrada.clone(
                     P=self.entrada.P-self.deltaP, split=i))
         else:
-            self.entrada = self.entrada.clone(caudalmasico=sum(self.split))
+            self.entrada = self.entrada.clone(caudalMasico=sum(self.split))
             for i in self.split:
                 self.salida.append(self.entrada.clone(
                     P=self.entrada.P-self.deltaP, split=i))
