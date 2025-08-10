@@ -44,7 +44,9 @@ from UI.petro import Definicion_Petro
 from UI.widgets import createAction
 
 
-__version__ = "0.1.0"
+with open("VERSION") as version_file:
+    __version__ = version_file.read().strip()
+
 year = config.__doc__.split()[7][:-1]
 
 other_window = (plots.Binary_distillation, UI_Tables.table.TablaMEoS,

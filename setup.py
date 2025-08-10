@@ -18,12 +18,13 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 
-from setuptools import setup, find_packages
-
 import io
 
+from setuptools import setup, find_packages
 
-__version__ = "0.1.0"
+
+with open("VERSION") as version_file:
+    __version__ = version_file.read().strip()
 
 with io.open('README.rst', encoding="utf8") as file:
     long_description = file.read()
