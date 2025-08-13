@@ -117,20 +117,17 @@ class TreeEquipment(QtWidgets.QTreeWidget):
                 item = QtWidgets.QTreeWidgetItem(self.Stream, 1)
                 item.setText(0, str(idx))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"]
-                    + os.path.join("images", "equipment", "in.svg"))))
+                    os.path.join(IMAGE_PATH, "equipment", "in.svg"))))
             elif idx in outs:
                 item = QtWidgets.QTreeWidgetItem(self.Stream, 2)
                 item.setText(0, str(idx))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"]
-                    + os.path.join("images", "equipment", "out.svg"))))
+                    os.path.join(IMAGE_PATH, "equipment", "out.svg"))))
             else:
                 item = QtWidgets.QTreeWidgetItem(self.Stream, 3)
                 item.setText(0, str(idx))
                 item.setIcon(0, QtGui.QIcon(QtGui.QPixmap(
-                    os.environ["pychemqt"]
-                    + os.path.join("images", "equipment", "stream.png"))))
+                    os.path.join(IMAGE_PATH, "equipment", "stream.png"))))
 
         for equip in items["equip"]:
             item = QtWidgets.QTreeWidgetItem(self.Equipment, 4)
@@ -525,7 +522,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
         # Paleta Toolbox
         self.toolboxPalette = QtWidgets.QDockWidget(
-            self.tr("Equipos"))
+            self.tr("Equipment"))
         self.toolboxPalette.setObjectName("toolbox")
         toolboxContenido = QtWidgets.QWidget()
         self.toolboxPalette.setWidget(toolboxContenido)

@@ -675,7 +675,7 @@ class Corriente(config.Entity):
             self._dependence = "CoolProp"
         elif MEoS and GERG:
             self._thermo = "gerg"
-        elif MEoS:
+        elif MEoS and len(self.ids)==1:
             self._thermo = "meos"
         else:
             self._thermo = "eos"
