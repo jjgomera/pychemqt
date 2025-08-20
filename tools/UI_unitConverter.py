@@ -111,6 +111,7 @@ class moneda(UI_conversorUnidades):
     """
     def __init__(self, valor=None, parent=None):
         super().__init__(Currency, valor=valor, parent=parent)
+        self.__TEXTSTATUS__ = self.tr("Launched currency converter aplication")
 
         self.fecha = QtWidgets.QLabel(self.tr("Date") + ": " + self.value.date)
         self.layout().addWidget(self.fecha, 0, 1)
@@ -166,6 +167,7 @@ class UI_unitConverter(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Units converter"))
+        self.__TEXTSTATUS__ = self.tr("Launched unit converter aplication")
 
         self.verticalLayout = QtWidgets.QVBoxLayout(self)
         self.lista = QtWidgets.QListWidget()

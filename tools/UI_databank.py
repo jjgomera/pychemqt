@@ -47,6 +47,7 @@ class UI_databank_widget(QtWidgets.QWidget):
     component list definnition"""
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__TEXTSTATUS__ = self.tr("Launched component database aplication")
         gridLayout = QtWidgets.QGridLayout(self)
 
         layoutTitle = QtWidgets.QHBoxLayout()

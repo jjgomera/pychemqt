@@ -279,6 +279,7 @@ class UI_Psychrometry(QtWidgets.QDialog):
     """Psychrometric charts tool"""
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__TEXTSTATUS__ = self.tr("Launched humid air properties aplication")
         self.setWindowTitle(self.tr("Psychrometric chart"))
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "psychrometric.png"))))
