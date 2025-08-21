@@ -93,19 +93,17 @@ class TreeEquipment(QtWidgets.QTreeWidget):
         self.setIconSize(QtCore.QSize(30, 30))
         self.headerItem().setHidden(True)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+
+    def updateList(self, items):
+        """Update list with project items"""
+        self.clear()
+
         self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
         self.Stream.setText(0, self.tr("Streams"))
         self.Stream.setExpanded(True)
         self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
         self.Equipment.setText(0, self.tr("Equipments"))
         self.Equipment.setExpanded(True)
-
-    def updateList(self, items):
-        """Update list with project items"""
-        # self.clear()
-
-        self.Stream.takeChildren()
-        self.Equipment.takeChildren()
 
         ins = []
         outs = []
