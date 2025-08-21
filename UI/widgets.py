@@ -1444,7 +1444,7 @@ def createAction(text, **kw):
     return action
 
 
-def okToContinue(parent, dirty, func, parameters):
+def okToContinue(parent, dirty, func, *parameters):
     """Function to ask user if any unsaved change
 
     Parameters
