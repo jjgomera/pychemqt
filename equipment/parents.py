@@ -304,7 +304,7 @@ class UI_equip(QtWidgets.QDialog):
             self.tabNotas,
             QtGui.QIcon(os.path.join(IMAGE_PATH, "button", "editor.png")),
             translate("equipment", "Notes"))
-        self.tabNotas.notas.textChanged.connect(self.cambiar_notas)
+        self.tabNotas.notes.textChanged.connect(self.cambiar_notas)
 
     def addSalida(self, title, **kw):
         widget = Ui_corriente(readOnly=True, **kw)
@@ -325,8 +325,8 @@ class UI_equip(QtWidgets.QDialog):
 
     def cambiar_notas(self):
         """Change notes properties"""
-        htm = self.tabNotas.notas.toHtml()
-        txt = self.tabNotas.notas.toPlainText()
+        htm = self.tabNotas.notes.toHtml()
+        txt = self.tabNotas.notes.toPlainText()
         self.Equipment.setNotas(htm, txt)
 
     def ayuda(self):
