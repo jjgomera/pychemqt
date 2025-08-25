@@ -368,7 +368,6 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             if lst:
                 valores = []
                 for i in lst:
-                    print(i)
                     valores.append(representacion(
                         getattr(self.value, self.value.__units__[i]),
                         self.decimales, self.tolerancia) + " " +
