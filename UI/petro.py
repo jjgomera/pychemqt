@@ -50,12 +50,12 @@ from UI.widgets import Entrada_con_unidades
 class View_Petro(QtWidgets.QDialog):
     """Dialog to show the properties of a petroleum fractions"""
 
-    def __init__(self, petroleo=None, parent=None):
+    def __init__(self, petrol=None, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Petrol assay characteristics"))
         layout = QtWidgets.QGridLayout(self)
-        self.nombre = QtWidgets.QLabel()
-        layout.addWidget(self.nombre, 1, 1, 1, 5)
+        self.name = QtWidgets.QLabel()
+        layout.addWidget(self.name, 1, 1, 1, 5)
         label = QtWidgets.QLabel("M")
         label.setToolTip(self.tr("Molecular Weight"))
         layout.addWidget(label, 2, 1)
@@ -172,10 +172,11 @@ class View_Petro(QtWidgets.QDialog):
         layout.addWidget(button, 16, 1, 1, 8)
 
         self.setReadOnly(True)
-        if petroleo:
-            self.rellenar(petroleo)
+        if petrol:
+            self.fill(petrol)
 
     def setReadOnly(self, boolean):
+        """Set readonly state for child widgets"""
         self.M.setReadOnly(boolean)
         self.Tb.setReadOnly(boolean)
         self.gravity.setReadOnly(boolean)
@@ -206,38 +207,39 @@ class View_Petro(QtWidgets.QDialog):
         self.flashOpen.setReadOnly(boolean)
         self.flashClosed.setReadOnly(boolean)
 
-    def rellenar(self, petroleo):
-        self.nombre.setText(petroleo.name)
-        self.M.setValue(petroleo.M)
-        self.Tb.setValue(petroleo.Tb)
-        self.gravity.setValue(petroleo.SG)
-        self.API.setValue(petroleo.API)
-        self.watson.setValue(petroleo.Kw)
+    def fill(self, petrol):
+        """Fill petrol properties values in widgets"""
+        self.name.setText(petrol.name)
+        self.M.setValue(petrol.M)
+        self.Tb.setValue(petrol.Tb)
+        self.gravity.setValue(petrol.SG)
+        self.API.setValue(petrol.API)
+        self.watson.setValue(petrol.Kw)
 
-        self.Tc.setValue(petroleo.Tc)
-        self.Pc.setValue(petroleo.Pc)
-        self.Vc.setValue(petroleo.Vc)
-        self.Zc.setValue(petroleo.Zc)
-        self.f_acent.setValue(petroleo.f_acent)
-        self.refractivity.setValue(petroleo.Ri)
-        self.CH.setValue(petroleo.CH)
-        self.S.setValue(petroleo.S)
-        self.H.setValue(petroleo.H)
+        self.Tc.setValue(petrol.Tc)
+        self.Pc.setValue(petrol.Pc)
+        self.Vc.setValue(petrol.Vc)
+        self.Zc.setValue(petrol.Zc)
+        self.f_acent.setValue(petrol.f_acent)
+        self.refractivity.setValue(petrol.Ri)
+        self.CH.setValue(petrol.CH)
+        self.S.setValue(petrol.S)
+        self.H.setValue(petrol.H)
 
-        self.n.setValue(petroleo.n)
-        self.I.setValue(petroleo.I)
-        self.cetane.setValue(petroleo.CetaneI)
-        self.aniline.setValue(petroleo.AnilineP)
-        self.cloud.setValue(petroleo.CloudP)
-        self.pour.setValue(petroleo.PourP)
-        self.freezing.setValue(petroleo.FreezingP)
-        self.smoke.setValue(petroleo.SmokeP)
-        self.v100.setValue(petroleo.v100)
-        self.v210.setValue(petroleo.v210)
-        # self.VGC.setValue(petroleo.VGC)
-        if petroleo.hasCurve:
-            self.flashOpen.setValue(petroleo.self.FlashPo)
-            self.flashClosed.setValue(petroleo.self.FlashPc)
+        self.n.setValue(petrol.n)
+        self.I.setValue(petrol.I)
+        self.cetane.setValue(petrol.CetaneI)
+        self.aniline.setValue(petrol.AnilineP)
+        self.cloud.setValue(petrol.CloudP)
+        self.pour.setValue(petrol.PourP)
+        self.freezing.setValue(petrol.FreezingP)
+        self.smoke.setValue(petrol.SmokeP)
+        self.v100.setValue(petrol.v100)
+        self.v210.setValue(petrol.v210)
+        # self.VGC.setValue(petrol.VGC)
+        if petrol.hasCurve:
+            self.flashOpen.setValue(petrol.self.FlashPo)
+            self.flashClosed.setValue(petrol.self.FlashPc)
 
 
 class Definicion_Petro(newComponent):
@@ -262,15 +264,15 @@ class Definicion_Petro(newComponent):
         curveWidget = QtWidgets.QWidget()
         lytcurve = QtWidgets.QGridLayout(curveWidget)
         lytcurve.addWidget(QtWidgets.QLabel("Curve type"), 1, 1)
-        self.tipoCurva = QtWidgets.QComboBox()
+        self.curveType = QtWidgets.QComboBox()
         for method in Petroleo.CURVE_TYPE:
-            self.tipoCurva.addItem(method)
-        self.tipoCurva.currentIndexChanged.connect(self.curveIndexChanged)
-        lytcurve.addWidget(self.tipoCurva, 1, 2)
-        self.curvaDestilacion = InputTableWidget(2)
-        self.curvaDestilacion.tabla.horizontalHeader().show()
-        self.curvaDestilacion.tabla.rowFinished.connect(self.checkStatusCurve)
-        lytcurve.addWidget(self.curvaDestilacion, 2, 1, 3, 3)
+            self.curveType.addItem(method)
+        self.curveType.currentIndexChanged.connect(self.curveIndexChanged)
+        lytcurve.addWidget(self.curveType, 1, 2)
+        self.curveDistillation = InputTableWidget(2)
+        self.curveDistillation.tabla.horizontalHeader().show()
+        self.curveDistillation.tabla.rowFinished.connect(self.checkStatusCurve)
+        lytcurve.addWidget(self.curveDistillation, 2, 1, 3, 3)
         self.regresionButton = QtWidgets.QPushButton(QtGui.QIcon(QtGui.QPixmap(
             os.path.join(IMAGE_PATH, "button", "fit.png"))),
             self.tr("Regression"))
@@ -285,10 +287,10 @@ class Definicion_Petro(newComponent):
         lytcurve.addWidget(self.finishButton, 5, 3)
         lytcurve.addWidget(QtWidgets.QLabel(
             self.tr("Pressure")), 5, 1)
-        self.presion = Entrada_con_unidades(unidades.Pressure, value=101325.)
-        self.presion.valueChanged.connect(partial(
+        self.pressure = Entrada_con_unidades(unidades.Pressure, value=101325.)
+        self.pressure.valueChanged.connect(partial(
             self.changeParams, "P_curve"))
-        lytcurve.addWidget(self.presion, 5, 2)
+        lytcurve.addWidget(self.pressure, 5, 2)
         lytcurve.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 6, 4)
@@ -296,36 +298,35 @@ class Definicion_Petro(newComponent):
         # Widget with crude functionality
         crudeWidget = QtWidgets.QWidget()
         lytcrude = QtWidgets.QGridLayout(crudeWidget)
-        self.crudo = QtWidgets.QComboBox()
-        self.crudo.addItem("")
+        self.crude = QtWidgets.QComboBox()
+        self.crude.addItem("")
         query = "SELECT name, location, API, sulfur FROM CrudeOil"
         sql.databank.execute(query)
         for name, location, API, sulfur in sql.databank:
-            self.crudo.addItem("%s (%s)  API: %s %s: %s" % (
-                name, location, API, "%S", sulfur))
-        self.crudo.currentIndexChanged.connect(partial(
+            self.crude.addItem(f"{name} ({location})  API: {API} %S: {sulfur}")
+        self.crude.currentIndexChanged.connect(partial(
             self.changeParams, "index"))
-        lytcrude.addWidget(self.crudo, 1, 1, 1, 2)
+        lytcrude.addWidget(self.crude, 1, 1, 1, 2)
         lytcrude.addWidget(QtWidgets.QLabel("Pseudo C+"), 2, 1)
         self.Cplus = Entrada_con_unidades(int, width=50)
         self.Cplus.valueChanged.connect(partial(self.changeParams, "Cplus"))
         lytcrude.addWidget(self.Cplus, 2, 2)
 
-        self.checkCurva = QtWidgets.QRadioButton(
+        self.checkCurve = QtWidgets.QRadioButton(
             self.tr("Define destillation curve"))
-        self.checkCurva.toggled.connect(curveWidget.setEnabled)
+        self.checkCurve.toggled.connect(curveWidget.setEnabled)
         curveWidget.setEnabled(False)
-        lyt.addWidget(self.checkCurva, 1, 1, 1, 2)
+        lyt.addWidget(self.checkCurve, 1, 1, 1, 2)
         lyt.addWidget(curveWidget, 2, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 3, 1)
-        self.checkCrudo = QtWidgets.QRadioButton(
+        self.checkCrude = QtWidgets.QRadioButton(
             self.tr("Use petrol fraction from list"))
-        self.checkCrudo.toggled.connect(self.changeUnknown)
-        self.checkCrudo.toggled.connect(crudeWidget.setEnabled)
+        self.checkCrude.toggled.connect(self.changeUnknown)
+        self.checkCrude.toggled.connect(crudeWidget.setEnabled)
         crudeWidget.setEnabled(False)
-        lyt.addWidget(self.checkCrudo, 4, 1, 1, 2)
+        lyt.addWidget(self.checkCrude, 4, 1, 1, 2)
         lyt.addWidget(crudeWidget, 5, 1, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
@@ -448,11 +449,13 @@ class Definicion_Petro(newComponent):
 
     @property
     def unknown(self):
-        if self.checkCrudo.isChecked():
+        """Define compound to show properties by options selected in widget"""
+        if self.checkCrude.isChecked():
             return self.Crudo
         return self.Petroleo
 
     def changeUnknown(self):
+        """Change type of calculation and update widget"""
         self.status.setState(self.unknown.status, self.unknown.msg)
         self.buttonShowDetails.setEnabled(self.unknown.status)
         self.btonBox.button(
@@ -466,23 +469,23 @@ class Definicion_Petro(newComponent):
             header = ["wt.%", "Tb, " + unidades.Temperature.text()]
         else:
             header = ["Vol.%", "Tb, " + unidades.Temperature.text()]
-        self.curvaDestilacion.tabla.setHorizontalHeaderLabels(header)
+        self.curveDistillation.tabla.setHorizontalHeaderLabels(header)
 
     def finishCurva(self):
         """End the curve distillation definition and add the data to the
         Petroleo instance"""
         kwargs = {}
-        curve = Petroleo.CURVE_TYPE[self.tipoCurva.currentIndex()]
+        curve = Petroleo.CURVE_TYPE[self.curveType.currentIndex()]
         kwargs["curveType"] = curve
-        kwargs["X_curve"] = self.curvaDestilacion.column(0)
-        kwargs["T_curve"] = self.curvaDestilacion.column(1)
+        kwargs["X_curve"] = self.curveDistillation.column(0)
+        kwargs["T_curve"] = self.curveDistillation.column(1)
         kwargs["fit_curve"] = self.curveParameters
         self.calculo(**kwargs)
 
     def checkStatusCurve(self):
         """Check curren data of curve to check completeness of its definition
         and enable/disable accordly the buttons"""
-        X = self.curvaDestilacion.column(0)
+        X = self.curveDistillation.column(0)
         self.regresionButton.setEnabled(len(X) > 3)
 
         defined = True
@@ -492,9 +495,10 @@ class Definicion_Petro(newComponent):
         self.finishButton.setEnabled(defined or regresion)
 
     def regresionCurve(self):
+        """Do distillation curve fitting regression"""
         dlg = PlotDialog(accept=True)
-        x = self.curvaDestilacion.column(0)
-        T = self.curvaDestilacion.column(1, unidades.Temperature)
+        x = self.curveDistillation.column(0)
+        T = self.curveDistillation.column(1, unidades.Temperature)
         dlg.addData(x, T, color="black", ls="None", marker="s", mfc="red")
         parameters, r2 = curve_Predicted(x, T)
         xi = arange(0, 1, 0.01)
@@ -505,10 +509,10 @@ class Definicion_Petro(newComponent):
         txt = r"$\frac{T-T_{o}}{T_{o}}=\left[\frac{A}{B}\ln\left(\frac{1}{1-x}"
         txt += r"\right)\right]^{1/B}$"
         To = unidades.Temperature(parameters[0])
-        txt2 = "\n\n\n$T_o=%s$" % To.str
-        txt2 += "\n$A=%0.4f$" % parameters[1]
-        txt2 += "\n$B=%0.4f$" % parameters[2]
-        txt2 += "\n$r^2=%0.6f$" % r2
+        txt2 = f"\n\n\n$T_o={To.str}$"
+        txt2 += f"\n$A={parameters[1]:0.4f}$"
+        txt2 += f"\n$B={parameters[2]:0.4f}$"
+        txt2 += f"\n$r^2={r2:0.6f}$"
         dlg.plot.ax.text(0, T[-1], txt, size="14", va="top", ha="left")
         dlg.plot.ax.text(0, T[-1], txt2, size="10", va="top", ha="left")
         if dlg.exec():
@@ -516,13 +520,14 @@ class Definicion_Petro(newComponent):
             self.checkStatusCurve()
 
     def showCutRange(self):
-        pass
+        """Define cut range for blending"""
+        #TODO
 
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    # petroleo = Petroleo(name="Petroleo", API=22.5, M=339.7)
+    # petrol = Petroleo(name="Petroleo", API=22.5, M=339.7)
     # petrol = Petroleo(name="Petroleo", Nc=20)
     # Dialog = View_Petro(petrol)
     Dialog = Definicion_Petro()

@@ -29,10 +29,9 @@ Library to configure process flow diagram (PFD)
 
 import os
 
-from UI.widgets import ColorSelector, Entrada_con_unidades
-from UI.widgets import PFDLineCombo
 from tools import UI_confResolution
 from tools.qt import QtCore, QtGui, QtWidgets
+from UI.widgets import ColorSelector, Entrada_con_unidades, PFDLineCombo
 
 
 class Widget(QtWidgets.QDialog):
@@ -132,12 +131,12 @@ class Dialog(QtWidgets.QDialog):
         layout = QtWidgets.QVBoxLayout(self)
         self.widget = Widget(config)
         layout.addWidget(self.widget)
-        self.buttonBox = QtWidgets.QDialogButtonBox(
+        buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Cancel
             | QtWidgets.QDialogButtonBox.StandardButton.Ok)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        layout.addWidget(buttonBox)
 
     def value(self, config):
         """Function result for wizard"""
@@ -180,7 +179,7 @@ class BrushCombo(QtWidgets.QComboBox):
             painter.drawRect(0, 0, 50, 50)
             icon = QtGui.QIcon(pix)
             painter.end()
-            self.addItem(icon, str(style).split(".")[-1])
+            self.addItem(icon, str(style).rsplit(".", maxsplit=1)[-1])
 
     def paintEvent(self, event):
         """Paint the widget with the selected QBrush"""
