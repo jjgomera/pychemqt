@@ -15,15 +15,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Dialog to common data entry
-#   -InputTableWidget: Widget for table data
-#   -InputTableDialog: Dialog for table data
-#   -eqDIPPR: Widget for select DIPPR equation
-###############################################################################
+Module to common data entry
+
+* :class:`InputTableWidget`: Widget for table data
+* :class:`InputTableDialog`: Dialog for table data
+* :class:`eqDIPPR`: Widget for select DIPPR equation
+
+'''
 
 
 from functools import partial
@@ -32,7 +33,7 @@ import os
 from numpy import loadtxt
 from tools.qt import QtCore, QtGui, QtWidgets
 
-from lib.unidades import Temperature
+from lib import unidades
 from UI.widgets import Entrada_con_unidades, Tabla
 
 
@@ -71,24 +72,27 @@ class eqDIPPR(QtWidgets.QWidget):
 
     @property
     def value(self):
+        """Return value of widget"""
         return self.eqDIPPR.value
 
     def setValue(self, value):
+        """Set value property of widget"""
         self.eqDIPPR.setValue(value)
 
     def clear(self):
+        """Clear widget value"""
         self.eqDIPPR.clear()
 
 
 class InputTableWidget(QtWidgets.QWidget):
     """Table data input dialog"""
-    def __init__(self, columnas, data=None, t=[], property=[],
-                 horizontalHeader=[], title="", DIPPR=False, hasTc=0,
-                 Tc=None, eq=1, unit=[], parent=None):
+    def __init__(self, columns, data=None, t=None, prop=None,
+                 horizontalHeader=None, title="", DIPPR=False, hasTc=0,
+                 Tc=None, eq=1, unit=None, parent=None):
         """
         data: mrray with original data
         t: values for x column, generally temperature
-        property: values for 2...n columns
+        prop: values for 2...n columns
         horizontalHeader: List with column title
         DIPPR: boolean to show DIPPR widget
         hasTc: boolean to show critical temperature (some DIPPR eq need it)
@@ -97,7 +101,7 @@ class InputTableWidget(QtWidgets.QWidget):
         unit: List of unidades classes for column definition
         """
         super().__init__(parent)
-        self.columnas = columnas
+        self.columns = columns
         self.title = title
         self.unit = unit
         gridLayout = QtWidgets.QGridLayout(self)
@@ -121,22 +125,22 @@ class InputTableWidget(QtWidgets.QWidget):
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed), 1, 4)
 
-        self.tabla = Tabla(self.columnas, horizontalHeader=horizontalHeader,
+        self.tabla = Tabla(self.columns, horizontalHeader=horizontalHeader,
                            verticalHeader=False, stretch=False)
         self.tabla.setConnected()
         if unit:
             hHeader = []
-            for unit, title in zip(self.unit, horizontalHeader):
-                hHeader.append("%s, %s" % (title, unit.text()))
+            for un, head in zip(self.unit, horizontalHeader):
+                hHeader.append(f"{head}, {un.text()}")
             self.tabla.setHorizontalHeaderLabels(hHeader)
             self.tabla.horizontalHeader().sectionClicked.connect(self.editUnit)
 
         if data:
             self.tabla.setData(data)
             self.tabla.addRow()
-        elif t and property:
+        elif t and prop:
             self.tabla.setColumn(0, t)
-            self.tabla.setColumn(1, property)
+            self.tabla.setColumn(1, prop)
         gridLayout.addWidget(self.tabla, 2, 1, 1, 4)
 
         if DIPPR:
@@ -146,7 +150,7 @@ class InputTableWidget(QtWidgets.QWidget):
 
             self.labelTc = QtWidgets.QLabel("Tc: ", self)
             gridLayout.addWidget(self.labelTc, 4, 1)
-            self.tc = Entrada_con_unidades(Temperature, value=Tc)
+            self.tc = Entrada_con_unidades(unidades.Temperature, value=Tc)
             gridLayout.addWidget(self.tc, 4, 2, 1, 3)
             self.showTc(1)
 
@@ -176,7 +180,7 @@ class InputTableWidget(QtWidgets.QWidget):
 
     def save(self):
         """Save currend data of table to a file"""
-        fname, ext = QtWidgets.QFileDialog.getSaveFileName(
+        fname, fileFilter = QtWidgets.QFileDialog.getSaveFileName(
             self, self.tr("Save data to file"), "./")
         if fname:
             with open(fname, 'w') as file:
@@ -187,9 +191,9 @@ class InputTableWidget(QtWidgets.QWidget):
                     file.write(item.text()+"\t")
                 file.write("\n")
                 data = self.data
-                for fila in range(len(data)):
-                    for columna in range(self.tabla.columnCount()):
-                        file.write(str(data[fila][columna])+"\t")
+                for fila in data:
+                    for dat in fila:
+                        file.write(str(dat)+"\t")
                     file.write("\n")
 
     def delete(self):
@@ -200,6 +204,7 @@ class InputTableWidget(QtWidgets.QWidget):
 
     @property
     def data(self):
+        """Table data"""
         return self.tabla.getData()
 
     def column(self, column, magnitud=None, unit="conf"):
@@ -232,16 +237,15 @@ class InputTableWidget(QtWidgets.QWidget):
         h = self.tabla.horizontalHeader().height()
         geometry = QtCore.QRect(pos, 0, size, h)
         widget.setGeometry(geometry)
-        widget.currentIndexChanged["int"].connect(
-            partial(self.updateHeader, col))
+        widget.currentIndexChanged.connect(partial(self.updateHeader, col))
         widget.show()
         widget.showPopup()
 
-    def updateHeader(self, col, index):
+    def updateHeader(self, col):
         """Change the text in header"""
         widget = self.sender()
         txt = self.tabla.horizontalHeaderItem(col).text()
-        newtxt = "%s, %s" % (txt.split(",")[0], widget.currentText())
+        newtxt = f"{txt.split(",")[0]}, {widget.currentText()}"
         self.tabla.setHorizontalHeaderItem(
                 col, QtWidgets.QTableWidgetItem(newtxt))
         widget.close()
@@ -249,10 +253,10 @@ class InputTableWidget(QtWidgets.QWidget):
 
 class InputTableDialog(QtWidgets.QDialog):
     """Dialog to config thermal method calculations"""
-    def __init__(self, columnas=2, help=False, helpFile="", **kwargs):
+    def __init__(self, columns=2, showHelp=False, helpFile="", **kwargs):
         """
         title: window title
-        help: boolean to show help button
+        showHelp: boolean to show help button
         helpFile: Path for help file, file or url
         """
         parent = kwargs.get("parent", None)
@@ -261,12 +265,12 @@ class InputTableDialog(QtWidgets.QDialog):
         self.setWindowTitle(title)
         self.helpFile = helpFile
         layout = QtWidgets.QVBoxLayout(self)
-        self.widget = InputTableWidget(columnas, **kwargs)
+        self.widget = InputTableWidget(columns, **kwargs)
         layout.addWidget(self.widget)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Cancel
             | QtWidgets.QDialogButtonBox.StandardButton.Ok)
-        if help:
+        if showHelp:
             self.buttonBox.addButton(
                 QtWidgets.QDialogButtonBox.StandardButton.Help)
             self.buttonBox.helpRequested.connect(self.ayuda)
@@ -282,11 +286,10 @@ class InputTableDialog(QtWidgets.QDialog):
 
 if __name__ == "__main__":
     import sys
-    from lib import unidades
     app = QtWidgets.QApplication(sys.argv)
-    hHeader = ["T", r"\mu"]
+    header = ["T", "μ"]
     ui = InputTableDialog(
-        title="titulo", horizontalHeader=hHeader,
-        unit=[unidades.Temperature, unidades.Viscosity])
+        title="titulo", horizontalHeader=header,
+        unit=[unidades.Temperature, unidades.Viscosity], showHelp=True)
     ui.show()
     sys.exit(app.exec())
