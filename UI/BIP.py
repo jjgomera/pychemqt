@@ -15,12 +15,14 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module for UI binary interaction parameter viewer
-###############################################################################
+Module for UI binary interaction parameter viewer
+
+* :class:`Ui_BIP`: Dialog to view the BIP for selected component and EoS
+
+'''
 
 
 from tools.qt import QtWidgets
@@ -47,8 +49,8 @@ class Ui_BIP(QtWidgets.QDialog):
 
         lyt = QtWidgets.QGridLayout(self)
         lyt.addWidget(QtWidgets.QLabel("EoS"), 1, 1)
-        self.eleccion = QtWidgets.QComboBox()
-        lyt.addWidget(self.eleccion, 1, 2)
+        self.eos = QtWidgets.QComboBox()
+        lyt.addWidget(self.eos, 1, 2)
         lyt.addItem(QtWidgets.QSpacerItem(
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed), 1, 3)
@@ -59,10 +61,9 @@ class Ui_BIP(QtWidgets.QDialog):
         names = []
         for cmp in ids:
             databank.execute(
-                "SELECT id, name FROM compuestos WHERE id==%i" % cmp)
+                f"SELECT id, name FROM compuestos WHERE id=={cmp}")
             names.append("%4i - %s" % databank.fetchone())
 
-        args = (len(ids), len(ids))
         kw = {"stretch": False, "readOnly": True, "horizontalHeader": names,
               "verticalHeaderLabels": names}
 
@@ -70,41 +71,61 @@ class Ui_BIP(QtWidgets.QDialog):
 
         # Iterate over the EoS available
         for EoS in EoSBIP:
-            self.eleccion.addItem(EoS)
+            self.eos.addItem(EoS)
             k = Kij(ids, EoS)
 
             widget = QtWidgets.QWidget()
             lyt2 = QtWidgets.QVBoxLayout(widget)
             lyt2.addWidget(QtWidgets.QLabel(title.get(EoS, "Kij")))
-            table1 = Tabla(*args, **kw)
+            table1 = Tabla(len(ids), len(ids), **kw)
             lyt2.addWidget(table1)
 
             # Special case for NRTL with two interaction parameters matrix
             if EoS == "NRTL":
+                lyt2.addItem(QtWidgets.QSpacerItem(
+                    20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+                    QtWidgets.QSizePolicy.Policy.Fixed))
                 lyt2.addWidget(QtWidgets.QLabel("α"))
-                table2 = Tabla(*args, **kw)
+                table2 = Tabla(len(ids), len(ids), **kw)
                 lyt2.addWidget(table2)
-                kij, aij = k
-                table1.setData(kij)
-                table2.setData(aij)
-                table1.resizeColumnsToContents()
+                table1.setData(k[0])
+                table2.setData(k[1])
                 table2.resizeColumnsToContents()
 
             else:
                 table1.setData(k)
-                table1.resizeColumnsToContents()
+
+            table1.resizeColumnsToContents()
+
+            lyt2.addItem(QtWidgets.QSpacerItem(
+                0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
+                QtWidgets.QSizePolicy.Policy.Expanding))
+
+            width = table1.verticalHeader().sizeHint().width() + 2
+            for i in range(table1.columnCount()):
+                width += table1.columnWidth(i)
+            table1.setFixedWidth(width)
+
+            height = table1.horizontalHeader().sizeHint().height() + 2
+            for i in range(table1.rowCount()):
+                height += table1.rowHeight(i)
+            table1.setFixedHeight(height)
+
+            if EoS == "NRTL":
+                table2.setFixedWidth(width)
+                table2.setFixedHeight(height)
 
             self.stacked.addWidget(widget)
 
-        self.eleccion.currentIndexChanged.connect(self.stacked.setCurrentIndex)
+        self.eos.currentIndexChanged.connect(self.stacked.setCurrentIndex)
         button = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Cancel
             | QtWidgets.QDialogButtonBox.StandardButton.Ok)
         button.accepted.connect(self.accept)
         button.rejected.connect(self.reject)
-        lyt.addWidget(button, 3, 1, 1, 3)
+        lyt.addWidget(button, 4, 1, 1, 4)
 
-        self.eleccion.setCurrentIndex(EoSIndex)
+        self.eos.setCurrentIndex(EoSIndex)
 
 
 if __name__ == "__main__":
