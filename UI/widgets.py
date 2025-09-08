@@ -1352,6 +1352,9 @@ class Table_Graphics(QtWidgets.QWidget):
         for i in reversed(range(self.layout().count())):
             self.layout().itemAt(i).widget().setParent(None)
 
+        # Reduce size of proxy widget to force fit content to new entity
+        self.graphicsProxyWidget().resize(0, 0)
+
     def populate(self, entity, idx, preferences):
         """Populate the widget with the new values"""
 
