@@ -33,7 +33,7 @@ from UI.widgets import Entrada_con_unidades
 from equipment.parents import UI_equip
 from equipment.widget import FoulingWidget, Dialog_Finned
 from equipment.UI_pipe import Catalogo_Materiales_Dialog
-from equipment.heatExchanger import Shell_Tube
+from equipment.shellTube import Shell_Tube
 from tools.costIndex import CostData
 
 

@@ -83,8 +83,8 @@ from equipment.pump import Pump
 from equipment.compressor import Compressor, Turbine
 from equipment.pipe import Pipe
 from equipment.distillation import Flash, ColumnFUG
-from equipment.heatExchanger import (Heat_Exchanger, Shell_Tube, Hairpin,
-                                     Fired_Heater)
+from equipment.heatExchanger import Heat_Exchanger, Hairpin, Fired_Heater
+from equipment.shellTube import Shell_Tube
 from equipment.gas_solid import (Ciclon, GravityChamber, Baghouse,
                                  ElectricPrecipitator)
 from equipment.gas_solid_liquid import Dryer, Scrubber
