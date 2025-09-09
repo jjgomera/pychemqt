@@ -254,27 +254,33 @@ def h_anulli_Laminar(Re, Pr, a, dhL=0, boundary=0):
 
 def h_anulli_Turbulent(Re, Pr, a, dhL=0, boundary=0):
     """VDI Heat Atlas G2 Pag.703"""
-    if boundary == 0:         #Inner surface heated
-        Fann = 0.75*a**-0.17
-    elif boundary == 1:       #Outer surface heated
-        Fann = (0.9-0.15*a**0.6)
-    elif boundary == 2:       #Both surfaces heated
-        Fann = (0.75*a**-0.17+(0.9-0.15*a**0.6))/(1+a)
+    if boundary == 0:
+        # Inner surface heated
+        Fann = 0.75*a**-0.17                                            # Eq 18
+    elif boundary == 1:
+        # Outer surface heated
+        Fann = 0.9-0.15*a**0.6                                          # Eq 19
+    elif boundary == 2:
+        # Both surfaces heated
+        Fann = (0.75*a**-0.17+(0.9-0.15*a**0.6))/(1+a)                  # Eq 20
 
-    Re_ = Re*((1+a**2)*log(a)+(1-a**2))/((1-a)**2*log(a))
-    Xann = (1.8*log10(Re_)-1.5)**-2
-    k1 = 1.07+900/Re-0.63/(1+10*Pr)
-    Nu = Xann/8*Re*Pr/(k1+12.7*(Xann/8)**0.5*(Pr**(2./3.)-1))*(1+dhL**(2./3.))*Fann
+    Re_ = Re*((1+a**2)*log(a)+(1-a**2))/((1-a)**2*log(a))               # Eq 17
+    Xann = (1.8*log10(Re_)-1.5)**-2                                     # Eq 16
+    k1 = 1.07+900/Re-0.63/(1+10*Pr)                                     # Eq 15
+
+    # Eq 14
+    Nu = Xann/8*Re*Pr / (k1+12.7*(Xann/8)**0.5*(Pr**(2/3)-1)) \
+        * (1+dhL**(2/3)) * Fann
     return Nu
 
 
 def h_anulli_Transition(Re, Pr, a, dhL=0, boundary=0):
     """VDI Heat Atlas G2 Pag.704"""
-    g = (Re-2300.)/(1.e4-2300.)
+    g = (Re-2300)/(1e4-2300)                                            # Eq 25
     Nu_lam = h_anulli_Laminar(2300, Pr, a, dhL, boundary)
     Nu_turb = h_anulli_Turbulent(1.e4, Pr, a, dhL, boundary)
 
-    Nu = (1-g)*Nu_lam+g*Nu_turb
+    Nu = (1-g)*Nu_lam+g*Nu_turb                                         # Eq 24
     return Nu
 
 
