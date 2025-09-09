@@ -812,7 +812,7 @@ class Hairpin(equipment):
             self.Ug(hi, ni, ho, no)
 
             NTU = self.A*self.U/Cmin
-            ep = efectividad(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
+            ep = effectiveness(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
             self.Q = unidades.Power(ep*Cmin*abs(inTube.T-inAnnulli.T))
 
             if inTube.T > inAnnulli.T:
@@ -1114,13 +1114,13 @@ class Hairpin(equipment):
         txt += self.propertiesToText(range(17, 20)) + os.linesep
         txt += self.propertiesToText(range(20, 29)) + os.linesep  # Tube
         txt += self.propertiesToText(range(29, 38)) + os.linesep  # Annulli
-        txt += self.propertiesToText(range(38, 41)) + os.linesep
+        txt += self.propertiesToText(range(38, 42)) + os.linesep
 
         if self.statusCoste:
             txt += os.linesep+"#---------------"
             txt += translate("equipment", "Preliminary Cost Estimation")
             txt += "-----------------#" + os.linesep
-            txt += self.propertiesToText(range(41, 48))
+            txt += self.propertiesToText(range(42, 49))
 
         return txt
 
@@ -1188,6 +1188,7 @@ class Hairpin(equipment):
              (translate("equipment", "Annulli heat transfer"),
               "hAnnulli", unidades.HeatTransfCoef),
              (translate("equipment", "U"), "U", unidades.HeatTransfCoef),
+             (translate("equipment", "Q"), "Q", unidades.Power),
              (translate("equipment", "Clean Factor"), "CF", unidades.Dimensionless),
              (translate("equipment", "Over Surface"), "OS", unidades.Dimensionless),
              (translate("equipment", "Base index"), "Base_index", float),
@@ -1239,6 +1240,7 @@ class Hairpin(equipment):
         state["deltaPAnnulli"] = self.deltaPAnnulli
         state["hAnnulli"] = self.hAnnulli
         state["U"] = self.U
+        state["Q"] = self.Q
         state["CF"] = self.CF
         state["OS"] = self.OS
 
@@ -1288,6 +1290,7 @@ class Hairpin(equipment):
         self.deltaPAnnulli = unidades.DeltaP(state["deltaPAnnulli"])
         self.hAnnulli = unidades.HeatTransfCoef(state["hAnnulli"])
         self.U = unidades.HeatTransfCoef(state["U"])
+        self.Q = unidades.Power(state["Q"])
         self.CF = unidades.Dimensionless(state["CF"])
         self.OS = unidades.Dimensionless(state["OS"])
 
