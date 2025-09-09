@@ -48,8 +48,19 @@ __doi__ = {
                   "Convection from a Vertical Plate",
          "ref": "Int. J. Heat Mass Transfer 18(11) (1975) 1323-29",
          "doi": "10.1016/0017-9310(75)90243-4"},
-
+    4:
+        {"autor": "Sieder, E.N., Tate, G.E.",
+         "title": "Heat Transfer and Pressure Drop of Liquids in Tubes",
+         "ref": "Ind. & Eng. Chemistry 28(12) (1936) 1929-1935",
+         "doi": "10.1021/ie50324a027"},
     5:
+        {"autor": "Triboix, A.",
+         "title": "Exact and approximate formulas for cross flow heat "
+                  "exchangers with unmixed fluids",
+         "ref": "Int. Comm. Heat Mass Transfer 36(2) (2009)",
+         "doi": "10.1016/j.icheatmasstransfer.2008.10.012"},
+
+    6:
         {"autor": "",
          "title": "",
          "ref": "",
@@ -361,8 +372,42 @@ def h_tube_Condensation_Traviss(fluid, Di, X):
 
 
 # Heat Exchanger design methods
-def efectividad(NTU, C_, flujo, **kwargs):
-    """Calculo de la efectividad del cambiador
+@refDoc(__doi__, [2, 4, 5])
+def effectiveness(NTU, Cr, flux, mixed="Cmin", exact="True"):
+    """Calculate heat exchanger efectiveness
+
+    Parameters
+    ----------
+    NTU : float
+        Number of transfer units, [-]
+    Cr : float
+        Heat capacity rates ratio, Cmin/Cmax, in 0-1 range, [-]
+    flux : str
+        The flux type of heat exchanger
+    mixed : str, optional
+        Mixed stream definition only necessary for CrFSMix model, Cmin or Cmax
+    exact : boolean, optional
+        Use the exact recursion solutión
+
+    Notes
+    -----
+    Flux would be the key code of exchanger:
+        * CF: Counter flow
+        * PF: Parallel flow
+        * CrFMix: Crossflow, both fluids mixed
+        * CrFSMix: Crossflow, one fluid mixed, other unmixed
+        * CrFunMix: Crossflow, both fluids unmixed
+        * 1-2TEMAE: 1-2 pass shell and tube exchanger
+
+    In case CrFunMix is possible calculate the exact recursion solution or the
+    approximate correlation from Triboix [5_]
+
+    Returns
+    -------
+    effectiveness : float
+        Thermal effectiveness of heat exchanger, [-]
+
+    Notes
     Flujo vendra definido por su acronimo
         CF: Counter flow
         PF: Parallel flow
