@@ -131,10 +131,10 @@
                 "fraccionMolar": [
                     1.0
                 ],
-                "K": "van der Waals",
+                "K": "vdW",
                 "alfa": "Original",
                 "mix": "van der Waals",
-                "H": "van der Waals",
+                "H": "vdW",
                 "MEoS": true
             },
             "status": 1,

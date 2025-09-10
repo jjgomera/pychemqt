@@ -15,21 +15,42 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library to multiparameter equation of state calculation using refprop
-# https://github.com/BenThelen/python-refprop
-# refprop dll must be installed from NIST package, license required
-# optional method to meos tools calculations
-###############################################################################
+Library to multiparameter equation of state calculation using refprop and
+the python binding from https://github.com/BenThelen/python-refprop. This \
+library implement an old unnofficial library wrapper compatible only \
+with Refprop v.9, refprop dll must be installed from NIST package.
+
+If available, this is a optional speed up method for mEoS internal library
+
+All the functionality is included in the main class:
+
+  * :class:`RefProp`: Stream definition using refProp external library
+
+API reference
+-------------
+
+"""
+
+
+import sys
+
+try:
+    import refprop
+except ImportError:
+    pass
+
+from lib import unidades, mEoS
+# from lib.config import Preferences
+from lib.mezcla import mix_unitmassflow, mix_unitmolarflow
+from lib.thermo import ThermoRefProp
+
 
 # TODO: Implement the official python wrapper compatible too with REFPROP v.10
 # https://github.com/usnistgov/REFPROP-wrappers/tree/master/wrappers/python
 
-# This library implement an old unnofficial library wrapper compatible
-# with Refprop v.9
 
 __doi__ = {
     1:
@@ -52,19 +73,6 @@ __doi__ = {
                   "of Industrially Importants Fluids",
          "ref": "Ind. Eng. Chem. Res. 61(42) (2022) 15449-15472",
          "doi": "10.1021/acs.iecr.2c01427"}}
-
-
-import sys
-
-try:
-    import refprop
-except ImportError:
-    pass
-
-from lib import unidades, mEoS
-# from lib.config import Preferences
-from lib.mezcla import mix_unitmassflow, mix_unitmolarflow
-from lib.thermo import ThermoRefProp
 
 
 # Automatic loading of refprop name from meos subclass _refPropName property
@@ -230,7 +238,7 @@ class RefProp(ThermoRefProp):
         * Thermodynamics definition: whatever pair properties between T, P,
             h, s, v, rho, x
         * Compound definition: Ids for compound identification, and in
-            multicomponent defintion any class of mixture definition
+            multicomponent defintion any kind of mixture definition
         """
         # Check mix state
         self._multicomponent = False

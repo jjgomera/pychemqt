@@ -256,8 +256,8 @@
             },
             "solid": {},
             "kwarg": {
-                "H": "van der Waals",
-                "K": "van der Waals",
+                "H": "vdW",
+                "K": "vdW",
                 "mix": "van der Waals",
                 "MEoS": true,
                 "T": 298.15,
@@ -415,7 +415,7 @@
             },
             "solid": {},
             "kwarg": {
-                "H": "van der Waals",
+                "H": "vdW",
                 "caudalMasico": 0.027777777777777776,
                 "fraccionMolar": [
                     1.0
@@ -425,7 +425,7 @@
                 "T": 423.15,
                 "P": 400000.0,
                 "alfa": "Original",
-                "K": "van der Waals"
+                "K": "vdW"
             },
             "up": "e1",
             "status": 1

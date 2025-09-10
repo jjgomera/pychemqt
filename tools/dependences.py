@@ -51,6 +51,7 @@ class ShowDependences(QtWidgets.QDialog):
     """Dialog to show optional dependences availability"""
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.__TEXTSTATUS__ = self.tr("Launched external libraries application")
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(os.path.join(
             os.environ["pychemqt"], "images", "button", "showPrograms.png"))))
         self.setWindowTitle(self.tr("External program"))

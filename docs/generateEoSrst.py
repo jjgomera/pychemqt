@@ -63,7 +63,7 @@ txt += "    :member-order: bysource" + os.linesep + os.linesep
 
 txt += os.linesep + ".. include:: EoSnotimplement.rst" + os.linesep
 
-txt += "References" + os.linesep
+txt += os.linesep + "References" + os.linesep
 txt += "----------" + os.linesep
 for id, rf in cubic.__doi__.items():
     id = str(id)

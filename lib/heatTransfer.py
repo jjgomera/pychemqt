@@ -49,18 +49,22 @@ __doi__ = {
          "ref": "Int. J. Heat Mass Transfer 18(11) (1975) 1323-29",
          "doi": "10.1016/0017-9310(75)90243-4"},
     4:
-        {"autor": "Sieder, E.N., Tate, G.E.",
-         "title": "Heat Transfer and Pressure Drop of Liquids in Tubes",
-         "ref": "Ind. & Eng. Chemistry 28(12) (1936) 1929-1935",
-         "doi": "10.1021/ie50324a027"},
+        {"autor": "Shah, R.K., Sekulić, D.P.",
+         "title": "Fundamentals of Heat Exchanger Design",
+         "ref": "John Wiley & Sons",
+         "doi": ""},
     5:
         {"autor": "Triboix, A.",
          "title": "Exact and approximate formulas for cross flow heat "
                   "exchangers with unmixed fluids",
          "ref": "Int. Comm. Heat Mass Transfer 36(2) (2009)",
          "doi": "10.1016/j.icheatmasstransfer.2008.10.012"},
-
     6:
+        {"autor": "Sieder, E.N., Tate, G.E.",
+         "title": "Heat Transfer and Pressure Drop of Liquids in Tubes",
+         "ref": "Ind. & Eng. Chemistry 28(12) (1936) 1929-1935",
+         "doi": "10.1021/ie50324a027"},
+    7:
         {"autor": "",
          "title": "",
          "ref": "",

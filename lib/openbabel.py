@@ -15,22 +15,22 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with the openbabel functionality, optional for chemical compound
-# graphics representation from its smile code
-#
-# - imageFromSmile: Generate image file with the compound chemical structure
-###############################################################################
+Module with the openbabel functionality, optional module for
+graphics representation of chemical compound from its smile code
 
+  * :func:`imageFromSmile`: Generate image file with expanded formulae
+  * :class:`ConfBabel`: Openbabel image generation configuration options
 
-from configparser import ConfigParser
-import tempfile
+'''
+
 import os
+import tempfile
+from configparser import ConfigParser
 
-from tools.qt import QtCore, QtWidgets, QtGui
+from tools.qt import QtCore, QtGui, QtWidgets
 
 try:
     from openbabel.pybel import readstring

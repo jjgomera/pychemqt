@@ -30,7 +30,7 @@ import os
 
 files = glob.glob(os.path.join("lib", "*.py"))
 
-__all__ = ["EoS", "mEoS"]
+__all__ = ["EoS", "mEoS", "newComponent"]
 for file in files:
     fname, ext = os.path.splitext(os.path.basename(file))
     if fname != "__init__" and fname not in ["project"]:

@@ -86,7 +86,8 @@ calculator = ""
 if sys.platform == "win32":
     calculator = "calc.exe"
 else:
-    for programa in ["qalculate", "gcalctool", "kcalc"]:
+    for programa in ["qalculate", "gnome-calculator", "gcalctool", "mate-calc",
+                     "kcalc", "galculator", "deepin-calculator"]:
         ejecutable = which(programa)
         if ejecutable:
             calculator = ejecutable
@@ -97,8 +98,9 @@ editor = ""
 if sys.platform == "win32":
     editor = "notepad.exe"
 else:
-    for programa in ["gedit", "leafpad", "geany", "kate", "kwrite", "vim",
-                     "vi", "emacs", "nano", "pico"]:
+    for programa in ["gedit", "leafpad", "l3afpad", "featherpad", "mousepad",
+                     "geany", "kate", "kwrite", "vim", "vi", "emacs", "nano",
+                     "pico"]:
         ejecutable = which(programa)
         if ejecutable:
             editor = ejecutable
@@ -594,7 +596,6 @@ def Preferences():
     conf.set("Openbabel", "AtomsAll", "False")
     conf.set("Openbabel", "AtomsEnd", "True")
     conf.set("Openbabel", "AtomsNone", "False")
-    conf.set("Openbabel", "AtomsIndex", "False")
     conf.set("Openbabel", "TighBond", "False")
     conf.set("Openbabel", "AsymetricDouble", "True")
 

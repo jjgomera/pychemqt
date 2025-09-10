@@ -31,7 +31,7 @@ from numpy import arange, logspace, arctan
 from tools.qt import QtWidgets, translate
 
 from lib.config import IMAGE_PATH
-from lib.heatTransfer import (efectividad, TemperatureEffectiveness,
+from lib.heatTransfer import (effectiveness, TemperatureEffectiveness,
                               CorrectionFactor, Fi)
 
 from plots.ui import Chart
@@ -115,7 +115,7 @@ class Efectividad(ChartHeat):
         for ci in C:
             e = [0]
             for N in NTU[1:]:
-                e.append(efectividad(N, ci, flujo, **kw))
+                e.append(effectiveness(N, ci, flujo, **kw))
             self.plt.plot(NTU, e, "k")
 
             fraccionx = (NTU[40]-NTU[30])/6

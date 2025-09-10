@@ -391,12 +391,12 @@ class Corriente(config.Entity):
                 compuesto = class_(P=P, x=x)
         elif self._thermo == "eos":
             if self.kwargs["K"]:
-                index = EoS.K_status.index(self.kwargs["K"])
+                index = EoS.K_name.index(self.kwargs["K"])
                 K = EoS.K[index]
             else:
                 K = EoS.K[Config.getint("Thermo", "K")]
             if self.kwargs["H"]:
-                index = EoS.H_status.index(self.kwargs["H"])
+                index = EoS.H_name.index(self.kwargs["H"])
                 H = EoS.H[index]
             else:
                 H = EoS.H[Config.getint("Thermo", "H")]
@@ -675,7 +675,7 @@ class Corriente(config.Entity):
             self._dependence = "CoolProp"
         elif MEoS and GERG:
             self._thermo = "gerg"
-        elif MEoS:
+        elif MEoS and len(self.ids)==1:
             self._thermo = "meos"
         else:
             self._thermo = "eos"

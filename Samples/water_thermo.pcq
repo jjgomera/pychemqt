@@ -241,7 +241,7 @@
             "kwarg": {
                 "mix": "van der Waals",
                 "P": 100000.0,
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "caudalMasico": 0.0002777777777777778,
                 "alfa": "Original",
@@ -249,7 +249,7 @@
                     1.0
                 ],
                 "T": 298.15,
-                "H": "van der Waals"
+                "H": "vdW"
             },
             "notasPlain": "",
             "status": 1,
@@ -402,7 +402,7 @@
                 "mix": "van der Waals",
                 "iapws": true,
                 "P": 100000.0,
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "caudalMasico": 0.0002777777777777778,
                 "alfa": "Original",
@@ -410,7 +410,7 @@
                     1.0
                 ],
                 "T": 298.15,
-                "H": "van der Waals"
+                "H": "vdW"
             },
             "notasPlain": "",
             "status": 1,
@@ -539,11 +539,11 @@
         "3": {
             "ind_down": 0,
             "kwarg": {
-                "H": "van der Waals",
+                "H": "vdW",
                 "mix": "van der Waals",
                 "iapws": true,
                 "P": 100000.0,
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "caudalMasico": 0.0002777777777777778,
                 "alfa": "Original",
@@ -682,7 +682,7 @@
             "kwarg": {
                 "mix": "van der Waals",
                 "P": 100000.0,
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "ids": [
                     62
@@ -694,7 +694,7 @@
                     1.0
                 ],
                 "coolProp": true,
-                "H": "van der Waals"
+                "H": "vdW"
             },
             "notasPlain": "",
             "status": 1,
@@ -846,7 +846,7 @@
                 "mix": "van der Waals",
                 "refprop": true,
                 "P": 100000.0,
-                "K": "van der Waals",
+                "K": "vdW",
                 "MEoS": true,
                 "ids": [
                     62
@@ -857,7 +857,7 @@
                     1.0
                 ],
                 "T": 298.15,
-                "H": "van der Waals"
+                "H": "vdW"
             },
             "notasPlain": "",
             "status": 1,

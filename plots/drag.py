@@ -21,12 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .. include:: drag.rst
 
 
+API Reference
+-------------
+
 The module include all related moody chart functionality
     * :class:`Drag`: Chart dialog
-    * :class:`CalculateDialog`: Dialog to calculate a specified point
-
-and its configuration
-
+    * :class:`CalculateDialog`: Dialog to calculate a specified point and \
+its configuration
     * :class:`Config`: Drag sphere chart configuration
 '''
 

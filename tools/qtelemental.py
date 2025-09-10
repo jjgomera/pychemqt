@@ -62,8 +62,12 @@ alignment = QtCore.Qt.AlignmentFlag.AlignTrailing | \
 
 class qtelemental(QtWidgets.QDialog):
     """Periodic table graph"""
+
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.__TEXTSTATUS__ = self.tr("Launched periodic table aplication")
+
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
             os.environ["pychemqt"]+"/images/button/PeriodicTableIcon.png")))
         self.setWindowTitle(self.tr("Periodic Table"))

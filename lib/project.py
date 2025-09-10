@@ -32,7 +32,7 @@ from configparser import ConfigParser
 # except:
    # from pygraph.readwrite.markup import write
 
-from lib.config import conf_dir
+from lib.config import conf_dir, currentConfig
 from lib.corriente import Corriente
 from equipment import equipments
 from equipment.flux import Mixer
@@ -276,6 +276,7 @@ class Project(object):
             os.rename(conf_dir+"pychemqtrc_temporal",
                       conf_dir+"pychemqtrc_temporal_bak")
         config.write(open(conf_dir+"pychemqtrc_temporal", "w"))
+        currentConfig.read(conf_dir + "pychemqtrc_temporal")
 
         # read equipments
         items = {}

@@ -55,7 +55,7 @@ class UI_equipment(UI_equip):
         self.criterio.currentIndexChanged.connect(self.criterio_Changed)
         lyt_Calc.addWidget(self.criterio, 1, 2, 1, 1)
 
-        self.fracciones = Tabla(1, horizontalHeader=[True], stretch=False)
+        self.fracciones = Tabla(1, horizontalHeader=[""], stretch=False)
         self.fracciones.setItemDelegateForColumn(0, CellEditor(self))
         lyt_Calc.addWidget(self.fracciones, 2, 1, 1, 2)
 
@@ -92,13 +92,18 @@ class UI_equipment(UI_equip):
             item = QtWidgets.QTableWidgetItem(
                 self.tr("Flow")+", "+MassFlow.text())
             self.fracciones.setHorizontalHeaderItem(0, item)
+            if self.Equipment:
+                for i, split in enumerate(self.Equipment.kwargs["split"]):
+                    itm = QtWidgets.QTableWidgetItem(
+                        f"{self.Equipment.entrada.caudalmasico.config()*split}")
+                    self.fracciones.setItem(i, 0, itm)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
                 QtCore.Qt.ItemFlag.ItemIsEditable
                 | QtCore.Qt.ItemFlag.ItemIsEnabled
                 | QtCore.Qt.ItemFlag.ItemIsSelectable)
         else:
             item = QtWidgets.QTableWidgetItem(
-                self.tr("Flow")+", "+MassFlow.text())
+                self.tr("Flow Ratio"))
             self.fracciones.setHorizontalHeaderItem(0, item)
             self.fracciones.item(self.fracciones.rowCount()-1, 0).setFlags(
                 QtCore.Qt.ItemFlag.NoItemFlags)
@@ -106,24 +111,47 @@ class UI_equipment(UI_equip):
 
     def changeParams(self, parametro, valor=None):
         if parametro == "split":
-            valor = self.fracciones.getColumn(0, False)
+            valor = self.fracciones.getColumn(0)
             if self.criterio.currentIndex() == 0:
                 if len(valor)+1 < self.fracciones.rowCount():
                     return
-                elif len(valor)+1 == self.fracciones.rowCount():
+
+                if len(valor)+1 == self.fracciones.rowCount():
                     valor.append(1-sum(valor))
                 elif len(valor) == self.fracciones.rowCount():
                     valor[-1] = 1-sum(valor[:-1])
+
+            else:
+                # Do units conversion from config default values
+                valor = [MassFlow(v, "conf") for v in valor]
+
+
+        # Exit if value isn't changed
+        if valor == self.Equipment.kwargs[parametro]:
+            return
+
         self.calculo(**{parametro: valor})
 
     def rellenar(self):
+        self.blockSignals(True)
         UI_equip.rellenar(self)
-        if self.Equipment.status == 1 and self.criterio.currentIndex() == 1:
-                self.entrada.setCorriente(self.Equipment.entrada)
+
+        # if self.Equipment.status == 1 and self.criterio.currentIndex() == 1:
+            # self.Entrada.setCorriente(self.Equipment.entrada)
+        self.blockSignals(False)
 
     def rellenarInput(self):
+        self.blockSignals(True)
         UI_equip.rellenarInput(self)
-        self.fracciones.setColumn(0, self.Equipment.kwargs["split"])
+
+        if self.criterio.currentIndex() == 1:
+            for i, split in enumerate(self.Equipment.kwargs["split"]):
+                itm = QtWidgets.QTableWidgetItem(
+                    f"{MassFlow(split).config()}")
+                self.fracciones.setItem(i, 0, itm)
+        else:
+            self.fracciones.setColumn(0, self.Equipment.kwargs["split"])
+        self.blockSignals(False)
 
 
 if __name__ == "__main__":

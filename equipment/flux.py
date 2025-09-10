@@ -128,7 +128,7 @@ class Divider(equipment):
                 self.salida.append(self.entrada.clone(
                     P=self.entrada.P-self.deltaP, split=i))
         else:
-            self.entrada = self.entrada.clone(caudalmasico=sum(self.split))
+            self.entrada = self.entrada.clone(caudalMasico=sum(self.split))
             for i in self.split:
                 self.salida.append(self.entrada.clone(
                     P=self.entrada.P-self.deltaP, split=i))
@@ -216,7 +216,7 @@ class Divider(equipment):
     def readStatefromJSON(self, state):
         """Load instance parameter from saved file"""
         self.criterio = state["criterio"]
-        self.split = (unidades.Dimensionless(x) for x in state["split"])
+        self.split = [unidades.Dimensionless(x) for x in state["split"]]
         self.deltaP = unidades.DeltaP(state["deltaP"])
         self.inputMolarFlow = unidades.MolarFlow(state["inputMolarFlow"])
         self.inputMassFlow = unidades.MassFlow(state["inputMassFlow"])

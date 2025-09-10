@@ -21,13 +21,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 .. include:: standing.rst
 
 
+API Reference
+-------------
+
 The module include all related moody chart functionality
     * :class:`Standing_Katz`: Chart dialog
     * :func:`calculate`: Calculate procedure
-    * :class:`CalculateDialog`: Dialog to calculate a specified point
-
-and its configuration
-
+    * :class:`CalculateDialog`: Dialog to calculate a specified point and \
+its configuration
     * :class:`Config`: Standing-Katz chart configuration
 '''
 

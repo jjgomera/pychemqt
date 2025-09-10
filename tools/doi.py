@@ -15,7 +15,38 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Tool to show the academic references for the calculation methods implemented \
+in the code.
+
+.. image:: images/tools_doi.png
+    :alt: tools/doi
+
+Double clik over a element open the link with the paper, or if the file is \
+available in local system open the document. By default search the file with \
+the doi code name or the title if doi is unavailable in the folder doc of \
+main program.
+
+`Here <references.html>`__ is the complete list of references.
+
+
+API reference
+-------------
+
+  * :class:`ShowReference`: Dialog to show the references used in the program
+
+Miscellaneous utilities
+
+  * :class:`QLineEditClickable`: Custom QLineEdit to catch Enter key and set \
+  focus to list and avoid close dialog
+  * :class:`QTreeWidgetClickable`: Custom QTreeWidget to catch Enter key and \
+  open file with it
+  * :func:`findFile`: Search reference paper path in documentation forder \
+  and return boolean if it's available
+
+'''
 
 
 import os
@@ -61,7 +92,7 @@ class ShowReference(QtWidgets.QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowIcon(QtGui.QIcon(QtGui.QPixmap(
-            os.environ["pychemqt"]+"/images/button/help.png")))
+            os.path.join(IMAGE_PATH, "button", "help.png"))))
         self.setWindowTitle(self.tr("Reference Paper Show Dialog"))
         layout = QtWidgets.QGridLayout(self)
 
@@ -206,7 +237,7 @@ class ShowReference(QtWidgets.QDialog):
                                 itemSubModule2.addChild(item)
 
                     # Special case for submodules
-                    elif "EoS" in library:
+                    elif library in ["EoS", "mEoS", "newComponent"]:
                         itemSubModule = QtWidgets.QTreeWidgetItem([key])
                         itemModule.addChildren([itemSubModule])
                         for key2 in sorted(module.__doi__[key].keys()):
@@ -214,6 +245,8 @@ class ShowReference(QtWidgets.QDialog):
                             if key == "lib.EoS.Cubic":
                                 title = key2
                             elif library == "EoS":
+                                title = ""
+                            elif library == "newComponent":
                                 title = ""
                             else:
                                 title = key2.replace("_", "")

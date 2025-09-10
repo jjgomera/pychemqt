@@ -134,11 +134,6 @@ class GraphicsView(QtWidgets.QGraphicsView):
         if not self.PFD:
             self.scene().views()[0].centerOn(self.mapToScene(event.pos()))
 
-    def closeEvent(self, event):
-        """Reimplement to avoid close window if it's the PFD window"""
-        if self.PFD:
-            event.ignore()
-
     def wheelEvent(self, event):
         """Change zoom of window, only work with PFD window, not in overview"""
         if self.PFD:

@@ -16,16 +16,25 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Module with miscelaneous utilities used in other parts of program:
 
-###############################################################################
-# Module with utilities:
-#   - representacion: Function for string representation of float values
-#   - colors: Function to generate colors
-#   - exportTable; Save data to a file
-#   - formatLine: Return a matplotlib line formatting kw
-###############################################################################
+  * :func:`representacion`: Function for string representation of float values
+  * :func:`colors`: Function to generate colors
+  * :func:`exportTable`: Save data to a spreadsheet file
+  * :func:`spreadsheetColumn`: Convert index column to AAA spreadsheet column \
+          namestyle
+  * :func:`formatLine`: Return a matplotlib line formatting kw
+  * :func:`SimpleEq`: Common procedure for calculation of simple properties \
+         like the ancillary equation in mEoS
+  * :func:`refDoc`: Function decorator used to automatic addiction of \
+         References section to documentation of procedures
+
+API reference
+-------------
+
+'''
 
 
 import os
@@ -92,11 +101,11 @@ def representacion(number, fmt=0, total=0, decimales=4, eng=False, tol=5,
         decimales = 1
 
     if fmt == 1:
-        string = start+"{}{:d}g".format(coma, decimales)+"}"
+        string = start + f"{coma}{decimales}g" + "}"
     elif fmt == 2:
-        string = start+"{:d}{}{:d}e".format(total, coma, decimales)+"}"
+        string = start + f"{total}{coma}{decimales}e" + "}"
     else:
-        string = start+"{:d}{}{:d}f".format(total, coma, decimales)+"}"
+        string = start + f"{total}{coma}{decimales}f" + "}"
 
     return string.format(number)
 
@@ -137,7 +146,7 @@ def colors(number, mix="", scale=False):
             blue_mix = int(mix[5:], base=16)
             blue = (blue + blue_mix) / 2
 
-        rgb.append(('#%02X%02X%02X' % (red, green, blue)))
+        rgb.append((f'#{red:02X}{green:02X}{blue:02X}'))
     return rgb
 
 
@@ -155,7 +164,7 @@ def exportTable(matrix, fname, ext, title=None):
     """
     sheetTitle = translate("Table")
     if fname.split(".")[-1] != ext:
-        fname += ".%s" % ext
+        fname += f".{ext}"
 
     # Format title
     header = []
@@ -189,10 +198,10 @@ def exportTable(matrix, fname, ext, title=None):
         # Add Data
         if title:
             for i, ttl in enumerate(header):
-                sheet["%s%i" % (spreadsheetColumn(i), 1)].set_value(ttl)
+                sheet[f"{spreadsheetColumn(i)}1"].set_value(ttl)
         for j, row in enumerate(matrix):
             for i, data in enumerate(row):
-                sheet["%s%i" % (spreadsheetColumn(i), j+2)].set_value(data)
+                sheet[f"{spreadsheetColumn(i)}{j+2}"].set_value(data)
         spreadsheet.save()
 
     elif ext == "xls":
@@ -230,12 +239,12 @@ def exportTable(matrix, fname, ext, title=None):
         # Add Data
         if title:
             for i, ttl in enumerate(header):
-                sheet["%s%i" % (spreadsheetColumn(i), 1)] = ttl
-                sheet["%s%i" % (spreadsheetColumn(i), 1)].style.font = font1
+                sheet[f"{spreadsheetColumn(i)}{1}"] = ttl
+                sheet[f"{spreadsheetColumn(i)}{1}"].style.font = font1
         for j, row in enumerate(matrix):
             for i, data in enumerate(row):
-                sheet["%s%i" % (spreadsheetColumn(i), j+2)] = data
-                sheet["%s%i" % (spreadsheetColumn(i), j+2)].style.font = font2
+                sheet[f"{spreadsheetColumn(i)}{j+2}"] = data
+                sheet[f"{spreadsheetColumn(i)}{j+2}"].style.font = font2
         spreadsheet.save(filename=fname)
 
     else:
@@ -243,7 +252,7 @@ def exportTable(matrix, fname, ext, title=None):
 
 
 def spreadsheetColumn(index):
-    """Procedure to convert index column in AAA spreadsheet column namestyle
+    """Procedure to convert index column to AAA spreadsheet column namestyle
 
     Parameters
     ----------
@@ -334,7 +343,6 @@ def SimpleEq(Tc, T, coef):
         * n: Polinomial parameter
         * t: Exponent of tita
 
-
     Parameters
     ----------
     Tc : float
@@ -363,7 +371,7 @@ def SimpleEq(Tc, T, coef):
     return pr
 
 
-def refDoc(doi, refs, tab=4):
+def refDoc(doi, refs, tab=0):
     """Function decorator used to automatic addiction of References section
     to documentation of procedures
 
@@ -373,6 +381,9 @@ def refDoc(doi, refs, tab=4):
         Dictionary with library references
     refs : list
         List of number to report in References section
+    tab : int, optional
+        Space at left of text, default 4 for main scope function, use greater \
+                value for document class procedure of other inner function
     """
     def decorator(f):
         f.__doc__ += os.linesep + os.linesep
@@ -396,4 +407,4 @@ if __name__ == "__main__":
     # print representacion("3232326262")
 
     # print(spreadsheetColumn(55))
-    # print(colors(5))
+    print(colors(5))

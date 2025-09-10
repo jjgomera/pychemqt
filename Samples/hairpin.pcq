@@ -68,6 +68,7 @@
                 "De": 0.0603,
                 "C_inst": 9664.999168372184,
                 "phaseTube": "Latent-Liquid",
+                "Q": 5853.494,
                 "kFin": 0.0
             }
         }
@@ -360,8 +361,8 @@
                 "MEoS": true,
                 "T": 293.15,
                 "caudalMasico": 0.1388888888888889,
-                "K": "van der Waals",
-                "H": "van der Waals",
+                "K": "vdW",
+                "H": "vdW",
                 "alfa": "Original",
                 "P": 150000.0,
                 "fraccionMolar": [
@@ -520,8 +521,8 @@
                 "MEoS": true,
                 "T": 368.15,
                 "caudalMasico": 0.36,
-                "K": "van der Waals",
-                "H": "van der Waals",
+                "K": "vdW",
+                "H": "vdW",
                 "alfa": "Original",
                 "P": 150000.0,
                 "fraccionMolar": [
@@ -682,8 +683,8 @@
                     1.0
                 ],
                 "caudalMasico": 0.1388888888888889,
-                "K": "van der Waals",
-                "H": "van der Waals",
+                "K": "vdW",
+                "H": "vdW",
                 "T": 303.22927886212796,
                 "alfa": "Original",
                 "P": 149995.79276825002
@@ -842,8 +843,8 @@
                     1.0
                 ],
                 "caudalMasico": 0.36,
-                "K": "van der Waals",
-                "H": "van der Waals",
+                "K": "vdW",
+                "H": "vdW",
                 "T": 364.2860878775719,
                 "alfa": "Original",
                 "P": 149996.72070642177

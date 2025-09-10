@@ -15,15 +15,19 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library for work with thread in pychemqt for improve UI response
-#   - WaitforClick: Thread for draw stream in PFD
-#   - Evaluate: Thread to insolate entity calculation from gui, used in
-#        streams equipment, and project
-###############################################################################
+Library for work with thread in pychemqt for improve UI response
+  * :class:`WaitforClick`: Thread for draw stream in PFD
+  * :class:`Evaluate`: Thread to insolate entity calculation from gui, used \
+            in streams equipment, and project
+
+API reference
+-------------
+
+'''
+
 
 from time import sleep
 

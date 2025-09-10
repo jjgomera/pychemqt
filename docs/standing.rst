@@ -6,7 +6,7 @@ reduced temperature and pression of a gas state.
 
 The diagram is configured in extended format for better visibility of all
 zones. Support for click interaction, let user save the chart as image and a
-dialog to calculate the friction factor:
+dialog to calculate the compresibility factor:
 
 .. image:: images/StandingPoint.png
     :alt: calculate point

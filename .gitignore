@@ -78,7 +78,6 @@ doc
 docs/equipment.rst
 docs/equipment.*.rst
 
-docs/lib.mEoS*
 docs/lib.*_ref.rst
 docs/references.rst
 
@@ -126,6 +125,9 @@ docs/lib.EoS.BWRSoave.rst
 docs/lib.EoS.Grayson_Streed.rst
 docs/lib.EoS.Lee_Kesler.rst
 docs/lib.EoS.virial.rst
+
+docs/lib.mEoS*
+docs/lib.newComponent.*.rst
 
 docs/plots.*.rst
 

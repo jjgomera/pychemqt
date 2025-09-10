@@ -15,15 +15,20 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module to view/edit component in database
-#   -View_Component: Dialog to view/edit compounds of database
-#   -DIPPR_widget: DIPPR equation composite widget
-#   -Parametric_widget: Parametric equation composite widget
-###############################################################################
+Module with widgets for view/edit component properties in database
+
+    * :class:`View_Component`: Dialog to view/edit compounds of database
+    * :class:`DIPPR_widget`: DIPPR equation composite widget
+    * :class:`Parametric_widget`: Parametric equation composite widget
+
+
+API reference
+-------------
+
+'''
 
 
 from functools import partial
@@ -100,7 +105,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             List of DIPPR equation representation in format
             [eq, A, B, C, D, E, Tmin, Tmax]
         """
-        super(DIPPR_widget, self).__init__(title, parent)
+        super().__init__(title, parent)
         self.prop = prop
 
         self.proptex = self.dict_proptex[prop]
@@ -187,6 +192,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             self.eqformula.setVisible(True)
             self.btnPlot.setEnabled(True)
             self.equation = array[0]
+        self.btnFit.setEnabled(self.parent.index >= 10001)
 
     def setReadOnly(self, bool):
         """Set widget readOnly state"""
@@ -453,7 +459,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
             List of DIPPR equation representation in format
             [eq, A, B, C, D, E, Tmin, Tmax]
         """
-        super(Parametric_widget, self).__init__(title, parent)
+        super().__init__(title, parent)
         self.prop = prop
         self.unit = unit
         self.id = id
@@ -544,6 +550,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         # Use local variable enabled to enable the btnPlot button if the
         # parameters are available
         enabled = False
+        self.btnFit.setEnabled(self.parent.index >= 10001)
 
         self.array = array
         for input, value in zip(self.coeff, array):
@@ -651,9 +658,9 @@ class Parametric_widget(QtWidgets.QGroupBox):
             string += "{%0.2g}{T}%+0.2g\\cdot\\lnT%+0.2g\\cdot T%+0.2g$" % args
 
         elif eq == "wagner":
-            string = "$Tr\\lnPr="
+            string = "$P_{v}=\\frac{P_{c}}{Tr}e^{"
             string += "%0.2g\\tau%+0.2g\\tau^{1.5}%+0.2g\\tau^3%+0.2g" % args
-            string += "\\tau^6$"
+            string += "\\tau^6}$"
 
         return string
 
@@ -797,7 +804,7 @@ class View_Component(QtWidgets.QDialog):
             can copy the compound and edit it
           - > 10000:  Compound added by user"""
 
-        super(View_Component, self).__init__(parent)
+        super().__init__(parent)
         lyt = QtWidgets.QVBoxLayout(self)
 
         lytTitle = QtWidgets.QHBoxLayout()
@@ -1527,13 +1534,13 @@ class View_Component(QtWidgets.QDialog):
 
     def change(self, index):
         if index == "-1":
-            if self.index == 1001:
+            if self.index == 10001:
                 index = sql.N_comp
             else:
                 index = self.index-1
         elif index == "+1":
             if self.index == sql.N_comp:
-                index = 1001
+                index = 10001
             else:
                 index = self.index+1
         elif index == "last":

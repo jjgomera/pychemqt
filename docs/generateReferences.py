@@ -53,7 +53,7 @@ for library in lib.__all__:
     module = lib.__getattribute__(library)
 
     # Special case for mEoS library
-    if library == "mEoS":
+    if library in ("mEoS", "newComponent"):
         for cmp in module.__doi__:
             for eq in module.__doi__[cmp]:
                 rf = module.__doi__[cmp][eq]

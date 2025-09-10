@@ -15,12 +15,28 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Library with a wrapper class of iapws97 for IAPWS formulation
-###############################################################################
+Library with a wrapper class of iapws97 for IAPWS formulation
+
+All the functionality is included in the main class:
+
+  * :class:`IAPWS97`: Stream definition using IAPWS-IF97 formulation valid \
+          for liquid water or steam
+
+Direct access to normally used input parameters
+
+  * :class:`IAPWS97_PT`: Derivated class for direct P and T input
+  * :class:`IAPWS97_Ph`: Derivated class for direct P and h input
+  * :class:`IAPWS97_Ps`: Derivated class for direct P and s input
+  * :class:`IAPWS97_Px`: Derivated class for direct P and x input
+  * :class:`IAPWS97_Tx`: Derivated class for direct T and x input
+
+API reference
+-------------
+
+"""
 
 
 from iapws.iapws97 import IAPWS97 as IAPWS
@@ -33,6 +49,7 @@ try:
     from iapws import __doi__
 except ImportError:
     __doi__ = {}
+
 
 __doi__["1"] = {
     "autor": "Wagner, W., Cooper, J.R., Dittmann, A., Kijima, J., "
