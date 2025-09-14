@@ -31,7 +31,7 @@ from tools.qt import translate
 
 from lib.compuestos import Componente
 from lib.config import Entity, getMainWindowConfig
-from lib.unidades import Density, MassFlow, Length, Temperature
+from lib.unidades import Density, MassFlow, Length, Temperature, VolFlow
 
 
 class Solid(Entity):
@@ -119,6 +119,7 @@ class Solid(Entity):
         self.diametro_medio = Length(diametro_medio,
                                      magnitud="ParticleDiameter")
         self.RhoS(self.kwargs.get("T", 300))
+        self.Q = VolFlow(self.caudal/self.rho)
 
     def RhoS(self, T):
         densidad = 0
