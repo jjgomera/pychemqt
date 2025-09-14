@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
+# pylint: disable=attribute-defined-outside-init
 
 """Pychemqt, Chemical Engineering Process simulator
 Copyright (C) 2009-2025, Juan José Gómez Romera <jjgomera@gmail.com>
@@ -15,14 +16,16 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>."""
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module with solid  definition
-#   -Solid: Solid entity
-###############################################################################
+Module with solid definition
 
+    * :class:`Solid`: Solid entity
+
+"""
+
+from ast import literal_eval
 
 from numpy import log, exp, r_
 from scipy.optimize import leastsq
@@ -69,6 +72,7 @@ class Solid(Entity):
 
     @property
     def isCalculable(self):
+        """Procedure to check complete definition of instance"""
         self.status = 0
         if sum(self.kwargs["caudalSolido"]) > 0:
             if self.kwargs["distribucion_fraccion"] and \
@@ -79,13 +83,14 @@ class Solid(Entity):
         return self.status
 
     def calculo(self):
+        """Procedure to calculate instance properties"""
         if self.kwargs["solids"] is not None:
             self.ids = self.kwargs["solids"]
         else:
             Config = getMainWindowConfig()
             txt = Config.get("Components", "Solids")
             if isinstance(txt, str):
-                self.ids = eval(txt)
+                self.ids = literal_eval(txt)
             else:
                 self.ids = txt
         self.componente = [Componente(int(i)) for i in self.ids]
@@ -93,25 +98,25 @@ class Solid(Entity):
         caudal = self.kwargs.get("caudalSolido", [])
         diametro_medio = self.kwargs.get("diametroMedio", 0.0)
         fraccion = self.kwargs.get("distribucion_fraccion", [])
-        diametros = self.kwargs.get("distribucion_diametro", [])
+        dms = self.kwargs.get("distribucion_diametro", [])
 
         if self.status == 0:
             self._bool = False
             return
-        else:
-            self._bool = True
+
+        self._bool = True
 
         self.caudalUnitario = [MassFlow(i) for i in caudal]
         self.caudal = MassFlow(sum(self.caudalUnitario))
-        self.diametros = diametros
+        self.diametros = dms
         self.fracciones = fraccion
         if self.status == 2:
             self.diametros = [Length(i, "m", magnitud="ParticleDiameter")
-                              for i in diametros]
+                              for i in dms]
             self.fracciones = fraccion
             diametro_medio = 0
             self.fracciones_acumuladas = [0]
-            for di, xi in zip(diametros, fraccion):
+            for di, xi in zip(dms, fraccion):
                 diametro_medio += di*xi
                 self.fracciones_acumuladas.append(
                     xi+self.fracciones_acumuladas[-1])
@@ -122,6 +127,7 @@ class Solid(Entity):
         self.Q = VolFlow(self.caudal/self.rho)
 
     def RhoS(self, T):
+        """Calculate solid density as a posible function of temperature"""
         densidad = 0
         for i in range(len(self.ids)):
             densidad += self.caudalUnitario[i]/self.caudal * \
@@ -131,10 +137,9 @@ class Solid(Entity):
 
     def __repr__(self):
         if self.status:
-            return "Solid with %s and dm %s" % (self.caudal.str,
-                                                self.diametro_medio.str)
-        else:
-            return "%s empty" % (self.__class__)
+            return f"Solid: Q:{self.caudal.str}, Dm:{self.diametro_medio.str}"
+
+        return f"{self.__class__} empty"
 
     def ajustar_distribucion(self, eq=0):
         """
@@ -186,7 +191,7 @@ class Solid(Entity):
             def function(p, d):
                 return erf(log(d/p[0])/p[1])
 
-        elif eq == 5:
+        else:
             model = "Harris"
             inicio = r_[d[-1]*2, 1, 1]
 
@@ -195,8 +200,8 @@ class Solid(Entity):
 
         def residuo(p, d, y):
             return function(p, d) - y
-        ajuste, exito = leastsq(residuo, inicio, args=(d, y))
-        return d, function(ajuste, d), model
+        ajuste = leastsq(residuo, inicio, args=(d, y))
+        return d, function(ajuste[0], d), model
 
     def Separar(self, etas):
         """Split solid with efficiency array input
@@ -209,49 +214,53 @@ class Solid(Entity):
         G_sep = MassFlow(self.caudal*rendimiento_global)
         if rendimiento_global == 1:
             return None, self
-        elif rendimiento_global == 0:
+
+        if rendimiento_global == 0:
             return self, None
-        else:
-            f_gas = []
-            f_solid = []
-            for i in range(len(self.diametros)):
-                f_gas.append(self.caudal*self.fracciones[i]*(1-etas[i])/G_skip)
-                f_solid.append(self.caudal*self.fracciones[i]*etas[i]/G_sep)
-            S_skip = Solid(caudalSolido=[G_skip],
-                           distribucion_diametro=self.diametros,
-                           distribucion_fraccion=f_gas)
-            S_sep = Solid(caudalSolido=[G_sep],
-                          distribucion_diametro=self.diametros,
-                          distribucion_fraccion=f_solid)
-            return S_skip, S_sep
 
-    def writeStatetoJSON(self, solid):
+        f_gas = []
+        f_solid = []
+        for i in range(len(self.diametros)):
+            f_gas.append(self.caudal*self.fracciones[i]*(1-etas[i])/G_skip)
+            f_solid.append(self.caudal*self.fracciones[i]*etas[i]/G_sep)
+        S_skip = Solid(caudalSolido=[G_skip],
+                       distribucion_diametro=self.diametros,
+                       distribucion_fraccion=f_gas)
+        S_sep = Solid(caudalSolido=[G_sep],
+                      distribucion_diametro=self.diametros,
+                      distribucion_fraccion=f_solid)
+        return S_skip, S_sep
+
+    def writeStatetoJSON(self, data):
+        """Write entity state to JSON file"""
         if self.status:
-            solid["status"] = self.status
-            solid["ids"] = self.ids
-            solid["unitFlow"] = self.caudalUnitario
-            solid["caudal"] = self.caudal
-            solid["diametros"] = self.diametros
-            solid["fracciones"] = self.fracciones
-            solid["fracciones_acumuladas"] = self.fracciones_acumuladas
-            solid["diametro_medio"] = self.diametro_medio
-            solid["rho"] = self.rho
-            solid["T"] = self.T
+            data["status"] = self.status
+            data["ids"] = self.ids
+            data["unitFlow"] = self.caudalUnitario
+            data["caudal"] = self.caudal
+            data["diametros"] = self.diametros
+            data["fracciones"] = self.fracciones
+            data["fracciones_acumuladas"] = self.fracciones_acumuladas
+            data["diametro_medio"] = self.diametro_medio
+            data["rho"] = self.rho
+            data["T"] = self.T
 
-    def readStatefromJSON(self, solid):
-        if solid:
+    def readStatefromJSON(self, data):
+        """Read entity state from JSON file"""
+        if data:
             self._bool = True
-            self.status = solid["status"]
-            self.ids = solid["ids"]
+            self.status = data["status"]
+            self.ids = data["ids"]
             self.componente = [Componente(int(i)) for i in self.ids]
-            self.caudalUnitario = [MassFlow(q) for q in solid["unitFlow"]]
-            self.caudal = MassFlow(solid["caudal"])
-            self.diametros = [Length(d, "m", "ParticleDiameter") for d in solid["diametros"]]
-            self.fracciones = solid["fracciones"]
-            self.fracciones_acumuladas = solid["fracciones_acumuladas"]
-            self.diametro_medio = Length(solid["diametro_medio"])
-            self.rho = Density(solid["rho"])
-            self.T = Temperature(solid["T"])
+            self.caudalUnitario = [MassFlow(q) for q in data["unitFlow"]]
+            self.caudal = MassFlow(data["caudal"])
+            self.diametros = [Length(d, "m", "ParticleDiameter")
+                              for d in data["diametros"]]
+            self.fracciones = data["fracciones"]
+            self.fracciones_acumuladas = data["fracciones_acumuladas"]
+            self.diametro_medio = Length(data["diametro_medio"])
+            self.rho = Density(data["rho"])
+            self.T = Temperature(data["T"])
         else:
             self._bool = False
             self.status = False
@@ -274,10 +283,9 @@ if __name__ == '__main__':
                     [127, 0.02]]
     diametros = []
     fracciones = []
-    for diametro, fraccion in distribucion:
+    for diametro, frac in distribucion:
         diametros.append(diametro)
-        fracciones.append(fraccion)
+        fracciones.append(frac)
 
     solido = Solid(caudalSolido=[5], distribucion_diametro=diametros,
                    distribucion_fraccion=fracciones)
-    print(solido._def)
