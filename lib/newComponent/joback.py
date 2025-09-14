@@ -140,7 +140,7 @@ class Joback(GroupContribution):
          "ref": "Chemical Engineering Communications, 57 (1987) 233-243",
          "doi": "10.1080/00986448708960487"},
       3:
-        {"autor": "Maloney, J.O.",
+        {"autor": "",
          "title": "Perry's Chemical Engineers' Handbook 8th Edition",
          "ref": "McGraw Hill (2008)",
          "doi": ""}}

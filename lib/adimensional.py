@@ -56,9 +56,9 @@ __doi__ = {
          "ref": "Berlin, New York. Springer 2010.",
          "doi": ""},
     2:
-        {"autor": "Maloney, J.O.",
-         "title": "Perry's Chemical Engineers' Handbook 8th Edition",
-         "ref": "McGraw-Hill (2008)",
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
          "doi": ""}}
 
 

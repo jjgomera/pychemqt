@@ -226,7 +226,13 @@ class Nannoolal(GroupContribution):
                   "the Saturated Liquid Viscosity of Non-Electrolyte Organic "
                   "Compounds Via Group Contributions and Group Interactions",
          "ref": "Fluid Phase Equilib., 281 (2009) 97-119",
-         "doi": "10.1016/j.fluid.2009.02.016"}}
+         "doi": "10.1016/j.fluid.2009.02.016"},
+      5:
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
+         "doi": ""}
+        }
 
     __coeff__ = {
         # Be careful, there are several changes in group between Tb paper and

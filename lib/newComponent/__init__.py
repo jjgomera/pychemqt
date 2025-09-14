@@ -174,13 +174,31 @@ for obj in _methods:
 # Goodman method for solid specific heat
 # Goodman, B. T., et al., J. Chem. Eng. Data, 49 (2004): 24.
 
+# Enthalpy of Sublimation
+# Goodman, B.T., Wilding, W.V., Oscarson, J.L., Rowley, R.L.
+# Use of the DIPPR Database for the Development of QSPR Correlations: Solid
+# Vapor Pressure and Heat of Sublimation of Organic Compounds
+# Intern. J. Thermophysics 25(2) (2004) 337-350
+
 # Reichenberg method for gas viscosity
 # Reichenberg, D., AIChE J., 21 (1975): 181.
 
 # Hsu method for liquid viscosity
 # Hsu, H.-C., Y.-W. Sheu, and C.-H. Tu, Chem. Eng. J., 88 (2002): 27.
 
+# Liquid mixture viscosity
+# UNIFAC-VISCO method
+# Chevalier, J. L., Petrino, P., Gaston-Bonhomme, Y.
+# Chem. Eng. Sci., 43 (1988) 1303
+# Gaston-Bonhomme, Y., Petrino, P., Chevalier, J.L.
+# Chem. Eng. Sci., 49 (1994): 1799.
+
 # Parachor method for surface tension
 # Macleod, D. B., Trans. Faraday Soc., 19 (1923): 38
 # Sugden, S. J., Chem. Soc., 125 (1924): 32
 # Knotts, T. A., et al., J. Chem. Eng. Data, 46 (2001): 1007.
+
+# Refractive index method
+# Wildman, S.A., Crippen, G.,M.
+# Prediction of Physicochemical Parameters by Atomic Contributions
+# J. Chem. Inf. Comput. Sci. 39(5) (1999) 868-873

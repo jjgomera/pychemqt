@@ -81,7 +81,13 @@ class Wilson(GroupContribution):
                   "first and second order methods",
          "ref": "Paper given at AIChE Spring National Meeting, New Orleans, "
                 "LA, USA, February 25-29, 1996.",
-         "doi": ""}}
+         "doi": ""},
+      3:
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
+         "doi": ""}
+        }
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["ring"] = 0
