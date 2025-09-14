@@ -1778,7 +1778,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def launch(self, dlg, *args):
         """Generic method to launch external application"""
         # Remove checked args send by a qaction
-        if isinstance(self.sender(), QtGui.QAction):
+        if dlg != newComponent.Ui_Contribution:
             dialog = dlg(*args[1:])
         else:
             dialog = dlg(*args)
