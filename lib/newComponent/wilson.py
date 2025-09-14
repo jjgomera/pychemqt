@@ -67,7 +67,13 @@ class Wilson(GroupContribution):
     '702.9 37.94 693.6'
     >>> c1.formula
     'C8H10O'
+
+    Example in pag 2-321 of [3]_, sec-butanol
+    >>> cmp = Wilson(Tb=372.9, group=[0, 5, 3, 41], contribution=[10, 1, 4, 1])
+    >>> "%0.2f %0.2f" % (cmp.Tc, cmp.Pc.bar)
+    '534.25 43.00'
     """
+
     __title__ = "Wilson-Jasperson (1996)"
     __doi__ = {
       1:
