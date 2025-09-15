@@ -230,18 +230,19 @@ with open("docs/references.rst", "w") as file:
     print("----------", file=file)
 
     id = 0
-    for lnk in sorted(total, key=lambda lnk: str.upper(lnk["autor"])):
+    for lnk in sorted(total, key=lambda lnk: str.upper(lnk["autor"])
+                      if lnk["autor"] else str.upper(lnk["title"])):
         if lnk["autor"] or lnk["title"] or lnk["ref"]:
             id += 1
-            ref = "%i. " % id
+            ref = f"{id}. "
             if lnk["autor"]:
-                ref += "%s; " % lnk["autor"]
+                ref += f"{lnk["autor"]}; "
             if lnk["title"]:
-                ref += "%s. " % lnk["title"]
+                ref += f"{lnk["title"]}. "
             if lnk["ref"]:
-                ref += "%s" % lnk["ref"]
+                ref += f"{lnk["ref"]}"
 
             if lnk["doi"]:
-                ref += ", http://dx.doi.org/%s" % lnk["doi"]
+                ref += f", http://dx.doi.org/{lnk["doi"]}"
 
             print(ref, file=file)
