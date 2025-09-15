@@ -48,6 +48,10 @@ spheres including all available methods:
 from math import exp, log, log10, tanh
 import sys
 
+from scipy.constants import g
+from scipy.optimize import fsolve
+from lib.adimensional import Archimedes
+from lib.unidades import Speed
 from lib.utilities import refDoc
 
 
@@ -144,7 +148,12 @@ __doi__ = {
                   "Shanks Transform",
          "ref": "Powder Technology 237 (2013) 432-435",
          "doi": "10.1016/j.powtec.2012.12.033"},
-}
+    17:
+        {"autor": "Karamanev, D.G.",
+         "title": "Equations for Calculation of the Terminal Velocity and "
+                  "Drag Coefficient of Solid Spheres and Gas Bubbles",
+         "ref": "Chem. Eng. Comm. 147(1) (1996) 75-84",
+         "doi": "10.1080/00986449608936496"}}
 
 
 @refDoc(__doi__, [1])
@@ -918,6 +927,7 @@ def Terfous(Re):
     return Cd
 
 
+@refDoc(__doi__, [16])
 def Mikhailov(Re):
     r'''Calculates drag coefficient of a smooth sphere using the method in
     [16]_.
@@ -1004,3 +1014,28 @@ def dragSphere(Re, method=None):
 
 f_list = (Barati, Clift, Ceylan, Almedeij, Morrison, Morsi, Khan, Flemmer,
           Haider, Turton, Concha, Swamee, Cheng, Terfous, Mikhailov)
+
+
+@refDoc(__doi__, [17])
+def Cd_Karamanev(Ar):
+    r'''Calculates drag coefficient of a smooth sphere as a function of
+    archimedes number using the method in [17]_.
+
+    .. math::
+        C_d = \frac{432}\left(1+0.047Ar^{2/3}\right) +
+        \frac{0.517}{1+154Ar^{-1/3}}
+
+    Parameters
+    ----------
+    Ar : float
+        Archimedes number, [-]
+
+    Returns
+    -------
+    Cd : float
+        Drag coefficient [-]
+    '''
+    # Eq 9
+    Cd = 432/Ar*(1+0.047*Ar**(2/3)) + 0.517/(1+154*Ar**(-1/3))
+    return Cd
+

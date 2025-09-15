@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 This module implements physics adimensional groups
 
-    * :func:`Ar`: Archimedes number
+    * :func:`Archimedes`: Archimedes number
     * :func:`Bi`: Biot number
     * :func:`Bo`: Bond number
     * :func:`Eu`: Euler number
@@ -63,7 +63,7 @@ __doi__ = {
 
 
 @refDoc(__doi__, [1])
-def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
+def Archimedes(L, rho_p, rho, mu=None, nu=None, g=g):
     r"""Calculates Archimedes number `Ar` for two phases densities, a
     geometric length `L` or any viscosity definition.
 
@@ -103,7 +103,7 @@ def Ar(L, rho_p, rho, mu=None, nu=None, g=g):
 
     Examples
     --------
-    >>> print("%0.0f" % Ar(5e-4, 2610, 0.6072, nu=48.09e-6))
+    >>> print("%0.0f" % Archimedes(5e-4, 2610, 0.6072, nu=48.09e-6))
     2278
     """
     if rho and mu:
