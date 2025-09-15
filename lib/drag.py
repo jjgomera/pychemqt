@@ -40,6 +40,13 @@ spheres including all available methods:
     * :func:`Terfous`
     * :func:`Mikhailov`
 
+Other functions:
+
+    * :func:`Karamanev`: Alternate function to calculate drag coefficient \
+            using Archimedes number
+    * :func:`terminalVelocity`: Calculate terminal velocity of a sphere \
+            falling in a fluid
+
 .. include:: drag.rst
 
 '''
@@ -49,7 +56,6 @@ from math import exp, log, log10, tanh
 import sys
 
 from scipy.constants import g
-from scipy.optimize import fsolve
 from lib.adimensional import Archimedes
 from lib.unidades import Speed
 from lib.utilities import refDoc
@@ -1039,3 +1045,41 @@ def Cd_Karamanev(Ar):
     Cd = 432/Ar*(1+0.047*Ar**(2/3)) + 0.517/(1+154*Ar**(-1/3))
     return Cd
 
+
+@refDoc(__doi__, [17])
+def terminalVelocity(dp, rhop, rho, mu):
+    r'''Calculates terminal velocity of a falling particle assuming sphere
+    geometry.
+    The laminar solution is tried first, if resulting Re are nor laminar
+    (Re > 0.1) the iterative solution must be done.
+
+    .. math::
+        v_t = \sqrt{\frac{4gd_p \left(\rho_p-\rho\right)}{3\rhoC_D}}
+
+    This method could use any Cd vs Re correlation available, but iterative
+    calculation would be neecesary. To avoid that use the correlation with
+    archimedes number given in [18]_.
+
+    Parameters
+    ----------
+    dp : float
+        Particle diameter, [m]
+    rhop : float
+        Particle density, [kg/m³]
+    rho : float
+        Fluid density, [kg/m³]
+    mu : float
+        Fluid viscosity, [Pa·s]
+
+    Returns
+    -------
+    vt : float
+        Terminal velocity, [m/s]
+    '''
+
+    ar = Archimedes(dp, rhop, rho, mu)
+    Cd = Cd_Karamanev(ar)
+
+    # Eq 12
+    vt = (4*g*dp*(rhop-rho)/3/rho/Cd)**0.5
+    return Speed(vt)
