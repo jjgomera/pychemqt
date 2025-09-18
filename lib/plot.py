@@ -49,9 +49,11 @@ class PlotWidget(backend_qtagg.FigureCanvasQTAgg):
         if dim == 2:
             self.ax = self.fig.add_subplot(111)
 
-        else:
+        elif dim == 3:
             self.ax = self.fig.add_subplot(projection="3d")
             self.ax.mouse_init(rotate_btn=1, zoom_btn=2)
+        # In any other case the axes are not defined and can be configured at
+        # used site
 
     def plot(self, *args, **kwargs):
         """Direct accesst to ax plot procedure"""
