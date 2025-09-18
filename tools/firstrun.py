@@ -59,8 +59,8 @@ magnitudes = [
 equipos = ['Divider', 'Valve', 'Mixer', 'Pump', 'Compressor', 'Turbine',
            'Pipe', 'Flash', 'ColumnFUG', 'Heat_Exchanger', 'Shell_Tube',
            'Hairpin', 'Fired_Heater', 'Ciclon', 'GravityChamber', 'Baghouse',
-           'ElectricPrecipitator', 'Dryer', 'Scrubber', 'Spreadsheet',
-           'Reactor', 'Grinder']
+           'ElectricPrecipitator', 'Dryer', 'Scrubber', 'Neumatic',
+           'Spreadsheet', 'Reactor', 'Grinder']
 
 
 def which(program):
