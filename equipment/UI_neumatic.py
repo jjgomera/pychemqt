@@ -27,7 +27,7 @@ from functools import partial
 
 from equipment.neumatic import Neumatic
 from equipment.parents import UI_equip
-from equipment.UI_pipe import Catalogo_Materiales_Dialog, Catalogo_Accesorios_Dialog
+from equipment.UI_pipe import PipeCatalogDialog, FittingCatalogDialog
 from lib.unidades import DeltaP, Speed, Length
 from tools.qt import QtWidgets
 from UI.widgets import Entrada_con_unidades
@@ -132,7 +132,7 @@ class UI_equipment(UI_equip):
 
     def showMaterial(self):
         """Show pipe catalog to select it to get a nominal diameter"""
-        dialogo = Catalogo_Materiales_Dialog()
+        dialogo = PipeCatalogDialog()
         if dialogo.exec():
             material = dialogo.getMaterial()
             if material:
@@ -145,7 +145,7 @@ class UI_equipment(UI_equip):
 
     def showFitting(self):
         """Show pipe fitting dialog"""
-        dialogo = Catalogo_Accesorios_Dialog()
+        dialogo = FittingCatalogDialog()
         if dialogo.exec():
             self.K.setValue(dialogo.K)
             self.changeParams("K", dialogo.K)

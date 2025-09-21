@@ -29,7 +29,7 @@ from lib.unidades import (Temperature, Pressure, DeltaP, Power, Length, Area,
                           ThermalConductivity, HeatTransfCoef, Currency)
 from UI.widgets import Entrada_con_unidades
 from equipment.heatExchanger import Hairpin
-from equipment.UI_pipe import Catalogo_Materiales_Dialog
+from equipment.UI_pipe import PipeCatalogDialog
 from equipment.parents import UI_equip
 from equipment.widget import FoulingWidget, Dialog_Finned
 from tools.costIndex import CostData
@@ -274,7 +274,7 @@ class UI_equipment(UI_equip):
             self.setEquipment(equipment)
 
     def showMaterial(self):
-        dialogo = Catalogo_Materiales_Dialog()
+        dialogo = PipeCatalogDialog()
         if dialogo.exec():
             material = dialogo.getMaterial()
             if material:

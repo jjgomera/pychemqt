@@ -32,7 +32,7 @@ from lib.unidades import Length, ThermalConductivity, Pressure, Currency
 from UI.widgets import Entrada_con_unidades
 from equipment.parents import UI_equip
 from equipment.widget import FoulingWidget, Dialog_Finned
-from equipment.UI_pipe import Catalogo_Materiales_Dialog
+from equipment.UI_pipe import PipeCatalogDialog
 from equipment.shellTube import Shell_Tube
 from tools.costIndex import CostData
 
@@ -459,7 +459,7 @@ class UI_equipment(UI_equip):
             self.Equipment(**dialogo.kwargs)
 
     def showMaterial(self):
-        dialogo = Catalogo_Materiales_Dialog()
+        dialogo = PipeCatalogDialog()
         if dialogo.exec():
             pass
 
