@@ -25,6 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from scipy.constants import g, pi
 
+from lib.unidades import Speed
 from lib.utilities import refDoc
 
 
@@ -35,11 +36,12 @@ __doi__ = {
          "ref": "(John Wiley & Sons) 2008",
          "doi": "10.1002/9780470727102"},
     2:
-        {"autor": "",
-         "title": "",
-         "ref": "",
+        {"autor": "Rizk, F.",
+         "title": "Pneumatic conveying at optimal operation conditions and a "
+                  "solution of Bath's equation",
+         "ref": "Proceedings of Pneumotransport 3, paper D4. BHRA Fluid "
+                "Engineering, Cranfield, England (1973)",
          "doi": ""},
-
     3:
         {"autor": "Matsumoto, S., Hara, M., Saito, S., Maeda, S.",
          "title": "Minimum Transport Velocity for Horizontal Pneumatic "
@@ -71,7 +73,7 @@ __doi__ = {
 }
 
 
-@refDoc(__doi__, [1])
+@refDoc(__doi__, [1, 2])
 def Rizk(M, dp, rhog, D):
     r"""Calculates saltation velocity of gas for pneumatic conveying, using
     the correlation of Rizk (1973) as described in [1]_
@@ -123,7 +125,7 @@ def Rizk(M, dp, rhog, D):
 
     # Solving saltation velocity
     Vs = (M * 10**delta * (g*D)**(0.5*Xi) / rhog / A)**(1/(Xi+1))
-    return Vs
+    return Speed(Vs)
 
 
 @refDoc(__doi__, [3, 4, 5])
@@ -226,7 +228,7 @@ def Matsumoto(M, rhop, dp, rhog, D, Vt, method="1977"):
     Frt = Vt/(g*dp)**0.5
     rhs = alpha*(rhop/rhog)**a * (Frt/10.)**b * (1/(g*D)**0.5/10.)**c
     Vs = (M/rhog/A / rhs)**(1/(c+1))
-    return Vs
+    return Speed(Vs)
 
 
 @refDoc(__doi__, [6])

@@ -35,7 +35,6 @@ Its disadvantages includes:
     * Friable materials have particle breakage
     * Material that oxidize easily need a inert gas as carrier fluid
 
-
 Any pneumatic conveying systems have this basic components:
     * The gas mover, equipment like a blowers, a centrifugal fans or a
     reciprocating compressors
@@ -50,6 +49,7 @@ from equipment.parents import equipment
 from lib.drag import terminalVelocity
 from lib.friction import f_friccion
 from lib.neumatic import V_saltation
+from lib.unidades import Pressure, Speed
 from tools.qt import translate
 
 
@@ -66,6 +66,8 @@ class Neumatic(equipment):
             3 - Matsumoto (1974)
             4 - Ochi (1991)
         eD : Pipe roughness, optional for Ochi saltation velocity method
+        L : Pipe length
+        K : Equivalent length of pipe fittings
 
     """
     title = translate("equipment", "Penumatic conveying")
@@ -73,14 +75,15 @@ class Neumatic(equipment):
     kwargs = {
         "entrada": None,
         "D": None,
-        "eD": 0,
+        "eD": None,
         "L": None,
+        "K": 0,
         "saltation": 0}
 
     kwargsInput = ("entrada", )
-    kwargsValue = ("D", "L")
+    kwargsValue = ("D", "L", "K", "eD")
     kwargsList = ("saltation", )
-    calculateValue = ("SLR", "DR", "VF", "vs")
+    calculateValue = ("SLR", "DR", "VF", "vs", "V", "Re", "f", "DeltaP")
 
     TEXT_SALTATION = (
         "Kizk", "Matsumoto 1977", "Matsumoto 1975", "Matsumoto 1974", "Ochi")
@@ -94,6 +97,11 @@ class Neumatic(equipment):
 
         if not self.kwargs["D"]:
             self.msg = translate("equipment", "undefined pipe diameter")
+            self.status = 0
+            return
+
+        if not self.kwargs["L"]:
+            self.msg = translate("equipment", "undefined pipe length")
             self.status = 0
             return
 
@@ -129,6 +137,11 @@ class Neumatic(equipment):
                               entrada.solido.rho,
                               entrada.Gas.rho, entrada.Gas.mu)
 
+        area = pi/4*self.kwargs["D"]**2
+        self.V = Speed(entrada.Gas.Q/area)
+        self.Re = self.V*self.kwargs["D"]/entrada.Gas.nu*entrada.Gas.rho
+        self.f = f_friccion(self.Re, eD=self.kwargs["eD"])
+
         # Matsumoto methods needs too solid density and terminal velocity
         if self.kwargs["saltation"] in (1, 2, 3):
             args.append(entrada.solido.rho)
@@ -137,17 +150,15 @@ class Neumatic(equipment):
         # Ochi method need too terminal velocity and darcy friction factor
         if self.kwargs["saltation"] == 4:
             args.append(vt)
-
-            area = pi/4*self.kwargs["D"]**2
-            V = entrada.Gas.Q/area
-            Re = V*self.kwargs["D"]*entrada.Gas.mu/entrada.Gas.rho
-            eD = self.kwargs["eD"]
-            f = f_friccion(Re, eD=eD)
-            args.append(f)
+            args.append(self.f)
 
         self.vs = V_saltation(self.kwargs["saltation"], *args)
 
-        self.salida = [entrada.clone()]
+        DeltaP_ac = self.kwargs["K"]*self.V**2/2*entrada.Gas.rho
+        DeltaP_f = self.kwargs["L"]*self.V**2/self.kwargs["D"]*self.f*entrada.Gas.rho/2
+        self.DeltaP = Pressure(DeltaP_ac + DeltaP_f)
+
+        self.salida = [entrada.clone(P=entrada.P-self.DeltaP)]
 
 
 if __name__ == "__main__":

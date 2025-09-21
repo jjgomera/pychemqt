@@ -917,6 +917,20 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.valueChanged.emit(array)
 
 
+class Catalogo_Accesorios_Dialog(QtWidgets.QDialog, Catalogo_Accesorios):
+    valueChanged = QtCore.pyqtSignal(list)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Select Pipe from Database"))
+        buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        self.layout().addWidget(buttonBox, 12, 0, 1, 3)
+
+
 class UI_equipment(UI_equip):
     """Pipe equipment edition dialog"""
     Equipment = Pipe()

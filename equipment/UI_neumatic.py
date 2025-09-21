@@ -27,8 +27,8 @@ from functools import partial
 
 from equipment.neumatic import Neumatic
 from equipment.parents import UI_equip
-from equipment.UI_pipe import Catalogo_Materiales_Dialog
-from lib.unidades import Speed, Length
+from equipment.UI_pipe import Catalogo_Materiales_Dialog, Catalogo_Accesorios_Dialog
+from lib.unidades import DeltaP, Speed, Length
 from tools.qt import QtWidgets
 from UI.widgets import Entrada_con_unidades
 
@@ -77,8 +77,16 @@ class UI_equipment(UI_equip):
         lyt_Calc.addWidget(self.eD, 4, 2)
         lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pipe Length")), 5, 1)
         self.L = Entrada_con_unidades(Length)
+        self.L.valueChanged.connect(partial(self.changeParams, "L"))
         lyt_Calc.addWidget(self.L, 5, 2)
 
+        lyt_Calc.addWidget(QtWidgets.QLabel("K"), 6, 1)
+        self.K = Entrada_con_unidades(float)
+        self.K.valueChanged.connect(partial(self.changeParams, "K"))
+        lyt_Calc.addWidget(self.K, 6, 2)
+        buttonfitting = QtWidgets.QPushButton(self.tr("Pipe Fittings"))
+        buttonfitting.clicked.connect(self.showFitting)
+        lyt_Calc.addWidget(buttonfitting, 6, 3)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 10, 5)
@@ -105,17 +113,19 @@ class UI_equipment(UI_equip):
         lyt.addWidget(QtWidgets.QLabel(self.tr("Saltation velocity")), 4, 1)
         self.vs = Entrada_con_unidades(Speed, retornar=False, readOnly=True)
         lyt.addWidget(self.vs, 4, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Real velocity")), 5, 1)
+        self.V = Entrada_con_unidades(Speed, retornar=False, readOnly=True)
+        lyt.addWidget(self.V, 5, 2)
 
-        # lyt.addWidget(QtWidgets.QLabel("Cp/Cv"), 2, 1)
-        # self.cp_cv = Entrada_con_unidades(float, retornar=False, readOnly=True)
-        # lyt.addWidget(self.cp_cv, 2, 2)
-        # lyt.setColumnStretch(3, 1)
-        # lyt.addWidget(QtWidgets.QLabel(self.tr("Pressure ratio")), 1, 4)
-        # self.razonCalculada = Entrada_con_unidades(float, readOnly=True)
-        # lyt.addWidget(self.razonCalculada, 1, 5)
-        # lyt.addWidget(QtWidgets.QLabel(self.tr("Efficiency")), 2, 4)
-        # self.rendimientoCalculado = Entrada_con_unidades(float, readOnly=True)
-        # lyt.addWidget(self.rendimientoCalculado, 2, 5)
+        lyt.addWidget(QtWidgets.QLabel("Re"), 1, 4)
+        self.Re = Entrada_con_unidades(float, readOnly=True)
+        lyt.addWidget(self.Re, 1, 5)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Friction factor")), 2, 4)
+        self.f = Entrada_con_unidades(float, readOnly=True)
+        lyt.addWidget(self.f, 2, 5)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Pressure loss")), 3, 4)
+        self.DeltaP = Entrada_con_unidades(DeltaP, readOnly=True)
+        lyt.addWidget(self.DeltaP, 3, 5)
 
         if equipment:
             self.setEquipment(equipment)
@@ -132,6 +142,13 @@ class UI_equipment(UI_equip):
                 self.D.setValue(diameter)
                 self.eD.setValue(eD)
                 self.calculo(**{"D": diameter, "eD": eD})
+
+    def showFitting(self):
+        """Show pipe fitting dialog"""
+        dialogo = Catalogo_Accesorios_Dialog()
+        if dialogo.exec():
+            self.K.setValue(dialogo.K)
+            self.changeParams("K", dialogo.K)
 
 
 if __name__ == "__main__":
