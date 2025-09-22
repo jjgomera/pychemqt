@@ -195,7 +195,14 @@ class Propylene(MEoS):
 
     _PR = [-0.1815, -16.3103]
 
-    _surface = {"sigma": [0.05268], "exp": [1.186]}
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I., Rodríguez-Martín, A.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "42 Alkenes",
+            "ref": "J. Phys. Chem. Ref. Data 54(3) (2025) 033102",
+            "doi": "10.1063/5.0277723"},
+        "sigma": [0.05582, -0.03696], "exp": [1.247, 6.795]}
 
     _melting = {
         "eq": 2,
