@@ -47,6 +47,19 @@ class UI_equipment(UI_equip):
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
 
         lyt = QtWidgets.QHBoxLayout()
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Pipeline orientation:")))
+        self.orientation = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_ORIENTATION:
+            self.orientation.addItem(txt)
+        self.orientation.currentIndexChanged.connect(
+            partial(self.changeParams, "orientation"))
+        lyt.addWidget(self.orientation)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
+        lyt_Calc.addLayout(lyt, 1, 1, 1, 4)
+
+        lyt = QtWidgets.QHBoxLayout()
         lyt.addWidget(QtWidgets.QLabel(self.tr("Saltation velocity method:")))
         self.saltation = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_SALTATION:
@@ -57,36 +70,50 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed))
-        lyt_Calc.addLayout(lyt, 1, 1, 1, 4)
+        lyt_Calc.addLayout(lyt, 2, 1, 1, 4)
+
+        lyt = QtWidgets.QHBoxLayout()
+        lyt.addWidget(QtWidgets.QLabel(self.tr(
+            "Solid friction factor method:")))
+        self.fs = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_FS:
+            self.fs.addItem(txt)
+        self.fs.currentIndexChanged.connect(
+            partial(self.changeParams, "fs"))
+        lyt.addWidget(self.fs)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
+        lyt_Calc.addLayout(lyt, 3, 1, 1, 4)
 
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
-            QtWidgets.QSizePolicy.Policy.Fixed), 2, 1, 1, 4)
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 4)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pipe Diameter")), 3, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pipe Diameter")), 5, 1)
         self.D = Entrada_con_unidades(Length, "PipeDiameter")
         self.D.valueChanged.connect(partial(self.changeParams, "D"))
-        lyt_Calc.addWidget(self.D, 3, 2)
+        lyt_Calc.addWidget(self.D, 5, 2)
         buttonPipe = QtWidgets.QPushButton(self.tr("Pipe Database"))
         buttonPipe.clicked.connect(self.showMaterial)
-        lyt_Calc.addWidget(buttonPipe, 3, 3)
+        lyt_Calc.addWidget(buttonPipe, 5, 3)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pipe Roughness")), 4, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pipe Roughness")), 6, 1)
         self.eD = Entrada_con_unidades(Length, "ParticleDiameter")
         self.eD.valueChanged.connect(partial(self.changeParams, "eD"))
-        lyt_Calc.addWidget(self.eD, 4, 2)
-        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pipe Length")), 5, 1)
+        lyt_Calc.addWidget(self.eD, 6, 2)
+        lyt_Calc.addWidget(QtWidgets.QLabel(self.tr("Pipe Length")), 7, 1)
         self.L = Entrada_con_unidades(Length)
         self.L.valueChanged.connect(partial(self.changeParams, "L"))
-        lyt_Calc.addWidget(self.L, 5, 2)
+        lyt_Calc.addWidget(self.L, 7, 2)
 
-        lyt_Calc.addWidget(QtWidgets.QLabel("K"), 6, 1)
+        lyt_Calc.addWidget(QtWidgets.QLabel("K"), 8, 1)
         self.K = Entrada_con_unidades(float)
         self.K.valueChanged.connect(partial(self.changeParams, "K"))
-        lyt_Calc.addWidget(self.K, 6, 2)
+        lyt_Calc.addWidget(self.K, 8, 2)
         buttonfitting = QtWidgets.QPushButton(self.tr("Pipe Fittings"))
         buttonfitting.clicked.connect(self.showFitting)
-        lyt_Calc.addWidget(buttonfitting, 6, 3)
+        lyt_Calc.addWidget(buttonfitting, 8, 3)
         lyt_Calc.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 10, 5)
