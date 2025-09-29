@@ -195,7 +195,7 @@ class GravityChamber(Separador_SolidGas):
     kwargsValue = ("W", "H", "L", "rendimientoAdmisible", "velocidadAdmisible",
                    "deltaP")
     kwargsList = ("metodo", "modelo")
-    calculateValue = ("Q", "LCalc", "WCalc", "HCalc", "Vgas",  "rendimiento")
+    calculateValue = ("Q", "LCalc", "WCalc", "HCalc", "Vgas", "rendimiento")
 
     TEXT_TIPO = [translate("equipment", "Rating"),
                  translate("equipment", "Design")]

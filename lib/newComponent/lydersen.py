@@ -52,7 +52,7 @@ class Lydersen(GroupContribution):
 
     Examples
     --------
-    Example 2 in [1]_ pag 2-343, 2-butanol critical properties
+    Example 2 in [1]_ pag 2-342, 2-butanol critical properties
 
     >>> cmp = Lydersen(Tb=372.7, group=[0, 1, 2, 18],
     ... contribution=[2, 1, 1, 1])
@@ -71,9 +71,9 @@ class Lydersen(GroupContribution):
 
     __doi__ = {
       1:
-        {"autor": "Maloney, J.O.",
-         "title": "Perry's Chemical Engineers' Handbook 8th Edition",
-         "ref": "McGraw Hill (2008)",
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 7th Edition",
+         "ref": "McGraw Hill (1997)",
          "doi": ""},
       2:
         {"autor": "Lydersen, A. L.",

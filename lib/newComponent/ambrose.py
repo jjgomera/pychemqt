@@ -60,7 +60,7 @@ class Ambrose(GroupContribution):
 
     Examples
     --------
-    Example 1 in [2]_, 2,2,3-Trimethylpentane
+    Example 1 in [3]_, 2,2,3-Trimethylpentane
 
     >>> Tb = unidades.Temperature(229.72, "F")
     >>> cmp = Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1],
@@ -70,7 +70,7 @@ class Ambrose(GroupContribution):
     >>> cmp.formula
     'C8H18'
 
-    Example 2 in [2]_, 2-Methyl-1-butene
+    Example 2 in [3]_, 2-Methyl-1-butene
 
     >>> Tb = unidades.Temperature(88.09, "F")
     >>> cmp = Ambrose(group=[0, 1, 4, 6], contribution=[2, 1, 1, 1],
@@ -78,14 +78,14 @@ class Ambrose(GroupContribution):
     >>> "%0.2f %0.1f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
     '385.95 520.3 0.0657'
 
-    Example 3 in [2]_, cis-Decalin
+    Example 3 in [3]_, cis-Decalin
 
     >>> Tb = unidades.Temperature(384.47, "F")
     >>> cmp = Ambrose(group=[10, 12], contribution=[8, 2], Tb=Tb, platt=0)
     >>> "%0.2f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
     '801.95 430.06 0.0562'
 
-    Example 4 in [2]_, tert-Butyl benzene
+    Example 4 in [3]_, tert-Butyl benzene
 
     >>> Tb = unidades.Temperature(336.41, "F")
     >>> cmp = Ambrose(group=[0, 3, 17], contribution=[3, 1, 1],
@@ -93,7 +93,7 @@ class Ambrose(GroupContribution):
     >>> "%0.2f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
     '705.82 415.97 0.0555'
 
-    Example 5 in [2]_, Anthracene
+    Example 5 in [3]_, Anthracene
 
     >>> Tb = unidades.Temperature(646.16, "F")
     >>> cmp = Ambrose(group=[18, 28], contribution=[1, 2], M=178.23, Tb=Tb,
@@ -101,7 +101,7 @@ class Ambrose(GroupContribution):
     >>> "%0.1f %0.2f %0.4f" % (cmp.Tc.F, cmp.Pc.psi, cmp.Vc.ft3lb)
     '1165.3 504.64 0.0502'
 
-    Example from [3]_, 2,2,4-trimethylpentane
+    Example from [4]_, 2,2,4-trimethylpentane
 
     >>> cmp = Ambrose(group=[0, 1, 2, 3], contribution=[5, 1, 1, 1],
     ... Tb=372.39, platt=0)
@@ -130,9 +130,9 @@ class Ambrose(GroupContribution):
          "ref": "",
          "doi": ""},
       4:
-        {"autor": "Maloney, J.O.",
-         "title": "Perry's Chemical Engineers' Handbook 8th Edition",
-         "ref": "McGraw Hill (2008)",
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
          "doi": ""}}
 
     kwargs = GroupContribution.kwargs.copy()

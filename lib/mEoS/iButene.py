@@ -78,7 +78,15 @@ class iButene(MEoS):
     eq = (lemmon, )
     _PR = [-0.1815, -16.3103]
 
-    _surface = {"sigma": [0.0545], "exp": [1.23]}
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I., Rodríguez-Martín, A.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "42 Alkenes",
+            "ref": "J. Phys. Chem. Ref. Data 54(3) (2025) 033102",
+            "doi": "10.1063/5.0277723"},
+        "sigma": [0.05374], "exp": [1.213]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-0.68973e1, 0.12475e1, -0.25441e1, -0.29282e1, 0.15778e1],

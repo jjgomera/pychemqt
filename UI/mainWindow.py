@@ -763,6 +763,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             slot=partial(self.addEquipment, equipment.UI_scrubber),
             button=True, parent=toolboxContenido)
         l4.addWidget(botonScrubber)
+        actionNeumatic, botonNeumatic = createAction(
+            self.tr("Neumatic"),
+            icon=os.path.join("equipment", "neumatic.png"),
+            slot=partial(self.addEquipment, equipment.UI_neumatic),
+            button=True, parent=toolboxContenido)
+        l4.addWidget(botonNeumatic)
         actionGravityChandler, botonGravityChandler = createAction(
             self.tr("Gravity settling chamber"),
             icon=os.path.join("equipment", "gravityChamber.png"),
@@ -884,6 +890,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuObjetosSolids.addAction(actionWasher)
         self.menuObjetosSolids.addAction(actionVacuum)
         self.menuObjetosSolids.addAction(actionScrubber)
+        self.menuObjetosSolids.addAction(actionNeumatic)
         self.menuObjetosSolids.addAction(actionGravityChandler)
         self.menuObjetos.addAction(self.menuObjetosSolids.menuAction())
 
@@ -1741,7 +1748,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def launch(self, dlg, *args):
         """Generic method to launch external application"""
         # Remove checked args send by a qaction
-        if isinstance(self.sender(), QtGui.QAction):
+        if dlg != newComponent.Ui_Contribution:
             dialog = dlg(*args[1:])
         else:
             dialog = dlg(*args)

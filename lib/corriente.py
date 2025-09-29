@@ -554,7 +554,7 @@ class Corriente(config.Entity):
 #                self.Gas.rhoSd=unidades.Density(1./R_atml/298.15*self.M, "gl")
 
             if self.x > 0:
-                self.Gas.Q = unidades.VolFlow(self.Q*(1-self.x))
+                self.Gas.Q = unidades.VolFlow(self.Q*self.x)
                 self.Gas.caudalmasico = unidades.MassFlow(self.caudalmasico*self.x)
                 self.Gas.caudalmolar = unidades.MolarFlow(self.caudalmolar*self.x)
                 kw = mix_molarflow_molarfraction(

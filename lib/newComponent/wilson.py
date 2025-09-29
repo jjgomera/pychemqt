@@ -67,7 +67,13 @@ class Wilson(GroupContribution):
     '702.9 37.94 693.6'
     >>> c1.formula
     'C8H10O'
+
+    Example in pag 2-321 of [3]_, sec-butanol
+    >>> cmp = Wilson(Tb=372.9, group=[0, 5, 3, 41], contribution=[10, 1, 4, 1])
+    >>> "%0.2f %0.2f" % (cmp.Tc, cmp.Pc.bar)
+    '534.25 43.00'
     """
+
     __title__ = "Wilson-Jasperson (1996)"
     __doi__ = {
       1:
@@ -81,7 +87,13 @@ class Wilson(GroupContribution):
                   "first and second order methods",
          "ref": "Paper given at AIChE Spring National Meeting, New Orleans, "
                 "LA, USA, February 25-29, 1996.",
-         "doi": ""}}
+         "doi": ""},
+      3:
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
+         "doi": ""}
+        }
 
     kwargs = GroupContribution.kwargs.copy()
     kwargs["ring"] = 0

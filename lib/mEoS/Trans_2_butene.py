@@ -80,12 +80,12 @@ class Trans_2_butene(MEoS):
 
     _surface = {
         "__doi__": {
-            "autor": "Mulero, A., Cachadiña, I.",
+            "autor": "Mulero, A., Cachadiña, I., Rodríguez-Martín, A.",
             "title": "Recommended Correlations for the Surface Tension of "
-                     "Several Fluids Included in the REFPROP Program",
-            "ref": "J. Phys. Chem. Ref. Data 43(2) (2014) 023104",
-            "doi": "10.1063/1.4878755"},
-        "sigma": [0.0001859, 0.05539], "exp": [0.07485, 1.224]}
+                     "42 Alkenes",
+            "ref": "J. Phys. Chem. Ref. Data 54(3) (2025) 033102",
+            "doi": "10.1063/5.0277723"},
+        "sigma": [0.0002977, 0.05544], "exp": [0.1684, 1.231]}
 
     _vapor_Pressure = {
         "eq": 3,

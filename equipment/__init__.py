@@ -47,6 +47,7 @@ from equipment import UI_baghouse
 from equipment import UI_electricPrecipitator
 from equipment import UI_dryer
 from equipment import UI_scrubber
+from equipment import UI_neumatic
 
 # Tools
 from equipment import UI_spreadsheet
@@ -68,8 +69,9 @@ UI_equipments = [UI_divider, UI_valve, UI_mixer, UI_pump, UI_compressor,
                  UI_turbine, UI_pipe, UI_flash, UI_columnFUG, UI_heatExchanger,
                  UI_shellTube, UI_hairpin, UI_fireHeater, UI_ciclon,
                  UI_gravityChamber, UI_baghouse, UI_electricPrecipitator,
-                 UI_dryer, UI_scrubber, UI_spreadsheet, UI_reactor, UI_grinder]
-# UI_tower, UI_reactor, UI_centrifuge, UI_solidWasher, UI_vacuum, ]
+                 UI_dryer, UI_scrubber, UI_neumatic, UI_spreadsheet,
+                 UI_reactor, UI_grinder]
+# UI_tower, UI_centrifuge, UI_solidWasher, UI_vacuum, ]
 
 equipments = [ui.UI_equipment.Equipment.__class__ for ui in UI_equipments]
 
@@ -83,14 +85,15 @@ from equipment.pump import Pump
 from equipment.compressor import Compressor, Turbine
 from equipment.pipe import Pipe
 from equipment.distillation import Flash, ColumnFUG
-from equipment.heatExchanger import (Heat_Exchanger, Shell_Tube, Hairpin,
-                                     Fired_Heater)
+from equipment.heatExchanger import Heat_Exchanger, Hairpin, Fired_Heater
+from equipment.shellTube import Shell_Tube
 from equipment.gas_solid import (Ciclon, GravityChamber, Baghouse,
                                  ElectricPrecipitator)
 from equipment.gas_solid_liquid import Dryer, Scrubber
+from equipment.neumatic import Neumatic
 from equipment.spreadsheet import Spreadsheet
 from equipment.reactor import Reactor
 
 # To get a list of equipment available to add to lib/firstrun.py file:
 # equipos=[equipment.__name__ for equipment in equipments]
-# print equipos
+# print(equipos)

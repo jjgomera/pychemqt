@@ -196,6 +196,17 @@ class Nannoolal(GroupContribution):
     '12.3872997 382.275'
     >>> "%0.4f" % cmp._Visco(363.15).mPas
     '2.6135'
+
+    Example in pag 2-316 of [5]_, o-xylene
+    >>> cmp = Nannoolal(Tb=417.58, group=[14, 2, 15, 125],
+    ... contribution=[4, 2, 2, 1])
+    >>> "%0.2f %0.2f %0.2f" % (cmp.Tc, cmp.Pc.kPa, cmp.Vc.ccg*cmp.M)
+    '628.87 3623.55 370.57'
+
+    Example in pag. 2.323 of [5]_, di-isopropanolamine
+    >>> cmp = Nannoolal(group=[0, 6, 33, 41], contribution=[2, 4, 2, 1])
+    >>> "%0.1f" % (cmp.Tb)
+    '509.3'
     """
     __title__ = "Nannoolal (2007)"
 
@@ -226,7 +237,13 @@ class Nannoolal(GroupContribution):
                   "the Saturated Liquid Viscosity of Non-Electrolyte Organic "
                   "Compounds Via Group Contributions and Group Interactions",
          "ref": "Fluid Phase Equilib., 281 (2009) 97-119",
-         "doi": "10.1016/j.fluid.2009.02.016"}}
+         "doi": "10.1016/j.fluid.2009.02.016"},
+      5:
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
+         "doi": ""}
+        }
 
     __coeff__ = {
         # Be careful, there are several changes in group between Tb paper and

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 # pylint: disable=wrong-import-position, assignment-from-no-return
+# pylint: disable=attribute-defined-outside-init
 
 
 """Pychemqt, Chemical Engineering Process simulator
@@ -98,24 +99,24 @@ def getComponents(solidos=False, config=None, name=True):
     if solidos:
         indices = config.get("Components", "Solids")
         if not isinstance(indices, list):
-            indices = eval(indices)
+            indices = literal_eval(indices)
     else:
         indices = config.get("Components", "Components")
         if not isinstance(indices, list):
-            indices = eval(indices)
+            indices = literal_eval(indices)
 
     if name:
         nombres = []
         M = []
-        for id in indices:
-            query = "select name, M from compuestos where id == %s" % str(id)
+        for idx in indices:
+            query = f"select name, M from compuestos where id == {idx}"
             databank.execute(query)
             texto = databank.fetchone()
             nombres.append(texto[0])
             M.append(texto[1])
         return indices, nombres, M
-    else:
-        return indices
+
+    return indices
 
 
 def getMainWindowConfig():
@@ -129,21 +130,21 @@ def setMainWindowConfig(config=None):
     if config:
         currentConfig = config
         return
+
+    widget = QtWidgets.QApplication.activeWindow()
+    if isinstance(widget, QtWidgets.QMainWindow) and \
+       widget.__class__.__name__ == "UI_pychemqt":
+        currentConfig = widget.currentConfig
     else:
-        widget = QtWidgets.QApplication.activeWindow()
-        if isinstance(widget, QtWidgets.QMainWindow) and \
-           widget.__class__.__name__ == "UI_pychemqt":
-            currentConfig = widget.currentConfig
-        else:
-            lista = QtWidgets.QApplication.topLevelWidgets()
-            for widget in lista:
-                if isinstance(widget, QtWidgets.QMainWindow) and \
-                   widget.__class__.__name__ == "UI_pychemqt":
-                    currentConfig = widget.currentConfig
-                    break
+        lista = QtWidgets.QApplication.topLevelWidgets()
+        for widget in lista:
+            if isinstance(widget, QtWidgets.QMainWindow) and \
+               widget.__class__.__name__ == "UI_pychemqt":
+                currentConfig = widget.currentConfig
+                break
 
 
-class Entity(object):
+class Entity():
     """General class for model object, with basic functionality:
 
         * clear object
@@ -214,6 +215,7 @@ class Entity(object):
             print(key, ": ", self.__dict__[key])
 
     def setNotas(self, html, txt):
+        """Set notas property of instance"""
         self.notas = html
         self.notasPlain = txt
         if html:
@@ -278,7 +280,6 @@ class Entity(object):
         if self.status:
             self.readStatefromJSON(data["state"])
 
-
 #        if run:
 #            self.__call__()
 #            print(self)
@@ -288,10 +289,12 @@ class Entity(object):
         return data[key]
 
     def writeStatetoJSON(self, data):
-        pass
+        """Write entity state to JSON file"""
+        # To define by child class
 
     def readStatefromJSON(self, data):
-        pass
+        """Read entity state from JSON file"""
+        # To define by child class
 
     # Properties
     @classmethod
@@ -312,7 +315,7 @@ class Entity(object):
                     lista.append(([f.str for f in prop], name))
             elif unit == str:
                 lista.append((prop, name, 0))
-            elif unit == int or unit == float:
+            elif unit in (int, float):
                 lista.append((str(prop), name, 1))
             else:
                 lista.append((prop.str, name, 1))
@@ -323,27 +326,31 @@ class Entity(object):
             prop = self.__class__.__name__
         elif attr == "notasPlain":
             prop = self.notasPlain
-        elif type(attr) == tuple:
-            prop = self.__getattribute__(attr[0])[self.kwargs[attr[1]]]
+        elif isinstance(attr, tuple):
+            prop = getattr(self, attr[0])[self.kwargs[attr[1]]]
         elif attr in self.__dict__:
-            prop = self.__getattribute__(attr)
+            prop = getattr(self, attr)
         elif attr in self.kwargs:
             prop = self.kwargs[attr]
+
         return prop
 
     def propertiesListTitle(self, index):
         """Define titles for list properties in popup"""
 
     def propertiesTitle(self):
+        """Extract titles from properties available"""
         return [prop[0] for prop in self.propertiesNames()]
 
     def propertiesAttribute(self):
+        """Extract keys from properties available"""
         return [prop[1] for prop in self.propertiesNames()]
 
     def propertiesUnit(self):
+        """Extract units from properties available"""
         return [prop[2] for prop in self.propertiesNames()]
 
-    def popup(self, preferences, exception=[]):
+    def popup(self, preferences):
         """
         Return a list with properties of entity to show in a puput
         preferences: ConfigParser instance with selected properties to show"""
@@ -355,7 +362,7 @@ class Entity(object):
                 txt.append((propiedades[i][1], "", 0))
                 title = self.propertiesListTitle(i)
                 for name, value in zip(title, propiedades[i][0]):
-                    txt.append(("%s\t%s" % (name, value), "", 1))
+                    txt.append((f"{name}\t{value}", "", 1))
             else:
                 txt.append(propiedades[i])
         return txt
@@ -371,7 +378,7 @@ class Entity(object):
         linesep: Boolean to add a linesep at end line
         suffix: Optional suffix text
         """
-        mask = "%s-%is%ss" % ("%", self.TEXT_FORMATING_LENG, "%")
+        mask = f"%-{self.TEXT_FORMATING_LENG}s%s"
         if index is None:
             index = range(len(self.propertiesNames()))
         if isinstance(index, int):
@@ -383,12 +390,12 @@ class Entity(object):
             if not kwKey:
                 kwKey = prop
             value = self._prop(prop)
-            if unit != str and unit != float and unit != int:
-                value = value.str
-            elif unit == str:
+            if unit == str:
                 value = " " + value
-            elif unit == float or unit == int:
-                value = " %s" % value.__repr__()
+            elif unit in (float, int):
+                value = f" {repr(value)}"
+            else:
+                value = value.str
 
             txt += mask % (title, value)
             if kwCheck:

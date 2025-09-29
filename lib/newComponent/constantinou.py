@@ -209,9 +209,9 @@ class Constantinou(GroupContribution):
          "ref": "Fluid Phase Equilibria 103 (1995) 11-22",
          "doi": "10.1016/0378-3812(94)02593-p"},
       4:
-        {"autor": "Maloney, J.O.",
-         "title": "Perry's Chemical Engineers' Handbook 8th Edition",
-         "ref": "McGraw Hill (2008)",
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
          "doi": ""}}
 
     __coeff__ = {

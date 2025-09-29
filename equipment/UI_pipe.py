@@ -184,7 +184,7 @@ class Dialog(QtWidgets.QDialog):
                 self.K = K
 
 
-class Catalogo_Materiales(QtWidgets.QWidget):
+class PipeCatalog(QtWidgets.QWidget):
     """Diálogo del catalogo de materiales y tamaños de tuberías"""
     valueChanged = QtCore.pyqtSignal(list)
 
@@ -465,7 +465,7 @@ class Catalogo_Materiales(QtWidgets.QWidget):
             self.valueChanged.emit(material)
 
 
-class Catalogo_Materiales_Dialog(QtWidgets.QDialog, Catalogo_Materiales):
+class PipeCatalogDialog(QtWidgets.QDialog, PipeCatalog):
     valueChanged = QtCore.pyqtSignal(list)
 
     def __init__(self, parent=None):
@@ -479,7 +479,7 @@ class Catalogo_Materiales_Dialog(QtWidgets.QDialog, Catalogo_Materiales):
         self.layout().addWidget(buttonBox, 10, 0, 1, 3)
 
 
-class Catalogo_Accesorios(QtWidgets.QWidget):
+class FittingCatalog(QtWidgets.QWidget):
     """Widget to select/edit/add fitting to pipe"""
     valueChanged = QtCore.pyqtSignal(list)
     titles = [
@@ -508,6 +508,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         self.Accesorios.setColumnWidth(2, 60)
         self.Accesorios.setColumnWidth(3, 50)
         self.Accesorios.setColumnWidth(4, 50)
+        self.Accesorios.setMinimumWidth(420)
         self.Accesorios.cellChanged.connect(self.CalcularK)
         self.Accesorios.currentCellChanged.connect(
             self.selectedChangedAccesorios)
@@ -536,6 +537,7 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
         gridLayout.addWidget(self.line, 3, 0, 1, 2)
 
         self.TablaAccesorios = QtWidgets.QTableWidget()
+        self.TablaAccesorios.setMinimumWidth(420)
         self.TablaAccesorios.setSelectionBehavior(
             QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.TablaAccesorios.horizontalHeader().setStretchLastSection(True)
@@ -917,6 +919,21 @@ class Catalogo_Accesorios(QtWidgets.QWidget):
             self.valueChanged.emit(array)
 
 
+class FittingCatalogDialog(QtWidgets.QDialog, FittingCatalog):
+    """Dialog format of fitting editing to standalone use"""
+    valueChanged = QtCore.pyqtSignal(list)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Select Pipe from Database"))
+        buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+        self.layout().addWidget(buttonBox, 12, 0, 1, 3)
+
+
 class UI_equipment(UI_equip):
     """Pipe equipment edition dialog"""
     Equipment = Pipe()
@@ -928,13 +945,13 @@ class UI_equipment(UI_equip):
         super().__init__(Pipe, entrada=False, salida=False, parent=parent)
 
         # Catalog tab
-        self.tabCatalogo = Catalogo_Materiales()
+        self.tabCatalogo = PipeCatalog()
         self.tabCatalogo.valueChanged.connect(
             partial(self.changeParams, "material"))
         self.tabWidget.insertTab(1, self.tabCatalogo, self.tr("Catalog"))
 
         # Fitting tab
-        self.tabAccesorios = Catalogo_Accesorios()
+        self.tabAccesorios = FittingCatalog()
         self.tabAccesorios.valueChanged.connect(
             partial(self.changeParams, "accesorios"))
         self.tabWidget.insertTab(2, self.tabAccesorios, self.tr("Fittings"))

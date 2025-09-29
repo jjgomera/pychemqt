@@ -1215,18 +1215,18 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
 
     def hoverEnterEvent(self, event):
         if not (self.scene().addObj and self.scene().addType == "stream"):
+            self.scene().popup.show()
             self.scene().popup.populate(self.corriente, self.id, Preferences)
             point = self.mapToParent(event.scenePos())
             self.scene().popup.move(int(point.x()), int(point.y()))
-            self.scene().popup.show()
 
     def hoverLeaveEvent(self, event):
         self.scene().popup.hide()
 
     def hoverMoveEvent(self, event):
         point = self.mapToParent(event.scenePos())
-        self.scene().popup.move(int(point.x()), int(point.y()))
         self.scene().popup.show()
+        self.scene().popup.move(int(point.x()), int(point.y()))
 
     def contextMenu(self):
         ViewAction = createAction(
@@ -1538,7 +1538,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
         if self.scene().addObj and self.scene().addType == "stream":
             self.showInput(True)
         else:
-            if self.dialogoId != None:
+            if self.dialogoId is not None:
                 self.scene().popup.populate(self.equipment, self.id, Preferences)
             else:
                 if self.output:
@@ -1548,8 +1548,9 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
                     self.scene().popup.populate(
                         self.up[0].corriente, self.up[0].id, Preferences)
             point = event.scenePos()
-            self.scene().popup.move(int(point.x()), int(point.y()))
             self.scene().popup.show()
+            self.scene().popup.move(int(point.x()), int(point.y()))
+            self.scene().popup.graphicsProxyWidget().resize(0, 0)
 
     def hoverLeaveEvent(self, event):
         self.showInput(False)

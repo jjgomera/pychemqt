@@ -76,13 +76,13 @@ class Propadiene(MEoS):
     eq = (refprop, )
 
     _surface = {
-        "__doi__": {"autor": "Huber, M.L.",
-                    "title": "Models for Viscosity, Thermal Conductivity, and "
-                             "Surface Tension of Selected Pure Fluids as "
-                             "Implemented in REFPROP v10.0",
-                    "ref": "NISTIR 8209",
-                    "doi": "10.6028/NIST.IR.8209"},
-        "sigma": [0.056], "exp": [1.205]}
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I., Rodríguez-Martín, A.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "42 Alkenes",
+            "ref": "J. Phys. Chem. Ref. Data 54(3) (2025) 033102",
+            "doi": "10.1063/5.0277723"},
+        "sigma": [0.0001716, 0.06201], "exp": [1.1532, 1.248]}
 
     _vapor_Pressure = {
         "eq": 3,

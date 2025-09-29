@@ -84,6 +84,15 @@ class Hexene_1(MEoS):
 
     eq = (betken, )
 
+    _surface = {
+        "__doi__": {
+            "autor": "Mulero, A., Cachadiña, I., Rodríguez-Martín, A.",
+            "title": "Recommended Correlations for the Surface Tension of "
+                     "42 Alkenes",
+            "ref": "J. Phys. Chem. Ref. Data 54(3) (2025) 033102",
+            "doi": "10.1063/5.0277723"},
+        "sigma": [0.05353, 0.009619], "exp": [1.226, 5.972]}
+
     _vapor_Pressure = {
         "eq": 3,
         "n": [-7.526, 2.924, -2.8748, -3.584, -3.229],
