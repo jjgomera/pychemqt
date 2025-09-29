@@ -4108,6 +4108,40 @@ class Petroleo(newComponente):
             xp, xn, xa = PNA_van_Nes(self.M, self.n, self.d20, self.S)
         return xp, xn, xa
 
+    def Viscosity_Index(self):
+        """Método de calculo del indice de viscosidad, API procedure 11A6.1, pag 1083"""
+        if self.v210.cSt>70:
+            L=0.8353*self.v210.cSt**2+14.67*self.v210.cSt-216
+            H=0.1684*self.v210.cSt**2+11.85*self.v210.cSt-97
+        else: #Ajuste de los datos de la tabla, producción propia
+            """Polynomial Fit of dataset: Table1_L, using function: a0+a1*x+a2*x^2+a3*x^3+a4*x^4+a5*x^5
+            --------------------------------------------------------------------------------------
+            Chi^2/doF = 1,4854228443647e+00
+            R^2 = 0,9999990418201
+            Adjusted R^2 = 0,9999990229086
+            RMSE (Root Mean Squared Error) = 1,218779243491
+            RSS (Residual Sum of Squares) = 453,0539675312
+            ---------------------------------------------------------------------------------------
+
+            Polynomial Fit of dataset: Table1_H, using function: a0+a1*x+a2*x^2+a3*x^3+a4*x^4+a5*x^5
+            --------------------------------------------------------------------------------------
+            Chi^2/doF = 1,7949865589785e-01
+            R^2 = 0,999998895674
+            Adjusted R^2 = 0,9999988738781
+            RMSE (Root Mean Squared Error) = 0,4236728170391
+            RSS (Residual Sum of Squares) = 54,74709004884
+            ---------------------------------------------------------------------------------------
+            """
+            L=-1.2756691045812e+01+6.1466654146190*self.v210.cSt+9.9774520581931e-01*self.v210.cSt**2-2.5045430263656e-03*self.v210.cSt**3+3.1748553181177e-05*self.v210.cSt**4-1.8264076604682e-07*self.v210.cSt**5
+            H=-7.6607640162508+5.4845434135144*self.v210.cSt+0.38222987985934*self.v210.cSt**2-4.6556329076069e-03*self.v210.cSt**3+5.1653200038471e-05*self.v210.cSt**4-2.3274903246922e-07*self.v210.cSt**5
+        if self.v100.cSt>H:
+            VI=(L-self.v100.cSt)/(L-H)*100
+        else:
+            N=(log10(H)-log10(self.v100.cSt))/log10(self.v210.cSt)
+            VI=(10**N-1)/0.00715+100
+        return VI
+
+
 
 
     # def Pv_Tsonopoulos(self, T):
@@ -4377,41 +4411,6 @@ class Petroleo(newComponente):
         # b=log(log(petro2[2]+0.7))-m*log(Tx)
 
         # return exp(exp(m*log(t.R)+b))-0.7
-
-
-    # def Viscosity_Index(self):
-        # """Método de calculo del indice de viscosidad, API procedure 11A6.1, pag 1083"""
-        # if self.v210.cSt>70:
-            # L=0.8353*self.v210.cSt**2+14.67*self.v210.cSt-216
-            # H=0.1684*self.v210.cSt**2+11.85*self.v210.cSt-97
-        # else: #Ajuste de los datos de la tabla, producción propia
-            # """Polynomial Fit of dataset: Table1_L, using function: a0+a1*x+a2*x^2+a3*x^3+a4*x^4+a5*x^5
-            # --------------------------------------------------------------------------------------
-            # Chi^2/doF = 1,4854228443647e+00
-            # R^2 = 0,9999990418201
-            # Adjusted R^2 = 0,9999990229086
-            # RMSE (Root Mean Squared Error) = 1,218779243491
-            # RSS (Residual Sum of Squares) = 453,0539675312
-            # ---------------------------------------------------------------------------------------
-
-            # Polynomial Fit of dataset: Table1_H, using function: a0+a1*x+a2*x^2+a3*x^3+a4*x^4+a5*x^5
-            # --------------------------------------------------------------------------------------
-            # Chi^2/doF = 1,7949865589785e-01
-            # R^2 = 0,999998895674
-            # Adjusted R^2 = 0,9999988738781
-            # RMSE (Root Mean Squared Error) = 0,4236728170391
-            # RSS (Residual Sum of Squares) = 54,74709004884
-            # ---------------------------------------------------------------------------------------
-            # """
-            # L=-1.2756691045812e+01+6.1466654146190*self.v210.cSt+9.9774520581931e-01*self.v210.cSt**2-2.5045430263656e-03*self.v210.cSt**3+3.1748553181177e-05*self.v210.cSt**4-1.8264076604682e-07*self.v210.cSt**5
-            # H=-7.6607640162508+5.4845434135144*self.v210.cSt+0.38222987985934*self.v210.cSt**2-4.6556329076069e-03*self.v210.cSt**3+5.1653200038471e-05*self.v210.cSt**4-2.3274903246922e-07*self.v210.cSt**5
-        # if self.v100.cSt>H:
-            # VI=(L-self.v100.cSt)/(L-H)*100
-        # else:
-            # N=(log10(H)-log10(self.v100.cSt))/log10(self.v210.cSt)
-            # VI=(10**N-1)/0.00715+100
-        # return VI
-
 
 
 

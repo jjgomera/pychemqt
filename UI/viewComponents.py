@@ -88,7 +88,7 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         8: r"A+B\frac{C/T}{\sinh(C/T)}+D\frac{E/T}{\cosh(E/T)}",
         9: r"A^2/Tr+B-2ACTr-ADTr^2-C^2Tr^3/3-CDTr^4/2-D^2Tr^5/5"}
 
-    def __init__(self, title, unit, id=0, prop="", array=None, parent=None):
+    def __init__(self, title, unit, index=0, prop="", coef=None, parent=None):
         """Constructor of widget
 
         Parameters
@@ -97,11 +97,11 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             Title so show of qgroupbox
         unit : string
             Aditional string with unit representation
-        id : integer
+        index : integer
             Index of compound in database to show
         prop : string
             Latex representation of property to show in matplotlib
-        array : list
+        coef : list
             List of DIPPR equation representation in format
             [eq, A, B, C, D, E, Tmin, Tmax]
         """
@@ -159,15 +159,15 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         self.eqformula = QLabelMath("")
         lyt.addWidget(self.eqformula, 0, 0, 1, 6)
 
-        self.changeId(id)
-        if array:
-            self.fill(array)
+        self.changeId(index)
+        if coef:
+            self.fill(coef)
 
-    def changeId(self, id):
-        """Common action to do when the component id change, change from user
-        to system compound, editable to readOnly compound"""
-        self.id = id
-        if id == 0 or id > 10000:
+    def changeId(self, index):
+        """Common action to do when the component index change, change from
+        user to system compound, editable to readOnly compound"""
+        self.id = index
+        if index == 0 or index > 10000:
             self.eqformula.setVisible(False)
             self.setReadOnly(False)
             self.btnFit.setEnabled(True)
@@ -176,31 +176,31 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             self.eq.setVisible(True)
             self.btnFit.setEnabled(False)
 
-    def fill(self, array):
-        """Populate the widgets with the DIPPR coefficient in array in format
+    def fill(self, coef):
+        """Populate the widgets with the DIPPR coefficient in format
         [eq, A, B, C, D, E, Tmin, Tmax]"""
-        if array[0] != 0:
-            for valor, entrada in zip(array[1:6], self.coeff):
+        if coef[0] != 0:
+            for valor, entrada in zip(coef[1:6], self.coeff):
                 entrada.setValue(valor)
-            self.tmin.setValue(array[6])
-            self.tmax.setValue(array[7])
-            self.eq.setValue(array[0])
-            latex = self.latex[array[0]]
-            tex = "$%s = %s$" % (self.proptex, latex)
+            self.tmin.setValue(coef[6])
+            self.tmax.setValue(coef[7])
+            self.eq.setValue(coef[0])
+            latex = self.latex[coef[0]]
+            tex = f"${self.proptex} = {latex}$"
             self.eqformula.setTex(tex)
             self.eq.setVisible(False)
             self.eqformula.setVisible(True)
             self.btnPlot.setEnabled(True)
-            self.equation = array[0]
+            self.equation = coef[0]
         self.btnFit.setEnabled(self.parent.index >= 10001)
 
-    def setReadOnly(self, bool):
+    def setReadOnly(self, boolean):
         """Set widget readOnly state"""
         for entrada in self.coeff:
-            entrada.setReadOnly(bool)
-        self.tmin.setReadOnly(bool)
-        self.tmax.setReadOnly(bool)
-        self.btnFit.setDisabled(bool)
+            entrada.setReadOnly(boolean)
+        self.tmin.setReadOnly(boolean)
+        self.tmax.setReadOnly(boolean)
+        self.btnFit.setDisabled(boolean)
 
     @property
     def value(self):
@@ -242,25 +242,25 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             Coefficient of DIPPR equation
         """
         if eq == 1:
-            string = "$%s = " % self.proptex
+            string = f"${self.proptex} = "
             if args[0]:
-                string += "%0.3g" % args[0]
+                string += f"{args[0]:0.5g}"
             if args[1]:
-                string += "%+0.3gT" % args[1]
+                string += f"{args[1]:+0.5g}T"
             if args[2]:
-                string += "%+0.3gT^2" % args[2]
+                string += f"{args[2]:+0.5g}T^2"
             if args[3]:
-                string += "%+0.3gT^3" % args[3]
+                string += f"{args[3]:+0.5g}T^3"
             if args[4]:
-                string += "%+0.3gT^4" % args[4]
+                string += f"{args[4]:+0.5g}T^4"
             string += "$"
 
         elif eq == 2:
             string = "$%s = e^{" % self.proptex
             if args[0]:
-                string += "%0.3g" % args[0]
+                string += f"{args[0]:0.5g}"
             if args[1]:
-                string += "%+0.3fgT" % args[1]
+                string += f"{args[1]:0.5g}T"
             if args[2]:
                 string += r"%+0.3g \ln(T)" % args[2]
             if args[3]:
@@ -268,23 +268,23 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             string += "}$"
 
         elif eq == 3:
-            string = "$%s = %0.3g T^{\\frac{%0.3g}{1%+0.3g T" % (
+            string = r"$%s = \frac{%0.3g T^{%0.3g}}{1%+0.3g/ T" % (
                     self.proptex, args[0], args[1], args[2])
             if args[3]:
-                string += "%+0.3g^2" % args[3]
-            string += "}}$"
+                string += f"{args[3]:+0.3g}/T^2"
+            string += "}$"
+            print(string)
 
         elif eq == 4:
-            string = "$%s = %0.3g%+0.3g*exp(" % (
-                self.proptex, args[0], args[1])
+            string = f"${self.proptex} = {args[0]:0.5g}{args[1]:+0.3g}*exp("
             if args[2] < 0:
                 string += "-"
             string += "%0.3g/T^{%0.3g})$" % (args[2], args[3])
 
         elif eq == 5:
-            string = "$%s = " % self.proptex
+            string = f"${self.proptex} = "
             if args[0]:
-                string += "%0.3g" % args[0]
+                string += f"{args[0]:0.3g}"
             if args[1]:
                 string += "+\\frac{%0.3g}{T}" % args[1]
             if args[2]:
@@ -303,19 +303,19 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         elif eq == 7:
             string = "$%s = %0.3g (1-T_r)^{" % (self.proptex, args[0])
             if args[1]:
-                string += "%0.3g" % args[1]
+                string += f"{args[1]:0.3g}"
             if args[2]:
-                string += "%+0.3gT_r" % args[2]
+                string += f"{args[2]:+0.3g}T_r"
             if args[3]:
-                string += "%+0.3gT_r^2" % args[3]
+                string += f"{args[3]:+0.3g}T_r^2"
             if args[4]:
-                string += "%+0.3gT_r^3" % args[4]
+                string += f"{args[4]:+0.3g}T_r^3"
             string += "}$"
 
         elif eq == 8:
-            string = "$%s = " % self.proptex
+            string = f"${self.proptex} = "
             if args[0]:
-                string += "%0.3g" % args[0]
+                string += f"{args[0]:0.3g}"
             if args[1]:
                 string += "%+0.3g\\left(\\frac{%0.3g/T}{sinh(%0.3g/T)}" % (
                     args[1], args[2], args[2])
@@ -327,21 +327,21 @@ class DIPPR_widget(QtWidgets.QGroupBox):
             string += "$"
 
         elif eq == 9:
-            string = "$%s = " % self.proptex
+            string = f"${self.proptex} = "
             if args[0]:
                 string += "\\frac{%0.3g}{T_r}" % args[0]
             if args[1]:
-                string += "%+0.3g" % args[1]
+                string += f"{args[1]:0.3g}"
             if args[0] and args[2]:
-                string += "%+0.3gT_r" % -2*args[0]*args[2]
+                string += f"{-2*args[0]*args[2]:+0.3g}T_r"
             if args[0] and args[3]:
-                string += "%+0.3gT_r^2" % -args[0]*args[3]
+                string += f"{args[0]*args[3]:+0.3g}T_r^2"
             if args[2]:
-                string += "%+0.3gT_r^3" % -args[2]**2/3
+                string += f"{-args[2]**2/3:+0.3g}T_r^3"
             if args[2] and args[3]:
-                string += "%+0.3gT_r^4" % -args[2]*args[3]/2
+                string += f"{-args[2]*args[3]/2:+0.3g}T_r^4"
             if args[3]:
-                string += "%+0.3gT_r^5" % -args[3]**2/5
+                string += f"{-args[3]**2/5:+0.3g}T_r^5"
             string += "$"
 
         return string
@@ -351,12 +351,12 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         r correlation coefficient, optional parameter for reuse the code in the
         fit data procedure
         """
-        array = self.value
-        t = list(linspace(array[-2], array[-1], 100))
+        coef = self.value
+        t = list(linspace(coef[-2], coef[-1], 100))
         kw = {}
         kw["Tc"] = self.parent.Tc.value
         kw["M"] = self.parent.M.value
-        var = [DIPPR(self.prop, ti, array[:-2], **kw) for ti in t]
+        var = [DIPPR(self.prop, ti, coef[:-2], **kw) for ti in t]
         dialog = PlotDialog()
         dialog.addData(t, var)
         if self.data:
@@ -365,14 +365,14 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         dialog.plot.ax.set_title(self.title(), size="14")
 
         # Annotate the equation
-        formula = self.formula_DIPPR(array[0], array[1:-2])
+        formula = self.formula_DIPPR(coef[0], coef[1:-2])
         dialog.plot.ax.annotate(formula, (0.05, 0.9), xycoords='axes fraction',
                                 size="10", va="center")
 
         # Add correlation coefficient
         if r:
             dialog.plot.ax.annotate(
-                "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
+                f"$r^2={r:0.5f}$", (0.05, 0.8), xycoords='axes fraction',
                 size="10", va="center")
 
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
@@ -382,8 +382,8 @@ class DIPPR_widget(QtWidgets.QGroupBox):
 
     def fit(self):
         """Fit experimental data to a DIPPR equation"""
-        uniT = unidades.Temperature.text()
-        hHeader = ["T, %s" % uniT, "%s, %s" % (self.title(), self.unit.text())]
+        hHeader = [f"T, {unidades.Temperature.text()}",
+                   f"{self.title()}, {self.unit.text()}"]
         dlg = InputTableDialog(
                 title=self.title(), DIPPR=True, horizontalHeader=hHeader,
                 hasTc=True, Tc=self.parent.Tc.value, t=self.t,
@@ -442,7 +442,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         "wagner": 4,
         "viscosity": 2}
 
-    def __init__(self, title, unit, id=0, prop="", array=None, parent=None):
+    def __init__(self, title, unit, index=0, prop="", coef=None, parent=None):
         """Constructor of widget
 
         Parameters
@@ -451,18 +451,18 @@ class Parametric_widget(QtWidgets.QGroupBox):
             Title so show of qgroupbox
         unit : string
             Aditional string with unit representation
-        id : integer
+        index : integer
             Index of compound in database to show
         prop : string
             code name of property to show
-        array : list
+        coef : list
             List of DIPPR equation representation in format
             [eq, A, B, C, D, E, Tmin, Tmax]
         """
         super().__init__(title, parent)
         self.prop = prop
         self.unit = unit
-        self.id = id
+        self.id = index
         self.parent = parent
         self.t = []
         self.data = []
@@ -524,15 +524,15 @@ class Parametric_widget(QtWidgets.QGroupBox):
             0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
 
-        self.changeId(id)
-        if array:
-            self.fill(array)
+        self.changeId(index)
+        if coef:
+            self.fill(coef)
 
-    def changeId(self, id):
-        """Common action to do when the component id change, change from user
-        to system compound, editable to readOnly compound"""
-        self.id = id
-        if id == 0 or id > 10000:
+    def changeId(self, index):
+        """Common action to do when the component index change, change from
+        user to system compound, editable to readOnly compound"""
+        self.id = index
+        if index == 0 or index > 10000:
             self.setReadOnly(False)
             self.btnFit.setEnabled(True)
         else:
@@ -545,39 +545,40 @@ class Parametric_widget(QtWidgets.QGroupBox):
             for label in self.advancedLabel:
                 label.setVisible(False)
 
-    def fill(self, array):
-        """Populate the widgets with the parametric coefficient in array"""
+    def fill(self, coef):
+        """Populate the widgets with the parametric coefficient"""
         # Use local variable enabled to enable the btnPlot button if the
         # parameters are available
         enabled = False
         self.btnFit.setEnabled(self.parent.index >= 10001)
 
-        self.array = array
-        for input, value in zip(self.coeff, array):
+        self.array = coef
+        for wdg, value in zip(self.coeff, coef):
             if value:
                 enabled = True
-                input.setValue(value)
+                wdg.setValue(value)
         self.btnPlot.setEnabled(enabled)
 
-        if self.prop == "antoine" and len(array) > 3:
-            for entrada, value in zip(self.advancedCoeff, array[3:]):
+        if self.prop == "antoine" and len(coef) > 3:
+            for entrada, value in zip(self.advancedCoeff, coef[3:]):
                 entrada.setVisible(True)
                 entrada.setValue(value)
             for label in self.advancedLabel:
                 label.setVisible(True)
 
-    def setReadOnly(self, bool):
+    def setReadOnly(self, boolean):
         """Set widget readOnly state"""
         for entrada in self.coeff:
-            entrada.setReadOnly(bool)
-        self.btnFit.setDisabled(bool)
+            entrada.setReadOnly(boolean)
+        self.btnFit.setDisabled(boolean)
 
         if self.prop == "antoine":
             for entrada in self.advancedCoeff:
-                entrada.setReadOnly(bool)
+                entrada.setReadOnly(boolean)
 
     @property
     def value(self):
+        """Return list with coeff of array"""
         valor = []
         for entrada in self.coeff:
             elemento = entrada.value
@@ -587,11 +588,12 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 valor.append(0)
         if valor != [0]*self.count:
             return valor
-        else:
-            return []
+        return None
 
     @property
     def advancedValue(self):
+        """Return list with advances values for Antoine vapour pressure if
+        available"""
         valor = []
         for entrada in self.advancedCoeff:
             elemento = entrada.value
@@ -601,8 +603,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 valor.append(0)
         if sum(valor):
             return valor
-        else:
-            return []
+        return None
 
     def clear(self):
         """Clear widget contents"""
@@ -665,6 +666,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         return string
 
     def function(self, prop):
+        """Define functions of widget"""
         function = {
             "viscosity": MuL_Parametric,
             "antoine": Pv_Antoine,
@@ -696,7 +698,9 @@ class Parametric_widget(QtWidgets.QGroupBox):
         coeff = self.value
         kw = {}
         if self.prop == "antoine":
-            coeff += self.advancedValue
+            coeff_adv = self.advancedValue
+            if coeff_adv:
+                coeff += coeff_adv
             kw["Tc"] = self.parent.Tc.value
         elif self.prop == "wagner":
             kw["Tc"] = self.parent.Tc.value
@@ -722,7 +726,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
         # Add correlation coefficient
         if r:
             dialog.plot.ax.annotate(
-                "$r^2=%0.5f$" % r, (0.05, 0.8), xycoords='axes fraction',
+                f"$r^2={r:0.5f}$", (0.05, 0.8), xycoords='axes fraction',
                 size="10", va="center")
 
         dialog.plot.ax.set_xlabel("T, K", ha='right', size="12")
@@ -732,7 +736,7 @@ class Parametric_widget(QtWidgets.QGroupBox):
 
     def fit(self):
         """Fit experimental data to a parametric equation"""
-        hHeader = ["T", "%s" % self.title()]
+        hHeader = ["T", f"{self.title()}"]
         dlg = InputTableDialog(
             title=self.title(), horizontalHeader=hHeader,
             hasTc=self.prop == "sigma", Tc=self.parent.Tc.value,
@@ -794,6 +798,7 @@ class View_Component(QtWidgets.QDialog):
     friendly format. This dialog can be used too to edit a user component, or
     define a new component"""
     cmp = Componente()
+    index = None
 
     def __init__(self, index=0, parent=None):
         """
@@ -923,13 +928,13 @@ class View_Component(QtWidgets.QDialog):
         self.SG.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.SG, 6, 5)
         labelTm = QtWidgets.QLabel("T<sub>m</sub>")
-        labelTm.setToolTip(self.tr("Melting Point")),
+        labelTm.setToolTip(self.tr("Melting Point"))
         lytGeneral.addWidget(labelTm, 7, 4)
         self.Tm = Entrada_con_unidades(unidades.Temperature)
         self.Tm.valueChanged.connect(self.setDirty)
         lytGeneral.addWidget(self.Tm, 7, 5)
         labelTb = QtWidgets.QLabel("T<sub>b</sub>")
-        labelTb.setToolTip(self.tr("Boiling Point")),
+        labelTb.setToolTip(self.tr("Boiling Point"))
         lytGeneral.addWidget(labelTb, 8, 4)
         self.Tb = Entrada_con_unidades(unidades.Temperature)
         self.Tb.valueChanged.connect(self.setDirty)
@@ -956,7 +961,7 @@ class View_Component(QtWidgets.QDialog):
         lytCp.setSpacing(25)
 
         grpCpIdeal = QtWidgets.QGroupBox(
-                self.tr("Cp ideal gas") + ", cal/mol·K")
+            self.tr("Cp ideal gas") + ", cal/mol·K")
         lytCp.addWidget(grpCpIdeal, 1, 1, 1, 1)
         lytCpIdeal = QtWidgets.QGridLayout(grpCpIdeal)
         mathTex = "$C_p^o=A+BT+CT^2+DT^3+ET^4+FT^5$"
@@ -1533,6 +1538,7 @@ class View_Component(QtWidgets.QDialog):
         self.dirty = False
 
     def change(self, index):
+        """Actions to be done when change index of compound"""
         if index == "-1":
             if self.index == 10001:
                 index = sql.N_comp
@@ -1549,10 +1555,14 @@ class View_Component(QtWidgets.QDialog):
             else:
                 index = sql.N_comp
 
-        btnDiscard = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Discard)
-        btnSave = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Save)
-        btnApply = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Apply)
-        btnClose = self.btnBox.button(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        btnDiscard = self.btnBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Discard)
+        btnSave = self.btnBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Save)
+        btnApply = self.btnBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Apply)
+        btnClose = self.btnBox.button(
+            QtWidgets.QDialogButtonBox.StandardButton.Close)
         if index == 0:
             btnDiscard.setVisible(True)
             btnSave.setVisible(True)
@@ -1588,9 +1598,11 @@ class View_Component(QtWidgets.QDialog):
         self.index = index
 
     def setDirty(self):
+        """Set dirty state"""
         self.dirty = True
 
     def clear(self):
+        """Clear childer widget"""
         self.name.clear()
         self.alternateName.clear()
         self.CAS.clear()
@@ -1672,9 +1684,10 @@ class View_Component(QtWidgets.QDialog):
         self.watson.clear()
 
     def fill(self, index):
+        """Populate widget with compound properties"""
         self.index = index
         self.cmp = Componente(index)
-        self.name.setText("%i - %s" % (self.cmp.id, self.cmp.name))
+        self.name.setText(f"{self.cmp.id} - {self.cmp.name}")
         self.alternateName.setText(self.cmp.Synonyms)
         self.CAS.setText(self.cmp.CASNumber)
         self.formula1.setText(self.cmp.formula)
@@ -1689,10 +1702,10 @@ class View_Component(QtWidgets.QDialog):
 
         if self.cmp.UNIFAC != []:
             self.UNIFAC.setRowCount(len(self.cmp.UNIFAC))
-            for i in range(len(self.cmp.UNIFAC)):
+            for i, unifac in enumerate(self.cmp.UNIFAC):
                 self.UNIFAC.setRowHeight(i, 25)
-                item = QtWidgets.QTableWidgetItem(str(self.cmp.UNIFAC[i][0]))
-                item2 = QtWidgets.QTableWidgetItem(str(self.cmp.UNIFAC[i][1]))
+                item = QtWidgets.QTableWidgetItem(str(unifac[0]))
+                item2 = QtWidgets.QTableWidgetItem(str(unifac[1]))
                 self.UNIFAC.setItem(i, 0, item)
                 self.UNIFAC.setItem(i, 1, item2)
                 self.UNIFAC.item(i, 1).setTextAlignment(
@@ -1825,6 +1838,7 @@ class View_Component(QtWidgets.QDialog):
             self.watson.setValue(self.cmp.Kw)
 
     def getComponent(self):
+        """Get compound data"""
         new = []
         new.append(str(self.formula1.text()))
         if self.index == 0:
@@ -1914,6 +1928,7 @@ class View_Component(QtWidgets.QDialog):
         return new
 
     def buttonClicked(self, boton):
+        """Buttonbox functions management"""
         role = self.btnBox.buttonRole(boton)
         if role == QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole:
             componente = self.getComponent()
@@ -1926,9 +1941,11 @@ class View_Component(QtWidgets.QDialog):
         elif role == QtWidgets.QDialogButtonBox.ButtonRole.DestructiveRole:
             componente = self.getComponent()
             if self.index == 0:
+                # New component definition
                 func = sql.inserElementsFromArray
                 arg = (sql.databank_Custom_name, [componente])
             elif self.index > 10000:
+                # Editing custom compound
                 func = sql.updateElement
                 arg = (componente, self.index)
             if okToContinue(self, self.dirty, func, arg):
@@ -1938,71 +1955,73 @@ class View_Component(QtWidgets.QDialog):
         else:
             self.reject()
 
-    def setReadOnly(self, bool):
-        self.formula1.setReadOnly(bool)
-        self.CAS.setReadOnly(bool)
-        self.alternateName.setReadOnly(bool)
-        self.formula1.setReadOnly(bool)
-        self.smile.setReadOnly(bool)
-        self.M.setReadOnly(bool)
-        self.Tc.setReadOnly(bool)
-        self.Pc.setReadOnly(bool)
-        self.Vc.setReadOnly(bool)
-        self.w.setReadOnly(bool)
-        self.SG.setReadOnly(bool)
-        self.Tb.setReadOnly(bool)
-        self.Tm.setReadOnly(bool)
-        self.calorFormacionGas.setReadOnly(bool)
-        self.energiaGibbsGas.setReadOnly(bool)
-        self.cpa.setReadOnly(bool)
-        self.cpb.setReadOnly(bool)
-        self.cpc.setReadOnly(bool)
-        self.cpd.setReadOnly(bool)
-        self.cpe.setReadOnly(bool)
-        self.cpf.setReadOnly(bool)
-        self.MSRKa.setReadOnly(bool)
-        self.MSRKb.setReadOnly(bool)
-        self.Melhemm.setReadOnly(bool)
-        self.Melhemn.setReadOnly(bool)
-        self.SRKAPIS1.setReadOnly(bool)
-        self.SRKAPIS2.setReadOnly(bool)
-        self.MathiasCopemanC1.setReadOnly(bool)
-        self.MathiasCopemanC2.setReadOnly(bool)
-        self.MathiasCopemanC3.setReadOnly(bool)
-        self.SVk0.setReadOnly(bool)
-        self.SVk1.setReadOnly(bool)
-        self.SVk2.setReadOnly(bool)
-        self.ZVk1.setReadOnly(bool)
-        self.ZVk2.setReadOnly(bool)
-        self.Almeidam.setReadOnly(bool)
-        self.Almeidan.setReadOnly(bool)
-        self.AlmeidaG.setReadOnly(bool)
-        self.PTZc.setReadOnly(bool)
-        self.PTF.setReadOnly(bool)
-        self.TBq1.setReadOnly(bool)
-        self.TBq2.setReadOnly(bool)
-        self.TBSZc.setReadOnly(bool)
-        self.TBSm.setReadOnly(bool)
-        self.TBSp.setReadOnly(bool)
-        self.TBSd.setReadOnly(bool)
-        self.SolubilityPar.setReadOnly(bool)
-        self.Dipole.setReadOnly(bool)
-        self.MolecularDiameter.setReadOnly(bool)
-        self.NetHeat.setReadOnly(bool)
-        self.GrossHeat.setReadOnly(bool)
-        self.VolLiqConstant.setReadOnly(bool)
-        self.API.setReadOnly(bool)
-        self.wMod.setReadOnly(bool)
-        self.UNIQUACArea.setReadOnly(bool)
-        self.UNIQUACVolume.setReadOnly(bool)
-        self.wilson.setReadOnly(bool)
-        self.stiel.setReadOnly(bool)
-        self.rackett.setReadOnly(bool)
-        self.PolarParameter.setReadOnly(bool)
-        self.EpsK.setReadOnly(bool)
-        self.watson.setReadOnly(bool)
+    def setReadOnly(self, boolean):
+        """Set readOnly for all child widgets"""
+        self.formula1.setReadOnly(boolean)
+        self.CAS.setReadOnly(boolean)
+        self.alternateName.setReadOnly(boolean)
+        self.formula1.setReadOnly(boolean)
+        self.smile.setReadOnly(boolean)
+        self.M.setReadOnly(boolean)
+        self.Tc.setReadOnly(boolean)
+        self.Pc.setReadOnly(boolean)
+        self.Vc.setReadOnly(boolean)
+        self.w.setReadOnly(boolean)
+        self.SG.setReadOnly(boolean)
+        self.Tb.setReadOnly(boolean)
+        self.Tm.setReadOnly(boolean)
+        self.calorFormacionGas.setReadOnly(boolean)
+        self.energiaGibbsGas.setReadOnly(boolean)
+        self.cpa.setReadOnly(boolean)
+        self.cpb.setReadOnly(boolean)
+        self.cpc.setReadOnly(boolean)
+        self.cpd.setReadOnly(boolean)
+        self.cpe.setReadOnly(boolean)
+        self.cpf.setReadOnly(boolean)
+        self.MSRKa.setReadOnly(boolean)
+        self.MSRKb.setReadOnly(boolean)
+        self.Melhemm.setReadOnly(boolean)
+        self.Melhemn.setReadOnly(boolean)
+        self.SRKAPIS1.setReadOnly(boolean)
+        self.SRKAPIS2.setReadOnly(boolean)
+        self.MathiasCopemanC1.setReadOnly(boolean)
+        self.MathiasCopemanC2.setReadOnly(boolean)
+        self.MathiasCopemanC3.setReadOnly(boolean)
+        self.SVk0.setReadOnly(boolean)
+        self.SVk1.setReadOnly(boolean)
+        self.SVk2.setReadOnly(boolean)
+        self.ZVk1.setReadOnly(boolean)
+        self.ZVk2.setReadOnly(boolean)
+        self.Almeidam.setReadOnly(boolean)
+        self.Almeidan.setReadOnly(boolean)
+        self.AlmeidaG.setReadOnly(boolean)
+        self.PTZc.setReadOnly(boolean)
+        self.PTF.setReadOnly(boolean)
+        self.TBq1.setReadOnly(boolean)
+        self.TBq2.setReadOnly(boolean)
+        self.TBSZc.setReadOnly(boolean)
+        self.TBSm.setReadOnly(boolean)
+        self.TBSp.setReadOnly(boolean)
+        self.TBSd.setReadOnly(boolean)
+        self.SolubilityPar.setReadOnly(boolean)
+        self.Dipole.setReadOnly(boolean)
+        self.MolecularDiameter.setReadOnly(boolean)
+        self.NetHeat.setReadOnly(boolean)
+        self.GrossHeat.setReadOnly(boolean)
+        self.VolLiqConstant.setReadOnly(boolean)
+        self.API.setReadOnly(boolean)
+        self.wMod.setReadOnly(boolean)
+        self.UNIQUACArea.setReadOnly(boolean)
+        self.UNIQUACVolume.setReadOnly(boolean)
+        self.wilson.setReadOnly(boolean)
+        self.stiel.setReadOnly(boolean)
+        self.rackett.setReadOnly(boolean)
+        self.PolarParameter.setReadOnly(boolean)
+        self.EpsK.setReadOnly(boolean)
+        self.watson.setReadOnly(boolean)
 
     def help(self, page):
+        """Open help page in documentation"""
         # First search for a local documentation build
         # By default in docs/_build/html/
         path = os.path.join(os.environ["pychemqt"], "docs") + os.sep

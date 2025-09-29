@@ -993,7 +993,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         """Show dialog to change text"""
         dialog = TextItemDlg(self.toHtml())
         if dialog.exec():
-            self.setHtml(dialog.editor.texto)
+            self.setHtml(dialog.editor.text)
 
     def contextMenu(self):
         """Define context menu of item"""
@@ -1761,7 +1761,7 @@ class TextItemDlg(QtWidgets.QDialog):
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
         self.editor = texteditor.TextEditor()
-        self.editor.notas.textChanged.connect(self.updateUi)
+        self.editor.notes.textChanged.connect(self.updateUi)
         layout.addWidget(self.editor, 1, 1, 1, 1)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Ok
@@ -1769,7 +1769,7 @@ class TextItemDlg(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox, 2, 1, 1, 1)
-        self.editor.notas.setFocus()
+        self.editor.notes.setFocus()
         if text:
             self.editor.setText(text)
         self.setWindowTitle(self.tr("Edit text"))
@@ -1779,7 +1779,7 @@ class TextItemDlg(QtWidgets.QDialog):
         """Set enable/disable OK button"""
         self.buttonBox.button(
             QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(
-                bool(self.editor.notas.toPlainText()))
+                bool(self.editor.notes.toPlainText()))
 
 
 if __name__ == "__main__":

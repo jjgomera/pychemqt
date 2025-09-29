@@ -15,31 +15,33 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module to define common graphics widget
-#   - Status: Label with status (for equipment, stream)
-#   - Entrada_con_unidades: Composite widget for unit values for input/view
-#   - Tabla: Custom tablewidget tablewidget with added functionality
-#   - ClickableLabel: Label with custom clicked signal
-#   - ColorSelector: Composite widget for colour definition
-#   - DragButton: Button with drag & drop support
-#   - PathConfig: Custom widget for file path show and configure
-#   - LineConfig: Custom QGroupbox with all matplotlib Line configuration
-#   - CustomCombo: General custom QComboBox
-#   - LineStyleCombo: Custom QComboBox for select matplotlib line styles
-#   - MarkerCombo: Custom QComboBox for select matplotlib line marker
-#   - NumericFactor: Numeric format configuration dialog
-#   - InputFont: Custom widget to edit a text input with font and color support
-#   - Table_Graphics: Custom widget to implement a popup in PFD
-#   - QLabelMath: Customized QLabel to show a pixmap from a latex code
+Module to define common graphics widget
 
-#   - createAction
-#   - okToContinue: Function to ask user if any unsaved change
-#   - mathTex2QPixmap: Convert a latex text to a QPixmap
-###############################################################################
+  * :class:`Status`: Label with status (for equipment, stream)
+  * :class:`Entrada_con_unidades`: Composite widget for unit values for input/view
+  * :class:`Tabla`: Custom tablewidget tablewidget with added functionality
+  * :class:`ClickableLabel`: Label with custom clicked signal
+  * :class:`ColorSelector`: Composite widget for colour definition
+  * :class:`DragButton`: Button with drag & drop support
+  * :class:`PathConfig`: Custom widget for file path show and configure
+  * :class:`LineConfig`: Custom QGroupbox with all matplotlib Line configuration
+  * :class:`GridConfig`: Extended version of LineConfig for grid specific line
+  * :class:`CustomCombo`: General custom QComboBox
+  * :class:`LineStyleCombo`: Custom QComboBox for select matplotlib line styles
+  * :class:`PFDLineCombo`: Custom QComboBox for select PFD line styles for stream
+  * :class:`MarkerCombo`: Custom QComboBox for select matplotlib line marker
+  * :class:`NumericFactor`: Numeric format configuration dialog
+  * :class:`InputFont`: Custom widget to edit a text input with font and color support
+  * :class:`Table_Graphics`: Custom widget to implement a popup in PFD
+  * :func: `mathTex2QPixmap`: Convert a latex text to a QPixmap
+  * :class:`QLabelMath`: Customized QLabel to show a pixmap from a latex code
+
+  * :func: `createAction`
+  * :func: `okToContinue`: Function to ask user if any unsaved change
+'''
 
 
 from configparser import ConfigParser
@@ -179,6 +181,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.resaltado = resaltado
         self.showNull = showNull
 
+        # Set color on input widget
         Config = ConfigParser()
         Config.read(conf_dir+"pychemqtrc")
         if colorReadOnly:
@@ -322,12 +325,15 @@ class Entrada_con_unidades(QtWidgets.QWidget):
         self.setResaltado(self.resaltado)
 
     def setNotReadOnly(self, editable):
+        """Inverse readonly slot"""
         self.setReadOnly(not editable)
 
     def setRetornar(self, retornar):
+        """Update value of widget from unit values list dialog"""
         self.retornar = retornar
 
     def setValue(self, value):
+        """Set value of widget"""
         if value is None:
             value = 0
         self.value = self.unidad(value)
@@ -344,6 +350,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
             self.setToolTip()
 
     def setFrame(self, frame):
+        """Set frame of widget"""
         self.entrada.setFrame(frame)
         self.frame = frame
 
@@ -362,7 +369,7 @@ class Entrada_con_unidades(QtWidgets.QWidget):
                 valores = []
                 for i in lst:
                     valores.append(representacion(
-                        self.value.__getattribute__(self.value.__units__[i]),
+                        getattr(self.value, self.value.__units__[i]),
                         self.decimales, self.tolerancia) + " " +
                         self.value.__text__[i])
                 self.entrada.setToolTip(os.linesep.join(valores))
@@ -630,7 +637,7 @@ class Tabla(QtWidgets.QTableWidget):
             for columna, dato in enumerate(matriz[fila]):
                 # self.setVerticalHeaderItem(fila, QtWidgets.QTableWidgetItem(
                     # self.verticalHeaderModel+str(fila)))
-                self.item(fila, columna).setText(str(dato))
+                self.item(fila+self.verticalOffset, columna).setText(str(dato))
                 self.item(fila+self.verticalOffset, columna).setTextAlignment(
                     self.orientacion | QtCore.Qt.AlignmentFlag.AlignVCenter)
         for i in range(self.verticalOffset, self.rowCount()):
@@ -658,6 +665,7 @@ class Tabla(QtWidgets.QTableWidget):
             self.item(row, column).setFlags(flags)
 
     def leaveEvent(self, event):
+        """Emit editingFinished when focus leave widget"""
         if self.isEnabled():
             self.editingFinished.emit()
 
@@ -667,6 +675,7 @@ class ClickableLabel(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal()
 
     def mousePressEvent(self, event):
+        """Use mouse press event to simulate clicked signal"""
         self.clicked.emit()
 
 
@@ -754,10 +763,12 @@ class ColorSelector(QtWidgets.QWidget):
 
 
 class DragButton(QtWidgets.QToolButton):
-    """Clase que define un botón especial que permite arrastrar"""
+    """Class to define a special button with drag/drop supoort"""
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+    #TODO: Not implemented
 
     # def mouseMoveEvent(self, event):
         # self.startDrag()
@@ -853,6 +864,7 @@ class PathConfig(QtWidgets.QWidget):
             self.valueChanged.emit(ruta)
 
     def pathEdited(self, path):
+        """Emit valueChanged signals when path is changed"""
         if os.path.isfile(path):
             self.valueChanged.emit(path)
 
@@ -921,12 +933,15 @@ class LineConfig(QtWidgets.QGroupBox):
         self.changeMarker(0)
 
     def changeMarker(self, index):
+        """Update visibility of marker properties widget when any marker is
+        selected"""
         self.MarkerSize.setVisible(index)
         self.MarkerColor.setVisible(index)
         self.EdgeSize.setVisible(index)
         self.EdgeColor.setVisible(index)
 
     def setConfig(self, config, section="MEOS"):
+        """Set widget values from config"""
         alfa = config.getint(section, self.conf+"alpha")
         self.Color.setColor(config.get(section, self.conf+'Color'), alfa)
         self.Width.setValue(config.getfloat(section, self.conf+'lineWidth'))
@@ -943,6 +958,7 @@ class LineConfig(QtWidgets.QGroupBox):
                 config.get(section, self.conf+'markeredgecolor'), alfa)
 
     def value(self, config, section="MEOS"):
+        """Update ConfigParser instance with the config"""
         config.set(section, self.conf+"Color", self.Color.color.name())
         config.set(section, self.conf+"alpha", str(self.Color.color.alpha()))
         config.set(section, self.conf+"lineWidth", str(self.Width.value()))
@@ -1005,6 +1021,7 @@ class GridConfig(LineConfig):
         self.layout().insertLayout(2, lyt)
 
     def setConfig(self, config, section):
+        """Set widget values from config"""
         LineConfig.setConfig(self, config, section)
         self.grid.setChecked(config.getboolean(section, 'grid'))
         txt = config.get(section, 'gridwhich')
@@ -1172,12 +1189,12 @@ class NumericFactor(QtWidgets.QDialog):
         layout.addWidget(buttonBox, 20, 1, 1, 3)
 
         self.checkFixed.setChecked(config["fmt"] == 0)
-        self.TotalDigits.setNotReadOnly(config["fmt"] == 0)
-        self.DecimalDigits.setNotReadOnly(config["fmt"] == 0)
+        self.TotalDigits.setReadOnly(config["fmt"] != 0)
+        self.DecimalDigits.setReadOnly(config["fmt"] != 0)
         self.checkSignificant.setChecked(config["fmt"] == 1)
-        self.FiguresSignificatives.setNotReadOnly(config["fmt"] == 1)
+        self.FiguresSignificatives.setReadOnly(config["fmt"] != 1)
         self.checkExp.setChecked(config["fmt"] == 2)
-        self.FiguresExponential.setNotReadOnly(config["fmt"] == 2)
+        self.FiguresExponential.setReadOnly(config["fmt"] != 2)
         if config["fmt"] == 0:
             self.DecimalDigits.setValue(config["decimales"])
         elif config["fmt"] == 1:
@@ -1190,7 +1207,7 @@ class NumericFactor(QtWidgets.QDialog):
             self.checkExpVariable.setChecked(config["exp"])
         if "tol" in config:
             self.Tolerance.setValue(config["tol"])
-        self.Tolerance.setNotReadOnly(config.get("exp", False))
+        self.Tolerance.setReadOnly(not config.get("exp", False))
         if "signo" in config:
             self.checkSign.setChecked(config["signo"])
         if "thousand" in config:
@@ -1385,6 +1402,7 @@ class Table_Graphics(QtWidgets.QWidget):
         else:
             self.layout().addWidget(QtWidgets.QLabel(self.tr("Undefined")))
 
+
 def createAction(text, **kw):
     """Create a QAction and a QToolButton if its requested
 
@@ -1447,7 +1465,7 @@ def createAction(text, **kw):
     return action
 
 
-def okToContinue(parent, dirty, func, parameters):
+def okToContinue(parent, dirty, func, *parameters):
     """Function to ask user if any unsaved change
 
     Parameters
@@ -1562,6 +1580,7 @@ class QLabelMath(QtWidgets.QLabel):
 
 
 def demo():
+    """Show a demo widget with implemented custom widget"""
 
     from lib import unidades
 
@@ -1578,14 +1597,18 @@ def demo():
     layout.addWidget(w3)
     w4 = LineConfig("saturation", "Line Style")
     layout.addWidget(w4)
-    w5 = InputFont(text="foo bar", color="#0000ff")
+    w5 = GridConfig("grid", "Grid Line Style")
     layout.addWidget(w5)
-    w6 = Tabla(columnas=1, filas=1, verticalHeaderModel="C", dinamica=True)
+    w6 = LineStyleCombo()
     layout.addWidget(w6)
-    w7 = QLabelMath(r"$\frac{\pi r^2}{2\epsilon \mu}$", fs=15)
+    w7 = InputFont(text="foo bar", color="#0000ff")
     layout.addWidget(w7)
-    w8 = Status()
+    w8 = Tabla(columnas=1, filas=1, verticalHeaderModel="C", dinamica=True)
     layout.addWidget(w8)
+    w9 = QLabelMath(r"$\frac{\pi r^2}{2\epsilon \mu}$", fs=15)
+    layout.addWidget(w9)
+    w10 = Status()
+    layout.addWidget(w10)
 
     ui.show()
     sys.exit(app.exec())

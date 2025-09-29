@@ -15,16 +15,17 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-###############################################################################
-# Module to implement delegate special editiing in tables
-#   -CellEditor
-#   -SpinEditor
-#   -CheckEditor
-#   -SpinEditor
-###############################################################################
+Module to implement delegate special editing in tables
+
+  * :class:`CellEditor`: Numeric editor of tableitem, with numeric validator
+  * :class:`SpinEditor`: Spinbox editor for tableitem
+  * :class:`CheckEditor`: Checkbox editor for tableitem
+  * :class:`ComboEditor`: Combobox Editor for tableitem
+
+'''
 
 
 from tools.qt import QtCore, QtGui, QtWidgets
@@ -72,7 +73,8 @@ class CheckEditor(QtWidgets.QItemDelegate):
 
     def setModelData(self, editor, model, index):
         value = editor.isChecked()
-        model.setData(index, QtCore.QVariant(value), QtCore.Qt.ItemDataRole.DisplayRole)
+        model.setData(
+            index, QtCore.QVariant(value), QtCore.Qt.ItemDataRole.DisplayRole)
 
 
 class ComboEditor(QtWidgets.QItemDelegate):
@@ -99,4 +101,5 @@ class ComboEditor(QtWidgets.QItemDelegate):
 
     def setModelData(self, editor, model, index):
         value = editor.currentText()
-        model.setData(index, QtCore.QVariant(value), QtCore.Qt.ItemDataRole.DisplayRole)
+        model.setData(
+            index, QtCore.QVariant(value), QtCore.Qt.ItemDataRole.DisplayRole)

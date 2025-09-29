@@ -41,7 +41,7 @@ from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
 from UI import newComponent, flujo, plots, viewComponents
 from UI.prefPFD import BrushCombo
 from UI.petro import Definicion_Petro
-from UI.widgets import createAction
+from UI.widgets import createAction, okToContinue
 
 
 with open("VERSION") as version_file:
@@ -93,19 +93,17 @@ class TreeEquipment(QtWidgets.QTreeWidget):
         self.setIconSize(QtCore.QSize(30, 30))
         self.headerItem().setHidden(True)
         self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
+
+    def updateList(self, items):
+        """Update list with project items"""
+        self.clear()
+
         self.Stream = QtWidgets.QTreeWidgetItem(self, 0)
         self.Stream.setText(0, self.tr("Streams"))
         self.Stream.setExpanded(True)
         self.Equipment = QtWidgets.QTreeWidgetItem(self, 0)
         self.Equipment.setText(0, self.tr("Equipments"))
         self.Equipment.setExpanded(True)
-
-    def updateList(self, items):
-        """Update list with project items"""
-        # self.clear()
-
-        self.Stream.takeChildren()
-        self.Equipment.takeChildren()
 
         ins = []
         outs = []
@@ -1094,7 +1092,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
     def closeEvent(self, event=None):
         """Catch main close event to do actions like avoid lost changes or
         save main program settings"""
-        if self.okToContinue():
+        if okToContinue(self, any(self.dirty), self.fileSaveAll):
             for tab in range(self.centralWidget().count()):
                 centralWidget = self.centralWidget().widget(tab)
                 scene = centralWidget.subWindowList()[0].widget().scene()
@@ -1117,41 +1115,6 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.close()
         else:
             event.ignore()
-
-    def okToContinue(self, ind=-1):
-        """Ask user to save project when close to avoid lost changes"""
-        if not self.dirty:
-            return True
-
-        if ind != -1:
-            ind = list(range(self.centralWidget().count()))
-        else:
-            ind = [ind]
-        dirty = False
-        for tab in ind:
-            if self.dirty[tab]:
-                dirty = True
-                break
-
-        if dirty:
-            dialog = QtWidgets.QMessageBox.question(
-                self,
-                self.tr("Unsaved changes"),
-                self.tr("Save unsaved changes?"),
-                QtWidgets.QMessageBox.StandardButton.Yes
-                | QtWidgets.QMessageBox.StandardButton.No
-                | QtWidgets.QMessageBox.StandardButton.Cancel,
-                QtWidgets.QMessageBox.StandardButton.Yes)
-
-            if dialog == QtWidgets.QMessageBox.StandardButton.Cancel:
-                return False
-            if dialog == QtWidgets.QMessageBox.StandardButton.No:
-                return True
-            if dialog == QtWidgets.QMessageBox.StandardButton.Yes:
-                self.fileSaveAll()
-                return True
-        else:
-            return True
 
     # Menus configuration
     def aboutToShow_MenuEdit(self):
@@ -1601,7 +1564,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     def fileClose(self, index):
         """Actions to be done when close a project in mainwindow"""
-        if self.okToContinue(index):
+        if okToContinue(self, self.dirty[index], self.fileSave, index):
             self.updateStatus(self.tr( "Closed") + " " + self.currentFilename)
             self.centralWidget().removeTab(index)
             del self.dirty[index]

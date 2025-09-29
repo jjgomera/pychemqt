@@ -73,9 +73,11 @@ class newComponent(QtWidgets.QDialog):
         QtWidgets.QDialog.accept(self)
 
     def changeParams(self, parametro, valor):
+        """Update new component when change any parameters"""
         self.calculo(**{parametro: valor})
 
     def calculo(self, **kwargs):
+        """Does UI changes when make new component calculation"""
         self.status.setState(4)
         self.unknown(**kwargs)
         self.status.setState(self.unknown.status, self.unknown.msg)
@@ -98,8 +100,8 @@ class View_Contribution(QtWidgets.QDialog):
         self.setWindowTitle(self.tr("Group Contribution new component"))
         layout = QtWidgets.QGridLayout(self)
 
-        self.nombre = QtWidgets.QLabel()
-        layout.addWidget(self.nombre, 1, 1, 1, 5)
+        self.name = QtWidgets.QLabel()
+        layout.addWidget(self.name, 1, 1, 1, 5)
         label = QtWidgets.QLabel("M")
         label.setToolTip(self.tr("Molecular Weight"))
         layout.addWidget(label, 2, 1)
@@ -199,8 +201,8 @@ class View_Contribution(QtWidgets.QDialog):
         label = QtWidgets.QLabel("Sol")
         label.setToolTip(self.tr("Solubility Parameter"))
         layout.addWidget(label, 8, 7)
-        self.Parametro_solubilidad = Entrada_con_unidades(SolubilityParameter)
-        layout.addWidget(self.Parametro_solubilidad, 8, 8)
+        self.SolubilityParameter = Entrada_con_unidades(SolubilityParameter)
+        layout.addWidget(self.SolubilityParameter, 8, 8)
 
         layout.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
@@ -212,37 +214,39 @@ class View_Contribution(QtWidgets.QDialog):
 
         self.setReadOnly(True)
         if cmp:
-            self.rellenar(cmp)
+            self.fill(cmp)
 
-    def setReadOnly(self, bool):
-        self.M.setReadOnly(bool)
-        self.Tb.setReadOnly(bool)
-        self.Tf.setReadOnly(bool)
-        self.Tc.setReadOnly(bool)
-        self.Pc.setReadOnly(bool)
-        self.Vc.setReadOnly(bool)
-        self.Hf.setReadOnly(bool)
-        self.Gf.setReadOnly(bool)
+    def setReadOnly(self, boolean):
+        """Set readonly state for child widgets"""
+        self.M.setReadOnly(boolean)
+        self.Tb.setReadOnly(boolean)
+        self.Tf.setReadOnly(boolean)
+        self.Tc.setReadOnly(boolean)
+        self.Pc.setReadOnly(boolean)
+        self.Vc.setReadOnly(boolean)
+        self.Hf.setReadOnly(boolean)
+        self.Gf.setReadOnly(boolean)
 
-        self.Hm.setReadOnly(bool)
-        self.Hv.setReadOnly(bool)
-        self.cpa.setReadOnly(bool)
-        self.cpb.setReadOnly(bool)
-        self.cpc.setReadOnly(bool)
-        self.cpd.setReadOnly(bool)
-        self.mua.setReadOnly(bool)
-        self.mub.setReadOnly(bool)
+        self.Hm.setReadOnly(boolean)
+        self.Hv.setReadOnly(boolean)
+        self.cpa.setReadOnly(boolean)
+        self.cpb.setReadOnly(boolean)
+        self.cpc.setReadOnly(boolean)
+        self.cpd.setReadOnly(boolean)
+        self.mua.setReadOnly(boolean)
+        self.mub.setReadOnly(boolean)
 
-        self.gravity.setReadOnly(bool)
-        self.API.setReadOnly(bool)
-        self.watson.setReadOnly(bool)
-        self.f_acent.setReadOnly(bool)
-        self.rackett.setReadOnly(bool)
-        self.Vliq.setReadOnly(bool)
-        self.Parametro_solubilidad.setReadOnly(bool)
+        self.gravity.setReadOnly(boolean)
+        self.API.setReadOnly(boolean)
+        self.watson.setReadOnly(boolean)
+        self.f_acent.setReadOnly(boolean)
+        self.rackett.setReadOnly(boolean)
+        self.Vliq.setReadOnly(boolean)
+        self.SolubilityParameter.setReadOnly(boolean)
 
-    def rellenar(self, cmp):
-        self.nombre.setText(cmp.name)
+    def fill(self, cmp):
+        """Add cmp properties in widgets"""
+        self.name.setText(cmp.name)
         self.M.setValue(cmp.M)
         self.Tb.setValue(cmp.Tb)
         self.Tf.setValue(cmp.Tf)
@@ -265,7 +269,7 @@ class View_Contribution(QtWidgets.QDialog):
         self.f_acent.setValue(cmp.f_acent)
         self.rackett.setValue(cmp.rackett)
         self.Vliq.setValue(cmp.Vliq)
-        self.Parametro_solubilidad.setValue(cmp.Parametro_solubilidad)
+        self.SolubilityParameter.setValue(cmp.Parametro_solubilidad)
 
 
 class Ui_Contribution(newComponent):
@@ -275,7 +279,7 @@ class Ui_Contribution(newComponent):
 
     def __init__(self, metodo, parent=None):
         """Metodo: name of group contribution method:
-            Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose, Klincewicz
+            Joback, Constantinou, Wilson, Marrero, Elliott, Ambrose, ...
         """
         super().__init__(parent)
 
@@ -298,9 +302,9 @@ class Ui_Contribution(newComponent):
         layout = QtWidgets.QGridLayout(widget)
 
         layout.addWidget(QtWidgets.QLabel(self.tr("Name")), 1, 0)
-        self.nombre = QtWidgets.QLineEdit()
-        self.nombre.textChanged.connect(partial(self.changeParams, "name"))
-        layout.addWidget(self.nombre, 1, 1, 1, 3)
+        self.name = QtWidgets.QLineEdit()
+        self.name.textChanged.connect(partial(self.changeParams, "name"))
+        layout.addWidget(self.name, 1, 1, 1, 3)
 
         self.Group = QtWidgets.QTableWidget()
         self.Group.verticalHeader().hide()
@@ -446,8 +450,8 @@ class Ui_Contribution(newComponent):
 
         newComponent.loadUI(self)
 
-        for nombre in self.unknown.__coeff__["txt"]:
-            self.groupContributions.addItem(nombre[0])
+        for name in self.unknown.__coeff__["txt"]:
+            self.groupContributions.addItem(name[0])
 
         if self.unknown.SecondOrder:
             self.Order()
@@ -500,7 +504,7 @@ class Ui_Contribution(newComponent):
         self.contribucion = []
         self.Formula.clear()
         self.M.clear()
-        self.nombre.clear()
+        self.name.clear()
         self.Tb.clear()
         self.SG.clear()
         self.unknown.clear()
