@@ -236,13 +236,13 @@ with open("docs/references.rst", "w") as file:
             id += 1
             ref = f"{id}. "
             if lnk["autor"]:
-                ref += f"{lnk["autor"]}; "
+                ref += f"{lnk['autor']}; "
             if lnk["title"]:
-                ref += f"{lnk["title"]}. "
+                ref += f"{lnk['title']}. "
             if lnk["ref"]:
-                ref += f"{lnk["ref"]}"
+                ref += f"{lnk['ref']}"
 
             if lnk["doi"]:
-                ref += f", http://dx.doi.org/{lnk["doi"]}"
+                ref += f", http://dx.doi.org/{lnk['doi']}"
 
             print(ref, file=file)

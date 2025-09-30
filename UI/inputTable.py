@@ -171,7 +171,7 @@ class InputTable(Tabla):
         """Change the text in header"""
         widget = self.sender()
         txt = self.horizontalHeaderItem(col).text()
-        newtxt = f"{txt.split(",")[0]}, {widget.currentText()}"
+        newtxt = f"{txt.split(',')[0]}, {widget.currentText()}"
         self.setHorizontalHeaderItem(
                 col, QtWidgets.QTableWidgetItem(newtxt))
         widget.close()
