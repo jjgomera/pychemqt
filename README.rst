@@ -11,7 +11,7 @@
     :alt: codecov.io analysis
 
 .. image:: https://app.codacy.com/project/badge/Grade/457297f080904ae5aa2ae52a4c1e7f9d
-    :target: https://www.codacy.com/gh/jjgomera/pychemqt/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jjgomera/pychemqt&amp;utm_campaign=Badge_Grade
+    :target: https://app.codacy.com/gh/jjgomera/pychemqt/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade
     :alt: Code Quality
 
 .. image:: https://readthedocs.org/projects/pychemqt/badge/?version=latest
