@@ -38,6 +38,8 @@ Configuration tools
   * :class:`Entity`: General class for model object
 """
 
+
+from ast import literal_eval
 from configparser import ConfigParser
 import os
 
