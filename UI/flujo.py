@@ -47,7 +47,7 @@ from datetime import datetime
 from functools import partial
 import json
 import os
-from random import randint
+from random import uniform
 import subprocess
 import tempfile
 from xml.dom import minidom
@@ -241,8 +241,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             self.Pos.append(event.scenePos())
 
     def addActions(self, menu, pos=None):
-        """Define actions and state of its to add to context menuw"""
-        actionCut, actionCopy, actionPaste = self.defineShortcut(pos)
+        """Define actions and state of its to add to context menu"""
+        actionCut, actionCopy, actionPaste, actionDelete = self.defineShortcut(pos)
         menu.addAction(self.tr("Redraw"), self.update)
         menu.addAction(
             QtGui.QIcon(os.path.join(IMAGE_PATH, "button", "configure.png")),
@@ -255,30 +255,16 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             shortcut=QtGui.QKeySequence.StandardKey.SelectAll,
             icon=os.path.join("button", "selectAll.png"), parent=self))
         menu.addSeparator()
-        actionCut = createAction(
-            self.tr("Cut"),
-            slot=self.cut,
-            shortcut=QtGui.QKeySequence.StandardKey.Cut,
-            icon=os.path.join("button", "editCut.png"), parent=self)
         menu.addAction(actionCut)
-        actionCopy = createAction(
-            self.tr("Copy"),
-            slot=self.copy,
-            shortcut=QtGui.QKeySequence.StandardKey.Copy,
-            icon=os.path.join("button", "editCopy.png"), parent=self)
         menu.addAction(actionCopy)
-        actionPaste = createAction(
-            self.tr("Paste"),
-            slot=partial(self.paste, pos),
-            shortcut=QtGui.QKeySequence.StandardKey.Paste,
-            icon=os.path.join("button", "editPaste.png"), parent=self)
         menu.addAction(actionPaste)
-        actionDelete = createAction(
+        menu.addAction(actionDelete)
+        actionDeleteAll = createAction(
             self.tr("Delete All"),
             slot=self.delete,
             shortcut=QtGui.QKeySequence.StandardKey.Delete,
             icon=os.path.join("button", "editDelete.png"), parent=self)
-        menu.addAction(actionDelete)
+        menu.addAction(actionDeleteAll)
         menu.addSeparator()
 
         if self.copiedItem.isEmpty():
@@ -288,6 +274,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             actionCut.setEnabled(False)
             actionCopy.setEnabled(False)
             actionDelete.setEnabled(False)
+            actionDeleteAll.setEnabled(False)
 
         for item in items:
             menuEl = item.contextMenu()
@@ -318,10 +305,16 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             slot=partial(self.paste, pos),
             shortcut=QtGui.QKeySequence.StandardKey.Paste,
             icon=os.path.join("button", "editPaste.png"), parent=self)
+        actionDelete = createAction(
+            self.tr("Delete"),
+            slot=self.delete,
+            shortcut=QtGui.QKeySequence.StandardKey.Delete,
+            icon=os.path.join("button", "remove.png"), parent=self)
         self.views()[0].addAction(actionCopy)
         self.views()[0].addAction(actionCut)
         self.views()[0].addAction(actionPaste)
-        return actionCut, actionCopy, actionPaste
+        self.views()[0].addAction(actionDelete)
+        return actionCut, actionCopy, actionPaste, actionDelete
 
     def contextMenuEvent(self, event):
         """Create the context menu to show then right click"""
@@ -339,7 +332,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
     def copy(self, items=None):
         """Copy selected items to internal clickboard, StreamItem is not
-        suppoerted"""
+        supported"""
         if not items:
             items = self.selectedItems()
         self.copiedItem.clear()
@@ -351,12 +344,23 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         for item in items:
             self.writeItemToStream(st, item)
 
-    def cut(self):
+    # def delete(self, items=None):
+        # """Delete selected items to PFD"""
+        # if not items:
+            # items = self.selectedItems()
+
+        # for item in items:
+            # self.removeItem(item)
+            # del item
+
+    def cut(self, items=None):
         """Copy selected items to internal clickboard and delete of scene"""
-        item = self.selectedItems()[0]
-        self.copy(item)
-        self.removeItem(item)
-        del item
+        if not items:
+            items = self.selectedItems()
+
+        self.copy(items)
+        self.delete(items)
+
 
     def paste(self, pos=None):
         """Paste item saved in internal clipboard to the scene"""
@@ -373,9 +377,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             if pos:
                 item.setPos(pos)
             else:
+                print(item.pos().x())
                 offset = QtCore.QPointF(
-                    randint(-item.pos().x(), item.pos().x()),
-                    randint(-item.pos().y(), item.pos().y()))
+                    uniform(-item.pos().x(), item.pos().x()),
+                    uniform(-item.pos().y(), item.pos().y()))
                 item.setPos(item.pos() + offset)
                 self.pasteOffset += 5
             self.addItem(item)
@@ -390,15 +395,21 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
                     self.project.copyItem(item.id-1)
 
     def delete(self, items=None):
-        if items:
-            items = [items]
-        else:
+        if not items:
             items = self.selectedItems()
+        if not isinstance(items, list):
+            items = [items]
+
         for item in items:
             tipo = item.tipo
-            if tipo in ["stream", "equip"]:
+            # FIXME: Unify name convention to avoid use this annoying map
+            mapa = {"e": "equip",
+                    "i": "in",
+                    "o": "out",
+                    "stream": "stream"}
+            if tipo in ["stream", "e", "i", "o"]:
+                del self.objects[mapa[tipo]][item.id]
                 item.postDelete()
-                del self.objects[tipo][item.id]
             else:
                 self.objects[tipo].remove(item)
             self.removeItem(item)
@@ -1356,8 +1367,10 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
         StreamItem.free_id.append(self.id)
         self.up.down_used -= 1
         self.down.up_used -= 1
-        self.up.down.remove(self)
-        self.down.up.remove(self)
+        if self in self.up.down:
+            self.up.down.remove(self)
+        if self in self.down.up:
+            self.down.up.remove(self)
 
     def idLabelVisibility(self):
         self.idLabel.setVisible(not self.idLabel.isVisible())
