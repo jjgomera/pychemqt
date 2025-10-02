@@ -97,10 +97,12 @@ docs/lib.freeSteam.rst
 docs/lib.friction.rst
 docs/lib.gerg.rst
 docs/lib.heatTransfer.rst
+docs/lib.fitting.rst
 docs/lib.iapws97.rst
 docs/lib.meos.rst
 docs/lib.mezcla.rst
 docs/lib.newComponent.rst
+docs/lib.neumatic.rst
 docs/lib.openbabel.rst
 docs/lib.petro.rst
 docs/lib.physics.rst
