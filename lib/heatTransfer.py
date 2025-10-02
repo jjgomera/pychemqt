@@ -260,6 +260,8 @@ def h_anulli_Laminar(Re, Pr, a, dhL=0, boundary=0):
     elif boundary == 2:       #Both surfaces heated
         Nu1 = 3.66+(4-0.102/(a+0.02))*a**0.04
         fg = 1.615*(1+0.14*a**0.1)
+    else:
+        fg = 0
 
     Nu2 = fg*(Re*Pr*dhL)**(1./3)
     Nu3 = (2/(1+22*Pr))**(1./6)*(Re*Pr*dhL)**0.5
@@ -419,67 +421,75 @@ def effectiveness(NTU, Cr, flux, mixed="Cmin", exact="True"):
         CrFSMix: Crossflow, one fluid mixed, other unmixed
         CrFunMix: Crossflow, both fluids unmixed
         1-2TEMAE: 1-2 pass shell and tube exchanger
-
-    kwargs: Opciones adicionales:
-        mixed: corriente mezclada para CrFSMix
-        Cmin, Cmax
     """
-    if C_ == 0:
+    # Equations referenced in [2]
+
+    # General case for Cr = 0 valid for all exchangers, Eq 11.35a
+    if Cr == 0:
         ep = 1-exp(-NTU)
 
-    elif flujo == "PF":
-        if C_ == 1:
-            ep = (1-exp(-2*NTU))/2
-        else:
-            ep = (1-exp(-NTU*(1+C_)))/(1+C_)
+    elif flux == "PF":
+        # Eq 11.28a
+        ep = (1-exp(-NTU*(1+Cr)))/(1+Cr)
 
-    elif flujo == "CF":
-        if C_ == 1:
+    elif flux == "CF":
+        # Eq 11.29a
+        if Cr == 1:
             ep = NTU/(1+NTU)
         else:
-            ep = (1-exp(-NTU*(1-C_)))/(1-C_*exp(-NTU*(1-C_)))
+            ep = (1-exp(-NTU*(1-Cr)))/(1-Cr*exp(-NTU*(1-Cr)))
 
-    elif flujo == "CrFunMix":
-        def P(n, y):
+    elif flux == "CrFunMix":
+        if exact:
+            def P(n, y):
+                suma = 0
+                for j in range(1, n+1):
+                    suma += (n+1-j)/factorial(j)*y**(n+j)
+                return suma/factorial(n+1)
+            n = 1
             suma = 0
-            for j in range(1, n+1):
-                suma += (n+1-j)/factorial(j)*y**(n+j)
-            return suma/factorial(n+1)
-        n = 1
-        suma = 0
-        while True:
-            inc = C_**n*P(n, NTU)
-            suma += inc
-            n += 1
-            if inc < 1e-12:
-                break
-        ep = 1-exp(-NTU)-exp(-(1+C_)*NTU)*suma
+            while True:
+                inc = Cr**n*P(n, NTU)
+                suma += inc
+                n += 1
+                if inc < 1e-12:
+                    break
+            ep = 1-exp(-NTU)-exp(-(1+Cr)*NTU)*suma
+        else:
+            # Used the approximate formula from Triboix [5]
+            if Cr > 0.3 and NTU > 1:
+                # Eq 11-a
+                ep = (1 + 0.44*(1-Cr)) * \
+                    (1-(1/(0.92+(pi*Cr**0.15*NTU)**1.25))**(1/2.5))
+            else:
+                # Eq 11-b
+                ep = 1-exp((exp(-Cr**1.15*NTU)-1)/Cr**1.15)
+            # ep = 1 - exp(NTU**0.22/Cr * (exp(-Cr*NTU**0.78)-1))
 
-    elif flujo == "CrFMix":
-        if C_ == 1:
+    elif flux == "CrFMix":
+        if Cr == 1:
             ep = 1/(2/(1-exp(-NTU))-1/NTU)
         else:
-            ep = 1/(1/(1-exp(-NTU))+C_/(1-exp(-NTU*C_))-1/NTU)
+            ep = 1/(1/(1-exp(-NTU))+Cr/(1-exp(-NTU*Cr))-1/NTU)
 
-    elif flujo == "CrFSMix":
-        if C_ == 1:
-            ep = 1-exp(-(1-exp(-NTU)))
+    elif flux == "CrFSMix":
+        if mixed == "Cmin":
+            # Eq 11.34a
+            ep = 1-exp(-(1-exp(-NTU*Cr))/Cr)
         else:
-            if kwargs["mixed"] == "Cmin":
-                ep = 1-exp(-(1-exp(-NTU*C_))/C_)
-            else:
-                ep = (1-exp(-C_*(1-exp(-NTU))))/C_
+            # Eq 11.33a
+            ep = (1-exp(-Cr*(1-exp(-NTU))))/Cr
 
-    elif flujo == "1-2TEMAE":
-        if C_ == 1:
+    elif flux == "1-2TEMAE":
+        if Cr == 1:
             ep = 2/(2+2**0.5/tanh(2**0.5*NTU/2))
         else:
-            ep = 2/((1+C_)+(1+C_**2)**0.5/tanh(NTU*(1+C_**2)**0.5/2))
+            ep = 2/(1+Cr+(1+Cr**2)**0.5/tanh(NTU*(1+Cr**2)**0.5/2))
 
     return ep
 
 
-def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
+def TemperatureEffectiveness(NTU, R, flux, **kwargs):
     """Calculo de la temperatura efectividad del cambiador
     Flujo vendra definido por su acronimo
         CF: Counter flow
@@ -504,19 +514,19 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
             1, 2
     """
 
-    if flujo == "PF":
+    if flux == "PF":
         if R == 1:
             ep = NTU/(1+NTU)
         else:
             ep = (1-exp(-NTU*(1-R)))/(1-R*exp(-NTU*(1-R)))
 
-    elif flujo == "CF":
+    elif flux == "CF":
         if R == 1:
             ep = (1-exp(-2*NTU))/2.
         else:
             ep = (1-exp(-NTU*(1+R)))/(1+R)
 
-    elif flujo == "CrFunMix":
+    elif flux == "CrFunMix":
         ep = 1-exp(NTU**0.22/R*(exp(-R*NTU**0.78)-1))
         #            def P(n, y):
         #                suma=0
@@ -533,7 +543,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
         #                    break
         #            ep=1-exp(-NTU)-exp(-(1+R)*NTU)*suma
 
-    elif flujo == "CrFMix":
+    elif flux == "CrFMix":
         K1 = 1-exp(-NTU)
         if R == 1:
             ep = 1/(2/K1-1/NTU)
@@ -541,7 +551,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
             K2 = 1-exp(-R*NTU)
             ep = 1/(1/K1+R/K2-1/NTU)
 
-    elif flujo == "CrFSMix":
+    elif flux == "CrFSMix":
         K = 1-exp(-NTU)
         if R == 1:
             ep = 1-exp(-K)
@@ -552,14 +562,14 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
                 K = 1-exp(-R*NTU)
                 ep = 1-exp(-K/R)
 
-    elif flujo == "1-2TEMAE":
+    elif flux == "1-2TEMAE":
         if R == 1:
             ep = 1/(1+1/tanh(NTU/2**0.5)/2**0.5)
         else:
             E = (1+R**2)**0.5
             ep = 2/(1+R+E/tanh(E*NTU/2))
 
-    elif flujo == "1-2TEMAE2":
+    elif flux == "1-2TEMAE2":
         E = exp(NTU)
         if R == 2:
             ep = 0.5*(1-(1+E**-2)/2/(1+NTU))
@@ -567,7 +577,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
             B = exp(-NTU*R/2.)
             ep = 1/R*(1-(2-R)*(2.*E+R*B)/(2+R)/(2.*E-R/B))
 
-    elif flujo == "1-3TEMAE":
+    elif flux == "1-3TEMAE":
         l1 = -3./2+(9./4+R*(R-1))**0.5
         l2 = -3./2-(9./4+R*(R-1))**0.5
         l3 = R
@@ -583,7 +593,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
         C = X2*(3*R+l1)-X1*(3*R+l2)+X3*d
         ep = 1/R*(1-C/(A*C+B**2))
 
-    elif flujo == "1-4TEMAE":
+    elif flux == "1-4TEMAE":
         if R == 1:
             A = 1/tanh(5**0.5*NTU/4)
             B = tanh(NTU/4)
@@ -594,7 +604,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
             B = tanh(NTU*R/4)
             ep = 4/(2*(1+R)+D*A+R*B)
 
-    elif flujo == "1-1TEMAG":
+    elif flux == "1-1TEMAG":
         if R == 1:
             B = NTU/(2+NTU)
         else:
@@ -603,7 +613,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
         A = 1/(1+R)*(1-exp(-NTU*(1+R)/2))
         ep = A+B-A*B*(1+R)+R*A*B**2
 
-    elif flujo == "1-2TEMAG":
+    elif flux == "1-2TEMAG":
         if R == 2:
             alfa = exp(-NTU)
             ep = (1+2*NTU-alfa**2)/(4+4*NTU-(1-alfa)**2)
@@ -614,7 +624,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
             B = (4-beta*(2+R))/(2-R)
             ep = (B-alfa**2)/(A+2+R*B)
 
-    elif flujo == "1-1TEMAH":
+    elif flux == "1-1TEMAH":
         A = 1/(1+R/2)*(1-exp(-NTU*(1+R/2)/2))
         if R == 2:
             B = NTU/(2+NTU)
@@ -624,7 +634,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
         E = (A+B-A*B*R/2)/2
         ep = E*(1+(1-B*R/2)*(1-A*R/2+A*B*R))-A*B*(1-B*R/2)
 
-    elif flujo == "1-2TEMAH":
+    elif flux == "1-2TEMAH":
         if R == 4:
             H = NTU
             E = NTU/2
@@ -638,7 +648,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
         B = (1+H)*(1+E)**2
         ep = 1/R*(1-(1-D)**4/(B-4*G/R))
 
-    elif flujo == "1-1TEMAJ":
+    elif flux == "1-1TEMAJ":
         A = exp(NTU)
         if R == 2:
             ep = 0.5*(1-(1+1/A**2)/2/(1+NTU))
@@ -646,7 +656,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
             B = exp(-NTU*R/2)
             ep = 1/R*(1-(2-R)*(2*A+R*B)/(2+R)/(2*A-R/B))
 
-    elif flujo == "1-2TEMAJ":
+    elif flux == "1-2TEMAJ":
         l = (1+R**2/4)**0.5
         A = exp(NTU)
         B = (A**l+1)/(A**l-1)
@@ -654,7 +664,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
         D = 1+l*A**((l-1)/2)/(A**l-1)
         ep = 1/(1+R/2+l*B-2*l*C*D)
 
-    elif flujo == "1-4TEMAJ":
+    elif flux == "1-4TEMAJ":
         l = (1+R**2/16)**0.5
         A = exp(NTU)
         B = (A**l+1)/(A**l-1)
@@ -666,7 +676,7 @@ def TemperatureEffectiveness(NTU, R, flujo, **kwargs):
     return ep
 
 
-def CorrectionFactor(P, R, flujo, **kwargs):
+def CorrectionFactor(P, R, flux, **kwargs):
     """Calculo de la factor de correccion
     Flujo vendra definido por su acronimo
         CF: Counter flow
@@ -680,16 +690,16 @@ def CorrectionFactor(P, R, flujo, **kwargs):
         mixed: corriente mezclada para CrFSMix
             Cmin, Cmax
     """
-    if flujo == "PF" or flujo == "CF":
+    if flux == "PF" or flux == "CF":
         f = 1
 
-    elif flujo == "CrFSMix":
+    elif flux == "CrFSMix":
         if kwargs["mixed"] == "1":
             f = log((1-R*P)/(1-P))/(1-1/R)/log(1+R*log(1-P))
         else:
             f = log((1-R*P)/(1-P))/(R-1)/log(1+log(1-R*P)/R)
 
-    elif flujo == "1-2TEMAE":
+    elif flux == "1-2TEMAE":
         if R == 1:
             if P*(2+2**0.5) >= 2:
                 f = 0
@@ -703,7 +713,7 @@ def CorrectionFactor(P, R, flujo, **kwargs):
                 f = E*log((1-R*P)/(1-P))/(1-R)/log((2-P*(1+R-E))/(2-P*(1+R+E)))
 
     else:  # Para los ordenamientos de flujo sin solucion analitica
-        NTU = NTU_fPR(P, R, flujo, **kwargs)
+        NTU = NTU_fPR(P, R, flux, **kwargs)
         if R == 1:
             f = P/NTU/(1-P)
         else:
@@ -712,7 +722,7 @@ def CorrectionFactor(P, R, flujo, **kwargs):
     return f
 
 
-def NTU_fPR(P, R, flujo, **kwargs):
+def NTU_fPR(P, R, flux, **kwargs):
     """Calculo de la factor de correccion
     Flujo vendra definido por su acronimo
         CF: Counter flow
@@ -727,7 +737,7 @@ def NTU_fPR(P, R, flujo, **kwargs):
             Cmin, Cmax
     """
 
-    if flujo == "1-2TEMAE":
+    if flux == "1-2TEMAE":
         if R == 1:
             NTU = log((1-P)/2-3*P)
         else:
@@ -743,8 +753,8 @@ def NTU_fPR(P, R, flujo, **kwargs):
     return NTU
 
 
-def Fi(P, R, flujo, **kwargs):
-    F = CorrectionFactor(P, R, flujo, **kwargs)
+def Fi(P, R, flux, **kwargs):
+    F = CorrectionFactor(P, R, flux, **kwargs)
     if R == 1:
         Fi = F*(1-P)
     else:

@@ -62,6 +62,9 @@ class ChartHeat(Chart):
             self.mixed.addItem(text)
         self.mixed.currentIndexChanged.connect(self.plot)
         lyt.addWidget(self.mixed)
+        self.exact = QtWidgets.QCheckBox(self.tr("Use exact correlation"))
+        self.exact.toggled.connect(self.plot)
+        lyt.addWidget(self.exact)
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed))
@@ -105,9 +108,12 @@ class Efectividad(ChartHeat):
         flujo = self.flujo[index][1]
         self.set_image(flujo)
         self.mixed.setVisible(flujo == "CrFSMix")
+        self.exact.setVisible(flujo == "CrFunMix")
         kw = {}
         if flujo == "CrFSMix":
             kw["mixed"] = str(self.mixed.currentText())
+        if flujo == "CrFunMix":
+            kw["exact"] = self.exact.isChecked()
 
         C = [0, 0.2, 0.4, 0.6, 0.8, 1.]
 
@@ -118,16 +124,16 @@ class Efectividad(ChartHeat):
                 e.append(effectiveness(N, ci, flujo, **kw))
             self.plt.plot(NTU, e, "k")
 
-            fraccionx = (NTU[40]-NTU[30])/6
-            fracciony = e[40]-e[30]
-            try:
-                angle = arctan(fracciony/fraccionx)*360/2/pi
-            except ZeroDivisionError:
-                angle = 90
+            # Calculate angle for annotation text
+            xmin, xmax = self.plt.ax.get_xlim()
+            ymin, ymax = self.plt.ax.get_ylim()
+            f_x = (NTU[40]-NTU[35])/(xmax-xmin)
+            f_y = (e[40]-e[35])/(ymax-ymin)
+            angle = arctan(f_y/f_x)*360/2/pi
 
             self.plt.ax.annotate(
-                f"C*={ci:0.1f}", (NTU[29], e[30]), rotation=angle,
-                size="medium", ha="left", va="bottom")
+                f"C*={ci:0.1f}", (NTU[35], e[35]), rotation=angle,
+                size="x-small", ha="left", va="bottom")
 
         self.plt.draw()
 
@@ -135,7 +141,8 @@ class Efectividad(ChartHeat):
 class TemperatureEfectividad(ChartHeat):
     """Heat exchanger temperature-effectiveness plot"""
 
-    title = translate("TemperatureEfectividad", "Heat Exchanger temperature effectiveness")
+    title = translate("TemperatureEfectividad",
+                      "Heat Exchanger temperature effectiveness")
     flujo = [
         (translate("TemperatureEfectividad", "Counterflow"), "CF"),
         (translate("TemperatureEfectividad", "Parallelflow"), "PF"),
