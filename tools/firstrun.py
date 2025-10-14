@@ -147,6 +147,7 @@ def Preferences():
     conf.set("PFD", "Punta", "0")
     conf.set("PFD", "Guion", "0")
     conf.set("PFD", "Dash_offset", "0.0")
+    conf.set("PFD", "Move_Factor", "5")
 
     # TooltipEntity
     conf.add_section("TooltipEntity")

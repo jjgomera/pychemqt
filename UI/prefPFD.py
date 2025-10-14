@@ -72,6 +72,11 @@ class Widget(QtWidgets.QDialog):
         self.resolution = UI_confResolution.UI_confResolution_widget(config)
         lyt.addWidget(self.resolution)
 
+        layout.addWidget(QtWidgets.QLabel(self.tr("Move factor")), 8, 1)
+        self.moveFactor = QtWidgets.QSpinBox()
+        self.moveFactor.setRange(1, 100)
+        layout.addWidget(self.moveFactor, 8, 2)
+
         layout.addItem(QtWidgets.QSpacerItem(
             10, 0, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 14, 1, 1, 4)
@@ -97,6 +102,8 @@ class Widget(QtWidgets.QDialog):
             self.lineFormat.dashOffset.setValue(
                 config.getfloat("PFD", 'Dash_offset'))
             self.lineFormat.width.setValue(config.getfloat("PFD", 'Width'))
+            self.moveFactor.setValue(
+                config.getint("PFD", 'move_factor'))
 
     def value(self, config):
         """Update ConfigParser instance with the config"""
@@ -120,6 +127,7 @@ class Widget(QtWidgets.QDialog):
                    str(abs(self.lineFormat.groupCap.checkedId())-2))
         config.set("PFD", "Guion", str(self.lineFormat.guion.currentIndex()))
         config.set("PFD", "Dash_offset", str(self.lineFormat.dashOffset.value))
+        config.set("PFD", "Move_Factor", str(self.moveFactor.value()))
         return config
 
 

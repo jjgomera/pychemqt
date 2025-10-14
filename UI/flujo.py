@@ -73,10 +73,6 @@ from tools import UI_confResolution, UI_confThermo
 from tools.qt import QtCore, QtGui, QtSvgWidgets, QtWidgets, translate
 
 
-# Value for keyboard navigation, unnecessary add to configuration
-factor = 5
-
-
 class GraphicsView(QtWidgets.QGraphicsView):
     """Class for PFD representation"""
     mouseMove = QtCore.pyqtSignal(QtCore.QPointF)
@@ -919,6 +915,8 @@ class GeometricItem():
         return QtWidgets.QGraphicsItem.itemChange(self, key, value)
 
     def keyPressEvent(self, event):
+        factor = Preferences.getint("PFD", 'move_factor')
+
         if event.modifiers() & QtCore.Qt.KeyboardModifier.ShiftModifier:
             if event.key() == QtCore.Qt.Key.Key_Up:
                 rect = self.rect()
@@ -1034,6 +1032,8 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         return QtWidgets.QGraphicsItem.itemChange(self, key, value)
 
     def keyPressEvent(self, event):
+        factor = Preferences.getint("PFD", 'move_factor')
+
         if event.key() == QtCore.Qt.Key.Key_Delete or \
                 event.key() == QtCore.Qt.Key.Key_Backspace:
             self.delete()
@@ -1574,6 +1574,8 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
         self.scene().popup.move(int(point.x()), int(point.y()))
 
     def keyPressEvent(self, event):
+        factor = Preferences.getint("PFD", 'move_factor')
+
         if event.key() == QtCore.Qt.Key.Key_Delete or \
                 event.key() == QtCore.Qt.Key.Key_Backspace:
             self.delete()
