@@ -135,7 +135,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
         if self.PFD:
             ratio = 1.41 ** (-event.angleDelta().y() / 240.0)
             self.scale(ratio, ratio)
-            self.zoomChanged.emit(self.transform().m11()*100)
+            self.zoomChanged.emit(int(self.transform().m11()*100))
 
     def leaveEvent(self, event=None):
         """Reimplement to set value of status position to the total size"""
