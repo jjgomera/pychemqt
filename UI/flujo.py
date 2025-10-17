@@ -98,7 +98,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
             QtGui.QBrush(QtGui.QColor(brushColor), brushPattern))
 
         self.setMouseTracking(True)
-        # self.setAcceptDrops(True)
+        self.setAcceptDrops(True)
 
         # Widgets to show in the statusbar of mainwindow
         self.statusWidget = []
@@ -119,7 +119,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
         self.leaveEvent()
 
     def mouseMoveEvent(self, event):
-        """Reimplement to print the mouse position on statusbar"""
+        """Reimplemented to print the mouse position on statusbar"""
         QtWidgets.QGraphicsView.mouseMoveEvent(self, event)
         self.mouseMove.emit(self.mapToScene(event.pos()))
 
@@ -149,32 +149,23 @@ class GraphicsView(QtWidgets.QGraphicsView):
         self.resetTransform()
         self.scale(value, value)
 
-    # def dragEnterEvent(self, event):
-        # if event.mimeData().hasFormat("application/x-equipment"):
-            # event.accept()
-        # else:
-            # event.ignore()
+    def dragMoveEvent(self, event):
+        """Acept drag event"""
+        if event.mimeData().hasFormat("application/x-equipment"):
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
 
-    # def dragMoveEvent(self, event):
-        # if event.mimeData().hasFormat("application/x-equipment"):
-            # event.setDropAction(QtCore.Qt.DropAction.CopyAction)
-            # event.accept()
-        # else:
-            # event.ignore()
-
-    # def dropEvent(self, event):
-        # if event.mimeData().hasFormat("application/x-equipment"):
-            # data = event.mimeData().data("application/x-equipment")
-            # stream = QtCore.QDataStream(data, QtCore.QIODevice.ReadOnly)
-            # icon = QtGui.QIcon()
-            # stream >> icon
-            # event.setDropAction(QtCore.Qt.DropAction.CopyAction)
-            # print(event.pos())
-            # event.accept()
-            # self.updateGeometry()
-            # self.update()
-        # else:
-            # event.ignore()
+    def dropEvent(self, event):
+        """Do drop event simulating a click in the button and using the drop
+        point"""
+        if event.mimeData().hasFormat("application/x-equipment"):
+            event.source().clicked.emit()
+            self.scene().Pos.append(self.mapToScene(event.position().toPoint()))
+            event.source().setDown(False)
+        else:
+            event.ignore()
 
     def updatePosition(self, event):
         """Update text with mouse position"""

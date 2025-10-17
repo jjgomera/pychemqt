@@ -767,27 +767,35 @@ class DragButton(QtWidgets.QToolButton):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.dragStartPosition = QtCore.QPointF()
 
-    #TODO: Not implemented
+    def mousePressEvent(self, event):
+        """Register the start position to do the drag action and enable the
+        normal clicking action"""
+        if event.button() == QtCore.Qt.MouseButton.LeftButton:
+            self.dragStartPosition = event.pos()
+        QtWidgets.QToolButton.mousePressEvent(self, event)
 
-    # def mouseMoveEvent(self, event):
-        # self.startDrag()
-        # QtWidgets.QToolButton.mouseMoveEvent(self, event)
+    def mouseMoveEvent(self, event):
+        """Do the drag & drop actions"""
 
-    # def startDrag(self):
-        # if self.icon().isNull():
-        #     return
-        # data = QtCore.QByteArray()
-        # stream = QtCore.QDataStream(data, QtCore.QIODevice.WriteOnly)
-        # stream << self.icon()
-        # mimeData = QtCore.QMimeData()
-        # mimeData.setData("application/x-equipment", data)
-        # drag = QtGui.QDrag(self)
-        # drag.setMimeData(mimeData)
-        # pixmap = self.icon().pixmap(24, 24)
-        # drag.setHotSpot(QtCore.QPoint(12, 12))
-        # drag.setPixmap(pixmap)
-        # drag.exec(QtCore.Qt.DropAction.CopyAction)
+        if (event.pos()-self.dragStartPosition).manhattanLength() \
+                < QtWidgets.QApplication.startDragDistance():
+            return
+
+        # Disable drag action if button is the stream button
+        if self.isCheckable():
+            return
+
+        data = QtCore.QByteArray()
+        mimeData = QtCore.QMimeData()
+        mimeData.setData("application/x-equipment", data)
+        drag = QtGui.QDrag(self)
+        drag.setMimeData(mimeData)
+        pixmap = self.icon().pixmap(60, 60)
+        drag.setHotSpot(QtCore.QPoint(0, 0))
+        drag.setPixmap(pixmap)
+        drag.exec(QtCore.Qt.DropAction.CopyAction)
 
 
 class PathConfig(QtWidgets.QWidget):
