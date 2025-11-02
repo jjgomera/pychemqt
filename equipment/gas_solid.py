@@ -410,7 +410,7 @@ class Ciclon(Separador_SolidGas):
     7597.86 5427.04
     """
     title = translate("equipment", "Cyclone")
-    help = os.environ["pychemqt"] + "doc/Ciclones.htm"
+    help = os.environ["pychemqt"] + "docs/_build/html/help.equipment.Ciclon.html"
     kwargs = {"entrada": None,
               "tipo_calculo": 0,
               "modelo_rendimiento": 0,
