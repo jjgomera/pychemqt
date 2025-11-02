@@ -141,7 +141,8 @@ class GraphicsView(QtWidgets.QGraphicsView):
         """Reimplement to set value of status position to the total size"""
         x = Preferences.getint("PFD", "x")
         y = Preferences.getint("PFD", "y")
-        self.statusPosition.setText("%i, %i" % (x, y))
+        self.statusPosition.setText(f"{x}, {y}")
+        QtWidgets.QGraphicsView.leaveEvent(self, event)
 
     def zoom(self, value):
         """Apply zoom value to a pfd view"""
@@ -169,7 +170,7 @@ class GraphicsView(QtWidgets.QGraphicsView):
 
     def updatePosition(self, event):
         """Update text with mouse position"""
-        self.statusPosition.setText("%i, %i" % (event.x(), event.y()))
+        self.statusPosition.setText(f"{int(event.x())}, {int(event.y())}")
 
     def changeStatusThermo(self, config):
         """Show thermodynamic option in statusbar"""
@@ -192,9 +193,8 @@ class GraphicsView(QtWidgets.QGraphicsView):
             elif config.getboolean("Thermo", "meos"):
                 txt = "MEoS"
             else:
-                txt = "K: %s  H: %s" % (
-                    K[config.getint("Thermo", "K")].__status__,
-                    H[config.getint("Thermo", "H")].__status__)
+                txt = f"K: {K[config.getint("Thermo", "K")].__status__} "
+                txt += f"K: {H[config.getint("Thermo", "H")].__status__}"
 
             self.statusThermo.setText(txt)
 
@@ -207,6 +207,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
     addObj = False
     addType = ""
     project = Project()
+    Pos = []
+    obj = None
     objects = {"txt": [], "square": [], "ellipse": [], "stream": {}, "in": {},
                "out": {}, "equip": {}}
 
@@ -217,12 +219,10 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         proxy = QtWidgets.QGraphicsProxyWidget()
         proxy.setWidget(self.popup)
         self.addItem(proxy)
-        # self.popup.move(0, -self.popup.height())
         self.popup.hide()
 
-
     def mousePressEvent(self, event):
-        """Save event pos to locate item"""
+        """Save event position to locate item when add"""
         QtWidgets.QGraphicsScene.mousePressEvent(self, event)
         if self.addObj and self.addType != "stream":
             self.Pos.append(event.scenePos())
@@ -331,15 +331,6 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         for item in items:
             self.writeItemToStream(st, item)
 
-    # def delete(self, items=None):
-        # """Delete selected items to PFD"""
-        # if not items:
-            # items = self.selectedItems()
-
-        # for item in items:
-            # self.removeItem(item)
-            # del item
-
     def cut(self, items=None):
         """Copy selected items to internal clickboard and delete of scene"""
         if not items:
@@ -347,7 +338,6 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
 
         self.copy(items)
         self.delete(items)
-
 
     def paste(self, pos=None):
         """Paste item saved in internal clipboard to the scene"""
@@ -382,6 +372,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
                     self.project.copyItem(item.id-1)
 
     def delete(self, items=None):
+        """Delete items to the PFD"""
         if not items:
             items = self.selectedItems()
         if not isinstance(items, list):
@@ -404,14 +395,16 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         self.parent().list.updateList(self.objects)
 
     def configure(self):
+        """Show configure dialog for PFD"""
         dlg = Dialog(Preferences)
         if dlg.exec():
             preferences = dlg.value(Preferences)
             self.parent().updatePreferences(preferences)
 
-    def waitClick(self, numClick, tipo, object):
+    def waitClick(self, numClick, tipo, obj):
+        """Init wait for click instance to get click mouse user interaction"""
         self.Pos = []
-        self.object = object
+        self.obj = obj
         self.addType = tipo
         self.addObj = True
         self.views()[0].viewport().setCursor(
@@ -423,55 +416,56 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         clickCollector.start()
 
     def click(self):
+        """Actions to do when user finished a mouse interaction action"""
         if self.addType in ["equip", "in", "out", "txt"]:
-            self.object.setPos(self.Pos[0])
+            self.obj.setPos(self.Pos[0])
 
         elif self.addType == "stream":
-            self.object.up = self.up
-            self.object.down = self.down
-            self.up.down = self.up.down + [self.object]
-            self.down.up = self.down.up + [self.object]
+            self.obj.up = self.up
+            self.obj.down = self.down
+            self.up.down = self.up.down + [self.obj]
+            self.down.up = self.down.up + [self.obj]
             self.up.down_used += 1
             self.down.up_used += 1
-            self.object.Ang_entrada = self.points[0].direction
-            self.object.Ang_salida = self.points[1].direction
-            self.object.redraw(self.Pos[0], self.Pos[1])
+            self.obj.Ang_entrada = self.points[0].direction
+            self.obj.Ang_salida = self.points[1].direction
+            self.obj.redraw(self.Pos[0], self.Pos[1])
 
             # Unchecked stream button in toolbox
             self.parent().botonCorriente.setChecked(False)
 
         elif self.addType in ["square", "ellipse"]:
             rect = QtCore.QRectF(self.Pos[0], self.Pos[1])
-            self.object.setRect(rect)
+            self.obj.setRect(rect)
 
-        self.addItem(self.object)
+        self.addItem(self.obj)
         if self.addType == "equip":
             self.project.addItem(
-                "e%i" % self.object.id, self.object.dialogo.Equipment)
+                f"e{self.obj.id}", self.obj.dialogo.Equipment)
         elif self.addType == "in":
             self.project.addItem(
-                "i%i" % self.object.id, self.object.dialogo.corriente)
+                f"i{self.obj.id}", self.obj.dialogo.corriente)
         elif self.addType == "out":
             self.project.addItem(
-                "o%i" % self.object.id, self.object.dialogo.corriente)
+                f"o{self.obj.id}", self.obj.dialogo.corriente)
         elif self.addType == "stream":
             self.project.addStream(
-                self.object.id, "%s%i" % (self.up.tipo, self.up.id),
-                "%s%i" % (self.down.tipo, self.down.id), Corriente(),
+                self.obj.id, f"{self.up.tipo}{self.up.id}",
+                f"{self.down.tipo}{self.down.id}", Corriente(),
                 self.up.down_used - 1, self.down.up_used - 1)
 
         self.parent().dirty[self.parent().idTab] = True
         self.parent().saveControl()
         self.update()
-        self.object.setSelected(True)
+        self.obj.setSelected(True)
 
         self.parent().statusBar().clearMessage()
         self.addObj = False
         if self.addType in ("txt", "square", "ellipse"):
-            self.objects[self.addType].append(self.object)
+            self.objects[self.addType].append(self.obj)
         else:
-            id = self.object.id
-            self.objects[self.addType][id] = self.object
+            idx = self.obj.id
+            self.objects[self.addType][idx] = self.obj
         self.parent().list.updateList(self.objects)
 
         self.views()[0].viewport().setCursor(
@@ -482,6 +476,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
     #            item.setAcceptHoverEvents(False)
 
     def writeItemToStream(self, stream, item):
+        """Save item as a QDataStream in memory to paste in PFD is requested"""
         stream.writeQString(item.tipo)
         stream << item.transform() << item.pos()
         if isinstance(item, TextItem):
@@ -494,6 +489,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
                 stream.writeInt32(item.dialogoId)
 
     def readItemFromStream(self, stream):
+        """Read item from internal clickboard and create item"""
         tipo = stream.readQString()
         matrix = QtGui.QTransform()
         stream >> matrix
@@ -531,6 +527,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         return item
 
     def readFromJSON(self, data):
+        """Read scene object from project file"""
         self.objects = deepcopy(GraphicsScene.objects)
 
         for text in data["PFD"]["txt"].values():
@@ -588,8 +585,8 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         id_stream = []
         up_stream = {}
         down_stream = {}
-        for id, obj in data["PFD"]["stream"].items():
-            id = int(id)
+        for idx, obj in data["PFD"]["stream"].items():
+            idx = int(idx)
             s = StreamItem()
             in_x = obj["input_x"]
             in_y = obj["input_y"]
@@ -612,11 +609,11 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             down_type = obj["down_type"]
             up_id = obj["up_id"]
             down_id = obj["down_id"]
-            id_stream.append(id)
-            up_stream[id] = up_type, up_id
-            down_stream[id] = down_type, down_id
+            id_stream.append(idx)
+            up_stream[idx] = up_type, up_id
+            down_stream[idx] = down_type, down_id
 
-            s.id = id
+            s.id = idx
             s.entrada = entrada
             s.salida = salida
             s.Ang_entrada = obj["input_angle"]
@@ -634,56 +631,56 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             s.idLabel.setVisible(visible)
 
         angle_in = {}
-        for id, obj in data["PFD"]["in"].items():
-            id = int(id)
+        for idx, obj in data["PFD"]["in"].items():
+            idx = int(idx)
             s = EquipmentItem("in", None)
             x = obj["x"]
             y = obj["y"]
             pos = QtCore.QPointF(x, y)
             s.setPos(pos)
 
-            angle_in[id] = obj["angle"]
+            angle_in[idx] = obj["angle"]
             down = [self.objects["stream"][obj["down_id"]]]
             s.down = down
-            self.objects["in"][id] = s
+            self.objects["in"][idx] = s
             self.addItem(s)
 
         angle_out = {}
-        for id, obj in data["PFD"]["out"].items():
-            id = int(id)
+        for idx, obj in data["PFD"]["out"].items():
+            idx = int(idx)
             s = EquipmentItem("out", None)
             x = obj["x"]
             y = obj["y"]
             pos = QtCore.QPointF(x, y)
             s.setPos(pos)
 
-            angle_out[id] = obj["angle"]
+            angle_out[idx] = obj["angle"]
             up = [self.objects["stream"][obj["up_id"]]]
             s.up = up
-            self.objects["out"][id] = s
+            self.objects["out"][idx] = s
             self.addItem(s)
 
         angle_equip = {}
-        for id, obj in data["PFD"]["equip"].items():
-            id = int(id)
+        for idx, obj in data["PFD"]["equip"].items():
+            idx = int(idx)
 
             name = obj["name"]
             dialogoId = obj["dialogo_id"]
             s = EquipmentItem(name, dialogoId)
-            s.id = id
+            s.id = idx
 
             x = obj["x"]
             y = obj["y"]
             pos = QtCore.QPointF(x, y)
             s.setPos(pos)
 
-            angle_equip[id] = obj["angle"]
+            angle_equip[idx] = obj["angle"]
             up = [self.objects["stream"][i] for i in obj["up_id"]]
             s.up = up
             down = [self.objects["stream"][i] for i in obj["down_id"]]
             s.down = down
 
-            self.objects["equip"][id] = s
+            self.objects["equip"][idx] = s
             self.addItem(s)
 
             txt = obj["label"]
@@ -695,19 +692,19 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             visible = obj["label_visible"]
             s.idLabel.setVisible(visible)
 
-        for id in id_stream:
-            tipo, i = up_stream[id]
-            self.objects["stream"][id].up = self.getObject(tipo, i)
-            tipo, i = down_stream[id]
-            self.objects["stream"][id].down = self.getObject(tipo, i)
-            self.objects["stream"][id].redraw()
+        for idx in id_stream:
+            tipo, i = up_stream[idx]
+            self.objects["stream"][idx].up = self.getObject(tipo, i)
+            tipo, i = down_stream[idx]
+            self.objects["stream"][idx].down = self.getObject(tipo, i)
+            self.objects["stream"][idx].redraw()
 
-        for id, angle in angle_in.items():
-            self.objects["in"][id].rotate(angle)
-        for id, angle in angle_out.items():
-            self.objects["out"][id].rotate(angle)
-        for id, angle in angle_equip.items():
-            self.objects["equip"][id].rotate(angle)
+        for idx, angle in angle_in.items():
+            self.objects["in"][idx].rotate(angle)
+        for idx, angle in angle_out.items():
+            self.objects["out"][idx].rotate(angle)
+        for idx, angle in angle_equip.items():
+            self.objects["equip"][idx].rotate(angle)
 
     def writeToJSON(self, data):
         """Save json format to write to file"""
@@ -817,7 +814,7 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
             equipments[idx] = equip
         data["equip"] = equipments
 
-    def getObject(self, tipo, id):
+    def getObject(self, tipo, idx):
         """Return the object of project"""
         if tipo == "e":
             lista = self.objects["equip"]
@@ -828,11 +825,11 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         elif tipo == "s":
             lista = self.objects["stream"]
         else:
-            raise Exception
-        return lista[id]
+            raise ValueError
+        return lista[idx]
 
 
-class GeometricItem():
+class GeometricItem(QtWidgets.QAbstractGraphicsShapeItem):
     """Generic class with common functionality for geometric PFD elements"""
     tipo = ""
     icon = None
@@ -882,8 +879,9 @@ class GeometricItem():
             self.setPen(pen)
 
     def contextMenu(self):
+        """Define context menu of object"""
         contextMenu = QtWidgets.QMenu(
-            "%s Item" % self.tipo, self.scene().parent())
+            f"{self.tipo} Item", self.scene().parent())
         contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(self.icon)))
         contextMenu.addAction(
             QtGui.QIcon(os.path.join(IMAGE_PATH, "button", "editDelete.png")),
@@ -896,16 +894,18 @@ class GeometricItem():
         return contextMenu
 
     def itemChange(self, key, value):
+        """Set mainwindow current project modified at any change of item"""
         if self.scene() and key == \
                 QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange:
             mainwindow = self.scene().parent()
-            if mainwindow.dirty[mainwindow.idTab] == False:
+            if not mainwindow.dirty[mainwindow.idTab]:
                 mainwindow.dirty[mainwindow.idTab] = True
                 mainwindow.activeControl(True)
                 mainwindow.tabModified(mainwindow.idTab)
         return QtWidgets.QGraphicsItem.itemChange(self, key, value)
 
     def keyPressEvent(self, event):
+        """Do action when arrows keys are pressed"""
         factor = Preferences.getint("PFD", 'move_factor')
 
         if event.modifiers() & QtCore.Qt.KeyboardModifier.ShiftModifier:
@@ -952,13 +952,13 @@ class GeometricItem():
                 self.setRect(rect)
 
 
-class RectItem(GeometricItem, QtWidgets.QGraphicsRectItem):
+class RectItem(QtWidgets.QGraphicsRectItem, GeometricItem):
     """Class to plot a rectangular item"""
     tipo = "square"
     icon = os.path.join(IMAGE_PATH, "equipment", "square.png")
 
 
-class EllipseItem(GeometricItem, QtWidgets.QGraphicsEllipseItem):
+class EllipseItem(QtWidgets.QGraphicsEllipseItem, GeometricItem):
     """Class to plot a circle or oval item"""
     tipo = "ellipse"
     icon = os.path.join(IMAGE_PATH, "equipment", "cirle.png")
@@ -999,7 +999,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         """Define context menu of item"""
         if self.selectable:
             contextMenu = QtWidgets.QMenu(
-                self.tr("Text Item: %s" % self.toPlainText()),
+                self.tr(f"Text Item: {self.toPlainText()}"),
                 self.scene().parent())
             contextMenu.setIcon(QtGui.QIcon(QtGui.QPixmap(
                 os.path.join(IMAGE_PATH, "equipment", "text.png"))))
@@ -1013,6 +1013,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
             return contextMenu
 
     def itemChange(self, key, value):
+        """Set mainwindow current project modified at any change of item"""
         if self.scene() and key == \
                 QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange:
             mainwindow = self.scene().parent()
@@ -1023,6 +1024,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
         return QtWidgets.QGraphicsItem.itemChange(self, key, value)
 
     def keyPressEvent(self, event):
+        """Do action when arrows keys are pressed"""
         factor = Preferences.getint("PFD", 'move_factor')
 
         if event.key() == QtCore.Qt.Key.Key_Delete or \
@@ -1043,7 +1045,7 @@ class TextItem(QtWidgets.QGraphicsTextItem):
             self.setPos(QtCore.QPointF(self.pos().x()+factor, self.pos().y()))
 
 
-class GraphicsEntity():
+class GraphicsEntity(QtCore.QObject):
     """Class with common functionality for Entity in PFD"""
 
     def view(self):
@@ -1058,7 +1060,7 @@ class GraphicsEntity():
                 temp.write(self.tr("Stream Id"))
             else:
                 temp.write(self.tr("Equipment Id"))
-            temp.write(": %i" % self.id + os.linesep)
+            temp.write(f": {self.id}" + os.linesep)
 
             now = datetime.today()
             temp.write(self.tr("Report generated at"))
@@ -1099,8 +1101,8 @@ class GraphicsEntity():
                     self.entity.__class__.__name__.lower()) + ".ots"
 
                 if os.path.isfile(templatefile):
-                    spreadsheet = ezodf.newdoc("ods", ruta, templatefile)
-                    sheet = spreadsheet.sheets[0]
+                    spreadfile = ezodf.newdoc("ods", ruta, templatefile)
+                    sheet = spreadfile.sheets[0]
                     for attr, tipo, cell in self.entity.datamap2xls():
                         prop = self.entity._prop(attr)
                         if tipo == "value":
@@ -1109,9 +1111,9 @@ class GraphicsEntity():
                             value = prop.text()
                         sheet[cell].set_value(value)
                 else:
-                    spreadsheet = ezodf.newdoc("ods", ruta)
-                    sheets = spreadsheet.sheets
-                    sheet = ezodf.Table('pychemqt - s%i' % self.id)
+                    spreadfile = ezodf.newdoc("ods", ruta)
+                    sheets = spreadfile.sheets
+                    sheet = ezodf.Table(f'pychemqt - s{self.id}')
                     sheets += sheet
                     propiedades = self.entity.properties()
                     sheet.reset(size=(len(propiedades) + 1, 10))
@@ -1127,11 +1129,11 @@ class GraphicsEntity():
                             txt = value.text()
                             value = value.config()
 
-                        sheet["B%i" % (i + 2)].set_value(name)
-                        sheet["C%i" % (i + 2)].set_value(value)
-                        sheet["D%i" % (i + 2)].set_value(txt)
+                        sheet[f"B{i+2}"].set_value(name)
+                        sheet[f"C{i+2}"].set_value(value)
+                        sheet[f"D{i+2}"].set_value(txt)
 
-                spreadsheet.save()
+                spreadfile.save()
 
             elif ruta[-4:] == "xlsx":
                 # TODO:
@@ -1141,7 +1143,7 @@ class GraphicsEntity():
                 print(ruta, "is xls")
 
 
-class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
+class StreamItem(QtWidgets.QGraphicsPathItem, GeometricItem, GraphicsEntity):
     """Class to plot a mass stream"""
     up = None
     down = None
@@ -1163,27 +1165,33 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
         else:
             self.id = StreamItem.id + 1
             StreamItem.id += 1
-        self.idLabel = TextItem("S%i" % self.id, self, selectable=False)
+        self.idLabel = TextItem(f"S{self.id}", self, selectable=False)
         self.idLabel.setZValue(2)
         self.setAcceptHoverEvents(True)
         self.tr = partial(translate, "StreamItem")
 
     @property
     def corriente(self):
+        """Property with Corriente instance"""
         return self.scene().project.getStream(self.id)
 
     @property
     def entity(self):
+        """Property with Corriente instance"""
         return self.corriente
 
     def setCorriente(self, corriente):
+        """Set Corriente instance"""
         self.scene().project.setStream(self.id, corriente)
         kwargs = {"entrada": corriente}
         if isinstance(self.scene().project.getDownToStream(self.id), flux.Mixer):
             kwargs["id_entrada"] = self.scene().project.streams[self.id][3] + 1
         equip = self.scene().project.getDownToStream(self.id)
+
         if isinstance(equip, equipment):
             equip(**kwargs)
+
+        # Set color of stream to show fully calculated versus undefined streams
         pen = self.pen()
         if corriente.status == 1:
             pen.setColor(QtGui.QColor("blue"))
@@ -1192,11 +1200,14 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
         self.setPen(pen)
 
     def mouseDoubleClickEvent(self, event=None):
+        """Show Corriente dialog when double click object"""
         dialog = UI_corriente.Corriente_Dialog(self.corriente)
         if dialog.exec():
             self.setCorriente(dialog.corriente)
 
     def copyFromProject(self):
+        """Show dialog to select any stream from other pychemqt project to copy
+        it in this object"""
         dialog = SelectStreamProject()
         if dialog.exec():
             indice = dialog.stream.currentText()
@@ -1206,6 +1217,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             self.setCorriente(corriente)
 
     def keyPressEvent(self, event):
+        """Do action when keys are pressed"""
         if event.key() == QtCore.Qt.Key.Key_Delete or \
                 event.key() == QtCore.Qt.Key.Key_Backspace:
             self.delete()
@@ -1216,6 +1228,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             self.mouseDoubleClickEvent()
 
     def hoverEnterEvent(self, event):
+        """Show popup dialog with info when the mouse stay over the object"""
         if not (self.scene().addObj and self.scene().addType == "stream"):
             self.scene().popup.show()
             self.scene().popup.populate(self.corriente, self.id, Preferences)
@@ -1223,14 +1236,18 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             self.scene().popup.move(int(point.x()), int(point.y()))
 
     def hoverLeaveEvent(self, event):
+        """Hide popup dialog when mouse leave object"""
         self.scene().popup.hide()
 
     def hoverMoveEvent(self, event):
+        """Move popup dialog when the mouse move over the object"""
         point = self.mapToParent(event.scenePos())
         self.scene().popup.show()
         self.scene().popup.move(int(point.x()), int(point.y()))
 
     def contextMenu(self):
+        """Define context menu with actions availables to show when required
+        at right click mouse"""
         ViewAction = createAction(
             self.tr("View Properties"),
             slot=self.view, parent=self.scene())
@@ -1245,7 +1262,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             SolidDistributionAction.setEnabled(False)
 
         contextMenu = QtWidgets.QMenu(
-            "Stream %i" % self.id, self.scene().parent())
+            f"Stream {self.id}", self.scene().parent())
         contextMenu.setIcon(QtGui.QIcon(
             os.path.join(IMAGE_PATH, "equipment", "stream.png")))
         contextMenu.addAction(
@@ -1265,7 +1282,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             self.tr("Export to spreadsheet"), self.exportExcel)
         contextMenu.addAction(
             self.tr("Show/Hide Id Label"),
-            self.idLabelVisibility)
+            self.toggleLabel)
         contextMenu.addAction(
             self.tr("Appearance"),
             self.format)
@@ -1355,6 +1372,7 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
             self.idLabel.setPos(x_mean, (self.entrada.y()+self.salida.y())/2-10)
 
     def postDelete(self):
+        """Do actions necessary when remove a stream object"""
         StreamItem.free_id.append(self.id)
         self.up.down_used -= 1
         self.down.up_used -= 1
@@ -1363,10 +1381,12 @@ class StreamItem(GeometricItem, QtWidgets.QGraphicsPathItem, GraphicsEntity):
         if self in self.down.up:
             self.down.up.remove(self)
 
-    def idLabelVisibility(self):
+    def toggleLabel(self):
+        """Toggle label visibility"""
         self.idLabel.setVisible(not self.idLabel.isVisible())
 
     def solidFit(self):
+        """Show a dialog to fit solid particle size distribution"""
         if self.corriente.solido:
             dialog = Plot_Distribucion(self.id, self.corriente.solido)
             self.scene().parent().currentMdi.addSubWindow(dialog)
@@ -1386,7 +1406,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
 
     def __init__(self, name, dialogoId, parent=None):
         self.name = name
-        imagen = os.environ["pychemqt"] + "images/equipment/%s.svg" % name
+        imagen = os.path.join(IMAGE_PATH, "equipment", f"{name}.svg")
         super().__init__(imagen, parent=parent)
         self.dialogoId = dialogoId
         self.setFlags(
@@ -1403,7 +1423,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             EquipmentItem.id += 1
             self.id = EquipmentItem.id
             self.tipo = "e"
-            self.idLabel = TextItem("E%i" % self.id, self, selectable=False)
+            self.idLabel = TextItem(f"E{self.id}", self, selectable=False)
             self.idLabel.setPos(self.boundingRect().width() / 3., -20)
 
         else:
@@ -1418,7 +1438,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
                 self.tipo = "o"
 
         output = []
-        input = []
+        inpt = []
         doc = minidom.parse(imagen)
 
         for entrada in doc.getElementsByTagName("ins")[0].childNodes:
@@ -1427,7 +1447,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
                     x = float(entrada.getAttribute("x"))
                     y = float(entrada.getAttribute("y"))
                     d = float(entrada.getAttribute("d"))
-                    input.append([x, y, d])
+                    inpt.append([x, y, d])
 
         for salida in doc.getElementsByTagName("outs")[0].childNodes:
             if isinstance(salida, minidom.Element):
@@ -1439,8 +1459,8 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
         doc.unlink()
 
         self.input = []
-        if input:
-            for entrada in input:
+        if inpt:
+            for entrada in inpt:
                 obj = QtWidgets.QGraphicsEllipseItem(self)
                 obj.setRect(entrada[0] * self.boundingRect().width() - 5,
                             entrada[1] * self.boundingRect().height() - 5,
@@ -1466,24 +1486,27 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
 
     @property
     def equipment(self):
+        """Property with Equipment instance"""
         return self.scene().project.getItem(self.id)
 
     @property
     def entity(self):
+        """Property with Equipment instance"""
         return self.equipment
 
     def mouseDoubleClickEvent(self, event=None):
+        """Show equipment dialog when double click object"""
         if self.dialogoId is not None:
             kwarg = {"equipment": self.equipment}
             # Aditional parameters for selected equipment
             if isinstance(self.equipment, flux.Divider):
                 # Divider
-                if not len(self.down):
+                if not self.down:
                     return
                 kwarg["salidas"] = len(self.down)
             elif isinstance(self.equipment, flux.Mixer):
                 # mixer
-                if not len(self.up):
+                if not self.up:
                     return
                 kwarg["entradas"] = len(self.up)
             elif isinstance(self.equipment, spreadsheet.Spreadsheet):
@@ -1505,6 +1528,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
                 self.up[0].mouseDoubleClickEvent()
 
     def mousePressEvent(self, event):
+        """If any user interaction is waiting manage that mouse click"""
         QtSvgWidgets.QGraphicsSvgItem.mousePressEvent(self, event)
         if self.scene().addObj:
             if self.scene().addType == "stream":
@@ -1523,6 +1547,7 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
                 self.scene().Pos.append(event.pos())
 
     def mouseMoveEvent(self, event=None):
+        """Move object in scene and redraw the streams associated to it"""
         if event:
             QtWidgets.QGraphicsPixmapItem.mouseMoveEvent(self, event)
         for i, corriente in enumerate(self.up):
@@ -1532,13 +1557,16 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             corriente.redraw(
                 entrada=self.mapToScene(self.output[i].rect().center()))
 
-    def showInput(self, bool):
+    def showInput(self, boolean):
+        """Set visibility of input/output point"""
         for entrada in self.input:
-            entrada.setVisible(bool)
+            entrada.setVisible(boolean)
         for salida in self.output:
-            salida.setVisible(bool)
+            salida.setVisible(boolean)
 
     def hoverEnterEvent(self, event):
+        """Do actions when mouse hover over the object, show input/output point
+        when it's waiting user interaction or popup info in other case"""
         if self.scene().addObj and self.scene().addType == "stream":
             self.showInput(True)
         else:
@@ -1557,14 +1585,17 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             self.scene().popup.graphicsProxyWidget().resize(0, 0)
 
     def hoverLeaveEvent(self, event):
+        """Hide object shown at hoverEnterEvent"""
         self.showInput(False)
         self.scene().popup.hide()
 
     def hoverMoveEvent(self, event):
+        """Move popup with mouse movement"""
         point = event.scenePos()
         self.scene().popup.move(int(point.x()), int(point.y()))
 
     def keyPressEvent(self, event):
+        """Do action when arrows keys are pressed"""
         factor = Preferences.getint("PFD", 'move_factor')
 
         if event.key() == QtCore.Qt.Key.Key_Delete or \
@@ -1589,26 +1620,29 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             self.mouseMoveEvent()
 
     def itemChange(self, key, value):
+        """Set mainwindow current project modified at any change of item"""
         if self.scene() and key == \
                 QtWidgets.QGraphicsItem.GraphicsItemChange.ItemPositionChange:
             mainwindow = self.scene().parent()
-            if mainwindow.dirty[mainwindow.idTab] == False:
+            if mainwindow.dirty[mainwindow.idTab] is False:
                 mainwindow.dirty[mainwindow.idTab] = True
                 mainwindow.activeControl(True)
                 mainwindow.tabModified(mainwindow.idTab)
         return QtWidgets.QGraphicsItem.itemChange(self, key, value)
 
     def contextMenu(self):
-        if self.dialogoId != None:
+        """Define context menu with actions availables to show when required
+        at right click mouse"""
+        if self.dialogoId is not None:
             ViewAction = createAction(
                 self.tr("View Properties"),
                 slot=self.view, parent=self.scene())
             ViewAction.setEnabled(self.equipment.status)
 
             contextMenu = QtWidgets.QMenu(
-                "Equipment %i" % self.id, self.scene().parent())
+                f"Equipment {self.id}", self.scene().parent())
             contextMenu.setIcon(QtGui.QIcon(
-                os.path.join(IMAGE_PATH, "equipment", "%s.svg" % self.name)))
+                os.path.join(IMAGE_PATH, "equipment", f"{self.name}.svg")))
             contextMenu.addAction(self.tr("Edit"), self.mouseDoubleClickEvent)
             contextMenu.addAction(
                 QtGui.QIcon(os.path.join(
@@ -1620,12 +1654,10 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             contextMenu.addAction(
                 self.tr("Export to spreadsheet"), self.exportExcel)
             contextMenu.addAction(
-                self.tr("Show/Hide Id Label"), self.idLabelVisibility)
+                self.tr("Show/Hide Id Label"), self.toggleLabel)
 
-        # contextMenu.addAction(
-        # self.tr("Appearance"), self.format)
-        #            contextMenu.addSeparator()
-        #            contextMenu.addAction("Run", self.mouseDoubleClickEvent)
+            # contextMenu.addAction(
+                # self.tr("Appearance"), self.format)
 
         else:
             if self.output and self.down:
@@ -1635,40 +1667,43 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             else:
                 contextMenu = QtWidgets.QMenu()
 
-        self.menuTransform = QtWidgets.QMenu(self.tr("Transform"))
-        self.menuTransform.addAction(
+        menuTransform = QtWidgets.QMenu(self.tr("Transform"))
+        menuTransform.addAction(
             QtGui.QIcon(os.path.join(
                 IMAGE_PATH, "button", "transform_rotate_90.png")),
             self.tr("Rotate by 90"),
             partial(self.rotate, 90))
-        self.menuTransform.addAction(
+        menuTransform.addAction(
             QtGui.QIcon(os.path.join(
                 IMAGE_PATH, "button", "transform_rotate_180.png")),
             self.tr("Rotate by 180"),
             partial(self.rotate, 180))
-        self.menuTransform.addAction(
+        menuTransform.addAction(
             QtGui.QIcon(os.path.join(
                 IMAGE_PATH, "button", "transform_rotate_270.png")),
             self.tr("Rotate by 270"),
             partial(self.rotate, 270))
-        self.menuTransform.addSeparator()
-        self.menuTransform.addAction(
+        menuTransform.addSeparator()
+        menuTransform.addAction(
             self.tr("Mirror about X"),
             partial(self.rotate, 270))
-        self.menuTransform.addAction(
+        menuTransform.addAction(
             self.tr("Mirror about Y"),
             partial(self.rotate, 270))
-        contextMenu.addAction(self.menuTransform.menuAction())
+        contextMenu.addAction(menuTransform.menuAction())
 
         return contextMenu
 
     def delete(self):
+        """Delete item from scene"""
         self.scene().delete(self)
 
     def format(self):
-        pass
+        """Configure apperance of equipment svg"""
+        # TODO: Add configuration support for appearance of equipment
 
     def postDelete(self):
+        """Do actions necessary when remove a equipment object"""
         while self.down:
             stream = self.down.pop()
             self.scene().delete(stream)
@@ -1676,10 +1711,12 @@ class EquipmentItem(QtSvgWidgets.QGraphicsSvgItem, GraphicsEntity):
             stream = self.up.pop()
             self.scene().delete(stream)
 
-    def idLabelVisibility(self):
+    def toggleLabel(self):
+        """Toggle label visibility"""
         self.idLabel.setVisible(not self.idLabel.isVisible())
 
     def rotate(self, angle):
+        """Rotate equipment image"""
         self.angle = angle
         transform = self.transform()
         transform.rotate(angle)
