@@ -36,9 +36,9 @@ class Ne(MEoS):
     synonym = "R-720"
     _refPropName = "NEON"
     _coolPropName = "Neon"
-    rhoc = unidades.Density(486.3139)
-    Tc = unidades.Temperature(44.4)
-    Pc = unidades.Pressure(2661.63, "kPa")
+    rhoc = unidades.Density(481.914888)
+    Tc = unidades.Temperature(44.4918)
+    Pc = unidades.Pressure(2678.6, "kPa")
     M = 20.179  # g/mol
     Tt = unidades.Temperature(24.556)
     Tb = unidades.Temperature(27.104)
@@ -62,6 +62,7 @@ class Ne(MEoS):
         "cp": CP1,
         "ref": "NBP",
 
+        "rhoc": 24, "Tc": 44.4, "Pc": 2661.63,
         "Tmin": Tt, "Tmax": 725.0, "Pmax": 1000000.0, "rhomax": 155.57,
 
         "nr1": [0.031522418, 3.7716418, -4.27399448, -0.756466758, .066679921],
