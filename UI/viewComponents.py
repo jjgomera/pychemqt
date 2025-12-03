@@ -385,9 +385,9 @@ class DIPPR_widget(QtWidgets.QGroupBox):
         hHeader = [f"T, {unidades.Temperature.text()}",
                    f"{self.title()}, {self.unit.text()}"]
         dlg = InputTableDialog(
-                title=self.title(), DIPPR=True, horizontalHeader=hHeader,
-                hasTc=True, Tc=self.parent.Tc.value, t=self.t,
-                property=self.data, eq=self.eq.value())
+            title=self.title(), DIPPR=True, horizontalHeader=hHeader,
+            hasTc=True, Tc=self.parent.Tc.value, t=self.t,
+            prop=self.data, eqDIPPR=self.eq.value())
 
         if dlg.exec():
             t = array(dlg.widget.column(0, unidades.Temperature))
