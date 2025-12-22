@@ -118,6 +118,7 @@ class ClBenzene(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 502.1, "sigma": 0.547, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.934,
@@ -140,8 +141,8 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = ClBenzene(T=569.1, rhom=6.658)
-        self.assertEqual(round(st.mu.muPas, 4), 101.6735)
-        self.assertEqual(round(st.k.mWmK, 4), 84.6360)
+        self.assertEqual(round(st.mu.muPas, 4), 101.6731)
+        self.assertEqual(round(st.k.mWmK, 4), 84.6359)
 
     def test_Surface(self):
         """Table 10, pag 271"""

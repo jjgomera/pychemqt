@@ -259,5 +259,5 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = EthyOxide(T=422, rhom=14.798)
         # self.assertEqual(round(st.mu.muPas, 5), 99.29773)
-        self.assertEqual(round(st.mu.muPas, 5), 99.29920)
+        self.assertEqual(round(st.mu.muPas, 5), 99.29776)
         self.assertEqual(round(st.k.mWmK, 4), 100.2750)

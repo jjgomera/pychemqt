@@ -111,6 +111,7 @@ class C4F10(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 179, "sigma": 0.694, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,
@@ -182,6 +183,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = C4F10(T=347.7, rhom=5.405)
-        # self.assertEqual(round(st.mu.muPas, 4), 137.8044)
-        self.assertEqual(round(st.mu.muPas, 4), 137.8051)
-        self.assertEqual(round(st.k.mWmK, 4), 56.5125)
+        self.assertEqual(round(st.mu.muPas, 4), 137.8045)
+        self.assertEqual(round(st.k.mWmK, 4), 56.5124)

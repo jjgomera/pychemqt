@@ -142,5 +142,5 @@ class Test(TestCase):
         st = R218(T=310.5, rhom=6.771)
         # self.assertEqual(round(st.mu.muPas, 4), 144.3991)
         # self.assertEqual(round(st.k.mWmK, 4), 41.7675)
-        self.assertEqual(round(st.mu.muPas, 4), 144.4036)
+        self.assertEqual(round(st.mu.muPas, 4), 144.4028)
         self.assertEqual(round(st.k.mWmK, 4), 41.7754)

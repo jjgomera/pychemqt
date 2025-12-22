@@ -3584,7 +3584,7 @@ class Petroleo(newComponente):
                 self.EFV = D86_EFV(curva, X, self.SG)
                 self.SD = None
                 TBP_10mHg = [Tb_Pressure(t, P, reverse=True) for t in self.TBP]
-                D1160_10mHg = D1160_TBP_10mmHg(TBP_10mHg, reverse=True)
+                D1160_10mHg = D1160_TBP_10mmHg(TBP_10mHg)
                 self.D1160 = [Tb_Pressure(t, P) for t in D1160_10mHg]
 
             elif self.kwargs["TBP"]:

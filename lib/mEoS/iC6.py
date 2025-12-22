@@ -138,5 +138,5 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = iC6(T=447.9, rhom=5.581)
         # self.assertEqual(round(st.mu.muPas, 5), 87.01045)
-        self.assertEqual(round(st.mu.muPas, 5), 87.02139)
+        self.assertEqual(round(st.mu.muPas, 5), 87.02055)
         self.assertEqual(round(st.k.mWmK, 4), 69.8968)

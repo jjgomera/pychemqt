@@ -5217,7 +5217,7 @@ class MEoS(ThermoAdvanced):
                 mu = method(rho, T, fase).muPas
 
             elif coef["eq"] == 1:
-                muo = self._Visco0(T)
+                muo = self._Visco0(T, coef)
 
                 # Initial-density term, second virial coefficient
                 mud = 0
@@ -5379,13 +5379,19 @@ class MEoS(ThermoAdvanced):
                     visco0 = ref._viscosity[0]
                 M0 = visco0.get("M", ref.M)
 
+                # Using the critical variables if defined
+                if "Tc" in visco0:
+                    Tc0 = visco0["Tc"]
                 # Using the criticial variables of fundamental equation if
                 # defined
-                if "Tc" in ref().eq[0]:
+                elif "Tc" in ref().eq[0]:
                     Tc0 = ref.eq[0]["Tc"]
                 else:
                     Tc0 = ref.Tc
-                if "rhoc" in ref.eq[0]:
+
+                if "rhoc" in visco0:
+                    rhoc0 = visco0["rhoc"]*M0
+                elif "rhoc" in ref.eq[0]:
                     rhoc0 = ref.eq[0]["rhoc"]*M0
                 else:
                     rhoc0 = ref.rhoc

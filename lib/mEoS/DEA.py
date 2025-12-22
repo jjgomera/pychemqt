@@ -142,13 +142,9 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = DEA(T=662.8, rhom=7.262)
         # self.assertEqual(round(st.mu.muPas, 4), 228.4693)
-        self.assertEqual(round(st.mu.muPas, 4), 228.4867)
-        self.assertEqual(round(st.k.mWmK, 4), 142.1576)
+        self.assertEqual(round(st.mu.muPas, 4), 228.4695)
+        self.assertEqual(round(st.k.mWmK, 4), 142.1575)
 
     def test_Surface(self):
         """Table 10, pag 271"""
         self.assertEqual(round(DEA(T=662.8, x=0.5).sigma, 7), 0.0059581)
-
-
-if __name__ == "__main__":
-    st = DEA(T=662.8, rhom=7.262)

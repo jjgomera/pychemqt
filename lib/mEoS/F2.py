@@ -179,7 +179,5 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = F2(T=130, rhom=29.421)
         # self.assertEqual(round(st.mu.muPas, 5), 81.05026)
-        self.assertEqual(round(st.mu.muPas, 5), 81.04843)
-
-        # The critical enhancement differ, maybe a problem with EoS
-        # self.assertEqual(round(st.k.mWmK, 4), 73.6011)
+        self.assertEqual(round(st.mu.muPas, 5), 81.0503)
+        self.assertEqual(round(st.k.mWmK, 4), 73.6011)

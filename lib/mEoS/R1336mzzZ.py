@@ -124,6 +124,7 @@ class R1336mzzZ(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 352.97, "sigma": 0.5582, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.94,
@@ -217,8 +218,8 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = R1336mzzZ(T=400, rhom=6.422, thermal=1)
-        self.assertEqual(round(st.mu.muPas, 4), 121.0337)
-        self.assertEqual(round(st.k.mWmK, 4), 53.5265)
+        self.assertEqual(round(st.mu.muPas, 4), 121.0333)
+        self.assertEqual(round(st.k.mWmK, 4), 53.5264)
 
     def test_Perkins(self):
         """Table 3, pag 103"""

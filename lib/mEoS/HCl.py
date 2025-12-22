@@ -213,7 +213,6 @@ class Test(TestCase):
         self.assertEqual(round(st.w, 6), 515.047201)
         self.assertEqual(round(st.aM.kJkmol, 5), -5810.05088)
 
-
     def test_thol2014(self):
         """Table 9, Pag 26"""
         # Discard the last 4 number, I'm fairly sure is a problem with the
@@ -254,6 +253,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = HCl(T=292.2, rhom=23.87)
-        # self.assertEqual(round(st.mu.muPas, 5), 92.63275)
-        self.assertEqual(round(st.mu.muPas, 5), 92.63348)
-        self.assertEqual(round(st.k.mWmK, 4), 199.4777)
+        self.assertEqual(round(st.mu.muPas, 5), 92.63277)
+        self.assertEqual(round(st.k.mWmK, 4), 199.4775)

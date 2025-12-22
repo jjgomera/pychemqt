@@ -156,6 +156,7 @@ class Kr(MEoS):
 
               "eq": "ecs",
               "ref": N2,
+              "visco": "visco1",
 
               "ek": 178.9, "sigma": 0.3655, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1.008291,

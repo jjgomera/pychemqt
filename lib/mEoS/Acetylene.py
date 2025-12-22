@@ -135,7 +135,7 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = Acetylene(T=277.5, rhom=17.772)
         self.assertEqual(round(st.mu.muPas, 5), 70.87286)
-        self.assertEqual(round(st.k.mWmK, 4), 105.9641)
+        self.assertEqual(round(st.k.mWmK, 4), 105.964)
 
     def test_Surface(self):
         """Table 10, pag 271"""

@@ -141,8 +141,7 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = MEA(T=604.3, rhom=11.24)
-        # self.assertEqual(round(st.mu.muPas, 4), 132.2858)
-        self.assertEqual(round(st.mu.muPas, 4), 132.2899)
+        self.assertEqual(round(st.mu.muPas, 4), 132.2859)
         self.assertEqual(round(st.k.mWmK, 4), 167.1428)
 
     def test_Surface(self):

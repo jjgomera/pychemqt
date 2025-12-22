@@ -136,4 +136,4 @@ class Test(TestCase):
         """Table 7, pag 266"""
         self.assertEqual(round(
             # C1Palmitate(T=679.5, rhom=2.017).mu.muPas, 4), 145.8854)
-            C1Palmitate(T=679.5, rhom=2.017).mu.muPas, 4), 145.8980)
+            C1Palmitate(T=679.5, rhom=2.017).mu.muPas, 4), 145.8856)

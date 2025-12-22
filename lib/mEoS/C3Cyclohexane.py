@@ -173,7 +173,7 @@ class Test(TestCase):
 
         st = C3Cyclohexane(T=600, P=4.744e6)
         self.assertEqual(round(st.rho, 6), 501.697589)
-#         self.assertEqual(round(st.k, 5), 0.07432)
+        # self.assertEqual(round(st.k, 5), 0.07432)
 
         st = C3Cyclohexane(T=600, P=5e7)
         self.assertEqual(round(st.rho, 6), 644.863706)
@@ -182,5 +182,4 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         self.assertEqual(round(
-            # C3Cyclohexane(T=567.7, rhom=4.223).mu.muPas, 4), 124.8216)
-            C3Cyclohexane(T=567.7, rhom=4.223).mu.muPas, 4), 124.8235)
+            C3Cyclohexane(T=567.7, rhom=4.223).mu.muPas, 4), 124.8217)

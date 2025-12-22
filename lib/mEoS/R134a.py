@@ -342,7 +342,7 @@ class R134a(MEoS):
 
               "eq": 1, "omega": 1,
 
-              "M": 102.032, "ek": 299.363, "sigma": 0.46893,
+              "M": 102.031837, "ek": 299.363, "sigma": 0.46893,
               "n_chapman": 0.021357,
               "collision": [0.355404, -0.464337, 0.257353e-1],
 
@@ -404,7 +404,7 @@ class R134a(MEoS):
                             "IUPAC Round-Robin Sample of 1,1,1,2-"
                             "tetrafluoroethane (R134a)",
                    "ref": "NIST Interagency/Internal Report (NISTIR) - 6605",
-                   "doi": ""},
+                   "doi": "nistir6605"},
 
                "eq": 1,
 

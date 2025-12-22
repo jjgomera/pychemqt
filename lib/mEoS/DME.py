@@ -194,5 +194,5 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = DME(T=360.3, rhom=12.001, visco=1)
         # self.assertEqual(round(st.mu.muPas, 5), 83.3511)
-        self.assertEqual(round(st.mu.muPas, 5), 83.3514)
+        self.assertEqual(round(st.mu.muPas, 5), 83.35112)
         self.assertEqual(round(st.k.mWmK, 4), 99.1164)

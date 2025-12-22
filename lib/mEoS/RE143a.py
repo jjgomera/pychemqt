@@ -113,6 +113,7 @@ class RE143a(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 300.104, "sigma": 0.4847, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,
@@ -137,8 +138,8 @@ class Test(TestCase):
         st = RE143a(T=340.1, rhom=9.488)
         # self.assertEqual(round(st.mu.muPas, 4), 123.6032)
         # self.assertEqual(round(st.k.mWmK, 4), 62.6479)
-        self.assertEqual(round(st.mu.muPas, 4), 123.6033)
-        self.assertEqual(round(st.k.mWmK, 4), 62.6478)
+        self.assertEqual(round(st.mu.muPas, 4), 123.6028)
+        self.assertEqual(round(st.k.mWmK, 4), 62.6477)
 
     def test_Surface(self):
         """Table 10, pag 271"""

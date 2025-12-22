@@ -125,6 +125,7 @@ class VinylCl(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 337.46, "sigma": 0.455, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1.06,
@@ -190,8 +191,8 @@ class Test(TestCase):
         st = VinylCl(T=382.5, rhom=11.537)
         # self.assertEqual(round(st.mu.muPas, 5), 90.53455)
         # self.assertEqual(round(st.k.mWmK, 4), 84.5575)
-        self.assertEqual(round(st.mu.muPas, 5), 90.94743)
-        self.assertEqual(round(st.k.mWmK, 4), 84.8306)
+        self.assertEqual(round(st.mu.muPas, 5), 90.94715)
+        self.assertEqual(round(st.k.mWmK, 4), 84.8305)
 
     def test_Surface(self):
         """Table 10, pag 271"""

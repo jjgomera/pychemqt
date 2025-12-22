@@ -164,6 +164,7 @@ class R1233zd(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 349.1, "sigma": 0.524, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.93,
@@ -272,4 +273,4 @@ class Test(TestCase):
         """Table 7, pag 266"""
         self.assertEqual(round(
             # R1233zd(T=395.6, rhom=7.561).mu.muPas, 5), 113.0913)
-            R1233zd(T=395.6, rhom=7.561).mu.muPas, 5), 112.90889)
+            R1233zd(T=395.6, rhom=7.561).mu.muPas, 5), 112.9085)

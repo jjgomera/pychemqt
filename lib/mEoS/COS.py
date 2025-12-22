@@ -135,6 +135,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = COS(T=340.9, rhom=14.426)
-        # self.assertEqual(round(st.mu.muPas, 4), 104.7952)
-        self.assertEqual(round(st.mu.muPas, 4), 104.7940)
-        self.assertEqual(round(st.k.mWmK, 4), 72.6219)
+        self.assertEqual(round(st.mu.muPas, 4), 104.7952)
+        self.assertEqual(round(st.k.mWmK, 4), 72.6218)

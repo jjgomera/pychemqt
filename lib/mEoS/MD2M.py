@@ -159,6 +159,7 @@ class MD2M(MEoS):
 
               "eq": "ecs",
               "ref": N2,
+              "visco": "visco1",
 
               "ek": 476, "sigma": 0.849, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,

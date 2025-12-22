@@ -110,7 +110,7 @@ class C5F12(MEoS):
               "eq": "ecs",
 
               "ref": R134a,
-              "visco": "visco0",
+              "visco": "visco1",
 
               "ek": 195, "sigma": 0.736, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,
@@ -181,7 +181,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = C5F12(T=378.9, rhom=4.483)
-        # self.assertEqual(round(st.mu.muPas, 4), 159.7795)
-        # self.assertEqual(round(st.k.mWmK, 4), 54.6119)
-        self.assertEqual(round(st.mu.muPas, 4), 159.7803)
-        self.assertEqual(round(st.k.mWmK, 4), 54.6120)
+        self.assertEqual(round(st.mu.muPas, 4), 159.7796)
+        self.assertEqual(round(st.k.mWmK, 4), 54.6118)

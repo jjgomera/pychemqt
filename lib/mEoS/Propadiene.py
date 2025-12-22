@@ -132,10 +132,10 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = Propadiene(T=358.2, rhom=11.972)
-        # self.assertEqual(round(st.mu.muPas, 5), 78.02296)
-        self.assertEqual(round(st.mu.muPas, 5), 78.02271)
+        self.assertEqual(round(st.mu.muPas, 5), 78.02297)
         self.assertEqual(round(st.k.mWmK, 4), 89.6455)
 
     def test_Surface(self):
         """Table 10, pag 271"""
-        self.assertEqual(round(Propadiene(T=358.2, x=0.5).sigma, 7), 0.0034929)
+        # Value for correlation in NIST paper
+        self.assertEqual(round(Propadiene(T=358.2, x=0.5).sigma, 7), 0.0035152)

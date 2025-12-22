@@ -159,6 +159,7 @@ class MDM(MEoS):
 
               "eq": "ecs",
               "ref": N2,
+              "visco": "visco1",
 
               "ek": 448.9, "sigma": 0.776, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,

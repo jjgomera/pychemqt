@@ -173,5 +173,5 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = DEE(T=420, rhom=7.267)
         # self.assertEqual(round(st.mu.muPas, 5), 82.72072)
-        self.assertEqual(round(st.mu.muPas, 5), 82.72174)
+        self.assertEqual(round(st.mu.muPas, 5), 82.72074)
         self.assertEqual(round(st.k.mWmK, 4), 80.8456)

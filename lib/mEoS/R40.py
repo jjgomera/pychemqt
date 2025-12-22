@@ -113,6 +113,7 @@ class R40(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 330.6, "sigma": 0.419, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.97,
@@ -174,5 +175,5 @@ class Test(TestCase):
         st = R40(T=374.7, rhom=14.671)
         # self.assertEqual(round(st.mu.muPas, 5), 90.87011)
         # self.assertEqual(round(st.k.mWmK, 4), 87.6545)
-        self.assertEqual(round(st.mu.muPas, 5), 90.87045)
-        self.assertEqual(round(st.k.mWmK, 4), 87.6538)
+        self.assertEqual(round(st.mu.muPas, 5), 90.87017)
+        self.assertEqual(round(st.k.mWmK, 4), 87.6536)

@@ -181,6 +181,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = neoC5(T=390.4, rhom=6.434)
-        # self.assertEqual(round(st.mu.muPas, 5), 92.11549)
-        self.assertEqual(round(st.mu.muPas, 5), 92.11526)
-        self.assertEqual(round(st.k.mWmK, 4), 67.8593)
+        self.assertEqual(round(st.mu.muPas, 5), 92.1155)
+        self.assertEqual(round(st.k.mWmK, 4), 67.8592)
