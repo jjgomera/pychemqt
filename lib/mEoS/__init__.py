@@ -260,7 +260,6 @@ for obj in __all__:
     __doi__[obj.__name__] = subdict
 
 
-# TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
 
 # Correlation in REFPROP missing

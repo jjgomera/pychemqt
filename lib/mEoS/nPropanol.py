@@ -112,7 +112,36 @@ class nPropanol(MEoS):
         "epsilon_ass": [0.474063025, -0.67936823, -0.206270268, -0.454639836],
         "b_ass": [0.553635447, 0.11706642, 0.305768855, 0.105098566]}
 
-    eq = (gao, )
+    sun = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for n-propanol of Sun and Ely"
+                    " (2004)",
+        "__doi__": {"autor": "Sun, L., Ely, J.F.",
+                    "title": "Universal equation of state for engineering "
+                             "application: Algorithm and  application to "
+                             "non-polar and polar fluids",
+                    "ref": "Fluid Phase Equilib., 222-223 (2004) 107-118",
+                    "doi": "10.1016/j.fluid.2004.06.028"},
+
+        "R": 8.31451,
+        "cp": CP1,
+        "ref": "NBP",
+
+        "Tmin": Tt, "Tmax": 650, "Pmax": 1200000, "rhomax": 20,
+
+        "nr1": [-6.4846669, 6.3481226e-1, 5.34271316, 3.59156552e-2,
+                3.91173758e-4, -4.4277807e-1],
+        "d1": [1, 1, 1, 3, 7, 2],
+        "t1": [1.5, 0.25, 1.25, 0.25, 0.875, 1.375],
+
+        "nr2": [-1.33146361, 1.71475104, -1.20634979e-2, 2.02582101e-1,
+                4.4959531e-2, -8.06185866e-1, -1.97404896e-2, 4.98309152e-2],
+        "d2": [1, 1, 2, 5, 1, 1, 4, 2],
+        "t2": [0, 2.375, 2., 2.125, 3.5, 6.5, 4.75, 12.5],
+        "c2": [1, 1, 1, 1, 2, 2, 2, 3],
+        "gamma2": [1]*8}
+
+    eq = (gao, sun)
 
     _surface = {
         "__doi__": {"autor": "Mulero, A., Cachadiña, I., Sanjuán, E.L.",
