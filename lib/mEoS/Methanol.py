@@ -261,7 +261,10 @@ class Methanol(MEoS):
                              "Recommended Correlations",
                     "ref": "J. Phys. Chem. Ref. Data 44(3) (2015) 033104",
                     "doi": "10.1063/1.4927858"},
-        "sigma": [0.0759, -2.449, 2.47], "exp": [1.134, 3.508, -3.58]}
+        # Using corrected values from erratum article
+        # J. Phys. Chem. Ref. Data 45(9) (2016) 049901
+        # https://doi.org/10.1063/1.4972557
+        "sigma": [0.0759, -2.449, 2.47], "exp": [1.134, 3.508, 3.58]}
 
     _melting = {
         "eq": 1,

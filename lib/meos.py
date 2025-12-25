@@ -5577,6 +5577,12 @@ class MEoS(ThermoAdvanced):
             * no_den: Fraction denominator coefficient for dilute gas viscosity
             * to_den: Fraction denominator temperature exponent
 
+        Exponential terms:
+
+            * no_exp: Exponential term coefficient
+            * to_exp: Exponential term exponent
+            * logo_exp: 1 to use ln in sum term
+
         Custom Hardcoded terms:
 
             * special0: Name of procedure with hardcoded method
@@ -5629,8 +5635,11 @@ class MEoS(ThermoAdvanced):
 
         if "no_exp" in coef:
             term = 0
-            for n, t in zip(coef["no_exp"], coef["to_exp"]):
-                term += n*log(tau)**t
+            for n, t, x in zip(coef["no_exp"], coef["to_exp"], coef["logo_exp"]):
+                if x:
+                    term += n*log(tau)**t
+                else:
+                    term += n*tau**t
             muo += exp(term)
 
         # Special hardcoded method:
