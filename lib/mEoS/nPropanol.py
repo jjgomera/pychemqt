@@ -49,7 +49,7 @@ class nPropanol(MEoS):
 
     gao = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for ammonia of Gao (2023)",
+        "__name__": "Helmholtz equation of state for n Propanol of Gao (2025)",
         "__doi__": {
             "autor": "Cui, J.W., Gao, K.H., Wu, J.T.",
             "title": "Reference Correlation of the Viscosity of n-Propyl"
