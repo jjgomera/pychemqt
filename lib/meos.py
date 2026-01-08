@@ -3039,7 +3039,6 @@ class MEoS(ThermoAdvanced):
         fase.firddt = firddt
         fase.firdtt = firdtt
         fase.firttt = firdtt
-        fase.Bt = Bt
 
         h = self.R.kJkgK*self.T*(1+tau*(fiot+firt)+delta*fird) \
             + self.href-self.hoffset
@@ -3181,6 +3180,7 @@ class MEoS(ThermoAdvanced):
                 fase.d2PdrhodT/fase.dpdT_rho-fase.d2Pdrho2/fase.dpdrho_T)
 
         fase.virialB = unidades.SpecificVolume(estado["B"]/self.rhoc)
+        fase.dBt = -Bt/self.rhoc*self.Tc/self.T**2
         fase.virialC = unidades.SpecificVolume_square(
             estado["C"]/self.rhoc**2)
         fase.virialD = unidades.Dimensionless(
@@ -3918,8 +3918,8 @@ class MEoS(ThermoAdvanced):
                        + 3*c**2*delta_0**c*g - 3*c*d**2*delta_0**c*g + 2*d
                        + 6*c*d*delta_0**c*g - 2*c*delta_0**c*g + d**3 - 3*d**2)
 
-                Bt += n*t*delta_0**(d-1)*tau**(t-1)*(d-g*c*delta_0**c) * \
-                    exp(-g*delta_0**c)
+                Bt += n * delta_0**(d-1) * t * tau**(t-1) * exp(-delta_0**c*g) \
+                    * (d - c*delta_0**c*g)
                 # Ct += n*t*delta_0**(d-2)*tau**(t-1)*exp(-g*delta_0**c) * (
                 #     c**2*delta_0**(2*c)*g**2 - 2*c*d*delta_0**c*g -
                 #     c**2*delta_0**c*g + c*delta_0**c*g + d**2 - d)
