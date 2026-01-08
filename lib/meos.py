@@ -5642,7 +5642,7 @@ class MEoS(ThermoAdvanced):
         M = coef.get("M", self.M)
 
         # Collision integral calculation
-        if coef["omega"]:
+        if "omega" in coef and coef["omega"]:
             omega = self._Omega(T, coef)
             N_chap = coef.get("n_chapman", 0.0266958)
             t_chap = coef.get("t_chapman", 0.5)
