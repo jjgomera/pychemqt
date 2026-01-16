@@ -487,7 +487,7 @@ def f_solid(method=0, *args):
 
 @refDoc(__doi__, [13])
 def fs_Yang_Horizontal(eps, V, D):
-    """Calculate solid friction factor as define in [12]_.
+    """Calculate solid friction factor as define in [13]_.
 
     Parameters
     ----------
