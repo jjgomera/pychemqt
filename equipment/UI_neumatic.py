@@ -43,6 +43,12 @@ class UI_equipment(UI_equip):
         """
         super().__init__(Neumatic, entrada=False, salida=False, parent=parent)
 
+        # Compressor tab
+        # tabCompressor = QtWidgets.QWidget()
+        # tabCompressor.valueChanged.connect(
+        #     partial(self.changeParams, "material"))
+        # self.tabWidget.insertTab(1, tabCompressor, self.tr("Air mover"))
+
         # Calculate tab
         lyt_Calc = QtWidgets.QGridLayout(self.tabCalculo)
 
@@ -51,8 +57,7 @@ class UI_equipment(UI_equip):
         self.orientation = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_ORIENTATION:
             self.orientation.addItem(txt)
-        self.orientation.currentIndexChanged.connect(
-            partial(self.changeParams, "orientation"))
+        self.orientation.currentIndexChanged.connect(self.changeOrientation)
         lyt.addWidget(self.orientation)
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
@@ -80,6 +85,7 @@ class UI_equipment(UI_equip):
             self.fs.addItem(txt)
         self.fs.currentIndexChanged.connect(
             partial(self.changeParams, "fs"))
+        self.fs.setEnabled(False)
         lyt.addWidget(self.fs)
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
@@ -176,6 +182,10 @@ class UI_equipment(UI_equip):
         if dialogo.exec():
             self.K.setValue(dialogo.K)
             self.changeParams("K", dialogo.K)
+
+    def changeOrientation(self, idx):
+        self.changeParams("orientation", idx)
+        self.fs.setEnabled(idx)
 
 
 if __name__ == "__main__":
