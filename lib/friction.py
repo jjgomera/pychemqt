@@ -236,8 +236,13 @@ __doi__ = {
          "title": "HTRI Design Manual",
          "ref": "",
          "doi": ""},
-
-    # 31:
+    31:
+        {"autor": "Perkins, H.C., Woroe-Schmidt, P.",
+         "title": "Turbulent Heat and Momentum Transfer for Gases in a "
+                  "Circular Tube at Wall to Bulk Temperature Ratios to Seven",
+         "ref": "Int. J. Heat Mass Transfer 8(7) (1965) 1011-1031",
+         "doi": "10.1016/0017-9310(65)90085-2"},
+    # 32:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -1301,7 +1306,7 @@ def eD(Re, f):
 
 
 @refDoc(__doi__, [30])
-def f_noisothermal(Re, mu, muW, Gr=None, Pr=None, heating=True):
+def f_liquid_noisothermal(Re, mu, muW, Gr=None, Pr=None, heating=True):
     """Calculate nonisothermal correction factor to friction factor for liquid
     flow
 
@@ -1328,14 +1333,14 @@ def f_noisothermal(Re, mu, muW, Gr=None, Pr=None, heating=True):
     Examples
     --------
     B2.1.1.3.1 turbulent flow
-    >>> print("%0.3f" % f_noisothermal(24491, 0.208, 0.111))
+    >>> print("%0.3f" % f_liquid_noisothermal(24491, 0.208, 0.111))
     0.915
 
     B2.1.1.3.2 transition flow
     >>> Pr = 0.649*0.83/0.062
     >>> beta = -2/(47.6+40.8)*(47.6-40.8)/(82-355)
     >>> Gr = 0.0211**3*653**2*9.81*beta*(355-82)/0.000343**2
-    >>> print("%0.2f" % f_noisothermal(1656, 0.343, 2.02, Pr=Pr, Gr=Gr, heating=False))
+    >>> print("%0.2f" % f_liquid_noisothermal(1656, 0.343, 2.02, Pr=Pr, Gr=Gr, heating=False))
     2.64
     """
     # Ref in HTRI design manual B2.1.1.2
@@ -1370,6 +1375,39 @@ def f_noisothermal(Re, mu, muW, Gr=None, Pr=None, heating=True):
 
     # Eq B2.1-11
     return  phiM * psiN
+
+
+@refDoc(__doi__, [30, 31])
+def f_gas_noisothermal_turbulent(Re, mu, muw, T, Tw, eD=0):
+    """Calculate nonisothermal correction factor to friction factor for gas
+    flow in turbulent regimen
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muw : float
+        Wall flow temperature viscosity, [Pa·s]
+    T : float
+        Bulk temperature, [K]
+    Tw : float
+        Wall temperature, [K]
+    eD : float
+        Relative roughness of a pipe, [-]
+
+    Returns
+    -------
+    f : float
+        Non isothermal gas friction factor, [-]
+    """
+    Reeff = Re*(mu/muw)*(T/Tw)
+    fiso = f_colebrook(Reeff, eD)
+
+    # Eq B2.1-24 removing term ab as show in 31_, Eq 7
+    return fiso*(2/((Tw/T)**0.5+1))**2
+
 
 if __name__ == "__main__":
     for f in f_list:
