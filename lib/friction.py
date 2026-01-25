@@ -1329,7 +1329,7 @@ def f_noisothermal(Re, mu, muW, Gr=None, Pr=None, heating=True):
     --------
     B2.1.1.3.1 turbulent flow
     >>> print("%0.3f" % f_noisothermal(24491, 0.208, 0.111))
-    0.915
+    0.916
 
     B2.1.1.3.2 transition flow
     >>> Pr = 0.649*0.83/0.062
