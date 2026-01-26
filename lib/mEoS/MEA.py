@@ -38,7 +38,7 @@ class MEA(MEoS):
     Pc = unidades.Pressure(8125, "kPa")
     M = 61.0831  # g/mol
     Tt = unidades.Temperature(283.7)
-    Tb = unidades.Temperature(443.15)
+    Tb = unidades.Temperature(443.564)
     f_acent = 0.573
     momentoDipolar = unidades.DipoleMoment(0.7765, "Debye")
     id = 250
@@ -48,15 +48,15 @@ class MEA(MEoS):
            "ao_exp": [13.7, 11.1],
            "exp": [970.0, 3380.0]}
 
-    refprop = {
+    herrig = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for Monoethanolamine (2022)",
+        "__name__": "Helmholtz equation of state for Monoethanolamine (2018)",
         "__doi__": {
-            "autor": "Huber, M.L., Lemmon, E.W., Bell, I.H., McLinden, M.O.",
-            "title": "The NIST REFPROP Database for Highly Accurate Properties"
-                     " of Industrially Importants Fluids",
-            "ref": "Ind. Eng. Chem. Res. 61(42) (2022) 15449-15472",
-            "doi": "10.1021/acs.iecr.2c01427"},
+            "autor": "Herrig, S.",
+            "title": "New Helmholtz-Energy Equations of State for Pure "
+                     "Fluids and CCS-Relevant Mixtures",
+            "ref": "Ph.D. thesis. Bochum: Ruhr-Universität Bochum, 2018.",
+            "doi": ""},
 
         "R": 8.3144598,
         "cp": CP1,
@@ -82,7 +82,7 @@ class MEA(MEoS):
         "gamma3": [1.04, 1.04, 1.04, 1.37],
         "epsilon3": [0.84, 0.77, 0.6, 0.59]}
 
-    eq = (refprop, )
+    eq = (herrig, )
 
     _surface = {
         "__doi__": {"autor": "Huber, M.L.",

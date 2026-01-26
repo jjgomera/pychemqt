@@ -579,7 +579,7 @@ def Nu(h, L, k):
     >>> print("%0.1f" % Nu(102.3, 0.03927, 0.03181))
     126.3
     """
-    return Dimensionless(alfa*L/k)
+    return Dimensionless(h*L/k)
 
 
 @refDoc(__doi__, [2])

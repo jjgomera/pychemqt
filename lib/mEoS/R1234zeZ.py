@@ -38,7 +38,7 @@ class R1234zeZ(MEoS):
     Tt = unidades.Temperature(0)
     Tb = unidades.Temperature(282.878)
     f_acent = 0.327
-    momentoDipolar = unidades.DipoleMoment(0, "Debye")
+    momentoDipolar = unidades.DipoleMoment(2.9, "Debye")
 
     Fi1 = {"ao_log": [1, 3],
            "pow": [0, 1], "ao_pow": [-2.422442259, 8.1190539844],
@@ -161,8 +161,45 @@ class R1234zeZ(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
               "Xio": 0.206e-9, "gam0": 0.055, "qd": 0.62e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = (trnECS, )
-    _thermal = (trnECS, )
+    morshed = {"__name__": "Morshed (2023)",
+
+               "eq": "ecs",
+               "ref": R134a,
+               "visco": "visco1",
+
+               "ek": 336.11, "sigma": 0.5096, "omega": 6,
+               "n_chapman": 26.693e-3, "Fc": 0.85408,
+
+               "Pc": 3.533e6,
+               "psi": [0.83775, 0.0443], "psi_d": [0, 1],
+               "fint": [0.001578], "fint_t": [0],
+               "chi": [1.07355, -0.03355], "chi_d": [0, 1],
+
+               "critical": 3,
+               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
+               "Xio": 0.1952e-9, "gam0": 0.056, "qd": 0.6131e-9, "Tcref": 1.5*Tc}
+
+    morshedVisco = morshed.copy()
+    morshedVisco["__doi__"] = {
+        "autor": "Morshed, M., Tuhin, A.R., Akasaka, R., Miyara, A.",
+        "title": "Application of Extended Corresponding States (ECS) and "
+                 "Residual Entropy Scaling (RES) Techniques for Modeling "
+                 "Viscosity of cis-1,3,3,3-Tetrafluoropropene (R1234ze(Z)) "
+                 "with Revised Experimental Data",
+        "ref": "Int. J. Thermophysics 44 (2023) 123",
+        "doi": "10.1007/s10765-023-03231-0"}
+
+    morshedThermo = morshed.copy()
+    morshedThermo["__doi__"] = {
+        "autor": "Morshed, M., Alam, M.J., Tuhin, A.R., Islam, M.A., Miyara, A.",
+        "title": "Empirical models of thermal conductivity of cis-1,3,3,3-"
+                 "tetrafluoropropene (R1234ze(Z)) with measurements using "
+                 "transient hot-wire method",
+        "ref": "Int. J. Refrigeration 158 (2024) 1-8",
+        "doi": "10.1016/j.ijrefrig.2023.11.004"}
+
+    _viscosity = (trnECS, morshedVisco)
+    _thermal = (trnECS, morshedThermo)
 
 
 class Test(TestCase):
@@ -212,3 +249,46 @@ class Test(TestCase):
         # self.assertEqual(round(st.mu.muPas, 4), 105.4508)
         self.assertEqual(round(st.mu.muPas, 4), 105.4504)
         self.assertEqual(round(st.k.mWmK, 4), 65.5441)
+
+    def test_morshedVisco(self):
+        """Table 5, pag 13"""
+        st = R1234zeZ(T=312.72, P=5.01e5, visco=1, thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 10.396)
+        self.assertEqual(round(st.mu.muPas, 2), 212.81)
+
+        st = R1234zeZ(T=312.64, P=4.01e6, visco=1, thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 10.524)
+        self.assertEqual(round(st.mu.muPas, 2), 223.94)
+
+        st = R1234zeZ(T=394.33, P=3.029e6, visco=1, thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 7.907)
+        self.assertEqual(round(st.mu.muPas, 2), 88.07)
+
+        st = R1234zeZ(T=414.31, P=4.03e6, visco=1, thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 6.998)
+        self.assertEqual(round(st.mu.muPas, 2), 67.97)
+
+        st = R1234zeZ(T=354.07, P=5.04e5, visco=1, thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 0.193)
+        self.assertEqual(round(st.mu.muPas, 2), 11.40)
+
+        st = R1234zeZ(T=454.77, P=3e6, visco=1, thermal=1)
+        self.assertEqual(round(st.rhoM, 3), 1.114)
+        self.assertEqual(round(st.mu.muPas, 2), 16.49)
+
+    def test_morshedThermo(self):
+        """Table 7, pag 5"""
+        # FIXME: The values differ too much
+        st = R1234zeZ(T=373.95, P=2.1e5, visco=1, thermal=1)
+        # self.assertEqual(round(st.k.mWmK, 2), 18.19)
+        self.assertEqual(round(st.k.mWmK, 2), 18.15)
+
+        st = R1234zeZ(T=313.22, P=3.99e6, visco=1, thermal=1)
+        # self.assertEqual(round(st.k.mWmK, 2), 83.71)
+        self.assertEqual(round(st.k.mWmK, 2), 83.65)
+
+        st = R1234zeZ(T=374.24, P=4.01e6, visco=1, thermal=1)
+        # self.assertEqual(round(st.k.mWmK, 2), 66.98)
+
+        st = R1234zeZ(T=413.14, P=1e6, visco=1, thermal=1)
+        # self.assertEqual(round(st.k.mWmK, 2), 21.89)

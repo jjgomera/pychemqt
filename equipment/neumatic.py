@@ -139,6 +139,10 @@ class Neumatic(equipment):
         # Volume fraction (VF), the ratio of the volume occupied by solids to
         # the volume occupied by the gas
         self.VF = entrada.solido.Q/entrada.Q
+        self.eps = 1-self.VF
+
+        # Global density
+        self.rho_ap = entrada.Gas.rho*self.eps
 
         # Saltation velocity calculation
         # Set argument set as each method needs
@@ -171,19 +175,22 @@ class Neumatic(equipment):
 
         # Solid friction factor calculation
         if self.kwargs["orientation"] == 1:
+            # Horizontal pipe
             eps = 0
             self.fs = fs_Yang_Horizontal(eps, self.V, self.kwargs["D"])
 
-        args = []
-        if self.kwargs["fs"] != 0:
-            args.append(self.vs)
-        if self.kwargs["fs"] == 4:
-            args.append(self.kwargs["D"])
-        if self.kwargs["fs"] == 5:
-            args.append(0)  # eps
-            args.append(vt)
-            args.append(self.V)
-        self.fs = f_solid(self.kwargs["fs"], *args)
+        else:
+            # Vertical orientation
+            args = []
+            if self.kwargs["fs"] != 0:
+                args.append(self.vs)
+            if self.kwargs["fs"] == 4:
+                args.append(self.kwargs["D"])
+            if self.kwargs["fs"] == 5:
+                args.append(0)  # eps
+                args.append(vt)
+                args.append(self.V)
+            self.fs = f_solid(self.kwargs["fs"], *args)
 
         DeltaP_ac = self.kwargs["K"]*self.V**2/2*entrada.Gas.rho
         DeltaP_f = self.kwargs["L"]*self.V**2/self.kwargs["D"]*self.f*entrada.Gas.rho/2

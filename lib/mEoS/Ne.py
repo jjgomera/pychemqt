@@ -199,6 +199,7 @@ class Ne(MEoS):
     _thermal = (trnECS, )
 
     def _visco1(self, rho, T, fase=None):
+        """Hardcoded viscosity correlation from Rabinovich"""
         a = [17.67484, -2.78751, 311498.7, -48826500, 3938774000, -1.654629e11,
              2.86561e12]
         Tr = T/0.29944

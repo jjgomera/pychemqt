@@ -3024,6 +3024,10 @@ class MEoS(ThermoAdvanced):
         firddt = estado["firddt"]
         firdtt = estado["firdtt"]
         firttt = estado["firttt"]
+        if "Bt" in estado:
+            Bt = estado["Bt"]
+        else:
+            Bt = 0
 
         fase.fir = fir
         fase.fird = fird
@@ -3176,6 +3180,7 @@ class MEoS(ThermoAdvanced):
                 fase.d2PdrhodT/fase.dpdT_rho-fase.d2Pdrho2/fase.dpdrho_T)
 
         fase.virialB = unidades.SpecificVolume(estado["B"]/self.rhoc)
+        fase.dBt = -Bt/self.rhoc*self.Tc/self.T**2
         fase.virialC = unidades.SpecificVolume_square(
             estado["C"]/self.rhoc**2)
         fase.virialD = unidades.Dimensionless(
@@ -3845,7 +3850,8 @@ class MEoS(ThermoAdvanced):
         firddd = firdtt = firddt = firttt = 0
         delta_0 = 1e-100
         B = C = D = 0
-#         Bt = Ct = 0
+        Bt = 0
+        # Ct = 0
 
         if delta:
             # Polinomial terms
@@ -3866,7 +3872,7 @@ class MEoS(ThermoAdvanced):
                 B += n*d*delta_0**(d-1)*tau**t
                 C += n*d*(d-1)*delta_0**(d-2)*tau**t
                 D += n*d*(d-1)*(d-2)*delta_0**(d-3)*tau**t
-                # Bt += n*t*d*delta_0**(d-1)*tau**(t-1)
+                Bt += n*t*d*delta_0**(d-1)*tau**(t-1)
                 # Ct += n*d*(d-1)*delta_0**(d-2)*t*tau**(t-1)
 
             # Exponential terms
@@ -3912,8 +3918,8 @@ class MEoS(ThermoAdvanced):
                        + 3*c**2*delta_0**c*g - 3*c*d**2*delta_0**c*g + 2*d
                        + 6*c*d*delta_0**c*g - 2*c*delta_0**c*g + d**3 - 3*d**2)
 
-                # Bt += n*t*delta_0**(d-1)*tau**(t-1)*(d-g*c*delta_0**c) * \
-                #     exp(-g*delta_0**c)
+                Bt += n * delta_0**(d-1) * t * tau**(t-1) * exp(-delta_0**c*g) \
+                    * (d - c*delta_0**c*g)
                 # Ct += n*t*delta_0**(d-2)*tau**(t-1)*exp(-g*delta_0**c) * (
                 #     c**2*delta_0**(2*c)*g**2 - 2*c*d*delta_0**c*g -
                 #     c**2*delta_0**c*g + c*delta_0**c*g + d**2 - d)
@@ -4028,12 +4034,12 @@ class MEoS(ThermoAdvanced):
                     - 2*a*delta_0**d*ex1*(delta_0-e)**(ex1-3)
                     + (d**3-3*d**2+2*d)*delta_0**(d-3))
 
-                # Bt += expr_ * (
-                #     n*a*b*delta_0**d*(delta_0-e)**(ex1-1)*ex1*ex2*tau**t *
-                #     (tau-g)**(ex2-1) -
-                #     n*b*d*delta_0**(d-1)*ex2*tau**t*(tau-g)**(ex2-1) -
-                #     n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*t*tau**(t-1) +
-                #     n*d*delta_0**(d-1)*t*tau**(t-1))
+                Bt += expr_ * (
+                    n*a*b*delta_0**d*(delta_0-e)**(ex1-1)*ex1*ex2*tau**t *
+                    (tau-g)**(ex2-1) -
+                    n*b*d*delta_0**(d-1)*ex2*tau**t*(tau-g)**(ex2-1) -
+                    n*a*delta_0**d*(delta_0-e)**(ex1-1)*ex1*t*tau**(t-1) +
+                    n*d*delta_0**(d-1)*t*tau**(t-1))
 
             # Non analitic terms
             # FIXME: Invalid value in critical point with this term
@@ -4058,60 +4064,87 @@ class MEoS(ThermoAdvanced):
                 Fdtt = 4*C_*D_*F*(delta-1)*(2*D_*(tau-1)**2-1)
 
                 Delta = Tita**2+B_*((delta-1)**2)**a
-                Deltad = (delta-1)*(A*Tita*2/bt*((delta-1)**2)**(0.5/bt-1) +
-                                    2*B_*a*((delta-1)**2)**(a-1))
+                Deltad = (delta-1)*(A*Tita*2/bt*((delta-1)**2)**(0.5/bt-1)
+                                    + 2*B_*a*((delta-1)**2)**(a-1))
                 if delta == 1:
                     Deltadd = 0
                 else:
                     Deltadd = Deltad/(delta-1)+(delta-1)**2*(
-                        4*B_*a*(a-1)*((delta-1)**2)**(a-2) +
-                        2*A**2/bt**2*(((delta-1)**2)**(0.5/bt-1))**2 +
-                        A*Tita*4/bt*(0.5/bt-1)*((delta-1)**2)**(0.5/bt-2))
+                        4*B_*a*(a-1)*((delta-1)**2)**(a-2)
+                        + 2*A**2/bt**2*(((delta-1)**2)**(0.5/bt-1))**2
+                        + A*Tita*4/bt*(0.5/bt-1)*((delta-1)**2)**(0.5/bt-2))
 
-                DeltaBd = b*Delta**(b-1)*Deltad
-                DeltaBdd = b*(Delta**(b-1)*Deltadd +
-                              (b-1)*Delta**(b-2)*Deltad**2)
-                DeltaBt = -2*Tita*b*Delta**(b-1)
-                DeltaBtt = 2*b*Delta**(b-1)+4*Tita**2*b*(b-1)*Delta**(b-2)
-                DeltaBdt = -A*b*2/bt*Delta**(b-1)*(delta-1)*((delta-1)**2)**(
-                    0.5/bt-1)-2*Tita*b*(b-1)*Delta**(b-2)*Deltad
-                DeltaBdtt = 2*b*(b-1)*Delta**(b-2) * \
-                    (Deltad*(1+2*Tita**2*(b-2)/Delta)+4*Tita*A *
-                     (delta-1)/bt*((delta-1)**2)**(0.5/bt-1))
+                if Delta == 0:
+                    DeltaBd = 0
+                    DeltaBdd = 0
+                    DeltaBt = 0
+                    DeltaBtt = 0
+                    DeltaBdt = 0
+
+                else:
+                    DeltaBd = b*Delta**(b-1)*Deltad
+                    DeltaBdd = b*(Delta**(b-1)*Deltadd
+                                  + (b-1)*Delta**(b-2)*Deltad**2)
+                    DeltaBt = -2*Tita*b*Delta**(b-1)
+                    DeltaBtt = 2*b*Delta**(b-1)+4*Tita**2*b*(b-1)*Delta**(b-2)
+                    DeltaBdt = -A*b*2/bt*Delta**(b-1)*(delta-1)*((delta-1)**2)**(
+                        0.5/bt-1)-2*Tita*b*(b-1)*Delta**(b-2)*Deltad
+                    DeltaBdtt = 2*b*(b-1)*Delta**(b-2) * \
+                        (Deltad*(1+2*Tita**2*(b-2)/Delta)+4*Tita*A
+                         * (delta-1)/bt*((delta-1)**2)**(0.5/bt-1))
+
+                DeltaBddd = 0
+                DeltaBddt = 0
+                DeltaBttt = 0
+                Fddd = 0
+                Fddt = 0
+                Fttt = 0
 
                 fir += n*Delta**b*delta*F
-                fird += n*(Delta**b*(F+delta*Fd)+DeltaBd*delta*F)
-                firdd += n*(Delta**b*(2*Fd+delta*Fdd)+2*DeltaBd*(F+delta*Fd) +
-                            DeltaBdd*delta*F)
+                fird += n*(Delta**b*(F+delta*Fd) + DeltaBd*delta*F)
+
+                firdd += n*(Delta**b*(2*Fd+delta*Fdd)+2*DeltaBd*(F+delta*Fd)
+                            + DeltaBdd*delta*F)
                 firt += n*delta*(DeltaBt*F+Delta**b*Ft)
                 firtt += n*delta*(DeltaBtt*F+2*DeltaBt*Ft+Delta**b*Ftt)
-                firdt += n*(Delta**b*(Ft+delta*Fdt)+delta*DeltaBd*Ft +
-                            DeltaBt*(F+delta*Fd)+DeltaBdt*delta*F)
+                firdt += n*(Delta**b*(Ft+delta*Fdt)+delta*DeltaBd*Ft
+                            + DeltaBt*(F+delta*Fd)+DeltaBdt*delta*F)
+
+                firddd += n*(delta*Delta**b*Fddd + delta*F*DeltaBddd
+                             + 3*delta*DeltaBd*Fdd + 3*delta*DeltaBdd*Fd
+                             + 3*Delta**b*Fdd + 3*F*DeltaBdd + 6*DeltaBd*Fd)
+                firddt += n*(
+                    delta*Delta**b*Fddt + delta*F*DeltaBddt
+                    + 2*delta*DeltaBd*Fdt + delta*DeltaBdd*Ft
+                    + delta*DeltaBt*Fdd + 2*delta*Fd*DeltaBdt + 2*Delta**b*Fdt
+                    + 2*F*DeltaBdt + 2*DeltaBd*Ft + 2*DeltaBt*Fd)
                 firdtt += n*(
-                    (DeltaBtt*F+2*DeltaBt*Ft+Delta**b*Ftt) +
-                    delta*(DeltaBdtt*F+DeltaBtt*Fd+2*DeltaBdt*Ft +
-                           2*DeltaBt*Fdt + DeltaBt*Ftt+Delta**b*Fdtt))
+                    Delta**b*Ftt + F*DeltaBtt + 2*DeltaBt*Ft
+                    + delta*(Delta**b*Fdtt + F*DeltaBdtt + DeltaBd*Ftt
+                             + 2*DeltaBt*Fdt + DeltaBtt*Fd + 2*Ft*DeltaBdt))
+                firttt += delta*n*(Delta**b*Fttt + F*DeltaBttt
+                                   + 3*DeltaBt*Ftt + 3*DeltaBtt*Ft)
 
                 Tita_ = (1-tau)+A*((delta_0-1)**2)**(0.5/bt)
                 Delta_ = Tita_**2+B_*((delta_0-1)**2)**a
                 Deltad_ = (delta_0-1)*(A*Tita_*2/bt*((delta_0-1)**2)**(
                     0.5/bt-1)+2*B_*a*((delta_0-1)**2)**(a-1))
                 Deltadd_ = Deltad_/(delta_0-1) + (delta_0-1)**2*(
-                    4*B_*a*(a-1)*((delta_0-1)**2)**(a-2) +
-                    2*A**2/bt**2*(((delta_0-1)**2)**(0.5/bt-1))**2 +
-                    A*Tita_*4/bt*(0.5/bt-1)*((delta_0-1)**2)**(0.5/bt-2))
+                    4*B_*a*(a-1)*((delta_0-1)**2)**(a-2)
+                    + 2*A**2/bt**2*(((delta_0-1)**2)**(0.5/bt-1))**2
+                    + A*Tita_*4/bt*(0.5/bt-1)*((delta_0-1)**2)**(0.5/bt-2))
                 DeltaBd_ = b*Delta_**(b-1)*Deltad_
-                DeltaBdd_ = b*(Delta_**(b-1)*Deltadd_ +
-                               (b-1)*Delta_**(b-2)*Deltad_**2)
+                DeltaBdd_ = b*(Delta_**(b-1)*Deltadd_
+                               + (b-1)*Delta_**(b-2)*Deltad_**2)
                 F_ = exp(-C_*(delta_0-1)**2-D_*(tau-1)**2)
                 Fd_ = -2*C_*F_*(delta_0-1)
                 Fdd_ = 2*C_*F_*(2*C_*(delta_0-1)**2-1)
 
                 B += n*(Delta_**b*(F_+delta_0*Fd_)+DeltaBd_*delta_0*F_)
-                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_ \
+                C += n*(Delta_**b*(2*Fd_+delta_0*Fdd_)+2*DeltaBd_
                     * (F_+delta*Fd_) + DeltaBdd_*delta_0*F_)
-                # Bt += n*(Delta_**b*(Ft+delta_0*Fdt)+delta_0*DeltaBd_*Ft +
-                #          DeltaBt*(F+delta_0*Fd)+DeltaBdt*delta_0*F_)
+                Bt += n*(Delta_**b*(Ft+delta_0*Fdt)+delta_0*DeltaBd_*Ft +
+                         DeltaBt*(F+delta_0*Fd)+DeltaBdt*delta_0*F_)
 
             # Associative term from Gao correlation for ammonia
             if "nr_ass" in self._constants:
@@ -4172,6 +4205,8 @@ class MEoS(ThermoAdvanced):
                     B += n*tau**t * expr_ * expr_d0
                     C += n*tau**t * expr_ * expr_dd0
                     D += n*tau**t * expr_ * expr_ddd0
+
+                    Bt += n*tau**t * expr_ * expr_d0 * expr_t
 
             # Associative term from Piazza correlations
             if "type_ass" in self._constants:
@@ -4331,7 +4366,7 @@ class MEoS(ThermoAdvanced):
         prop["B"] = B
         prop["C"] = C
         prop["D"] = D
-        # prop["Bt"] = Bt
+        prop["Bt"] = Bt
         return prop
 
     @refDoc(__doi__, [11], tab=8)
@@ -5542,6 +5577,7 @@ class MEoS(ThermoAdvanced):
             \eta^o(T) = \frac{N_{chapman}\left(MT\right)^{t_{chapman}}}
             {\sigma^2\Omega(T^*)} + \sum_{i}^nN_i\tau^{t_i}
             + \frac{\sum_{i}^nN_i\tau^{t_i}}{\sum_{i}^nN_i\tau^{t_i}}
+            + \exp \left(\sum_{i}^n a_i\left(\ln(\tau)\right)^t_i\right)
             + \eta_{hc}^o\\
             T^* = \frac{T}{ε/k}\\
             \tau = \frac{T}{T_r}\\
@@ -5606,7 +5642,7 @@ class MEoS(ThermoAdvanced):
         M = coef.get("M", self.M)
 
         # Collision integral calculation
-        if coef["omega"]:
+        if "omega" in coef and coef["omega"]:
             omega = self._Omega(T, coef)
             N_chap = coef.get("n_chapman", 0.0266958)
             t_chap = coef.get("t_chapman", 0.5)
