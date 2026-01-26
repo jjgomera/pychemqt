@@ -57,6 +57,13 @@ __doi__ = {
                   "Transition and Turbulent Flows",
          "ref": "J. Heat Transfer 115(4) (1993) 890-896",
          "doi": "10.1115/1.2911384"},
+    6:
+        {"autor": "Hong, S.W., Bergles, A.E.",
+         "title": "Augmenttion of Laminar Flow Heat Transfer in Tubes by "
+                  "Means of Twisted-Tape Inserts",
+         "ref": "J. Heat Transfer 98(2) (1976) 251-256",
+         "doi": "10.1115/1.3450527"},
+
 
         }
 
@@ -293,6 +300,35 @@ def Nu_twisted_Plessis(Re, Pr, D, H, delta, Ae, De, x=None):
     # Eq 14
     Nu = 1.58*Psye*(1+6.4e-5*(Omge*Pr)**3)**0.117*(1+0.002*Omge**1.4)**(1/7)
 
+    return Nu
+
+
+@refDoc(__doi__, [2])
+def Nu_twisted_Hong(Re, Pr, D, H):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Hong and Bergles correlation. Valid only for laminar region Re < 2500
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    """
+    y = H/D
+
+    # Eq 3
+    Nu = 5.172*(1+5.484e-3*Pr**0.7*(Re/y)**1.25)**0.5
     return Nu
 
 
