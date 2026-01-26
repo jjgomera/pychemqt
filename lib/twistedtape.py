@@ -43,6 +43,20 @@ __doi__ = {
                   "Compact Heat Exchanger Analytical Data",
          "ref": "Academic Press 1978",
          "doi": ""},
+    4:
+        {"autor": "Manglik, R.M., Bergles, A.E.",
+         "title": "Heat Transfer and Pressure Drop Correlations for "
+                  "Twisted-Tape Inserts in Isothermal Tubes: Part I - Laminar "
+                  "Flows",
+         "ref": "J. Heat Transfer 115(4) (1993) 881-889",
+         "doi": "10.1115/1.2911383"},
+    5:
+        {"autor": "Manglik, R.M., Bergles, A.E.",
+         "title": "Heat Transfer and Pressure Drop Correlations for "
+                  "Twisted-Tape Inserts in Isothermal Tubes: Part II - "
+                  "Transition and Turbulent Flows",
+         "ref": "J. Heat Transfer 115(4) (1993) 890-896",
+         "doi": "10.1115/1.2911384"},
 
         }
 
@@ -182,6 +196,52 @@ def f_twisted_Shah(Re, D, H, delta):
         fRe = 38.4*(Re/Xl)**0.05*Xi
 
     return fRe/Re
+
+
+@refDoc(__doi__, [4, 5])
+def f_twisted_Manglik(Re, D, H, delta, Dh):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Manglik and Bergles correlation
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal pipe diameter, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+    Dh : float
+        Hydraulic diameter, [m]
+    """
+
+    if Re <= 2000:
+        # Laminar flow
+
+        Resw = Re*(pi/(pi-4*delta/D)) * ((pi*D/H)**2)**0.5
+        Sw = Resw/(H/2/D)**0.5
+
+        fsw = 15.767/Resw * ((pi+2-2*delta/D)/(pi-4*delta/D))**2 \
+            * (1+1e-6*Sw**2.55)**(1/6)
+
+        f = fsw * Dh/D*(1+(pi*D/H)**2)**1.5
+
+    elif Re > 1e4:
+        # Turbulent flow
+        f = 0.0791/Re**0.25 * (pi/(pi-4*delta/D))**1.75 \
+            * ((pi+2-2*delta/D)/(pi-4*delta/D))**1.25 * (1+2.752/(H/D)**1.29)
+
+    else:
+        # Transition flow
+        fl = f_twisted_Manglik(2000, D, H, delta, Dh)
+        ft = f_twisted_Manglik(1e4, D, H, delta, Dh)
+
+        # Eq 11 in 5
+        f = (fl**10 + ft**10)**0.1
+
+    return f
 
 
 # Heat Transfer coefficient correlations
