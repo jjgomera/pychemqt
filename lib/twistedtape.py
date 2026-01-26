@@ -37,6 +37,13 @@ __doi__ = {
                   "flow in a smooth tube with a twisted-tape insert",
          "ref": "Int. J. Heat Mass Transfer 30(3) (1987) 509-515",
          "doi": "10.1016/0017-9310(87)90265-1"},
+    3:
+        {"autor": "Shah, R.K., London, A.L.",
+         "title": "Laminar Flow Forced Convection in Ducts: A Source Book for "
+                  "Compact Heat Exchanger Analytical Data",
+         "ref": "Academic Press 1978",
+         "doi": ""},
+
         }
 
 
@@ -54,7 +61,7 @@ class TwistedTape():
         H : float
             Tape pitch for twist of π radians (180º), [m]
         D : float
-            Inner diameter of tube, [m]
+            Internal diameter of tube, [m]
         delta : float
             Tape thickness, [m]
         """
@@ -79,6 +86,7 @@ class TwistedTape():
         self.y = Dimensionless(H/D)
 
 
+# Friction factor correlations
 @refDoc(__doi__, [1])
 def f_twisted_Plessis(Re, D, H, delta, Ae, De):
     """Calculate friction factor for a pipe with a twisted-tape insert using
@@ -89,7 +97,7 @@ def f_twisted_Plessis(Re, D, H, delta, Ae, De):
     Re : float
         Reynolds number, [-]
     D : float
-        Inner diameter of tube, [m]
+        Internal diameter of tube, [m]
     delta : float
         Tape thickness, [m]
     H : float
@@ -129,6 +137,54 @@ def f_twisted_Plessis(Re, D, H, delta, Ae, De):
     return f
 
 
+@refDoc(__doi__, [3])
+def f_twisted_Shah(Re, D, H, delta):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Plessis and Kröger correlation
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    # Chapter XVI: Longitudinal Fins and Twisted Tapes within Ducts
+    # F: Circular Duct with a Twisted Tape, Pag 379 and on next
+
+    Xl = H/D
+
+    # Eq 559
+    C = 8.8201*Xl - 2.1193*Xl**2 + 0.2108*Xl**3 - 0.0069*Xl**4
+
+    # Eq 563
+    Xi = (pi/(pi+2))**2 * ((pi+2-2*delta/D)/(pi-4*delta/D))**2 \
+        * (pi/(pi-4*delta/D))
+
+    if Re/Xl < 6.7:
+        # Eq 560
+        fRe = 42.23*Xi
+    elif Re/Xl > 100:
+        # Eq 562
+        fRe = C*(Re/Xl)**0.3*Xi
+    else:
+        # Eq 561
+        fRe = 38.4*(Re/Xl)**0.05*Xi
+
+    return fRe/Re
+
+
+# Heat Transfer coefficient correlations
 @refDoc(__doi__, [2])
 def Nu_twisted_Plessis(Re, Pr, D, H, delta, Ae, De, x=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -139,7 +195,7 @@ def Nu_twisted_Plessis(Re, Pr, D, H, delta, Ae, De, x=None):
     Re : float
         Reynolds number, [-]
     D : float
-        Inner diameter of tube, [m]
+        Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
     delta : float
