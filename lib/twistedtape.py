@@ -503,3 +503,73 @@ def Nu_twisted_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, DT, HTRI=False):
     return Nu
 
 
+@refDoc(__doi__, [8])
+def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the correlation used in HTRI® software.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    Gz : float
+        Graetz number, [-]
+    D : float
+        Internal pipe diameter, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    Dh : float
+        Hydraulic diameter, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+    L : float, optional
+        Length of heated pipe, [m]
+    beta : float, optional
+        Volumetric expansion coefficient, [1/K]
+    dT : float, optional
+        Temperature difference between bulk and wall, [K]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    Examples
+    --------
+    B3.1.2.4 turbulent flow
+    >>> beta = -2/(527+609)*(527-609)/(106-36.7)
+    >>> args =(23390, 4.41, 0.0158, 0.158, 0.0096, 0.000208, 1e-3, beta, 69.3)
+    >>> Nu = Nu_twisted_HTRI(*args)
+    >>> print("%0.0f" % (Nu*0.11/0.0096))
+    1306
+    """
+    y = H/D
+
+    if Re <= 2000:
+        # Laminar flow
+
+        if Pr <= 200:
+            # Hong-Bergles modified correlation
+            Nu = 5.172*(1+5.484e-3*Pr**0.7*(2*Re/y)**1.25)**0.5
+        elif Pr >= 2000:
+            # Marner-Bergles correlation
+            Nu = 1.322*(pi/4*Re*Pr*D/L)**0.458*(mu/muW)**0.14
+        else:
+            NuL = Nu_twisted_HTRI(Re, 200, D, H, Dh, mu, muW)
+            NuH = Nu_twisted_HTRI(Re, 2000, D, H, Dh, mu, muW)
+            # Eq B3.1-42
+            Nu = Pr*(NuH-NuL)/1800 + NuL - (NuH-NuL)/9
+
+    elif Re >= 5000:
+        Nu = Nu_twisted_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, dT, HTRI=True)
+
+    else:
+        NuL = Nu_twisted_HTRI(2000, Pr, D, H, Dh, mu, muW)
+        NuH = Nu_twisted_HTRI(5000, Pr, D, H, Dh, mu, muW)
+        Nu = NuL*(5000-Re)/3000 + NuH*(Re-2000)/3000
+
+    return Nu
