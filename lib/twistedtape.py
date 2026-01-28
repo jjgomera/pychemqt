@@ -82,6 +82,19 @@ class TwistedTape():
     This tape, generally a thin metal strip, is twisted about its longitudinal
     axis"""
 
+    TEXT_FRICTION = (
+        "Manglik-Bergles (1993)",
+        "Plassis-Kröger (1984)",
+        "Lopina-Bergles (1969)",
+        "Shah-London (1978)")
+
+    TEXT_HEAT = (
+        "HTRI",
+        "Lopina-Bergles (1969)",
+        "Manglik-Bergles (1993)",
+        "Plessis-Kröger (1987)",
+        "Hong-Bergles (1976)")
+
     def __init__(self, H, D, delta):
         """
         Definition of twisted tape accesory
@@ -377,74 +390,76 @@ def Nu_twisted_Hong(Re, Pr, D, H):
     return Nu
 
 
-# @refDoc(__doi__, [4, 5])
-# def Nu_twisted_Manglik(Re, Pr, Gr, Gz,  D, H, delta, Dh, mu, muW):
-#     """Calculate Nusselt number for a pipe with a twisted-tape insert using
-#     the Manglik and Bergles correlation (1993)
+@refDoc(__doi__, [4, 5])
+def Nu_twisted_Manglik(Re, Pr, Gr, Gz, D, H, delta, Dh, mu, muW):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Manglik and Bergles correlation (1993)
 
-#     Parameters
-#     ----------
-#     Re : float
-#         Reynolds number, [-]
-#     Pr : float
-#         Prandtl number, [-]
-#     Gr : float
-#         Grashof number, [-]
-#     Gz : float
-#         Graetz number, [-]
-#     D : float
-#         Internal pipe diameter, [m]
-#     H : float
-#         Tape pitch for twist of π radians (180º), [m]
-#     delta : float
-#         Tape thickness, [m]
-#     Dh : float
-#         Hydraulic diameter, [m]
-#     mu : float
-#         Bulk flow temperature viscosity, [Pa·s]
-#     muW : float
-#         Wall flow temperature viscosity, [Pa·s]
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    Gr : float
+        Grashof number, [-]
+    Gz : float
+        Graetz number, [-]
+    D : float
+        Internal pipe diameter, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+    Dh : float
+        Hydraulic diameter, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
 
-#     Returns
-#     -------
-#     Nu : float
-#         Nusselt number, [-]
-#     """
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
 
-#     if Re <= 2000:
-#         # Laminar flow
+    if Re <= 2000:
+        # Laminar flow
 
-#         y = H/D
-#         Ra = Gr*Pr
+        y = H/D
+        Ra = Gr*Pr
 
-#         A = pi*D**2/4
-#         Ac = A-D*delta
+        A = pi*D**2/4
+        Ac = A-D*delta
 
-#         Resw = Re*(pi/(pi-4*delta/D)) * ((pi*D/H)**2)**0.5
-#         Sw = Resw/(H/2/D)**0.5
-#         Reax = Resw/Vs*Va*(1+(pi/2/y)**2)**0.5
+        Resw = Re*(pi/(pi-4*delta/D)) * ((pi*D/H)**2)**0.5
+        Sw = Resw/(H/2/D)**0.5
+        Reax = Resw/Vs*Va*(1+(pi/2/y)**2)**0.5
 
-#         # Eq 17
-#         Nu = 4.612*(mu/muW)**0.14*(
-#             ((1+0.0951*Gz**0.894)**2.5 + 6.413e-9*(Sw*Pr**0.391)**3.835)**2
-#             + 2.132e-14*(Reax*Ra)**2.23)**0.1
+        # Eq 17
+        Nu = 4.612*(mu/muW)**0.14*(
+            ((1+0.0951*Gz**0.894)**2.5 + 6.413e-9*(Sw*Pr**0.391)**3.835)**2
+            + 2.132e-14*(Reax*Ra)**2.23)**0.1
 
+    elif Re >= 5000:
+        # Transition flow
+        # Eq 8-9
+        Nu = (1+0.769/y)*0.023*Re**0.8*Pr**0.4*(pi/(pi-4*delta/D))**0.8 \
+            * ((pi+2-2*delta/D)/(pi-4*delta/D))**0.2
 
+        if mu < muW:
+            # Cooling
+            n = 0.3
+        else:
+            n = 0.18
+        Nu *= (mu/muW)**n
 
-#     # elif Re > 1e4:
-#     #     # Turbulent flow
-#     #     f = 0.0791/Re**0.25 * (pi/(pi-4*delta/D))**1.75 \
-#     #         * ((pi+2-2*delta/D)/(pi-4*delta/D))**1.25 * (1+2.752/(H/D)**1.29)
-
-#     # else:
-#     #     # Transition flow
-#     #     fl = f_twisted_Manglik(2000, D, H, delta, Dh)
-#     #     ft = f_twisted_Manglik(1e4, D, H, delta, Dh)
-
-#     #     # Eq 11 in 5
-#     #     f = (fl**10 + ft**10)**0.1
-
-#     # return f
+    else:
+        NuL = Nu_twisted_Manglik(2000, Pr, Gr, Gz, D, H, delta, Dh, mu, muW)
+        NuH = Nu_twisted_Manglik(2000, Pr, Gr, Gz, D, H, delta, Dh, mu, muW)
+        Nu = NuL*(5000-Re)/3000 + NuH*(Re-2000)/3000
+    return Nu
 
 
 @refDoc(__doi__, [7, 8])
@@ -546,6 +561,12 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
     >>> Nu = Nu_twisted_HTRI(*args)
     >>> print("%0.0f" % (Nu*0.11/0.0096))
     1306
+
+    laminar flow
+    >>> args =(1656, 8.69, 0.0211, 0.211, None, 0.000343, None, None, 12.2)
+    >>> Nu = Nu_twisted_HTRI(*args)
+    >>> print("%0.1f" % (Nu*0.107/0.0211))
+    157.8
     """
     y = H/D
 
