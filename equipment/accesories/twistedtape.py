@@ -20,8 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from math import pi
 
+from tools.qt import QtWidgets
+
 from lib.unidades import Dimensionless, Area, Length
 from lib.utilities import refDoc
+from UI.widgets import Entrada_con_unidades
 
 
 __doi__ = {
@@ -75,58 +78,6 @@ __doi__ = {
          "ref": "",
          "doi": ""}
         }
-
-
-class TwistedTape():
-    """Twisted-tape insert used in heat exchanger to improve efficiency.
-    This tape, generally a thin metal strip, is twisted about its longitudinal
-    axis"""
-
-    TEXT_FRICTION = (
-        "Manglik-Bergles (1993)",
-        "Plassis-Kröger (1984)",
-        "Lopina-Bergles (1969)",
-        "Shah-London (1978)")
-
-    TEXT_HEAT = (
-        "HTRI",
-        "Lopina-Bergles (1969)",
-        "Manglik-Bergles (1993)",
-        "Plessis-Kröger (1987)",
-        "Hong-Bergles (1976)")
-
-    def __init__(self, H, D, delta):
-        """
-        Definition of twisted tape accesory
-
-        Parameters
-        ----------
-        H : float
-            Tape pitch for twist of π radians (180º), [m]
-        D : float
-            Internal diameter of tube, [m]
-        delta : float
-            Tape thickness, [m]
-        """
-        # Geometrical definition of parameters in [1]_
-
-        # Helical factor, Eq 2
-        self.G = Dimensionless((1+pi**2/D**2/4/H**2)**0.5)
-
-        # Effective cross-sectional flow area, Eq 3
-        self.Ae = Area(2*H**2/pi*(self.G-1) - D*delta)
-
-        # Effective wetted perimeter, Eq 4
-        self.Pe = Length(2 * (D - delta + pi*D/2/self.G))
-
-        # Effective hydraulic diameter, Eq 7
-        self.De = Length(4*self.Ae/self.Pe)
-
-        # Area tube without tape
-        self.A = pi*D**2/4
-
-        # Tape twist parameter
-        self.y = Dimensionless(H/D)
 
 
 # Friction factor correlations
@@ -594,3 +545,140 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
         Nu = NuL*(5000-Re)/3000 + NuH*(Re-2000)/3000
 
     return Nu
+
+
+class TwistedTape():
+    """Twisted-tape insert used in heat exchanger to improve efficiency.
+    This tape, generally a thin metal strip, is twisted about its longitudinal
+    axis"""
+
+    TEXT_FRICTION = (
+        "Manglik-Bergles (1993)",
+        "Plassis-Kröger (1984)",
+        "Lopina-Bergles (1969)",
+        "Shah-London (1978)")
+
+    TEXT_HEAT = (
+        "HTRI",
+        "Lopina-Bergles (1969)",
+        "Manglik-Bergles (1993)",
+        "Plessis-Kröger (1987)",
+        "Hong-Bergles (1976)")
+
+    def __init__(self, H, D, delta):
+        """
+        Definition of twisted tape accesory
+
+        Parameters
+        ----------
+        H : float
+            Tape pitch for twist of π radians (180º), [m]
+        D : float
+            Internal diameter of tube, [m]
+        delta : float
+            Tape thickness, [m]
+        """
+        # Geometrical definition of parameters in [1]_
+
+        # Helical factor, Eq 2
+        self.G = Dimensionless((1+pi**2/D**2/4/H**2)**0.5)
+
+        # Effective cross-sectional flow area, Eq 3
+        self.Ae = Area(2*H**2/pi*(self.G-1) - D*delta)
+
+        # Effective wetted perimeter, Eq 4
+        self.Pe = Length(2 * (D - delta + pi*D/2/self.G))
+
+        # Effective hydraulic diameter, Eq 7
+        self.De = Length(4*self.Ae/self.Pe)
+
+        # Area tube without tape
+        self.A = pi*D**2/4
+
+        # Tape twist parameter
+        self.y = Dimensionless(H/D)
+
+
+class UI_TwistedTape(QtWidgets.QWidget):
+
+    """Custom widget to define DIPPR equation input"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        lyt = QtWidgets.QGridLayout(self)
+        self.check = QtWidgets.QCheckBox(self.tr("Use twisted tape insert"))
+        self.check.toggled.connect(self.setEnabled)
+        lyt.addWidget(self.check, 1, 1)
+        label = QtWidgets.QLabel(self.tr("Tape pitch"))
+        label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
+        lyt.addWidget(label, 2, 1)
+        self.H = Entrada_con_unidades(Length)
+        lyt.addWidget(self.H, 2, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 3, 1)
+        self.Dt = Entrada_con_unidades(Length)
+        lyt.addWidget(self.Dt, 3, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 4, 1)
+        self.delta = Entrada_con_unidades(Length, "Thickness")
+        lyt.addWidget(self.delta, 4, 2)
+
+        lytH = QtWidgets.QHBoxLayout()
+        lytH.addWidget(QtWidgets.QLabel(self.tr("Friction factor calculation method")))
+        self.delta = Entrada_con_unidades(Length, "Thickness")
+        self.methodFriction = QtWidgets.QComboBox()
+        for method in TwistedTape.TEXT_FRICTION:
+            self.methodFriction.addItem(method)
+        lytH.addWidget(self.methodFriction)
+        lyt.addLayout(lytH, 5, 1, 1, 2)
+
+        lytH = QtWidgets.QHBoxLayout()
+        lytH.addWidget(QtWidgets.QLabel(self.tr("Heat transfer calculation method")))
+        self.methodHeat = QtWidgets.QComboBox()
+        for method in TwistedTape.TEXT_HEAT:
+            self.methodHeat.addItem(method)
+        lytH.addWidget(self.methodHeat)
+        lyt.addLayout(lytH, 6, 1, 1, 2)
+
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
+
+        # self.fill()
+
+    def setEnabled(self, boolean):
+        """Toggled enable/disable state for all children widget except
+        checkbox used to change this"""
+        for wdg in self.children():
+            if wdg is not self.check:
+                wdg.setEnabled(boolean)
+
+    # def fill(self):
+    #     self.check.setChecked(True)
+        # self.check.setChecked(False)
+
+
+class Dialog(QtWidgets.QDialog):
+    """Component list config dialog"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Twisted-tape insert"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.datos = UI_TwistedTape()
+        layout.addWidget(self.datos)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
+
+    # def value(self, config):
+    #     """Function to result wizard"""
+    #     config = self.datos.value(config)
+    #     return config
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Dialog = Dialog()
+    Dialog.show()
+    sys.exit(app.exec())
