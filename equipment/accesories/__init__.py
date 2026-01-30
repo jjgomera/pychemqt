@@ -29,3 +29,4 @@ for file in files:
     fname, ext = os.path.splitext(os.path.basename(file))
     if fname != "__init__" and "pref" not in fname:
         __all__.append(fname)
+        __import__(f"equipment.accesories.{fname}")
