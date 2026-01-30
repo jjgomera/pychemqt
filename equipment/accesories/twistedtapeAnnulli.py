@@ -34,6 +34,17 @@ __doi__ = {
                   "Spiraling Tape Inserts in a Heat Exchanger Annulus",
          "ref": "Heat Transfer Engineering 24(6) (2003) 29-39",
          "doi": "10.1080/714044412"},
+    2:
+        {"autor": "Gupte, N.S., Date, A.W.",
+         "title": "Friction and Heat Transfer Characteristics of Helical "
+                  "Turbulent Air Flow in Annuli",
+         "ref": "J. Heat Transfer 111(2) (1989) 337-344",
+         "doi": "10.1115/1.3250682"},
+    # 3:
+    #     {"autor": "",
+    #      "title": "",
+    #      "ref": "",
+    #      "doi": ""},
         }
 
 
@@ -72,6 +83,62 @@ def f_twistedAnnulli_Coetzee(Re, D, H, opposite=0):
 
     # Eq 12
     f = g1*Re**g2
+    return f
+
+
+@refDoc(__doi__, [2])
+def f_twistedAnnulli_Gupte(Re, Do, Di, H):
+    """Calculate friction factor for a annulus section for a double pipe with
+    a twisted-tape insert using the Gupte correlation (1989).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Do : float
+        Outer diameter of annulii, [m]
+    Di : float
+        Inner diameter of annulii, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    Examples
+    --------
+    Selected point from Table 2 in [1]_
+
+    >>> st = f_twistedAnnulli_Gupte(1e4, 1, 0.61, 3)
+    """
+    phi0 = 2*pi
+    ri = Di/2
+    ro = Do/2
+    y = H/(ro-ri)
+
+    r = ri/ro                                                           # Eq 9
+    tau = (r**0.686-r**2)/(r*(1-r**0.686))                              # Eq 11
+    finf = 0.046/Re**0.2                                                # Eq 13
+    Dh_ = 2*phi0*(1-r**2)/(phi0*(1+r)+2*(1-r))                          # Eq 15
+
+    K1 = ((1+r)*phi0 + 2*(1-r)) / ((1+r*tau)*phi0 + (1+tau)*(1-r))      # Eq 16
+    K2 = phi0*(1+r*tau) + (1-r)*(1+tau)                                 # Eq 17
+
+    # Eq 18
+    K3 = (pi**2/(4*y**2*(1-r)**2))/(phi0*(1+r**2*tau)+(1-r**3)*(1+tau)/3)
+
+    K5 = (K1**0.5/(2*y*(1-r)))*(2/finf)**0.5/Re**2                      # Eq 20
+    K6 = (5.5+2.5*log(Re*(finf/2)**0.5/2))/K1**0.5                      # Eq 21
+    K7 = 1/Dh_*(finf/2)**0.5*Re/K1**0.5                                 # Eq 22
+
+    # Eq 19
+    K4 = K5*(K6*(890*(1/tau-1)+30*K7*(r/tau**0.5+1)) + 5180*(1-1/tau**0.5)
+             + 281.4*K7*(r-1))
+
+    # Eq 23
+    f = Dh_ * ((0.5*K1*(K2+K3)*finf + pi*Dh_**2*K4)/(phi0*(1-r**2)))
     return f
 
 
@@ -119,6 +186,75 @@ def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, opposite=0):
     # Eq 5
     Nu = 0.0726*Re**0.8*Pr**0.333*(mu/muW)**0.14 * (f1*Re**2 + f2*Re + f3)
     return Nu
+
+
+@refDoc(__doi__, [2])
+def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, wall):
+    """Calculate nusselt number for a annulus section for a double pipe with
+    a twisted-tape insert using the Gupte correlation (1989).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    Do : float
+        Outer diameter of annulii, [m]
+    Di : float
+        Inner diameter of annulii, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    wall : integer
+        0 - outer
+        1 - inner
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    phi0 = 2*pi
+    ri = Di/2
+    ro = Do/2
+    r = ri/ro                                                           # Eq 9
+    tau = (r**0.686-r**2)/(r*(1-r**0.686))                              # Eq 11
+    y = H/(ro-ri)
+    finf = 0.046/Re**0.2                                                # Eq 13
+    Dh_ = 2*phi0*(1-r**2)/(phi0*(1+r)+2*(1-r))                          # Eq 15
+    K1 = ((1+r)*phi0 + 2*(1-r)) / ((1+r*tau)*phi0 + (1+tau)*(1-r))      # Eq 16
+    K8 = pi*Dh_**2/(y*(1-r**2)*phi0*K1*finf*Re**2)                      # Eq 39
+    ro_ = Re/Dh_*(finf*K1/2)**0.5                                       # Eq 44
+    ri_ = Re*r*K1/Dh_*(finf*tau/2)**0.5                                 # Eq 45
+    alfai = atan(pi*ri/H)                                               # Eq 48
+    alfao = atan(pi*ro/H)                                               # Eq 49
+    PF = 9.24*((Pr/0.9)**0.75-1)                                        # Eq 46
+    A = 25/Pr*(((1+5*Pr)/Pr) * (log(1+5*Pr)-1) + 1)                     # Eq 33
+
+    if wall == 0:
+        # Only outer wall heated
+        K12 = 5250*Pr**0.731 - (137.5*Pr+A)*ro_                         # Eq 43
+
+        # Eq 38a
+        Stro = (K1*finf/2/cos(alfao))**0.5/0.9/(PF+(2*cos(alfao)/K1/finf)**0.5)
+
+        # Eq 52
+        Nu = (Stro/(1+r)-K8*(450-30*ro_)) / (1/(1+r)-K8*K12*(2/K1*finf)**0.5)
+    else:
+        # Only inner wall heated
+        K11 = ((137.5*Pr+A)*ri_ + 5250*Pr**0.731)/tau**0.5              # Eq 42
+
+        # Eq 38b
+        Stri = (K1*tau**finf/2/cos(alfai))**0.5/0.9 / \
+            (PF+(2*cos(alfai)/tau/K1/finf)**0.5)
+
+        # Eq 53
+        Nu = (Stri*r/(1+r) + 0.5*K8*K1*finf*(450+30*ri_)) / \
+            (r/(1+r) + K8*K11*(2/finf/K1)**0.5)
+
+    return Nu*Re*Pr
+
+
 
 # class TwistedTape():
 #     """Twisted-tape insert used in heat exchanger to improve efficiency.
