@@ -76,7 +76,18 @@ __doi__ = {
         {"autor": "",
          "title": "HTRI Design Manual",
          "ref": "",
-         "doi": ""}
+         "doi": ""},
+    9:
+        {"autor": "Naphon, P.",
+         "title": "Heat transfer and pressure drop in the horizontal double "
+                  "pipes with and without twisted tape insert",
+         "ref": "Int. Comm. Heat Mass Transfer 33 (2006) 166-175",
+         "doi": "10.1016/j.icheatmasstransfer.2005.09.007"},
+    # 9:
+        # {"autor": "",
+         # "title": "",
+         # "ref": "",
+         # "doi": ""},
         }
 
 
@@ -258,6 +269,30 @@ def f_twisted_Lopina(Re, D, H, Dh):
     y = H/D
 
     f = 3.8/y**0.406*(0.046/Reh**0.2)
+    return f
+
+
+@refDoc(__doi__, [9])
+def f_twisted_Naphon(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 9
+    f = 3.517/Re**0.414*(1+D/H)**1.045
     return f
 
 
@@ -547,6 +582,30 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
     return Nu
 
 
+@refDoc(__doi__, [9])
+def Nu_twisted_Naphon(Re, Pr, D, H):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 8
+    Nu = 0.648*Re**0.36*Pr**(1/3)*(1+D/H)**2.475
+    return Nu
+
+
 class TwistedTape():
     """Twisted-tape insert used in heat exchanger to improve efficiency.
     This tape, generally a thin metal strip, is twisted about its longitudinal
@@ -556,14 +615,16 @@ class TwistedTape():
         "Manglik-Bergles (1993)",
         "Plassis-Kröger (1984)",
         "Lopina-Bergles (1969)",
-        "Shah-London (1978)")
+        "Shah-London (1978)",
+        "Naphon (2006)")
 
     TEXT_HEAT = (
         "HTRI",
         "Lopina-Bergles (1969)",
         "Manglik-Bergles (1993)",
         "Plessis-Kröger (1987)",
-        "Hong-Bergles (1976)")
+        "Hong-Bergles (1976)",
+        "Naphon (2006)")
 
     def __init__(self, H, D, delta):
         """
