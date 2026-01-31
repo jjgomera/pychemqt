@@ -168,6 +168,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = Butene_1(T=377.4, rhom=8.494)
-        # self.assertEqual(round(st.mu.muPas, 5), 73.68086)
-        self.assertEqual(round(st.mu.muPas, 5), 73.68090)
+        self.assertEqual(round(st.mu.muPas, 5), 73.68087)
         self.assertEqual(round(st.k.mWmK, 4), 72.9207)

@@ -415,10 +415,10 @@ class Test(TestCase):
         """Table 7, pag 266"""
         self.assertEqual(round(
             # nC5(T=422.7, rhom=6.548).mu.muPas, 5), 80.03148)
-            nC5(T=422.7, rhom=6.548).mu.muPas, 5), 80.16498)
+            nC5(T=422.7, rhom=6.548).mu.muPas, 5), 80.16437)
 
     def test_Vassiliou(self):
         """Section 3.3.2, Pag 14"""
         # Viscosity value different to used in paper
         # self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.300)
-        self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.394)
+        self.assertEqual(round(nC5(T=460, P=3.3e6).k.mWmK, 3), 71.393)

@@ -117,6 +117,7 @@ class R1224ydZ(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 340.42, "sigma": 0.53, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.92,
@@ -139,8 +140,8 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = R1224ydZ(T=385.8, rhom=7.275)
-        self.assertEqual(round(st.mu.muPas, 4), 113.9877)
-        self.assertEqual(round(st.k.mWmK, 4), 53.9324)
+        self.assertEqual(round(st.mu.muPas, 4), 113.9873)
+        self.assertEqual(round(st.k.mWmK, 4), 53.9323)
 
     def test_Surface(self):
         """Table 10, pag 271"""

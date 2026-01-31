@@ -117,6 +117,7 @@ class C6F14(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 160, "sigma": 0.805, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,
@@ -187,9 +188,8 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = C6F14(T=403.2, rhom=3.873)
-        # self.assertEqual(round(st.mu.muPas, 4), 170.8344)
-        self.assertEqual(round(st.mu.muPas, 4), 170.8353)
-        self.assertEqual(round(st.k.mWmK, 4), 54.1785)
+        self.assertEqual(round(st.mu.muPas, 4), 170.8345)
+        self.assertEqual(round(st.k.mWmK, 4), 54.1784)
 
     def test_Surface(self):
         """Table 10, pag 271"""

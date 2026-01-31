@@ -187,8 +187,7 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         self.assertEqual(round(
-            # RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 150.0694)
-            RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 150.0729)
+            RE347mcc(T=393.9, rhom=5.48).mu.muPas, 4), 150.0694)
 
         # Table 9, pag 271
         self.assertEqual(round(
@@ -203,7 +202,7 @@ class Test(TestCase):
 
         st = RE347mcc(T=273, rho=1475)
         self.assertEqual(round(st.P.MPa, 4), 1.058)
-        # self.assertEqual(round(st.k.WmK, 6), 0.070957)
+        self.assertEqual(round(st.k.WmK, 6), 0.070951)
 
         st = RE347mcc(T=435, rho=0)
         self.assertEqual(round(st.P.MPa, 4), 0)
@@ -211,4 +210,4 @@ class Test(TestCase):
 
         st = RE347mcc(T=435, rho=300)
         self.assertEqual(round(st.P.MPa, 4), 2.3261)
-        self.assertEqual(round(st.k.WmK, 6), 0.033791)
+        self.assertEqual(round(st.k.WmK, 6), 0.03379)

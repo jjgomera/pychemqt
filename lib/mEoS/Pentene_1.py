@@ -134,10 +134,10 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = Pentene_1(T=419.2, rhom=6.898)
-        # self.assertEqual(round(st.mu.muPas, 5), 75.38902)
-        self.assertEqual(round(st.mu.muPas, 5), 75.38935)
+        self.assertEqual(round(st.mu.muPas, 5), 75.38903)
         self.assertEqual(round(st.k.mWmK, 4), 75.3082)
 
     def test_Surface(self):
         """Table 10, pag 271"""
-        self.assertEqual(round(Pentene_1(T=419.2, x=0.5).sigma, 7), 0.0034827)
+        # Value for correation of NIST paper
+        self.assertEqual(round(Pentene_1(T=419.2, x=0.5).sigma, 7), 0.0033407)

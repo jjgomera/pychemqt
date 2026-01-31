@@ -195,8 +195,7 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = C22_butane(T=441, rhom=5.585)
-        # self.assertEqual(round(st.mu.muPas, 5), 87.42913)
-        self.assertEqual(round(st.mu.muPas, 5), 87.42917)
+        self.assertEqual(round(st.mu.muPas, 5), 87.42914)
         self.assertEqual(round(st.k.mWmK, 4), 64.5770)
 
     def test_Surface(self):

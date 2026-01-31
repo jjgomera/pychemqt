@@ -6,3 +6,4 @@ Custom script useful for pychemqt but not included in main program
 * translation.py: Script to update translation .pro file with files availables
 * unidades.py: Script to generate magnitudes list added to firstrun file
 * plot2point.py: Manually get point for a chart as image
+* superanillary.py: Calculate of superancillary equation for mEoS fluid

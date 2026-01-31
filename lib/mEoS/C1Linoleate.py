@@ -163,8 +163,7 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         self.assertEqual(round(
-            # C1Linoleate(T=719.1, rhom=1.861).mu.muPas, 3), 148.324)
-            C1Linoleate(T=719.1, rhom=1.861).mu.muPas, 3), 148.334)
+            C1Linoleate(T=719.1, rhom=1.861).mu.muPas, 3), 148.324)
 
     def test_Perkins(self):
         """Table 3, Pag 2386"""

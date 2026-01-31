@@ -194,7 +194,7 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = C23_butane(T=450.5, rhom=5.652)
         # self.assertEqual(round(st.mu.muPas, 5), 90.14569)
-        self.assertEqual(round(st.mu.muPas, 5), 90.14598)
+        self.assertEqual(round(st.mu.muPas, 5), 90.14571)
         self.assertEqual(round(st.k.mWmK, 4), 67.3762)
 
     def test_Surface(self):

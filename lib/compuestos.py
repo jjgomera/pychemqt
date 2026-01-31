@@ -132,7 +132,7 @@ from numpy.lib.scimath import log, log10
 from numpy import exp, cosh, sinh, tanh, roots, absolute, array
 from scipy.optimize import fsolve
 from scipy.constants import R, Avogadro, Boltzmann
-from scipy.interpolate import interp1d, interp2d
+from scipy.interpolate import interp1d, RectBivariateSpline
 
 from lib.physics import R_atml, Collision_Neufeld
 from lib import unidades, config, sql
@@ -1668,7 +1668,7 @@ def Pv_Antoine(T, args, Tc=None, base=math.e, Punit="mmHg"):
     '1.2108'
     """
     # Clean args input of null values
-    if len(args) > 3 and args[3] is None:
+    if len(args) > 3 and not args[3]:
         args = args[:3]
 
     if len(args) == 3:
@@ -3642,14 +3642,14 @@ def ThL_Missenard(T, P, Tc, Pc, ko):
         raise NotImplementedError("Input out of bound")
 
     # Interpolate over table to get the Q parameter
-    Tri = [0.8, 0.7, 0.6, 0.5]
+    Tri = [0.5, 0.6, 0.7, 0.8]
     Pri = [1, 5, 10, 50, 100, 200]
-    Qi = array([[0.036, 0.038, 0.038, 0.038, 0.038, 0.038],
-                [0.018, 0.025, 0.027, 0.031, 0.032, 0.032],
+    Qi = array([[0.012, 0.0165, 0.017, 0.019, 0.020, 0.020],
                 [0.015, 0.020, 0.022, 0.024, 0.025, 0.025],
-                [0.012, 0.0165, 0.017, 0.019, 0.020, 0.020]])
-    f_Q = interp2d(Pri, Tri, Qi)
-    Q = f_Q(Pr, Tr)
+                [0.018, 0.025, 0.027, 0.031, 0.032, 0.032],
+                [0.036, 0.038, 0.038, 0.038, 0.038, 0.038]])
+    f_Q = RectBivariateSpline(Tri, Pri, Qi, kx=1, ky=1)
+    Q = f_Q(Tr, Pr)
 
     k = ko*(1 + Q*Pr**0.7)
     return unidades.ThermalConductivity(k)

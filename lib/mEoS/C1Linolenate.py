@@ -125,4 +125,4 @@ class Test(TestCase):
         """Table 7, pag 266"""
         self.assertEqual(round(
             # C1Linolenate(T=694.8, rhom=1.949).mu.muPas, 4), 125.1601)
-            C1Linolenate(T=694.8, rhom=1.949).mu.muPas, 4), 125.1744)
+            C1Linolenate(T=694.8, rhom=1.949).mu.muPas, 4), 125.1603)

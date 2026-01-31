@@ -154,6 +154,7 @@ class R1243zf(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 299.3, "sigma": 0.4975, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1.01,
@@ -240,6 +241,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = R1243zf(T=339.2, rhom=8.901)
-        # self.assertEqual(round(st.mu.muPas, 4), 103.5661)
-        self.assertEqual(round(st.mu.muPas, 4), 103.5665)
-        self.assertEqual(round(st.k.mWmK, 4), 59.9260)
+        self.assertEqual(round(st.mu.muPas, 4), 103.5662)
+        self.assertEqual(round(st.k.mWmK, 4), 59.9259)

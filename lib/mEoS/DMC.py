@@ -141,6 +141,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = DMC(T=501.3, rhom=8.3)
-        # self.assertEqual(round(st.mu.muPas, 4), 102.0731)
-        self.assertEqual(round(st.mu.muPas, 4), 102.0751)
+        self.assertEqual(round(st.mu.muPas, 4), 102.0731)
         self.assertEqual(round(st.k.mWmK, 4), 92.2091)

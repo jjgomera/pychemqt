@@ -134,7 +134,7 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = Butyne_1(T=388.8, rhom=9.61)
         # self.assertEqual(round(st.mu.muPas, 5), 86.57655)
-        self.assertEqual(round(st.mu.muPas, 5), 86.57846)
+        self.assertEqual(round(st.mu.muPas, 5), 86.57658)
         self.assertEqual(round(st.k.mWmK, 4), 81.2199)
 
     def test_Surface(self):

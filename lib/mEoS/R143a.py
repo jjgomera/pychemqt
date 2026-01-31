@@ -213,6 +213,7 @@ class R143a(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 301.76, "sigma": 0.4827, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.992,
@@ -481,7 +482,7 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         self.assertEqual(round(
-            R143a(T=311.3, rhom=10.627).mu.muPas, 4), 103.2256)
+            R143a(T=311.3, rhom=10.627).mu.muPas, 4), 103.2252)
 
         # Table 9, pag 271
         self.assertEqual(round(

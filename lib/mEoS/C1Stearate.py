@@ -135,5 +135,4 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         self.assertEqual(round(
-            # C1Stearate(T=697.5, rhom=1.79).mu.muPas, 4), 151.1512)
-            C1Stearate(T=697.5, rhom=1.79).mu.muPas, 4), 151.1649)
+            C1Stearate(T=697.5, rhom=1.79).mu.muPas, 4), 151.1513)

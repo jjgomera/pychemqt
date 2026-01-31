@@ -361,9 +361,8 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = H2S(T=335.8, rhom=20.154, visco=2)
-        # self.assertEqual(round(st.mu.muPas, 5), 97.16912)
-        self.assertEqual(round(st.mu.muPas, 5), 97.16763)
-        self.assertEqual(round(st.k.mWmK, 4), 121.2579)
+        self.assertEqual(round(st.mu.muPas, 5), 97.16911)
+        self.assertEqual(round(st.k.mWmK, 4), 121.2578)
 
     def test_dielectric(self):
         self.assertEqual(round(H2S(T=400, rhom=30).epsilon, 4), 5.0239)

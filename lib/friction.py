@@ -60,7 +60,7 @@ by iteration so so many method have been implement to get direct equations:
 '''
 
 
-from math import log, log10
+from math import exp, log, log10
 
 from scipy.optimize import fsolve
 
@@ -231,8 +231,18 @@ __doi__ = {
          "title": "Chemical Engineering Fluid Mechanics, 3rd Edition",
          "ref": "CRC Press, 2017",
          "doi": ""},
-
-    # 30:
+    30:
+        {"autor": "",
+         "title": "HTRI Design Manual",
+         "ref": "",
+         "doi": ""},
+    31:
+        {"autor": "Perkins, H.C., Woroe-Schmidt, P.",
+         "title": "Turbulent Heat and Momentum Transfer for Gases in a "
+                  "Circular Tube at Wall to Bulk Temperature Ratios to Seven",
+         "ref": "Int. J. Heat Mass Transfer 8(7) (1965) 1011-1031",
+         "doi": "10.1016/0017-9310(65)90085-2"},
+    # 32:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -1293,6 +1303,110 @@ def eD(Re, f):
     """
     eD = (10**(-0.5/f**0.5)-2.51/Re/f**0.5)*3.7
     return eD
+
+
+@refDoc(__doi__, [30])
+def f_liquid_noisothermal(Re, mu, muW, Gr=None, Pr=None, heating=True):
+    """Calculate nonisothermal correction factor to friction factor for liquid
+    flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+    Gr : float
+        Grashof number, [-]
+    Pr : float
+        Prandtl number, [-]
+    heating : boolean
+        Set heating of cooling process
+
+    Returns
+    -------
+    fp : float
+        Nonisothermal correction factor to friction factor in liquid flow, [-]
+
+    Examples
+    --------
+    B2.1.1.3.1 turbulent flow
+    >>> print("%0.3f" % f_liquid_noisothermal(24491, 0.208, 0.111))
+    0.915
+
+    B2.1.1.3.2 transition flow
+    >>> Pr = 0.649*0.83/0.062
+    >>> beta = -2/(47.6+40.8)*(47.6-40.8)/(82-355)
+    >>> Gr = 0.0211**3*653**2*9.81*beta*(355-82)/0.000343**2
+    >>> print("%0.2f" % f_liquid_noisothermal(1656, 0.343, 2.02, Pr=Pr, Gr=Gr, heating=False))
+    2.64
+    """
+    # Ref in HTRI design manual B2.1.1.2
+
+    if Re > 1e4:
+        # Turbulent flow
+        # Eq B2.1-12
+        phiM = (muW/mu)**0.14
+        psiN = 1
+
+    else:
+        if Re < 1500:
+            # Laminar flow
+            # Eq B2.1-14
+            M = 1
+            A = 0
+        else:
+            # Transition flow
+            M = 1 + exp(-6.4e6/Re**2)
+            A = 1e-11*Re**3
+
+        if heating:
+            Ctp = -1
+        else:
+            Ctp = 1
+        B1 = log10(muW/mu)**Ctp
+        B = 0.28*Ctp*B1**(0.5*M)/M
+        phiM = 10**B
+
+        Enc = (Gr*Pr*(mu/muW))**0.33
+        psiN = 1 + exp(-214/Enc)
+
+    # Eq B2.1-11
+    return  phiM * psiN
+
+
+@refDoc(__doi__, [30, 31])
+def f_gas_noisothermal_turbulent(Re, mu, muw, T, Tw, eD=0):
+    """Calculate nonisothermal correction factor to friction factor for gas
+    flow in turbulent regimen
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muw : float
+        Wall flow temperature viscosity, [Pa·s]
+    T : float
+        Bulk temperature, [K]
+    Tw : float
+        Wall temperature, [K]
+    eD : float
+        Relative roughness of a pipe, [-]
+
+    Returns
+    -------
+    f : float
+        Non isothermal gas friction factor, [-]
+    """
+    Reeff = Re*(mu/muw)*(T/Tw)
+    fiso = f_colebrook(Reeff, eD)
+
+    # Eq B2.1-24 removing term ab as show in 31_, Eq 7
+    return fiso*(2/((Tw/T)**0.5+1))**2
 
 
 if __name__ == "__main__":

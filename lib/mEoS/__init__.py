@@ -110,6 +110,7 @@ from lib.mEoS.C1Stearate import C1Stearate
 # Heteroatom
 from lib.mEoS.Methanol import Methanol
 from lib.mEoS.Ethanol import Ethanol
+from lib.mEoS.nPropanol import nPropanol
 from lib.mEoS.Acetone import Acetone
 from lib.mEoS.EthyOxide import EthyOxide
 from lib.mEoS.PropylenOxide import PropylenOxide
@@ -216,7 +217,7 @@ Alkenes = [Benzene, Toluene, oXylene, mXylene, pXylene, EthylBenzene,
            Cis_2_butene, Trans_2_butene, Pentene_1, Hexene_1, Acetylene,
            Propyne, Butyne_1, Cyclobutene, C1Oleate, C1Linolenate, C1Linoleate,
            C1Palmitate, C1Stearate]
-Heteroatom = [Methanol, Ethanol, Acetone, EthyOxide, PropylenOxide,
+Heteroatom = [Methanol, Ethanol, nPropanol, Acetone, EthyOxide, PropylenOxide,
               EthylenGlycol, PropylenGlycol, AceticAcid, DME, DEE, DEA, MEA,
               DMC, NF3, SF6, HCl]
 CFCs = [R13I1, R11, R12, R13, R14, R21, R22, R23, R32, R40, R41, R113, R114,
@@ -259,7 +260,6 @@ for obj in __all__:
     __doi__[obj.__name__] = subdict
 
 
-# TODO: Add 1-propanol from 10.1016_j.fluid.2004.06.028
 # TODO: Add 2-propanol from 10.1063/1.3112608
 
 # Correlation in REFPROP missing

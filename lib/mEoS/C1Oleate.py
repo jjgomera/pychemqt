@@ -164,7 +164,7 @@ class Test(TestCase):
         """Table 7, pag 266"""
         self.assertEqual(round(
             # C1Oleate(T=703.8, rhom=1.819).mu.muPas, 4), 187.8277)
-            C1Oleate(T=703.8, rhom=1.819).mu.muPas, 4), 187.8412)
+            C1Oleate(T=703.8, rhom=1.819).mu.muPas, 4), 187.8279)
 
     def test_Perkins(self):
         """Table 3, Pag 2386"""

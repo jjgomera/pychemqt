@@ -191,4 +191,4 @@ class Test(TestCase):
         """Table 7, pag 266"""
         self.assertEqual(round(
             # C1Cyclohexane(T=515, rhom=5.48).mu.muPas, 5), 107.4351)
-            C1Cyclohexane(T=515, rhom=5.48).mu.muPas, 4), 107.4355)
+            C1Cyclohexane(T=515, rhom=5.48).mu.muPas, 5), 107.43507)

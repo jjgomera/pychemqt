@@ -155,7 +155,7 @@ class Test(TestCase):
         st = RC318(T=349.5, rhom=6.379)
         # self.assertEqual(round(st.mu.muPas, 4), 188.5507)
         # self.assertEqual(round(st.k.mWmK, 4), 50.2769)
-        self.assertEqual(round(st.mu.muPas, 4), 188.5478)
+        self.assertEqual(round(st.mu.muPas, 4), 188.5464)
         self.assertEqual(round(st.k.mWmK, 4), 50.2780)
 
     def test_krauss(self):

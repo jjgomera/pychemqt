@@ -545,11 +545,14 @@ def Ma(V, c):
 
 
 @refDoc(__doi__, [1])
-def Nu(alfa, L, k):
+def Nu(h, L, k):
     r"""Calculates Nusselt number or `Nu`.
 
     .. math::
-        Nu = \frac{\alpha L}{k}
+        Nu = \frac{h L}{k}
+
+    Nusselt is the ratio of the convective heat transfer coefficient to the
+    heat transfer coefficient for conduction.
 
     Parameters
     ----------
@@ -557,7 +560,7 @@ def Nu(alfa, L, k):
         Thermal conductivity, [W/m/K]
     L : float
         Characteristic length, [m]
-    alpha : float
+    h : float
         Heat transfer coefficient, [W/m²/K]
 
     Returns
@@ -576,7 +579,7 @@ def Nu(alfa, L, k):
     >>> print("%0.1f" % Nu(102.3, 0.03927, 0.03181))
     126.3
     """
-    return Dimensionless(alfa*L/k)
+    return Dimensionless(h*L/k)
 
 
 @refDoc(__doi__, [2])
@@ -630,6 +633,9 @@ def Pe(V, L, rho=None, Cp=None, k=None, alpha=None):
 def Pr(cp=None, k=None, mu=None, nu=None, rho=None, alpha=None):
     r"""Calculates Prandtl number or `Pr` for a fluid with the given
     parameters.
+
+    Prandtl number is the ratio of momentum diffusion to energy diffusion and
+    relates the velocity profile to the temperature profile.
 
     .. math::
         Pr = \frac{C_p \mu}{k} = \frac{\nu}{\alpha} = \frac{C_p \rho \nu}{k}
@@ -718,13 +724,20 @@ def Re(D, V, rho=None, mu=None, nu=None):
     r"""Calculates Reynolds number or `Re` for a fluid with the given
     properties for the specified velocity and diameter.
 
-    .. math::
-        Re = {D \cdot V}{\nu} = \frac{\rho V D}{\mu}
-
     Inputs either of any of the following sets:
 
     * V, D, density `rho` and kinematic viscosity `mu`
     * V, D, and dynamic viscosity `nu`
+
+    .. math::
+        Re = {D \cdot V}{\nu} = \frac{\rho V D}{\mu}
+
+    Reynolds is the ratio of inertial forces to viscous forces, used to
+    determine the type of single-phase flow.
+
+    * Re ≤ 2000: Laminar flow, fluid particles move parallel to the tube axis
+    * 2000 ≤ Re ≤ 10000: Transition from laminar to turbulent flow
+    * Re ≥ 10000: Turbulent flow, fluid particles move chaotically
 
     Parameters
     ----------

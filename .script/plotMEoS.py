@@ -275,8 +275,8 @@ vap = fluid.from_list("x", 1, "T", Ts)
 xliq = [line.T / Tc if line.status == 1 else None for line in liq]
 yliq = [line.P / fluid.Pc if line.status == 1 else None for line in liq]
 ax_Ideal.plot(xliq, yliq, **isosat_kw)
-xvap = [v.T / Tc for v in vap]
-yvap = [v.P / fluid.Pc for v in vap]
+xvap = [v.T / Tc if v.status == 1 else None for v in vap]
+yvap = [v.P / fluid.Pc if v.status == 1 else None for v in vap]
 ax_Ideal.plot(xvap, yvap, **isosat_kw)
 
 PIPliq = [line.PIP if line.status == 1 else None for line in liq]
@@ -293,12 +293,12 @@ ax_PT.plot(Ts, Pliq, label="Saturated Liquid", **isosat_kw)
 ax_hs.plot(sliq, hliq, label="Saturated Liquid", **isosat_kw)
 ax_vu.plot(uliq, vliq, label="Saturated Liquid", **isosat_kw)
 
-PIPvap = [line.PIP for line in vap]
-hvap = [v.h.kJkg for v in vap]
-Pvap = [v.P.MPa for v in vap]
-svap = [v.s.kJkgK for v in vap]
-vvap = [v.v for v in vap]
-uvap = [v.u.kJkg for v in vap]
+PIPvap = [v.PIP if v.status == 1 else None for v in vap]
+hvap = [v.h.kJkg if v.status == 1 else None  for v in vap]
+Pvap = [v.P.MPa if v.status == 1 else None  for v in vap]
+svap = [v.s.kJkgK if v.status == 1 else None  for v in vap]
+vvap = [v.v if v.status == 1 else None  for v in vap]
+uvap = [v.u.kJkg if v.status == 1 else None  for v in vap]
 ax_PIP.plot(Ts, PIPvap, label="Saturated Vapor", **PIP_kw)
 ax_Ph.plot(hvap, Pvap, label="Saturaded Vapor", **isosat_kw)
 ax_Ts.plot(svap, Ts, label="Saturaded Vapor", **isosat_kw)
@@ -308,11 +308,11 @@ ax_vu.plot(uvap, vvap, label="Saturaded Vapor", **isosat_kw)
 
 
 # Set graphics limit to only saturation region
-hmax = max(hvap)
+hmax = max([i for i in hvap if i is not None])
 hmax += abs(hmax * 0.1)
-umax = max(uvap)
+umax = max([i for i in uvap if i is not None])
 umax += abs(umax * 0.1)
-smax = max(svap)
+smax = max([i for i in svap if i is not None])
 smax += abs(smax * 0.1)
 
 # ax_Ideal.set_ylim(bottom=1e-6)
@@ -352,24 +352,24 @@ for q in isoq:
     print("    %s" % txt)
     pts = fluid.from_list("x", q, "T", Ts)
 
-    x = [p.h.kJkg for p in pts]
-    y = [p.P.MPa for p in pts]
+    x = [p.h.kJkg if p.status == 1 else None for p in pts]
+    y = [p.P.MPa if p.status == 1 else None for p in pts]
     ax_Ph.plot(x, y, label=txt, **isoq_kw)
 
-    x = [p.s.kJkgK for p in pts]
-    y = [p.T for p in pts]
+    x = [p.s.kJkgK if p.status == 1 else None for p in pts]
+    y = [p.T if p.status == 1 else None for p in pts]
     ax_Ts.plot(x, y, label=txt, **isoq_kw)
 
-    x = [p.v for p in pts]
-    y = [p.T for p in pts]
+    x = [p.v if p.status == 1 else None for p in pts]
+    y = [p.T if p.status == 1 else None for p in pts]
     ax_Tv.plot(x, y, label=txt, **isoq_kw)
 
-    x = [p.s.kJkgK for p in pts]
-    y = [p.h.kJkg for p in pts]
+    x = [p.s.kJkgK if p.status == 1 else None for p in pts]
+    y = [p.h.kJkg if p.status == 1 else None for p in pts]
     ax_hs.plot(x, y, label=txt, **isoq_kw)
 
-    x = [p.u.kJkg for p in pts]
-    y = [p.v for p in pts]
+    x = [p.u.kJkg if p.status == 1 else None for p in pts]
+    y = [p.v if p.status == 1 else None for p in pts]
     ax_vu.plot(x, y, label=txt, **isoq_kw)
 
 
@@ -437,7 +437,7 @@ for T in isoT:
 
 # Calculate isobar lines
 print("Calculating isobar lines...")
-for P in np.concatenate([isoP, isoP_PIP]):
+for P in np.concatenate([isoP[1:], isoP_PIP]):
     txt = "P: %0.5g MPa" % (P/1e6)
     print("    %s" % txt)
 

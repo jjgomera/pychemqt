@@ -18,8 +18,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from math import exp, log
 from unittest import TestCase
 
+from scipy.constants import Avogadro, Boltzmann
 from lib import unidades
 from lib.meos import MEoS
 from lib.mEoS.N2 import N2
@@ -54,7 +56,7 @@ class Kr(MEoS):
         "__doi__": {"autor": "Lemmon, E.W., Span, R.",
                     "title": "Short Fundamental Equations of State for 20 "
                              "Industrial Fluids",
-                    "ref": "J. Chem. Eng. Data, 2006, 51 (3), pp 785–850",
+                    "ref": "J. Chem. Eng. Data 51(3) (2006) 785-850",
                     "doi": "10.1021/je050186n"},
 
         "R": 8.314472,
@@ -71,10 +73,7 @@ class Kr(MEoS):
         "d2": [2, 5, 1, 4, 3, 4],
         "t2": [0.625, 1.75, 3.625, 3.625, 14.5, 12.],
         "c2": [1, 1, 2, 2, 3, 3],
-        "gamma2": [1]*6,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*6}
 
     polt = {
         "__type__": "Helmholtz",
@@ -105,10 +104,7 @@ class Kr(MEoS):
         "d2": [0, 0, 0, 2, 2, 2],
         "t2": [3, 4, 5, 3, 4, 5],
         "c2": [2, 2, 2, 2, 2, 2],
-        "gamma2": [1]*6,
-
-        "nr3": [],
-        "nr4": []}
+        "gamma2": [1]*6}
 
     eq = lemmon, polt
 
@@ -156,6 +152,7 @@ class Kr(MEoS):
 
               "eq": "ecs",
               "ref": N2,
+              "visco": "visco1",
 
               "ek": 178.9, "sigma": 0.3655, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1.008291,
@@ -168,7 +165,61 @@ class Kr(MEoS):
               "gnu": 0.63, "gamma": 1.239, "R0": 1.02,
               "Xio": 0.168e-9, "gam0": 0.058, "qd": 0.437e-9, "Tcref": 1.5*Tc}
 
-    _viscosity = (trnECS, )
+    visco1 = {"__name__": "Polychroniadou (2022)",
+
+              "__doi__": {
+                  "autor": "Polychroniadou, S., Antoniadis, K.D., Assael, "
+                           "M.J., Bell, I.H.",
+                  "title": "A Reference Correlation for the Viscosity of "
+                           "Krypton From Entropy Scaling",
+                  "ref": "Int. J. Thermophys. 43 (2022) 6",
+                  "doi": "10.1007/s10765-021-02927-5"},
+
+              "eq": 1,
+              "special": "_mur"}
+
+    def _mu0(self, T):
+        """Special term for zero-density viscosity for Polychroniadou
+        correlation"""
+        # Parameters get this reference
+        # X. Xiao, X., Rowland, D., Ghafri, Al Ghafri, S.Z.S., May, E.F.
+        # Wide-Ranging Reference Correlations for Dilute Gas Transport
+        # Properties Based on Ab Initio Calculations and Viscosity Ratio
+        # Measurements
+        # J. Phys. Chem. Ref. Data 49(1) (2020) 013101
+        # https://doi.org/10.1063/1.5125100
+        a = [9.129712e-1, -1.001470e-1, -2.454742e-2, 3.145009e-2,
+             -4.456257e-3, -4.511243e-3, 2.237544e-3, -1.455422e-4,
+             -2.006385e-4, 8.341288e-5, -1.520236e-5, 1.159085e-6]
+
+        # Eq 8
+        muo = exp(sum(ai*log(T/298.15)**(i+1) for i, ai in enumerate(a)))
+        return 25.3062*muo
+
+    def _mur(self, rho, T, fase=None):
+        """Hardcoded viscosity correlation from Polychroniadou"""
+        muo = self._mu0(T)
+
+        if rho and fase:
+            B = fase.virialB
+            dBT = fase.dBt
+            teta = (B+T*dBT)/Avogadro*self.M/1000
+            mu_dl = muo*1e-6/(self.M*1e-3/Avogadro*Boltzmann*T)**0.5*teta**(2/3)
+
+            s = self.R.kJkgK*(self.Tc/T*fase.firt-fase.fir)*self.M
+            splus = -s/self.R.kJkgK/self.M
+            clj = [0.125364, 0.220795, -0.0313726, 0.00313907]
+            lj = exp(sum(ci*splus**(i+1) for i, ci in enumerate(clj))) - 1
+            mu_res = lj * 1.05
+
+            muPlus = mu_res + mu_dl
+            rhon = rho/self.M*1000*Avogadro
+            return 1e6*rhon**(2/3)*(self.M/1000/Avogadro*Boltzmann*T)**0.5*muPlus/splus**(2/3)
+
+        else:
+            return muo
+
+    _viscosity = (trnECS, visco1)
     _thermal = (trnECS, )
 
 
@@ -196,3 +247,22 @@ class Test(TestCase):
         st = Kr(T=188.5, rhom=21.274)
         self.assertEqual(round(st.mu.muPas, 4), 115.6593)
         self.assertEqual(round(st.k.mWmK, 4), 48.3068)
+
+    def test_Polychroniadou(self):
+        st = Kr(T=200, rhom=1e-9, visco=1)
+        self.assertEqual(round(st.mu.muPas, 8), 17.33865199)
+
+        # This point isn't real, it's in two phases region so need force
+        # calculation
+        # st = Kr(T=200, rhom=13.020, visco=1)
+        # self.assertEqual(round(mu.muPas, 15), 56.44764255291952)
+
+        st = Kr(T=298.15, rhom=1e-9, visco=1)
+        self.assertEqual(round(st.mu.muPas, 11), 25.30620000081)
+
+        st = Kr(T=400, rhom=1e-9, visco=1)
+        self.assertEqual(round(st.mu.muPas, 12), 32.79555841859)
+
+        # Difference wieh paper by Avogadro value
+        st = Kr(T=400, rhom=13.020, visco=1)
+        self.assertEqual(round(st.mu.muPas, 5), 64.80147)

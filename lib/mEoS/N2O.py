@@ -104,6 +104,7 @@ class N2O(MEoS):
 
               "eq": "ecs",
               "ref": N2,
+              "visco": "visco1",
 
               "ek": 232.4, "sigma": 0.3828, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,

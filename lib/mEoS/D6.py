@@ -116,7 +116,9 @@ class D6(MEoS):
 
               "eq": "ecs",
               "ref": N2,
+              "visco": "visco1",
 
+              "rhoc": 279.0957298413672,
               "ek": 512.8, "sigma": 0.945, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,
 

@@ -116,6 +116,7 @@ class RE245cb2(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 323.05, "sigma": 0.5418, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,
@@ -137,6 +138,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = RE245cb2(T=366.1, rhom=6.908)
-        # self.assertEqual(round(st.mu.muPas, 4), 131.9492)
-        self.assertEqual(round(st.mu.muPas, 4), 131.9498)
-        self.assertEqual(round(st.k.mWmK, 4), 52.1205)
+        self.assertEqual(round(st.mu.muPas, 4), 131.9493)
+        self.assertEqual(round(st.k.mWmK, 4), 52.1204)

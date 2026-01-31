@@ -157,6 +157,7 @@ class MM(MEoS):
 
               "eq": "ecs",
               "ref": N2,
+              "visco": "visco1",
 
               "ek": 357, "sigma": 0.719, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 1,

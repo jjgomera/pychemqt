@@ -166,5 +166,5 @@ class Test(TestCase):
     def test_huber(self):
         """Table 4 from lib.coolprop reference, pag 2504"""
         st = R124(T=350, x=0)
-        self.assertEqual(round(st.mu.muPas, 3), 138.059)
+        self.assertEqual(round(st.mu.muPas, 3), 138.056)
         self.assertEqual(round(st.k.mWmK, 3), 52.794)

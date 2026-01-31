@@ -130,5 +130,5 @@ class Test(TestCase):
         st = Propyne(T=362.1, rhom=12.571)
         # self.assertEqual(round(st.mu.muPas, 5), 80.62469)
         # self.assertEqual(round(st.k.mWmK, 4), 91.2068)
-        self.assertEqual(round(st.mu.muPas, 5), 80.62182)
+        self.assertEqual(round(st.mu.muPas, 5), 80.62157)
         self.assertEqual(round(st.k.mWmK, 4), 91.2093)

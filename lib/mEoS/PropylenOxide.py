@@ -132,9 +132,8 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = PropylenOxide(T=439.3, rhom=10.502)
-        # self.assertEqual(round(st.mu.muPas, 5), 89.19919)
-        self.assertEqual(round(st.mu.muPas, 5), 89.20032)
-        self.assertEqual(round(st.k.mWmK, 4), 99.8309)
+        self.assertEqual(round(st.mu.muPas, 5), 89.19921)
+        self.assertEqual(round(st.k.mWmK, 4), 99.8308)
 
     def test_Surface(self):
         """Table 10, pag 271"""

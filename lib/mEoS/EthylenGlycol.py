@@ -60,7 +60,7 @@ class EthylenGlycol(MEoS):
 
         "R": 8.3144598,
         "cp": CP1,
-        "ref": "IIR",
+        "ref": "NBP",
 
         "Tmin": 300, "Tmax": 850.0, "Pmax": 100000.0, "rhomax": 55.57,
 
@@ -225,6 +225,5 @@ class Test(TestCase):
     def test_Huber(self):
         """Table 7, pag 266"""
         st = EthylenGlycol(T=647.1, rhom=12.365, visco=1, thermal=1)
-        # self.assertEqual(round(st.mu.muPas, 4), 124.6233)
-        self.assertEqual(round(st.mu.muPas, 4), 124.6256)
-        self.assertEqual(round(st.k.mWmK, 4), 204.0773)
+        self.assertEqual(round(st.mu.muPas, 4), 124.6234)
+        self.assertEqual(round(st.k.mWmK, 4), 204.0772)

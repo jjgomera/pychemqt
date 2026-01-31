@@ -215,6 +215,6 @@ class Test(TestCase):
         """Table 7, pag 266"""
         st = Acetone(T=457.3, rhom=9.8, visco=1, thermal=1)
         # self.assertEqual(round(st.mu.muPas, 5), 99.01729)
+        self.assertEqual(round(st.mu.muPas, 5), 99.01734)
         # self.assertEqual(round(st.k.mWmK, 4), 96.5053)
-        self.assertEqual(round(st.mu.muPas, 5), 99.02148)
-        self.assertEqual(round(st.k.mWmK, 4), 96.5060)
+        self.assertEqual(round(st.k.mWmK, 4), 96.506)

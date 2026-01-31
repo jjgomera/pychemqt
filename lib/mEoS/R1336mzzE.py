@@ -115,6 +115,7 @@ class R1336mzzE(MEoS):
 
               "eq": "ecs",
               "ref": R134a,
+              "visco": "visco1",
 
               "ek": 320.44, "sigma": 0.5531, "omega": 6,
               "n_chapman": 26.692e-3, "Fc": 0.761917,
@@ -151,8 +152,8 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 3), 146.214)
         self.assertEqual(round(st.cpM.JmolK, 3), 193.851)
         self.assertEqual(round(st.w, 3), 725.684)
-        self.assertEqual(round(st.mu.muPas, 3), 401.371)
-        self.assertEqual(round(st.k.mWmK, 4), 75.8548)
+        self.assertEqual(round(st.mu.muPas, 3), 401.367)
+        self.assertEqual(round(st.k.mWmK, 4), 75.8546)
 
         st = R1336mzzE(T=300, rhom=0.05)
         self.assertEqual(round(st.P.MPa, 6), 0.119033)
@@ -167,8 +168,8 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 3), 154.022)
         self.assertEqual(round(st.cpM.JmolK, 3), 254.161)
         self.assertEqual(round(st.w, 3), 209.403)
-        self.assertEqual(round(st.mu.muPas, 4), 99.8968)
-        self.assertEqual(round(st.k.mWmK, 4), 53.4109)
+        self.assertEqual(round(st.mu.muPas, 4), 99.8964)
+        self.assertEqual(round(st.k.mWmK, 4), 53.4108)
 
         st = R1336mzzE(T=380, rhom=0.5)
         self.assertEqual(round(st.P.MPa, 6), 1.212781)
@@ -183,5 +184,5 @@ class Test(TestCase):
         self.assertEqual(round(st.cvM.JmolK, 3), 165.611)
         self.assertEqual(round(st.cpM.JmolK, 2), 4690.00)
         self.assertEqual(round(st.w, 4), 71.6230)
-        self.assertEqual(round(st.mu.muPas, 4), 30.8930)
+        self.assertEqual(round(st.mu.muPas, 4), 30.8929)
         self.assertEqual(round(st.k.mWmK, 4), 53.7456)
