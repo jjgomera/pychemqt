@@ -755,6 +755,7 @@ class Hairpin(equipment):
             self.w = unidades.Length(self.kwargs["wTube"])
             self.De = unidades.Length(self.Di+w*2)
         self.Dee = unidades.Length(self.kwargs["DeeTube"])
+        self.Dei = unidades.Length(self.De+self.w)
         self.rugosidad = unidades.Length(self.kwargs["rTube"])
         self.k = unidades.ThermalConductivity(self.kwargs["kTube"])
         self.fi = unidades.Fouling(self.kwargs["tubeFouling"])
@@ -770,7 +771,7 @@ class Hairpin(equipment):
         dp_tube = self.L*self.VTube**2/self.Di*f*self.rhoTube/2
         self.deltaPTube = unidades.DeltaP(dp_tube)
 
-        f_a = f_friccion(self.ReAnnulli, geometry=6)
+        f_a = f_friccion(self.ReAnnulli, geometry=6, Di=self.Dei, Do=self.Dee)
         dp_annulli = self.L*self.VAnnulli**2/self.De*f_a*self.rhoAnnulli/2
         self.deltaPAnnulli = unidades.DeltaP(dp_annulli)
 

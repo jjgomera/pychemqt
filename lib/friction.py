@@ -242,7 +242,14 @@ __doi__ = {
                   "Circular Tube at Wall to Bulk Temperature Ratios to Seven",
          "ref": "Int. J. Heat Mass Transfer 8(7) (1965) 1011-1031",
          "doi": "10.1016/0017-9310(65)90085-2"},
-    # 32:
+    32:
+        {"autor": "Gnielinski, V.",
+         "title": "Berechnung des Druckverlustes in glatten konzentrischen "
+                  "Ringspalten bei ausgebildeter laminarer und turbulenter "
+                  "isothermer Strömung",
+         "ref": "Chemie Ingenieur Technik 79(1-2) (2007) 91-95",
+         "doi": "10.1002/cite.200600126"},
+    # 33:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -1173,14 +1180,26 @@ def f_blasius(Re):
     return 0.079/Re**0.25
 
 
-def f_Gnielinsky(Re):
-    """
-    Friction factor by Gnielinsky, for annulli section in bare tubes
+@refDoc(__doi__, [32])
+def f_annulli_Gnielinski(Re, Di, Do):
+    """Friction factor for annulli section in bare tubes using the Gnielinski
+    correlation (2007)
 
     Input parameters:
     Re: Reynolds number, based in hydraulic number
     """
-    return (1.8*log(Re)-1.5)**-2.
+    a = Di/Do                                                           # Eq 4
+    phi = ((1+a**2)*log(a) + (1-a**2))/((1-a)**2*log(a))                # Eq 7
+    Reh = phi*Re                                                        # Eq 9
+
+    if Reh < 2000:
+        # Laminar flow
+        f = 64/Re                                                       # Eq 10
+
+    else:
+        # Turbulent flow
+        f = 1/(1.8*log(Reh)-1.5)**2                                     # Eq 13
+    return f
 
 
 @refDoc(__doi__, [29])
@@ -1247,7 +1266,11 @@ def f_friccion(Re, eD=0, method=0, geometry=0, *args):
             * Right triangle: Angle, [º]
             * Anulli: Internal and external diameter, [m]
     """
-    if Re < 2100:
+    if geometry == 6:
+        Di, Do = args
+        f_friccion = f_annulli_Gnielinski(Re, Di, Do)
+
+    elif Re < 2100:
         if geometry == 0:
             # Circle
             f_friccion = 16./Re
@@ -1269,18 +1292,15 @@ def f_friccion(Re, eD=0, method=0, geometry=0, *args):
             f_friccion = 2*Dh**2*(D**2+d**2)/D**2/d**2/Re
         elif geometry == 5:
             pass
-        elif geometry == 6:
-            # Annulli
-            # Eq 7.9, 7.10, pag 183
-            Di, Do = args
-            alpha = (Do-Di)**2/(Do**2+Di**2-(Do**2-Di**2)/log(Do/Di))
-            f_friccion = 16*alpha/Re
+        # elif geometry == 6:
+        #     # Annulli
+        #     # Eq 7.9, 7.10, pag 183
+        #     Di, Do = args
+        #     alpha = (Do-Di)**2/(Do**2+Di**2-(Do**2-Di**2)/log(Do/Di))
+        #     f_friccion = 16*alpha/Re
 
     else:
-        if geometry == 6:
-            f_friccion = f_Gnielinsky(Re)
-        else:
-            f_friccion = f_list[method](Re, eD)
+        f_friccion = f_list[method](Re, eD)
 
     return Dimensionless(f_friccion)
 
