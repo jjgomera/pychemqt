@@ -56,7 +56,7 @@ from tools.pdf import openPDF
 
 import lib
 from lib.config import IMAGE_PATH
-from equipment import equipments
+from equipment import equipments, accesories
 
 
 class QLineEditClickable(QtWidgets.QLineEdit):
@@ -211,12 +211,15 @@ class ShowReference(QtWidgets.QDialog):
     def fill(self):
         """Fill tree with documentation entries"""
         # General population Library
+        itemLibrary = QtWidgets.QTreeWidgetItem([self.tr("library")])
+        self.tree.addTopLevelItem(itemLibrary)
+        itemLibrary.setExpanded(True)
         for library in lib.__all__:
             __import__(f"lib.{library}")
             module = lib.__getattribute__(library)
             if hasattr(module, "__doi__") and module.__doi__:
                 itemModule = QtWidgets.QTreeWidgetItem(["lib/"+library])
-                self.tree.addTopLevelItem(itemModule)
+                itemLibrary.addChild(itemModule)
                 for key in sorted(module.__doi__.keys()):
 
                     if key == "lib.EoS.Cubic":
@@ -240,6 +243,9 @@ class ShowReference(QtWidgets.QDialog):
                     elif library in ["EoS", "mEoS", "newComponent"]:
                         itemSubModule = QtWidgets.QTreeWidgetItem([key])
                         itemModule.addChildren([itemSubModule])
+                        if library == "EoS":
+                            itemModule.setExpanded(True)
+
                         for key2 in sorted(module.__doi__[key].keys()):
                             link = module.__doi__[key][key2]
                             if key == "lib.EoS.Cubic":
@@ -284,6 +290,7 @@ class ShowReference(QtWidgets.QDialog):
         # Equipment
         itemEquipment = QtWidgets.QTreeWidgetItem([self.tr("Equipments")])
         self.tree.addTopLevelItem(itemEquipment)
+        itemEquipment.setExpanded(True)
         for equip in equipments:
             itemequip = QtWidgets.QTreeWidgetItem([equip.__name__])
             itemEquipment.addChild(itemequip)
@@ -298,6 +305,27 @@ class ShowReference(QtWidgets.QDialog):
                     item.setIcon(0, icon)
 
                 itemequip.addChild(item)
+
+        # Add accesorios subfolder
+        itemAccesories = QtWidgets.QTreeWidgetItem([self.tr("Accesories")])
+        itemEquipment.addChild(itemAccesories)
+        itemAccesories.setExpanded(True)
+        for equip in accesories.__all__:
+            itemequip = QtWidgets.QTreeWidgetItem([equip])
+            itemAccesories.addChild(itemequip)
+            module = accesories.__getattribute__(equip)
+            for idx, link in module.__doi__.items():
+                item = QtWidgets.QTreeWidgetItem([
+                    "", link["autor"], link["title"],
+                    link["ref"], link["doi"]])
+
+                if findFile(link):
+                    icon = QtGui.QIcon(QtGui.QPixmap(os.path.join(
+                        IMAGE_PATH, "button", "ok.png")))
+                    item.setIcon(0, icon)
+
+                itemequip.addChild(item)
+
 
     def open(self, item):
         """Open file if exist in doc/doi folder or open a browser with link"""
