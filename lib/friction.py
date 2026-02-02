@@ -1203,7 +1203,7 @@ def f_annulli_Gnielinski(Re, Di, Do):
 
 
 @refDoc(__doi__, [29])
-def f_friccion(Re, eD=0, method=0, geometry=0, *args):
+def f_friccion(Re, eD=0, method=0, geometry=0, **kw):
     """
     Generalized method for calculate friction factor for laminar or turbulent
     flux in several geometries
@@ -1267,29 +1267,30 @@ def f_friccion(Re, eD=0, method=0, geometry=0, *args):
             * Anulli: Internal and external diameter, [m]
     """
     if geometry == 6:
-        Di, Do = args
-        f_friccion = f_annulli_Gnielinski(Re, Di, Do)
+        f = f_annulli_Gnielinski(Re, **kw)
 
     elif Re < 2100:
         if geometry == 0:
             # Circle
-            f_friccion = 16./Re
+            f = 16./Re
         elif geometry == 1:
             # Square
-            f_friccion = 14.2/Re
+            f = 14.2/Re
         elif geometry == 2:
             # Isosceles triangle
             pass
         elif geometry == 3:
             # Rectangle
-            D, d = args[1], args[0]
-            f_friccion = 16/(2/3+11/24*d/D*(2-d/D))/Re
+            D = kw["D"]
+            d = kw["d"]
+            f = 16/(2/3+11/24*d/D*(2-d/D))/Re
         elif geometry == 4:
             # Ellipse
-            D, d = args[1], args[0]
+            D = kw["D"]
+            d = kw["d"]
             c = (D-d)/(D+d)
             Dh = 4*d*D*(64-16*c**2)/((d+D)*(64-3*c**4))
-            f_friccion = 2*Dh**2*(D**2+d**2)/D**2/d**2/Re
+            f = 2*Dh**2*(D**2+d**2)/D**2/d**2/Re
         elif geometry == 5:
             pass
         # elif geometry == 6:
@@ -1297,12 +1298,12 @@ def f_friccion(Re, eD=0, method=0, geometry=0, *args):
         #     # Eq 7.9, 7.10, pag 183
         #     Di, Do = args
         #     alpha = (Do-Di)**2/(Do**2+Di**2-(Do**2-Di**2)/log(Do/Di))
-        #     f_friccion = 16*alpha/Re
+        #     f= 16*alpha/Re
 
     else:
-        f_friccion = f_list[method](Re, eD)
+        f = f_list[method](Re, eD)
 
-    return Dimensionless(f_friccion)
+    return Dimensionless(f)
 
 
 @refDoc(__doi__, [1])
@@ -1394,7 +1395,7 @@ def f_liquid_noisothermal(Re, mu, muW, Gr=None, Pr=None, heating=True):
         psiN = 1 + exp(-214/Enc)
 
     # Eq B2.1-11
-    return  phiM * psiN
+    return phiM * psiN
 
 
 @refDoc(__doi__, [30, 31])
