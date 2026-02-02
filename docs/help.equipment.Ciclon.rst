@@ -247,10 +247,10 @@ La ecuación que nos da el rendimiento de captación es:
 
 .. math::
     \begin{array}[t]{l}
-    \eta = 1-\exp{-2\left(\frac{G\tauV_0}{D_c^3}\left(n+1\right)\right)
+    \eta = 1-\exp{-2\left(\frac{G \tau V_0}{D_c^3}\left(n+1\right)\right)
     ^{0.5/n+1}}\\
     G = \frac{4D_c\left(2V_s+V\right)}{a^2b^2}\\
-    n = 1 - \left(1-\frac{\left(12D_cright)^{0.14}}{2.5}\right)
+    n = 1 - \left(1-\frac{\left(12D_c\right)^{0.14}}{2.5}\right)
     \left(\frac{T+460}{530}\right)^{0.3}\\
     \tau = \frac{\rho_p d_p^2}{18\mu}\\
     \end{array}
