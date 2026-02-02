@@ -136,7 +136,7 @@ __doi__ = {
         {"autor": "Zigrang, D.J., Sylvester, N.D.",
          "title": "Explicit approximations to the solution of Colebrook's"
                   "friction factor equation",
-         "ref": "AICHE J 28, 514-515.",
+         "ref": "AIChE J. 28(03) (1982) 514-515.",
          "doi": "10.1002/aic.690280323"},
     14:
         {"autor": "Tsal, R.J.",

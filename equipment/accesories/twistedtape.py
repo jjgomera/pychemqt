@@ -83,7 +83,13 @@ __doi__ = {
                   "pipes with and without twisted tape insert",
          "ref": "Int. Comm. Heat Mass Transfer 33 (2006) 166-175",
          "doi": "10.1016/j.icheatmasstransfer.2005.09.007"},
-    # 9:
+    10:
+        {"autor": "Agarwal, S.K., Raja Rao, M.",
+         "title": "Heat transfer augmentation for the flow of a viscous "
+                  "liquid in circular tubes using twisted tape inserts",
+         "ref": "Int. J. Heat Mass Transfer 39(17) (1996) 3547-3557",
+         "doi": ""},
+    # 12:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -296,6 +302,35 @@ def f_twisted_Naphon(Re, D, H):
     return f
 
 
+@refDoc(__doi__, [10])
+def f_twisted_Agarwal(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Agarwal and Raja Rao correlation (1996).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    y = H/D
+
+    if Re/y < 9 or Re/y > 1000:
+        raise NotImplementedError("Input out of bound")
+
+    # 29
+    f = 1/Re/y**0.28*((75.74*(Re/y)**0.0216)**10 + (19.48*(Re/y)**0.3481)**10)
+
+    return f
+
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [2])
 def Nu_twisted_Plessis(Re, Pr, D, H, delta, Ae, De, x=None):
@@ -495,7 +530,6 @@ def Nu_twisted_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, DT, HTRI=False):
     if mu > muW:
         # In liquids viscosity decrease with temperature, so cooling processes
         Nc = 0
-
     else:
         # Heating processes
         Nc = 0.193*((2*Reh/y)**2*Dh/D*beta*DT*Pr)**(1/3)
@@ -591,6 +625,8 @@ def Nu_twisted_Naphon(Re, Pr, D, H):
     ----------
     Re : float
         Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
     D : float
         Internal diameter of tube, [m]
     H : float
@@ -606,6 +642,47 @@ def Nu_twisted_Naphon(Re, Pr, D, H):
     return Nu
 
 
+@refDoc(__doi__, [10])
+def Nu_twisted_Agarwal(Re, Pr, D, H, mu, muW):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Agarwal and Raja Rao correlation (1996).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+
+    if Re/y < 9 or Re/y > 1000:
+        raise NotImplementedError("Input out of bound")
+
+    if mu > muW:
+        # In liquids viscosity decrease with temperature, so cooling processes
+        Nu = 1.365*Re**0.517*y**-1.05*Pr**(1/3)*(mu/muW)**0.14          # Eq 31
+    else:
+        # Heating processes
+        Nu = 0.725*Re**0.568*y**-0.788*Pr**(1/3)*(mu/muW)**0.14         # Eq 30
+
+    return Nu
+
+
+
 class TwistedTape():
     """Twisted-tape insert used in heat exchanger to improve efficiency.
     This tape, generally a thin metal strip, is twisted about its longitudinal
@@ -616,7 +693,8 @@ class TwistedTape():
         "Plassis-Kröger (1984)",
         "Lopina-Bergles (1969)",
         "Shah-London (1978)",
-        "Naphon (2006)")
+        "Naphon (2006)",
+        "Agarwal-Rao (1996)")
 
     TEXT_HEAT = (
         "HTRI",
@@ -624,7 +702,9 @@ class TwistedTape():
         "Manglik-Bergles (1993)",
         "Plessis-Kröger (1987)",
         "Hong-Bergles (1976)",
-        "Naphon (2006)")
+        "Naphon (2006)",
+        "Agarwal-Rao (1996)",t
+        "Kidd (1969)")
 
     def __init__(self, H, D, delta):
         """
