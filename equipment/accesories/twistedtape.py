@@ -89,6 +89,12 @@ __doi__ = {
                   "liquid in circular tubes using twisted tape inserts",
          "ref": "Int. J. Heat Mass Transfer 39(17) (1996) 3547-3557",
          "doi": ""},
+    11:
+        {"autor": "Kidd, G.J. Jr.",
+         "title": "Heat Transfer and Pressure Drop for Nitrogen Flowing in "
+                  "Tubes Containing Twisted Tapes",
+         "ref": "AIChE J. 15(4) (1969) 581-585.",
+         "doi": "10.1002/aic.690150420"},
     # 12:
         # {"autor": "",
          # "title": "",
@@ -681,6 +687,43 @@ def Nu_twisted_Agarwal(Re, Pr, D, H, mu, muW):
 
     return Nu
 
+t
+@refDoc(__doi__, [11])
+def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Kidd correlation (1969).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    L : float, optional
+        Length of heated pipe, [m]
+    T : float
+        Bulk flow temperature, [K]
+    Tw : float
+        Wall flow temperature, [K]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 2e4 or Re > 2e5:
+        raise NotImplementedError("Input out of bound")
+
+    y = H/D
+
+    # Eq 3
+    Nu = 0.024*Re**0.8*Pr**0.4*(T/Tw)**0.7*(1+(L/D)**-0.55)*(y/(y-1))**1.1
+
+    return Nu
 
 
 class TwistedTape():
