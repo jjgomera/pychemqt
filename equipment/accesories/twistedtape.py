@@ -76,7 +76,30 @@ __doi__ = {
         {"autor": "",
          "title": "HTRI Design Manual",
          "ref": "",
-         "doi": ""}
+         "doi": ""},
+    9:
+        {"autor": "Naphon, P.",
+         "title": "Heat transfer and pressure drop in the horizontal double "
+                  "pipes with and without twisted tape insert",
+         "ref": "Int. Comm. Heat Mass Transfer 33 (2006) 166-175",
+         "doi": "10.1016/j.icheatmasstransfer.2005.09.007"},
+    10:
+        {"autor": "Agarwal, S.K., Raja Rao, M.",
+         "title": "Heat transfer augmentation for the flow of a viscous "
+                  "liquid in circular tubes using twisted tape inserts",
+         "ref": "Int. J. Heat Mass Transfer 39(17) (1996) 3547-3557",
+         "doi": ""},
+    11:
+        {"autor": "Kidd, G.J. Jr.",
+         "title": "Heat Transfer and Pressure Drop for Nitrogen Flowing in "
+                  "Tubes Containing Twisted Tapes",
+         "ref": "AIChE J. 15(4) (1969) 581-585.",
+         "doi": "10.1002/aic.690150420"},
+    # 12:
+        # {"autor": "",
+         # "title": "",
+         # "ref": "",
+         # "doi": ""},
         }
 
 
@@ -260,6 +283,59 @@ def f_twisted_Lopina(Re, D, H, Dh):
     f = 3.8/y**0.406*(0.046/Reh**0.2)
     return f
 
+
+@refDoc(__doi__, [9])
+def f_twisted_Naphon(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 9
+    f = 3.517/Re**0.414*(1+D/H)**1.045
+    return f
+
+
+@refDoc(__doi__, [10])
+def f_twisted_Agarwal(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Agarwal and Raja Rao correlation (1996).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    y = H/D
+
+    if Re/y < 9 or Re/y > 1000:
+        raise NotImplementedError("Input out of bound")
+
+    # 29
+    f = 1/Re/y**0.28*((75.74*(Re/y)**0.0216)**10 + (19.48*(Re/y)**0.3481)**10)
+
+    return f
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [2])
@@ -460,7 +536,6 @@ def Nu_twisted_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, DT, HTRI=False):
     if mu > muW:
         # In liquids viscosity decrease with temperature, so cooling processes
         Nc = 0
-
     else:
         # Heating processes
         Nc = 0.193*((2*Reh/y)**2*Dh/D*beta*DT*Pr)**(1/3)
@@ -547,6 +622,110 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
     return Nu
 
 
+@refDoc(__doi__, [9])
+def Nu_twisted_Naphon(Re, Pr, D, H):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 8
+    Nu = 0.648*Re**0.36*Pr**(1/3)*(1+D/H)**2.475
+    return Nu
+
+
+@refDoc(__doi__, [10])
+def Nu_twisted_Agarwal(Re, Pr, D, H, mu, muW):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Agarwal and Raja Rao correlation (1996).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+
+    if Re/y < 9 or Re/y > 1000:
+        raise NotImplementedError("Input out of bound")
+
+    if mu > muW:
+        # In liquids viscosity decrease with temperature, so cooling processes
+        Nu = 1.365*Re**0.517*y**-1.05*Pr**(1/3)*(mu/muW)**0.14          # Eq 31
+    else:
+        # Heating processes
+        Nu = 0.725*Re**0.568*y**-0.788*Pr**(1/3)*(mu/muW)**0.14         # Eq 30
+
+    return Nu
+
+t
+@refDoc(__doi__, [11])
+def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Kidd correlation (1969).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    L : float, optional
+        Length of heated pipe, [m]
+    T : float
+        Bulk flow temperature, [K]
+    Tw : float
+        Wall flow temperature, [K]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 2e4 or Re > 2e5:
+        raise NotImplementedError("Input out of bound")
+
+    y = H/D
+
+    # Eq 3
+    Nu = 0.024*Re**0.8*Pr**0.4*(T/Tw)**0.7*(1+(L/D)**-0.55)*(y/(y-1))**1.1
+
+    return Nu
+
+
 class TwistedTape():
     """Twisted-tape insert used in heat exchanger to improve efficiency.
     This tape, generally a thin metal strip, is twisted about its longitudinal
@@ -556,14 +735,19 @@ class TwistedTape():
         "Manglik-Bergles (1993)",
         "Plassis-Kröger (1984)",
         "Lopina-Bergles (1969)",
-        "Shah-London (1978)")
+        "Shah-London (1978)",
+        "Naphon (2006)",
+        "Agarwal-Rao (1996)")
 
     TEXT_HEAT = (
         "HTRI",
         "Lopina-Bergles (1969)",
         "Manglik-Bergles (1993)",
         "Plessis-Kröger (1987)",
-        "Hong-Bergles (1976)")
+        "Hong-Bergles (1976)",
+        "Naphon (2006)",
+        "Agarwal-Rao (1996)",t
+        "Kidd (1969)")
 
     def __init__(self, H, D, delta):
         """

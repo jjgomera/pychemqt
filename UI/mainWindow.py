@@ -1928,7 +1928,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         """Add text item to PFD of current project"""
         dialog = flujo.TextItemDlg()
         if dialog.exec():
-            txtItem = flujo.TextItem(dialog.editor.texto)
+            txtItem = flujo.TextItem(dialog.editor.text)
             self.currentScene.waitClick(1, "txt", txtItem)
 
     def addItem(self, tipo, check=True):
