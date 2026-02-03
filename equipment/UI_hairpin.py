@@ -32,6 +32,7 @@ from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import PipeCatalogDialog
 from equipment.parents import UI_equip
 from equipment.widget import FoulingWidget, Dialog_Finned
+from equipment.accesories import twistedtape
 from tools.costIndex import CostData
 from tools.qt import QtWidgets
 
@@ -51,9 +52,30 @@ class UI_equipment(UI_equip):
         self.addEntrada(self.tr("Annulli"), "entradaExterior")
 
         # Pipe catalog tab
-        tabCatalogo = QtWidgets.QWidget()
+        tabCatalogo = QtWidgets.QTabWidget()
         self.tabWidget.insertTab(1, tabCatalogo, self.tr("Catalog"))
-        lyt = QtWidgets.QGridLayout(tabCatalogo)
+
+        tabCatalogoMethods = QtWidgets.QWidget()
+        tabCatalogo.addTab(tabCatalogoMethods, self.tr("Correlations"))
+        lyt = QtWidgets.QGridLayout(tabCatalogoMethods)
+        lyt.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer in annuli section")), 1, 1)
+        self.annulliNuMethod = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_METHOD_ANNULI:
+            self.annulliNuMethod.addItem(txt)
+        # "tubesideLaminar": 0,
+        # "tubesideTurbulent": 0,
+        self.annulliNuMethod.currentIndexChanged.connect(
+            partial(self.changeParams, "annulliNuMethod"))
+        lyt.addWidget(self.annulliNuMethod, 1, 2)
+
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 20, 3)
+
+        tabCatalogoGeometry = QtWidgets.QWidget()
+        tabCatalogo.addTab(tabCatalogoGeometry, self.tr("Geometry"))
+        lyt = QtWidgets.QGridLayout(tabCatalogoGeometry)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Tube length")), 4, 1)
         self.LTube = Entrada_con_unidades(Length)
         self.LTube.valueChanged.connect(partial(self.changeParams, "LTube"))
@@ -126,6 +148,9 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 20, 1, 1, 6)
+
+        self.twistedTape = twistedtape.UI_TwistedTape()
+        tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)

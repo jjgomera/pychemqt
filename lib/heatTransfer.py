@@ -294,6 +294,20 @@ def Nu_anulli_Turbulent_Gnielinski(Re, Pr, di, do, L=None, boundary=0, Prw=None)
         External diameter of annuli, [m]
     L : float, optional
         Length of heated pipe, [m]
+    boundary : integer
+        integet to set kind of boundary limit:
+            0 - Inner surface heated
+            1 - Outer surface heated
+            2 - Both surfaces heated
+    Prw : float, optional
+        Prandtl number at wall temperature, [-]
+
+    The normal use on geat transfer is using the fluid in internal pipe as
+    heating/cooling medium so using boundary condition 0
+    Length of pipe is a optional parameters to calculate effect of developing
+    flow at entrance
+    Prw is a optional parameter to calculate efect of variable properties by
+    diameter of pipe.
 
     Returns
     -------

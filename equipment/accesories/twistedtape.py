@@ -88,7 +88,7 @@ __doi__ = {
          "title": "Heat transfer augmentation for the flow of a viscous "
                   "liquid in circular tubes using twisted tape inserts",
          "ref": "Int. J. Heat Mass Transfer 39(17) (1996) 3547-3557",
-         "doi": ""},
+         "doi": "10.1016/0017-9310(96)00039-7"},
     11:
         {"autor": "Kidd, G.J. Jr.",
          "title": "Heat Transfer and Pressure Drop for Nitrogen Flowing in "
@@ -687,7 +687,7 @@ def Nu_twisted_Agarwal(Re, Pr, D, H, mu, muW):
 
     return Nu
 
-t
+
 @refDoc(__doi__, [11])
 def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -746,7 +746,7 @@ class TwistedTape():
         "Plessis-Kröger (1987)",
         "Hong-Bergles (1976)",
         "Naphon (2006)",
-        "Agarwal-Rao (1996)",t
+        "Agarwal-Rao (1996)",
         "Kidd (1969)")
 
     def __init__(self, H, D, delta):

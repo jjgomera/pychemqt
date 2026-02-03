@@ -281,7 +281,7 @@ __doi__ = {
     24:
         {"autor": "Stiel, L.I., Thodos, G.",
          "title": "The Viscosity of Nonpolar Gases at Normal Pressures",
-         "ref": "AIChE J. 7(4) (1961) 611-615",
+         "ref": "AIChE Journal 7(4) (1961) 611-615",
          "doi": "10.1002/aic.690070416"},
     25:
         {"autor": "Misic, D., Thodos, G.",

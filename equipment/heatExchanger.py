@@ -39,7 +39,8 @@ from equipment.parents import equipment
 from lib import unidades
 from lib.adimensional import Re, Pr, Gr, Gz
 from lib.friction import f_friccion
-from lib.heatTransfer import *  # noqa
+import lib.heatTransfer as ht
+# from lib.heatTransfer import *  # noqa
 
 
 class Heat_Exchanger(equipment):
@@ -595,6 +596,7 @@ class Hairpin(equipment):
         "orientacion": 0,
         "tubesideLaminar": 0,
         "tubesideTurbulent": 0,
+        "annulliNuMethod": 0,
         "metodo": 0,
         "phase": 0,
 
@@ -633,7 +635,7 @@ class Hairpin(equipment):
     kwargsValue = ("DeTube", "DiTube", "wTube", "rTube", "kTube", "LTube",
                    "nTube", "tubeFouling", "annulliFouling", "P_dis",
                    "tubeTout", "annulliTout")
-    kwargsList = ("modo", "flujo", "orientacion")
+    kwargsList = ("modo", "flujo", "orientacion", "annulliNuMethod")
     kwargsCheck = ("tubeFinned", )
     calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
                       "deltaPTube", "deltaPAnnulli", "CF")
@@ -654,6 +656,11 @@ class Hairpin(equipment):
         translate("equipment", "Carbon steel/carbon steel"),
         translate("equipment", "Carbon steel/304 stainless"),
         translate("equipment", "Carbon steel/316 stainless")]
+    TEXT_METHOD_ANNULI = [
+        "Gnielinski (2009)",
+        "Dirker-Meyer (2005)",
+        "Stein-Begell (1958)",
+        "Crookston-Rothfus-Kermode (1968)"]
     CODE_FLUJO = ("CF", "PF")
 
     @property
@@ -755,7 +762,6 @@ class Hairpin(equipment):
             self.w = unidades.Length(self.kwargs["wTube"])
             self.De = unidades.Length(self.Di+w*2)
         self.Dee = unidades.Length(self.kwargs["DeeTube"])
-        self.Dei = unidades.Length(self.De+self.w)
         self.rugosidad = unidades.Length(self.kwargs["rTube"])
         self.k = unidades.ThermalConductivity(self.kwargs["kTube"])
         self.fi = unidades.Fouling(self.kwargs["tubeFouling"])
@@ -771,7 +777,7 @@ class Hairpin(equipment):
         dp_tube = self.L*self.VTube**2/self.Di*f*self.rhoTube/2
         self.deltaPTube = unidades.DeltaP(dp_tube)
 
-        f_a = f_friccion(self.ReAnnulli, geometry=6, Di=self.Dei, Do=self.Dee)
+        f_a = f_friccion(self.ReAnnulli, geometry=6, Di=self.De, Do=self.Dee)
         dp_annulli = self.L*self.VAnnulli**2/self.De*f_a*self.rhoAnnulli/2
         self.deltaPAnnulli = unidades.DeltaP(dp_annulli)
 
@@ -813,7 +819,7 @@ class Hairpin(equipment):
             self.Ug(hi, ni, ho, no)
 
             NTU = self.A*self.U/Cmin
-            ep = effectiveness(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
+            ep = ht.effectiveness(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
             self.Q = unidades.Power(ep*Cmin*abs(inTube.T-inAnnulli.T))
 
             if inTube.T > inAnnulli.T:
@@ -1004,32 +1010,32 @@ class Hairpin(equipment):
                 beta = fluido.alfav
                 gr = Gr(beta=beta, T=fluidTube.T, To=fluidTube.T, L=L, mu=mu)
                 if self.kwargs["tubesideLaminar"] == 0:
-                    Nu = h_tubeside_laminar_Eubank_Proctor(
+                    Nu = ht.h_tubeside_laminar_Eubank_Proctor(
                         Pr=pr, Gz=gz, Gr=gr, D=self.Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 1:
-                    Nu = h_tubeside_laminar_VDI(Re=re_i, Pr=pr, D=self.Di, L=L)
+                    Nu = ht.h_tubeside_laminar_VDI(Re=re_i, Pr=pr, D=self.Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 2:
-                    Nu = h_tubeside_laminar_Hausen(Gz=gz)
+                    Nu = ht.h_tubeside_laminar_Hausen(Gz=gz)
                 elif self.kwargs["tubesideLaminar"] == 3:
-                    Nu = h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
+                    Nu = ht.h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
             else:
                 if self.kwargs["tubesideTurbulent"] == 0:
-                    Nu = h_tubeside_turbulent_Sieder_Tate(Re=re_i, Pr=pr)
+                    Nu = ht.h_tubeside_turbulent_Sieder_Tate(Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 1:
-                    Nu = h_tubeside_turbulent_Colburn(Re=re_i, Pr=pr)
+                    Nu = ht.h_tubeside_turbulent_Colburn(Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 2:
                     frio = self.kwargs["entradaCarcasa"].T > fluidTube.T
-                    Nu = h_tubeside_turbulent_Dittus_Boelter(
+                    Nu = ht.h_tubeside_turbulent_Dittus_Boelter(
                         Re=re_i, Pr=pr, calentamiento=frio)
                 elif self.kwargs["tubesideTurbulent"] == 3:
-                    Nu = h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
+                    Nu = ht.h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 4:
-                    Nu = h_tubeside_turbulent_Gnielinski(
+                    Nu = ht.h_tubeside_turbulent_Gnielinski(
                         Re=re_i, Pr=pr, D=self.Di, L=L)
                 elif self.kwargs["tubesideTurbulent"] == 5:
                     line = self.kwargs["distribucionTube"] == 3
                     filas = self.kwargs["NTube"]**0.5
-                    Nu = h_tubeside_turbulent_VDI(
+                    Nu = ht.h_tubeside_turbulent_VDI(
                         Re=re_i, Pr=pr, filas_tubos=filas, alineados=line)
 
         if self.phaseTube == "Condenser":
@@ -1066,14 +1072,10 @@ class Hairpin(equipment):
         self.ReAnnulli = unidades.Dimensionless(re)
         pr = fluidAnnulli.Liquido.Prandt
 
-        if re <= 2300:
-            Nu = h_anulli_Laminar(re, pr, a)
-        elif re >= 1e4:
-            Nu = h_anulli_Turbulent(re, pr, a)
-        else:
-            Nu = h_anulli_Transition(re, pr, a)
+        kw = {"method": self.kwargs["annulliNuMethod"], "L": self.L}
+        Nu = ht.Nu_anulli(re, pr, self.De, self.Dee, **kw)
 
-        return unidades.HeatTransfCoef(Nu*k/self.Di)
+        return unidades.HeatTransfCoef(Nu*k/dh)
 
     def coste(self):
         self.material = self.kwargs["material"]
