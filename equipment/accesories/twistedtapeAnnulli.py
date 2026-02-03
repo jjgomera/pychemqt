@@ -316,24 +316,6 @@ class UI_TwistedTapeAnnuli(ToolGui):
 
         lyt = self.layout()
 
-        # lytH = QtWidgets.QHBoxLayout()
-        # lytH.addWidget(QtWidgets.QLabel(
-        #     self.tr("Friction factor calculation method")))
-        # self.methodFriction = QtWidgets.QComboBox()
-        # for method in TwistedTapeAnnuli.TEXT_FRICTION:
-        #     self.methodFriction.addItem(method)
-        # lytH.addWidget(self.methodFriction)
-        # lyt.addLayout(lytH, 2, 1, 1, 2)
-
-        # lytH = QtWidgets.QHBoxLayout()
-        # lytH.addWidget(QtWidgets.QLabel(
-        #     self.tr("Heat transfer calculation method")))
-        # self.methodHeat = QtWidgets.QComboBox()
-        # for method in TwistedTapeAnnuli.TEXT_HEAT:
-        #     self.methodHeat.addItem(method)
-        # lytH.addWidget(self.methodHeat)
-        # lyt.addLayout(lytH, 3, 1, 1, 2)
-
         label = QtWidgets.QLabel(self.tr("Tape pitch"))
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
         lyt.addWidget(label, 2, 1)
@@ -354,8 +336,6 @@ class UI_TwistedTapeAnnuli(ToolGui):
         self.labelOrientation = QtWidgets.QLabel(self.tr(
             "Direction of flow relative to the tape curvature"))
         lytH.addWidget(self.labelOrientation)
-        # lytH.addWidget(QtWidgets.QLabel(
-        #     self.tr("Direction of flow relative to the tape curvature")))
         self.orientation = QtWidgets.QComboBox()
         for method in TwistedTapeAnnuli.TEXT_ORIENTACION:
             self.orientation.addItem(method)
@@ -363,10 +343,12 @@ class UI_TwistedTapeAnnuli(ToolGui):
         lyt.addLayout(lytH, 7, 1, 1, 2)
 
     def setEnabled(self, boolean):
+        """Add logic to parent setEnabled for orientation option"""
         ToolGui.setEnabled(self, boolean)
         self.setEnableOrientation(boolean and self.angled.isChecked())
 
     def setEnableOrientation(self, boolean):
+        """Change Enable/Disable state for orientation of twisted tape"""
         self.labelOrientation.setEnabled(boolean)
         self.orientation.setEnabled(boolean)
 

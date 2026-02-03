@@ -96,7 +96,14 @@ __doi__ = {
                   "Tubes Containing Twisted Tapes",
          "ref": "AIChE J. 15(4) (1969) 581-585.",
          "doi": "10.1002/aic.690150420"},
-    # 12:
+    12:
+        {"autor": "Sivashanmugam, P., Suresh, S.",
+         "title": "Experimental studies on heat transfer and friction factor "
+                  "characteristics of laminar flow through a circular tube "
+                  "fitted with helical screw-tape inserts",
+         "ref": "App. Thermal Eng. 26(8) (2006) 1990-1997",
+         "doi": "10.1016/j.applthermaleng.2006.01.008"},
+    # 13:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -337,6 +344,36 @@ def f_twisted_Agarwal(Re, D, H):
     f = 1/Re/y**0.28*((75.74*(Re/y)**0.0216)**10 + (19.48*(Re/y)**0.3481)**10)
 
     return f
+
+
+@refDoc(__doi__, [12])
+def f_twisted_Sivashanmugam(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Sivashanmugam-Suresh correlation (2006). Valid in laminar flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+
+    if Re > 2000:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 6
+    f = 10.7564*Re**0.387*(H/D)**-1.054
+
+    return f
+
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [2])
@@ -727,6 +764,34 @@ def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
     return Nu
 
 
+@refDoc(__doi__, [12])
+def Nu_twisted_Sivashanmugam(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Sivashanmugam-Suresh correlation (2006). Valid in laminar flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re > 2000:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 6
+    Nu = 0.017*Re**0.996*(H/D)**-0.5437
+
+    return Nu
+
+
 class TwistedTape():
     """Twisted-tape insert used in heat exchanger to improve efficiency.
     This tape, generally a thin metal strip, is twisted about its longitudinal
@@ -738,7 +803,8 @@ class TwistedTape():
         "Lopina-Bergles (1969)",
         "Shah-London (1978)",
         "Naphon (2006)",
-        "Agarwal-Rao (1996)")
+        "Agarwal-Rao (1996)",
+        "Sivashanmugam-Suresh (2006)")
 
     TEXT_HEAT = (
         "HTRI",
@@ -749,6 +815,8 @@ class TwistedTape():
         "Naphon (2006)",
         "Agarwal-Rao (1996)",
         "Kidd (1969)")
+        "Kidd (1969)",
+        "Sivashanmugam-Suresh (2006)")
 
     def __init__(self, H, D, delta):
         """
