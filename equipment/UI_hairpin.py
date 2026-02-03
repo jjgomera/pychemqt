@@ -32,7 +32,7 @@ from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import PipeCatalogDialog
 from equipment.parents import UI_equip
 from equipment.widget import FoulingWidget, Dialog_Finned
-from equipment.accesories import twistedtape
+from equipment.accesories import twistedtape, twistedtapeAnnulli
 from tools.costIndex import CostData
 from tools.qt import QtWidgets
 
@@ -151,6 +151,9 @@ class UI_equipment(UI_equip):
 
         self.twistedTape = twistedtape.UI_TwistedTape()
         tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
+        self.twistedTapeAnnuli = twistedtapeAnnulli.UI_TwistedTapeAnnuli()
+        tabCatalogo.addTab(self.twistedTapeAnnuli, self.tr(
+            "Annulli Twisted-tape insert"))
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)

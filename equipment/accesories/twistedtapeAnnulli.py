@@ -20,11 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from math import pi, log, cos, atan
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, translate
 
 from lib.unidades import Dimensionless, Area, Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
+from equipment.accesories.gui import ToolGui
 
 
 __doi__ = {
@@ -50,7 +51,7 @@ __doi__ = {
 
 # Friction factor correlations
 @refDoc(__doi__, [1])
-def f_twistedAnnulli_Coetzee(Re, D, H, opposite=0):
+def f_twistedAnnulli_Coetzee(Re, D, H, orientation=0):
     """Calculate friction factor for a annulus section for a double pipe with
     a twisted-tape insert using the Coetzee correlation (2003).
 
@@ -62,7 +63,7 @@ def f_twistedAnnulli_Coetzee(Re, D, H, opposite=0):
         Width of tape, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
-    opposite : boolean
+    orientation : boolean
         Set flow orientation of flow in the annulus with the curvature of tape
           0(along flow), 1(against flow)
 
@@ -73,7 +74,7 @@ def f_twistedAnnulli_Coetzee(Re, D, H, opposite=0):
     """
     y = H/D
 
-    if opposite:
+    if orientation:
         g1 = 0.3618*y**2 - 1.047*y + 0.9186                             # Eq 13
         g2 = -0.0669*y**2 + 0.1656*y - 0.2282                           # Eq 14
 
@@ -144,7 +145,7 @@ def f_twistedAnnulli_Gupte(Re, Do, Di, H):
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [1])
-def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, opposite=0):
+def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, orientation=0):
     """Calculate Nusselt number for a annulus section for a double pipe with
     a twisted-tape insert using the Coetzee correlation (2003).
 
@@ -162,7 +163,7 @@ def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, opposite=0):
         Bulk flow temperature viscosity, [Pa·s]
     muW : float, optional
         Wall flow temperature viscosity, [Pa·s]
-    opposite : boolean
+    orientation: boolean
         Set flow orientation of flow in the annulus with the curvature of tape
           0(along flow), 1(against flow)
 
@@ -173,7 +174,7 @@ def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, opposite=0):
     """
     y = H/D
 
-    if opposite:
+    if orientation:
         f1 = 2.256e-9*y**2 - 10.989e-9*y + 16.03e-9                     # Eq 6
         f2 = -21.04e-6*y**2 + 125.27e-6*y - 211.33e-6                   # Eq 7
         f3 = 0.449*y**2 - 2.329*y + 4.503                               # Eq 8
@@ -189,7 +190,7 @@ def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, opposite=0):
 
 
 @refDoc(__doi__, [2])
-def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, wall):
+def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, boundary=0):
     """Calculate nusselt number for a annulus section for a double pipe with
     a twisted-tape insert using the Gupte correlation (1989).
 
@@ -205,9 +206,9 @@ def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, wall):
         Inner diameter of annulii, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
-    wall : integer
-        0 - outer
-        1 - inner
+    boundary : integer
+        0 - inner
+        1 - outer
 
     Returns
     -------
@@ -231,7 +232,7 @@ def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, wall):
     PF = 9.24*((Pr/0.9)**0.75-1)                                        # Eq 46
     A = 25/Pr*(((1+5*Pr)/Pr) * (log(1+5*Pr)-1) + 1)                     # Eq 33
 
-    if wall == 0:
+    if boundary == 0:
         # Only outer wall heated
         K12 = 5250*Pr**0.731 - (137.5*Pr+A)*ro_                         # Eq 43
 
@@ -256,140 +257,142 @@ def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, wall):
 
 
 
-# class TwistedTape():
-#     """Twisted-tape insert used in heat exchanger to improve efficiency.
-#     This tape, generally a thin metal strip, is twisted about its longitudinal
-#     axis"""
+class TwistedTapeAnnuli():
+    """Twisted-tape insert specially for annulli section of double-pipe
+    section."""
 
-#     TEXT_FRICTION = (
-#         "Manglik-Bergles (1993)",
-#         "Plassis-Kröger (1984)",
-#         "Lopina-Bergles (1969)",
-#         "Shah-London (1978)")
+    TEXT_FRICTION = (
+        "Coetzee (2003)",
+        "Gupte (1989)")
 
-#     TEXT_HEAT = (
-#         "HTRI",
-#         "Lopina-Bergles (1969)",
-#         "Manglik-Bergles (1993)",
-#         "Plessis-Kröger (1987)",
-#         "Hong-Bergles (1976)")
+    TEXT_HEAT = (
+        "Coetzee (2003)",
+        "Gupte (1989)")
 
-#     def __init__(self, H, D, delta):
-#         """
-#         Definition of twisted tape accesory
+    TEXT_ORIENTACION = (
+        translate("equipment", "Along flow"),
+        translate("equipment", "Against flow"))
 
-#         Parameters
-#         ----------
-#         H : float
-#             Tape pitch for twist of π radians (180º), [m]
-#         D : float
-#             Internal diameter of tube, [m]
-#         delta : float
-#             Tape thickness, [m]
-#         """
-#         # Geometrical definition of parameters in [1]_
+    def __init__(self, H, D, delta):
+        """
+        Definition of twisted tape inserts
 
-#         # Helical factor, Eq 2
-#         self.G = Dimensionless((1+pi**2/D**2/4/H**2)**0.5)
+        Parameters
+        ----------
+        H : float
+            Tape pitch for twist of π radians (180º), [m]
+        D : float
+            Internal diameter of tube, [m]
+        delta : float
+            Tape thickness, [m]
+        """
+        # Geometrical definition of parameters in [1]_
 
-#         # Effective cross-sectional flow area, Eq 3
-#         self.Ae = Area(2*H**2/pi*(self.G-1) - D*delta)
+        # Helical factor, Eq 2
+        self.G = Dimensionless((1+pi**2/D**2/4/H**2)**0.5)
 
-#         # Effective wetted perimeter, Eq 4
-#         self.Pe = Length(2 * (D - delta + pi*D/2/self.G))
+        # Effective cross-sectional flow area, Eq 3
+        self.Ae = Area(2*H**2/pi*(self.G-1) - D*delta)
 
-#         # Effective hydraulic diameter, Eq 7
-#         self.De = Length(4*self.Ae/self.Pe)
+        # Effective wetted perimeter, Eq 4
+        self.Pe = Length(2 * (D - delta + pi*D/2/self.G))
 
-#         # Area tube without tape
-#         self.A = pi*D**2/4
+        # Effective hydraulic diameter, Eq 7
+        self.De = Length(4*self.Ae/self.Pe)
 
-#         # Tape twist parameter
-#         self.y = Dimensionless(H/D)
+        # Area tube without tape
+        self.A = pi*D**2/4
+
+        # Tape twist parameter
+        self.y = Dimensionless(H/D)
 
 
-# class UI_TwistedTape(QtWidgets.QWidget):
+class UI_TwistedTapeAnnuli(ToolGui):
+    """Twisted-tape insert dialog"""
 
-#     """Custom widget to define DIPPR equation input"""
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         lyt = QtWidgets.QGridLayout(self)
-#         self.check = QtWidgets.QCheckBox(self.tr("Use twisted tape insert"))
-#         self.check.toggled.connect(self.setEnabled)
-#         lyt.addWidget(self.check, 1, 1)
-#         label = QtWidgets.QLabel(self.tr("Tape pitch"))
-#         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
-#         lyt.addWidget(label, 2, 1)
-#         self.H = Entrada_con_unidades(Length)
-#         lyt.addWidget(self.H, 2, 2)
-#         lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 3, 1)
-#         self.Dt = Entrada_con_unidades(Length)
-#         lyt.addWidget(self.Dt, 3, 2)
-#         lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 4, 1)
-#         self.delta = Entrada_con_unidades(Length, "Thickness")
-#         lyt.addWidget(self.delta, 4, 2)
+    title = translate("equipment", "Use twisted tape insert in annuli section")
 
-#         lytH = QtWidgets.QHBoxLayout()
-#         lytH.addWidget(QtWidgets.QLabel(self.tr("Friction factor calculation method")))
-#         self.delta = Entrada_con_unidades(Length, "Thickness")
-#         self.methodFriction = QtWidgets.QComboBox()
-#         for method in TwistedTape.TEXT_FRICTION:
-#             self.methodFriction.addItem(method)
-#         lytH.addWidget(self.methodFriction)
-#         lyt.addLayout(lytH, 5, 1, 1, 2)
+    def loadUI(self):
 
-#         lytH = QtWidgets.QHBoxLayout()
-#         lytH.addWidget(QtWidgets.QLabel(self.tr("Heat transfer calculation method")))
-#         self.methodHeat = QtWidgets.QComboBox()
-#         for method in TwistedTape.TEXT_HEAT:
-#             self.methodHeat.addItem(method)
-#         lytH.addWidget(self.methodHeat)
-#         lyt.addLayout(lytH, 6, 1, 1, 2)
+        lyt = self.layout()
 
-#         lyt.addItem(QtWidgets.QSpacerItem(
-#             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-#             QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
+        # lytH = QtWidgets.QHBoxLayout()
+        # lytH.addWidget(QtWidgets.QLabel(
+        #     self.tr("Friction factor calculation method")))
+        # self.methodFriction = QtWidgets.QComboBox()
+        # for method in TwistedTapeAnnuli.TEXT_FRICTION:
+        #     self.methodFriction.addItem(method)
+        # lytH.addWidget(self.methodFriction)
+        # lyt.addLayout(lytH, 2, 1, 1, 2)
 
-#         # self.fill()
+        # lytH = QtWidgets.QHBoxLayout()
+        # lytH.addWidget(QtWidgets.QLabel(
+        #     self.tr("Heat transfer calculation method")))
+        # self.methodHeat = QtWidgets.QComboBox()
+        # for method in TwistedTapeAnnuli.TEXT_HEAT:
+        #     self.methodHeat.addItem(method)
+        # lytH.addWidget(self.methodHeat)
+        # lyt.addLayout(lytH, 3, 1, 1, 2)
 
-#     def setEnabled(self, boolean):
-#         """Toggled enable/disable state for all children widget except
-#         checkbox used to change this"""
-#         for wdg in self.children():
-#             if wdg is not self.check:
-#                 wdg.setEnabled(boolean)
+        label = QtWidgets.QLabel(self.tr("Tape pitch"))
+        label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
+        lyt.addWidget(label, 2, 1)
+        self.H = Entrada_con_unidades(Length)
+        lyt.addWidget(self.H, 2, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 3, 1)
+        self.Dt = Entrada_con_unidades(Length)
+        lyt.addWidget(self.Dt, 3, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 4, 1)
+        self.delta = Entrada_con_unidades(Length, "Thickness")
+        lyt.addWidget(self.delta, 4, 2)
 
-#     # def fill(self):
-#     #     self.check.setChecked(True)
-#         # self.check.setChecked(False)
+        self.angled = QtWidgets.QCheckBox(self.tr("Angled twisted-tape"))
+        self.angled.toggled.connect(self.setEnableOrientation)
+        lyt.addWidget(self.angled, 5, 1, 1, 2)
+
+        lytH = QtWidgets.QHBoxLayout()
+        self.labelOrientation = QtWidgets.QLabel(self.tr(
+            "Direction of flow relative to the tape curvature"))
+        lytH.addWidget(self.labelOrientation)
+        # lytH.addWidget(QtWidgets.QLabel(
+        #     self.tr("Direction of flow relative to the tape curvature")))
+        self.orientation = QtWidgets.QComboBox()
+        for method in TwistedTapeAnnuli.TEXT_ORIENTACION:
+            self.orientation.addItem(method)
+        lytH.addWidget(self.orientation)
+        lyt.addLayout(lytH, 7, 1, 1, 2)
+
+    def setEnabled(self, boolean):
+        ToolGui.setEnabled(self, boolean)
+        self.setEnableOrientation(boolean and self.angled.isChecked())
+
+    def setEnableOrientation(self, boolean):
+        self.labelOrientation.setEnabled(boolean)
+        self.orientation.setEnabled(boolean)
 
 
-# class Dialog(QtWidgets.QDialog):
-#     """Component list config dialog"""
-#     def __init__(self, parent=None):
-#         super().__init__(parent)
-#         self.setWindowTitle(self.tr("Twisted-tape insert"))
-#         layout = QtWidgets.QVBoxLayout(self)
-#         self.datos = UI_TwistedTape()
-#         layout.addWidget(self.datos)
-#         self.buttonBox = QtWidgets.QDialogButtonBox(
-#             QtWidgets.QDialogButtonBox.StandardButton.Cancel
-#             | QtWidgets.QDialogButtonBox.StandardButton.Ok)
-#         self.buttonBox.accepted.connect(self.accept)
-#         self.buttonBox.rejected.connect(self.reject)
-#         layout.addWidget(self.buttonBox)
+class Dialog(QtWidgets.QDialog):
+    """Component list config dialog"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle(self.tr("Twisted-tape insert"))
+        layout = QtWidgets.QVBoxLayout(self)
+        self.datos = UI_TwistedTapeAnnuli()
+        layout.addWidget(self.datos)
+        self.buttonBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Cancel
+            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+        layout.addWidget(self.buttonBox)
 
-#     # def value(self, config):
-#     #     """Function to result wizard"""
-#     #     config = self.datos.value(config)
-#     #     return config
 
 
 if __name__ == "__main__":
     import sys
-    # app = QtWidgets.QApplication(sys.argv)
-    # Dialog = Dialog()
-    # Dialog.show()
-    # sys.exit(app.exec())
-    print(f_twistedAnnulli_Gupte(4e4, 1, 0.61, pi*2))
+    app = QtWidgets.QApplication(sys.argv)
+    Dialog = Dialog()
+    Dialog.show()
+    sys.exit(app.exec())
+    # print(f_twistedAnnulli_Gupte(4e4, 1, 0.61, pi*2))
 
