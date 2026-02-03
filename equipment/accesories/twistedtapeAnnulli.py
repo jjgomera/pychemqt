@@ -286,20 +286,6 @@ class TwistedTapeAnnuli():
         delta : float
             Tape thickness, [m]
         """
-        # Geometrical definition of parameters in [1]_
-
-        # Helical factor, Eq 2
-        self.G = Dimensionless((1+pi**2/D**2/4/H**2)**0.5)
-
-        # Effective cross-sectional flow area, Eq 3
-        self.Ae = Area(2*H**2/pi*(self.G-1) - D*delta)
-
-        # Effective wetted perimeter, Eq 4
-        self.Pe = Length(2 * (D - delta + pi*D/2/self.G))
-
-        # Effective hydraulic diameter, Eq 7
-        self.De = Length(4*self.Ae/self.Pe)
-
         # Area tube without tape
         self.A = pi*D**2/4
 
@@ -313,7 +299,7 @@ class UI_TwistedTapeAnnuli(ToolGui):
     title = translate("equipment", "Use twisted tape insert in annuli section")
 
     def loadUI(self):
-
+        """Add widget"""
         lyt = self.layout()
 
         label = QtWidgets.QLabel(self.tr("Tape pitch"))
@@ -369,12 +355,9 @@ class Dialog(QtWidgets.QDialog):
         layout.addWidget(self.buttonBox)
 
 
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     Dialog = Dialog()
     Dialog.show()
     sys.exit(app.exec())
-    # print(f_twistedAnnulli_Gupte(4e4, 1, 0.61, pi*2))
-

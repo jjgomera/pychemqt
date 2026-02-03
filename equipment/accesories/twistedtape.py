@@ -814,7 +814,6 @@ class TwistedTape():
         "Hong-Bergles (1976)",
         "Naphon (2006)",
         "Agarwal-Rao (1996)",
-        "Kidd (1969)")
         "Kidd (1969)",
         "Sivashanmugam-Suresh (2006)")
 
@@ -858,7 +857,7 @@ class UI_TwistedTape(ToolGui):
     title = translate("equipment", "Use twisted tape insert")
 
     def loadUI(self):
-
+        """Add widget"""
         lyt = self.layout()
 
         lytH = QtWidgets.QHBoxLayout()
