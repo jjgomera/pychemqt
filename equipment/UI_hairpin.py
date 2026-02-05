@@ -31,8 +31,8 @@ from UI.widgets import Entrada_con_unidades
 from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import PipeCatalogDialog
 from equipment.parents import UI_equip
-from equipment.widget import FoulingWidget
-from equipment.accesories import twistedtape, twistedtapeAnnulli, finnedPipe
+from equipment.widget.fouling import FoulingWidget
+from equipment.widget import twistedtape, twistedtapeAnnulli, finnedPipe
 from tools.costIndex import CostData
 from tools.qt import QtWidgets
 

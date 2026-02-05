@@ -22,10 +22,10 @@ from math import pi, log, cos, atan
 
 from tools.qt import QtWidgets, translate
 
-from lib.unidades import Dimensionless, Area, Length
+from lib.unidades import Dimensionless, Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
-from equipment.accesories.gui import ToolGui
+from equipment.widget.gui import ToolGui
 
 
 __doi__ = {
@@ -40,18 +40,12 @@ __doi__ = {
          "title": "Friction and Heat Transfer Characteristics of Helical "
                   "Turbulent Air Flow in Annuli",
          "ref": "J. Heat Transfer 111(2) (1989) 337-344",
-         "doi": "10.1115/1.3250682"},
-    # 3:
-    #     {"autor": "",
-    #      "title": "",
-    #      "ref": "",
-    #      "doi": ""},
-        }
+         "doi": "10.1115/1.3250682"}}
 
 
 # Friction factor correlations
 @refDoc(__doi__, [1])
-def f_twistedAnnulli_Coetzee(Re, D, H, orientation=0):
+def f_twistedAnnulli_Coetzee(Re, Di, H, orientation=0):
     """Calculate friction factor for a annulus section for a double pipe with
     a twisted-tape insert using the Coetzee correlation (2003).
 
@@ -59,8 +53,8 @@ def f_twistedAnnulli_Coetzee(Re, D, H, orientation=0):
     ----------
     Re : float
         Reynolds number, [-]
-    D : float
-        Width of tape, [m]
+    Di : float
+        Inner diameter of annuli, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
     orientation : boolean
@@ -72,7 +66,7 @@ def f_twistedAnnulli_Coetzee(Re, D, H, orientation=0):
     f : float
         Friction factor, [-]
     """
-    y = H/D
+    y = H/Di
 
     if orientation:
         g1 = 0.3618*y**2 - 1.047*y + 0.9186                             # Eq 13
@@ -97,9 +91,9 @@ def f_twistedAnnulli_Gupte(Re, Do, Di, H):
     Re : float
         Reynolds number, [-]
     Do : float
-        Outer diameter of annulii, [m]
+        Outer diameter of annuli, [m]
     Di : float
-        Inner diameter of annulii, [m]
+        Inner diameter of annuli, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
 
@@ -145,7 +139,7 @@ def f_twistedAnnulli_Gupte(Re, Do, Di, H):
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [1])
-def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, orientation=0):
+def Nu_twistedAnnulli_Coetzee(Re, Pr, Di, H, mu=1, muW=1, orientation=0):
     """Calculate Nusselt number for a annulus section for a double pipe with
     a twisted-tape insert using the Coetzee correlation (2003).
 
@@ -155,8 +149,8 @@ def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, orientation=0):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    D : float
-        Width of tape, [m]
+    Di : float
+        Inner diameter of annuli, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
     mu : float, optional
@@ -172,7 +166,7 @@ def Nu_twistedAnnulli_Coetzee(Re, Pr, D, H, mu=1, muW=1, orientation=0):
     Nu : float
         Nusselt number, [-]
     """
-    y = H/D
+    y = H/Di
 
     if orientation:
         f1 = 2.256e-9*y**2 - 10.989e-9*y + 16.03e-9                     # Eq 6
@@ -201,9 +195,9 @@ def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, boundary=0):
     Pr : float
         Prandtl number, [-]
     Do : float
-        Outer diameter of annulii, [m]
+        Outer diameter of annuli, [m]
     Di : float
-        Inner diameter of annulii, [m]
+        Inner diameter of annuli, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
     boundary : integer
@@ -232,7 +226,7 @@ def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, boundary=0):
     PF = 9.24*((Pr/0.9)**0.75-1)                                        # Eq 46
     A = 25/Pr*(((1+5*Pr)/Pr) * (log(1+5*Pr)-1) + 1)                     # Eq 33
 
-    if boundary == 0:
+    if boundary == 1:
         # Only outer wall heated
         K12 = 5250*Pr**0.731 - (137.5*Pr+A)*ro_                         # Eq 43
 
@@ -256,24 +250,15 @@ def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, boundary=0):
     return Nu*Re*Pr
 
 
-
 class TwistedTapeAnnuli():
     """Twisted-tape insert specially for annulli section of double-pipe
     section."""
-
-    TEXT_FRICTION = (
-        "Coetzee (2003)",
-        "Gupte (1989)")
-
-    TEXT_HEAT = (
-        "Coetzee (2003)",
-        "Gupte (1989)")
 
     TEXT_ORIENTACION = (
         translate("equipment", "Along flow"),
         translate("equipment", "Against flow"))
 
-    def __init__(self, H, D, delta):
+    def __init__(self, H, Di, Do, angled=False, orientation=0):
         """
         Definition of twisted tape inserts
 
@@ -281,38 +266,67 @@ class TwistedTapeAnnuli():
         ----------
         H : float
             Tape pitch for twist of π radians (180º), [m]
-        D : float
-            Internal diameter of tube, [m]
-        delta : float
-            Tape thickness, [m]
+        Do : float
+            Outer diameter of annuli, [m]
+        Di : float
+            Inner diameter of annuli, [m]
+        angled : boolean
+            Set if twisted-tape is angled
+        orientation: boolean
+             Set flow orientation of flow in the annulus with the curvature of tape
+             0(along flow), 1(against flow)
         """
-        # Area tube without tape
-        self.A = pi*D**2/4
+        self.H = H
+        self.Di = Di
+        self.Do = Do
+        self.angled = angled
+        self.orientation = orientation
 
-        # Tape twist parameter
-        self.y = Dimensionless(H/D)
+    def Nu(self, Re, Pr, mu, muW, boundary):
+        """Calculate nusselt number"""
+        if self.angled and self.orientation:
+            Nu = Nu_twistedAnnulli_Coetzee(
+                Re, Pr, self.Di, self.H, mu, muW, self.orientation)
+        else:
+            Nu = Nu_twistedAnnulli_Gupte(Re, Pr, self.Do, self.Di, self.H, boundary)
+
+        return Nu
+
+    def f(self, Re, Pr, mu, muW, boundary):
+        """Calculate friction factor"""
+        if self.angled and self.orientation:
+            f = f_twistedAnnulli_Coetzee(Re, self.Di, self.H, self.orientation)
+        else:
+            f = f_twistedAnnulli_Gupte(Re, self.Do, self.Di, self.H)
+
+        return f
 
 
 class UI_TwistedTapeAnnuli(ToolGui):
     """Twisted-tape insert dialog"""
 
     title = translate("equipment", "Use twisted tape insert in annuli section")
+    Entity = TwistedTapeAnnuli
 
     def loadUI(self):
         """Add widget"""
         lyt = self.layout()
 
-        label = QtWidgets.QLabel(self.tr("Tape pitch"))
+        label = QtWidgets.QLabel(self.tr("Tape pitch, H"))
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
         lyt.addWidget(label, 2, 1)
         self.H = Entrada_con_unidades(Length)
         lyt.addWidget(self.H, 2, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 3, 1)
-        self.Dt = Entrada_con_unidades(Length)
-        lyt.addWidget(self.Dt, 3, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 4, 1)
-        self.delta = Entrada_con_unidades(Length, "Thickness")
-        lyt.addWidget(self.delta, 4, 2)
+        label = QtWidgets.QLabel("Di")
+        label.setToolTip(self.tr("Internal diameter of annuli section"))
+        lyt.addWidget(label, 3, 1)
+        self.Di = Entrada_con_unidades(Length, "PipeDiameter")
+        lyt.addWidget(self.Di, 3, 2)
+        label = QtWidgets.QLabel("Do")
+        label.setToolTip(self.tr("External diameter of annuli section"))
+        lyt.addWidget(label, 4, 1)
+        self.Do = Entrada_con_unidades(Length, "PipeDiameter")
+        lyt.addWidget(self.Do, 4, 2)
 
         self.angled = QtWidgets.QCheckBox(self.tr("Angled twisted-tape"))
         self.angled.toggled.connect(self.setEnableOrientation)

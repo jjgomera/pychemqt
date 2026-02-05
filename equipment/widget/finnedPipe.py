@@ -18,14 +18,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from math import pi
-
 from tools.qt import QtWidgets, translate
 
-from lib.unidades import Dimensionless, Length, ThermalConductivity
+from lib.unidades import Length, ThermalConductivity
 from lib.pipeDatabase import finnedTube_database
 from UI.widgets import Entrada_con_unidades
-from equipment.accesories.gui import ToolGui
+from equipment.widget.gui import ToolGui
 
 
 __doi__ = {
@@ -34,29 +32,7 @@ __doi__ = {
     #      "title": "",
     #      "ref": "",
     #      "doi": ""},
-        }
-
-class FinnedPipe():
-    """Finned pipe"""
-
-    def __init__(self, H, D, delta):
-        """
-        Definition of twisted tape inserts
-
-        Parameters
-        ----------
-        H : float
-            Tape pitch for twist of π radians (180º), [m]
-        D : float
-            Internal diameter of tube, [m]
-        delta : float
-            Tape thickness, [m]
-        """
-        # Area tube without tape
-        self.A = pi*D**2/4
-
-        # Tape twist parameter
-        self.y = Dimensionless(H/D)
+    }
 
 
 class UI_FinnedPipe(ToolGui):

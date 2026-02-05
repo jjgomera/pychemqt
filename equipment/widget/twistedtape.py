@@ -25,7 +25,7 @@ from tools.qt import QtWidgets, translate
 from lib.unidades import Dimensionless, Area, Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
-from equipment.accesories.gui import ToolGui
+from equipment.widget.gui import ToolGui
 
 
 __doi__ = {
@@ -101,7 +101,7 @@ __doi__ = {
          "title": "Experimental studies on heat transfer and friction factor "
                   "characteristics of laminar flow through a circular tube "
                   "fitted with helical screw-tape inserts",
-         "ref": "App. Thermal Eng. 26(8) (2006) 1990-1997",
+         "ref": "App. Thermal Eng. 26(16) (2006) 1990-1997",
          "doi": "10.1016/j.applthermaleng.2006.01.008"},
     # 13:
         # {"autor": "",
@@ -884,7 +884,7 @@ class UI_TwistedTape(ToolGui):
         self.H = Entrada_con_unidades(Length)
         lyt.addWidget(self.H, 4, 2)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 5, 1)
-        self.Dt = Entrada_con_unidades(Length)
+        self.Dt = Entrada_con_unidades(Length, "PipeDiameter")
         lyt.addWidget(self.Dt, 5, 2)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 6, 1)
         self.delta = Entrada_con_unidades(Length, "Thickness")

@@ -28,10 +28,10 @@ from functools import partial
 from tools.qt import QtWidgets
 
 from lib.unidades import Length, ThermalConductivity, Pressure, Currency
-from equipment.accesories import twistedtape, finnedPipe
+from equipment.widget import twistedtape, finnedPipe
 from equipment.parents import UI_equip
 from equipment.shellTube import Shell_Tube
-from equipment.widget import FoulingWidget
+from equipment.widget.fouling import FoulingWidget
 from equipment.UI_pipe import PipeCatalogDialog
 from tools.costIndex import CostData
 from UI.widgets import Entrada_con_unidades
