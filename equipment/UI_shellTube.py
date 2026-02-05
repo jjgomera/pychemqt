@@ -18,23 +18,23 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-
 ###############################################################################
 # Shell and tube heat exchanger equipment dialog
 ###############################################################################
+
 
 from functools import partial
 
 from tools.qt import QtWidgets
 
-
 from lib.unidades import Length, ThermalConductivity, Pressure, Currency
-from UI.widgets import Entrada_con_unidades
+from equipment.accesories import twistedtape, finnedPipe
 from equipment.parents import UI_equip
-from equipment.widget import FoulingWidget, Dialog_Finned
-from equipment.UI_pipe import PipeCatalogDialog
 from equipment.shellTube import Shell_Tube
+from equipment.widget import FoulingWidget
+from equipment.UI_pipe import PipeCatalogDialog
 from tools.costIndex import CostData
+from UI.widgets import Entrada_con_unidades
 
 
 class Dialog_Methods(QtWidgets.QDialog):
@@ -154,8 +154,10 @@ class UI_equipment(UI_equip):
             QtWidgets.QSizePolicy.Policy.Expanding), 10, 1, 1, 6)
 
         # Tubes tab
+        tabCatalogo = QtWidgets.QTabWidget()
+        self.tabWidget.insertTab(2, tabCatalogo, self.tr("Catalog"))
         tab = QtWidgets.QWidget()
-        self.tabWidget.insertTab(2, tab, self.tr("Tubes"))
+        tabCatalogo.addTab(tab, self.tr("Tubes"))
         lyt = QtWidgets.QGridLayout(tab)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Number of tubes")), 1, 1)
         self.NTubes = Entrada_con_unidades(int, width=60, spinbox=True, step=1)
@@ -204,16 +206,7 @@ class UI_equipment(UI_equip):
         self.pitch = Entrada_con_unidades(Length)
         self.pitch.valueChanged.connect(partial(self.changeParams, "pitch"))
         lyt.addWidget(self.pitch, 10, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Fin Tube")), 11, 1)
-        self.buttonFin = QtWidgets.QPushButton(self.tr("Finned Pipe Database"))
-        self.buttonFin.setEnabled(False)
-        self.buttonFin.clicked.connect(self.showFinTube)
-        lyt.addWidget(self.buttonFin, 11, 4, 1, 1)
-        self.finned = QtWidgets.QComboBox()
-        self.finned.addItem(self.tr("Bared tube"))
-        self.finned.addItem(self.tr("Finned tube"))
-        self.finned.currentIndexChanged.connect(self.finnedChanged)
-        lyt.addWidget(self.finned, 11, 2)
+
         lyt.addWidget(QtWidgets.QLabel(self.tr("Fouling")), 12, 1)
         self.tubeFouling = FoulingWidget()
         self.tubeFouling.valueChanged.connect(
@@ -222,6 +215,11 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 15, 1, 1, 6)
+
+        self.finnedPipe = finnedPipe.UI_FinnedPipe()
+        tabCatalogo.addTab(self.finnedPipe, self.tr("Finned pipe"))
+        self.twistedTape = twistedtape.UI_TwistedTape()
+        tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
 
         # Shell tab
         tab = QtWidgets.QWidget()
@@ -469,15 +467,6 @@ class UI_equipment(UI_equip):
             widget.setValue(Fouling_Factor_Shell_Tube_Exchanger[str(txt)])
         else:
             widget.setReadOnly(False)
-
-    def finnedChanged(self, ind):
-        self.buttonFin.setEnabled(ind)
-        self.changeParams("finned", ind)
-
-    def showFinTube(self):
-        dialogo = Dialog_Finned()
-        if dialogo.exec():
-            pass
 
     def rellenar(self):
         pass

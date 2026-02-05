@@ -554,7 +554,7 @@ class Hairpin(equipment):
         tubeFouling: Fouling at tubeside
         annulliFouling: Fouling at annulliside
 
-        tubeFinned: Boolean to use finned tube
+        finnedPipe: Boolean to use finned tube
         hFin: Finned height
         thicknessBaseFin: Thickness of the bottom of fin
         thicknessTopFin: Thickness of the top of fin
@@ -612,7 +612,7 @@ class Hairpin(equipment):
         "tubeFouling": 0.0,
         "annulliFouling": 0.0,
 
-        "tubeFinned": 0,
+        "finnedPipe": 0,
         "hFin": 0.0,
         "thicknessBaseFin": 0.0,
         "thicknessTopFin": 0.0,
@@ -636,7 +636,7 @@ class Hairpin(equipment):
                    "nTube", "tubeFouling", "annulliFouling", "P_dis",
                    "tubeTout", "annulliTout")
     kwargsList = ("modo", "flujo", "orientacion", "annulliNuMethod")
-    kwargsCheck = ("tubeFinned", )
+    kwargsCheck = ("finnedPipe", )
     calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
                       "deltaPTube", "deltaPAnnulli", "CF")
     calculateCostos = ("C_adq", "C_inst")
@@ -707,7 +707,7 @@ class Hairpin(equipment):
 
         self.statusFinned = 0
         self.tubefinned = translate("equipment", "Bare Tube")
-        if self.kwargs["tubeFinned"]:
+        if self.kwargs["finnedPipe"]:
             self.tubefinned = translate("equipment", "Finned Tube")
             if self.kwargs["hFin"] and (self.kwargs["thicknessBaseFin"] or
                                         self.kwargs["thicknessTopFin"]):
@@ -956,7 +956,7 @@ class Hairpin(equipment):
         self.rootDoFin = unidades.Length(self.kwargs["rootDoFin"])
         self.kFin = unidades.ThermalConductivity(self.kwargs["kFin"])
         self.nFin = unidades.Dimensionless(self.kwargs["nFin"])
-        if self.kwargs["tubeFinned"]:
+        if self.kwargs["finnedPipe"]:
             if self.statusFinned:
                 # For now only use circular fin
                 do = self.kwargs["rootDoFin"]
@@ -1108,8 +1108,8 @@ class Hairpin(equipment):
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(11))
 
-        if self.kwargs["tubeFinned"]:
-            txt += "\t" + self.propertiesToText(range(11, 17))
+        # if self.kwargs["finnedPipe"]:
+        #     txt += "\t" + self.propertiesToText(range(11, 17))
 
         txt += os.linesep + "#---------------"
         txt += translate("equipment", "Calculate properties")

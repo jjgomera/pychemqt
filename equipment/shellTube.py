@@ -57,7 +57,7 @@ def h_shellside_turbulent_Bell_Delaware(**kw):
         Ptef = kw["pitch"]
 
     if kw["distribucionTube"] < 3:
-        tita_tp = unidades.Angle([30, 45, 60][kw["distribucionTube"]], "deg")
+        tita_tp = unidades.Angle([30, 45, 60, 90][kw["distribucionTube"]], "deg")
         Pt_ = kw["pitch"]*cos(tita_tp)
     else:
         Pt_ = kw["pitch"]
@@ -189,7 +189,7 @@ def jFactor(Re, PtD, tubeConf):
         if Re < 10:
             a1, a2 = 1.55, -0.667
         elif Re < 100:
-            a1, a2 = 0.498, -0.656
+            a1, a2 = 1.498, -0.656
         elif Re < 1000:
             a1, a2 = 0.73, -0.500
         else:
@@ -233,8 +233,8 @@ def fFactor(Re, PtD, tubeConf):
         Reynolds number
     PtD : float
         Ratio between tube pitch and tube OD
-    tubeConf : str
-        Code with tube bundle configuration, square|triangular|rotSquare
+    tubeConf : integer
+        integer with index of tube bundle configuration, 30, 45, 60, 90
 
     Return
     ------
@@ -943,13 +943,14 @@ if __name__ == "__main__":
     from matplotlib import pyplot
     Re = logspace(0, 5, 10000)
     print(Re)
-    PtD = (1.25, 1.33, 1.5)
+    PtD = (1.25, 1.33, 1.5, 1.75)
     for p in PtD:
-        ji = [jFactor(Rei, p, "rotSquare") for Rei in Re]
+        ji = [jFactor(Rei, p, "") for Rei in Re]
         pyplot.plot(Re, ji)
-        fi = [fFactor(Rei, p, "rotSquare") for Rei in Re]
+        fi = [fFactor(Rei, p, "") for Rei in Re]
         pyplot.plot(Re, fi)
     pyplot.xscale("log")
     pyplot.yscale("log")
+    pyplot.ylim(1e-2, 10)
     pyplot.show()
 

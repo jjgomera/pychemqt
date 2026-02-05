@@ -31,8 +31,8 @@ from UI.widgets import Entrada_con_unidades
 from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import PipeCatalogDialog
 from equipment.parents import UI_equip
-from equipment.widget import FoulingWidget, Dialog_Finned
-from equipment.accesories import twistedtape, twistedtapeAnnulli
+from equipment.widget import FoulingWidget
+from equipment.accesories import twistedtape, twistedtapeAnnulli, finnedPipe
 from tools.costIndex import CostData
 from tools.qt import QtWidgets
 
@@ -125,16 +125,6 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 14, 1)
-        self.tubeFinned = QtWidgets.QCheckBox(self.tr("Finned Tube"))
-        lyt.addWidget(self.tubeFinned, 15, 1, 1, 4)
-        self.buttonFin = QtWidgets.QPushButton(
-            self.tr("Finned Pipe Database"))
-        self.buttonFin.setEnabled(False)
-        self.buttonFin.clicked.connect(self.showFinTube)
-        lyt.addWidget(self.buttonFin, 15, 3)
-        self.tubeFinned.toggled.connect(
-            partial(self.changeParams, "tubeFinned"))
-        self.tubeFinned.toggled.connect(self.buttonFin.setEnabled)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Inside Fouling")), 16, 1)
         self.tubeFouling = FoulingWidget()
         self.tubeFouling.valueChanged.connect(
@@ -149,6 +139,8 @@ class UI_equipment(UI_equip):
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 20, 1, 1, 6)
 
+        self.finnedPipe = finnedPipe.UI_FinnedPipe()
+        tabCatalogo.addTab(self.finnedPipe, self.tr("Finned pipe"))
         self.twistedTape = twistedtape.UI_TwistedTape()
         tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
         self.twistedTapeAnnuli = twistedtapeAnnulli.UI_TwistedTapeAnnuli()
@@ -310,12 +302,6 @@ class UI_equipment(UI_equip):
                 self.DiTube.setValue(material[4])
                 self.wTube.setValue(material[5])
                 self.DeTube.setValue(material[6])
-
-    def showFinTube(self):
-        dialogo = Dialog_Finned(self.Equipment.kwargs)
-        if dialogo.exec():
-            kwarg = dialogo.kwarg()
-            self.calculo(**kwarg)
 
 
 if __name__ == "__main__":

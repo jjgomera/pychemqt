@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 # Library for equipment common widget
 #   * FoulingWidget: pipe fouling input data
-#   * Dialog_Finned: Finned tube definition
 ###############################################################################
 
 
@@ -256,98 +255,9 @@ class FoulingWidget(QtWidgets.QWidget):
             self.value.setReadOnly(False)
 
 
-class Dialog_Finned(QtWidgets.QDialog):
-    """Dialog to define finned tube properties"""
-    def __init__(self, kwarg=None, parent=None):
-        super().__init__(parent=parent)
-        self.setWindowTitle(self.tr("Specify tube finned characteristics"))
-        layout = QtWidgets.QGridLayout(self)
-        self.listTube = QtWidgets.QComboBox()
-        self.listTube.addItem("")
-        layout.addWidget(self.listTube, 0, 1, 1, 2)
-
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
-            QtWidgets.QSizePolicy.Policy.Fixed), 1, 1, 1, 2)
-        layout.addWidget(QtWidgets.QLabel(self.tr("Material")), 2, 1)
-        self.listMaterial = QtWidgets.QComboBox()
-        self.listMaterial.addItem("")
-        self.listMaterial.addItem(self.tr("Carbon Steel"))
-        layout.addWidget(self.listMaterial, 2, 2)
-        layout.addWidget(QtWidgets.QLabel(
-            self.tr("Thermal Conductivity")), 3, 1)
-        self.kFin = Entrada_con_unidades(ThermalConductivity)
-        layout.addWidget(self.kFin, 3, 2)
-        layout.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
-            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
-
-        layout.addWidget(QtWidgets.QLabel(self.tr("Root diameter")), 5, 1)
-        self.RootD = Entrada_con_unidades(Length, "PipeDiameter")
-        layout.addWidget(self.RootD, 5, 2)
-        layout.addWidget(QtWidgets.QLabel(self.tr("Fin Height")), 6, 1)
-        self.hFin = Entrada_con_unidades(Length, "Thickness")
-        layout.addWidget(self.hFin, 6, 2)
-        layout.addWidget(QtWidgets.QLabel(self.tr("Base Fin Thickness")), 7, 1)
-        self.BaseThickness = Entrada_con_unidades(Length, "Thickness")
-        layout.addWidget(self.BaseThickness, 7, 2)
-        layout.addWidget(QtWidgets.QLabel(self.tr("Top Fin Thickness")), 8, 1)
-        self.TopThickness = Entrada_con_unidades(Length, "Thickness")
-        layout.addWidget(self.TopThickness, 8, 2)
-        layout.addWidget(QtWidgets.QLabel(self.tr("Number of fins")), 9, 1)
-        self.Nfin = Entrada_con_unidades(float, textounidad="fins/m")
-        layout.addWidget(self.Nfin, 9, 2)
-
-        self.buttonBox = QtWidgets.QDialogButtonBox(
-            QtWidgets.QDialogButtonBox.StandardButton.Cancel
-            | QtWidgets.QDialogButtonBox.StandardButton.Ok)
-        self.buttonBox.accepted.connect(self.accept)
-        self.buttonBox.rejected.connect(self.reject)
-        layout.addWidget(self.buttonBox, 10, 1, 1, 2)
-
-        for tuberia in finnedTube_database:
-            self.listTube.addItem("%s %s" % (tuberia[0], tuberia[1]))
-        self.listTube.currentIndexChanged.connect(self.rellenarData)
-        self.listTube.currentIndexChanged.connect(self.setDisabled)
-
-        if kwarg:
-            self.hFin.setValue(kwarg["hFin"])
-            self.BaseThickness.setValue(kwarg["thicknessBaseFin"])
-            self.TopThickness.setValue(kwarg["thicknessTopFin"])
-            self.kFin.setValue(kwarg["kFin"])
-            self.Nfin.setValue(kwarg["nFin"])
-            self.RootD.setValue(kwarg["rootDoFin"])
-
-    def rellenarData(self, ind):
-        tuberia = finnedTube_database[ind-1]
-        if tuberia[0] == "HPT":
-            self.Nfin.setValue(int(tuberia[1][:2]))
-            self.BaseThickness.setValue(tuberia[12]/1000.)
-            self.TopThickness.setValue(tuberia[12]/1000.)
-            self.RootD.setValue(tuberia[6]/1000.)
-            self.hFin.setValue(tuberia[13]/1000.)
-
-    def setDisabled(self, bool):
-        self.RootD.setReadOnly(bool)
-        self.BaseThickness.setReadOnly(bool)
-        self.TopThickness.setReadOnly(bool)
-        self.Nfin.setReadOnly(bool)
-        self.hFin.setReadOnly(bool)
-
-    def kwarg(self):
-        kwarg = {"hFin": self.hFin.value,
-                 "thicknessBaseFin": self.BaseThickness.value,
-                 "thicknessTopFin": self.TopThickness.value,
-                 "kFin": self.kFin.value,
-                 "nFin": self.Nfin.value,
-                 "rootDoFin": self.RootD.value}
-        return kwarg
-
-
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
-    dialogo = Dialog_Finned()
-    # dialogo = FoulingWidget()
+    dialogo = FoulingWidget()
     dialogo.show()
     sys.exit(app.exec())
