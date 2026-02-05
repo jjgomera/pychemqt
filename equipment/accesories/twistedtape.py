@@ -102,7 +102,13 @@ __doi__ = {
                   "fitted with helical screw-tape inserts",
          "ref": "App. Thermal Eng. 26(8) (2006) 1990-1997",
          "doi": "10.1016/j.applthermaleng.2006.01.008"},
-    # 13:
+    13:
+        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
+         "title": "Heat Transfer and Friction Factor Studies in a Circular "
+                  "Tube Fitted with Twisted Tape Consisting of Wire-nails",
+         "ref": "Chin. J. Chem. Eng. 18(6) (2010) 1038-1042",
+         "doi": "10.1016/S1004-9541(09)60166-X"},
+    # 14:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -370,6 +376,41 @@ def f_twisted_Sivashanmugam(Re, D, H):
 
     # Eq 6
     f = 10.7564*Re**0.387*(H/D)**-1.054
+
+    return f
+
+
+@refDoc(__doi__, [13])
+def f_twisted_Murugesan(Re, D, H, nails=0):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    nails : boolean
+        Use the correlation for special twisted tape with wire nails
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+
+    if Re < 2000:
+        raise NotImplementedError("Input out of bound")
+
+    if nails:
+        # Eq 6
+        f = 28.91*Re**-0.731*(H/D)**-0.255
+    else:
+        # Eq 4
+        f = 2.642*Re**-0.474*(H/D)**-0.302
 
     return f
 
@@ -764,7 +805,7 @@ def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
 
 
 @refDoc(__doi__, [12])
-def Nu_twisted_Sivashanmugam(Re, D, H):
+def Nu_twisted_Sivashanmugam(Re, Pr, D, H):
     """Calculate friction factor for a pipe with a twisted-tape insert using
     the Sivashanmugam-Suresh correlation (2006). Valid in laminar flow
 
@@ -772,6 +813,8 @@ def Nu_twisted_Sivashanmugam(Re, D, H):
     ----------
     Re : float
         Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
     D : float
         Internal diameter of tube, [m]
     H : float
@@ -786,7 +829,44 @@ def Nu_twisted_Sivashanmugam(Re, D, H):
         raise NotImplementedError("Input out of bound")
 
     # Eq 6
-    Nu = 0.017*Re**0.996*(H/D)**-0.5437
+    Nu = 0.017*Re**0.996*Pr*(H/D)**-0.5437
+
+    return Nu
+
+
+@refDoc(__doi__, [13])
+def Nu_twisted_Murugesan(Re, Pr, D, H, nails=0):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    nails : boolean
+        Use the correlation for special twisted tape with wire nails
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    if Re < 2000:
+        raise NotImplementedError("Input out of bound")
+
+    if nails:
+        # Eq 5
+        Nu = 0.063*Re**-0.789*Pr**0.33*(H/D)**-0.257
+    else:
+        # Eq 4
+        Nu = 0.027*Re**0.862*Pr**0.33*(H/D)**-0.215
 
     return Nu
 
