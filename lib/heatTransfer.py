@@ -65,10 +65,38 @@ __doi__ = {
          "ref": "Ind. & Eng. Chemistry 28(12) (1936) 1929-1935",
          "doi": "10.1021/ie50324a027"},
     7:
-        {"autor": "",
-         "title": "",
-         "ref": "",
-         "doi": ""},
+        {"autor": "Gnielinski, V.",
+         "title": "Heat Transfer Coeffients for Turbulent Flow in Concentric"
+                  "Annular Ducts",
+         "ref": "Heat Transfer Eng. 30(6) (2009) 431-436",
+         "doi": "10.1080/01457630802528661"},
+    8:
+        {"autor": "Stephan, K.",
+         "title": "Wärmeübergang bei turbulenter und bei laminarer Strömung "
+                  "in Ringspalten",
+         "ref": "Chem. Ing. Techn. 34(3) (1962) 207-212",
+         "doi": "10.1002/cite.330340313"},
+    9:
+        {"autor": "Dirker, J., Meyer, J.P.",
+         "title": "Convective Heat Transfer Coefficients in Concentric Annuli",
+         "ref": "Heat Transfer Eng. 26(2) (2005) 38-44",
+         "doi": "10.1080/01457630590897097"},
+    10:
+        {"autor": "Stein, R.P., Begell, W.",
+         "title": "Heat Transfer to Water in Turbulent Flow in Internally "
+                  "Heated Annuli",
+         "ref": "AIChE Journal 4(2) (1958) 127-131",
+         "doi": "10.1002/aic.690040203"},
+    11:
+        {"autor": "Crookston, R.B., Rothfus, R.R., Kermode, R.I.",
+         "title": "Turbulent Heat Transfer in Annuli with Small Cores",
+         "ref": "Int. J. Heat Mass Transfer 11(3) (1968) 415-426",
+         "doi": "10.1016/0017-9310(68)90086-0"},
+    # 12:
+    #     {"autor": "",
+    #      "title": "",
+    #      "ref": "",
+    #      "doi": ""},
 
 }
 
@@ -249,59 +277,257 @@ def h_tubeside_turbulent_VDI(Re, Pr, filas_tubos, alineados):
 
 
 # Double pipe
-def h_anulli_Laminar(Re, Pr, a, dhL=0, boundary=0):
-    """VDI Heat Atlas G2 Pag.702"""
-    if boundary == 0:         #Inner surface heated
-        Nu1 = 3.66+1.2*a**-0.8
-        fg = 1.615*(1+0.14*a**-0.5)
-    elif boundary == 1:       #Outer surface heated
-        Nu1 = 3.66+1.2*a**0.5
-        fg = 1.615*(1+0.14*a**(1./3))
-    elif boundary == 2:       #Both surfaces heated
-        Nu1 = 3.66+(4-0.102/(a+0.02))*a**0.04
-        fg = 1.615*(1+0.14*a**0.1)
-    else:
-        fg = 0
+@refDoc(__doi__, [7, 8, 1])
+def Nu_anulli_Turbulent_Gnielinski(Re, Pr, di, do, L=None, boundary=0, Prw=None):
+    """Calculate Nusselt number for a annuli section in turbulent flow using
+    the Gnielinski correlation (2009).
 
-    Nu2 = fg*(Re*Pr*dhL)**(1./3)
-    Nu3 = (2/(1+22*Pr))**(1./6)*(Re*Pr*dhL)**0.5
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Internal diameter of annuli, [m]
+    do : float
+        External diameter of annuli, [m]
+    L : float, optional
+        Length of heated pipe, [m]
+    boundary : integer
+        integet to set kind of boundary limit:
+            0 - Inner surface heated
+            1 - Outer surface heated
+            2 - Both surfaces heated
+    Prw : float, optional
+        Prandtl number at wall temperature, [-]
 
-    return (Nu1**3+Nu2**3+Nu3**3)**(1./3.)
+    The normal use on geat transfer is using the fluid in internal pipe as
+    heating/cooling medium so using boundary condition 0
+    Length of pipe is a optional parameters to calculate effect of developing
+    flow at entrance
+    Prw is a optional parameter to calculate efect of variable properties by
+    diameter of pipe.
 
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
 
-def h_anulli_Turbulent(Re, Pr, a, dhL=0, boundary=0):
-    """VDI Heat Atlas G2 Pag.703"""
+    Examples
+    --------
+    G2-7 from VDI Heat Atlas Pag 705
+
+    >>> print("%0.2f" % Nu_anulli_Turbulent_Gnielinski(
+    ... 23041, 15.88, 0.02, 0.04, 10, 0, 8.66))
+    227.02
+
+    # 239.20
+
+    >>> print("%0.2f" % (Nu_anulli_Turbulent_Gnielinski(
+    ... 10000, 15.88, 0.02, 0.04, 13, 0, 8.66)))
+    111.82
+
+    # 108.78
+    """
+
+    a = di/do
+    Dh = do-di
+
     if boundary == 0:
         # Inner surface heated
-        Fann = 0.75*a**-0.17                                            # Eq 18
+        Fann = 0.75*a**-0.17                                            # Eq 23
     elif boundary == 1:
         # Outer surface heated
-        Fann = 0.9-0.15*a**0.6                                          # Eq 19
-    elif boundary == 2:
+        Fann = 0.9-0.15*a**0.6                                          # Eq 25
+    else:
         # Both surfaces heated
-        Fann = (0.75*a**-0.17+(0.9-0.15*a**0.6))/(1+a)                  # Eq 20
+        # Eq 8 from Stephan [8]_
+        Fann = (0.75*a**-0.17+(0.9-0.15*a**0.6))/(1+a)
 
-    Re_ = Re*((1+a**2)*log(a)+(1-a**2))/((1-a)**2*log(a))               # Eq 17
-    Xann = (1.8*log10(Re_)-1.5)**-2                                     # Eq 16
-    k1 = 1.07+900/Re-0.63/(1+10*Pr)                                     # Eq 15
+    Reh = Re*((1+a**2)*log(a) + (1-a**2))/((1-a)**2*log(a))             # Eq 19
+    fann = (1.8*log10(Reh)-1.5)**-2                                     # Eq 18
+    k1 = 1.07 + 900/Re - 0.63/(1+10*Pr)
 
-    # Eq 14
-    Nu = Xann/8*Re*Pr / (k1+12.7*(Xann/8)**0.5*(Pr**(2/3)-1)) \
-        * (1+dhL**(2/3)) * Fann
+    # Eq 22
+    Nu = fann/8*Re*Pr / (k1+12.7*(fann/8)**0.5*(Pr**(2/3)-1)) * Fann
+
+    if L:
+        Nu *= 1+(Dh/L)**(2/3)
+
+    if Prw:
+        K = (Pr/Prw)**0.11
+        Nu *= K
     return Nu
 
 
-def h_anulli_Transition(Re, Pr, a, dhL=0, boundary=0):
-    """VDI Heat Atlas G2 Pag.704"""
+@refDoc(__doi__, [9])
+def Nu_anulli_Turbulent_Dirker(Re, Pr, di, do, mu=None, muW=None):
+    """Calculate Nusselt number for a annuli section in turbulent flow using
+    the Dirker and Meyer correlation (2005).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Internal diameter of annuli, [m]
+    do : float
+        External diameter of annuli, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    a = di/do
+    Reh = Re*((1+a**2)*log(a) + (1-a**2))/((1-a)**2*log(a))             # Eq 19
+
+    P = 1.013*exp(-0.067*a)                                             # Eq 3
+    Co = 0.003*a**1.86/(0.063*a**3-0.674*a**2+2.225*a-1.157)            # Eq 4
+
+    # Eq 2
+    Nu = Co*Re**P*Pr**(1/3)
+
+    if mu and muW:
+        Nu *= (mu/muW)**0.14
+
+    return Nu
+
+
+@refDoc(__doi__, [10])
+def Nu_anulli_Turbulent_Stein(Re, Pr, di, do):
+    """Calculate Nusselt number for a annuli section in turbulent flow using
+    the Stein and Begell correlation (1958).
+
+    Correlation based only in water data, valid for Re > 30000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Internal diameter of annuli, [m]
+    do : float
+        External diameter of annuli, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    a = di/do
+
+    # Eq 9, Using St=Nu/Re/Pr relation and reorganized equation
+    Nu = 0.02*a**0.5*Re**0.8*Pr**(1/3)
+
+    return Nu
+
+
+@refDoc(__doi__, [11])
+def Nu_anulli_Turbulent_Crookston(Re, Pr, di, do):
+    """Calculate Nusselt number for a annuli section in turbulent flow using
+    the Crookston-Rothfus-Kermode correlation (1968).
+
+    Correlation based only in water data, valid for Re > 17000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Internal diameter of annuli, [m]
+    do : float
+        External diameter of annuli, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    a = di/do
+
+    # Eq 21 using parameters for annuli fron Table 1
+    # Using j=Nu/Re/Pr^2/3 relation and reorganized equation
+    Nu = 0.02*a**0.25*Re**0.75*Pr**(1/3)
+
+    return Nu
+
+
+@refDoc(__doi__, [1])
+def Nu_anulli_Laminar(Re, Pr, di, do, L=0, boundary=0, Prw=None):
+    """Calculate Nusselt number for a annuli section in laminar flow"""
+    # G2 5.1, Pag.702
+    a = di/do
+    Dh = do-di
+
+    if boundary == 0:
+        # Inner surface heated
+        Nu1 = 3.66 + 1.2*a**-0.8                                        # Eq 3
+        fg = 1.615*(1 + 0.14/a**0.5)                                    # Eq 7
+    elif boundary == 1:
+        # Outer surface heated
+        Nu1 = 3.66 + 1.2*a**0.5                                         # Eq 4
+        fg = 1.615*(1 + 0.14*a**(1/3))                                  # Eq 8
+    else:
+        # Both surfaces heated
+        Nu1 = 3.66 + (4-0.102/(a+0.02))*a**0.04                         # Eq 5
+        fg = 1.615*(1+0.14*a**0.1)                                      # Eq 9
+
+    Nu2 = fg*(Re*Pr*Dh/L)**(1./3)                                       # Eq 6
+    Nu3 = (2/(1+22*Pr))**(1/6) * (Re*Pr*Dh/L)**0.5                      # Eq 12
+
+    # Eq 13
+    Nu = (Nu1**3 + Nu2**3 + Nu3**3)**(1/3)
+
+    if Prw:
+        # Temperature dependent physical properties
+        Nu *= (Pr/Prw)**0.11                                            # Eq 11
+
+    return Nu
+
+
+@refDoc(__doi__, [1])
+def Nu_anulli_Transition(Re, Pr, di, do, method, **kw):
+    """Calculate Nusselt number for a annuli section in turbulent flow"""
+    # G2 6.3, Pag.704
     g = (Re-2300)/(1e4-2300)                                            # Eq 25
-    Nu_lam = h_anulli_Laminar(2300, Pr, a, dhL, boundary)
-    Nu_turb = h_anulli_Turbulent(1.e4, Pr, a, dhL, boundary)
+    Nu_lam = Nu_anulli_Laminar(2300, Pr, di, do, **kw)
+    Nu_turb = Nu_anulli(1.e4, Pr, di, do, method, **kw)
 
     Nu = (1-g)*Nu_lam+g*Nu_turb                                         # Eq 24
     return Nu
 
 
-#
+def Nu_anulli(Re, Pr, di, do, method=0, **kw):
+    """Calculate Nusselt number for a annuli section"""
+    if Re <= 2300:
+        Nu = Nu_anulli_Laminar(Re, Pr, di, do, **kw)
+    elif Re >= 1e4:
+        if method == 1:
+            Nu = Nu_anulli_Turbulent_Dirker(Re, Pr, di, do, **kw)
+        elif method == 2:
+            Nu = Nu_anulli_Turbulent_Stein(Re, Pr, di, do)
+        elif method == 3:
+            Nu = Nu_anulli_Turbulent_Crookston(Re, Pr, di, do)
+        else:
+            Nu = Nu_anulli_Turbulent_Gnielinski(Re, Pr, di, do, **kw)
+    else:
+        Nu = Nu_anulli_Transition(Re, Pr, di, do, method, **kw)
+
+    return Nu
+
+
 # Unused
 def Nu_Convection_Free_External_Horizontal_Plate(Pr, Ra):
     """Calculo del Nusselt en convección natural externa de una pared vertical"""

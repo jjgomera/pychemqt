@@ -39,7 +39,8 @@ from equipment.parents import equipment
 from lib import unidades
 from lib.adimensional import Re, Pr, Gr, Gz
 from lib.friction import f_friccion
-from lib.heatTransfer import *  # noqa
+import lib.heatTransfer as ht
+# from lib.heatTransfer import *  # noqa
 
 
 class Heat_Exchanger(equipment):
@@ -553,7 +554,12 @@ class Hairpin(equipment):
         tubeFouling: Fouling at tubeside
         annulliFouling: Fouling at annulliside
 
-        tubeFinned: Boolean to use finned tube
+        hasTwistedTape: Boolean to use a twisted tape
+        twistedTape: Twisted tape insert instance
+        hasTwistedAnnuli: Boolean to use a twisted tape in annuli section
+        twistedAnnuli: Twisted tape in annulli section instance
+
+        finnedPipe: Boolean to use finned tube
         hFin: Finned height
         thicknessBaseFin: Thickness of the bottom of fin
         thicknessTopFin: Thickness of the top of fin
@@ -595,6 +601,7 @@ class Hairpin(equipment):
         "orientacion": 0,
         "tubesideLaminar": 0,
         "tubesideTurbulent": 0,
+        "annulliNuMethod": 0,
         "metodo": 0,
         "phase": 0,
 
@@ -610,13 +617,18 @@ class Hairpin(equipment):
         "tubeFouling": 0.0,
         "annulliFouling": 0.0,
 
-        "tubeFinned": 0,
+        "finnedPipe": 0,
         "hFin": 0.0,
         "thicknessBaseFin": 0.0,
         "thicknessTopFin": 0.0,
         "rootDoFin": 0.0,
         "kFin": 0.0,
         "nFin": 0,
+
+        "hasTwistedTape": False,
+        "twistedTape": None,
+        "hasTwistedAnnuli": False,
+        "twistedAnnuli": None,
 
         "tubeTout": 0.0,
         "tubeXout": -1.0,
@@ -633,8 +645,8 @@ class Hairpin(equipment):
     kwargsValue = ("DeTube", "DiTube", "wTube", "rTube", "kTube", "LTube",
                    "nTube", "tubeFouling", "annulliFouling", "P_dis",
                    "tubeTout", "annulliTout")
-    kwargsList = ("modo", "flujo", "orientacion")
-    kwargsCheck = ("tubeFinned", )
+    kwargsList = ("modo", "flujo", "orientacion", "annulliNuMethod")
+    kwargsCheck = ("finnedPipe", )
     calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
                       "deltaPTube", "deltaPAnnulli", "CF")
     calculateCostos = ("C_adq", "C_inst")
@@ -654,6 +666,11 @@ class Hairpin(equipment):
         translate("equipment", "Carbon steel/carbon steel"),
         translate("equipment", "Carbon steel/304 stainless"),
         translate("equipment", "Carbon steel/316 stainless")]
+    TEXT_METHOD_ANNULI = [
+        "Gnielinski (2009)",
+        "Dirker-Meyer (2005)",
+        "Stein-Begell (1958)",
+        "Crookston-Rothfus-Kermode (1968)"]
     CODE_FLUJO = ("CF", "PF")
 
     @property
@@ -700,7 +717,7 @@ class Hairpin(equipment):
 
         self.statusFinned = 0
         self.tubefinned = translate("equipment", "Bare Tube")
-        if self.kwargs["tubeFinned"]:
+        if self.kwargs["finnedPipe"]:
             self.tubefinned = translate("equipment", "Finned Tube")
             if self.kwargs["hFin"] and (self.kwargs["thicknessBaseFin"] or
                                         self.kwargs["thicknessTopFin"]):
@@ -770,7 +787,7 @@ class Hairpin(equipment):
         dp_tube = self.L*self.VTube**2/self.Di*f*self.rhoTube/2
         self.deltaPTube = unidades.DeltaP(dp_tube)
 
-        f_a = f_friccion(self.ReAnnulli, geometry=6)
+        f_a = self._fAnnuli(self.ReAnnulli)
         dp_annulli = self.L*self.VAnnulli**2/self.De*f_a*self.rhoAnnulli/2
         self.deltaPAnnulli = unidades.DeltaP(dp_annulli)
 
@@ -812,7 +829,7 @@ class Hairpin(equipment):
             self.Ug(hi, ni, ho, no)
 
             NTU = self.A*self.U/Cmin
-            ep = effectiveness(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
+            ep = ht.effectiveness(NTU, C_, self.CODE_FLUJO[self.kwargs["flujo"]])
             self.Q = unidades.Power(ep*Cmin*abs(inTube.T-inAnnulli.T))
 
             if inTube.T > inAnnulli.T:
@@ -949,7 +966,7 @@ class Hairpin(equipment):
         self.rootDoFin = unidades.Length(self.kwargs["rootDoFin"])
         self.kFin = unidades.ThermalConductivity(self.kwargs["kFin"])
         self.nFin = unidades.Dimensionless(self.kwargs["nFin"])
-        if self.kwargs["tubeFinned"]:
+        if self.kwargs["finnedPipe"]:
             if self.statusFinned:
                 # For now only use circular fin
                 do = self.kwargs["rootDoFin"]
@@ -1003,32 +1020,32 @@ class Hairpin(equipment):
                 beta = fluido.alfav
                 gr = Gr(beta=beta, T=fluidTube.T, To=fluidTube.T, L=L, mu=mu)
                 if self.kwargs["tubesideLaminar"] == 0:
-                    Nu = h_tubeside_laminar_Eubank_Proctor(
+                    Nu = ht.h_tubeside_laminar_Eubank_Proctor(
                         Pr=pr, Gz=gz, Gr=gr, D=self.Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 1:
-                    Nu = h_tubeside_laminar_VDI(Re=re_i, Pr=pr, D=self.Di, L=L)
+                    Nu = ht.h_tubeside_laminar_VDI(Re=re_i, Pr=pr, D=self.Di, L=L)
                 elif self.kwargs["tubesideLaminar"] == 2:
-                    Nu = h_tubeside_laminar_Hausen(Gz=gz)
+                    Nu = ht.h_tubeside_laminar_Hausen(Gz=gz)
                 elif self.kwargs["tubesideLaminar"] == 3:
-                    Nu = h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
+                    Nu = ht.h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
             else:
                 if self.kwargs["tubesideTurbulent"] == 0:
-                    Nu = h_tubeside_turbulent_Sieder_Tate(Re=re_i, Pr=pr)
+                    Nu = ht.h_tubeside_turbulent_Sieder_Tate(Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 1:
-                    Nu = h_tubeside_turbulent_Colburn(Re=re_i, Pr=pr)
+                    Nu = ht.h_tubeside_turbulent_Colburn(Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 2:
                     frio = self.kwargs["entradaCarcasa"].T > fluidTube.T
-                    Nu = h_tubeside_turbulent_Dittus_Boelter(
+                    Nu = ht.h_tubeside_turbulent_Dittus_Boelter(
                         Re=re_i, Pr=pr, calentamiento=frio)
                 elif self.kwargs["tubesideTurbulent"] == 3:
-                    Nu = h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
+                    Nu = ht.h_tubeside_turbulent_ESDU(Re=re_i, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 4:
-                    Nu = h_tubeside_turbulent_Gnielinski(
+                    Nu = ht.h_tubeside_turbulent_Gnielinski(
                         Re=re_i, Pr=pr, D=self.Di, L=L)
                 elif self.kwargs["tubesideTurbulent"] == 5:
                     line = self.kwargs["distribucionTube"] == 3
                     filas = self.kwargs["NTube"]**0.5
-                    Nu = h_tubeside_turbulent_VDI(
+                    Nu = ht.h_tubeside_turbulent_VDI(
                         Re=re_i, Pr=pr, filas_tubos=filas, alineados=line)
 
         if self.phaseTube == "Condenser":
@@ -1051,7 +1068,7 @@ class Hairpin(equipment):
         return unidades.HeatTransfCoef(Nu*k/self.Di)
 
     def _hAnnulli(self, fluidAnnulli):
-        """Calculate convection heat transfer coefficient in annulliside"""
+        """Calculate convective heat transfer coefficient in annulli side"""
         a = self.Dee/self.De
         dh = self.Dee-self.De
 
@@ -1065,14 +1082,22 @@ class Hairpin(equipment):
         self.ReAnnulli = unidades.Dimensionless(re)
         pr = fluidAnnulli.Liquido.Prandt
 
-        if re <= 2300:
-            Nu = h_anulli_Laminar(re, pr, a)
-        elif re >= 1e4:
-            Nu = h_anulli_Turbulent(re, pr, a)
+        if self.kwargs["hasTwistedAnnuli"] and self.kwargs["twistedAnnuli"]:
+            Nu = self.kwargs["twistedAnnuli"].Nu(re, pr, mu, mu)
         else:
-            Nu = h_anulli_Transition(re, pr, a)
+            kw = {"method": self.kwargs["annulliNuMethod"], "L": self.L}
+            Nu = ht.Nu_anulli(re, pr, self.De, self.Dee, **kw)
 
-        return unidades.HeatTransfCoef(Nu*k/self.Di)
+        return unidades.HeatTransfCoef(Nu*k/dh)
+
+    def _fAnnuli(self, Re):
+        """Calculate friction factor coefficient in annulli side"""
+        if self.kwargs["hasTwistedAnnuli"] and self.kwargs["twistedAnnuli"]:
+            f = self.kwargs["twistedAnnuli"].f(Re)
+        else:
+            f = f_friccion(Re, geometry=6, Di=self.De, Do=self.Dee)
+        # print(f)
+        return f
 
     def coste(self):
         self.material = self.kwargs["material"]
@@ -1105,8 +1130,8 @@ class Hairpin(equipment):
         txt += "-----------------#" + os.linesep
         txt += self.propertiesToText(range(11))
 
-        if self.kwargs["tubeFinned"]:
-            txt += "\t" + self.propertiesToText(range(11, 17))
+        # if self.kwargs["finnedPipe"]:
+        #     txt += "\t" + self.propertiesToText(range(11, 17))
 
         txt += os.linesep + "#---------------"
         txt += translate("equipment", "Calculate properties")

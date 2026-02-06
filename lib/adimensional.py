@@ -853,15 +853,16 @@ def Sc(D, mu=None, nu=None, rho=None):
 
 
 @refDoc(__doi__, [2])
-def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
+def St(Nu=None, Pe=None, Re=None, Pr=None, alfa=None, rho=None, cp=None, V=None):
     r"""Calculate Stanton number `St`
 
     .. math::
-        St = \frac{Nu}{Pe} = \frac{\alpha}{\rho c_pV}
+        St = \frac{Nu}{Pe} = \frac{Nu}{Re Pr} = \frac{\alpha}{\rho c_pV}
 
     Inputs either of any of the following sets:
 
     * Péclet and Nusselt number
+    * Nusselt, Reynolds and Prandt number
     * V, density `rho`, heat specific `cp` and heat transfer coefficient `alfa`
 
     Parameters
@@ -886,6 +887,8 @@ def St(Nu=None, Pe=None, alfa=None, rho=None, cp=None, V=None):
     """
     if Nu and Pe:
         st = Nu/Pe
+    elif Nu and Re and Pr:
+        st = Nu/Re/Pr
     elif alfa and rho and cp and V:
         st = alfa/(rho*cp*V)
     else:

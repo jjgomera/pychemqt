@@ -31,7 +31,8 @@ from UI.widgets import Entrada_con_unidades
 from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import PipeCatalogDialog
 from equipment.parents import UI_equip
-from equipment.widget import FoulingWidget, Dialog_Finned
+from equipment.widget.fouling import FoulingWidget
+from equipment.widget import twistedtape, twistedtapeAnnulli, finnedPipe
 from tools.costIndex import CostData
 from tools.qt import QtWidgets
 
@@ -51,9 +52,30 @@ class UI_equipment(UI_equip):
         self.addEntrada(self.tr("Annulli"), "entradaExterior")
 
         # Pipe catalog tab
-        tabCatalogo = QtWidgets.QWidget()
+        tabCatalogo = QtWidgets.QTabWidget()
         self.tabWidget.insertTab(1, tabCatalogo, self.tr("Catalog"))
-        lyt = QtWidgets.QGridLayout(tabCatalogo)
+
+        tabCatalogoMethods = QtWidgets.QWidget()
+        tabCatalogo.addTab(tabCatalogoMethods, self.tr("Correlations"))
+        lyt = QtWidgets.QGridLayout(tabCatalogoMethods)
+        lyt.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer in annuli section")), 1, 1)
+        self.annulliNuMethod = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_METHOD_ANNULI:
+            self.annulliNuMethod.addItem(txt)
+        # "tubesideLaminar": 0,
+        # "tubesideTurbulent": 0,
+        self.annulliNuMethod.currentIndexChanged.connect(
+            partial(self.changeParams, "annulliNuMethod"))
+        lyt.addWidget(self.annulliNuMethod, 1, 2)
+
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Expanding), 20, 3)
+
+        tabCatalogoGeometry = QtWidgets.QWidget()
+        tabCatalogo.addTab(tabCatalogoGeometry, self.tr("Geometry"))
+        lyt = QtWidgets.QGridLayout(tabCatalogoGeometry)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Tube length")), 4, 1)
         self.LTube = Entrada_con_unidades(Length)
         self.LTube.valueChanged.connect(partial(self.changeParams, "LTube"))
@@ -103,16 +125,6 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 14, 1)
-        self.tubeFinned = QtWidgets.QCheckBox(self.tr("Finned Tube"))
-        lyt.addWidget(self.tubeFinned, 15, 1, 1, 4)
-        self.buttonFin = QtWidgets.QPushButton(
-            self.tr("Finned Pipe Database"))
-        self.buttonFin.setEnabled(False)
-        self.buttonFin.clicked.connect(self.showFinTube)
-        lyt.addWidget(self.buttonFin, 15, 3)
-        self.tubeFinned.toggled.connect(
-            partial(self.changeParams, "tubeFinned"))
-        self.tubeFinned.toggled.connect(self.buttonFin.setEnabled)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Inside Fouling")), 16, 1)
         self.tubeFouling = FoulingWidget()
         self.tubeFouling.valueChanged.connect(
@@ -126,6 +138,19 @@ class UI_equipment(UI_equip):
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Expanding), 20, 1, 1, 6)
+
+        self.finnedPipe = finnedPipe.UI_FinnedPipe()
+        tabCatalogo.addTab(self.finnedPipe, self.tr("Finned pipe"))
+        self.twistedTape = twistedtape.UI_TwistedTape()
+        tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
+        self.twistedTapeAnnuli = twistedtapeAnnulli.UI_TwistedTapeAnnuli()
+        self.twistedTapeAnnuli.toggled
+        self.twistedTapeAnnuli.toggled.connect(
+            partial(self.changeParams, "hasTwistedAnnuli"))
+        self.twistedTapeAnnuli.valueChanged.connect(
+            partial(self.changeParams, "twistedAnnuli"))
+        tabCatalogo.addTab(self.twistedTapeAnnuli, self.tr(
+            "Annulli Twisted-tape insert"))
 
         # Calculate tab
         lyt = QtWidgets.QGridLayout(self.tabCalculo)
@@ -282,12 +307,6 @@ class UI_equipment(UI_equip):
                 self.DiTube.setValue(material[4])
                 self.wTube.setValue(material[5])
                 self.DeTube.setValue(material[6])
-
-    def showFinTube(self):
-        dialogo = Dialog_Finned(self.Equipment.kwargs)
-        if dialogo.exec():
-            kwarg = dialogo.kwarg()
-            self.calculo(**kwarg)
 
 
 if __name__ == "__main__":

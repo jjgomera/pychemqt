@@ -27,5 +27,6 @@ files = sorted(glob.glob(os.path.join("equipment", "accesories", "*.py")))
 __all__ = []
 for file in files:
     fname, ext = os.path.splitext(os.path.basename(file))
-    if fname != "__init__" and "pref" not in fname:
+    if fname not in ("__init__", "gui"):
         __all__.append(fname)
+        __import__(f"equipment.accesories.{fname}")

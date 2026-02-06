@@ -20,11 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from math import pi
 
-from tools.qt import QtWidgets
+from tools.qt import QtWidgets, translate
 
 from lib.unidades import Dimensionless, Area, Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
+from equipment.widget.gui import ToolGui
 
 
 __doi__ = {
@@ -88,7 +89,7 @@ __doi__ = {
          "title": "Heat transfer augmentation for the flow of a viscous "
                   "liquid in circular tubes using twisted tape inserts",
          "ref": "Int. J. Heat Mass Transfer 39(17) (1996) 3547-3557",
-         "doi": ""},
+         "doi": "10.1016/0017-9310(96)00039-7"},
     11:
         {"autor": "Kidd, G.J. Jr.",
          "title": "Heat Transfer and Pressure Drop for Nitrogen Flowing in "
@@ -100,7 +101,7 @@ __doi__ = {
          "title": "Experimental studies on heat transfer and friction factor "
                   "characteristics of laminar flow through a circular tube "
                   "fitted with helical screw-tape inserts",
-         "ref": "App. Thermal Eng. 26(8) (2006) 1990-1997",
+         "ref": "App. Thermal Eng. 26(16) (2006) 1990-1997",
          "doi": "10.1016/j.applthermaleng.2006.01.008"},
     13:
         {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
@@ -930,60 +931,44 @@ class TwistedTape():
         self.y = Dimensionless(H/D)
 
 
-class UI_TwistedTape(QtWidgets.QWidget):
+class UI_TwistedTape(ToolGui):
+    """Twisted-tape insert dialog"""
 
-    """Custom widget to define DIPPR equation input"""
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        lyt = QtWidgets.QGridLayout(self)
-        self.check = QtWidgets.QCheckBox(self.tr("Use twisted tape insert"))
-        self.check.toggled.connect(self.setEnabled)
-        lyt.addWidget(self.check, 1, 1)
-        label = QtWidgets.QLabel(self.tr("Tape pitch"))
-        label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
-        lyt.addWidget(label, 2, 1)
-        self.H = Entrada_con_unidades(Length)
-        lyt.addWidget(self.H, 2, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 3, 1)
-        self.Dt = Entrada_con_unidades(Length)
-        lyt.addWidget(self.Dt, 3, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 4, 1)
-        self.delta = Entrada_con_unidades(Length, "Thickness")
-        lyt.addWidget(self.delta, 4, 2)
+    title = translate("equipment", "Use twisted tape insert")
+
+    def loadUI(self):
+        """Add widget"""
+        lyt = self.layout()
 
         lytH = QtWidgets.QHBoxLayout()
-        lytH.addWidget(QtWidgets.QLabel(self.tr("Friction factor calculation method")))
-        self.delta = Entrada_con_unidades(Length, "Thickness")
+        lytH.addWidget(QtWidgets.QLabel(
+            self.tr("Friction factor calculation method")))
         self.methodFriction = QtWidgets.QComboBox()
         for method in TwistedTape.TEXT_FRICTION:
             self.methodFriction.addItem(method)
         lytH.addWidget(self.methodFriction)
-        lyt.addLayout(lytH, 5, 1, 1, 2)
+        lyt.addLayout(lytH, 2, 1, 1, 2)
 
         lytH = QtWidgets.QHBoxLayout()
-        lytH.addWidget(QtWidgets.QLabel(self.tr("Heat transfer calculation method")))
+        lytH.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer calculation method")))
         self.methodHeat = QtWidgets.QComboBox()
         for method in TwistedTape.TEXT_HEAT:
             self.methodHeat.addItem(method)
         lytH.addWidget(self.methodHeat)
-        lyt.addLayout(lytH, 6, 1, 1, 2)
+        lyt.addLayout(lytH, 3, 1, 1, 2)
 
-        lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
-
-        # self.fill()
-
-    def setEnabled(self, boolean):
-        """Toggled enable/disable state for all children widget except
-        checkbox used to change this"""
-        for wdg in self.children():
-            if wdg is not self.check:
-                wdg.setEnabled(boolean)
-
-    # def fill(self):
-    #     self.check.setChecked(True)
-        # self.check.setChecked(False)
+        label = QtWidgets.QLabel(self.tr("Tape pitch"))
+        label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
+        lyt.addWidget(label, 4, 1)
+        self.H = Entrada_con_unidades(Length)
+        lyt.addWidget(self.H, 4, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 5, 1)
+        self.Dt = Entrada_con_unidades(Length, "PipeDiameter")
+        lyt.addWidget(self.Dt, 5, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 6, 1)
+        self.delta = Entrada_con_unidades(Length, "Thickness")
+        lyt.addWidget(self.delta, 6, 2)
 
 
 class Dialog(QtWidgets.QDialog):

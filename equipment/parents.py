@@ -264,7 +264,7 @@ class UI_equip(QtWidgets.QDialog):
                 QtGui.QIcon(os.path.join(IMAGE_PATH, "equipment", "in.svg")),
                 translate("equipment", "Input"))
 
-        # Calcule tab
+        # Calculate tab
         if calculo:
             self.tabCalculo = QtWidgets.QWidget()
             self.tabWidget.addTab(
