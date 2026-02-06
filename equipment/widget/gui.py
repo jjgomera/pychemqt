@@ -18,11 +18,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from tools.qt import QtWidgets
+from tools.qt import QtCore, QtWidgets
 
 
 class ToolGui(QtWidgets.QWidget):
     """Parent widget with common functionality for equipment tools"""
+
+    # Signal to propagate changes to parent widgets
+    toggled = QtCore.pyqtSignal(bool)
+    valueChanged = QtCore.pyqtSignal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -45,6 +49,7 @@ class ToolGui(QtWidgets.QWidget):
     def setEnabled(self, boolean):
         """Toggled enable/disable state for all children widget except
         checkbox used to change this"""
+        self.toggled.emit(boolean)
         for wdg in self.children():
             if wdg is not self.check and wdg is not self.layout():
                 wdg.setEnabled(boolean)
@@ -59,3 +64,28 @@ class ToolGui(QtWidgets.QWidget):
     def loadUI(self):
         """Rewrite in child class to add widget"""
 
+    def changeParams(self, key, value):
+        """Change any kwargs value"""
+        self.Entity(**{key: value})
+
+
+class CallableEntity(QtCore.QObject):
+    """Class with callable capability to add each input in a call"""
+    def __init__(self, **kwargs):
+        """Class constructor, copy kwargs for child class, it can be customize
+        for child class to add functionality"""
+        super().__init__()
+        self.kw = self.__class__.kw.copy()
+
+        if kwargs:
+            self.__call__(**kwargs)
+
+    def __call__(self, **kw):
+        """Add callable functionality, so it can be possible add kwargs,
+        advanced functionality can be added in subclass"""
+        self._oldkw = self.kw.copy()
+
+        self.kw.update(kw)
+
+        if self.isCalculable and self._oldkw != self.kw:
+            self.calculo()

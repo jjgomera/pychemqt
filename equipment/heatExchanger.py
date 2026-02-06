@@ -554,6 +554,11 @@ class Hairpin(equipment):
         tubeFouling: Fouling at tubeside
         annulliFouling: Fouling at annulliside
 
+        hasTwistedTape: Boolean to use a twisted tape
+        twistedTape: Twisted tape insert instance
+        hasTwistedAnnuli: Boolean to use a twisted tape in annuli section
+        twistedAnnuli: Twisted tape in annulli section instance
+
         finnedPipe: Boolean to use finned tube
         hFin: Finned height
         thicknessBaseFin: Thickness of the bottom of fin
@@ -619,6 +624,11 @@ class Hairpin(equipment):
         "rootDoFin": 0.0,
         "kFin": 0.0,
         "nFin": 0,
+
+        "hasTwistedTape": False,
+        "twistedTape": None,
+        "hasTwistedAnnuli": False,
+        "twistedAnnuli": None,
 
         "tubeTout": 0.0,
         "tubeXout": -1.0,
@@ -777,7 +787,7 @@ class Hairpin(equipment):
         dp_tube = self.L*self.VTube**2/self.Di*f*self.rhoTube/2
         self.deltaPTube = unidades.DeltaP(dp_tube)
 
-        f_a = f_friccion(self.ReAnnulli, geometry=6, Di=self.De, Do=self.Dee)
+        f_a = self._fAnnuli(self.ReAnnulli)
         dp_annulli = self.L*self.VAnnulli**2/self.De*f_a*self.rhoAnnulli/2
         self.deltaPAnnulli = unidades.DeltaP(dp_annulli)
 
@@ -1058,7 +1068,7 @@ class Hairpin(equipment):
         return unidades.HeatTransfCoef(Nu*k/self.Di)
 
     def _hAnnulli(self, fluidAnnulli):
-        """Calculate convection heat transfer coefficient in annulliside"""
+        """Calculate convective heat transfer coefficient in annulli side"""
         a = self.Dee/self.De
         dh = self.Dee-self.De
 
@@ -1072,10 +1082,22 @@ class Hairpin(equipment):
         self.ReAnnulli = unidades.Dimensionless(re)
         pr = fluidAnnulli.Liquido.Prandt
 
-        kw = {"method": self.kwargs["annulliNuMethod"], "L": self.L}
-        Nu = ht.Nu_anulli(re, pr, self.De, self.Dee, **kw)
+        if self.kwargs["hasTwistedAnnuli"] and self.kwargs["twistedAnnuli"]:
+            Nu = self.kwargs["twistedAnnuli"].Nu(re, pr, mu, mu)
+        else:
+            kw = {"method": self.kwargs["annulliNuMethod"], "L": self.L}
+            Nu = ht.Nu_anulli(re, pr, self.De, self.Dee, **kw)
 
         return unidades.HeatTransfCoef(Nu*k/dh)
+
+    def _fAnnuli(self, Re):
+        """Calculate friction factor coefficient in annulli side"""
+        if self.kwargs["hasTwistedAnnuli"] and self.kwargs["twistedAnnuli"]:
+            f = self.kwargs["twistedAnnuli"].f(Re)
+        else:
+            f = f_friccion(Re, geometry=6, Di=self.De, Do=self.Dee)
+        # print(f)
+        return f
 
     def coste(self):
         self.material = self.kwargs["material"]

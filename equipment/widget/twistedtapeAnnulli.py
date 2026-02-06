@@ -18,14 +18,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from functools import partial
 from math import pi, log, cos, atan
 
-from tools.qt import QtWidgets, translate
+from tools.qt import QtCore, QtWidgets, translate
 
-from lib.unidades import Dimensionless, Length
+from equipment.widget.gui import ToolGui, CallableEntity
+from lib.unidades import Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
-from equipment.widget.gui import ToolGui
 
 
 __doi__ = {
@@ -58,7 +59,7 @@ def f_twistedAnnulli_Coetzee(Re, Di, H, orientation=0):
     H : float
         Tape pitch for twist of π radians (180º), [m]
     orientation : boolean
-        Set flow orientation of flow in the annulus with the curvature of tape
+        Set flow orientation in the annulus with the curvature of tape
           0(along flow), 1(against flow)
 
     Returns
@@ -158,7 +159,7 @@ def Nu_twistedAnnulli_Coetzee(Re, Pr, Di, H, mu=1, muW=1, orientation=0):
     muW : float, optional
         Wall flow temperature viscosity, [Pa·s]
     orientation: boolean
-        Set flow orientation of flow in the annulus with the curvature of tape
+        Set flow orientation in the annulus with the curvature of tape
           0(along flow), 1(against flow)
 
     Returns
@@ -250,39 +251,73 @@ def Nu_twistedAnnulli_Gupte(Re, Pr, Do, Di, H, boundary=0):
     return Nu*Re*Pr
 
 
-class TwistedTapeAnnuli():
+class TwistedTapeAnnuli(CallableEntity):
     """Twisted-tape insert specially for annulli section of double-pipe
-    section."""
+    section.
+
+    Parameters
+    ----------
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    Do : float
+        Outer diameter of annuli, [m]
+    Di : float
+        Inner diameter of annuli, [m]
+    angled : boolean
+        Set if twisted-tape is angled
+    orientation: boolean
+         Set flow orientation in the annulus with the curvature of tape
+         0(along flow), 1(against flow)
+    """
 
     TEXT_ORIENTACION = (
         translate("equipment", "Along flow"),
         translate("equipment", "Against flow"))
 
-    def __init__(self, H, Di, Do, angled=False, orientation=0):
+    status = 0
+    msg = ""
+    kw = {
+        "H": 0,
+        "Di": 0,
+        "Do": 0,
+        "angled": False,
+        "orientation": 0}
+
+    valueChanged = QtCore.pyqtSignal()
+
+    @property
+    def isCalculable(self):
+        """Check if all input are defined"""
+        if not self.kw["H"]:
+            self.msg = translate("equipment", "undefined tape pitch")
+            self.status = 0
+            return False
+        if not self.kw["Di"]:
+            self.msg = translate("equipment", "undefined internal diameter")
+            self.status = 0
+            return False
+        if not self.kw["Do"]:
+            self.msg = translate("equipment", "undefined external diameter")
+            self.status = 0
+            return False
+
+        self.msg = ""
+        self.status = 1
+        return True
+
+    def calculo(self):
         """
         Definition of twisted tape inserts
 
-        Parameters
-        ----------
-        H : float
-            Tape pitch for twist of π radians (180º), [m]
-        Do : float
-            Outer diameter of annuli, [m]
-        Di : float
-            Inner diameter of annuli, [m]
-        angled : boolean
-            Set if twisted-tape is angled
-        orientation: boolean
-             Set flow orientation of flow in the annulus with the curvature of tape
-             0(along flow), 1(against flow)
         """
-        self.H = H
-        self.Di = Di
-        self.Do = Do
-        self.angled = angled
-        self.orientation = orientation
+        self.H = self.kw["H"]
+        self.Di = self.kw["Di"]
+        self.Do = self.kw["Do"]
+        self.angled = self.kw["angled"]
+        self.orientation = self.kw["orientation"]
+        self.valueChanged.emit()
 
-    def Nu(self, Re, Pr, mu, muW, boundary):
+    def Nu(self, Re, Pr, mu, muW, boundary=0):
         """Calculate nusselt number"""
         if self.angled and self.orientation:
             Nu = Nu_twistedAnnulli_Coetzee(
@@ -292,9 +327,9 @@ class TwistedTapeAnnuli():
 
         return Nu
 
-    def f(self, Re, Pr, mu, muW, boundary):
+    def f(self, Re):
         """Calculate friction factor"""
-        if self.angled and self.orientation:
+        if self.angled:
             f = f_twistedAnnulli_Coetzee(Re, self.Di, self.H, self.orientation)
         else:
             f = f_twistedAnnulli_Gupte(Re, self.Do, self.Di, self.H)
@@ -306,26 +341,33 @@ class UI_TwistedTapeAnnuli(ToolGui):
     """Twisted-tape insert dialog"""
 
     title = translate("equipment", "Use twisted tape insert in annuli section")
-    Entity = TwistedTapeAnnuli
 
     def loadUI(self):
         """Add widget"""
+        self.Entity = TwistedTapeAnnuli()
+
         lyt = self.layout()
 
         label = QtWidgets.QLabel(self.tr("Tape pitch, H"))
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
         lyt.addWidget(label, 2, 1)
         self.H = Entrada_con_unidades(Length)
+        self.H.valueChanged.connect(
+            partial(self.changeParams, "H"))
         lyt.addWidget(self.H, 2, 2)
         label = QtWidgets.QLabel("Di")
         label.setToolTip(self.tr("Internal diameter of annuli section"))
         lyt.addWidget(label, 3, 1)
         self.Di = Entrada_con_unidades(Length, "PipeDiameter")
+        self.Di.valueChanged.connect(
+            partial(self.changeParams, "Di"))
         lyt.addWidget(self.Di, 3, 2)
         label = QtWidgets.QLabel("Do")
         label.setToolTip(self.tr("External diameter of annuli section"))
         lyt.addWidget(label, 4, 1)
         self.Do = Entrada_con_unidades(Length, "PipeDiameter")
+        self.Do.valueChanged.connect(
+            partial(self.changeParams, "Do"))
         lyt.addWidget(self.Do, 4, 2)
 
         self.angled = QtWidgets.QCheckBox(self.tr("Angled twisted-tape"))
@@ -339,8 +381,11 @@ class UI_TwistedTapeAnnuli(ToolGui):
         self.orientation = QtWidgets.QComboBox()
         for method in TwistedTapeAnnuli.TEXT_ORIENTACION:
             self.orientation.addItem(method)
+        self.orientation.currentIndexChanged.connect(
+            partial(self.changeParams, "orientation"))
         lytH.addWidget(self.orientation)
         lyt.addLayout(lytH, 7, 1, 1, 2)
+        self.Entity.valueChanged.connect(self.changeEntity)
 
     def setEnabled(self, boolean):
         """Add logic to parent setEnabled for orientation option"""
@@ -351,7 +396,10 @@ class UI_TwistedTapeAnnuli(ToolGui):
         """Change Enable/Disable state for orientation of twisted tape"""
         self.labelOrientation.setEnabled(boolean)
         self.orientation.setEnabled(boolean)
+        self.changeParams("angled", boolean)
 
+    def changeEntity(self):
+        self.valueChanged.emit(self.Entity)
 
 class Dialog(QtWidgets.QDialog):
     """Component list config dialog"""

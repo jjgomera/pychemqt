@@ -144,6 +144,11 @@ class UI_equipment(UI_equip):
         self.twistedTape = twistedtape.UI_TwistedTape()
         tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
         self.twistedTapeAnnuli = twistedtapeAnnulli.UI_TwistedTapeAnnuli()
+        self.twistedTapeAnnuli.toggled
+        self.twistedTapeAnnuli.toggled.connect(
+            partial(self.changeParams, "hasTwistedAnnuli"))
+        self.twistedTapeAnnuli.valueChanged.connect(
+            partial(self.changeParams, "twistedAnnuli"))
         tabCatalogo.addTab(self.twistedTapeAnnuli, self.tr(
             "Annulli Twisted-tape insert"))
 
