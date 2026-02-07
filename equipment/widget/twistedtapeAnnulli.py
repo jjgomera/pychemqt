@@ -283,7 +283,8 @@ class TwistedTapeAnnuli(CallableEntity):
         "angled": False,
         "orientation": 0}
 
-    valueChanged = QtCore.pyqtSignal()
+    valueChanged = QtCore.pyqtSignal(object)
+    inputChanged = QtCore.pyqtSignal(object)
 
     @property
     def isCalculable(self):
@@ -308,18 +309,24 @@ class TwistedTapeAnnuli(CallableEntity):
     def calculo(self):
         """
         Definition of twisted tape inserts
-
         """
         self.H = self.kw["H"]
         self.Di = self.kw["Di"]
         self.Do = self.kw["Do"]
         self.angled = self.kw["angled"]
         self.orientation = self.kw["orientation"]
-        self.valueChanged.emit()
+
+        if self.angled and self.H/self.Di > 10:
+            self.status = 3
+            self.msg = translate(
+                "equipment",
+                "Coetzee correlation out of bound, using Gupte instead")
+
+        self.valueChanged.emit(self)
 
     def Nu(self, Re, Pr, mu, muW, boundary=0):
         """Calculate nusselt number"""
-        if self.angled and self.orientation:
+        if self.angled and self.H/self.Di > 10:
             Nu = Nu_twistedAnnulli_Coetzee(
                 Re, Pr, self.Di, self.H, mu, muW, self.orientation)
         else:
@@ -329,7 +336,7 @@ class TwistedTapeAnnuli(CallableEntity):
 
     def f(self, Re):
         """Calculate friction factor"""
-        if self.angled:
+        if self.angled and self.H/self.Di > 10:
             f = f_twistedAnnulli_Coetzee(Re, self.Di, self.H, self.orientation)
         else:
             f = f_twistedAnnulli_Gupte(Re, self.Do, self.Di, self.H)
@@ -385,7 +392,8 @@ class UI_TwistedTapeAnnuli(ToolGui):
             partial(self.changeParams, "orientation"))
         lytH.addWidget(self.orientation)
         lyt.addLayout(lytH, 7, 1, 1, 2)
-        self.Entity.valueChanged.connect(self.changeEntity)
+        self.Entity.valueChanged.connect(self.valueChanged.emit)
+        self.Entity.inputChanged.connect(self.populate)
 
     def setEnabled(self, boolean):
         """Add logic to parent setEnabled for orientation option"""
@@ -398,8 +406,12 @@ class UI_TwistedTapeAnnuli(ToolGui):
         self.orientation.setEnabled(boolean)
         self.changeParams("angled", boolean)
 
-    def changeEntity(self):
-        self.valueChanged.emit(self.Entity)
+    def populate(self, entity):
+        if self.isChecked():
+            self.msg.setState(entity)
+        else:
+            self.msg.clear()
+
 
 class Dialog(QtWidgets.QDialog):
     """Component list config dialog"""

@@ -22,11 +22,11 @@ import glob
 import os
 
 
-files = sorted(glob.glob(os.path.join("equipment", "accesories", "*.py")))
+files = sorted(glob.glob(os.path.join("equipment", "widget", "*.py")))
 
 __all__ = []
 for file in files:
     fname, ext = os.path.splitext(os.path.basename(file))
     if fname not in ("__init__", "gui"):
         __all__.append(fname)
-        __import__(f"equipment.accesories.{fname}")
+        __import__(f"equipment.widget.{fname}")

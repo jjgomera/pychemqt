@@ -56,7 +56,7 @@ from tools.pdf import openPDF
 
 import lib
 from lib.config import IMAGE_PATH
-from equipment import equipments, accesories
+from equipment import equipments, widget
 
 
 class QLineEditClickable(QtWidgets.QLineEdit):
@@ -310,10 +310,10 @@ class ShowReference(QtWidgets.QDialog):
         itemAccesories = QtWidgets.QTreeWidgetItem([self.tr("Accesories")])
         itemEquipment.addChild(itemAccesories)
         itemAccesories.setExpanded(True)
-        for equip in accesories.__all__:
+        for equip in widget.__all__:
             itemequip = QtWidgets.QTreeWidgetItem([equip])
             itemAccesories.addChild(itemequip)
-            module = accesories.__getattribute__(equip)
+            module = widget.__getattribute__(equip)
             for idx, link in module.__doi__.items():
                 item = QtWidgets.QTreeWidgetItem([
                     "", link["autor"], link["title"],

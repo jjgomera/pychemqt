@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Module to define common graphics widget
 
+  * :class:`SimpleStatus`: Status with simple format and functionality
   * :class:`Status`: Label with status (for equipment, stream)
   * :class:`Entrada_con_unidades`: Composite widget for unit values for input/view
   * :class:`Tabla`: Custom tablewidget tablewidget with added functionality
@@ -58,6 +59,18 @@ from lib.utilities import representacion
 from tools.qt import QtCore, QtGui, QtWidgets, translate
 from tools.UI_unitConverter import UI_conversorUnidades, moneda
 from UI.delegate import CellEditor
+
+
+class SimpleStatus(QtWidgets.QLabel):
+    """QLabel to show status info"""
+    def setState(self, entity):
+        """Change the state"""
+        self.setText(entity.msg)
+        if entity.status in (0, 5):
+            color = "red"
+        else:
+            color = "black"
+        self.setStyleSheet(f"QLabel {{color: {color}}}")
 
 
 class Status(QtWidgets.QLabel):
@@ -112,7 +125,7 @@ class Status(QtWidgets.QLabel):
         self.state = state
 
     def restaurar(self):
-        """Restore old stade"""
+        """Restore old state"""
         self.setState(self.oldState, self.oldText)
 
 

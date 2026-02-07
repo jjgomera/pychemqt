@@ -35,6 +35,11 @@ __doi__ = {
     }
 
 
+class FinnedPipe():
+    status = 0
+    msg = ""
+
+
 class UI_FinnedPipe(ToolGui):
     """Finned pipe dialog"""
 
@@ -42,6 +47,7 @@ class UI_FinnedPipe(ToolGui):
 
     def loadUI(self):
         """Add widget"""
+        self.Entity = FinnedPipe()
         lyt = self.layout()
 
         lytH = QtWidgets.QHBoxLayout()
