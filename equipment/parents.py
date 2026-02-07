@@ -60,6 +60,7 @@ class equipment(Entity):
         kwargsValue: Inputs of value string
         kwargsList: Inputs of combobox (option of a list)
         kwargsCheck: Inputs of checkbox (True/False)
+        kwargsMandatory: Inputs with no comparation check, mandatory calculo run
         calculateValue: Results values
         statusCoste: Cost section status
         indiceCostos: Index of equipment in costindex
@@ -84,6 +85,7 @@ class equipment(Entity):
     kwargsValue = ()
     kwargsList = ()
     kwargsCheck = ()
+    kwargsMandatory = ()
     calculateValue = ()
     statusCoste = False
     indiceCostos = None
@@ -127,7 +129,7 @@ class equipment(Entity):
         Entity.__call__(self, **kwargs)
         input = False
         for key in kwargs:
-            if key in self.kwargsInput:
+            if key in self.kwargsInput+self.kwargsMandatory:
                 input = True
                 break
         if self.isCalculable and (self._oldkwargs != self.kwargs or input):

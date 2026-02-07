@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
+from UI.widgets import SimpleStatus
 from tools.qt import QtCore, QtWidgets
 
 
@@ -42,7 +43,10 @@ class ToolGui(QtWidgets.QWidget):
 
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 10, 3)
+            QtWidgets.QSizePolicy.Policy.Expanding), 9, 3)
+
+        self.msg = SimpleStatus()
+        lyt.addWidget(self.msg, 10, 1, 1, 3)
 
         self.setEnabled(False)
 
@@ -89,3 +93,4 @@ class CallableEntity(QtCore.QObject):
 
         if self.isCalculable and self._oldkw != self.kw:
             self.calculo()
+        self.inputChanged.emit(self)
