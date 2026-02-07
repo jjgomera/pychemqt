@@ -817,7 +817,10 @@ class TwistedTape():
         "Kidd (1969)",
         "Sivashanmugam-Suresh (2006)")
 
-    def __init__(self, H, D, delta):
+    status = 0
+    msg = ""
+
+    def __call__(self, H, D, delta):
         """
         Definition of twisted tape accesory
 
@@ -858,6 +861,8 @@ class UI_TwistedTape(ToolGui):
 
     def loadUI(self):
         """Add widget"""
+        self.Entity = TwistedTape()
+
         lyt = self.layout()
 
         lytH = QtWidgets.QHBoxLayout()
