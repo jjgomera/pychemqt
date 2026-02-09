@@ -97,19 +97,26 @@ __doi__ = {
          "ref": "AIChE J. 15(4) (1969) 581-585.",
          "doi": "10.1002/aic.690150420"},
     12:
+        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
+         "title": "Heat Transfer and Friction Factor Studies in a Circular "
+                  "Tube Fitted with Twisted Tape Consisting of Wire-nails",
+         "ref": "Chin. J. Chem. Eng. 18(6) (2010) 1038-1042",
+         "doi": "10.1016/S1004-9541(09)60166-X"},
+    13:
         {"autor": "Sivashanmugam, P., Suresh, S.",
          "title": "Experimental studies on heat transfer and friction factor "
                   "characteristics of laminar flow through a circular tube "
                   "fitted with helical screw-tape inserts",
          "ref": "App. Thermal Eng. 26(16) (2006) 1990-1997",
          "doi": "10.1016/j.applthermaleng.2006.01.008"},
-    13:
-        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
-         "title": "Heat Transfer and Friction Factor Studies in a Circular "
-                  "Tube Fitted with Twisted Tape Consisting of Wire-nails",
-         "ref": "Chin. J. Chem. Eng. 18(6) (2010) 1038-1042",
-         "doi": "10.1016/S1004-9541(09)60166-X"},
-    # 14:
+    14:
+        {"autor": "Sivashanmugam, P., Suresh, S.",
+         "title": "Experimental studies on heat transfer and friction factor "
+                  "characteristics of turbulent flow through a circular tube "
+                  "fitted with helical screw-tape inserts",
+         "ref": "Chem. Eng. Processing 46(12) (2007) 1292-1298",
+         "doi": "10.1016/j.cep.2006.10.009"},
+    # 15:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -353,35 +360,6 @@ def f_twisted_Agarwal(Re, D, H):
 
 
 @refDoc(__doi__, [12])
-def f_twisted_Sivashanmugam(Re, D, H):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Sivashanmugam-Suresh correlation (2006). Valid in laminar flow
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-    """
-
-    if Re > 2000:
-        raise NotImplementedError("Input out of bound")
-
-    # Eq 6
-    f = 10.7564*Re**0.387*(H/D)**-1.054
-
-    return f
-
-
-@refDoc(__doi__, [13])
 def f_twisted_Murugesan(Re, D, H, nails=0):
     """Calculate friction factor for a pipe with a twisted-tape insert using
     the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
@@ -412,6 +390,38 @@ def f_twisted_Murugesan(Re, D, H, nails=0):
     else:
         # Eq 4
         f = 2.642*Re**-0.474*(H/D)**-0.302
+
+    return f
+
+
+@refDoc(__doi__, [13, 14])
+def f_helical_Sivashanmugam(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Sivashanmugam-Suresh correlation (2006)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re > 2000:
+        # Turbulent flow
+        # Eq 6 in 14_
+        f = 32.415*Re**-0.598*(H/D)**-0.7986
+
+    else:
+        # Laminar flow
+        # Eq 6 in 13_
+        f = 10.7564*Re**0.387*(H/D)**-1.054
 
     return f
 
@@ -612,7 +622,7 @@ def Nu_twisted_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, DT, HTRI=False):
         F = 1.137
         x = 0.8
 
-    if mu > muW:
+    if mu >= muW:
         # In liquids viscosity decrease with temperature, so cooling processes
         Nc = 0
     else:
@@ -806,9 +816,9 @@ def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
 
 
 @refDoc(__doi__, [12])
-def Nu_twisted_Sivashanmugam(Re, Pr, D, H):
+def Nu_twisted_Murugesan(Re, Pr, D, H, nails=0):
     """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Sivashanmugam-Suresh correlation (2006). Valid in laminar flow
+    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
 
     Parameters
     ----------
@@ -820,25 +830,35 @@ def Nu_twisted_Sivashanmugam(Re, Pr, D, H):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
+    nails : boolean
+        Use the correlation for special twisted tape with wire nails
 
     Returns
     -------
     Nu : float
         Nusselt number, [-]
     """
-    if Re > 2000:
+
+    if Re < 2000:
         raise NotImplementedError("Input out of bound")
 
-    # Eq 6
-    Nu = 0.017*Re**0.996*Pr*(H/D)**-0.5437
+    if nails:
+        # Eq 5
+        Nu = 0.063*Re**-0.789*Pr**0.33*(H/D)**-0.257
+    else:
+        # Eq 4
+        Nu = 0.027*Re**0.862*Pr**0.33*(H/D)**-0.215
 
     return Nu
 
 
-@refDoc(__doi__, [13])
-def Nu_twisted_Murugesan(Re, Pr, D, H, nails=0):
+@refDoc(__doi__, [13, 14])
+def Nu_helical_Sivashanmugam(Re, Pr, D, H):
     """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
+    the Sivashanmugam-Suresh correlation (2006).
+
+    Correlation for helical screw-tape insert valid for all flow regimen, using
+    turbulent correlation for transition regimen.
 
     Parameters
     ----------
