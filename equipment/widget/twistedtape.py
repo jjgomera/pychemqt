@@ -116,7 +116,14 @@ __doi__ = {
                   "fitted with helical screw-tape inserts",
          "ref": "Chem. Eng. Processing 46(12) (2007) 1292-1298",
          "doi": "10.1016/j.cep.2006.10.009"},
-    # 15:
+    15:
+        {"autor": "Sarma, P.K., Kishore, P.S., Rao, V.D., Subrahnamyam, T.",
+         "title": "A Conbined approach to predict friction coefficients and "
+                  "convective heat transfer characteristics in A tube with "
+                  "twisted tape inserts for a wide range of Re and Pr",
+         "ref": "Int. J. Therm. Sciences 44(4) (2005) 393-398",
+         "doi": "10.1016/j.ijthermalsci.2004.12.001"},
+    # 16:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -391,6 +398,31 @@ def f_twisted_Murugesan(Re, D, H, nails=0):
         # Eq 4
         f = 2.642*Re**-0.474*(H/D)**-0.302
 
+    return f
+
+
+@refDoc(__doi__, [15])
+def f_twisted_Sarma(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Sarma et al. correlation (2005)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 4
+    rhs = 0.474 - 0.3*log10(Re) + 0.065*log10(Re)**2 - 4.66e-3*log10(Re)**3
+    f = (1+D/H)**3.378 * rhs
     return f
 
 
@@ -817,7 +849,7 @@ def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
 
 @refDoc(__doi__, [12])
 def Nu_twisted_Murugesan(Re, Pr, D, H, nails=0):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
 
     Parameters
@@ -852,9 +884,36 @@ def Nu_twisted_Murugesan(Re, Pr, D, H, nails=0):
     return Nu
 
 
+@refDoc(__doi__, [15])
+def Nu_twisted_Sarma(Re, Pr, D, H):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Sarma et al. correlation (2005)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 8
+    rhs = 0.974 - 0.783*log10(Re) + 0.35*log10(Re)**2 - 0.0273*log10(Re)**3
+    Nu = Pr**(1/3) * (1+D/H)**2 * 10**rhs
+    return Nu
+
+
 @refDoc(__doi__, [13, 14])
 def Nu_helical_Sivashanmugam(Re, Pr, D, H):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Sivashanmugam-Suresh correlation (2006).
 
     Correlation for helical screw-tape insert valid for all flow regimen, using
@@ -904,6 +963,7 @@ class TwistedTape():
         "Shah-London (1978)",
         "Naphon (2006)",
         "Agarwal-Rao (1996)",
+        "Sarma (2005)",
         "Sivashanmugam-Suresh (2006)")
 
     TEXT_HEAT = (
