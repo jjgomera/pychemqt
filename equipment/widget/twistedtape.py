@@ -123,7 +123,38 @@ __doi__ = {
                   "twisted tape inserts for a wide range of Re and Pr",
          "ref": "Int. J. Therm. Sciences 44(4) (2005) 393-398",
          "doi": "10.1016/j.ijthermalsci.2004.12.001"},
-    # 16:
+    16:
+        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
+         "title": "Heat Transfer and Friction Factor Studies in a Circular "
+                  "Tube Fitted with Twisted Tape Consisting of Wire-nails",
+         "ref": "Chin. J. Chem. Eng. 18(6) (2010) 1038-1042",
+         "doi": "10.1016/S1004-9541(09)60166-X"},
+    17:
+        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
+         "title": "Turbulent Heat Transfer and Pressure Drop in Tube Fitted "
+                  "with Square-cut Twisted Tape",
+         "ref": "Chin. J. Chem. Eng. 18(4) (2010) 609-617",
+         "doi": "10.1016/s1004-9541(10)60264-9"},
+    18:
+        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S., Srinivasan, P.S.S",
+         "title": "Heat transfer and pressure drop characteristics in a "
+                  "circular tube fitted with and without V-cut twisted tape"
+                  "insert",
+         "ref": "Int. Comm. Heat Mass Transfer 38(3) (2011) 329-334",
+         "doi": "10.1016/j.icheatmasstransfer.2010.11.010"},
+    19:
+        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
+         "title": "Heat Transfer in Tubes Fitted with Trapezoidal-Cut and "
+                  "Plain Twisted Tape Inserts",
+         "ref": "Chem. Eng. Communications 198(7) (2011) 886-904",
+         "doi": "10.1080/00986445.2011.545294"},
+    20:
+        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
+         "title": "Heat Transfer in a Tube Fitted with Vertical and "
+                  "Horizontal Wing-cut Twisted Tapes",
+         "ref": "Exp. Heat Transfer 25(1) (2012) 30-47",
+         "doi": "10.1080/08916152.2011.559567"},
+    # 21:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -366,41 +397,6 @@ def f_twisted_Agarwal(Re, D, H):
     return f
 
 
-@refDoc(__doi__, [12])
-def f_twisted_Murugesan(Re, D, H, nails=0):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-    nails : boolean
-        Use the correlation for special twisted tape with wire nails
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-    """
-
-    if Re < 2000:
-        raise NotImplementedError("Input out of bound")
-
-    if nails:
-        # Eq 6
-        f = 28.91*Re**-0.731*(H/D)**-0.255
-    else:
-        # Eq 4
-        f = 2.642*Re**-0.474*(H/D)**-0.302
-
-    return f
-
-
 @refDoc(__doi__, [15])
 def f_twisted_Sarma(Re, D, H):
     """Calculate friction factor for a pipe with a twisted-tape insert using
@@ -423,6 +419,86 @@ def f_twisted_Sarma(Re, D, H):
     # Eq 4
     rhs = 0.474 - 0.3*log10(Re) + 0.065*log10(Re)**2 - 4.66e-3*log10(Re)**3
     f = (1+D/H)**3.378 * rhs
+    return f
+
+
+@refDoc(__doi__, [12])
+def f_twisted_Smithberg(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Smithberg-Landis correlation (1964). Valid for turbulent flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 17
+    n = 0.2*(1+1.7*(H/D)**-0.5)
+    f = (0.046 + 2.1/(H/D-0.5)**1.2) / Re**n
+    return f
+
+
+@refDoc(__doi__, [16, 17, 18, 19, 20])
+def f_twisted_Murugesan(Re, D, H, mod="", de=None, w=None):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Twisted tape diameter, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        Nails | Square cut | V cut | Trapezoidal cut
+    de : float, optional
+        Depth of V cut, [m]
+    w : float
+        Width of V cut, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+
+    if Re < 2000:
+        raise NotImplementedError("Input out of bound")
+
+    if mod == "Nails":
+        # Eq 6
+        f = 28.91*Re**-0.731*(H/D)**-0.255
+    elif mod == "Square cut":
+        # Eq 18 in 17_
+        f = 6.936*Re**-0.579*(H/D)**-0.259
+    elif mod == "V cut":
+        # Eq 9 in 18_
+        f = 8.632*Re**-0.615*(H/D)**-0.269*(1+de/D)**2.477/(1+w/D)**1.914
+    elif mod == "Trapezoidal cut":
+        # Eq 22 in 19_
+        f = 7.401*Re**-0.587*(H/D)**-0.278
+    elif mod == "Vertical wings":
+        # Eq 19 in 20_
+        f = 13.769*Re**-0.65*(H/D)**-0.257
+    elif mod == "Horizontal wings":
+        # Eq 21 in 20_
+        f = 31.477*Re**-0.74*(H/D)**-0.24
+    else:
+        # Eq 4
+        f = 2.642*Re**-0.474*(H/D)**-0.302
+
     return f
 
 
@@ -591,7 +667,7 @@ def Nu_twisted_Manglik(Re, Pr, Gr, Gz, D, H, delta, Dh, mu, muW):
             + 2.132e-14*(Reax*Ra)**2.23)**0.1
 
     elif Re >= 5000:
-        # Transition flow
+        # Turbulent flow
         # Eq 8-9
         Nu = (1+0.769/y)*0.023*Re**0.8*Pr**0.4*(pi/(pi-4*delta/D))**0.8 \
             * ((pi+2-2*delta/D)/(pi-4*delta/D))**0.2
@@ -847,10 +923,10 @@ def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
     return Nu
 
 
-@refDoc(__doi__, [12])
-def Nu_twisted_Murugesan(Re, Pr, D, H, nails=0):
+@refDoc(__doi__, [15])
+def Nu_twisted_Sarma(Re, Pr, D, H):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
+    the Sarma et al. correlation (2005)
 
     Parameters
     ----------
@@ -920,18 +996,49 @@ def Nu_twisted_Murugesan(Re, Pr, D, H, mod="", de=None, w=None):
     Pr : float
         Prandtl number, [-]
     D : float
-        Internal diameter of tube, [m]
+        Tape diameter, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        Nails|Square cut|V cut
+    de : float, optional
+        Depth of V cut, [m]
+    w : float
+        Width of V cut, [m]
 
     Returns
     -------
     Nu : float
         Nusselt number, [-]
     """
-    # Eq 8
-    rhs = 0.974 - 0.783*log10(Re) + 0.35*log10(Re)**2 - 0.0273*log10(Re)**3
-    Nu = Pr**(1/3) * (1+D/H)**2 * 10**rhs
+
+    if Re < 2000:
+        raise NotImplementedError("Input out of bound")
+
+    if mod == "Nails":
+        # Eq 5
+        Nu = 0.063*Re**-0.789*Pr**0.33*(H/D)**-0.257
+    elif mod == "Square cut":
+        # Eq 18 in 17_
+        Nu = 0.041*Re**0.862*Pr**0.33*(H/D)**-0.228
+    elif mod == "V cut":
+        # Eq 8 in 18_
+        Nu = 0.0296*Re**0.853*Pr**0.33*(H/D)**-0.222 * (1+de/D)**1.148 \
+            * (1+w/D)**-0.751
+    elif mod == "Trapezoidal cut":
+        # Eq 21 in 19_
+        Nu = 0.034*Re**0.841*Pr**0.33*(H/D)**-0.226
+    elif mod == "Vertical wings":
+        # Eq 18 in 20_
+        Nu = 0.0484*Re**0.817*Pr**0.33*(H/D)**-0.263
+    elif mod == "Horizontal wings":
+        # Eq 20 in 20_
+        Nu = 0.071*Re**0.775*Pr**0.33*(H/D)**-0.236
+    else:
+        # Eq 4
+        Nu = 0.027*Re**0.862*Pr**0.33*(H/D)**-0.215
+
     return Nu
 
 
@@ -953,42 +1060,76 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
-    nails : boolean
-        Use the correlation for special twisted tape with wire nails
 
     Returns
     -------
     Nu : float
         Nusselt number, [-]
     """
+    # There is a extension study to regularly spaced helical screw-tape insert
+    # Don't implement because laminar paper don´t give correlation
 
-    if Re < 2000:
-        raise NotImplementedError("Input out of bound")
+    # Sivashanmugam, P., Suresh, S.
+    # Experimental studies on heat transfer and friction factor characteristics
+    # of turbulent flow through a circular tube fitted with regularly spaced
+    # helical screw-tape inserts
+    # App. Thermal Eng. 27(8-9) (2007) 1311-1319
+    # doi: 10.1016/j.applthermaleng.2006.10.035
 
-    if nails:
-        # Eq 5
-        Nu = 0.063*Re**-0.789*Pr**0.33*(H/D)**-0.257
+    # Experimental studies on heat transfer and friction factor characteristics
+    # of laminar flow through a circular tube fitted with regularly spaced
+    # helical screw-tape inserts
+    # Exp. Thermal Fluid Sci. 31(4) (2007) 301-308
+    # doi: 10.1016/j.expthermflusci.2006.05.005
+
+    if Re > 2000:
+        # Turbulent flow
+        # Eq 5 in 14_
+        Nu = 0.4675*Re**0.4774*Pr*(H/D)**-0.2138
+
     else:
-        # Eq 4
-        Nu = 0.027*Re**0.862*Pr**0.33*(H/D)**-0.215
+        # Laminar flow
+        # Eq 6 in 13_
+        Nu = 0.017*Re**0.996*Pr*(H/D)**-0.5437
 
     return Nu
 
 
-class TwistedTape():
+class TwistedTape(CallableEntity):
     """Twisted-tape insert used in heat exchanger to improve efficiency.
     This tape, generally a thin metal strip, is twisted about its longitudinal
-    axis"""
+    axis
+
+    Parameters
+    ----------
+    methodFriction : integer
+        Index of method used for friction factor calculation
+    methodHeat : integer
+        Index of method used for heat transfer calculation
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    Dt : float
+        Internal diameter of tube, [m]
+    delta : float
+        Tape thickness, [m]
+
+    Lopina: Turbulent flow
+    Naphon: Turbulent flow
+    Kidd: Turbulent flow, developed with gas data
+    Sivashanmugam: Laminar flow Re < 2000
+    """
 
     TEXT_FRICTION = (
         "Manglik-Bergles (1993)",
-        "Plassis-Kröger (1984)",
+        "Plessis-Kröger (1984)",
         "Lopina-Bergles (1969)",
         "Shah-London (1978)",
         "Naphon (2006)",
         "Agarwal-Rao (1996)",
         "Sarma (2005)",
-        "Sivashanmugam-Suresh (2006)")
+        "Smithberg-Landis (1964)",
+        "Murugesan (2010)",
+        )
 
     TEXT_HEAT = (
         "HTRI",
