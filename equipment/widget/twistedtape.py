@@ -97,11 +97,11 @@ __doi__ = {
          "ref": "AIChE J. 15(4) (1969) 581-585.",
          "doi": "10.1002/aic.690150420"},
     12:
-        {"autor": "Murugesan, P., Mayilsamy, K., Suresh, S.",
-         "title": "Heat Transfer and Friction Factor Studies in a Circular "
-                  "Tube Fitted with Twisted Tape Consisting of Wire-nails",
-         "ref": "Chin. J. Chem. Eng. 18(6) (2010) 1038-1042",
-         "doi": "10.1016/S1004-9541(09)60166-X"},
+        {"autor": "Smithberg, E., Landis, F.",
+         "title": "Friction and Forced Convection Heat-Transfer "
+                  "Characteristics in Tubes With Twisted Tape Swirl Generators",
+         "ref": "J. Heat Transfer. 86(1) (1964) 39-48",
+         "doi": "10.1115/1.3687060"},
     13:
         {"autor": "Sivashanmugam, P., Suresh, S.",
          "title": "Experimental studies on heat transfer and friction factor "
@@ -862,32 +862,56 @@ def Nu_twisted_Murugesan(Re, Pr, D, H, nails=0):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
-    nails : boolean
-        Use the correlation for special twisted tape with wire nails
 
     Returns
     -------
     Nu : float
         Nusselt number, [-]
     """
+    # Eq 8
+    rhs = 0.974 - 0.783*log10(Re) + 0.35*log10(Re)**2 - 0.0273*log10(Re)**3
+    Nu = Pr**(1/3) * (1+D/H)**2 * 10**rhs
+    return Nu
 
-    if Re < 2000:
-        raise NotImplementedError("Input out of bound")
 
-    if nails:
-        # Eq 5
-        Nu = 0.063*Re**-0.789*Pr**0.33*(H/D)**-0.257
-    else:
-        # Eq 4
-        Nu = 0.027*Re**0.862*Pr**0.33*(H/D)**-0.215
+@refDoc(__doi__, [12])
+def Nu_twisted_Smithberg(Re, Pr, D, H, Dh):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Smithberg-Landis correlation (1964)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    Dh : float
+        Hydraulic diameter, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    f = f_twisted_Smithberg(Re, D, H)
+
+    # Eq 38
+    P = (1+0.0219/(H/D)**2/f)**0.5
+    A = 50.9*D/H/Re/f**0.5 + 0.023*D/Dh/Re**0.2/Pr**(2/3)*P
+    B = 1 + 700/Re/f * D/H * Dh/D * Pr**0.731
+    Nu = Re*Pr*A/B
 
     return Nu
 
 
-@refDoc(__doi__, [15])
-def Nu_twisted_Sarma(Re, Pr, D, H):
+@refDoc(__doi__, [16, 17, 18, 19, 20])
+def Nu_twisted_Murugesan(Re, Pr, D, H, mod="", de=None, w=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Sarma et al. correlation (2005)
+    the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
 
     Parameters
     ----------
