@@ -18,14 +18,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
-from math import pi
+from functools import partial
+from math import pi, log10
 
-from tools.qt import QtWidgets, translate
+from tools.qt import QtCore, QtWidgets, translate
 
 from lib.unidades import Dimensionless, Area, Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
-from equipment.widget.gui import ToolGui
+from equipment.widget.gui import CallableEntity, ToolGui
 
 
 __doi__ = {
@@ -912,7 +913,7 @@ def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
     Nu : float
         Nusselt number, [-]
     """
-    if Re < 2e4 or Re > 2e5:
+    if Re < 2e4:
         raise NotImplementedError("Input out of bound")
 
     y = H/D
@@ -1018,7 +1019,7 @@ def Nu_twisted_Murugesan(Re, Pr, D, H, mod="", de=None, w=None):
 
     if mod == "Nails":
         # Eq 5
-        Nu = 0.063*Re**-0.789*Pr**0.33*(H/D)**-0.257
+        Nu = 0.063*Re**0.789*Pr**0.33*(H/D)**-0.257
     elif mod == "Square cut":
         # Eq 18 in 17_
         Nu = 0.041*Re**0.862*Pr**0.33*(H/D)**-0.228
@@ -1133,50 +1134,284 @@ class TwistedTape(CallableEntity):
 
     TEXT_HEAT = (
         "HTRI",
-        "Lopina-Bergles (1969)",
         "Manglik-Bergles (1993)",
         "Plessis-Kröger (1987)",
+        "Lopina-Bergles (1969)",
         "Hong-Bergles (1976)",
         "Naphon (2006)",
         "Agarwal-Rao (1996)",
         "Kidd (1969)",
-        "Sivashanmugam-Suresh (2006)")
+        "Sarma (2005)",
+        "Smithberg-Landis (1964)",
+        "Murugesan (2010)",
+        )
+
+    TEXT_MURUGESAN = (
+        "",
+        "Nails",
+        "Square cut",
+        "V cut",
+        "Trapezoidal cut",
+        "Vertical wings",
+        "Horizontal wings")
+
+    # Helical method
+    # "Sivashanmugam-Suresh (2006)"
 
     status = 0
     msg = ""
+    kw = {
+        "methodFriction": 0,
+        "methodHeat": 0,
+        "H": 0,
+        "Dt": 0,
+        "delta": 0,
+        "isHelical": False,
+        "modMurugesan": "",
+        "Vcut_w": 0,
+        "Vcut_De": 0
+        }
 
-    def __call__(self, H, D, delta):
-        """
-        Definition of twisted tape accesory
+    valueChanged = QtCore.pyqtSignal(object)
+    inputChanged = QtCore.pyqtSignal(object)
 
-        Parameters
-        ----------
-        H : float
-            Tape pitch for twist of π radians (180º), [m]
-        D : float
-            Internal diameter of tube, [m]
-        delta : float
-            Tape thickness, [m]
-        """
+    @property
+    def isCalculable(self):
+        """Check if all input are defined"""
+        if not self.kw["H"]:
+            self.msg = translate("equipment", "undefined tape pitch")
+            self.status = 0
+            return False
+        if not self.kw["Dt"]:
+            self.msg = translate("equipment", "undefined tape diameter")
+            self.status = 0
+            return False
+        if not self.kw["delta"]:
+            self.msg = translate("equipment", "undefined tape thickness")
+            self.status = 0
+            return False
+
+        self.msg = ""
+        self.status = 1
+        return True
+
+    def calculo(self):
+        """Definition of twisted tape inserts"""
         # Geometrical definition of parameters in [1]_
 
+        self.H = self.kw["H"]
+        self.Dt = self.kw["Dt"]
+        self.delta = self.kw["delta"]
+
         # Helical factor, Eq 2
-        self.G = Dimensionless((1+pi**2/D**2/4/H**2)**0.5)
+        self.G = Dimensionless((1+pi**2/self.Dt**2/4/self.H**2)**0.5)
 
         # Effective cross-sectional flow area, Eq 3
-        self.Ae = Area(2*H**2/pi*(self.G-1) - D*delta)
+        self.Ae = Area(2*self.H**2/pi*(self.G-1) - self.Dt*self.delta)
 
         # Effective wetted perimeter, Eq 4
-        self.Pe = Length(2 * (D - delta + pi*D/2/self.G))
+        self.Pe = Length(2 * (self.Dt - self.delta + pi*self.Dt/2/self.G))
 
         # Effective hydraulic diameter, Eq 7
         self.De = Length(4*self.Ae/self.Pe)
 
         # Area tube without tape
-        self.A = pi*D**2/4
+        self.A = pi*self.Dt**2/4
 
         # Tape twist parameter
-        self.y = Dimensionless(H/D)
+        self.y = Dimensionless(self.H/self.Dt)
+
+        self.valueChanged.emit(self)
+
+    def Nu(self, Re, Pr, mu, muW, beta, dT, L, method=None):
+        """Calculate nusselt number"""
+
+        msg = ""
+        if method is None:
+            method = self.kw["methodHeat"]
+
+        print(method)
+        if method == 0:
+            # HTRI
+            Nu = Nu_twisted_HTRI(
+                Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT, L)
+
+        elif method == 1:
+            # Manglik-Bergles (1993)
+            Nu = Nu_twisted_Manglik(
+                Re, Pr, Gr, Gz, self.Dt, self.H, self.delta, self.De, mu, muW)
+
+        elif method == 2:
+            # Plessis-Kröger (1987)
+            Nu = Nu_twisted_Plessis(
+                Re, Pr, self.Dt, self.H, self.delta, self.Ae, self.De)
+
+        elif method == 3:
+            # Lopina-Bergles (1969)
+            if Re < 5000:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Lopina correlation only valid in turbulent flow, using "
+                msg += "HTRI instead"
+            else:
+                Nu = Nu_twisted_Lopina(
+                    Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT)
+
+        elif method == 4:
+            # Hong-Bergles (1976)
+            if Re > 2500:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Hong correlation only valid in laminar flow, using "
+                msg += "HTRI instead"
+            else:
+                Nu = Nu_twisted_Hong(Re, Pr, self.Dt, self.H)
+
+        elif method == 5:
+            # Naphon (2006)
+            if Re < 5000:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Naphon correlation only valid in laminar flow, using "
+                msg += "HTRI instead"
+            else:
+                Nu = Nu_twisted_Naphon(Re, Pr, self.Dt, self.H)
+
+        elif method == 6:
+            # Agarwal-Rao (1996)
+            try:
+                Nu = Nu_twisted_Agarwal(Re, Pr, self.Dt, self.H, mu, muW)
+            except NotImplementedError:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Agarwal correlation out of range, using HTRI instead"
+
+        elif method == 7:
+            # Kidd (1969)
+            if Re < 2e4:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Kidd correlation only valid in turbulent flow, using "
+                msg += "HTRI instead"
+            else:
+                Nu = Nu_twisted_Kidd(Re, Pr, self.Dt, self.H, L, 1, 1)
+
+        elif method == 8:
+            # Sarma (2005)
+            Nu = Nu_twisted_Sarma(Re, Pr, self.Dt, self.H)
+
+        elif method == 9:
+            # Smithberg-Landis (1964)
+            if Re < 5000:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Smithberg correlation only valid in turbulent flow, "
+                msg += "using HTRI instead"
+            else:
+                Nu = Nu_twisted_Smithberg(Re, Pr, self.Dt, self.H, self.De)
+
+        elif method == 10:
+            # Murugesan (2010)
+            if Re < 2000:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Murugesan correlation only valid in turbulent flow, "
+                msg += "using HTRI instead"
+            elif self.kw["modMurugesan"] == "V cut" and self.kw["Vcut_De"] \
+                    and self.kw["Vcut_w"]:
+                Nu = Nu_twisted_Murugesan(
+                    Re, Pr, self.Dt, self.H, self.kw["modMurugesan"],
+                    self.kw["Vcut_De"], self.kw["Vcut_w"])
+            elif self.kw["modMurugesan"] == "V cut":
+                Nu = Nu_twisted_Murugesan(Re, Pr, self.Dt, self.H)
+                msg = "V cut twisted tape geometry don't defined, using plain "
+                msg += "twisted tape instead"
+            else:
+                Nu = Nu_twisted_Murugesan(
+                    Re, Pr, self.Dt, self.H, self.kw["modMurugesan"])
+
+        return Nu
+
+    def f(self, Re, method=None):
+        """Calculate friction factor"""
+        msg = ""
+        if method is None:
+            method = self.kw["methodFriction"]
+
+        if self.kw["isHelical"]:
+            f = f_helical_Sivashanmugam(Re, self.Dt, self.H)
+            return f
+
+        if method == 0:
+            # Manglik-Bergles (1993)
+            f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
+
+        elif method == 1:
+            # Plessis-Kröger (1984)
+            f = f_twisted_Plessis(
+                Re, self.Dt, self.H, self.delta, self.Ae, self.De)
+
+        elif method == 2:
+            # Lopina-Bergles (1969)
+            if Re < 5000:
+                f = self.f(Re, 0)
+                msg = "Lopina correlation only valid in turbulent flow, using "
+                msg += "Manglik instead"
+            else:
+                f = f_twisted_Lopina(Re, self.Dt, self.H, self.De)
+
+        elif method == 3:
+            # Shah-London (1978)
+            f = f_twisted_Shah(Re, self.Dt, self.H, self.delta)
+
+        elif method == 4:
+            # Naphon (2006)
+            if Re < 5000:
+                f = self.f(Re, 0)
+                msg = "Naphon correlation only valid in turbulent flow, using "
+                msg += "Manglik instead"
+            else:
+                f = f_twisted_Naphon(Re, self.Dt, self.H)
+
+        elif method == 5:
+            # Agarwal-Rao (1996)
+            try:
+                f = f_twisted_Agarwal(Re, self.Dt, self.H)
+            except NotImplementedError:
+                f = self.f(Re, 0)
+                msg = "Agarwal correlation out of range, using Manglik instead"
+
+        elif method == 6:
+            # Sarma (2005)
+            f = f_twisted_Sarma(Re, self.Dt, self.H)
+
+        elif method == 7:
+            # Smithberg-Landis (1964)
+            if Re < 3000:
+                f = self.f(Re, 0)
+                msg = "Smithberg correlation only valid in turbulent flow, "
+                msg += "using Manglik instead"
+            else:
+                f = f_twisted_Smithberg(Re, self.Dt, self.H)
+
+        elif method == 8:
+            # Murugesan (2010)
+            if Re < 2000:
+                f = self.f(Re, 0)
+                msg = "Murugesan correlation only valid in turbulent flow, "
+                msg += "using Manglik instead"
+            elif self.kw["modMurugesan"] == "V cut" and self.kw["Vcut_De"] \
+                    and self.kw["Vcut_w"]:
+                f = f_twisted_Murugesan(
+                    Re, self.Dt, self.H, self.kw["modMurugesan"],
+                    self.kw["Vcut_w"], self.kw["Vcut_De"])
+            elif self.kw["modMurugesan"] == "V cut":
+                f = f_twisted_Murugesan(Re, self.Dt, self.H)
+                msg = "V cut twisted tape geometry don't defined, using plain "
+                msg += "twisted tape instead"
+            else:
+                f = f_twisted_Murugesan(
+                    Re, self.Dt, self.H, self.kw["modMurugesan"])
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
+
+        return f
 
 
 class UI_TwistedTape(ToolGui):
@@ -1196,6 +1431,9 @@ class UI_TwistedTape(ToolGui):
         self.methodFriction = QtWidgets.QComboBox()
         for method in TwistedTape.TEXT_FRICTION:
             self.methodFriction.addItem(method)
+        self.methodFriction.currentIndexChanged.connect(
+            partial(self.changeParams, "methodFriction"))
+        self.methodFriction.currentTextChanged.connect(self.setVisibleMod)
         lytH.addWidget(self.methodFriction)
         lyt.addLayout(lytH, 2, 1, 1, 2)
 
@@ -1205,6 +1443,9 @@ class UI_TwistedTape(ToolGui):
         self.methodHeat = QtWidgets.QComboBox()
         for method in TwistedTape.TEXT_HEAT:
             self.methodHeat.addItem(method)
+        self.methodHeat.currentIndexChanged.connect(
+            partial(self.changeParams, "methodHeat"))
+        self.methodHeat.currentTextChanged.connect(self.setVisibleMod)
         lytH.addWidget(self.methodHeat)
         lyt.addLayout(lytH, 3, 1, 1, 2)
 
@@ -1212,13 +1453,65 @@ class UI_TwistedTape(ToolGui):
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
         lyt.addWidget(label, 4, 1)
         self.H = Entrada_con_unidades(Length)
+        self.H.valueChanged.connect(partial(self.changeParams, "H"))
         lyt.addWidget(self.H, 4, 2)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 5, 1)
         self.Dt = Entrada_con_unidades(Length, "PipeDiameter")
+        self.Dt.valueChanged.connect(partial(self.changeParams, "Dt"))
         lyt.addWidget(self.Dt, 5, 2)
         lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 6, 1)
         self.delta = Entrada_con_unidades(Length, "Thickness")
+        self.delta.valueChanged.connect(partial(self.changeParams, "delta"))
         lyt.addWidget(self.delta, 6, 2)
+
+        self.groupMurugesan = QtWidgets.QWidget()
+        lytMuru = QtWidgets.QGridLayout(self.groupMurugesan)
+        lytMuru.addWidget(QtWidgets.QLabel(self.tr(
+            "Murugesan correlation modification")), 1, 1, 1, 2)
+        self.modMurugesan = QtWidgets.QComboBox()
+        for method in TwistedTape.TEXT_MURUGESAN:
+            self.modMurugesan.addItem(method)
+        self.modMurugesan.currentTextChanged.connect(
+            partial(self.changeParams, "modMurugesan"))
+        self.modMurugesan.currentTextChanged.connect(self.setEnable_Murugesan)
+        lytMuru.addWidget(self.modMurugesan, 1, 3)
+        self.lblDe = QtWidgets.QLabel(self.tr("Depth of V cut"))
+        lytMuru.addWidget(self.lblDe, 2, 2)
+        self.De = Entrada_con_unidades(Length, "thickness")
+        self.De.valueChanged.connect(partial(self.changeParams, "Vcut_De"))
+        lytMuru.addWidget(self.De, 2, 3)
+        self.lblw = QtWidgets.QLabel(self.tr("Widgth of V cut"))
+        lytMuru.addWidget(self.lblw, 3, 2)
+        self.w = Entrada_con_unidades(Length, "thickness")
+        self.w.valueChanged.connect(partial(self.changeParams, "Vcut_w"))
+        lytMuru.addWidget(self.w, 3, 3)
+
+        lyt.addWidget(self.groupMurugesan, 8, 1, 1, 2)
+
+        self.helical = QtWidgets.QCheckBox(self.tr(
+            "Helical screw-tape inserts"))
+        self.helical.toggled.connect(
+            partial(self.changeParams, "isHelical"))
+        lyt.addWidget(self.helical, 9, 1, 1, 3)
+
+        self.Entity.valueChanged.connect(self.valueChanged.emit)
+        self.Entity.inputChanged.connect(self.populate)
+        self.setVisibleMod()
+
+    def setVisibleMod(self):
+        if self.methodHeat.currentText() == "Murugesan (2010)" or \
+                self.methodFriction.currentText() == "Murugesan (2010)":
+            self.groupMurugesan.setVisible(True)
+        else:
+            self.groupMurugesan.setVisible(False)
+        self.setEnable_Murugesan(self.modMurugesan.currentText())
+
+    def setEnable_Murugesan(self, mod):
+        """Change Enable/Disable state for Murugesan aditional parameters"""
+        self.lblDe.setEnabled(mod == "V cut")
+        self.De.setEnabled(mod == "V cut")
+        self.lblw.setEnabled(mod == "V cut")
+        self.w.setEnabled(mod == "V cut")
 
 
 class Dialog(QtWidgets.QDialog):
@@ -1235,11 +1528,6 @@ class Dialog(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
-
-    # def value(self, config):
-    #     """Function to result wizard"""
-    #     config = self.datos.value(config)
-    #     return config
 
 
 if __name__ == "__main__":

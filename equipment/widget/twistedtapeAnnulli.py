@@ -307,9 +307,7 @@ class TwistedTapeAnnuli(CallableEntity):
         return True
 
     def calculo(self):
-        """
-        Definition of twisted tape inserts
-        """
+        """Definition of twisted tape inserts for annuli sections"""
         self.H = self.kw["H"]
         self.Di = self.kw["Di"]
         self.Do = self.kw["Do"]
@@ -359,22 +357,19 @@ class UI_TwistedTapeAnnuli(ToolGui):
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
         lyt.addWidget(label, 2, 1)
         self.H = Entrada_con_unidades(Length)
-        self.H.valueChanged.connect(
-            partial(self.changeParams, "H"))
+        self.H.valueChanged.connect(partial(self.changeParams, "H"))
         lyt.addWidget(self.H, 2, 2)
         label = QtWidgets.QLabel("Di")
         label.setToolTip(self.tr("Internal diameter of annuli section"))
         lyt.addWidget(label, 3, 1)
         self.Di = Entrada_con_unidades(Length, "PipeDiameter")
-        self.Di.valueChanged.connect(
-            partial(self.changeParams, "Di"))
+        self.Di.valueChanged.connect(partial(self.changeParams, "Di"))
         lyt.addWidget(self.Di, 3, 2)
         label = QtWidgets.QLabel("Do")
         label.setToolTip(self.tr("External diameter of annuli section"))
         lyt.addWidget(label, 4, 1)
         self.Do = Entrada_con_unidades(Length, "PipeDiameter")
-        self.Do.valueChanged.connect(
-            partial(self.changeParams, "Do"))
+        self.Do.valueChanged.connect(partial(self.changeParams, "Do"))
         lyt.addWidget(self.Do, 4, 2)
 
         self.angled = QtWidgets.QCheckBox(self.tr("Angled twisted-tape"))
@@ -405,12 +400,6 @@ class UI_TwistedTapeAnnuli(ToolGui):
         self.labelOrientation.setEnabled(boolean)
         self.orientation.setEnabled(boolean)
         self.changeParams("angled", boolean)
-
-    def populate(self, entity):
-        if self.isChecked():
-            self.msg.setState(entity)
-        else:
-            self.msg.clear()
 
 
 class Dialog(QtWidgets.QDialog):

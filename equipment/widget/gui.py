@@ -34,7 +34,7 @@ class ToolGui(QtWidgets.QWidget):
         lyt = QtWidgets.QGridLayout(self)
         self.check = QtWidgets.QCheckBox(self.title)
         self.check.toggled.connect(self.setEnabled)
-        lyt.addWidget(self.check, 0, 1)
+        lyt.addWidget(self.check, 0, 1, 1, 3)
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 1, 1)
@@ -43,7 +43,7 @@ class ToolGui(QtWidgets.QWidget):
 
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 9, 3)
+            QtWidgets.QSizePolicy.Policy.Expanding), 9, 4)
 
         self.msg = SimpleStatus()
         lyt.addWidget(self.msg, 10, 1, 1, 3)
@@ -57,6 +57,7 @@ class ToolGui(QtWidgets.QWidget):
         for wdg in self.children():
             if wdg is not self.check and wdg is not self.layout():
                 wdg.setEnabled(boolean)
+        self.populate(self.Entity)
 
     def isChecked(self):
         """Level up check state as global value for widget"""
@@ -72,6 +73,12 @@ class ToolGui(QtWidgets.QWidget):
         """Change any kwargs value"""
         self.Entity(**{key: value})
 
+    def populate(self, entity):
+        if self.isChecked():
+            self.msg.setState(entity)
+        else:
+            self.msg.clear()
+
 
 class CallableEntity(QtCore.QObject):
     """Class with callable capability to add each input in a call"""
@@ -81,8 +88,7 @@ class CallableEntity(QtCore.QObject):
         super().__init__()
         self.kw = self.__class__.kw.copy()
 
-        if kwargs:
-            self.__call__(**kwargs)
+        self.__call__(**kwargs)
 
     def __call__(self, **kw):
         """Add callable functionality, so it can be possible add kwargs,

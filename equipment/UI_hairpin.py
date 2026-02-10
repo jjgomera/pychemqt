@@ -142,9 +142,12 @@ class UI_equipment(UI_equip):
         self.finnedPipe = finnedPipe.UI_FinnedPipe()
         tabCatalogo.addTab(self.finnedPipe, self.tr("Finned pipe"))
         self.twistedTape = twistedtape.UI_TwistedTape()
+        self.twistedTape.toggled.connect(
+            partial(self.changeParams, "hasTwistedTape"))
+        self.twistedTape.valueChanged.connect(
+            partial(self.changeParams, "twistedTape"))
         tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
         self.twistedTapeAnnuli = twistedtapeAnnulli.UI_TwistedTapeAnnuli()
-        self.twistedTapeAnnuli.toggled
         self.twistedTapeAnnuli.toggled.connect(
             partial(self.changeParams, "hasTwistedAnnuli"))
         self.twistedTapeAnnuli.valueChanged.connect(
