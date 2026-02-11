@@ -155,7 +155,15 @@ __doi__ = {
                   "Horizontal Wing-cut Twisted Tapes",
          "ref": "Exp. Heat Transfer 25(1) (2012) 30-47",
          "doi": "10.1080/08916152.2011.559567"},
-    # 21:
+    21:
+        {"autor": "Jaisankar, S., Radhakrishnan, T.;., Sheeba, K.N.",
+         "title": "Experimental studies on heat transfer and friction factor "
+                  "characteristics of forced circulation solar water heater "
+                  "system fitted with helical twisted tapes",
+         "ref": "Solar Energy 83(11) (2009) 1943-1952",
+         "doi": "10.1016/j.solener.2009.07.006"},
+
+    # 22:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -501,6 +509,35 @@ def f_twisted_Murugesan(Re, D, H, mod="", de=None, w=None):
         f = 2.642*Re**-0.474*(H/D)**-0.302
 
     return f
+
+
+@refDoc(__doi__, [21])
+def f_twisted_Jaisankar(Re, D, H):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Jaisankar et al. correlation (2009).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re < 3000:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 10
+    f = 271.1*Re**-0.947*(H/D)**-0.584
+
+    return f
+
 
 
 @refDoc(__doi__, [13, 14])
@@ -1043,6 +1080,37 @@ def Nu_twisted_Murugesan(Re, Pr, D, H, mod="", de=None, w=None):
     return Nu
 
 
+@refDoc(__doi__, [21])
+def Nu_twisted_Jaisankar(Re, Pr, D, H):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Jaisankar et al. correlation (2009).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 3000:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 9
+    Nu = 0.000115*Re**1.169*Pr**2.424*(H/D)**-0.511
+
+    return Nu
+
+
+
 @refDoc(__doi__, [13, 14])
 def Nu_helical_Sivashanmugam(Re, Pr, D, H):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -1130,6 +1198,7 @@ class TwistedTape(CallableEntity):
         "Sarma (2005)",
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
+        "Jaisankar (2009)",
         )
 
     TEXT_HEAT = (
@@ -1144,6 +1213,7 @@ class TwistedTape(CallableEntity):
         "Sarma (2005)",
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
+        "Jaisankar (2009)",
         )
 
     TEXT_MURUGESAN = (
@@ -1323,6 +1393,15 @@ class TwistedTape(CallableEntity):
                 Nu = Nu_twisted_Murugesan(
                     Re, Pr, self.Dt, self.H, self.kw["modMurugesan"])
 
+        elif method == 11:
+            # Jaisankar
+            if Re < 2000:
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Jaisankar correlation only valid in turbulent flow, "
+                msg += "using HTRI instead"
+            else:
+                Nu = Nu_twisted_Jaisankar(Re, Pr, self.Dt, self.H)
+
         return Nu
 
     def f(self, Re, method=None):
@@ -1405,6 +1484,15 @@ class TwistedTape(CallableEntity):
             else:
                 f = f_twisted_Murugesan(
                     Re, self.Dt, self.H, self.kw["modMurugesan"])
+
+        elif method == 9:
+            # Jaisankar
+            if Re < 3000:
+                f = self.f(Re, 0)
+                msg = "Jaisankar correlation only valid in turbulent flow, "
+                msg += "using Manglik instead"
+            else:
+                f = f_twisted_Jaisankar(Re, self.Dt, self.H)
 
         if msg:
             self.status = 3
