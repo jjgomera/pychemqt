@@ -32,7 +32,7 @@ from equipment.heatExchanger import Hairpin
 from equipment.UI_pipe import PipeCatalogDialog
 from equipment.parents import UI_equip
 from equipment.widget.fouling import FoulingWidget
-from equipment.widget import twistedtape, twistedtapeAnnulli, finnedPipe
+from equipment.widget import twistedtape, twistedtapeAnnulli, finnedPipe, wirecoil
 from tools.costIndex import CostData
 from tools.qt import QtWidgets
 
@@ -147,6 +147,12 @@ class UI_equipment(UI_equip):
         self.twistedTape.valueChanged.connect(
             partial(self.changeParams, "twistedTape"))
         tabCatalogo.addTab(self.twistedTape, self.tr("Twisted-tape insert"))
+        self.wireCoil = wirecoil.UI_WireCoil()
+        self.wireCoil.toggled.connect(
+            partial(self.changeParams, "hasWireCoil"))
+        self.wireCoil.valueChanged.connect(
+            partial(self.changeParams, "wireCoil"))
+        tabCatalogo.addTab(self.wireCoil, self.tr("Wire-coil insert"))
         self.twistedTapeAnnuli = twistedtapeAnnulli.UI_TwistedTapeAnnuli()
         self.twistedTapeAnnuli.toggled.connect(
             partial(self.changeParams, "hasTwistedAnnuli"))

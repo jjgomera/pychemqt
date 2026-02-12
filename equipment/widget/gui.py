@@ -43,10 +43,10 @@ class ToolGui(QtWidgets.QWidget):
 
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 9, 4)
+            QtWidgets.QSizePolicy.Policy.Expanding), 19, 4)
 
         self.msg = SimpleStatus()
-        lyt.addWidget(self.msg, 10, 1, 1, 3)
+        lyt.addWidget(self.msg, 20, 1, 1, 3)
 
         self.setEnabled(False)
 

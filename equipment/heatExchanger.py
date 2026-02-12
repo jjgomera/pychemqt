@@ -556,6 +556,8 @@ class Hairpin(equipment):
 
         hasTwistedTape: Boolean to use a twisted tape
         twistedTape: Twisted tape insert instance
+        hasWireCoil: Boolean to use a wire coil insert
+        wireCoil: Wire-coil insert instance
         hasTwistedAnnuli: Boolean to use a twisted tape in annuli section
         twistedAnnuli: Twisted tape in annulli section instance
 
@@ -627,6 +629,8 @@ class Hairpin(equipment):
 
         "hasTwistedTape": False,
         "twistedTape": None,
+        "hasWireCoil": False,
+        "wireCoil": None,
         "hasTwistedAnnuli": False,
         "twistedAnnuli": None,
 
@@ -647,7 +651,7 @@ class Hairpin(equipment):
                    "tubeTout", "annulliTout")
     kwargsList = ("modo", "flujo", "orientacion", "annulliNuMethod")
     kwargsCheck = ("finnedPipe", )
-    kwargsMandatory = ("twistedTape", "twistedAnnuli")
+    kwargsMandatory = ("twistedTape", "twistedAnnuli", "wireCoil")
     calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
                       "deltaPTube", "deltaPAnnulli", "CF")
     calculateCostos = ("C_adq", "C_inst")
@@ -1015,6 +1019,8 @@ class Hairpin(equipment):
 
         if self.kwargs["hasTwistedTape"] and self.kwargs["twistedTape"]:
             Nu = self.kwargs["twistedTape"].Nu(re, pr, mu, mu, beta, 0, self.L)
+        elif self.kwargs["hasWireCoil"] and self.kwargs["wireCoil"]:
+            Nu = self.kwargs["wireCoil"].Nu(re, pr)
 
         elif self.phaseTube[:6] == "Latent":
 
@@ -1100,6 +1106,8 @@ class Hairpin(equipment):
         """Calculate friction factor coefficient in tube side"""
         if self.kwargs["hasTwistedTape"] and self.kwargs["twistedTape"]:
             f = self.kwargs["twistedTape"].f(Re)
+        elif self.kwargs["hasWireCoil"] and self.kwargs["wireCoil"]:
+            f = self.kwargs["wireCoil"].f(Re)
         else:
             f = f_friccion(Re, eD)
         print("f: ", f)
