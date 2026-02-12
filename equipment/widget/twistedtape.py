@@ -162,8 +162,20 @@ __doi__ = {
                   "system fitted with helical twisted tapes",
          "ref": "Solar Energy 83(11) (2009) 1943-1952",
          "doi": "10.1016/j.solener.2009.07.006"},
-
-    # 22:
+    22:
+        {"autor": "Sivashanmugam, P., Suresh, S.",
+         "title": "Experimental studies on heat transfer and friction factor "
+                  "characteristics of turbulent flow through a circular tube "
+                  "fitted with regularly spaced helical screw-tape inserts",
+         "ref": "App. Thermal Eng. 27(8-9) (2007) 1311-1319",
+         "doi": "10.1016/j.applthermaleng.2006.10.035"},
+    23:
+        {"autor": "Ibrahim, E.Z.",
+         "title": "Augmentation of laminar flow and heat transfer in flat "
+                  "tubes by means of helical screw-tape inserts",
+         "ref": "Energy Conv. Management 52(1) (2011) 250-257",
+         "doi": "10.1016/j.enconman.2010.06.065"},
+    # 24:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -539,11 +551,11 @@ def f_twisted_Jaisankar(Re, D, H):
     return f
 
 
-
-@refDoc(__doi__, [13, 14])
-def f_helical_Sivashanmugam(Re, D, H):
+@refDoc(__doi__, [13, 14, 22, 23])
+def f_helical_Sivashanmugam(Re, D, H, S=None):
     """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Sivashanmugam-Suresh correlation (2006)
+    the Sivashanmugam-Suresh correlation (2006) with lamanar flow correlation
+    for spacer from Ibrahim correlation (2011).
 
     Parameters
     ----------
@@ -553,6 +565,8 @@ def f_helical_Sivashanmugam(Re, D, H):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
+    S : float
+        Spacer lenght without twisted section, [m]
 
     Returns
     -------
@@ -561,13 +575,21 @@ def f_helical_Sivashanmugam(Re, D, H):
     """
     if Re > 2000:
         # Turbulent flow
-        # Eq 6 in 14_
-        f = 32.415*Re**-0.598*(H/D)**-0.7986
+        if S:
+            # Eq 6 in 22_
+            f = Re**-0.384*(H/D)**-0.852*(1+S/D)**-0.047
+        else:
+            # Eq 6 in 14_
+            f = 32.415*Re**-0.598*(H/D)**-0.7986
 
     else:
         # Laminar flow
-        # Eq 6 in 13_
-        f = 10.7564*Re**0.387*(H/D)**-1.054
+        if S:
+            # Eq 12 in 23_
+            Nu = 54.41*Re**-0.87*(1+S/D)**-0.045*(H/D)**-0.146
+        else:
+            # Eq 6 in 13_
+            f = 10.7564*Re**0.387*(H/D)**-1.054
 
     return f
 
@@ -1110,11 +1132,11 @@ def Nu_twisted_Jaisankar(Re, Pr, D, H):
     return Nu
 
 
-
-@refDoc(__doi__, [13, 14])
-def Nu_helical_Sivashanmugam(Re, Pr, D, H):
+@refDoc(__doi__, [13, 14, 22, 23])
+def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Sivashanmugam-Suresh correlation (2006).
+    the Sivashanmugam-Suresh correlation (2006) with lamanar flow correlation
+    for spacer from Ibrahim correlation (2011).
 
     Correlation for helical screw-tape insert valid for all flow regimen, using
     turbulent correlation for transition regimen.
@@ -1129,37 +1151,31 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
+    S : float
+        Spacer lenght without twisted section, [m]
 
     Returns
     -------
     Nu : float
         Nusselt number, [-]
     """
-    # There is a extension study to regularly spaced helical screw-tape insert
-    # Don't implement because laminar paper don´t give correlation
-
-    # Sivashanmugam, P., Suresh, S.
-    # Experimental studies on heat transfer and friction factor characteristics
-    # of turbulent flow through a circular tube fitted with regularly spaced
-    # helical screw-tape inserts
-    # App. Thermal Eng. 27(8-9) (2007) 1311-1319
-    # doi: 10.1016/j.applthermaleng.2006.10.035
-
-    # Experimental studies on heat transfer and friction factor characteristics
-    # of laminar flow through a circular tube fitted with regularly spaced
-    # helical screw-tape inserts
-    # Exp. Thermal Fluid Sci. 31(4) (2007) 301-308
-    # doi: 10.1016/j.expthermflusci.2006.05.005
-
     if Re > 2000:
         # Turbulent flow
-        # Eq 5 in 14_
-        Nu = 0.4675*Re**0.4774*Pr*(H/D)**-0.2138
+        if S:
+            # Eq 5 in 22_
+            Nu = 0.258*Re**0.554*Pr*(H/D)**-0.242*(1+S/D)**-0.042
+        else:
+            # Eq 5 in 14_
+            Nu = 0.4675*Re**0.4774*Pr*(H/D)**-0.2138
 
     else:
         # Laminar flow
-        # Eq 6 in 13_
-        Nu = 0.017*Re**0.996*Pr*(H/D)**-0.5437
+        if S:
+            # Eq 11 in 23_
+            Nu = 6.11*Re**0.199*(1+S/D)**-0.064*(H/D)**-0.318
+        else:
+            # Eq 6 in 13_
+            Nu = 0.017*Re**0.996*Pr*(H/D)**-0.5437
 
     return Nu
 
@@ -1185,7 +1201,6 @@ class TwistedTape(CallableEntity):
     Lopina: Turbulent flow
     Naphon: Turbulent flow
     Kidd: Turbulent flow, developed with gas data
-    Sivashanmugam: Laminar flow Re < 2000
     """
 
     TEXT_FRICTION = (
@@ -1226,7 +1241,7 @@ class TwistedTape(CallableEntity):
         "Horizontal wings")
 
     # Helical method
-    # "Sivashanmugam-Suresh (2006)"
+    # "Sivashanmugam-Suresh-Ibrahim (2006)"
 
     status = 0
     msg = ""
@@ -1239,7 +1254,8 @@ class TwistedTape(CallableEntity):
         "isHelical": False,
         "modMurugesan": "",
         "Vcut_w": 0,
-        "Vcut_De": 0
+        "Vcut_De": 0,
+        "S": 0
         }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -1300,7 +1316,10 @@ class TwistedTape(CallableEntity):
         if method is None:
             method = self.kw["methodHeat"]
 
-        print(method)
+        if self.kw["isHelical"]:
+            Nu = Nu_helical_Sivashanmugam(Re, Pr, self.Dt, self.H, self.kw["S"])
+            return Nu
+
         if method == 0:
             # HTRI
             Nu = Nu_twisted_HTRI(
@@ -1411,7 +1430,7 @@ class TwistedTape(CallableEntity):
             method = self.kw["methodFriction"]
 
         if self.kw["isHelical"]:
-            f = f_helical_Sivashanmugam(Re, self.Dt, self.H)
+            f = f_helical_Sivashanmugam(Re, self.Dt, self.H, self.kw["S"])
             return f
 
         if method == 0:
@@ -1580,7 +1599,16 @@ class UI_TwistedTape(ToolGui):
             "Helical screw-tape inserts"))
         self.helical.toggled.connect(
             partial(self.changeParams, "isHelical"))
+        self.helical.toggled.connect(self.setEnableSpacer)
         lyt.addWidget(self.helical, 9, 1, 1, 3)
+
+        lytH = QtWidgets.QHBoxLayout()
+        self.lblS = QtWidgets.QLabel(self.tr("Spacer lenght"))
+        lytH.addWidget(self.lblS)
+        self.S = Entrada_con_unidades(Length)
+        self.S.valueChanged.connect(partial(self.changeParams, "S"))
+        lytH.addWidget(self.S)
+        lyt.addLayout(lytH, 10, 2, 1, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
@@ -1600,6 +1628,15 @@ class UI_TwistedTape(ToolGui):
         self.De.setEnabled(mod == "V cut")
         self.lblw.setEnabled(mod == "V cut")
         self.w.setEnabled(mod == "V cut")
+
+    def setEnabled(self, boolean):
+        """Add logic to parent setEnabled for orientation option"""
+        ToolGui.setEnabled(self, boolean)
+        self.setEnableSpacer(boolean and self.helical.isChecked())
+
+    def setEnableSpacer(self, boolean):
+        self.lblS.setEnabled(boolean)
+        self.S.setEnabled(boolean)
 
 
 class Dialog(QtWidgets.QDialog):
