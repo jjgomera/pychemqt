@@ -343,6 +343,37 @@ def Nu_wire_Gunes(Re, Pr, P, a, D):
     return Nu
 
 
+@refDoc(__doi__, [6])
+def Nu_wire_Klaczak(Re, Pr, P, e, D):
+    """Calculate Nusselt number for a pipe with a wire coil using the Klaczak
+    correlation (1973).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 1700:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 15
+    Nu = 1.04 * Re**0.52 * Pr**0.54 * (D/P)**0.29 * (e/D)**0.35
+
+    return Nu
+
 class WireCoil(CallableEntity):
     """Wire coil insert for pipe to improve heat transfer
 
