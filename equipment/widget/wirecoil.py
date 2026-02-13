@@ -37,7 +37,13 @@ __doi__ = {
                   "at different Prandtl numbers",
          "ref": "Int. J. Heat Mass Transfer 48(21-22) (2005) 4640-4651",
          "doi": "10.1016/j.ijheatmasstransfer.2005.04.024"},
-    # 2:
+    2:
+        {"autor": "Uttarwar, S.B., Raja Rao, M.",
+         "title": "Augmentation of Laminar Flow Heat Transfer in Tubes by "
+                  "Means of Wire Coil Inserts",
+         "ref": "J. Heat Transfer 107(4) (1985) 930-935",
+         "doi": "10.1115/1.3247523"}
+    # 3:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -55,7 +61,7 @@ def f_wire_Garcia(Re, p, e):
     Re : float
         Reynolds number, [-]
     p : float
-        helical pitch for twist of π radians (180º), [m]
+        helical pitch for twist of 2π radians (360º), [m]
     e : float
         Wire diameter, [m]
 
@@ -82,7 +88,7 @@ def Nu_wire_Garcia(Re, Pr, p, e):
     Pr : float
         Prandtl number, [-]
     p : float
-        helical pitch for twist of π radians (180º), [m]
+        helical pitch for twist of 2π radians (360º), [m]
     e : float
         Wire diameter, [m]
 
@@ -97,19 +103,69 @@ def Nu_wire_Garcia(Re, Pr, p, e):
     return Nu
 
 
+@refDoc(__doi__, [2])
+def Nu_wire_Uttarwar(Re, Pr, p, D, mu=None, muW=None):
+    """Calculate Nusselt number for a pipe with a wire coil using the Uttarwar-
+    Raja Rao correlation (1985).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    p : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+    D : float
+        Internal diameter of tube, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Helix angle
+    tan_alpha = p/pi/D
+
+    # Eq 8
+    Nu = 1.65*tan_alpha * Re**(0.25*tan_alpha**-0.38)*Pr**0.35
+
+    if mu and muW:
+        Nu *= (mu/muW)**0.14
+
+    return Nu
+
+
 class WireCoil(CallableEntity):
     """Wire coil insert for pipe to improve heat transfer
 
     Parameters
     ----------
     p : float
-        helical pitch for twist of π radians (180º), [m]
+        helical pitch for twist of 2π radians (360º), [m]
     e : float
         Wire diameter, [m]
     """
+    TEXT_FRICTION = (
+        "García (2005)",
+        )
+
+    TEXT_HEAT = (
+        "García (2005)",
+        "Uttarwar-Raja Rao (1985)",
+        )
+
     status = 0
     msg = ""
     kw = {
+        "methodFriction": 0,
+        "methodHeat": 0,
         "p": 0,
         "e": 0}
 
@@ -139,9 +195,13 @@ class WireCoil(CallableEntity):
 
         self.valueChanged.emit(self)
 
-    def Nu(self, Re, Pr):
+    def Nu(self, Re, Pr, D, mu, muW):
         """Calculate nusselt number"""
-        Nu = Nu_wire_Garcia(Re, Pr, self.p, self.e)
+        if self.kw["methodHeat"] == 1:
+            Nu = Nu_wire_Uttarwar(Re, Pr, self.p, self.e, D, mu, muW)
+        else:
+            # Garcia
+            Nu = Nu_wire_Garcia(Re, Pr, self.p, self.e)
         return Nu
 
     def f(self, Re):
@@ -161,17 +221,42 @@ class UI_WireCoil(ToolGui):
 
         lyt = self.layout()
 
+        # lytH = QtWidgets.QHBoxLayout()
+        # lytH.addWidget(QtWidgets.QLabel(
+        #     self.tr("Friction factor calculation method")))
+        # self.methodFriction = QtWidgets.QComboBox()
+        # for method in TwistedTape.TEXT_FRICTION:
+        #     self.methodFriction.addItem(method)
+        # self.methodFriction.currentIndexChanged.connect(
+        #     partial(self.changeParams, "methodFriction"))
+        # self.methodFriction.currentTextChanged.connect(self.setVisibleMod)
+        # lytH.addWidget(self.methodFriction)
+        # lyt.addLayout(lytH, 2, 1, 1, 2)
+
+        lytH = QtWidgets.QHBoxLayout()
+        lytH.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer calculation method")))
+        self.methodHeat = QtWidgets.QComboBox()
+        for method in WireCoil.TEXT_HEAT:
+            self.methodHeat.addItem(method)
+        self.methodHeat.currentIndexChanged.connect(
+            partial(self.changeParams, "methodHeat"))
+        # self.methodHeat.currentTextChanged.connect(self.setVisibleMod)
+        lytH.addWidget(self.methodHeat)
+        lyt.addLayout(lytH, 3, 1, 1, 2)
+
+
         label = QtWidgets.QLabel(self.tr("Wire pitch"))
-        label.setToolTip(self.tr("Wire pitch for twist of π radians (180º)"))
-        lyt.addWidget(label, 2, 1)
+        label.setToolTip(self.tr("Wire pitch for twist of 2π radians (360º)"))
+        lyt.addWidget(label, 4, 1)
         self.p = Entrada_con_unidades(Length)
         self.p.valueChanged.connect(partial(self.changeParams, "p"))
-        lyt.addWidget(self.p, 2, 2)
+        lyt.addWidget(self.p, 4, 2)
         label = QtWidgets.QLabel("Wire diameter")
-        lyt.addWidget(label, 3, 1)
+        lyt.addWidget(label, 5, 1)
         self.e = Entrada_con_unidades(Length, "Thickness")
         self.e.valueChanged.connect(partial(self.changeParams, "e"))
-        lyt.addWidget(self.e, 3, 2)
+        lyt.addWidget(self.e, 5, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)

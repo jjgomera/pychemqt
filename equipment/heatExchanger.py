@@ -1020,7 +1020,7 @@ class Hairpin(equipment):
         if self.kwargs["hasTwistedTape"] and self.kwargs["twistedTape"]:
             Nu = self.kwargs["twistedTape"].Nu(re, pr, mu, mu, beta, 0, self.L)
         elif self.kwargs["hasWireCoil"] and self.kwargs["wireCoil"]:
-            Nu = self.kwargs["wireCoil"].Nu(re, pr)
+            Nu = self.kwargs["wireCoil"].Nu(re, pr, self.Di, mu, mu)
 
         elif self.phaseTube[:6] == "Latent":
 
