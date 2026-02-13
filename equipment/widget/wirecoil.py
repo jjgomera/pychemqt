@@ -61,6 +61,19 @@ __doi__ = {
                   "triangle cross sectioned coiled wire inserts",
          "ref": "Exp. Thermal Fluid Sci. 34(6) (2010) 684-691",
          "doi": "10.1016/j.expthermflusci.2009.12.010"},
+    6:
+        {"autor": "Klaczak, A.",
+         "title": "Heat Transfer in Tubes With Spiral and Helical "
+                  "Turbulators",
+         "ref": "J. Heat Transfer 95(4) (1973) 557-559",
+         "doi": "10.1115/1.3450114"},
+    7:
+        {"autor": "Ravigururajan, T.S., Bergles, A.E.",
+         "title": "Development and Verification of General Correlations for"
+                  "Pressure Drop and Heat Transfer in Single-Phase Turbulent "
+                  "Flow in Enhanced Tubes",
+         "ref": "Exp. Thermal Fluid Sci. 13(1) (1996) 55-70",
+         "doi": "10.1016/0894-1777(96)00014-3"},
     # 8:
     #     {"autor": "",
     #      "title": "",
@@ -180,6 +193,44 @@ def f_wire_Gunes(Re, P, a, D):
     f = 83.70924 * Re**-0.305268 * (P/D)**-0.388*(a/D)**1.319018
 
     return f
+
+
+@refDoc(__doi__, [4])
+def f_wire_Ravigururajan(Re, P, e, D):
+    """Calculate friction factor for a pipe with a wire coil using the
+    Ravigururajan-Bergles correlation (1996).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
+    # Helix angle
+    alpha = atan(P/pi/D)*180/pi
+
+    # Eq 4
+    rhs = (1 + (29.1*Re**(0.67-0.06*P/D-0.49*alpha/90)
+                * (e/D)**(1.37-0.157*P/D) * (P/D)**(-1.66e-6*Re-0.33*alpha/90)
+                * (alpha/90)**(4.59+4.11e-6*Re-0.15*P/D))**(15/16))**(16/15)
+
+    fs = (1.58*log(Re)-3.28)**-2                                        # Eq 1
+
+    return fs*rhs
+
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [1])
@@ -374,6 +425,46 @@ def Nu_wire_Klaczak(Re, Pr, P, e, D):
 
     return Nu
 
+
+@refDoc(__doi__, [4])
+def Nu_wire_Ravigururajan(Re, Pr, P, e, D):
+    """Calculate friction factor for a pipe with a wire coil using the
+    Ravigururajan-Bergles correlation (1996).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
+    # Helix angle
+    alpha = atan(P/pi/D)*180/pi
+
+    # Eq 7
+    rhs = (1 + (2.64*Re**0.036*(e/D)**0.212 * (P/D)**-0.21
+                * (alpha/90)**0.29*Pr**0.024)**7)**(1/7)
+
+    fs = (1.58*log(Re)-3.28)**-2                                        # Eq 1
+    Nus = fs/2*Re*Pr/(1+12.7*(fs/2)**0.5*(Pr**(2/3)-1))
+
+    return Nus*rhs
+
+
 class WireCoil(CallableEntity):
     """Wire coil insert for pipe to improve heat transfer
 
@@ -387,14 +478,19 @@ class WireCoil(CallableEntity):
     TEXT_FRICTION = (
         "García (2005)",
         "Inaba (1994)",
-        "Naphon (2006)"
+        "Naphon (2006)",
+        "Gunes (2010)",
+        "Ravigururajan (1996)"
         )
 
     TEXT_HEAT = (
         "García (2005)",
         "Uttarwar-Raja Rao (1985)",
         "Inaba (1994)",
-        "Naphon (2006)"
+        "Naphon (2006)",
+        "Gunes (2010)",
+        "Klaczak (1973)",
+        "Ravigururajan (1996)"
         )
 
     status = 0
@@ -431,39 +527,111 @@ class WireCoil(CallableEntity):
 
         self.valueChanged.emit(self)
 
-    def Nu(self, Re, Pr, D, mu, muW):
+    def Nu(self, Re, Pr, D, mu, muW, method=None):
         """Calculate nusselt number"""
-        if self.kw["methodHeat"] == 1:
+        msg = ""
+        if method is None:
+            method = self.kw["methodHeat"]
+
+        if method == 1:
             # Uttarwar-Raja Rao (1985)
             Nu = Nu_wire_Uttarwar(Re, Pr, self.P, D, mu, muW)
 
-        elif self.kw["methodHeat"] == 2:
+        elif method == 2:
             # Inaba (1994)
             Nu = Nu_wire_Inaba(Re, Pr, self.P, self.e)
 
-        elif self.kw["methodHeat"] == 3:
+        elif method == 3:
             # Naphon (2006)
-            Nu = Nu_wire_Naphon(Re, Pr, self.P, D)
+            if Re < 5000:
+                Nu = self.Nu(Re, Pr, D, mu, muW, 0)
+                msg = "Naphon correlation only valid in turbulent flow, using "
+                msg += "Garcia instead"
+            else:
+                Nu = Nu_wire_Naphon(Re, Pr, self.P, D)
+
+        elif method == 4:
+            # Gunes (2010)
+            if Re < 3500:
+                Nu = self.Nu(Re, Pr, D, mu, muW, 0)
+                msg = "Gunes Ncorrelation only valid in turbulent flow, using "
+                msg += "Garcia instead"
+            else:
+                Nu = Nu_wire_Gunes(Re, Pr, self.P, self.e, D)
+
+        elif method == 5:
+            # Klaczak (1973)
+            if Re < 1700:
+                Nu = self.Nu(Re, Pr, D, mu, muW, 0)
+                msg = "Klaczak correlation only valid in turbulent flow, using"
+                msg += " Garcia instead"
+            else:
+                Nu = Nu_wire_Klaczak(Re, Pr, self.P, self.e, D)
+
+        elif method == 6:
+            # Ravigururajan (1996)
+            if Re < 5000:
+                Nu = self.Nu(Re, Pr, D, mu, muW, 0)
+                msg = "Ravigururajan correlation only valid in turbulent flow,"
+                msg += " using Garcia instead"
+            else:
+                Nu = Nu_wire_Ravigururajan(Re, Pr, self.P, self.e, D)
 
         else:
             # García (2005)
             Nu = Nu_wire_Garcia(Re, Pr, self.P, self.e)
 
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
+
         return Nu
 
-    def f(self, Re, D):
+    def f(self, Re, D, method=None):
         """Calculate friction factor"""
-        if self.kw["methodFriction"] == 1:
+        msg = ""
+        if method is None:
+            method = self.kw["methodFriction"]
+
+        if method == 1:
             # Inaba (1994)
             f = f_wire_Inaba(Re, self.P, self.e)
 
-        elif self.kw["methodHeat"] == 2:
+        elif method == 2:
             # Naphon (2006)
+            if Re < 5000:
+                f = self.f(Re, D, 0)
+                msg = "Naphon correlation only valid in turbulent flow, using "
+                msg += "Garcia instead"
             f = f_wire_Naphon(Re, self.P, D)
+
+        elif method == 3:
+            # Gunes (2010)
+            if Re < 3500:
+                f = self.f(Re, D, 0)
+                msg = "Gunes Ncorrelation only valid in turbulent flow, using "
+                msg += "Garcia instead"
+            else:
+                f = f_wire_Gunes(Re, self.P, self.e, D)
+
+        elif method == 4:
+            # Ravigururajan (1996)
+            if Re < 5000:
+                f = self.f(Re, D, 0)
+                msg = "Ravigururajan correlation only valid in turbulent flow,"
+                msg += " using Garcia instead"
+            else:
+                f = f_wire_Ravigururajan(Re, self.P, self.e, D)
 
         else:
             # García (2005)
             f = f_wire_Garcia(Re, self.P, self.e)
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
 
         return f
 
