@@ -1107,7 +1107,7 @@ class Hairpin(equipment):
         if self.kwargs["hasTwistedTape"] and self.kwargs["twistedTape"]:
             f = self.kwargs["twistedTape"].f(Re)
         elif self.kwargs["hasWireCoil"] and self.kwargs["wireCoil"]:
-            f = self.kwargs["wireCoil"].f(Re)
+            f = self.kwargs["wireCoil"].f(Re, self.Di)
         else:
             f = f_friccion(Re, eD)
         print("f: ", f)

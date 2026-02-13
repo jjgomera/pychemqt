@@ -48,12 +48,18 @@ __doi__ = {
          "title": "A Fundamental Study of Heat-Transfer Enhancement and "
                   "Flow-Drag Reduction in Tubes by Means of Wire Coil Insert",
          "ref": "Trans. Jpn. Soc. Mech. Eng. 60 (1994) 240-247",
-         "doi": "10.1299/kikaib.60.240"}
-    # 4:
+         "doi": "10.1299/kikaib.60.240"},
+    4:
+        {"autor": "Naphon, P.",
+         "title": "Effect of coil-wire insert on heat trasnfer enhancement "
+                  "pressure drop of the horizontal concentric tubes",
+         "ref": "Int. Comm. Heat Mass Transfer 33(6) (2006) 753-763",
+         "doi": "10.1016/j.icheatmasstransfer.2006.01.020"},
+    # 5:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
-    #      "doi": ""}
+    #      "doi": ""},
         }
 
 
@@ -106,6 +112,31 @@ def f_wire_Inaba(Re, P, e):
     """
     # Eq 7
     f = 11.5*Re**-0.39*(P/e)**-0.87
+
+    return f
+
+
+@refDoc(__doi__, [4])
+def f_wire_Naphon(Re, P, D):
+    """Calculate friction factor for a pipe with a wire coil using the Naphon
+    correlation (2006).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 7
+    f = 322.92*log(Re)**-1.849*(P/D)**0.061
 
     return f
 
@@ -210,6 +241,36 @@ def Nu_wire_Inaba(Re, Pr, P, e):
     return Nu
 
 
+@refDoc(__doi__, [4])
+def Nu_wire_Naphon(Re, Pr, P, D):
+    """Calculate Nusselt number for a pipe with a wire coil using the Naphon
+    correlation (2006).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 6
+    Nu = 0.156*Re**0.512*Pr**(1/3)*(P/D)**0.253
+
+    return Nu
+
+
 class WireCoil(CallableEntity):
     """Wire coil insert for pipe to improve heat transfer
 
@@ -222,13 +283,15 @@ class WireCoil(CallableEntity):
     """
     TEXT_FRICTION = (
         "García (2005)",
-        "Inaba (1994)"
+        "Inaba (1994)",
+        "Naphon (2006)"
         )
 
     TEXT_HEAT = (
         "García (2005)",
         "Uttarwar-Raja Rao (1985)",
-        "Inaba (1994)"
+        "Inaba (1994)",
+        "Naphon (2006)"
         )
 
     status = 0
@@ -275,17 +338,25 @@ class WireCoil(CallableEntity):
             # Inaba (1994)
             Nu = Nu_wire_Inaba(Re, Pr, self.P, self.e)
 
+        elif self.kw["methodHeat"] == 3:
+            # Naphon (2006)
+            Nu = Nu_wire_Naphon(Re, Pr, self.P, D)
+
         else:
             # García (2005)
             Nu = Nu_wire_Garcia(Re, Pr, self.P, self.e)
 
         return Nu
 
-    def f(self, Re):
+    def f(self, Re, D):
         """Calculate friction factor"""
         if self.kw["methodFriction"] == 1:
             # Inaba (1994)
             f = f_wire_Inaba(Re, self.P, self.e)
+
+        elif self.kw["methodHeat"] == 2:
+            # Naphon (2006)
+            f = f_wire_Naphon(Re, self.P, D)
 
         else:
             # García (2005)
