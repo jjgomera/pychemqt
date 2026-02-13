@@ -42,8 +42,14 @@ __doi__ = {
          "title": "Augmentation of Laminar Flow Heat Transfer in Tubes by "
                   "Means of Wire Coil Inserts",
          "ref": "J. Heat Transfer 107(4) (1985) 930-935",
-         "doi": "10.1115/1.3247523"}
-    # 3:
+         "doi": "10.1115/1.3247523"},
+    3:
+        {"autor": "Inaba, H., Ozaki, K., Kanaoka, S.",
+         "title": "A Fundamental Study of Heat-Transfer Enhancement and "
+                  "Flow-Drag Reduction in Tubes by Means of Wire Coil Insert",
+         "ref": "Trans. Jpn. Soc. Mech. Eng. 60 (1994) 240-247",
+         "doi": "10.1299/kikaib.60.240"}
+    # 4:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -51,8 +57,9 @@ __doi__ = {
         }
 
 
+# Friction factor correlations
 @refDoc(__doi__, [1])
-def f_wire_Garcia(Re, p, e):
+def f_wire_Garcia(Re, P, e):
     """Calculate friction factor for a pipe with a wire coil using the Garcia
     et al. correlation (2005).
 
@@ -60,7 +67,7 @@ def f_wire_Garcia(Re, p, e):
     ----------
     Re : float
         Reynolds number, [-]
-    p : float
+    P : float
         helical pitch for twist of 2π radians (360º), [m]
     e : float
         Wire diameter, [m]
@@ -71,13 +78,41 @@ def f_wire_Garcia(Re, p, e):
         Friction factor, [-]
     """
     # Eq 4
-    f = 9.35*(p/e)**-1.16*Re**-0.217
+    f = 9.35*(P/e)**-1.16*Re**-0.217
 
     return f
 
 
+@refDoc(__doi__, [3])
+def f_wire_Inaba(Re, P, e):
+    """Calculate friction factor for a pipe with a wire coil using the Inaba
+    correlation (1994).
+
+    Valid for P/e > 10, for bellow ratio the pipe is like a rough pipe
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 7
+    f = 11.5*Re**-0.39*(P/e)**-0.87
+
+    return f
+
+
+# Heat Transfer coefficient correlations
 @refDoc(__doi__, [1])
-def Nu_wire_Garcia(Re, Pr, p, e):
+def Nu_wire_Garcia(Re, Pr, P, e):
     """Calculate Nusselt number for a pipe with a wire coil using the Garcia
     et al. correlation (2005).
 
@@ -87,7 +122,7 @@ def Nu_wire_Garcia(Re, Pr, p, e):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    p : float
+    P : float
         helical pitch for twist of 2π radians (360º), [m]
     e : float
         Wire diameter, [m]
@@ -98,13 +133,13 @@ def Nu_wire_Garcia(Re, Pr, p, e):
         Nusselt number, [-]
     """
     # Eq 10
-    Nu = 0.132*(p/e)**-0.372*Re**0.72*Pr**0.37
+    Nu = 0.132*(P/e)**-0.372*Re**0.72*Pr**0.37
 
     return Nu
 
 
 @refDoc(__doi__, [2])
-def Nu_wire_Uttarwar(Re, Pr, p, D, mu=None, muW=None):
+def Nu_wire_Uttarwar(Re, Pr, P, D, mu=None, muW=None):
     """Calculate Nusselt number for a pipe with a wire coil using the Uttarwar-
     Raja Rao correlation (1985).
 
@@ -114,7 +149,7 @@ def Nu_wire_Uttarwar(Re, Pr, p, D, mu=None, muW=None):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    p : float
+    P : float
         helical pitch for twist of 2π radians (360º), [m]
     e : float
         Wire diameter, [m]
@@ -131,7 +166,7 @@ def Nu_wire_Uttarwar(Re, Pr, p, D, mu=None, muW=None):
         Nusselt number, [-]
     """
     # Helix angle
-    tan_alpha = p/pi/D
+    tan_alpha = P/pi/D
 
     # Eq 8
     Nu = 1.65*tan_alpha * Re**(0.25*tan_alpha**-0.38)*Pr**0.35
@@ -142,23 +177,58 @@ def Nu_wire_Uttarwar(Re, Pr, p, D, mu=None, muW=None):
     return Nu
 
 
+@refDoc(__doi__, [3])
+def Nu_wire_Inaba(Re, Pr, P, e):
+    """Calculate Nusselt number for a pipe with a wire coil using the Inaba
+    correlation (1994).
+
+    Valid for P/e > 10, for bellow ratio the pipe is like a rough pipe
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 2000:
+        # Eq 11
+        Nu = 0.225*Re**0.8*Pr**(1/3)*(P/e)**-0.48
+    else:
+        # Eq 10
+        Nu = 0.803*Re**0.63*Pr**(1/3)*(P/e)**-0.48
+
+    return Nu
+
+
 class WireCoil(CallableEntity):
     """Wire coil insert for pipe to improve heat transfer
 
     Parameters
     ----------
-    p : float
+    P : float
         helical pitch for twist of 2π radians (360º), [m]
     e : float
         Wire diameter, [m]
     """
     TEXT_FRICTION = (
         "García (2005)",
+        "Inaba (1994)"
         )
 
     TEXT_HEAT = (
         "García (2005)",
         "Uttarwar-Raja Rao (1985)",
+        "Inaba (1994)"
         )
 
     status = 0
@@ -166,7 +236,7 @@ class WireCoil(CallableEntity):
     kw = {
         "methodFriction": 0,
         "methodHeat": 0,
-        "p": 0,
+        "P": 0,
         "e": 0}
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -175,7 +245,7 @@ class WireCoil(CallableEntity):
     @property
     def isCalculable(self):
         """Check if all input are defined"""
-        if not self.kw["p"]:
+        if not self.kw["P"]:
             self.msg = translate("equipment", "undefined wire coil pitch")
             self.status = 0
             return False
@@ -191,22 +261,36 @@ class WireCoil(CallableEntity):
     def calculo(self):
         """Definition of twisted tape inserts for annuli sections"""
         self.e = self.kw["e"]
-        self.p = self.kw["p"]
+        self.P = self.kw["P"]
 
         self.valueChanged.emit(self)
 
     def Nu(self, Re, Pr, D, mu, muW):
         """Calculate nusselt number"""
         if self.kw["methodHeat"] == 1:
-            Nu = Nu_wire_Uttarwar(Re, Pr, self.p, self.e, D, mu, muW)
+            # Uttarwar-Raja Rao (1985)
+            Nu = Nu_wire_Uttarwar(Re, Pr, self.P, D, mu, muW)
+
+        elif self.kw["methodHeat"] == 2:
+            # Inaba (1994)
+            Nu = Nu_wire_Inaba(Re, Pr, self.P, self.e)
+
         else:
-            # Garcia
-            Nu = Nu_wire_Garcia(Re, Pr, self.p, self.e)
+            # García (2005)
+            Nu = Nu_wire_Garcia(Re, Pr, self.P, self.e)
+
         return Nu
 
     def f(self, Re):
         """Calculate friction factor"""
-        f= f_wire_Garcia(Re, self.p, self.e)
+        if self.kw["methodFriction"] == 1:
+            # Inaba (1994)
+            f = f_wire_Inaba(Re, self.P, self.e)
+
+        else:
+            # García (2005)
+            f = f_wire_Garcia(Re, self.P, self.e)
+
         return f
 
 
@@ -221,17 +305,16 @@ class UI_WireCoil(ToolGui):
 
         lyt = self.layout()
 
-        # lytH = QtWidgets.QHBoxLayout()
-        # lytH.addWidget(QtWidgets.QLabel(
-        #     self.tr("Friction factor calculation method")))
-        # self.methodFriction = QtWidgets.QComboBox()
-        # for method in TwistedTape.TEXT_FRICTION:
-        #     self.methodFriction.addItem(method)
-        # self.methodFriction.currentIndexChanged.connect(
-        #     partial(self.changeParams, "methodFriction"))
-        # self.methodFriction.currentTextChanged.connect(self.setVisibleMod)
-        # lytH.addWidget(self.methodFriction)
-        # lyt.addLayout(lytH, 2, 1, 1, 2)
+        lytH = QtWidgets.QHBoxLayout()
+        lytH.addWidget(QtWidgets.QLabel(
+            self.tr("Friction factor calculation method")))
+        self.methodFriction = QtWidgets.QComboBox()
+        for method in WireCoil.TEXT_FRICTION:
+            self.methodFriction.addItem(method)
+        self.methodFriction.currentIndexChanged.connect(
+            partial(self.changeParams, "methodFriction"))
+        lytH.addWidget(self.methodFriction)
+        lyt.addLayout(lytH, 2, 1, 1, 2)
 
         lytH = QtWidgets.QHBoxLayout()
         lytH.addWidget(QtWidgets.QLabel(
@@ -241,7 +324,6 @@ class UI_WireCoil(ToolGui):
             self.methodHeat.addItem(method)
         self.methodHeat.currentIndexChanged.connect(
             partial(self.changeParams, "methodHeat"))
-        # self.methodHeat.currentTextChanged.connect(self.setVisibleMod)
         lytH.addWidget(self.methodHeat)
         lyt.addLayout(lytH, 3, 1, 1, 2)
 
@@ -249,9 +331,9 @@ class UI_WireCoil(ToolGui):
         label = QtWidgets.QLabel(self.tr("Wire pitch"))
         label.setToolTip(self.tr("Wire pitch for twist of 2π radians (360º)"))
         lyt.addWidget(label, 4, 1)
-        self.p = Entrada_con_unidades(Length)
-        self.p.valueChanged.connect(partial(self.changeParams, "p"))
-        lyt.addWidget(self.p, 4, 2)
+        self.P = Entrada_con_unidades(Length)
+        self.P.valueChanged.connect(partial(self.changeParams, "P"))
+        lyt.addWidget(self.P, 4, 2)
         label = QtWidgets.QLabel("Wire diameter")
         lyt.addWidget(label, 5, 1)
         self.e = Entrada_con_unidades(Length, "Thickness")
