@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import pi, log, cos, atan
+from math import pi, log, atan
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -55,7 +55,13 @@ __doi__ = {
                   "pressure drop of the horizontal concentric tubes",
          "ref": "Int. Comm. Heat Mass Transfer 33(6) (2006) 753-763",
          "doi": "10.1016/j.icheatmasstransfer.2006.01.020"},
-    # 5:
+    5:
+        {"autor": "Gunes, S., Ozceyhan, V., Buyukalaca, O.",
+         "title": "Heat transfer enhancement in a tube with equilateral "
+                  "triangle cross sectioned coiled wire inserts",
+         "ref": "Exp. Thermal Fluid Sci. 34(6) (2010) 684-691",
+         "doi": "10.1016/j.expthermflusci.2009.12.010"},
+    # 8:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -135,11 +141,45 @@ def f_wire_Naphon(Re, P, D):
     f : float
         Friction factor, [-]
     """
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
     # Eq 7
     f = 322.92*log(Re)**-1.849*(P/D)**0.061
 
     return f
 
+
+@refDoc(__doi__, [4])
+def f_wire_Gunes(Re, P, a, D):
+    """Calculate friction factor for a pipe with a wire coil using the Gunes
+    et al. correlation (2010).
+
+    This correlation apply to a special wire coil of triangular shape.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    a : float
+        side length of equilateral triangle in the wire cross section
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re < 3500:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 15
+    f = 83.70924 * Re**-0.305268 * (P/D)**-0.388*(a/D)**1.319018
+
+    return f
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [1])
@@ -267,6 +307,38 @@ def Nu_wire_Naphon(Re, Pr, P, D):
 
     # Eq 6
     Nu = 0.156*Re**0.512*Pr**(1/3)*(P/D)**0.253
+
+    return Nu
+
+
+@refDoc(__doi__, [5])
+def Nu_wire_Gunes(Re, Pr, P, a, D):
+    """Calculate Nusselt number for a pipe with a wire coil using the Gunes
+    correlation (2010).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    a : float
+        side length of equilateral triangle in the wire cross section
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 3500:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 14
+    Nu = 0.598417*Re**0.745064 * (P/D)**-0.268374 * (a/D)**0.813205 * Pr**0.39
 
     return Nu
 
