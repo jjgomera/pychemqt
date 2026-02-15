@@ -58,11 +58,11 @@ __doi__ = {
 
 
 # Automatic loading of coolProp name from meos subclass _coolPropName property
-__all__ = {}
+all__ = {}
 noIds = []
 for cmp in mEoS.__all__:
     if cmp.id and cmp._coolPropName:
-        __all__[cmp.id] = cmp._coolPropName
+        all__[cmp.id] = cmp._coolPropName
     elif cmp._coolPropName:
         noIds.append(cmp._coolPropName)
 
@@ -151,7 +151,7 @@ class CoolProp(ThermoAdvanced):
         # Check supported fluid
         COOLPROP_available = True
         for id in self.kwargs["ids"]:
-            if id not in __all__ and id not in noIds:
+            if id not in all__ and id not in noIds:
                 COOLPROP_available = False
                 if not COOLPROP_available:
                     raise(ValueError)
@@ -208,8 +208,8 @@ class CoolProp(ThermoAdvanced):
     def _name(self):
         lst = []
         for fld in self.kwargs["ids"]:
-            if fld in __all__:
-                lst.append(__all__[fld])
+            if fld in all__:
+                lst.append(all__[fld])
             elif fld in noIds:
                 lst.append(fld)
         name = "&".join(lst)

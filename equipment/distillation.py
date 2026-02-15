@@ -77,7 +77,7 @@ class Flash(equipment):
 
     >>> kw = {"MEoS": True, "coolProp": True, "ids": [5, 6, 7, 8, 10]}
     >>> entrada = Corriente(T=300, x=0.5, caudalMasico=0.01, \
-        fraccionMolar=[.3, 0.25, 0.05, 0.15, 0.25], **kw)
+        fraccionMolar=[.3, 0.25, 0.15, 0.05, 0.25], **kw)
     >>> flash = Flash(entrada=entrada)
     """
     title = translate("equipment", "Flash Separator")
@@ -924,10 +924,10 @@ if __name__ == '__main__':
     # import doctest
     # doctest.testmod()
 
-    kw = {"MEoS": True, "coolprop": True, "ids": [5, 6, 7, 8, 10]}
-    entrada = Corriente(T=300, x=0.5, caudalMasico=0.01,
-                        fraccionMolar=[.3, 0.25, 0.05, 0.15, 0.25], **kw)
-    columna=ColumnFUG(entrada=entrada, LK=2, LKsplit=0.9, HK=3, HKsplit=0.9, R_Rmin=1.05, calc_feed=0, DeltaP=0.1)
+    # kw = {"MEoS": True, "coolprop": True, "ids": [5, 6, 7, 8, 10]}
+    # entrada = Corriente(T=300, x=0.5, caudalMasico=0.01,
+                        # fraccionMolar=[.3, 0.25, 0.05, 0.15, 0.25], **kw)
+    # columna=ColumnFUG(entrada=entrada, LK=2, LKsplit=0.9, HK=3, HKsplit=0.9, R_Rmin=1.05, calc_feed=0, DeltaP=0.1)
 #    print columna.Rmin
 #    print columna.DutyCondenser.MJh, columna.DutyReboiler.MJh
 
@@ -949,3 +949,7 @@ if __name__ == '__main__':
 #    import matplotlib.pyplot as plt
 #    batch()
 
+    kw = {"MEoS": True, "coolProp": False, "ids": [5, 6, 7, 8, 10]}
+    entrada = Corriente(T=300, x=0.5, caudalMasico=0.01,
+                        fraccionMolar=[.3, 0.25, 0.15, 0.05, 0.25], **kw)
+    flash = Flash(entrada=entrada)

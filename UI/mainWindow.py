@@ -44,7 +44,7 @@ from UI.petro import Definicion_Petro
 from UI.widgets import createAction, okToContinue
 
 
-with open("VERSION") as version_file:
+with open(os.path.join(os.environ["pychemqt"], "VERSION")) as version_file:
     __version__ = version_file.read().strip()
 
 year = config.__doc__.split()[7][:-1]

@@ -42,7 +42,7 @@ setup(
     version=__version__,
 
     packages=find_packages(exclude=["iapws"]),
-    package_data={'': ['../README.rst', '../LICENSE'],
+    package_data={'': ['../README.rst', '../LICENSE', '../VERSION'],
                   'images': ["*.png", "*/*.png", "*.jpg", "*/*.jpg",
                              "*/*.svg", "*/*.gif"],
                   'docs': ["*.rst"],

@@ -85,7 +85,7 @@ def auto(tmin=None, tmax=None, pmin=None, pmax=None, components=None):
     if len(components) == 1 and components[0] in mEoS.id_mEoS:
         config.set("Thermo", "MEoS", "True")
     if os.environ["CoolProp"] == "True" and len(components) == 1 and \
-            components[0] in coolProp.__all__:
+            components[0] in coolProp.all__:
         config.set("Thermo", "coolprop", "True")
     if os.environ["refprop"] == "True" and REFPROP_available:
         config.set("Thermo", "refprop", "True")
