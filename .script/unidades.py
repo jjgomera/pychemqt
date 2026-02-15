@@ -25,7 +25,7 @@ from lib.unidades import MAGNITUDES, unidad  # noqa
 
 
 # For get a fresh new list of magnitudes when we add some new, the list can be
-# add at start of lib/firstrun.py file:
+# add at start of tools/firstrun.py file:
 magnitudes = []
 for magnitud, title, unit in MAGNITUDES:
     magnitudes.append(magnitud)
