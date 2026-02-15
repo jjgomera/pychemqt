@@ -1,5 +1,6 @@
 [MASTER]
 
+init-hook='import sys; sys.path.append("/home/jjgomera/Programacion/pychemqt/")'
 extension-pkg-whitelist = PyQt6, CoolProp
 
 disable = invalid-name, too-many-instance-attributes, too-many-statements,
