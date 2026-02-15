@@ -33,7 +33,7 @@ _all = {
     translate("Plots", "Fluid Flow"): (moody.Moody, drag.Drag),
     translate("Plots", "Heat Exchanger"): chartHE}
 
-__all__ = ["moody", "drag", "standing", "chartHE"]
+__all__ = ["moody", "drag", "standing"]
 
 # List used in Preferences main window to add a subfolder of plot configuration
 Pref = moody.Config, drag.Config, standing.Config
