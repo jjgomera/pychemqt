@@ -84,7 +84,7 @@ for library in lib.__all__:
         print("="*(len(library)+4+7), file=file)
         print("", file=file)
         print(".. automodule:: lib.%s" % library, file=file)
-        if module in ("coolProp", "refProp"):
+        if library in ("coolProp", "refProp"):
             print("    :ignore-module-all:", file=file)
 
         if hasattr(module, "__doi__") and module.__doi__:
