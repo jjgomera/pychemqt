@@ -193,8 +193,8 @@ class GraphicsView(QtWidgets.QGraphicsView):
             elif config.getboolean("Thermo", "meos"):
                 txt = "MEoS"
             else:
-                txt = f"K: {K[config.getint("Thermo", "K")].__status__} "
-                txt += f"K: {H[config.getint("Thermo", "H")].__status__}"
+                txt = f"K: {K[config.getint('Thermo', 'K')].__status__}"
+                txt += f"H: {H[config.getint('Thermo', 'H')].__status__}"
 
             self.statusThermo.setText(txt)
 
