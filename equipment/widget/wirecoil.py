@@ -19,8 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import pi, log, atan
+from math import pi, log, atan, tan
 
+from scipy.optimize import newton
 from tools.qt import QtCore, QtWidgets, translate
 
 from equipment.widget.gui import ToolGui, CallableEntity
@@ -74,12 +75,12 @@ __doi__ = {
                   "Flow in Enhanced Tubes",
          "ref": "Exp. Thermal Fluid Sci. 13(1) (1996) 55-70",
          "doi": "10.1016/0894-1777(96)00014-3"},
-    # 8:
-    #     {"autor": "",
-    #      "title": "",
-    #      "ref": "",
-    #      "doi": ""},
-        }
+    8:
+        {"autor": "Sethumadhavan, R., Raja Rao, M.",
+         "title": "Turbulent Flow Heat Transfer and Fluid Friction in "
+                  "Helical-Wire-Coil-Inserted Tubes",
+         "ref": "Int. J. Heat Mass Transfer 26(12) (1983) 1833-1845",
+         "doi": "10.1016/s0017-9310(83)80154-9"}}
 
 
 # Friction factor correlations
@@ -230,6 +231,52 @@ def f_wire_Ravigururajan(Re, P, e, D):
     fs = (1.58*log(Re)-3.28)**-2                                        # Eq 1
 
     return fs*rhs
+
+
+@refDoc(__doi__, [8])
+def f_wire_Sethumadhavan(Re, P, e, D):
+    """Calculate friction factor for a pipe with a wire coil using the
+    Sethumadhavan-Raja Rao correlation (1983).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    print(Re, P, e, D)
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
+    # Helix angle
+    alpha = atan(P/pi/D)*180/pi
+    Deq = D-e
+
+    # Eq 13
+    def f_res(f):
+        """Iterative solution of intrinsic equation"""
+
+        R = 2**0.5/f + 2.5*log(2*e/Deq) + 3.75
+        h = e/Deq * Re * (f/2)**0.5
+        return R*tan(alpha)**0.18-7*h**0.13
+
+    fo = f_wire_Garcia(Re, P, e)
+    f = newton(f_res, fo)
+
+    if isinstance(f, complex):
+        raise ValueError("Solution don't converge")
+
+    return f
 
 
 # Heat Transfer coefficient correlations
@@ -428,7 +475,7 @@ def Nu_wire_Klaczak(Re, Pr, P, e, D):
 
 @refDoc(__doi__, [4])
 def Nu_wire_Ravigururajan(Re, Pr, P, e, D):
-    """Calculate friction factor for a pipe with a wire coil using the
+    """Calculate Nusselt number for a pipe with a wire coil using the
     Ravigururajan-Bergles correlation (1996).
 
     Parameters
@@ -446,8 +493,8 @@ def Nu_wire_Ravigururajan(Re, Pr, P, e, D):
 
     Returns
     -------
-    f : float
-        Friction factor, [-]
+    Nu : float
+        Nusselt number, [-]
     """
     if Re < 5000:
         raise NotImplementedError("Input out of bound")
@@ -465,6 +512,49 @@ def Nu_wire_Ravigururajan(Re, Pr, P, e, D):
     return Nus*rhs
 
 
+@refDoc(__doi__, [8])
+def Nu_wire_Sethumadhavan(Re, Pr, P, e, D):
+    """Calculate Nusselt number for a pipe with a wire coil using the
+    Sethumadhavan-Raja Rao correlation (1983).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    e : float
+        Wire diameter, [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
+    # Helix angle
+    alpha = atan(P/pi/D)*180/pi
+    Deq = D-e
+
+    f = f_wire_Garcia(Re, P, e)
+    h = e/Deq * Re * (f/2)**0.5
+    R = 2**0.5/f + 2.5*log(2*e/Deq) + 3.75
+
+    # Eq 16
+    G = 8.6*h**0.13/tan(alpha)**0.18/Pr**-0.55
+
+    # Eq 7
+    St = 1/((((G-R)*(f/2)**0.5)+1)*2/f)
+
+    return St*Re*Pr
+
+
 class WireCoil(CallableEntity):
     """Wire coil insert for pipe to improve heat transfer
 
@@ -480,8 +570,8 @@ class WireCoil(CallableEntity):
         "Inaba (1994)",
         "Naphon (2006)",
         "Gunes (2010)",
-        "Ravigururajan (1996)"
-        )
+        "Ravigururajan (1996)",
+        "Sethumadhavan-Raja Rao (1983)")
 
     TEXT_HEAT = (
         "García (2005)",
@@ -490,8 +580,8 @@ class WireCoil(CallableEntity):
         "Naphon (2006)",
         "Gunes (2010)",
         "Klaczak (1973)",
-        "Ravigururajan (1996)"
-        )
+        "Ravigururajan (1996)",
+        "Sethumadhavan-Raja Rao (1983)")
 
     status = 0
     msg = ""
@@ -577,6 +667,15 @@ class WireCoil(CallableEntity):
             else:
                 Nu = Nu_wire_Ravigururajan(Re, Pr, self.P, self.e, D)
 
+        elif method == 7:
+            # Sethumadhavan-Raja Rao (1983)
+            if Re < 5000:
+                Nu = self.Nu(Re, Pr, D, mu, muW, 0)
+                msg = "Sethumadhavan correlation only valid in turbulent flow,"
+                msg += " using Garcia instead"
+            else:
+                Nu = Nu_wire_Sethumadhavan(Re, Pr, self.P, self.e, D)
+
         else:
             # García (2005)
             Nu = Nu_wire_Garcia(Re, Pr, self.P, self.e)
@@ -624,6 +723,20 @@ class WireCoil(CallableEntity):
             else:
                 f = f_wire_Ravigururajan(Re, self.P, self.e, D)
 
+        elif method == 5:
+            # Sethumadhavan-Raja Rao (1983)
+            if Re < 5000:
+                f = self.f(Re, D, 0)
+                msg = "Ravigururajan correlation only valid in turbulent flow,"
+                msg += " using Garcia instead"
+            else:
+                try:
+                    f = f_wire_Sethumadhavan(Re, self.P, self.e, D)
+                except ValueError:
+                    f = self.f(Re, D, 0)
+                    msg = "Ravigururajan correlation don't converge,"
+                    msg += " using Garcia instead"
+
         else:
             # García (2005)
             f = f_wire_Garcia(Re, self.P, self.e)
@@ -668,7 +781,6 @@ class UI_WireCoil(ToolGui):
             partial(self.changeParams, "methodHeat"))
         lytH.addWidget(self.methodHeat)
         lyt.addLayout(lytH, 3, 1, 1, 2)
-
 
         label = QtWidgets.QLabel(self.tr("Wire pitch"))
         label.setToolTip(self.tr("Wire pitch for twist of 2π radians (360º)"))
