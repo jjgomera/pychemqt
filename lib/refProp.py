@@ -76,11 +76,11 @@ __doi__ = {
 
 
 # Automatic loading of refprop name from meos subclass _refPropName property
-__all__ = {}
+all__ = {}
 noIds = []
 for cmp in mEoS.__all__:
     if cmp.id and cmp._refPropName:
-        __all__[cmp.id] = cmp._refPropName
+        all__[cmp.id] = cmp._refPropName
     elif cmp._refPropName:
         noIds.append(cmp._refPropName)
 
@@ -249,7 +249,7 @@ class RefProp(ThermoRefProp):
         REFPROP_available = True
         for id in self.kwargs["ids"]:
 
-            if id not in __all__ and id not in noIds:
+            if id not in all__ and id not in noIds:
                 REFPROP_available = False
                 if not REFPROP_available:
                     raise ValueError
@@ -321,8 +321,8 @@ class RefProp(ThermoRefProp):
     def _name(self):
         name = []
         for fld in self.kwargs["ids"]:
-            if fld in __all__:
-                name.append(__all__[fld])
+            if fld in all__:
+                name.append(all__[fld])
             elif fld in noIds:
                 name.append(fld)
         return name

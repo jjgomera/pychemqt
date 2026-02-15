@@ -633,9 +633,9 @@ class Corriente(config.Entity):
         GERG_available = True
         REFPROP_available = True
         for id in self.ids:
-            if id not in coolProp.__all__:
+            if id not in coolProp.all__:
                 COOLPROP_available = False
-            if id not in refProp.__all__:
+            if id not in refProp.all__:
                 REFPROP_available = False
             if id not in gerg.id_GERG:
                 GERG_available = False
