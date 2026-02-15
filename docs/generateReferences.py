@@ -247,7 +247,6 @@ for wdg in equipment.widget.__all__:
             print("References", file=file)
             print("----------", file=file)
             for id, rf in module.__doi__.items():
-                id = str(id+1)
                 print(".. [%s] %s; %s. %s" % (
                     id, rf["autor"], rf["title"], rf["ref"]), file=file)
 

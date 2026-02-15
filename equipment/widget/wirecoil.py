@@ -15,8 +15,41 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+
+Helical wire-coil insert is a enhancement for heat transfer of a pipe. This
+module implement several correlation to calculate its thermal eficiency and
+friction factor
+
+Friction factor:
+
+    * :func:`f_wire_Garcia`: García et al. (2005)
+    * :func:`f_wire_Inaba`: Inaba et al. (1994)
+    * :func:`f_wire_Naphon`: Naphon (2006)
+    * :func:`f_wire_Gunes`: Gunes et al. (2010)
+    * :func:`f_wire_Ravigururajan`: Ravigururajan-Bergles (1996)
+    * :func:`f_wire_Sethumadhavan`: Sethumadhavan-Raja Rao (1983)
+
+Heat transfer:
+
+    * :func:`Nu_wire_Garcia`: García et al. (2005)
+    * :func:`Nu_wire_Uttarwar`: Uttarwar-Raja Rao (1985)
+    * :func:`Nu_wire_Inaba`: Inaba et al. (1994)
+    * :func:`Nu_wire_Naphon`: Naphon (2006)
+    * :func:`Nu_wire_Gunes`: Gunes et al. (2010)
+    * :func:`Nu_wire_Klaczak`: Klaczak (1973)
+    * :func:`Nu_wire_Ravigururajan`: Ravigururajan-Bergles (1996)
+    * :func:`Nu_wire_Sethumadhavan`: Sethumadhavan-Raja Rao (1983)
+
+
+All methods are integrated in:
+
+* :class:`WireCoil`. A simple callable to integrate all calculation method
+* :class:`UI_WireCoil`. Graphical interface to define methods and properties
+
+
+'''
 
 from functools import partial
 from math import pi, log, atan, tan
@@ -164,7 +197,7 @@ def f_wire_Naphon(Re, P, D):
     return f
 
 
-@refDoc(__doi__, [4])
+@refDoc(__doi__, [5])
 def f_wire_Gunes(Re, P, a, D):
     """Calculate friction factor for a pipe with a wire coil using the Gunes
     et al. correlation (2010).
@@ -196,7 +229,7 @@ def f_wire_Gunes(Re, P, a, D):
     return f
 
 
-@refDoc(__doi__, [4])
+@refDoc(__doi__, [7])
 def f_wire_Ravigururajan(Re, P, e, D):
     """Calculate friction factor for a pipe with a wire coil using the
     Ravigururajan-Bergles correlation (1996).
@@ -473,7 +506,7 @@ def Nu_wire_Klaczak(Re, Pr, P, e, D):
     return Nu
 
 
-@refDoc(__doi__, [4])
+@refDoc(__doi__, [7])
 def Nu_wire_Ravigururajan(Re, Pr, P, e, D):
     """Calculate Nusselt number for a pipe with a wire coil using the
     Ravigururajan-Bergles correlation (1996).
