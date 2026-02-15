@@ -106,18 +106,18 @@ for library in lib.__all__:
 
 # Plots module
 # Generate index file
-# txt = "plots package" + os.linesep
-# txt += "=============" + os.linesep + os.linesep
-# txt += "Submodules" + os.linesep
-# txt += "----------" + os.linesep + os.linesep
-# txt += ".. toctree::" + os.linesep
-# txt += "    :maxdepth: 1" + os.linesep + os.linesep
+txt = "plots package" + os.linesep
+txt += "=============" + os.linesep + os.linesep
+txt += "Submodules" + os.linesep
+txt += "----------" + os.linesep + os.linesep
+txt += ".. toctree::" + os.linesep
+txt += "    :maxdepth: 1" + os.linesep + os.linesep
 
-# for mod in plots.__all__:
-    # txt += "    plots.%s" % mod + os.linesep
+for mod in plots.__all__:
+    txt += "    plots.%s" % mod + os.linesep
 
-# with open("docs/plots.rst", "w") as file:
-    # file.write(txt)
+with open("docs/plots.rst", "w") as file:
+    file.write(txt)
 
 # Generate each module documentation file
 for lib in plots.__all__:
@@ -194,6 +194,8 @@ txt += "    :maxdepth: 1" + os.linesep + os.linesep
 
 for mod in equipment.__all__:
     txt += "    equipment.%s" % mod + os.linesep
+for mod in equipment.widget.__all__:
+    txt += "    equipment.widget.%s" % mod + os.linesep
 
 with open("docs/equipment.rst", "w") as file:
     file.write(txt)
@@ -216,6 +218,35 @@ for equip in equipment.equipments:
             print("References", file=file)
             print("----------", file=file)
             for id, rf in enumerate(equip.__doi__):
+                id = str(id+1)
+                print(".. [%s] %s; %s. %s" % (
+                    id, rf["autor"], rf["title"], rf["ref"]), file=file)
+
+                if rf not in total:
+                    total.append(rf)
+
+# Generate each module documentation file
+for wdg in equipment.widget.__all__:
+
+    __import__("equipment.widget.%s" % wdg)
+    module = equipment.widget.__getattribute__(wdg)
+
+    # Make equipment.widget.rst schemas
+    with open("docs/equipment.widget.%s.rst" % wdg, "w") as file:
+        print("equipment.widget.%s module" % wdg, file=file)
+        print("="*(len(wdg)+10+13), file=file)
+        print("", file=file)
+        print(".. automodule:: equipment.widget.%s" % wdg, file=file)
+
+        if module.__doi__:
+            print("", file=file)
+            print(".. include:: equipment.widget.%s_ref.rst" % wdg, file=file)
+
+    if module.__doi__:
+        with open("docs/equipment.widget.%s_ref.rst" % wdg, "w") as file:
+            print("References", file=file)
+            print("----------", file=file)
+            for id, rf in module.__doi__.items():
                 id = str(id+1)
                 print(".. [%s] %s; %s. %s" % (
                     id, rf["autor"], rf["title"], rf["ref"]), file=file)

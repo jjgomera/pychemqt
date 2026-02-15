@@ -23,17 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 ###############################################################################
 
 
-from plots import drag, moody, standing
-from plots.heatTransfer import chartHE
+from plots import drag, heatTransfer, moody, standing
 from tools.qt import translate
 
 
 _all = {
     translate("Plots", "Petro"): (standing.Standing_Katz, ),
     translate("Plots", "Fluid Flow"): (moody.Moody, drag.Drag),
-    translate("Plots", "Heat Exchanger"): chartHE}
+    translate("Plots", "Heat Exchanger"): heatTransfer.chartHE}
 
-__all__ = ["moody", "drag", "standing"]
+__all__ = ["moody", "drag", "standing", "heatTransfer"]
 
 # List used in Preferences main window to add a subfolder of plot configuration
 Pref = moody.Config, drag.Config, standing.Config
