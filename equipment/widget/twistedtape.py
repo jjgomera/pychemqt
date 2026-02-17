@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import pi, log10
+from math import exp, pi, log10
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -175,8 +175,15 @@ __doi__ = {
                   "tubes by means of helical screw-tape inserts",
          "ref": "Energy Conv. Management 52(1) (2011) 250-257",
          "doi": "10.1016/j.enconman.2010.06.065"},
-    # 24:
-        # {"autor": "",
+    24:
+        {"autor": "Saha, S.K., Gaitonde, U.N., Date, A.W.",
+         "title": "Heat Transfer and Pressure Drop Characteristics of Laminar "
+                  "Flow in a Circular Tube Fitted with Regularly Spaced "
+                  "Twisted-Tape Elements",
+         "ref": "Exp. Thermal Fluid Sci. 2(3) (1989) 310-322",
+         "doi": "10.1016/0894-1777(89)90020-4"},
+    # 25:
+         # {"autor": "",
          # "title": "",
          # "ref": "",
          # "doi": ""},
@@ -549,6 +556,78 @@ def f_twisted_Jaisankar(Re, D, H):
     f = 271.1*Re**-0.947*(H/D)**-0.584
 
     return f
+
+
+@refDoc(__doi__, [24])
+def f_twisted_Saha(Re, D, H, delta, S):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Saha-Gaitonde-Date correlation (1989).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    S : float
+        Spacer lenght without twisted section, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    y = H/D
+    s = S/D
+
+    if Re > 2300 or y > 10 or y < 3 or s < 2.5 or s > 10:
+        raise NotImplementedError("Input out of bound")
+
+    Dh0 = (pi*D**2*y+pi*(D**2-delta**2)*s)/((pi+2)*y*D+pi*(D+delta)*s)  # Eq 21
+    Dh1 = ((pi*D**2-4*delta*D)*y+pi*(D**2-delta**2)*s) / \
+        ((pi+2-2*delta/D)*y*D+pi*(D+delta)*s)                           # Eq 22
+    Ac0 = (pi*(D**2*y+(D**2-delta**2)*s))/(4*(y+s))                     # Eq 23
+    Ac1 = ((pi*D**2-4*delta*D)*y+pi*(D**2-delta**2)*s)/(4*(y+s))        # Eq 24
+
+    xi = Dh0**2*Ac0/Dh1**2*Ac1                                          # Eq 20
+
+    if s <= 2.5:
+        if 7.5 <= y <= 10:
+            C = 0.0678*exp(-0.0631*y)*s-0.9936*exp(0.0069*y)+1          # Eq 25
+        else:
+            C = 0.1998*exp(-0.0631*y)*s + 0.011*y - 0.3175              # Eq 26
+    elif s <= 5:
+        if 7.5 <= y <= 10:
+            C = -0.0031*exp(0.1649*y)*s + 0.02812*exp(0.092*y)          # Eq 27
+        else:
+            C = -3.97e-3*y*s + 0.01*s + 0.018*y - 7.15e-3               # Eq 30
+    elif s <= 7.5:
+        if 7.5 <= y <= 10:
+            C = -2.45e-5*exp(0.1649*y)*s - 3.51e-3*exp(0.092*y)         # Eq 28
+        else:
+            C = -4.05e-3*y*s + 0.01*s + 0.018*y - 7.15e-4               # Eq 31
+    else:
+        if 7.5 <= y <= 10:
+            C = -6.39e-4*exp(0.1649*y)*s + 8.7e-3*exp(0.092*y)          # Eq 29
+        else:
+            C = -2.96e-3*y*s + 0.01*s + 0.018*y - 0.0516                # Eq 32
+
+    C1 = 8.8201*y - 2.1193*y**2 + 0.2108*y**3 - 0.0069*y**4             # Eq 33
+
+    if Re/y <= 100:
+        # Eq 17
+        f = 38.4 * xi * Re**-0.95 * y**-0.05 * (1+C*s)
+    elif Re/y <= 155:
+        # Eq 18
+        f = 0.5*(38.4*xi*Re**-0.95*y**-0.05*C1*xi*Re**-0.07*y**-0.3)*(1+C*s)
+    else:
+        # Eq 19
+        f = C1*xi*Re**-0.07*y**-0.3*(1+C*s)
+
+    return f
+
 
 
 @refDoc(__doi__, [13, 14, 22, 23])
@@ -1132,6 +1211,56 @@ def Nu_twisted_Jaisankar(Re, Pr, D, H):
     return Nu
 
 
+@refDoc(__doi__, [24])
+def Nu_twisted_Saha(Re, Pr, D, H, delta, S):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Saha-Gaitonde-Date correlation (1989).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    S : float
+        Spacer lenght without twisted section, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+    s = S/D
+
+    if Re > 2300 or y > 10 or y < 3 or s < 2.5 or s > 10:
+        raise NotImplementedError("Input out of bound")
+
+    K1 = pi*D**2*(y+s)/((pi*D**2-4*delta*D)*y+pi*(D**2-delta**2)*s)     # Eq 35
+
+    if y < 7.5:
+        C = (0.057*y*s+0.3622)*exp((-0.0296*y-0.305)*s)                 # Eq 38
+    elif s <= 5:
+        C = 0.0112*y*s - 0.1233*s - 0.0629*y + 0.6948                   # Eq 36
+    else:
+        C = 0.00015*y*s - 0.00377*s - 0.0056*y + 0.0751                 # Eq 37
+
+    if Re < 700:
+        X = 1-4.0422e-2*s                                               # Eq 39
+    else:
+        X = 1
+
+    Nu = 5.172*(1+6.7482e-3*Pr**0.7*(K1*Re/y)**1.25)**0.5*(1+C*s)*X     # Eq 34
+
+    return Nu
+
+
+
+
 @refDoc(__doi__, [13, 14, 22, 23])
 def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -1214,6 +1343,7 @@ class TwistedTape(CallableEntity):
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
+        "Saha-Gaitonde-Date (1989)",
         )
 
     TEXT_HEAT = (
@@ -1229,6 +1359,7 @@ class TwistedTape(CallableEntity):
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
+        "Saha-Gaitonde-Date (1989)",
         )
 
     TEXT_MURUGESAN = (
@@ -1320,13 +1451,9 @@ class TwistedTape(CallableEntity):
             Nu = Nu_helical_Sivashanmugam(Re, Pr, self.Dt, self.H, self.kw["S"])
             return Nu
 
-        if method == 0:
-            # HTRI
-            Nu = Nu_twisted_HTRI(
-                Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT, L)
-
-        elif method == 1:
+        if method == 1:
             # Manglik-Bergles (1993)
+            Gz = pi/4*Re*Pr*self.De/L
             Nu = Nu_twisted_Manglik(
                 Re, Pr, Gr, Gz, self.Dt, self.H, self.delta, self.De, mu, muW)
 
@@ -1421,6 +1548,27 @@ class TwistedTape(CallableEntity):
             else:
                 Nu = Nu_twisted_Jaisankar(Re, Pr, self.Dt, self.H)
 
+        elif method == 12:
+            # Saha-Gaitonde-Date (1989)
+            try:
+                Nu = Nu_twisted_Saha(
+                    Re, Pr, self.Dt, self.H, self.delta, self.kw["S"])
+            except NotImplementedError:
+                f = self.f(Re, 0)
+                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                msg = "Saha-Gaitonde-Date correlation out of range, "
+                msg += "using HTRI instead"
+
+        else:
+            # HTRI
+            Nu = Nu_twisted_HTRI(
+                Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT, L)
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
+
         return Nu
 
     def f(self, Re, method=None):
@@ -1433,11 +1581,7 @@ class TwistedTape(CallableEntity):
             f = f_helical_Sivashanmugam(Re, self.Dt, self.H, self.kw["S"])
             return f
 
-        if method == 0:
-            # Manglik-Bergles (1993)
-            f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
-
-        elif method == 1:
+        if method == 1:
             # Plessis-Kröger (1984)
             f = f_twisted_Plessis(
                 Re, self.Dt, self.H, self.delta, self.Ae, self.De)
@@ -1505,13 +1649,26 @@ class TwistedTape(CallableEntity):
                     Re, self.Dt, self.H, self.kw["modMurugesan"])
 
         elif method == 9:
-            # Jaisankar
+            # Jaisankar (2009)
             if Re < 3000:
                 f = self.f(Re, 0)
                 msg = "Jaisankar correlation only valid in turbulent flow, "
                 msg += "using Manglik instead"
             else:
                 f = f_twisted_Jaisankar(Re, self.Dt, self.H)
+
+        elif method == 10:
+            # Saha-Gaitonde-Date (1989)
+            try:
+                f = f_twisted_Saha(Re, self.Dt, self.H, self.delta, self.kw["S"])
+            except NotImplementedError:
+                f = self.f(Re, 0)
+                msg = "Saha-Gaitonde-Date correlation out of range, "
+                msg += "using Manglik instead"
+
+        else:
+            # Manglik-Bergles (1993)
+            f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
 
         if msg:
             self.status = 3
