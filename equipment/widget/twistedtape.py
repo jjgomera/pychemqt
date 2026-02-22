@@ -182,7 +182,14 @@ __doi__ = {
                   "Twisted-Tape Elements",
          "ref": "Exp. Thermal Fluid Sci. 2(3) (1989) 310-322",
          "doi": "10.1016/0894-1777(89)90020-4"},
-    # 25:
+    25:
+        {"autor": "Date, A.W., Gaitonde, U.N.",
+         "title": "Development of Correlations for Predicting Characteristics "
+                  "of Laminar Flow in a Tube Fitted with Regularly Spaced "
+                  "Twisted-Tape Elements",
+         "ref": "Exp. Thermal Fluid Sci. 3(4) (1990) 373-382",
+         "doi": "10.1016/0894-1777(90)90035-6"},
+    # 26:
          # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -460,10 +467,12 @@ def f_twisted_laminar_Saha(Re, D, H, delta, S):
     return f
 
 
-@refDoc(__doi__, [9])
-def f_twisted_Naphon(Re, D, H):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+@refDoc(__doi__, [25])
+def f_twisted_laminar_Date(Re, D, H):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Date-Gaitonde correlation (1990).
+
+    The paper include a complex correalation for regularly spaced twisted-tape
 
     Parameters
     ----------
