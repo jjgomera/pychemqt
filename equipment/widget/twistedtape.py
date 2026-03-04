@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import exp, pi, log10
+from math import atan, exp, log10, pi
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -189,7 +189,13 @@ __doi__ = {
                   "Twisted-Tape Elements",
          "ref": "Exp. Thermal Fluid Sci. 3(4) (1990) 373-382",
          "doi": "10.1016/0894-1777(90)90035-6"},
-    # 26:
+    26:
+        {"autor": "Klaczak, A.",
+         "title": "Heat transfer by laminar flow in a vertical pipe with "
+                  "twisted-tape inserts",
+         "ref": "Heat Mass Transfer 36 (2000) 195-199",
+         "doi": "10.1007/s002310050384"},
+    # 27:
          # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1010,6 +1016,48 @@ def Nu_twisted_laminar_Saha(Re, Pr, D, H, delta, S):
     return Nu
 
 
+@refDoc(__doi__, [24])
+def Nu_twisted_laminar_Klaczak(Re, Pr, D, H, delta, mu=None, muW=None):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Klaczak correlation (2000).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+
+    Sw = Re/y**0.5*(pi/(pi-4*delta/D)) * (1+(pi/2/y)**2)**0.5           # Eq 10
+
+    if Sw < 58 or Sw > 2300 or y > 5.29 or y < 1.62 or Pr < 2.06 or Pr > 2.73:
+        raise NotImplementedError("Input out of bound")
+
+    Nu = 0.858 * Pr**0.3 * Sw**0.3                                      # Eq 11
+
+    if mu and muW:
+        Nu *= (mu/muW)**0.14
+
+    return Nu
+
+
 @refDoc(__doi__, [7, 8])
 def Nu_twisted_turbulent_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, DT, HTRI=False):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -1251,7 +1299,6 @@ def Nu_twisted_turbulent_Jaisankar(Re, Pr, D, H):
     return Nu
 
 
-
 @refDoc(__doi__, [13, 14, 22, 23])
 def f_helical_Sivashanmugam(Re, D, H, S=None):
     """Calculate friction factor for a pipe with a twisted-tape insert using
@@ -1396,6 +1443,7 @@ class TwistedTape(CallableEntity):
         "Agarwal-Rao (1996)",
         "Sarma (2005)",
         "Saha-Gaitonde-Date (1989)",
+        "Klaczak (2000)",
         )
 
     TEXT_TURBULENT_HEAT = (
@@ -1538,10 +1586,18 @@ class TwistedTape(CallableEntity):
                     Nu = Nu_twisted_laminar_Saha(
                         Re, Pr, self.Dt, self.H, self.delta, self.kw["S"])
                 except NotImplementedError:
-                    f = self.f(Re, 0)
                     Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
                     msg = "Saha-Gaitonde-Date correlation out of range, "
                     msg += "using HTRI instead"
+
+            elif method == 7:
+                # Klaczak (2000)
+                try:
+                    Nu = Nu_twisted_laminar_Klaczak(
+                        Re, Pr, self.Dt, self.H, self.delta, mu, muW)
+                except NotImplementedError:
+                    Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                    msg = "Klaczak correlation out of range, using HTRI instead"
 
             else:
                 # HTRI
