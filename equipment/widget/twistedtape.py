@@ -683,8 +683,6 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    Gz : float
-        Graetz number, [-]
     D : float
         Internal pipe diameter, [m]
     H : float
@@ -751,9 +749,27 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
 
 
 @refDoc(__doi__, [4, 5])
-def Nu_twisted_Manglik(Re, Pr, Gr, Gz, D, H, delta, Dh, mu, muW):
-    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+def Nu_twisted_Manglik(Re, Pr, D, H, delta, Dh, mu, muW):
+    r"""Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Manglik and Bergles correlation (1993)
+
+    In laminar flow for simplicity use only fully developed swirl flow
+    correlation and without thermal entrance effects and combined forced and
+    free convection.
+
+    .. math::
+        Nu = 4.612 \left(1+6.413e-9\left(Sw Pr^{0.391}\right)^{3.835}\right)^{0.2}
+
+    For turbulent flow:
+
+    .. math::
+        \frac{Nu}{Nu_{y=\infty}} = 1+\frac{0.769}{y}
+
+    .. math::
+        Nu_{y=\infty} = 0.023 Re^{0.8} Pr^{0.4}
+        \left(\frac{\pi}{pi-4\delta/d}\right)^{0.8}
+        \left(\frac{\pi+2-2\delta/d}{\pi-4\delta/d}\right)^{0.2}
+
 
     Parameters
     ----------
@@ -761,10 +777,6 @@ def Nu_twisted_Manglik(Re, Pr, Gr, Gz, D, H, delta, Dh, mu, muW):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    Gr : float
-        Grashof number, [-]
-    Gz : float
-        Graetz number, [-]
     D : float
         Internal pipe diameter, [m]
     H : float
@@ -788,19 +800,12 @@ def Nu_twisted_Manglik(Re, Pr, Gr, Gz, D, H, delta, Dh, mu, muW):
         # Laminar flow
 
         y = H/D
-        Ra = Gr*Pr
-
-        A = pi*D**2/4
-        Ac = A-D*delta
 
         Resw = Re*(pi/(pi-4*delta/D)) * ((pi*D/H)**2)**0.5
         Sw = Resw/(H/2/D)**0.5
-        Reax = Resw/Vs*Va*(1+(pi/2/y)**2)**0.5
 
-        # Eq 17
-        Nu = 4.612*(mu/muW)**0.14*(
-            ((1+0.0951*Gz**0.894)**2.5 + 6.413e-9*(Sw*Pr**0.391)**3.835)**2
-            + 2.132e-14*(Reax*Ra)**2.23)**0.1
+        # Eq 14
+        Nu = 4.612*(mu/muW)**0.14*((1 + 6.413e-9*(Sw*Pr**0.391)**3.835)**0.2)
 
     elif Re >= 5000:
         # Turbulent flow
@@ -816,8 +821,8 @@ def Nu_twisted_Manglik(Re, Pr, Gr, Gz, D, H, delta, Dh, mu, muW):
         Nu *= (mu/muW)**n
 
     else:
-        NuL = Nu_twisted_Manglik(2000, Pr, Gr, Gz, D, H, delta, Dh, mu, muW)
-        NuH = Nu_twisted_Manglik(2000, Pr, Gr, Gz, D, H, delta, Dh, mu, muW)
+        NuL = Nu_twisted_Manglik(2000, Pr, D, H, delta, Dh, mu, muW)
+        NuH = Nu_twisted_Manglik(2000, Pr, D, H, delta, Dh, mu, muW)
         Nu = NuL*(5000-Re)/3000 + NuH*(Re-2000)/3000
     return Nu
 
@@ -983,6 +988,8 @@ def Nu_twisted_laminar_Saha(Re, Pr, D, H, delta, S):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
     S : float
         Spacer lenght without twisted section, [m]
 
@@ -1536,6 +1543,9 @@ class TwistedTape(CallableEntity):
         # Tape twist parameter
         self.y = Dimensionless(self.H/self.Dt)
 
+        # Helix angle
+        self.alpha = atan(pi/2/self.y)
+
         self.valueChanged.emit(self)
 
     def Nu(self, Re, Pr, mu, muW, beta, dT, L, method=None):
@@ -1554,8 +1564,7 @@ class TwistedTape(CallableEntity):
 
             if method == 1:
                 # Manglik-Bergles (1993)
-                Gz = pi/4*Re*Pr*self.De/L
-                Nu = Nu_twisted_Manglik(Re, Pr, Gr, Gz, self.Dt, self.H,
+                Nu = Nu_twisted_Manglik(Re, Pr, self.Dt, self.H,
                                         self.delta, self.De, mu, muW)
 
             elif method == 2:
@@ -1611,8 +1620,7 @@ class TwistedTape(CallableEntity):
 
             if method == 1:
                 # Manglik-Bergles (1993)
-                Gz = pi/4*Re*Pr*self.De/L
-                Nu = Nu_twisted_Manglik(Re, Pr, Gr, Gz, self.Dt, self.H,
+                Nu = Nu_twisted_Manglik(Re, Pr, self.Dt, self.H,
                                         self.delta, self.De, mu, muW)
 
             elif method == 2:
