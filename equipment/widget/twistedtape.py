@@ -1812,6 +1812,7 @@ class UI_TwistedTape(ToolGui):
             self.methodFrictionLaminar.addItem(method)
         self.methodFrictionLaminar.currentIndexChanged.connect(
             partial(self.changeParams, "methodFrictionLaminar"))
+        self.methodFrictionLaminar.currentTextChanged.connect(self.setVisibleMod)
         lytM.addWidget(self.methodFrictionLaminar, 2, 2)
         self.methodFrictionTurbulent = QtWidgets.QComboBox()
         for method in TwistedTape.TEXT_TURBULENT_FRICTION:
@@ -1828,34 +1829,42 @@ class UI_TwistedTape(ToolGui):
             self.methodHeatLaminar.addItem(method)
         self.methodHeatLaminar.currentIndexChanged.connect(
             partial(self.changeParams, "methodHeatLaminar"))
+        self.methodHeatLaminar.currentTextChanged.connect(self.setVisibleMod)
         lytM.addWidget(self.methodHeatLaminar, 3, 2)
         self.methodHeatTurbulent = QtWidgets.QComboBox()
         for method in TwistedTape.TEXT_TURBULENT_HEAT:
             self.methodHeatTurbulent.addItem(method)
         self.methodHeatTurbulent.currentIndexChanged.connect(
             partial(self.changeParams, "methodHeatTurbulent"))
-        lytM.addWidget(self.methodHeatTurbulent, 3, 3)
         self.methodHeatTurbulent.currentTextChanged.connect(self.setVisibleMod)
+        lytM.addWidget(self.methodHeatTurbulent, 3, 3)
         lyt.addLayout(lytM, 2, 1, 1, 2)
+
+        self.helical = QtWidgets.QCheckBox(self.tr(
+            "Helical screw-tape inserts"))
+        self.helical.toggled.connect(
+            partial(self.changeParams, "isHelical"))
+        self.helical.toggled.connect(self.setEnableSpacer)
+        lyt.addWidget(self.helical, 3, 1, 1, 3)
 
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
-            QtWidgets.QSizePolicy.Policy.Fixed), 3, 1, 1, 2)
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
 
         label = QtWidgets.QLabel(self.tr("Tape pitch"))
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
-        lyt.addWidget(label, 4, 1)
+        lyt.addWidget(label, 5, 1)
         self.H = Entrada_con_unidades(Length)
         self.H.valueChanged.connect(partial(self.changeParams, "H"))
-        lyt.addWidget(self.H, 4, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 5, 1)
+        lyt.addWidget(self.H, 5, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 6, 1)
         self.Dt = Entrada_con_unidades(Length, "PipeDiameter")
         self.Dt.valueChanged.connect(partial(self.changeParams, "Dt"))
-        lyt.addWidget(self.Dt, 5, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 6, 1)
+        lyt.addWidget(self.Dt, 6, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 7, 1)
         self.delta = Entrada_con_unidades(Length, "Thickness")
         self.delta.valueChanged.connect(partial(self.changeParams, "delta"))
-        lyt.addWidget(self.delta, 6, 2)
+        lyt.addWidget(self.delta, 7, 2)
 
         self.groupMurugesan = QtWidgets.QWidget()
         lytMuru = QtWidgets.QGridLayout(self.groupMurugesan)
@@ -1878,35 +1887,31 @@ class UI_TwistedTape(ToolGui):
         self.w = Entrada_con_unidades(Length, "thickness")
         self.w.valueChanged.connect(partial(self.changeParams, "Vcut_w"))
         lytMuru.addWidget(self.w, 3, 3)
-
         lyt.addWidget(self.groupMurugesan, 8, 1, 1, 2)
 
-        self.helical = QtWidgets.QCheckBox(self.tr(
-            "Helical screw-tape inserts"))
-        self.helical.toggled.connect(
-            partial(self.changeParams, "isHelical"))
-        self.helical.toggled.connect(self.setEnableSpacer)
-        lyt.addWidget(self.helical, 9, 1, 1, 3)
-
-        lytH = QtWidgets.QHBoxLayout()
         self.lblS = QtWidgets.QLabel(self.tr("Spacer lenght"))
-        lytH.addWidget(self.lblS)
+        lyt.addWidget(self.lblS, 10, 1)
         self.S = Entrada_con_unidades(Length)
         self.S.valueChanged.connect(partial(self.changeParams, "S"))
-        lytH.addWidget(self.S)
-        lyt.addLayout(lytH, 10, 2, 1, 2)
+        lyt.addWidget(self.S, 10, 2)
+        # lyt.addLayout(lytH, 10, 1, 1, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
 
     def setVisibleMod(self):
-        if self.methodHeatLaminar.currentText() == "Murugesan (2010)" or \
+        """Enable widget with special parameters for selected method"""
+        # Murugesan method
+        if self.methodHeatTurbulent.currentText() == "Murugesan (2010)" or \
                 self.methodFrictionTurbulent.currentText() == "Murugesan (2010)":
             self.groupMurugesan.setVisible(True)
         else:
             self.groupMurugesan.setVisible(False)
         self.setEnable_Murugesan(self.modMurugesan.currentText())
+
+        # Saha use Spacer special parameter
+        self.setEnableSpacer()
 
     def setEnable_Murugesan(self, mod):
         """Change Enable/Disable state for Murugesan aditional parameters"""
@@ -1918,9 +1923,12 @@ class UI_TwistedTape(ToolGui):
     def setEnabled(self, boolean):
         """Add logic to parent setEnabled for orientation option"""
         ToolGui.setEnabled(self, boolean)
-        self.setEnableSpacer(boolean and self.helical.isChecked())
+        self.setEnableSpacer()
 
-    def setEnableSpacer(self, boolean):
+    def setEnableSpacer(self):
+        method = self.methodHeatLaminar.currentText() == "Saha-Gaitonde-Date (1989)" or \
+            self.methodFrictionLaminar.currentText() == "Saha-Gaitonde-Date (1989)"
+        boolean = method or self.helical.isChecked()
         self.lblS.setEnabled(boolean)
         self.S.setEnabled(boolean)
 
