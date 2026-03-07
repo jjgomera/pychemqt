@@ -195,6 +195,31 @@ __doi__ = {
                   "twisted-tape inserts",
          "ref": "Heat Mass Transfer 36 (2000) 195-199",
          "doi": "10.1007/s002310050384"},
+    27:
+        {"autor": "Chang, S.W., Guo, M.H.",
+         "title": "Thermal perfomances of enhanced smooth and spiky twisted "
+                  "tapes for laminar and turbulent tubular flows",
+         "ref": "Int. J. Heat Mass Transfer 55(25-26) (2012) 7651-7667",
+         "doi": "10.1016/j.ijheatmasstransfer.2012.07.077"},
+    28:
+        {"autor": "Chang, S.W., Jan, Y.J., Liou, J.S.",
+         "title": "Turbulent heat transfer and pressure drop in tube fitted"
+                  "with serrated twisted tape",
+         "ref": "Int. J. Thermal Sci. 46(5) (2007) 506-518",
+         "doi": "10.1016/j.ijthermalsci.2006.07.009"},
+    29:
+        {"autor": "Chang, S.W., Yang, T.L., Liou, J.S.",
+         "title": "Heat transfer and pressure drop in tube with broken "
+                  "twisted tape insert",
+         "ref": "Exp. Thermal Fluid Sci. 32(2) (2007) 489-501",
+         "doi": "10.1016/j.expthermflusci.2007.06.002"},
+
+    # 30:
+    #     {"autor": "",
+    #      "title": "",
+    #      "ref": "",
+    #      "doi": ""},
+
     # 27:
          # {"autor": "",
          # "title": "",
@@ -272,6 +297,100 @@ def f_twisted_Sarma(Re, D, H):
     # Eq 4
     rhs = 0.474 - 0.3*log10(Re) + 0.065*log10(Re)**2 - 4.66e-3*log10(Re)**3
     f = (1+D/H)**3.378 * rhs
+    return f
+
+
+@refDoc(__doi__, [27, 28, 29])
+def f_twisted_Chang(Re, D, H, mod="", ff=True):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Chang-Guo correlation (2012).
+
+    The twisted-tape have geometrical modifications:
+
+        * PT: Perforated twisted tape
+        * PJT: Perforated twisted tape with jaggedness
+        * PSJ: Perforated spiky twisted tape
+        * PJST: Perforated spicy twisted tape with jaggedness
+        * VST: V-notched spicy twisted tape
+        * SR: Serrated roughened
+        * BT: Broken twisted tape
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        PT | PJT | PSJ | PJSJ | VST
+    ff : boolean
+        In jaggedness mod flow orientation is relevant, set fordward flow state
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    y = H/D
+
+    # Coefficient from Table 5
+    if mod == "PT":
+        ci = ((0.0174, 0.13, 0.339), (0.02, 4.41, 0.725),
+              (3.4e-4, 1.05e-3, 0.512))
+    elif mod == "PJT":
+        if ff:
+            ci = ((0.0174, 0.311, 0.493), (0.02, 2.21, 0.565),
+                  (3.4e-4, 1.22e-3, 0.699))
+        else:
+            ci = ((0.0174, 0.35, 0.567), (0.02, 0.648, 0.209),
+                  (3.4e-4, 3.14e-4, 0.719))
+    elif mod == "PST":
+        ci = ((0.0174, 0.249, 0.34), (0.02, 2.77, 0.527),
+              (3.4e-4, 1.06e-3, 0.702))
+    elif mod == "PJST":
+        if ff:
+            ci = ((0.0174, 1.89, 0.96), (0.02, 0.364, 0.134),
+                  (3.4e-4, 1.09e-3, 0.873))
+        else:
+            ci = ((0.0174, 3.01, 1.21), (0.02, 1.14, 0.295),
+                  (3.4e-4, 0.177, 3.04))
+    elif mod == "VST":
+        ci = ((0.0174, 0.561, 0.471), (0.02, 0.706, 0.453),
+              (3.4e-4, 2.23, 1.13), (0, 0.00878, 4.64))
+
+    elif mod == "BT":
+        # From [29]_, Eq 9
+        ci = ((0.0174, 0.21, 0.332), (0.02, 0.161, 1.27),
+              (3.4e-4, -3.21e-4, 0.548))
+
+    # From [28]_
+    elif mod == "SR":
+        # Eq 9 in [28]_
+        ci = ((0, 0, 0), (0.033, 0.756, 0.765), (0.166, -0.235, 0.524))
+    else:
+        # Smooth twisted tape
+        # Eq 8 in [28]_
+        ci = ((0, 0, 0), (0.07, 9.87, 1.81), (-0.08, -0.94, 1.23))
+
+
+    c0 = ci[0][0]+ci[0][1]*exp(-ci[0][2]*y)
+    c1 = ci[1][0]+ci[1][1]*exp(-ci[1][2]*y)
+    c2 = ci[2][0]+ci[2][1]*exp(-ci[2][2]*y)
+
+    # Eq 6
+    if not mod or mod == "SR":
+        f = c1*Re**c2
+    else:
+        f = c0 + c1*exp(-c2*Re)
+
+    # Aditional term for VST
+    if mod == "VST":
+        c3 = ci[3][0]+ci[3][1]*exp(-ci[3][2]*y)
+        f += c3*Re
+
     return f
 
 
@@ -852,6 +971,96 @@ def Nu_twisted_Sarma(Re, Pr, D, H):
     rhs = 0.974 - 0.783*log10(Re) + 0.35*log10(Re)**2 - 0.0273*log10(Re)**3
     Nu = Pr**(1/3) * (1+D/H)**2 * 10**rhs
     return Nu
+
+
+@refDoc(__doi__, [27, 28, 29])
+def Nu_twisted_Chang(Re, Pr, D, H, mod="", ff=True):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Chang-Guo correlation (2012).
+
+    The twisted-tape have geometrical modifications:
+
+        * PT: Perforated twisted tape
+        * PJT: Perforated twisted tape with jaggedness
+        * PSJ: Perforated spiky twisted tape
+        * PJST: Perforated spicy twisted tape with jaggedness
+        * VST: V-notched spicy twisted tape
+        * SR: Serrated roughened twisted tape
+        * BT: Broken twisted tape
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        PT | PJT | PSJ | PJSJ | VST
+    ff : boolean
+        In jaggedness mod flow orientation is relevant, set fordward flow state
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+
+    # Coef for developed flow from Table 3(b)
+    if mod == "PT":
+        ai = (0.0364, 0.771, 0.363)
+        bi = (0.782, 0.239, 0.145)
+    elif mod == "PJT":
+        if ff:
+            ai = (0.0364, 0.732, 0.367)
+            bi = (0.782, 0.223, 0.161)
+        else:
+            ai = (0.0364, 0.581, 0.282)
+            bi = (0.782, 0.199, 0.103)
+    elif mod == "PST":
+        ai = (0.0452, 0.56, 0.286)
+        bi = (0.77, 0.184, 0.147)
+    elif mod == "PJST":
+        if ff:
+            ai = (0.0452, 0.333, 0.323)
+            bi = (0.77, 0.126, 0.226)
+        else:
+            ai = (0.0452, 0.416, 0.323)
+            bi = (0.77, 0.144, 0.098)
+    elif mod == "VST":
+        ai = (0.0452, 0.337, 0.204)
+        bi = (0.77, 0.122, 0.109)
+
+    elif mod == "BT":
+        # From [29]_, Eq 4
+        # Using only the parameter for developed flow
+        ai = (0.0452, 0.3, 0.141)
+        bi = (0.77, 0.157, 0.13)
+
+    # From [28]_
+    elif mod == "SR":
+        # Eq 7 in [28]_
+        ai = (0.118, 5.84, 1.83)
+        bi = (0.73, 0.695, 1.26)
+    else:
+        # Smooth twisted tape
+        # Eq 6 in [28]_
+        ai = (0.0364, 3.66, 1.11)
+        bi = (0.8, 0.375, 0.31)
+
+
+    A = ai[0]+ai[1]*exp(-ai[2]*y)
+    B = bi[0]-bi[1]*exp(-bi[2]*y)
+
+    Nu = A*Re**B*Pr**(1/3)
+
+    return Nu
+
 
 
 @refDoc(__doi__, [2])
