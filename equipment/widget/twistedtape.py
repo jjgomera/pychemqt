@@ -301,15 +301,15 @@ def f_twisted_Sarma(Re, D, H):
 
 
 @refDoc(__doi__, [27, 28, 29])
-def f_twisted_Chang(Re, D, H, mod="", ff=True):
+def f_twisted_Chang(Re, D, H, mod="", bf=False):
     """Calculate friction factor a pipe with a twisted-tape insert using
-    the Chang-Guo correlation (2012).
+    the Chang et al. correlation (2012).
 
     The twisted-tape have geometrical modifications:
 
         * PT: Perforated twisted tape
         * PJT: Perforated twisted tape with jaggedness
-        * PSJ: Perforated spiky twisted tape
+        * PST: Perforated spiky twisted tape
         * PJST: Perforated spicy twisted tape with jaggedness
         * VST: V-notched spicy twisted tape
         * SR: Serrated roughened
@@ -325,9 +325,9 @@ def f_twisted_Chang(Re, D, H, mod="", ff=True):
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        PT | PJT | PSJ | PJSJ | VST
-    ff : boolean
-        In jaggedness mod flow orientation is relevant, set fordward flow state
+        PT | PJT | PST | PJSJ | VST
+    bf : boolean
+        In jaggedness mod flow orientation is relevant, set backward flow state
 
     Returns
     -------
@@ -341,22 +341,22 @@ def f_twisted_Chang(Re, D, H, mod="", ff=True):
         ci = ((0.0174, 0.13, 0.339), (0.02, 4.41, 0.725),
               (3.4e-4, 1.05e-3, 0.512))
     elif mod == "PJT":
-        if ff:
-            ci = ((0.0174, 0.311, 0.493), (0.02, 2.21, 0.565),
-                  (3.4e-4, 1.22e-3, 0.699))
-        else:
+        if bf:
             ci = ((0.0174, 0.35, 0.567), (0.02, 0.648, 0.209),
                   (3.4e-4, 3.14e-4, 0.719))
+        else:
+            ci = ((0.0174, 0.311, 0.493), (0.02, 2.21, 0.565),
+                  (3.4e-4, 1.22e-3, 0.699))
     elif mod == "PST":
         ci = ((0.0174, 0.249, 0.34), (0.02, 2.77, 0.527),
               (3.4e-4, 1.06e-3, 0.702))
     elif mod == "PJST":
-        if ff:
-            ci = ((0.0174, 1.89, 0.96), (0.02, 0.364, 0.134),
-                  (3.4e-4, 1.09e-3, 0.873))
-        else:
+        if bf:
             ci = ((0.0174, 3.01, 1.21), (0.02, 1.14, 0.295),
                   (3.4e-4, 0.177, 3.04))
+        else:
+            ci = ((0.0174, 1.89, 0.96), (0.02, 0.364, 0.134),
+                  (3.4e-4, 1.09e-3, 0.873))
     elif mod == "VST":
         ci = ((0.0174, 0.561, 0.471), (0.02, 0.706, 0.453),
               (3.4e-4, 2.23, 1.13), (0, 0.00878, 4.64))
@@ -374,7 +374,6 @@ def f_twisted_Chang(Re, D, H, mod="", ff=True):
         # Smooth twisted tape
         # Eq 8 in [28]_
         ci = ((0, 0, 0), (0.07, 9.87, 1.81), (-0.08, -0.94, 1.23))
-
 
     c0 = ci[0][0]+ci[0][1]*exp(-ci[0][2]*y)
     c1 = ci[1][0]+ci[1][1]*exp(-ci[1][2]*y)
@@ -974,15 +973,15 @@ def Nu_twisted_Sarma(Re, Pr, D, H):
 
 
 @refDoc(__doi__, [27, 28, 29])
-def Nu_twisted_Chang(Re, Pr, D, H, mod="", ff=True):
+def Nu_twisted_Chang(Re, Pr, D, H, mod="", bf=False):
     """Calculate friction factor a pipe with a twisted-tape insert using
-    the Chang-Guo correlation (2012).
+    the Chang et al. correlation (2012).
 
     The twisted-tape have geometrical modifications:
 
         * PT: Perforated twisted tape
         * PJT: Perforated twisted tape with jaggedness
-        * PSJ: Perforated spiky twisted tape
+        * PST: Perforated spiky twisted tape
         * PJST: Perforated spicy twisted tape with jaggedness
         * VST: V-notched spicy twisted tape
         * SR: Serrated roughened twisted tape
@@ -1000,9 +999,9 @@ def Nu_twisted_Chang(Re, Pr, D, H, mod="", ff=True):
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        PT | PJT | PSJ | PJSJ | VST
-    ff : boolean
-        In jaggedness mod flow orientation is relevant, set fordward flow state
+        PT | PJT | PST | PJSJ | VST
+    bf : boolean
+        In jaggedness mod flow orientation is relevant, set backward flow state
 
     Returns
     -------
@@ -1016,22 +1015,22 @@ def Nu_twisted_Chang(Re, Pr, D, H, mod="", ff=True):
         ai = (0.0364, 0.771, 0.363)
         bi = (0.782, 0.239, 0.145)
     elif mod == "PJT":
-        if ff:
-            ai = (0.0364, 0.732, 0.367)
-            bi = (0.782, 0.223, 0.161)
-        else:
+        if bf:
             ai = (0.0364, 0.581, 0.282)
             bi = (0.782, 0.199, 0.103)
+        else:
+            ai = (0.0364, 0.732, 0.367)
+            bi = (0.782, 0.223, 0.161)
     elif mod == "PST":
         ai = (0.0452, 0.56, 0.286)
         bi = (0.77, 0.184, 0.147)
     elif mod == "PJST":
-        if ff:
-            ai = (0.0452, 0.333, 0.323)
-            bi = (0.77, 0.126, 0.226)
-        else:
+        if bf:
             ai = (0.0452, 0.416, 0.323)
             bi = (0.77, 0.144, 0.098)
+        else:
+            ai = (0.0452, 0.333, 0.323)
+            bi = (0.77, 0.126, 0.226)
     elif mod == "VST":
         ai = (0.0452, 0.337, 0.204)
         bi = (0.77, 0.122, 0.109)
@@ -1053,14 +1052,12 @@ def Nu_twisted_Chang(Re, Pr, D, H, mod="", ff=True):
         ai = (0.0364, 3.66, 1.11)
         bi = (0.8, 0.375, 0.31)
 
-
     A = ai[0]+ai[1]*exp(-ai[2]*y)
     B = bi[0]-bi[1]*exp(-bi[2]*y)
 
     Nu = A*Re**B*Pr**(1/3)
 
     return Nu
-
 
 
 @refDoc(__doi__, [2])
@@ -1638,7 +1635,8 @@ class TwistedTape(CallableEntity):
         "Agarwal-Rao (1996)",
         "Sarma (2005)",
         "Saha-Gaitonde-Date (1989)",
-        "Date-Gaitonde (1990)"
+        "Date-Gaitonde (1990)",
+        "Chang (2012)"
         )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1649,6 +1647,7 @@ class TwistedTape(CallableEntity):
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
+        "Chang (2012)"
         )
 
     TEXT_LAMINAR_HEAT = (
@@ -1660,6 +1659,7 @@ class TwistedTape(CallableEntity):
         "Sarma (2005)",
         "Saha-Gaitonde-Date (1989)",
         "Klaczak (2000)",
+        "Chang (2012)"
         )
 
     TEXT_TURBULENT_HEAT = (
@@ -1672,6 +1672,7 @@ class TwistedTape(CallableEntity):
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
+        "Chang (2012)"
         )
 
     TEXT_MURUGESAN = (
@@ -1682,6 +1683,17 @@ class TwistedTape(CallableEntity):
         "Trapezoidal cut",
         "Vertical wings",
         "Horizontal wings")
+
+    TEXT_CHANG = ("", "PT", "PJT", "PST", "PJST", "VST", "SR", "BT")
+    TEXT_CHANG_TOOLTIP = (
+        "",
+        translate("twistedtape", "Perforated twisted tape"),
+        translate("twistedtape", "Perforated twisted tape with jaggedness"),
+        translate("twistedtape", "Perforated spiky twisted tape"),
+        translate("twistedtape", "Perforated spicy twisted tape with jaggedness"),
+        translate("twistedtape", "V-notched spicy twisted tape"),
+        translate("twistedtape", "Serrated roughened twisted tape"),
+        translate("twistedtape", "Broken twisted tape"))
 
     # Helical method
     # "Sivashanmugam-Suresh-Ibrahim (2006)"
@@ -1696,11 +1708,13 @@ class TwistedTape(CallableEntity):
         "H": 0,
         "Dt": 0,
         "delta": 0,
+        "S": 0,
         "isHelical": False,
         "modMurugesan": "",
         "Vcut_w": 0,
         "Vcut_De": 0,
-        "S": 0
+        "modChang": "",
+        "bf": False
         }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -1817,6 +1831,11 @@ class TwistedTape(CallableEntity):
                     Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
                     msg = "Klaczak correlation out of range, using HTRI instead"
 
+            elif method == 8:
+                # Chang (2012)
+                Nu = Nu_twisted_Chang(Re, Pr, self.Dt, self.H,
+                                      self.kw["modChang"], self.kw["bf"])
+
             else:
                 # HTRI
                 Nu = Nu_twisted_HTRI(
@@ -1874,6 +1893,11 @@ class TwistedTape(CallableEntity):
             elif method == 8:
                 # Jaisankar
                 Nu = Nu_twisted_turbulent_Jaisankar(Re, Pr, self.Dt, self.H)
+
+            elif method == 9:
+                # Chang (2012)
+                Nu = Nu_twisted_Chang(Re, Pr, self.Dt, self.H,
+                                      self.kw["modChang"], self.kw["bf"])
 
             else:
                 # HTRI
@@ -1937,6 +1961,11 @@ class TwistedTape(CallableEntity):
                 # Date-Gaitonde (1990)
                 f = f_twisted_laminar_Date(Re, self.Dt, self.H)
 
+            elif method == 7:
+                # Chang (2012)
+                f = f_twisted_Chang(
+                    Re, self.Dt, self.H, self.kw["modChang"], self.kw["bf"])
+
             else:
                 # Manglik-Bergles (1993)
                 f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
@@ -1980,6 +2009,11 @@ class TwistedTape(CallableEntity):
             elif method == 6:
                 # Jaisankar (2009)
                 f = f_twisted_turbulent_Jaisankar(Re, self.Dt, self.H)
+
+            elif method == 7:
+                # Chang (2012)
+                f = f_twisted_Chang(
+                    Re, self.Dt, self.H, self.kw["modChang"], self.kw["bf"])
 
             else:
                 # Manglik-Bergles (1993)
@@ -2075,6 +2109,12 @@ class UI_TwistedTape(ToolGui):
         self.delta.valueChanged.connect(partial(self.changeParams, "delta"))
         lyt.addWidget(self.delta, 7, 2)
 
+        self.lblS = QtWidgets.QLabel(self.tr("Spacer lenght"))
+        lyt.addWidget(self.lblS, 8, 1)
+        self.S = Entrada_con_unidades(Length)
+        self.S.valueChanged.connect(partial(self.changeParams, "S"))
+        lyt.addWidget(self.S, 8, 2)
+
         self.groupMurugesan = QtWidgets.QWidget()
         lytMuru = QtWidgets.QGridLayout(self.groupMurugesan)
         lytMuru.addWidget(QtWidgets.QLabel(self.tr(
@@ -2096,18 +2136,44 @@ class UI_TwistedTape(ToolGui):
         self.w = Entrada_con_unidades(Length, "thickness")
         self.w.valueChanged.connect(partial(self.changeParams, "Vcut_w"))
         lytMuru.addWidget(self.w, 3, 3)
-        lyt.addWidget(self.groupMurugesan, 8, 1, 1, 2)
+        lytMuru.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 4)
+        lyt.addWidget(self.groupMurugesan, 9, 1, 1, 2)
 
-        self.lblS = QtWidgets.QLabel(self.tr("Spacer lenght"))
-        lyt.addWidget(self.lblS, 10, 1)
-        self.S = Entrada_con_unidades(Length)
-        self.S.valueChanged.connect(partial(self.changeParams, "S"))
-        lyt.addWidget(self.S, 10, 2)
-        # lyt.addLayout(lytH, 10, 1, 1, 2)
+        self.groupChang = QtWidgets.QWidget()
+        lytChang = QtWidgets.QGridLayout(self.groupChang)
+        lytChang.addWidget(QtWidgets.QLabel(self.tr(
+            "Chan-Guo correlation modification")), 1, 1, 1, 2)
+        self.modChang = QtWidgets.QComboBox()
+        for method, txt in zip(TwistedTape.TEXT_CHANG, TwistedTape.TEXT_CHANG_TOOLTIP):
+            if method and txt:
+                self.modChang.addItem(f"{method} - {txt}")
+            else:
+                self.modChang.addItem("")
+        self.modChang.currentTextChanged.connect(self.changeModChang)
+        lytChang.addWidget(self.modChang, 1, 3)
+        lytChang.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 2, 1)
+        self.checkBF = QtWidgets.QCheckBox(self.tr("Backward flow"))
+        self.checkBF.toggled.connect(partial(self.changeParams, "bf"))
+        lytChang.addWidget(self.checkBF, 2, 2)
+        lytChang.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 4)
+        lyt.addWidget(self.groupChang, 10, 1, 1, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
+
+    def changeModChang(self, txt):
+        """Extract code from txt"""
+        if txt:
+            txt = txt.split(" - ")[0]
+        self.changeParams("modChang", txt)
+        self.checkBF.setEnabled("J" in txt)
 
     def setVisibleMod(self):
         """Enable widget with special parameters for selected method"""
@@ -2121,6 +2187,16 @@ class UI_TwistedTape(ToolGui):
 
         # Saha use Spacer special parameter
         self.setEnableSpacer()
+
+        # Chang method
+        if self.methodHeatTurbulent.currentText() == "Chang (2012)" or \
+                self.methodFrictionTurbulent.currentText() == "Chang (2012)" or \
+                self.methodHeatLaminar.currentText() == "Chang (2012)" or \
+                self.methodFrictionLaminar.currentText() == "Chang (2012)":
+            self.groupChang.setVisible(True)
+        else:
+            self.groupChang.setVisible(False)
+        self.checkBF.setEnabled("J" in self.modChang.currentText())
 
     def setEnable_Murugesan(self, mod):
         """Change Enable/Disable state for Murugesan aditional parameters"""
