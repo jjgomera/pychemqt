@@ -48,7 +48,7 @@ class UI_FinnedPipe(ToolGui):
     def loadUI(self):
         """Add widget"""
         self.Entity = FinnedPipe()
-        lyt = self.layout()
+        lyt = self.wdg.layout()
 
         lytH = QtWidgets.QHBoxLayout()
         lytH.addWidget(QtWidgets.QLabel(self.tr("Pipe from database")))

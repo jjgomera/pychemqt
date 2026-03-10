@@ -2272,7 +2272,7 @@ class UI_TwistedTape(ToolGui):
         """Add widget"""
         self.Entity = TwistedTape()
 
-        lyt = self.layout()
+        lyt = self.wdg.layout()
 
         lytM = QtWidgets.QGridLayout()
 

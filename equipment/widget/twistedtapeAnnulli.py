@@ -351,7 +351,7 @@ class UI_TwistedTapeAnnuli(ToolGui):
         """Add widget"""
         self.Entity = TwistedTapeAnnuli()
 
-        lyt = self.layout()
+        lyt = self.wdg.layout()
 
         label = QtWidgets.QLabel(self.tr("Tape pitch, H"))
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
