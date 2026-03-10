@@ -23,7 +23,7 @@ from math import atan, exp, log10, pi, tan
 
 from tools.qt import QtCore, QtWidgets, translate
 
-from lib.unidades import Dimensionless, Area, Length
+from lib.unidades import Dimensionless, Area, Length, Angle
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
 from equipment.widget.gui import CallableEntity, ToolGui
@@ -1820,7 +1820,8 @@ class TwistedTape(CallableEntity):
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
-        "Chang (2012)"
+        "Chang (2012)",
+        "Eiamsa-ard (2010)"
         )
 
     TEXT_LAMINAR_HEAT = (
@@ -1869,6 +1870,20 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Serrated roughened twisted tape"),
         translate("twistedtape", "Broken twisted tape"))
 
+    TEXT_EIAMSA = ("", "CT", "CoT", "oDWT", "sDWT", "PT","WT", "AWT", "ST",
+                   "DST")
+    TEXT_EIAMSA_TOOLTIP = (
+        "",
+        translate("twistedtape", "Twin counter twisted tape"),
+        translate("twistedtape", "Twin co-twisted tape"),
+        translate("twistedtape", "Oblique delta-winglet twisted tape"),
+        translate("twistedtape", "Straight delta-winglet twisted tape"),
+        translate("twistedtape", "Peripherally-cut twisted tape"),
+        translate("twistedtape", "Twisted tape with centre wings"),
+        translate("twistedtape", "Twisted tape with centre wings and alternate axes"),
+        translate("twistedtape", "Regularly-spaced twisted tape"),
+        translate("twistedtape", "Regularly-spaced dual twisted tape"))
+
     # Helical method
     # "Sivashanmugam-Suresh-Ibrahim (2006)"
 
@@ -1879,17 +1894,25 @@ class TwistedTape(CallableEntity):
         "methodFrictionTurbulent": 0,
         "methodHeatLaminar": 0,
         "methodHeatTurbulent": 0,
+
         "H": 0,
         "Dt": 0,
         "delta": 0,
         "S": 0,
+
         "isHelical": False,
+
         "modMurugesan": "",
         "Vcut_w": 0,
         "Vcut_De": 0,
+
         "modChang": "",
-        "bf": False
-        }
+        "bf": False,
+
+        "modEiamsa": "",
+        "dW": 0,
+        "w": 0,
+        "beta": 0}
 
     valueChanged = QtCore.pyqtSignal(object)
     inputChanged = QtCore.pyqtSignal(object)
@@ -2073,6 +2096,26 @@ class TwistedTape(CallableEntity):
                 Nu = Nu_twisted_Chang(Re, Pr, self.Dt, self.H,
                                       self.kw["modChang"], self.kw["bf"])
 
+            elif method == 10:
+                # Eiamsa-ard (2010)
+                kw = {"mod": self.kw["modEiamsa"],
+                      "dW": self.kw["dW"],
+                      "w": self.kw["w"],
+                      "S": self.kw["S"],
+                      "beta": self.kw["beta"]}
+
+                if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
+                    kw["mod"] = ""
+                    msg = "Depth of wing cut don't defined, using plain "
+                    msg += "twisted tape instead"
+                elif self.kw["modEiamsa"] == "PT" and not self.kw["w"]:
+                    kw["mod"] = ""
+                    msg = "Peripherally-cut width don't defined, using plain "
+                    msg += "twisted tape instead"
+
+                Nu = Nu_twisted_turbulent_Eiamsaard(
+                    Re, Pr, self.Dt, self.H, **kw)
+
             else:
                 # HTRI
                 Nu = Nu_twisted_HTRI(
@@ -2189,6 +2232,25 @@ class TwistedTape(CallableEntity):
                 f = f_twisted_Chang(
                     Re, self.Dt, self.H, self.kw["modChang"], self.kw["bf"])
 
+            elif method == 8:
+                # Eiamsa-ard (2010)
+                kw = {"mod": self.kw["modEiamsa"],
+                      "dW": self.kw["dW"],
+                      "w": self.kw["w"],
+                      "S": self.kw["S"],
+                      "beta": self.kw["beta"]}
+
+                if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
+                    kw["mod"] = ""
+                    msg = "Depth of wing cut don't defined, using plain "
+                    msg += "twisted tape instead"
+                elif self.kw["modEiamsa"] == "PT" and not self.kw["w"]:
+                    kw["mod"] = ""
+                    msg = "Peripherally-cut width don't defined, using plain "
+                    msg += "twisted tape instead"
+
+                f = f_twisted_turbulent_Eiamsaard(Re, self.Dt, self.H, **kw)
+
             else:
                 # Manglik-Bergles (1993)
                 f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
@@ -2289,6 +2351,7 @@ class UI_TwistedTape(ToolGui):
         self.S.valueChanged.connect(partial(self.changeParams, "S"))
         lyt.addWidget(self.S, 8, 2)
 
+        # Murugesan additional parameters
         self.groupMurugesan = QtWidgets.QWidget()
         lytMuru = QtWidgets.QGridLayout(self.groupMurugesan)
         lytMuru.addWidget(QtWidgets.QLabel(self.tr(
@@ -2305,16 +2368,17 @@ class UI_TwistedTape(ToolGui):
         self.De = Entrada_con_unidades(Length, "thickness")
         self.De.valueChanged.connect(partial(self.changeParams, "Vcut_De"))
         lytMuru.addWidget(self.De, 2, 3)
-        self.lblw = QtWidgets.QLabel(self.tr("Widgth of V cut"))
-        lytMuru.addWidget(self.lblw, 3, 2)
-        self.w = Entrada_con_unidades(Length, "thickness")
-        self.w.valueChanged.connect(partial(self.changeParams, "Vcut_w"))
-        lytMuru.addWidget(self.w, 3, 3)
+        self.lblVcut_w = QtWidgets.QLabel(self.tr("Widgth of V cut"))
+        lytMuru.addWidget(self.lblVcut_w, 3, 2)
+        self.Vcut_w = Entrada_con_unidades(Length, "thickness")
+        self.Vcut_w.valueChanged.connect(partial(self.changeParams, "Vcut_w"))
+        lytMuru.addWidget(self.Vcut_w, 3, 3)
         lytMuru.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 4)
         lyt.addWidget(self.groupMurugesan, 9, 1, 1, 2)
 
+        # Chang-Guo additional parameters
         self.groupChang = QtWidgets.QWidget()
         lytChang = QtWidgets.QGridLayout(self.groupChang)
         lytChang.addWidget(QtWidgets.QLabel(self.tr(
@@ -2338,6 +2402,38 @@ class UI_TwistedTape(ToolGui):
             QtWidgets.QSizePolicy.Policy.Fixed), 3, 4)
         lyt.addWidget(self.groupChang, 10, 1, 1, 2)
 
+        # Eiamsa-ard additional parameters
+        self.groupEiamsa = QtWidgets.QWidget()
+        lytEiamsa = QtWidgets.QGridLayout(self.groupEiamsa)
+        lytEiamsa.addWidget(QtWidgets.QLabel(self.tr(
+            "Eiamsa-ard correlation modification")), 1, 1, 1, 2)
+        self.modEiamsa = QtWidgets.QComboBox()
+        for method, txt in zip(TwistedTape.TEXT_EIAMSA, TwistedTape.TEXT_EIAMSA_TOOLTIP):
+            if method and txt:
+                self.modEiamsa.addItem(f"{method} - {txt}")
+            else:
+                self.modEiamsa.addItem("")
+        self.modEiamsa.currentTextChanged.connect(self.changeModEiamsa)
+        lytEiamsa.addWidget(self.modEiamsa, 1, 3)
+
+        self.lbldW = QtWidgets.QLabel(self.tr("Depth of wing cut"))
+        lytEiamsa.addWidget(self.lbldW, 2, 2)
+        self.dW = Entrada_con_unidades(Length, "thickness")
+        self.dW.valueChanged.connect(partial(self.changeParams, "dW"))
+        lytEiamsa.addWidget(self.dW, 2, 3)
+        self.lblw = QtWidgets.QLabel(self.tr("Peripherally-cut width"))
+        lytEiamsa.addWidget(self.lblw, 3, 2)
+        self.w = Entrada_con_unidades(Length, "thickness")
+        self.w.valueChanged.connect(partial(self.changeParams, "w"))
+        lytEiamsa.addWidget(self.w, 3, 3)
+        self.lblbeta = QtWidgets.QLabel(self.tr("Attack angle"))
+        lytEiamsa.addWidget(self.lblbeta, 4, 2)
+        self.beta = Entrada_con_unidades(Angle)
+        self.beta.valueChanged.connect(partial(self.changeParams, "beta"))
+        lytEiamsa.addWidget(self.beta, 4, 3)
+
+        lyt.addWidget(self.groupEiamsa, 11, 1, 1, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
@@ -2348,6 +2444,13 @@ class UI_TwistedTape(ToolGui):
             txt = txt.split(" - ")[0]
         self.changeParams("modChang", txt)
         self.checkBF.setEnabled("J" in txt)
+
+    def changeModEiamsa(self, txt):
+        """Extract code from txt"""
+        self.setEnable_Eiamsa(txt)
+        if txt:
+            txt = txt.split(" - ")[0]
+        self.changeParams("modEiamsa", txt)
 
     def setVisibleMod(self):
         """Enable widget with special parameters for selected method"""
@@ -2372,12 +2475,30 @@ class UI_TwistedTape(ToolGui):
             self.groupChang.setVisible(False)
         self.checkBF.setEnabled("J" in self.modChang.currentText())
 
+        # Eiamsa-ard method
+        if self.methodHeatTurbulent.currentText() == "Eiamsa-ard (2010)" or \
+                self.methodFrictionTurbulent.currentText() == "Eiamsa-ard (2010)":
+            self.groupEiamsa.setVisible(True)
+        else:
+            self.groupEiamsa.setVisible(False)
+        self.setEnable_Eiamsa(self.modEiamsa.currentText())
+
     def setEnable_Murugesan(self, mod):
         """Change Enable/Disable state for Murugesan aditional parameters"""
         self.lblDe.setEnabled(mod == "V cut")
         self.De.setEnabled(mod == "V cut")
-        self.lblw.setEnabled(mod == "V cut")
-        self.w.setEnabled(mod == "V cut")
+        self.lblVcut_w.setEnabled(mod == "V cut")
+        self.Vcut_w.setEnabled(mod == "V cut")
+
+    def setEnable_Eiamsa(self, mod):
+        """Change Enable/Disable state for Eiamsa-ard aditional parameters"""
+        self.lbldW.setEnabled("DWT" in mod)
+        self.dW.setEnabled("DWT" in mod)
+        self.lblw.setEnabled("PT" in mod)
+        self.w.setEnabled("PT" in mod)
+        self.lblbeta.setEnabled(mod[:3] in ("AWT", "WT "))
+        self.beta.setEnabled(mod[:3] in ("AWT", "WT "))
+        self.setEnableSpacer()
 
     def setEnabled(self, boolean):
         """Add logic to parent setEnabled for orientation option"""
@@ -2387,7 +2508,8 @@ class UI_TwistedTape(ToolGui):
     def setEnableSpacer(self):
         method = self.methodHeatLaminar.currentText() == "Saha-Gaitonde-Date (1989)" or \
             self.methodFrictionLaminar.currentText() == "Saha-Gaitonde-Date (1989)"
-        boolean = method or self.helical.isChecked()
+        eiamsa = self.groupEiamsa.isVisible() and "ST" in self.modEiamsa.currentText()
+        boolean = method or eiamsa or self.helical.isChecked()
         self.lblS.setEnabled(boolean)
         self.S.setEnabled(boolean)
 
