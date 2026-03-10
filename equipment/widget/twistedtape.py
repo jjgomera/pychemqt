@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import atan, exp, log10, pi
+from math import atan, exp, log10, pi, tan
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -213,18 +213,55 @@ __doi__ = {
                   "twisted tape insert",
          "ref": "Exp. Thermal Fluid Sci. 32(2) (2007) 489-501",
          "doi": "10.1016/j.expthermflusci.2007.06.002"},
+    30:
+        {"autor": "Eiamsa-ard, S., Thianpong, C., Eiamsa-ard, P.",
+         "title": "Turbulent heat transfer enhancement by counter/co-swirling "
+                  "flow in a tube fitted with twin twisted tapes",
+         "ref": "Exp. Thermal Fluid Sci. 34(1) (2010) 53-62",
+         "doi": "10.1016/j.expthermflusci.2009.09.002"},
+    31:
+        {"autor": "Eiamsa-ard, S., Wongcharee, K., Eiamsa-ard, P., Thianpong, C.",
+         "title": "Heat transfer enhancement in a tube using delta-winglet "
+                  "twisted tape inserts",
+         "ref": "Applied Thermal Eng. 30(4) (2010) 310-318",
+         "doi": "10.1016/j.applthermaleng.2009.09.006"},
+    32:
+        {"autor": "Eiamsa-ard, S., Seemawute, P., Wongcharee, K.",
+         "title": "Influences of peripherally-cut twisted tape insert on "
+                  "heat transfer and thermal performance characteristics in "
+                  "laminar and turbulent tube flows",
+         "ref": "Exp. Thermal Fluid Sci. 34(6) (2010) 711-719",
+         "doi": "10.1016/j.expthermflusci.2009.12.013"},
 
-    # 30:
+    33:
+        {"autor": "Eiamsa-ard, P., Piriyarungroj, N., Thianpong, C., "
+                  "Eiamsa-ard, S.",
+         "title": "A case study on thermal performance assessment of a heat "
+                  "exchanger tube equipped with regularly-spaced twisted "
+                  "tapes as swirl generators",
+         "ref": "Case Studies Thermal Eng. 3 (2014) 86-102",
+         "doi": "10.1016/j.csite.2014.04.002"},
+    34:
+        {"autor": "Eiamsa-ard, S., Wongcharee, K., Eiamsa-ard, P., "
+                  "Thianpong, C.",
+         "title": "Thermohydraulic investigation of turbulent flow through a "
+                  "round tube equipped with twisted tapes consisting of "
+                  "centre wings and alternate-axes",
+         "ref": "Exp. Thermal Fluid Sci. 34(8) (2010) 1151-1161",
+         "doi": "10.1016/j.expthermflusci.2010.04.004"},
+    35:
+        {"autor": "Eiamsa-ard, Thianpong, C., Eiamsa-ard, P., Promvonge, P.",
+         "title": "Thermal characteristics in a heat exchanger tube fitted "
+                  "with dual twisted tape elements in tandem",
+         "ref": "Int. Comm. Heat Mass Transfer 37(1) (2010) 39-46",
+         "doi": "10.1016/j.icheatmasstransfer.2009.08.010"},
+
+    # 36:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
     #      "doi": ""},
 
-    # 27:
-         # {"autor": "",
-         # "title": "",
-         # "ref": "",
-         # "doi": ""},
         }
 
 
@@ -787,6 +824,142 @@ def f_twisted_turbulent_Jaisankar(Re, D, H):
     f = 271.1*Re**-0.947*(H/D)**-0.584
 
     return f
+
+
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35])
+def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", dW=0, w=0, S=0, beta=0):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Eiamsa-ard et al. correlation (2010).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        CT | CoT | oDWT | sDWT | PT | ST
+    dW : float
+        depth of wing cut, [m]
+    w : float
+        Peripherally-cut width
+    S : float
+        Spacer lenght without twisted section, [m]
+    beta : float
+        Attack angle, [ºdeg]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Be careful with nomenclature in papers, use y as tape width
+    y = H/D
+
+    if mod == "CT":
+        # Eq 14 from [30]_
+        f = 72.29 / Re**0.53 / y**1.01
+    elif mod == "CoT":
+        # Eq 16 from [30]_
+        f = 41.7 / Re**0.52 / y**0.84
+    elif mod == "oDWT":
+        # Eq 16 from [31]_
+        f = 24.8 / Re**0.51 / y**0.566 * (1+dW/D)**1.87
+    elif mod == "sDWT":
+        # Eq 19 from [31]_
+        f = 21.7 / Re**0.45 / y**0.564 * (1+dW/D)**1.41
+    elif mod == "PT":
+        # Eq 18 from [32]_
+        f = 39.46 / Re**0.591 * y**0.195 / (w/D)**0.201
+    elif mod == "ST":
+        # Eq 20 from [33]_
+        f = 3.044 / y**0.556 / (S/D+1)**0.34
+    elif mod == "WT":
+        # Table 2 from [34]_
+        f = 14.039 / Re**0.505 * (1+tan(beta))**0.406
+    elif mod == "AWT":
+        # Table 2 from [34]_
+        f = 20.445 / Re**0.504 * (1+tan(beta))**0.283
+    elif mod == "DST":
+        # Eq 24 from [35]_
+        f = 30.5 / Re**0.56 / y**0.54 / (1.5*S/D+1)**0.2
+    else:
+        # Eq 12 from [30]_
+        f = 65.4 / Re**0.52 / y**1.31
+
+    return f
+
+
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35])
+def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", dW=0, w=0, S=0, beta=0):
+    """Calculate nusselt number for a pipe with a twisted-tape insert using
+    the Eiamsa-ard et al. correlation (2010).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        CT | CoT | oDWT | sDWT | PT
+    dW : float
+        depth of wing cut, [m]
+    w : float
+        Peripherally-cut width
+    S : float
+        Spacer lenght without twisted section, [m]
+    beta : float
+        Attack angle, [ºdeg]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Be careful with nomenclature in papers, use y as tape width
+    y = H/D
+
+    if mod == "CT":
+        # Eq 13 from [30]_
+        Nu = 0.473 * Re**0.66 * Pr**0.4 / y**0.9
+    elif mod == "CoT":
+        # Eq 15 from [30]_
+        Nu = 0.264 * Re**0.66 * Pr**0.4 / y**0.61
+    elif mod == "oDWT":
+        # Eq 15 from [31]_
+        Nu = 0.18 * Re**0.67 * Pr**0.4 / y**0.423 * (1+dW/D)**0.982
+    elif mod == "sDWT":
+        # Eq 18 from [31]_
+        Nu = 0.184 * Re**0.675 * Pr**0.4 / y**0.465 * (1+dW/D)**0.76
+    elif mod == "PT":
+        # Eq 17 from [32]_
+        Nu = 0.244 * Re**0.625 * Pr**0.4 * y**0.168 / (w/D)**0.112
+    elif mod == "ST":
+        # Eq 19 from [33]_
+        Nu = 0.144 * Re**0.697 * Pr**0.4 / y**0.228 / (S/D+1)**0.179
+    elif mod == "WT":
+        # Table 2 from [34]_
+        Nu = 0.232 * Re**0.595 * Pr**0.4 * (1+tan(beta))**0.202
+    elif mod == "AWT":
+        # Table 2 from [34]_
+        Nu = 0.385* Re**0.568 * Pr**0.4 * (1+tan(beta))**0.129
+    elif mod == "DST":
+        # Eq 23 from [35]_
+        Nu = 0.069 * Re**0.74 * Pr**0.4 / y**0.26 / (1.5*S/D+1)**0.1
+    else:
+        # Eq 11 from [30]_
+        Nu = 0.224 * Re**0.66 * Pr**0.4 / y**0.6
+
+    return Nu
 
 
 # Heat Transfer coefficient correlations
@@ -1672,7 +1845,8 @@ class TwistedTape(CallableEntity):
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
-        "Chang (2012)"
+        "Chang (2012)",
+        "Eiamsa-ard (2010)"
         )
 
     TEXT_MURUGESAN = (
