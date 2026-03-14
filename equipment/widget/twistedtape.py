@@ -255,8 +255,15 @@ __doi__ = {
                   "with dual twisted tape elements in tandem",
          "ref": "Int. Comm. Heat Mass Transfer 37(1) (2010) 39-46",
          "doi": "10.1016/j.icheatmasstransfer.2009.08.010"},
+    36:
+        {"autor": "Ponnada, S., Subrahmanyam, T., Naidu, S.V.",
+         "title": "A comparative study on the thermal performance of water in "
+                  "a circular tube with twisted tapes, perforated twisted "
+                  "tapes and perforated twisted tapes with alternate axis",
+         "ref": "Int. J. Thermal Sci. 136 (2019) 530-538",
+         "doi": "10.1016/j.ijthermalsci.2018.11.008"},
 
-    # 36:
+    # 37:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -893,73 +900,42 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", dW=0, w=0, S=0, beta=0):
     return f
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35])
-def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", dW=0, w=0, S=0, beta=0):
-    """Calculate nusselt number for a pipe with a twisted-tape insert using
-    the Eiamsa-ard et al. correlation (2010).
+@refDoc(__doi__, [36])
+def f_twisted_turbulent_Ponnada(Re, D, H, mod=""):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Ponnada et al. correlation (2019).
 
     Parameters
     ----------
     Re : float
         Reynolds number, [-]
-    Pr : float
-        Prandtl number, [-]
     D : float
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        CT | CoT | oDWT | sDWT | PT
-    dW : float
-        depth of wing cut, [m]
-    w : float
-        Peripherally-cut width
-    S : float
-        Spacer lenght without twisted section, [m]
-    beta : float
-        Attack angle, [ºdeg]
+        PTT | PATT
 
     Returns
     -------
-    Nu : float
-        Nusselt number, [-]
+    f : float
+        Friction factor, [-]
     """
     # Be careful with nomenclature in papers, use y as tape width
     y = H/D
 
-    if mod == "CT":
-        # Eq 13 from [30]_
-        Nu = 0.473 * Re**0.66 * Pr**0.4 / y**0.9
-    elif mod == "CoT":
-        # Eq 15 from [30]_
-        Nu = 0.264 * Re**0.66 * Pr**0.4 / y**0.61
-    elif mod == "oDWT":
-        # Eq 15 from [31]_
-        Nu = 0.18 * Re**0.67 * Pr**0.4 / y**0.423 * (1+dW/D)**0.982
-    elif mod == "sDWT":
-        # Eq 18 from [31]_
-        Nu = 0.184 * Re**0.675 * Pr**0.4 / y**0.465 * (1+dW/D)**0.76
-    elif mod == "PT":
-        # Eq 17 from [32]_
-        Nu = 0.244 * Re**0.625 * Pr**0.4 * y**0.168 / (w/D)**0.112
-    elif mod == "ST":
-        # Eq 19 from [33]_
-        Nu = 0.144 * Re**0.697 * Pr**0.4 / y**0.228 / (S/D+1)**0.179
-    elif mod == "WT":
-        # Table 2 from [34]_
-        Nu = 0.232 * Re**0.595 * Pr**0.4 * (1+tan(beta))**0.202
-    elif mod == "AWT":
-        # Table 2 from [34]_
-        Nu = 0.385* Re**0.568 * Pr**0.4 * (1+tan(beta))**0.129
-    elif mod == "DST":
-        # Eq 23 from [35]_
-        Nu = 0.069 * Re**0.74 * Pr**0.4 / y**0.26 / (1.5*S/D+1)**0.1
+    if mod == "PTT":
+        # Eq 23
+        f = 0.881 / Re**0.359 / y**0.046
+    elif mod == "PATT":
+        # Eq 25
+        f = 1.295 / Re**0.399 / y**0.049
     else:
-        # Eq 11 from [30]_
-        Nu = 0.224 * Re**0.66 * Pr**0.4 / y**0.6
+        # Eq 21
+        f = 1.093 / Re**0.39 * y**0.004
 
-    return Nu
+    return f
 
 
 # Heat Transfer coefficient correlations
@@ -1685,6 +1661,116 @@ def Nu_twisted_turbulent_Jaisankar(Re, Pr, D, H):
     return Nu
 
 
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35])
+def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", dW=0, w=0, S=0, beta=0):
+    """Calculate nusselt number for a pipe with a twisted-tape insert using
+    the Eiamsa-ard et al. correlation (2010).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        CT | CoT | oDWT | sDWT | PT
+    dW : float
+        depth of wing cut, [m]
+    w : float
+        Peripherally-cut width
+    S : float
+        Spacer lenght without twisted section, [m]
+    beta : float
+        Attack angle, [ºdeg]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Be careful with nomenclature in papers, use y as tape width
+    y = H/D
+
+    if mod == "CT":
+        # Eq 13 from [30]_
+        Nu = 0.473 * Re**0.66 * Pr**0.4 / y**0.9
+    elif mod == "CoT":
+        # Eq 15 from [30]_
+        Nu = 0.264 * Re**0.66 * Pr**0.4 / y**0.61
+    elif mod == "oDWT":
+        # Eq 15 from [31]_
+        Nu = 0.18 * Re**0.67 * Pr**0.4 / y**0.423 * (1+dW/D)**0.982
+    elif mod == "sDWT":
+        # Eq 18 from [31]_
+        Nu = 0.184 * Re**0.675 * Pr**0.4 / y**0.465 * (1+dW/D)**0.76
+    elif mod == "PT":
+        # Eq 17 from [32]_
+        Nu = 0.244 * Re**0.625 * Pr**0.4 * y**0.168 / (w/D)**0.112
+    elif mod == "ST":
+        # Eq 19 from [33]_
+        Nu = 0.144 * Re**0.697 * Pr**0.4 / y**0.228 / (S/D+1)**0.179
+    elif mod == "WT":
+        # Table 2 from [34]_
+        Nu = 0.232 * Re**0.595 * Pr**0.4 * (1+tan(beta))**0.202
+    elif mod == "AWT":
+        # Table 2 from [34]_
+        Nu = 0.385* Re**0.568 * Pr**0.4 * (1+tan(beta))**0.129
+    elif mod == "DST":
+        # Eq 23 from [35]_
+        Nu = 0.069 * Re**0.74 * Pr**0.4 / y**0.26 / (1.5*S/D+1)**0.1
+    else:
+        # Eq 11 from [30]_
+        Nu = 0.224 * Re**0.66 * Pr**0.4 / y**0.6
+
+    return Nu
+
+
+@refDoc(__doi__, [36])
+def Nu_twisted_turbulent_Ponnada(Re, Pr, D, H, mod=""):
+    """Calculate nusselt number for a pipe with a twisted-tape insert using
+    the Ponnada et al. correlation (2019).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        PTT | PATT
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Be careful with nomenclature in papers, use y as tape width
+    y = H/D
+
+    if mod == "PTT":
+        # Eq 22
+        Nu = 1.199 * Re**0.507 / Pr**0.243 / y**0.132
+    elif mod == "PATT":
+        # Eq 24
+        Nu = 1.161 * Re**0.509 / Pr**0.214 / y**0.141
+    else:
+        # Eq 20
+        Nu = 0.388 * Re**0.541 * Pr**0.212 / y**0.145
+
+    return Nu
+
+
+
 @refDoc(__doi__, [13, 14, 22, 23])
 def f_helical_Sivashanmugam(Re, D, H, S=None):
     """Calculate friction factor for a pipe with a twisted-tape insert using
@@ -1728,7 +1814,7 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
     return f
 
 
-
+# Helical screw-tape
 @refDoc(__doi__, [13, 14, 22, 23])
 def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -1821,7 +1907,8 @@ class TwistedTape(CallableEntity):
         "Murugesan (2010)",
         "Jaisankar (2009)",
         "Chang (2012)",
-        "Eiamsa-ard (2010)"
+        "Eiamsa-ard (2010)",
+        "Ponnada (2019)"
         )
 
     TEXT_LAMINAR_HEAT = (
@@ -1847,7 +1934,8 @@ class TwistedTape(CallableEntity):
         "Murugesan (2010)",
         "Jaisankar (2009)",
         "Chang (2012)",
-        "Eiamsa-ard (2010)"
+        "Eiamsa-ard (2010)",
+        "Ponnada (2019)"
         )
 
     TEXT_MURUGESAN = (
@@ -1884,6 +1972,12 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Regularly-spaced twisted tape"),
         translate("twistedtape", "Regularly-spaced dual twisted tape"))
 
+    TEXT_PONNADA = ("", "PTT", "PATT")
+    TEXT_PONNADA_TOOLTIP = (
+        "",
+        translate("twistedtape", "Perforated twisted tape"),
+        translate("twistedtape", "Perforated twisted tape with alternate axis"))
+
     # Helical method
     # "Sivashanmugam-Suresh-Ibrahim (2006)"
 
@@ -1912,7 +2006,9 @@ class TwistedTape(CallableEntity):
         "modEiamsa": "",
         "dW": 0,
         "w": 0,
-        "beta": 0}
+        "beta": 0,
+
+        "modPonnada": ""}
 
     valueChanged = QtCore.pyqtSignal(object)
     inputChanged = QtCore.pyqtSignal(object)
@@ -2116,6 +2212,11 @@ class TwistedTape(CallableEntity):
                 Nu = Nu_twisted_turbulent_Eiamsaard(
                     Re, Pr, self.Dt, self.H, **kw)
 
+            elif method == 11:
+                # Ponnada (2019)
+                Nu = Nu_twisted_turbulent_Ponnada(
+                    Re, Pr, self.Dt, self.H, self.kw["modPonnada"])
+
             else:
                 # HTRI
                 Nu = Nu_twisted_HTRI(
@@ -2250,6 +2351,11 @@ class TwistedTape(CallableEntity):
                     msg += "twisted tape instead"
 
                 f = f_twisted_turbulent_Eiamsaard(Re, self.Dt, self.H, **kw)
+
+            elif method == 9:
+                # Ponnada (2019)
+                f = f_twisted_turbulent_Ponnada(
+                    Re, self.Dt, self.H, self.kw["modPonnada"])
 
             else:
                 # Manglik-Bergles (1993)
@@ -2434,6 +2540,24 @@ class UI_TwistedTape(ToolGui):
 
         lyt.addWidget(self.groupEiamsa, 11, 1, 1, 2)
 
+        # Ponnada additional parameters
+        self.groupPonnada = QtWidgets.QWidget()
+        lytPonnada = QtWidgets.QGridLayout(self.groupPonnada)
+        lytPonnada.addWidget(QtWidgets.QLabel(self.tr(
+            "Ponnada correlation modification")), 1, 1, 1, 2)
+        self.modPonnada = QtWidgets.QComboBox()
+        for method, txt in zip(TwistedTape.TEXT_PONNADA, TwistedTape.TEXT_PONNADA_TOOLTIP):
+            if method and txt:
+                self.modPonnada.addItem(f"{method} - {txt}")
+            else:
+                self.modPonnada.addItem("")
+        self.modPonnada.currentTextChanged.connect(self.changeModPonnada)
+        lytPonnada.addWidget(self.modPonnada, 1, 3)
+        lytPonnada.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 4)
+        lyt.addWidget(self.groupPonnada, 12, 1, 1, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
@@ -2451,6 +2575,12 @@ class UI_TwistedTape(ToolGui):
         if txt:
             txt = txt.split(" - ")[0]
         self.changeParams("modEiamsa", txt)
+
+    def changeModPonnada(self, txt):
+        """Extract code from txt"""
+        if txt:
+            txt = txt.split(" - ")[0]
+        self.changeParams("modPonnada", txt)
 
     def setVisibleMod(self):
         """Enable widget with special parameters for selected method"""
@@ -2482,6 +2612,13 @@ class UI_TwistedTape(ToolGui):
         else:
             self.groupEiamsa.setVisible(False)
         self.setEnable_Eiamsa(self.modEiamsa.currentText())
+
+        # Ponnada method
+        if self.methodHeatTurbulent.currentText() == "Ponnada (2019)" or \
+                self.methodFrictionTurbulent.currentText() == "Ponnada (2019)":
+            self.groupPonnada.setVisible(True)
+        else:
+            self.groupPonnada.setVisible(False)
 
     def setEnable_Murugesan(self, mod):
         """Change Enable/Disable state for Murugesan aditional parameters"""
