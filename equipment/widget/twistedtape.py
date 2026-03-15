@@ -262,8 +262,14 @@ __doi__ = {
                   "tapes and perforated twisted tapes with alternate axis",
          "ref": "Int. J. Thermal Sci. 136 (2019) 530-538",
          "doi": "10.1016/j.ijthermalsci.2018.11.008"},
+    37:
+        {"autor": "He, Y., Liu, L., Li, P., Ma, L.",
+         "title": "Experimental study on Heat transfer enhancement "
+                  "characteristics of tube with cross hollow twisted tape ",
+         "ref": "Applied Thermal Eng. 131 (2018) 743-749",
+         "doi": "10.1016/j.applthermaleng.2017.12.029"},
 
-    # 37:
+    # 38:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -578,7 +584,7 @@ def f_twisted_laminar_Saha(Re, D, H, delta, S):
     H : float
         Tape pitch for twist of π radians (180º), [m]
     S : float
-        Spacer lenght without twisted section, [m]
+        Spacer length without twisted section, [m]
 
     Returns
     -------
@@ -854,7 +860,7 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", dW=0, w=0, S=0, beta=0):
     w : float
         Peripherally-cut width
     S : float
-        Spacer lenght without twisted section, [m]
+        Spacer length without twisted section, [m]
     beta : float
         Attack angle, [ºdeg]
 
@@ -1346,7 +1352,7 @@ def Nu_twisted_laminar_Saha(Re, Pr, D, H, delta, S):
     delta : float
         Tape thickness, [m]
     S : float
-        Spacer lenght without twisted section, [m]
+        Spacer length without twisted section, [m]
 
     Returns
     -------
@@ -1684,7 +1690,7 @@ def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", dW=0, w=0, S=0, beta=0)
     w : float
         Peripherally-cut width
     S : float
-        Spacer lenght without twisted section, [m]
+        Spacer length without twisted section, [m]
     beta : float
         Attack angle, [ºdeg]
 
@@ -1770,7 +1776,7 @@ def Nu_twisted_turbulent_Ponnada(Re, Pr, D, H, mod=""):
     return Nu
 
 
-
+# Helical screw-tape
 @refDoc(__doi__, [13, 14, 22, 23])
 def f_helical_Sivashanmugam(Re, D, H, S=None):
     """Calculate friction factor for a pipe with a twisted-tape insert using
@@ -1786,7 +1792,7 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
     H : float
         Tape pitch for twist of π radians (180º), [m]
     S : float
-        Spacer lenght without twisted section, [m]
+        Spacer length without twisted section, [m]
 
     Returns
     -------
@@ -1814,7 +1820,6 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
     return f
 
 
-# Helical screw-tape
 @refDoc(__doi__, [13, 14, 22, 23])
 def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -1835,7 +1840,7 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
     H : float
         Tape pitch for twist of π radians (180º), [m]
     S : float
-        Spacer lenght without twisted section, [m]
+        Spacer length without twisted section, [m]
 
     Returns
     -------
@@ -1863,6 +1868,65 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
     return Nu
 
 
+# Hollow twisted-tape
+@refDoc(__doi__, [37])
+def f_hollow_He(Re, D, C):
+    """Calculate friction factor for a pipe with a hollow twisted-tape insert
+    using the He et al. correlation (2018)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    C : float
+        Hollow width of the cross hollow twisted tape, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    c = C/D
+
+    # Eq 17
+    f = 9.348 / Re**0.3959 * (5.53*c**3 + 2.578*c**2 - 7.307*c + 3.499)
+
+    return f
+
+
+@refDoc(__doi__, [37])
+def Nu_hollow_He(Re, Pr, D, C):
+    """Calculate nusselt number for a pipe with a hollow twisted-tape insert
+    using the He et al. correlation (2018)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    C : float
+        Hollow width of the cross hollow twisted tape, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    c = C/D
+
+    # Eq 16
+    Nu = 0.3415 * Re**0.5911 * Pr**0.32 * \
+        (0.9058*c**3 + 0.5439*c**2 - 1.345*c + 1.271)
+
+    return Nu
+
+
+
 class TwistedTape(CallableEntity):
     """Twisted-tape insert used in heat exchanger to improve efficiency.
     This tape, generally a thin metal strip, is twisted about its longitudinal
@@ -1872,7 +1936,7 @@ class TwistedTape(CallableEntity):
     ----------
     methodFrictionLaminar : integer
         Index of method used for friction factor calculation in laminar flow
-    methodFrictionTurbulent: integer
+    methodFTurbulent: integer
         Index of method used for friction factor calculation in turbulent flow
     methodHeatLaminar : integer
         Index of method used for heat transfer calculation in laminar flow
@@ -1985,7 +2049,7 @@ class TwistedTape(CallableEntity):
     msg = ""
     kw = {
         "methodFrictionLaminar": 0,
-        "methodFrictionTurbulent": 0,
+        "methodFTurbulent": 0,
         "methodHeatLaminar": 0,
         "methodHeatTurbulent": 0,
 
@@ -1995,6 +2059,8 @@ class TwistedTape(CallableEntity):
         "S": 0,
 
         "isHelical": False,
+        "isHollow": False,
+        "C": 0,
 
         "modMurugesan": "",
         "Vcut_w": 0,
@@ -2026,6 +2092,11 @@ class TwistedTape(CallableEntity):
             return False
         if not self.kw["delta"]:
             self.msg = translate("equipment", "undefined tape thickness")
+            self.status = 0
+            return False
+
+        if self.kw["isHollow"] and not self.kw["C"]:
+            self.msg = translate("equipment", "undefined hollow width")
             self.status = 0
             return False
 
@@ -2070,6 +2141,10 @@ class TwistedTape(CallableEntity):
 
         if self.kw["isHelical"]:
             Nu = Nu_helical_Sivashanmugam(Re, Pr, self.Dt, self.H, self.kw["S"])
+            return Nu
+
+        if self.kw["isHollow"]:
+            Nu = Nu_hollow_He(Re, Pr, self.Dt, self.kw["C"])
             return Nu
 
         if Re < 2000:
@@ -2237,6 +2312,10 @@ class TwistedTape(CallableEntity):
             f = f_helical_Sivashanmugam(Re, self.Dt, self.H, self.kw["S"])
             return f
 
+        if self.kw["isHollow"]:
+            f = f_hollow_He(Re, self.Dt, self.kw["C"])
+            return f
+
         if Re < 2000:
             # Laminar methods
 
@@ -2291,7 +2370,7 @@ class TwistedTape(CallableEntity):
         else:
             # Turbulent methods
             if method is None:
-                method = self.kw["methodFrictionTurbulent"]
+                method = self.kw["methodFTurbulent"]
 
             if method == 1:
                 # Lopina-Bergles (1969)
@@ -2380,8 +2459,18 @@ class UI_TwistedTape(ToolGui):
 
         lyt = self.wdg.layout()
 
-        lytM = QtWidgets.QGridLayout()
 
+        self.twisted = QtWidgets.QRadioButton(self.tr(
+            "Tipical twisted-tape inserts"))
+        self.twisted.setChecked(True)
+        self.twisted.toggled.connect(self.setVisibleMod)
+        lyt.addWidget(self.twisted, 1, 1, 1, 2)
+
+        self.groupMethods = QtWidgets.QWidget()
+        lytM = QtWidgets.QGridLayout(self.groupMethods)
+        lytM.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 0)
         lbl = QtWidgets.QLabel(self.tr("Laminar Flow"))
         lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter
                          | QtCore.Qt.AlignmentFlag.AlignVCenter)
@@ -2397,15 +2486,17 @@ class UI_TwistedTape(ToolGui):
             self.methodFrictionLaminar.addItem(method)
         self.methodFrictionLaminar.currentIndexChanged.connect(
             partial(self.changeParams, "methodFrictionLaminar"))
-        self.methodFrictionLaminar.currentTextChanged.connect(self.setVisibleMod)
+        self.methodFrictionLaminar.currentTextChanged.connect(
+            self.setVisibleMod)
         lytM.addWidget(self.methodFrictionLaminar, 2, 2)
-        self.methodFrictionTurbulent = QtWidgets.QComboBox()
+        self.methodFTurbulent = QtWidgets.QComboBox()
         for method in TwistedTape.TEXT_TURBULENT_FRICTION:
-            self.methodFrictionTurbulent.addItem(method)
-        self.methodFrictionTurbulent.currentIndexChanged.connect(
-            partial(self.changeParams, "methodFrictionTurbulent"))
-        self.methodFrictionTurbulent.currentTextChanged.connect(self.setVisibleMod)
-        lytM.addWidget(self.methodFrictionTurbulent, 2, 3)
+            self.methodFTurbulent.addItem(method)
+        self.methodFTurbulent.currentIndexChanged.connect(
+            partial(self.changeParams, "methodFTurbulent"))
+        self.methodFTurbulent.currentTextChanged.connect(
+            self.setVisibleMod)
+        lytM.addWidget(self.methodFTurbulent, 2, 3)
 
         lytM.addWidget(QtWidgets.QLabel(
             self.tr("Heat transfer method")), 3, 1)
@@ -2423,39 +2514,52 @@ class UI_TwistedTape(ToolGui):
             partial(self.changeParams, "methodHeatTurbulent"))
         self.methodHeatTurbulent.currentTextChanged.connect(self.setVisibleMod)
         lytM.addWidget(self.methodHeatTurbulent, 3, 3)
-        lyt.addLayout(lytM, 2, 1, 1, 2)
+        lytM.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
+        lyt.addWidget(self.groupMethods, 2, 1, 1, 2)
+        self.twisted.toggled.connect(self.groupMethods.setEnabled)
 
-        self.helical = QtWidgets.QCheckBox(self.tr(
+        self.helical = QtWidgets.QRadioButton(self.tr(
             "Helical screw-tape inserts"))
-        self.helical.toggled.connect(
-            partial(self.changeParams, "isHelical"))
+        self.helical.toggled.connect(partial(self.changeParams, "isHelical"))
         self.helical.toggled.connect(self.setEnableSpacer)
         lyt.addWidget(self.helical, 3, 1, 1, 3)
 
+        self.hollow = QtWidgets.QRadioButton(self.tr(
+            "Hollow twisted-tape inserts"))
+        self.hollow.toggled.connect(self.setEnableHollow)
+        lyt.addWidget(self.hollow, 4, 1, 1, 3)
         lyt.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
-            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
+            QtWidgets.QSizePolicy.Policy.Fixed), 5, 1, 1, 2)
 
         label = QtWidgets.QLabel(self.tr("Tape pitch"))
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
-        lyt.addWidget(label, 5, 1)
+        lyt.addWidget(label, 6, 1)
         self.H = Entrada_con_unidades(Length)
         self.H.valueChanged.connect(partial(self.changeParams, "H"))
-        lyt.addWidget(self.H, 5, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 6, 1)
+        lyt.addWidget(self.H, 6, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 7, 1)
         self.Dt = Entrada_con_unidades(Length, "PipeDiameter")
         self.Dt.valueChanged.connect(partial(self.changeParams, "Dt"))
-        lyt.addWidget(self.Dt, 6, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 7, 1)
+        lyt.addWidget(self.Dt, 7, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 8, 1)
         self.delta = Entrada_con_unidades(Length, "Thickness")
         self.delta.valueChanged.connect(partial(self.changeParams, "delta"))
-        lyt.addWidget(self.delta, 7, 2)
+        lyt.addWidget(self.delta, 8, 2)
 
-        self.lblS = QtWidgets.QLabel(self.tr("Spacer lenght"))
-        lyt.addWidget(self.lblS, 8, 1)
+        self.lblS = QtWidgets.QLabel(self.tr("Spacer length"))
+        lyt.addWidget(self.lblS, 9, 1)
         self.S = Entrada_con_unidades(Length)
         self.S.valueChanged.connect(partial(self.changeParams, "S"))
-        lyt.addWidget(self.S, 8, 2)
+        lyt.addWidget(self.S, 9, 2)
+
+        self.lblC = QtWidgets.QLabel(self.tr("Hollow width"))
+        lyt.addWidget(self.lblC, 10, 1)
+        self.C = Entrada_con_unidades(Length)
+        self.C.valueChanged.connect(partial(self.changeParams, "C"))
+        lyt.addWidget(self.C, 10, 2)
 
         # Murugesan additional parameters
         self.groupMurugesan = QtWidgets.QWidget()
@@ -2482,7 +2586,7 @@ class UI_TwistedTape(ToolGui):
         lytMuru.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 4)
-        lyt.addWidget(self.groupMurugesan, 9, 1, 1, 2)
+        lyt.addWidget(self.groupMurugesan, 11, 1, 1, 2)
 
         # Chang-Guo additional parameters
         self.groupChang = QtWidgets.QWidget()
@@ -2506,7 +2610,7 @@ class UI_TwistedTape(ToolGui):
         lytChang.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed), 3, 4)
-        lyt.addWidget(self.groupChang, 10, 1, 1, 2)
+        lyt.addWidget(self.groupChang, 12, 1, 1, 2)
 
         # Eiamsa-ard additional parameters
         self.groupEiamsa = QtWidgets.QWidget()
@@ -2537,8 +2641,7 @@ class UI_TwistedTape(ToolGui):
         self.beta = Entrada_con_unidades(Angle)
         self.beta.valueChanged.connect(partial(self.changeParams, "beta"))
         lytEiamsa.addWidget(self.beta, 4, 3)
-
-        lyt.addWidget(self.groupEiamsa, 11, 1, 1, 2)
+        lyt.addWidget(self.groupEiamsa, 13, 1, 1, 2)
 
         # Ponnada additional parameters
         self.groupPonnada = QtWidgets.QWidget()
@@ -2556,11 +2659,13 @@ class UI_TwistedTape(ToolGui):
         lytPonnada.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
             QtWidgets.QSizePolicy.Policy.Fixed), 3, 4)
-        lyt.addWidget(self.groupPonnada, 12, 1, 1, 2)
+        lyt.addWidget(self.groupPonnada, 14, 1, 1, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
+        self.lblC.setEnabled(False)
+        self.C.setEnabled(False)
 
     def changeModChang(self, txt):
         """Extract code from txt"""
@@ -2584,38 +2689,39 @@ class UI_TwistedTape(ToolGui):
 
     def setVisibleMod(self):
         """Enable widget with special parameters for selected method"""
+        twisted = self.twisted.isChecked()
         # Murugesan method
-        if self.methodHeatTurbulent.currentText() == "Murugesan (2010)" or \
-                self.methodFrictionTurbulent.currentText() == "Murugesan (2010)":
+        if twisted and (self.methodHeatTurbulent.currentText() == "Murugesan (2010)" or
+                        self.methodFTurbulent.currentText() == "Murugesan (2010)"):
             self.groupMurugesan.setVisible(True)
         else:
             self.groupMurugesan.setVisible(False)
-        self.setEnable_Murugesan(self.modMurugesan.currentText())
+        self.setEnable_Murugesan(twisted and self.modMurugesan.currentText())
 
         # Saha use Spacer special parameter
         self.setEnableSpacer()
 
         # Chang method
-        if self.methodHeatTurbulent.currentText() == "Chang (2012)" or \
-                self.methodFrictionTurbulent.currentText() == "Chang (2012)" or \
-                self.methodHeatLaminar.currentText() == "Chang (2012)" or \
-                self.methodFrictionLaminar.currentText() == "Chang (2012)":
+        if twisted and (self.methodHeatTurbulent.currentText() == "Chang (2012)" or
+                        self.methodFTurbulent.currentText() == "Chang (2012)" or
+                        self.methodHeatLaminar.currentText() == "Chang (2012)" or
+                        self.methodFrictionLaminar.currentText() == "Chang (2012)"):
             self.groupChang.setVisible(True)
         else:
             self.groupChang.setVisible(False)
-        self.checkBF.setEnabled("J" in self.modChang.currentText())
+        self.checkBF.setEnabled(twisted and "J" in self.modChang.currentText())
 
         # Eiamsa-ard method
-        if self.methodHeatTurbulent.currentText() == "Eiamsa-ard (2010)" or \
-                self.methodFrictionTurbulent.currentText() == "Eiamsa-ard (2010)":
+        if twisted and (self.methodHeatTurbulent.currentText() == "Eiamsa-ard (2010)" or
+                        self.methodFTurbulent.currentText() == "Eiamsa-ard (2010)"):
             self.groupEiamsa.setVisible(True)
         else:
             self.groupEiamsa.setVisible(False)
         self.setEnable_Eiamsa(self.modEiamsa.currentText())
 
         # Ponnada method
-        if self.methodHeatTurbulent.currentText() == "Ponnada (2019)" or \
-                self.methodFrictionTurbulent.currentText() == "Ponnada (2019)":
+        if twisted and (self.methodHeatTurbulent.currentText() == "Ponnada (2019)" or
+                        self.methodFTurbulent.currentText() == "Ponnada (2019)"):
             self.groupPonnada.setVisible(True)
         else:
             self.groupPonnada.setVisible(False)
@@ -2649,6 +2755,13 @@ class UI_TwistedTape(ToolGui):
         boolean = method or eiamsa or self.helical.isChecked()
         self.lblS.setEnabled(boolean)
         self.S.setEnabled(boolean)
+        # self.setVisibleMod()
+
+    def setEnableHollow(self, boolean):
+        self.lblC.setEnabled(boolean)
+        self.C.setEnabled(boolean)
+        self.changeParams("isHollow", boolean)
+        self.setVisibleMod()
 
 
 class Dialog(QtWidgets.QDialog):
