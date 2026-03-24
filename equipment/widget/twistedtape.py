@@ -280,8 +280,14 @@ __doi__ = {
                   "Effect of rotated-axis length",
          "ref": "Applied Thermal Eng. 54 (2013) 289-309",
          "doi": "10.1016/j.applthermaleng.2013.01.041"},
+    40:
+        {"autor": "Thianpong, C., Eiamsa-ard, S., Somkleang, P.",
+         "title": "Heat transfer and thermal performance characteristics of "
+                  "heat exchanger tube fitted with perforated twisted-tapes",
+         "ref": "Heat Mass Transfer 48(6) (2012) 881-892",
+         "doi": "10.1007/s00231-011-0943-0"},
 
-    # 40:
+    # 41:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -851,9 +857,8 @@ def f_twisted_turbulent_Jaisankar(Re, D, H):
     return f
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39])
-def f_twisted_turbulent_Eiamsaard(
-        Re, D, H, mod="", dW=0, w=0, S=0, beta=0, teta=0, l=0):
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40])
+def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
     """Calculate friction factor a pipe with a twisted-tape insert using
     the Eiamsa-ard et al. correlation (2010).
 
@@ -867,7 +872,7 @@ def f_twisted_turbulent_Eiamsaard(
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        CT | CoT | oDWT | sDWT | PT | ST | WT | AWT | DST | TT | AT
+        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT
     dW : float
         depth of wing cut, [m]
     w : float
@@ -878,6 +883,10 @@ def f_twisted_turbulent_Eiamsaard(
         Attack angle, [ºdeg]
     l : float
         Length of alternate axis, [m]
+    sP : float
+        Spaced-pitch length of perforated, [m]
+    dP : float
+        Diameter of perforated, [m]
 
     Returns
     -------
@@ -895,31 +904,45 @@ def f_twisted_turbulent_Eiamsaard(
         f = 41.7 / Re**0.52 / y**0.84
     elif mod == "oDWT":
         # Eq 16 from [31]_
+        dW = kw.get("dW", 0)
         f = 24.8 / Re**0.51 / y**0.566 * (1+dW/D)**1.87
     elif mod == "sDWT":
         # Eq 19 from [31]_
+        dW = kw.get("dW", 0)
         f = 21.7 / Re**0.45 / y**0.564 * (1+dW/D)**1.41
-    elif mod == "PT":
+    elif mod == "PCT":
         # Eq 18 from [32]_
+        w = kw.get("w", 0)
         f = 39.46 / Re**0.591 * y**0.195 / (w/D)**0.201
     elif mod == "ST":
         # Eq 20 from [33]_
+        S = kw.get("S", 0)
         f = 3.044 / y**0.556 / (S/D+1)**0.34
     elif mod == "WT":
         # Table 2 from [34]_
+        beta = kw.get("beta", 0)
         f = 14.039 / Re**0.505 * (1+tan(beta))**0.406
     elif mod == "AWT":
         # Table 2 from [34]_
+        beta = kw.get("beta", 0)
         f = 20.445 / Re**0.504 * (1+tan(beta))**0.283
     elif mod == "DST":
         # Eq 24 from [35]_
+        S = kw.get("S", 0)
         f = 30.5 / Re**0.56 / y**0.54 / (1.5*S/D+1)**0.2
     elif mod == "TT":
         # Eq 20 from [38]_
+        teta = kw.get("teta", 0)
         f = 16.559 / Re**0.49 / y**0.51 / (1+teta)**0.53
     elif mod == "AT":
         # Eq 18 from [39]_
+        l = kw.get("l", 0)
         f = 75.18 / Re**0.612 / (1+l/H)**0.623
+    elif mod == "PT":
+        # Eq 13 from [40]_
+        sP = kw.get("sP", 0)
+        dP = kw.get("dP", 0)
+        f = 9.03 / Re**0.272 / y**0.631 / (sP/D)**0.204 * (dP/D)**0.428
     else:
         # Eq 12 from [30]_
         f = 65.4 / Re**0.52 / y**1.31
@@ -1688,9 +1711,8 @@ def Nu_twisted_turbulent_Jaisankar(Re, Pr, D, H):
     return Nu
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39])
-def Nu_twisted_turbulent_Eiamsaard(
-        Re, Pr, D, H, mod="", dW=0, w=0, S=0, beta=0, teta=0, l=0):
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40])
+def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
     """Calculate nusselt number for a pipe with a twisted-tape insert using
     the Eiamsa-ard et al. correlation (2010).
 
@@ -1706,7 +1728,7 @@ def Nu_twisted_turbulent_Eiamsaard(
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        CT | CoT | oDWT | sDWT | PT | ST | WT | AWT | DST | TT | AT
+        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT
     dW : float
         depth of wing cut, [m]
     w : float
@@ -1719,6 +1741,10 @@ def Nu_twisted_turbulent_Eiamsaard(
         Taper angle, [ºdeg]
     l : float
         Length of alternate axis, [m]
+    sP : float
+        Spaced-pitch length of perforated, [m]
+    dP : float
+        Diameter of perforated, [m]
 
     Returns
     -------
@@ -1736,31 +1762,45 @@ def Nu_twisted_turbulent_Eiamsaard(
         Nu = 0.264 * Re**0.66 * Pr**0.4 / y**0.61
     elif mod == "oDWT":
         # Eq 15 from [31]_
+        dW = kw.get("dW", 0)
         Nu = 0.18 * Re**0.67 * Pr**0.4 / y**0.423 * (1+dW/D)**0.982
     elif mod == "sDWT":
         # Eq 18 from [31]_
+        dW = kw.get("dW", 0)
         Nu = 0.184 * Re**0.675 * Pr**0.4 / y**0.465 * (1+dW/D)**0.76
-    elif mod == "PT":
+    elif mod == "PCT":
         # Eq 17 from [32]_
+        w = kw.get("w", 0)
         Nu = 0.244 * Re**0.625 * Pr**0.4 * y**0.168 / (w/D)**0.112
     elif mod == "ST":
         # Eq 19 from [33]_
+        S = kw.get("S", 0)
         Nu = 0.144 * Re**0.697 * Pr**0.4 / y**0.228 / (S/D+1)**0.179
     elif mod == "WT":
         # Table 2 from [34]_
+        beta = kw.get("beta", 0)
         Nu = 0.232 * Re**0.595 * Pr**0.4 * (1+tan(beta))**0.202
     elif mod == "AWT":
         # Table 2 from [34]_
+        beta = kw.get("beta", 0)
         Nu = 0.385 * Re**0.568 * Pr**0.4 * (1+tan(beta))**0.129
     elif mod == "DST":
         # Eq 23 from [35]_
+        S = kw.get("S", 0)
         Nu = 0.069 * Re**0.74 * Pr**0.4 / y**0.26 / (1.5*S/D+1)**0.1
     elif mod == "TT":
         # Eq 19 from [38]_
+        teta = kw.get("teta", 0)
         Nu = 0.076 * Re**0.75 * Pr**0.4 / y**0.39 / (1+teta)**0.1
     elif mod == "AT":
         # Eq 17 from [39]_
+        l = kw.get("l", 0)
         Nu = 1.364 * Re**0.472 * Pr**0.4 / (1+l/H)**0.437
+    elif mod == "PT":
+        # Eq 12 from [40]_
+        sP = kw.get("sP", 0)
+        dP = kw.get("dP", 0)
+        Nu = 0.09 * Re**0.768 * Pr**0.4 / y**0.325 / (sP/D)**0.133 * (dP/D)**0.114
     else:
         # Eq 11 from [30]_
         Nu = 0.224 * Re**0.66 * Pr**0.4 / y**0.6
@@ -2054,8 +2094,8 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Serrated roughened twisted tape"),
         translate("twistedtape", "Broken twisted tape"))
 
-    TEXT_EIAMSA = ("", "CT", "CoT", "oDWT", "sDWT", "PT","WT", "AWT", "ST",
-                   "DST", "TT", "AT")
+    TEXT_EIAMSA = ("", "CT", "CoT", "oDWT", "sDWT", "PCT","WT", "AWT", "ST",
+                   "DST", "TT", "AT", "PT")
     TEXT_EIAMSA_TOOLTIP = (
         "",
         translate("twistedtape", "Twin counter twisted tape"),
@@ -2068,7 +2108,8 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Regularly-spaced twisted tape"),
         translate("twistedtape", "Regularly-spaced dual twisted tape"),
         translate("twistedtape", "Tapered twisted tape"),
-        translate("twistedtape", "Alternate axes twisted tape"))
+        translate("twistedtape", "Alternate axes twisted tape"),
+        translate("twistedtape", "Perforated twisted tape"))
 
     TEXT_PONNADA = ("", "PTT", "PATT")
     TEXT_PONNADA_TOOLTIP = (
@@ -2109,6 +2150,8 @@ class TwistedTape(CallableEntity):
         "beta": 0,
         "teta": 0,
         "l": 0,
+        "sP": 0,
+        "dP": 0,
 
         "modPonnada": ""}
 
@@ -2311,15 +2354,22 @@ class TwistedTape(CallableEntity):
                       "S": self.kw["S"],
                       "beta": self.kw["beta"],
                       "l": self.kw["l"],
-                      "teta": self.kw["teta"]}
+                      "teta": self.kw["teta"],
+                      "sP": self.kw["sP"],
+                      "dP": self.kw["dP"]}
 
                 if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
                     kw["mod"] = ""
                     msg = "Depth of wing cut don't defined, using plain "
                     msg += "twisted tape instead"
-                elif self.kw["modEiamsa"] == "PT" and not self.kw["w"]:
+                elif self.kw["modEiamsa"] == "PCT" and not self.kw["w"]:
                     kw["mod"] = ""
                     msg = "Peripherally-cut width don't defined, using plain "
+                    msg += "twisted tape instead"
+                elif self.kw["modEiamsa"] == "PT" and \
+                        (not self.kw["sP"] or not self.kw["dP"]):
+                    kw["mod"] = ""
+                    msg = "Perforated geometry don't defined, using plain "
                     msg += "twisted tape instead"
 
                 Nu = Nu_twisted_turbulent_Eiamsaard(
@@ -2458,15 +2508,22 @@ class TwistedTape(CallableEntity):
                       "S": self.kw["S"],
                       "beta": self.kw["beta"],
                       "l": self.kw["l"],
-                      "teta": self.kw["teta"]}
+                      "teta": self.kw["teta"],
+                      "sP": self.kw["sP"],
+                      "dP": self.kw["dP"]}
 
                 if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
                     kw["mod"] = ""
                     msg = "Depth of wing cut don't defined, using plain "
                     msg += "twisted tape instead"
-                elif self.kw["modEiamsa"] == "PT" and not self.kw["w"]:
+                elif self.kw["modEiamsa"] == "PCT" and not self.kw["w"]:
                     kw["mod"] = ""
                     msg = "Peripherally-cut width don't defined, using plain "
+                    msg += "twisted tape instead"
+                elif self.kw["modEiamsa"] == "PT" and \
+                        (not self.kw["sP"] or not self.kw["dP"]):
+                    kw["mod"] = ""
+                    msg = "Perforated geometry don't defined, using plain "
                     msg += "twisted tape instead"
 
                 f = f_twisted_turbulent_Eiamsaard(Re, self.Dt, self.H, **kw)
@@ -2691,6 +2748,17 @@ class UI_TwistedTape(ToolGui):
         self.l = Entrada_con_unidades(Length)
         self.l.valueChanged.connect(partial(self.changeParams, "l"))
         lytEiamsa.addWidget(self.l, 6, 3)
+        self.lbldP = QtWidgets.QLabel(self.tr("Diameter of perforated"))
+        lytEiamsa.addWidget(self.lbldP, 7, 2)
+        self.dP = Entrada_con_unidades(Length, "thickness")
+        self.dP.valueChanged.connect(partial(self.changeParams, "dP"))
+        lytEiamsa.addWidget(self.dP, 7, 3)
+        self.lblsP = QtWidgets.QLabel(self.tr("Spaced-pitch length of perforated"))
+        lytEiamsa.addWidget(self.lblsP, 8, 2)
+        self.sP = Entrada_con_unidades(Length, "thickness")
+        self.sP.valueChanged.connect(partial(self.changeParams, "sP"))
+        lytEiamsa.addWidget(self.sP, 8, 3)
+
 
         lyt.addWidget(self.groupEiamsa, 13, 1, 1, 2)
 
@@ -2715,8 +2783,8 @@ class UI_TwistedTape(ToolGui):
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
-        self.lblC.setEnabled(False)
-        self.C.setEnabled(False)
+        self.lblC.setVisible(False)
+        self.C.setVisible(False)
 
     def changeModChang(self, txt):
         """Extract code from txt"""
@@ -2779,23 +2847,27 @@ class UI_TwistedTape(ToolGui):
 
     def setEnable_Murugesan(self, mod):
         """Change Enable/Disable state for Murugesan aditional parameters"""
-        self.lblDe.setEnabled(mod == "V cut")
-        self.De.setEnabled(mod == "V cut")
-        self.lblVcut_w.setEnabled(mod == "V cut")
-        self.Vcut_w.setEnabled(mod == "V cut")
+        self.lblDe.setVisible(mod == "V cut")
+        self.De.setVisible(mod == "V cut")
+        self.lblVcut_w.setVisible(mod == "V cut")
+        self.Vcut_w.setVisible(mod == "V cut")
 
     def setEnable_Eiamsa(self, mod):
         """Change Enable/Disable state for Eiamsa-ard aditional parameters"""
-        self.lbldW.setEnabled("DWT" in mod)
-        self.dW.setEnabled("DWT" in mod)
-        self.lblw.setEnabled("PT" in mod)
-        self.w.setEnabled("PT" in mod)
-        self.lblbeta.setEnabled(mod[:3] in ("AWT", "WT "))
-        self.beta.setEnabled(mod[:3] in ("AWT", "WT "))
-        self.lblteta.setEnabled("TT" in mod)
-        self.teta.setEnabled("TT" in mod)
-        self.lbll.setEnabled("AT" in mod)
-        self.l.setEnabled("AT" in mod)
+        self.lbldW.setVisible("DWT" in mod)
+        self.dW.setVisible("DWT" in mod)
+        self.lblw.setVisible("PCT" in mod)
+        self.w.setVisible("PCT" in mod)
+        self.lblbeta.setVisible(mod[:3] in ("AWT", "WT "))
+        self.beta.setVisible(mod[:3] in ("AWT", "WT "))
+        self.lblteta.setVisible("TT" in mod)
+        self.teta.setVisible("TT" in mod)
+        self.lbll.setVisible("AT" in mod)
+        self.l.setVisible("AT" in mod)
+        self.lblsP.setVisible("PT" in mod)
+        self.sP.setVisible("PT" in mod)
+        self.lbldP.setVisible("PT" in mod)
+        self.dP.setVisible("PT" in mod)
         self.setEnableSpacer()
 
     def setEnabled(self, boolean):
@@ -2813,8 +2885,8 @@ class UI_TwistedTape(ToolGui):
         # self.setVisibleMod()
 
     def setEnableHollow(self, boolean):
-        self.lblC.setEnabled(boolean)
-        self.C.setEnabled(boolean)
+        self.lblC.setVisible(boolean)
+        self.C.setVisible(boolean)
         self.changeParams("isHollow", boolean)
         self.setVisibleMod()
 
