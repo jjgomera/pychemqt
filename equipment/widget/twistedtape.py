@@ -293,8 +293,14 @@ __doi__ = {
                   "inserts",
          "ref": "Int. J. Heat Mass Transfer 53(7-8) (2010) 1364-1372",
          "doi": "10.1016/j.ijheatmasstransfer.2009.12.023"},
+    42:
+        {"autor": "Eiamsa-ard, S., Wongcharee, K.,",
+         "title": "Heat transfer enhancement by twisted tapes with alternate-"
+                  "axes and triangular, rectangular and trapezoidal wings",
+         "ref": "Chem. Eng. Processing 50(2) (2011) 211-219",
+         "doi": "10.1016/j.cep.2010.11.012"},
 
-    # 42:
+    # 43:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -864,7 +870,7 @@ def f_twisted_turbulent_Jaisankar(Re, D, H):
     return f
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41])
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42])
 def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
     """Calculate friction factor a pipe with a twisted-tape insert using
     the Eiamsa-ard et al. correlation (2010).
@@ -879,7 +885,8 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT | CCC
+        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT |
+        CCC | T-Tra | T-Rec | T_Tri
     dW : float
         depth of wing cut, [m]
     w : float
@@ -958,6 +965,18 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
         # Eq 13 from [41]_
         tita = kw.get("tita", 0)
         f = 46.39 / Re**0.544 / y**0.77 * (1+sin(tita))**0.45
+    elif mod == "T-Tra":
+        # Eq 14 from [42]_
+        dW = kw.get("dW", 0)
+        f = 64 / Re**0.587 * (dW/D)**0.189
+    elif mod == "T-Rec":
+        # Eq 17 from [42]_
+        dW = kw.get("dW", 0)
+        f = 43.7 / Re**0.562 * (dW/D)**0.181
+    elif mod == "T-Tri":
+        # Eq 20 from [42]_
+        dW = kw.get("dW", 0)
+        f = 36 / Re**0.553 * (dW/D)**0.172
     else:
         # Eq 12 from [30]_
         f = 65.4 / Re**0.52 / y**1.31
@@ -1726,7 +1745,7 @@ def Nu_twisted_turbulent_Jaisankar(Re, Pr, D, H):
     return Nu
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41])
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42])
 def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
     """Calculate nusselt number for a pipe with a twisted-tape insert using
     the Eiamsa-ard et al. correlation (2010).
@@ -1744,6 +1763,7 @@ def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
     mod : string
         Name of modification code of twisted tape
         CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT
+        CCC | T-Tra | T-Rec | T_Tri
     dW : float
         depth of wing cut, [m]
     w : float
@@ -1822,6 +1842,18 @@ def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
         # Eq 12 from [41]_
         tita = kw.get("tita", 0)
         Nu = 0.31 * Re**0.6 * Pr**0.4 / y**0.36 * (1+sin(tita))**0.44
+    elif mod == "T-Tra":
+        # Eq 13 from [42]_
+        dW = kw.get("dW", 0)
+        Nu = 0.625 * Re**0.547 * Pr**0.4 * (dW/D)**0.113
+    elif mod == "T-Rec":
+        # Eq 16 from [42]_
+        dW = kw.get("dW", 0)
+        Nu = 0.506 * Re**0.562 * Pr**0.4 * (dW/D)**0.103
+    elif mod == "T-Tri":
+        # Eq 19 from [42]_
+        dW = kw.get("dW", 0)
+        Nu = 0.404 * Re**0.58 * Pr**0.4 * (dW/D)**0.096
     else:
         # Eq 11 from [30]_
         Nu = 0.224 * Re**0.66 * Pr**0.4 / y**0.6
@@ -2116,7 +2148,7 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Broken twisted tape"))
 
     TEXT_EIAMSA = ("", "CT", "CoT", "oDWT", "sDWT", "PCT", "WT", "AWT", "ST",
-                   "DST", "TT", "AT", "PT", "CCC")
+                   "DST", "TT", "AT", "PT", "CCC", "T-Tra", "T-Rec", "T-Tri")
     TEXT_EIAMSA_TOOLTIP = (
         "",
         translate("twistedtape", "Twin counter twisted tape"),
@@ -2131,7 +2163,10 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Tapered twisted tape"),
         translate("twistedtape", "Alternate axes twisted tape"),
         translate("twistedtape", "Perforated twisted tape"),
-        translate("twistedtape", "Alternate clockwise and counter-clockwise twisted tape"))
+        translate("twistedtape", "Alternate clockwise and counter-clockwise twisted tape"),
+        translate("twistedtape", "Twisted tape with trapezoid wings"),
+        translate("twistedtape", "Twisted tape with rectangular wings"),
+        translate("twistedtape", "Twisted tape with triangular wings"))
 
     TEXT_PONNADA = ("", "PTT", "PATT")
     TEXT_PONNADA_TOOLTIP = (
@@ -2382,7 +2417,9 @@ class TwistedTape(CallableEntity):
                       "dP": self.kw["dP"],
                       "tita": self.kw["tita"]}
 
-                if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
+                if self.kw["modEiamsa"] in (
+                        "oDWT", "sDWT", "T-Tra", "T-Rec", "T-Tri") \
+                        and not self.kw["dW"]:
                     kw["mod"] = ""
                     msg = "Depth of wing cut don't defined, using plain "
                     msg += "twisted tape instead"
@@ -2537,7 +2574,9 @@ class TwistedTape(CallableEntity):
                       "dP": self.kw["dP"],
                       "tita": self.kw["tita"]}
 
-                if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
+                if self.kw["modEiamsa"] in (
+                        "oDWT", "sDWT", "T-Tra", "T-Rec", "T-Tri") \
+                        and not self.kw["dW"]:
                     kw["mod"] = ""
                     msg = "Depth of wing cut don't defined, using plain "
                     msg += "twisted tape instead"
@@ -2884,8 +2923,8 @@ class UI_TwistedTape(ToolGui):
 
     def setEnable_Eiamsa(self, mod):
         """Change Enable/Disable state for Eiamsa-ard aditional parameters"""
-        self.lbldW.setVisible("DWT" in mod)
-        self.dW.setVisible("DWT" in mod)
+        self.lbldW.setVisible("DWT" in mod or "T-" in mod)
+        self.dW.setVisible("DWT" in mod or "T-" in mod)
         self.lblw.setVisible("PCT" in mod)
         self.w.setVisible("PCT" in mod)
         self.lblbeta.setVisible(mod[:3] in ("AWT", "WT "))
