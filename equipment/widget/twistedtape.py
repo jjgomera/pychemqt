@@ -299,8 +299,14 @@ __doi__ = {
                   "axes and triangular, rectangular and trapezoidal wings",
          "ref": "Chem. Eng. Processing 50(2) (2011) 211-219",
          "doi": "10.1016/j.cep.2010.11.012"},
+    43:
+        {"autor": "Bas, H., Ozceyhan, V.",
+         "title": "Heat transfer enhancement in a tube with twisted tape "
+                  "inserts placed separately from the tube wall",
+         "ref": "Exp. Thermal Fluid Sci. 41 (2012) 51-58",
+         "doi": "10.1016/j.expthermflusci.2012.03.008"},
 
-    # 43:
+    # 44:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -1018,6 +1024,40 @@ def f_twisted_turbulent_Ponnada(Re, D, H, mod=""):
     else:
         # Eq 21
         f = 1.093 / Re**0.39 * y**0.004
+
+    return f
+
+
+@refDoc(__doi__, [43])
+def f_twisted_turbulent_Bas(Re, D, H, c=0):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Bas-Ozceyhan correlation (2012).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    c : float
+        Distance between inner wall of tube and twisted tape insert, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Be careful with nomenclature in papers, use y as tape width
+    y = H/D
+
+    if c:
+        # Eq 24
+        f = 6.544291 / Re**0.452085 / y**0.730772 / (c/D)**0.1579
+    else:
+        # Eq 26
+        f = 12.32 / Re**0.45 / y**0.65
 
     return f
 
@@ -1882,8 +1922,8 @@ def Nu_twisted_turbulent_Ponnada(Re, Pr, D, H, mod=""):
 
     Returns
     -------
-    f : float
-        Friction factor, [-]
+    Nu : float
+        Nusselt number, [-]
     """
     # Be careful with nomenclature in papers, use y as tape width
     y = H/D
@@ -1897,6 +1937,41 @@ def Nu_twisted_turbulent_Ponnada(Re, Pr, D, H, mod=""):
     else:
         # Eq 20
         Nu = 0.388 * Re**0.541 * Pr**0.212 / y**0.145
+
+    return Nu
+
+
+@refDoc(__doi__, [43])
+def Nu_twisted_turbulent_Bas(Re, Pr, D, H, c=0):
+    """Calculate nusselt number for a pipe with a twisted-tape insert using
+    the Bas-Ozceyhan correlation (2012).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    c : float
+        Distance between inner wall of tube and twisted tape insert, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Be careful with nomenclature in papers, use y as tape width
+
+    if c:
+        # Eq 23
+        Nu = 0.406903 * Re**0.586556 * Pr**0.38 / (H/D)**0.443989 / (c/D)**0.055072
+    else:
+        # Eq 25
+        Nu = 0.6 * Re**0.57 * Pr**0.4 / (H/D)**0.45
 
     return Nu
 
@@ -1937,7 +2012,7 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
         # Laminar flow
         if S:
             # Eq 12 in 23_
-            Nu = 54.41*Re**-0.87*(1+S/D)**-0.045*(H/D)**-0.146
+            f = 54.41*Re**-0.87*(1+S/D)**-0.045*(H/D)**-0.146
         else:
             # Eq 6 in 13_
             f = 10.7564*Re**0.387*(H/D)**-1.054
@@ -2051,7 +2126,6 @@ def Nu_hollow_He(Re, Pr, D, C):
     return Nu
 
 
-
 class TwistedTape(CallableEntity):
     """Twisted-tape insert used in heat exchanger to improve efficiency.
     This tape, generally a thin metal strip, is twisted about its longitudinal
@@ -2097,7 +2171,8 @@ class TwistedTape(CallableEntity):
         "Jaisankar (2009)",
         "Chang (2012)",
         "Eiamsa-ard (2010)",
-        "Ponnada (2019)"
+        "Ponnada (2019)",
+        "Bas-Ozceyhan (2012)"
         )
 
     TEXT_LAMINAR_HEAT = (
@@ -2124,7 +2199,8 @@ class TwistedTape(CallableEntity):
         "Jaisankar (2009)",
         "Chang (2012)",
         "Eiamsa-ard (2010)",
-        "Ponnada (2019)"
+        "Ponnada (2019)",
+        "Bas-Ozceyhan (2012)"
         )
 
     TEXT_MURUGESAN = (
@@ -2174,8 +2250,11 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Perforated twisted tape"),
         translate("twistedtape", "Perforated twisted tape with alternate axis"))
 
-    # Helical method
+    # Helical screw tape
     # "Sivashanmugam-Suresh-Ibrahim (2006)"
+
+    # Hollow twisted-tape
+    # "He (2018)"
 
     status = 0
     msg = ""
@@ -2210,6 +2289,8 @@ class TwistedTape(CallableEntity):
         "sP": 0,
         "dP": 0,
         "tita": 0,
+
+        "c": 0,
 
         "modPonnada": ""}
 
@@ -2441,6 +2522,11 @@ class TwistedTape(CallableEntity):
                 Nu = Nu_twisted_turbulent_Ponnada(
                     Re, Pr, self.Dt, self.H, self.kw["modPonnada"])
 
+            elif method == 12:
+                # Bas-Ozceyhan (2012)
+                Nu = Nu_twisted_turbulent_Bas(
+                    Re, Pr, self.Dt, self.H, self.kw["c"])
+
             else:
                 # HTRI
                 Nu = Nu_twisted_HTRI(
@@ -2596,6 +2682,10 @@ class TwistedTape(CallableEntity):
                 # Ponnada (2019)
                 f = f_twisted_turbulent_Ponnada(
                     Re, self.Dt, self.H, self.kw["modPonnada"])
+
+            elif method == 10:
+                # Bas-Ozceyhan (2012)
+                f = f_twisted_turbulent_Bas(Re, self.Dt, self.H, self.kw["c"])
 
             else:
                 # Manglik-Bergles (1993)
@@ -2849,6 +2939,15 @@ class UI_TwistedTape(ToolGui):
             QtWidgets.QSizePolicy.Policy.Fixed), 3, 4)
         lyt.addWidget(self.groupPonnada, 14, 1, 1, 2)
 
+        # Bas-Ozceyhan aditional parameter
+        self.lblc = QtWidgets.QLabel(self.tr("Clearance"))
+        self.lblc.setToolTip(self.tr(
+            "Clearance between inner wall and twisted tape"))
+        lyt.addWidget(self.lblc, 10, 1)
+        self.c = Entrada_con_unidades(Length, "Thickness")
+        self.c.valueChanged.connect(partial(self.changeParams, "c"))
+        lyt.addWidget(self.c, 10, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
@@ -2878,6 +2977,7 @@ class UI_TwistedTape(ToolGui):
     def setVisibleMod(self):
         """Enable widget with special parameters for selected method"""
         twisted = self.twisted.isChecked()
+
         # Murugesan method
         if twisted and (self.methodHeatTurbulent.currentText() == "Murugesan (2010)" or
                         self.methodFTurbulent.currentText() == "Murugesan (2010)"):
@@ -2913,6 +3013,15 @@ class UI_TwistedTape(ToolGui):
             self.groupPonnada.setVisible(True)
         else:
             self.groupPonnada.setVisible(False)
+
+        # Bas-Ozceyhan method
+        if twisted and (self.methodHeatTurbulent.currentText() == "Bas-Ozceyhan (2012)" or
+                        self.methodFTurbulent.currentText() == "Bas-Ozceyhan (2012)"):
+            self.lblc.setVisible(True)
+            self.c.setVisible(True)
+        else:
+            self.lblc.setVisible(False)
+            self.c.setVisible(False)
 
     def setEnable_Murugesan(self, mod):
         """Change Enable/Disable state for Murugesan aditional parameters"""
@@ -2953,7 +3062,6 @@ class UI_TwistedTape(ToolGui):
         boolean = method or eiamsa or self.helical.isChecked()
         self.lblS.setEnabled(boolean)
         self.S.setEnabled(boolean)
-        # self.setVisibleMod()
 
     def setEnableHollow(self, boolean):
         self.lblC.setVisible(boolean)
