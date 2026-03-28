@@ -305,8 +305,14 @@ __doi__ = {
                   "inserts placed separately from the tube wall",
          "ref": "Exp. Thermal Fluid Sci. 41 (2012) 51-58",
          "doi": "10.1016/j.expthermflusci.2012.03.008"},
+    44:
+        {"autor": "Eiamsa-ard, S., Promvonge, P.",
+         "title": "Thermal characteristics in round tube fitted with serrated "
+                  "twisted tape",
+         "ref": "Applied Thermal Engineering 30(13) (2010) 1673-1682",
+         "doi": "10.1016/j.applthermaleng.2010.03.026"},
 
-    # 44:
+    # 45:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -876,7 +882,7 @@ def f_twisted_turbulent_Jaisankar(Re, D, H):
     return f
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42])
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 44])
 def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
     """Calculate friction factor a pipe with a twisted-tape insert using
     the Eiamsa-ard et al. correlation (2010).
@@ -892,7 +898,7 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
     mod : string
         Name of modification code of twisted tape
         CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT |
-        CCC | T-Tra | T-Rec | T_Tri
+        CCC | T-Tra | T-Rec | T_Tri | STT
     dW : float
         depth of wing cut, [m]
     w : float
@@ -911,6 +917,10 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
         Diameter of perforated, [m]
     tita : float
         twist angle, [ºdeg]
+    Sw : float
+        Serration width, [m]
+    Sd : float
+        Serration depth, [m]
 
     Returns
     -------
@@ -983,6 +993,12 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
         # Eq 20 from [42]_
         dW = kw.get("dW", 0)
         f = 36 / Re**0.553 * (dW/D)**0.172
+    elif mod == "STT":
+        # Eq 20 from [44]_
+        Sw = kw.get("Sw", 0)
+        Sd = kw.get("Sd", 0)
+        fp = 0.786 / Re**0.33                                           # Eq 18
+        f = 3.63 / Re**0.057 / (1+Sw/D)**0.53 * (1+Sd/D)**1.86 * fp
     else:
         # Eq 12 from [30]_
         f = 65.4 / Re**0.52 / y**1.31
@@ -1822,6 +1838,10 @@ def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
         Diameter of perforated, [m]
     tita : float
         twist angle, [ºdeg]
+    Sw : float
+        Serration width, [m]
+    Sd : float
+        Serration depth, [m]
 
     Returns
     -------
@@ -1894,6 +1914,12 @@ def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
         # Eq 19 from [42]_
         dW = kw.get("dW", 0)
         Nu = 0.404 * Re**0.58 * Pr**0.4 * (dW/D)**0.096
+    elif mod == "STT":
+        # Eq 19 from [44]_
+        Sw = kw.get("Sw", 0)
+        Sd = kw.get("Sd", 0)
+        Nup = 0.018 * Re**0.814 * Pr**0.4                               # Eq 17
+        Nu = 3.877 / Re**0.103 * Pr**0.4 / (1+Sw/D)**0.13 * (1+Sd/D)**0.67 * Nup
     else:
         # Eq 11 from [30]_
         Nu = 0.224 * Re**0.66 * Pr**0.4 / y**0.6
@@ -2224,7 +2250,8 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Broken twisted tape"))
 
     TEXT_EIAMSA = ("", "CT", "CoT", "oDWT", "sDWT", "PCT", "WT", "AWT", "ST",
-                   "DST", "TT", "AT", "PT", "CCC", "T-Tra", "T-Rec", "T-Tri")
+                   "DST", "TT", "AT", "PT", "CCC", "T-Tra", "T-Rec", "T-Tri",
+                   "STT")
     TEXT_EIAMSA_TOOLTIP = (
         "",
         translate("twistedtape", "Twin counter twisted tape"),
@@ -2242,7 +2269,8 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Alternate clockwise and counter-clockwise twisted tape"),
         translate("twistedtape", "Twisted tape with trapezoid wings"),
         translate("twistedtape", "Twisted tape with rectangular wings"),
-        translate("twistedtape", "Twisted tape with triangular wings"))
+        translate("twistedtape", "Twisted tape with triangular wings"),
+        translate("twistedtape", "Serrated twisted tape"))
 
     TEXT_PONNADA = ("", "PTT", "PATT")
     TEXT_PONNADA_TOOLTIP = (
@@ -2289,6 +2317,8 @@ class TwistedTape(CallableEntity):
         "sP": 0,
         "dP": 0,
         "tita": 0,
+        "Sw": 0,
+        "Sd": 0,
 
         "c": 0,
 
@@ -2496,7 +2526,9 @@ class TwistedTape(CallableEntity):
                       "teta": self.kw["teta"],
                       "sP": self.kw["sP"],
                       "dP": self.kw["dP"],
-                      "tita": self.kw["tita"]}
+                      "tita": self.kw["tita"],
+                      "Sw": self.kw["Sw"],
+                      "Sd": self.kw["Sd"]}
 
                 if self.kw["modEiamsa"] in (
                         "oDWT", "sDWT", "T-Tra", "T-Rec", "T-Tri") \
@@ -2658,7 +2690,9 @@ class TwistedTape(CallableEntity):
                       "teta": self.kw["teta"],
                       "sP": self.kw["sP"],
                       "dP": self.kw["dP"],
-                      "tita": self.kw["tita"]}
+                      "tita": self.kw["tita"],
+                      "Sw": self.kw["Sw"],
+                      "Sd": self.kw["Sd"]}
 
                 if self.kw["modEiamsa"] in (
                         "oDWT", "sDWT", "T-Tra", "T-Rec", "T-Tri") \
@@ -2918,6 +2952,16 @@ class UI_TwistedTape(ToolGui):
         self.tita = Entrada_con_unidades(Angle)
         self.tita.valueChanged.connect(partial(self.changeParams, "tita"))
         lytEiamsa.addWidget(self.tita, 9, 3)
+        self.lblSw = QtWidgets.QLabel(self.tr("Serration width"))
+        lytEiamsa.addWidget(self.lblSw, 10, 2)
+        self.Sw = Entrada_con_unidades(Length, "thickness")
+        self.Sw.valueChanged.connect(partial(self.changeParams, "Sw"))
+        lytEiamsa.addWidget(self.Sw, 10, 3)
+        self.lblSd = QtWidgets.QLabel(self.tr("Serration depth"))
+        lytEiamsa.addWidget(self.lblSd, 11, 2)
+        self.Sd = Entrada_con_unidades(Length, "thickness")
+        self.Sd.valueChanged.connect(partial(self.changeParams, "Sd"))
+        lytEiamsa.addWidget(self.Sd, 11, 3)
 
         lyt.addWidget(self.groupEiamsa, 13, 1, 1, 2)
 
@@ -3038,16 +3082,20 @@ class UI_TwistedTape(ToolGui):
         self.w.setVisible("PCT" in mod)
         self.lblbeta.setVisible(mod[:3] in ("AWT", "WT "))
         self.beta.setVisible(mod[:3] in ("AWT", "WT "))
-        self.lblteta.setVisible("TT" in mod)
-        self.teta.setVisible("TT" in mod)
-        self.lbll.setVisible("AT" in mod)
-        self.l.setVisible("AT" in mod)
-        self.lblsP.setVisible("PT" in mod)
-        self.sP.setVisible("PT" in mod)
-        self.lbldP.setVisible("PT" in mod)
-        self.dP.setVisible("PT" in mod)
-        self.lbltita.setVisible("CCC" in mod)
-        self.tita.setVisible("CCC" in mod)
+        self.lblteta.setVisible(mod == "TT")
+        self.teta.setVisible(mod == "TT")
+        self.lbll.setVisible(mod == "AT")
+        self.l.setVisible(mod == "AT")
+        self.lblsP.setVisible(mod == "PT")
+        self.sP.setVisible(mod == "PT")
+        self.lbldP.setVisible(mod == "PT")
+        self.dP.setVisible(mod == "PT")
+        self.lbltita.setVisible(mod == "CCC")
+        self.tita.setVisible(mod == "CCC")
+        self.lblSw.setVisible(mod == "STT")
+        self.Sw.setVisible(mod == "STT")
+        self.lblSd.setVisible(mod == "STT")
+        self.Sd.setVisible(mod == "STT")
         self.setEnableSpacer()
 
     def setEnabled(self, boolean):
@@ -3058,7 +3106,7 @@ class UI_TwistedTape(ToolGui):
     def setEnableSpacer(self):
         method = self.methodHeatLaminar.currentText() == "Saha-Gaitonde-Date (1989)" or \
             self.methodFrictionLaminar.currentText() == "Saha-Gaitonde-Date (1989)"
-        eiamsa = self.groupEiamsa.isVisible() and "ST" in self.modEiamsa.currentText()
+        eiamsa = self.groupEiamsa.isVisible() and self.modEiamsa.currentText() == "ST"
         boolean = method or eiamsa or self.helical.isChecked()
         self.lblS.setEnabled(boolean)
         self.S.setEnabled(boolean)
