@@ -19,11 +19,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import pi, log10
+from math import atan, exp, log10, pi, tan
 
 from tools.qt import QtCore, QtWidgets, translate
 
-from lib.unidades import Dimensionless, Area, Length
+from lib.unidades import Dimensionless, Area, Length, Angle
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
 from equipment.widget.gui import CallableEntity, ToolGui
@@ -175,112 +175,97 @@ __doi__ = {
                   "tubes by means of helical screw-tape inserts",
          "ref": "Energy Conv. Management 52(1) (2011) 250-257",
          "doi": "10.1016/j.enconman.2010.06.065"},
-    # 24:
-        # {"autor": "",
-         # "title": "",
-         # "ref": "",
-         # "doi": ""},
+    24:
+        {"autor": "Saha, S.K., Gaitonde, U.N., Date, A.W.",
+         "title": "Heat Transfer and Pressure Drop Characteristics of Laminar "
+                  "Flow in a Circular Tube Fitted with Regularly Spaced "
+                  "Twisted-Tape Elements",
+         "ref": "Exp. Thermal Fluid Sci. 2(3) (1989) 310-322",
+         "doi": "10.1016/0894-1777(89)90020-4"},
+    25:
+        {"autor": "Date, A.W., Gaitonde, U.N.",
+         "title": "Development of Correlations for Predicting Characteristics "
+                  "of Laminar Flow in a Tube Fitted with Regularly Spaced "
+                  "Twisted-Tape Elements",
+         "ref": "Exp. Thermal Fluid Sci. 3(4) (1990) 373-382",
+         "doi": "10.1016/0894-1777(90)90035-6"},
+    26:
+        {"autor": "Klaczak, A.",
+         "title": "Heat transfer by laminar flow in a vertical pipe with "
+                  "twisted-tape inserts",
+         "ref": "Heat Mass Transfer 36 (2000) 195-199",
+         "doi": "10.1007/s002310050384"},
+    27:
+        {"autor": "Chang, S.W., Guo, M.H.",
+         "title": "Thermal perfomances of enhanced smooth and spiky twisted "
+                  "tapes for laminar and turbulent tubular flows",
+         "ref": "Int. J. Heat Mass Transfer 55(25-26) (2012) 7651-7667",
+         "doi": "10.1016/j.ijheatmasstransfer.2012.07.077"},
+    28:
+        {"autor": "Chang, S.W., Jan, Y.J., Liou, J.S.",
+         "title": "Turbulent heat transfer and pressure drop in tube fitted"
+                  "with serrated twisted tape",
+         "ref": "Int. J. Thermal Sci. 46(5) (2007) 506-518",
+         "doi": "10.1016/j.ijthermalsci.2006.07.009"},
+    29:
+        {"autor": "Chang, S.W., Yang, T.L., Liou, J.S.",
+         "title": "Heat transfer and pressure drop in tube with broken "
+                  "twisted tape insert",
+         "ref": "Exp. Thermal Fluid Sci. 32(2) (2007) 489-501",
+         "doi": "10.1016/j.expthermflusci.2007.06.002"},
+    30:
+        {"autor": "Eiamsa-ard, S., Thianpong, C., Eiamsa-ard, P.",
+         "title": "Turbulent heat transfer enhancement by counter/co-swirling "
+                  "flow in a tube fitted with twin twisted tapes",
+         "ref": "Exp. Thermal Fluid Sci. 34(1) (2010) 53-62",
+         "doi": "10.1016/j.expthermflusci.2009.09.002"},
+    31:
+        {"autor": "Eiamsa-ard, S., Wongcharee, K., Eiamsa-ard, P., Thianpong, C.",
+         "title": "Heat transfer enhancement in a tube using delta-winglet "
+                  "twisted tape inserts",
+         "ref": "Applied Thermal Eng. 30(4) (2010) 310-318",
+         "doi": "10.1016/j.applthermaleng.2009.09.006"},
+    32:
+        {"autor": "Eiamsa-ard, S., Seemawute, P., Wongcharee, K.",
+         "title": "Influences of peripherally-cut twisted tape insert on "
+                  "heat transfer and thermal performance characteristics in "
+                  "laminar and turbulent tube flows",
+         "ref": "Exp. Thermal Fluid Sci. 34(6) (2010) 711-719",
+         "doi": "10.1016/j.expthermflusci.2009.12.013"},
+
+    33:
+        {"autor": "Eiamsa-ard, P., Piriyarungroj, N., Thianpong, C., "
+                  "Eiamsa-ard, S.",
+         "title": "A case study on thermal performance assessment of a heat "
+                  "exchanger tube equipped with regularly-spaced twisted "
+                  "tapes as swirl generators",
+         "ref": "Case Studies Thermal Eng. 3 (2014) 86-102",
+         "doi": "10.1016/j.csite.2014.04.002"},
+    34:
+        {"autor": "Eiamsa-ard, S., Wongcharee, K., Eiamsa-ard, P., "
+                  "Thianpong, C.",
+         "title": "Thermohydraulic investigation of turbulent flow through a "
+                  "round tube equipped with twisted tapes consisting of "
+                  "centre wings and alternate-axes",
+         "ref": "Exp. Thermal Fluid Sci. 34(8) (2010) 1151-1161",
+         "doi": "10.1016/j.expthermflusci.2010.04.004"},
+    35:
+        {"autor": "Eiamsa-ard, Thianpong, C., Eiamsa-ard, P., Promvonge, P.",
+         "title": "Thermal characteristics in a heat exchanger tube fitted "
+                  "with dual twisted tape elements in tandem",
+         "ref": "Int. Comm. Heat Mass Transfer 37(1) (2010) 39-46",
+         "doi": "10.1016/j.icheatmasstransfer.2009.08.010"},
+
+    # 36:
+    #     {"autor": "",
+    #      "title": "",
+    #      "ref": "",
+    #      "doi": ""},
+
         }
 
 
 # Friction factor correlations
-@refDoc(__doi__, [1])
-def f_twisted_Plessis(Re, D, H, delta, Ae, De):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Plessis and Kröger correlation (1984)
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    delta : float
-        Tape thickness, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-    Ae : float
-        Effective flow area, [m²]
-    De : float
-        Effective hydraulic diameter, [m]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-
-    Examples
-    --------
-    Selected point from Table 2 in [1]_
-
-    >>> st = TwistedTape(10, 1, 0)
-    >>> print("%0.3f" % f_twisted_Plessis(50, 1, 10, 0, st.Ae, st.De))
-    0.849
-
-    >>> print("%0.4f" % f_twisted_Plessis(2000, 1, 10, 0, st.Ae, st.De))
-    0.0296
-    """
-    A = pi*D**2/4
-    y = H/D
-
-    # Eq 15
-    Deltae = A*D**2/Ae/De**2
-
-    # Eq 16
-    fe = Deltae/Re*(15.767-0.14706*delta/D)
-
-    # Eq 17
-    f = fe * (1 + (Re/(70*y**1.3))**1.5)**(1/3)
-    return f
-
-
-@refDoc(__doi__, [3])
-def f_twisted_Shah(Re, D, H, delta):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Shah and London correlation (1978)
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-    delta : float
-        Tape thickness, [m]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-
-    """
-    # Chapter XVI: Longitudinal Fins and Twisted Tapes within Ducts
-    # F: Circular Duct with a Twisted Tape, Pag 379 and on next
-
-    Xl = H/D
-
-    # Eq 559
-    C = 8.8201*Xl - 2.1193*Xl**2 + 0.2108*Xl**3 - 0.0069*Xl**4
-
-    # Eq 563
-    Xi = (pi/(pi+2))**2 * ((pi+2-2*delta/D)/(pi-4*delta/D))**2 \
-        * (pi/(pi-4*delta/D))
-
-    if Re/Xl < 6.7:
-        # Eq 560
-        fRe = 42.23*Xi
-    elif Re/Xl > 100:
-        # Eq 562
-        fRe = C*(Re/Xl)**0.3*Xi
-    else:
-        # Eq 561
-        fRe = 38.4*(Re/Xl)**0.05*Xi
-
-    return fRe/Re
-
-
 @refDoc(__doi__, [4, 5])
 def f_twisted_Manglik(Re, D, H, delta, Dh):
     """Calculate friction factor for a pipe with a twisted-tape insert using
@@ -327,11 +312,10 @@ def f_twisted_Manglik(Re, D, H, delta, Dh):
     return f
 
 
-@refDoc(__doi__, [7, 8])
-def f_twisted_Lopina(Re, D, H, Dh):
+@refDoc(__doi__, [15])
+def f_twisted_Sarma(Re, D, H):
     """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Lopina and Bergles correlation (1969). Only valid for turbulent flow
-    with Re > 5000
+    the Sarma et al. correlation (2005)
 
     Parameters
     ----------
@@ -341,8 +325,130 @@ def f_twisted_Lopina(Re, D, H, Dh):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
-    Dh : float
-        Hydraulic diameter, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 4
+    rhs = 0.474 - 0.3*log10(Re) + 0.065*log10(Re)**2 - 4.66e-3*log10(Re)**3
+    f = (1+D/H)**3.378 * rhs
+    return f
+
+
+@refDoc(__doi__, [27, 28, 29])
+def f_twisted_Chang(Re, D, H, mod="", bf=False):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Chang et al. correlation (2012).
+
+    The twisted-tape have geometrical modifications:
+
+        * PT: Perforated twisted tape
+        * PJT: Perforated twisted tape with jaggedness
+        * PST: Perforated spiky twisted tape
+        * PJST: Perforated spicy twisted tape with jaggedness
+        * VST: V-notched spicy twisted tape
+        * SR: Serrated roughened
+        * BT: Broken twisted tape
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        PT | PJT | PST | PJSJ | VST
+    bf : boolean
+        In jaggedness mod flow orientation is relevant, set backward flow state
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    y = H/D
+
+    # Coefficient from Table 5
+    if mod == "PT":
+        ci = ((0.0174, 0.13, 0.339), (0.02, 4.41, 0.725),
+              (3.4e-4, 1.05e-3, 0.512))
+    elif mod == "PJT":
+        if bf:
+            ci = ((0.0174, 0.35, 0.567), (0.02, 0.648, 0.209),
+                  (3.4e-4, 3.14e-4, 0.719))
+        else:
+            ci = ((0.0174, 0.311, 0.493), (0.02, 2.21, 0.565),
+                  (3.4e-4, 1.22e-3, 0.699))
+    elif mod == "PST":
+        ci = ((0.0174, 0.249, 0.34), (0.02, 2.77, 0.527),
+              (3.4e-4, 1.06e-3, 0.702))
+    elif mod == "PJST":
+        if bf:
+            ci = ((0.0174, 3.01, 1.21), (0.02, 1.14, 0.295),
+                  (3.4e-4, 0.177, 3.04))
+        else:
+            ci = ((0.0174, 1.89, 0.96), (0.02, 0.364, 0.134),
+                  (3.4e-4, 1.09e-3, 0.873))
+    elif mod == "VST":
+        ci = ((0.0174, 0.561, 0.471), (0.02, 0.706, 0.453),
+              (3.4e-4, 2.23, 1.13), (0, 0.00878, 4.64))
+
+    elif mod == "BT":
+        # From [29]_, Eq 9
+        ci = ((0.0174, 0.21, 0.332), (0.02, 0.161, 1.27),
+              (3.4e-4, -3.21e-4, 0.548))
+
+    # From [28]_
+    elif mod == "SR":
+        # Eq 9 in [28]_
+        ci = ((0, 0, 0), (0.033, 0.756, 0.765), (0.166, -0.235, 0.524))
+    else:
+        # Smooth twisted tape
+        # Eq 8 in [28]_
+        ci = ((0, 0, 0), (0.07, 9.87, 1.81), (-0.08, -0.94, 1.23))
+
+    c0 = ci[0][0]+ci[0][1]*exp(-ci[0][2]*y)
+    c1 = ci[1][0]+ci[1][1]*exp(-ci[1][2]*y)
+    c2 = ci[2][0]+ci[2][1]*exp(-ci[2][2]*y)
+
+    # Eq 6
+    if not mod or mod == "SR":
+        f = c1*Re**c2
+    else:
+        f = c0 + c1*exp(-c2*Re)
+
+    # Aditional term for VST
+    if mod == "VST":
+        c3 = ci[3][0]+ci[3][1]*exp(-ci[3][2]*y)
+        f += c3*Re
+
+    return f
+
+
+@refDoc(__doi__, [1])
+def f_twisted_laminar_Plessis(Re, D, H, delta, Ae, De):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Plessis and Kröger correlation (1984)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    delta : float
+        Tape thickness, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    Ae : float
+        Effective flow area, [m²]
+    De : float
+        Effective hydraulic diameter, [m]
 
     Returns
     -------
@@ -351,23 +457,33 @@ def f_twisted_Lopina(Re, D, H, Dh):
 
     Examples
     --------
-    B2.2.1.2.3 in [8]_
-    >>> print("%0.2f" % f_twisted_Lopina(24491, 0.61, 6.1, 1.07))
-    0.01
-    """
-    # Using the modified parameter in HTRI Design Manual, section B2.1.2.1
+    Selected point from Table 2 in [1]_
 
-    Reh = Re*Dh/D
+    >>> st = TwistedTape(10, 1, 0)
+    >>> print("%0.3f" % f_twisted_laminar_Plessis(50, 1, 10, 0, st.Ae, st.De))
+    0.849
+
+    >>> print("%0.4f" % f_twisted_laminar_Plessis(2000, 1, 10, 0, st.Ae, st.De))
+    0.0296
+    """
+    A = pi*D**2/4
     y = H/D
 
-    f = 3.8/y**0.406*(0.046/Reh**0.2)
+    # Eq 15
+    Deltae = A*D**2/Ae/De**2
+
+    # Eq 16
+    fe = Deltae/Re*(15.767-0.14706*delta/D)
+
+    # Eq 17
+    f = fe * (1 + (Re/(70*y**1.3))**1.5)**(1/3)
     return f
 
 
-@refDoc(__doi__, [9])
-def f_twisted_Naphon(Re, D, H):
+@refDoc(__doi__, [3])
+def f_twisted_laminar_Shah(Re, D, H, delta):
     """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+    the Shah and London correlation (1978)
 
     Parameters
     ----------
@@ -377,19 +493,42 @@ def f_twisted_Naphon(Re, D, H):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
 
     Returns
     -------
     f : float
         Friction factor, [-]
+
     """
-    # Eq 9
-    f = 3.517/Re**0.414*(1+D/H)**1.045
-    return f
+    # Chapter XVI: Longitudinal Fins and Twisted Tapes within Ducts
+    # F: Circular Duct with a Twisted Tape, Pag 379 and on next
+
+    Xl = H/D
+
+    # Eq 559
+    C = 8.8201*Xl - 2.1193*Xl**2 + 0.2108*Xl**3 - 0.0069*Xl**4
+
+    # Eq 563
+    Xi = (pi/(pi+2))**2 * ((pi+2-2*delta/D)/(pi-4*delta/D))**2 \
+        * (pi/(pi-4*delta/D))
+
+    if Re/Xl < 6.7:
+        # Eq 560
+        fRe = 42.23*Xi
+    elif Re/Xl > 100:
+        # Eq 562
+        fRe = C*(Re/Xl)**0.3*Xi
+    else:
+        # Eq 561
+        fRe = 38.4*(Re/Xl)**0.05*Xi
+
+    return fRe/Re
 
 
 @refDoc(__doi__, [10])
-def f_twisted_Agarwal(Re, D, H):
+def f_twisted_laminar_Agarwal(Re, D, H):
     """Calculate friction factor for a pipe with a twisted-tape insert using
     the Agarwal and Raja Rao correlation (1996).
 
@@ -418,10 +557,83 @@ def f_twisted_Agarwal(Re, D, H):
     return f
 
 
-@refDoc(__doi__, [15])
-def f_twisted_Sarma(Re, D, H):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Sarma et al. correlation (2005)
+@refDoc(__doi__, [24])
+def f_twisted_laminar_Saha(Re, D, H, delta, S):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Saha-Gaitonde-Date correlation (1989).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    S : float
+        Spacer lenght without twisted section, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    y = H/D
+    s = S/D
+
+    if Re > 2300 or y > 10 or y < 3 or s < 2.5 or s > 10:
+        raise NotImplementedError("Input out of bound")
+
+    Dh0 = (pi*D**2*y+pi*(D**2-delta**2)*s)/((pi+2)*y*D+pi*(D+delta)*s)  # Eq 21
+    Dh1 = ((pi*D**2-4*delta*D)*y+pi*(D**2-delta**2)*s) / \
+        ((pi+2-2*delta/D)*y*D+pi*(D+delta)*s)                           # Eq 22
+    Ac0 = (pi*(D**2*y+(D**2-delta**2)*s))/(4*(y+s))                     # Eq 23
+    Ac1 = ((pi*D**2-4*delta*D)*y+pi*(D**2-delta**2)*s)/(4*(y+s))        # Eq 24
+
+    xi = Dh0**2*Ac0/Dh1**2*Ac1                                          # Eq 20
+
+    if s <= 2.5:
+        if 7.5 <= y <= 10:
+            C = 0.0678*exp(-0.0631*y)*s-0.9936*exp(0.0069*y)+1          # Eq 25
+        else:
+            C = 0.1998*exp(-0.0631*y)*s + 0.011*y - 0.3175              # Eq 26
+    elif s <= 5:
+        if 7.5 <= y <= 10:
+            C = -0.0031*exp(0.1649*y)*s + 0.02812*exp(0.092*y)          # Eq 27
+        else:
+            C = -3.97e-3*y*s + 0.01*s + 0.018*y - 7.15e-3               # Eq 30
+    elif s <= 7.5:
+        if 7.5 <= y <= 10:
+            C = -2.45e-5*exp(0.1649*y)*s - 3.51e-3*exp(0.092*y)         # Eq 28
+        else:
+            C = -4.05e-3*y*s + 0.01*s + 0.018*y - 7.15e-4               # Eq 31
+    else:
+        if 7.5 <= y <= 10:
+            C = -6.39e-4*exp(0.1649*y)*s + 8.7e-3*exp(0.092*y)          # Eq 29
+        else:
+            C = -2.96e-3*y*s + 0.01*s + 0.018*y - 0.0516                # Eq 32
+
+    C1 = 8.8201*y - 2.1193*y**2 + 0.2108*y**3 - 0.0069*y**4             # Eq 33
+
+    if Re/y <= 100:
+        # Eq 17
+        f = 38.4 * xi * Re**-0.95 * y**-0.05 * (1+C*s)
+    elif Re/y <= 155:
+        # Eq 18
+        f = 0.5*(38.4*xi*Re**-0.95*y**-0.05*C1*xi*Re**-0.07*y**-0.3)*(1+C*s)
+    else:
+        # Eq 19
+        f = C1*xi*Re**-0.07*y**-0.3*(1+C*s)
+
+    return f
+
+
+@refDoc(__doi__, [25])
+def f_twisted_laminar_Date(Re, D, H):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Date-Gaitonde correlation (1990).
+
+    The paper include a complex correalation for regularly spaced twisted-tape
 
     Parameters
     ----------
@@ -437,14 +649,77 @@ def f_twisted_Sarma(Re, D, H):
     f : float
         Friction factor, [-]
     """
-    # Eq 4
-    rhs = 0.474 - 0.3*log10(Re) + 0.065*log10(Re)**2 - 4.66e-3*log10(Re)**3
-    f = (1+D/H)**3.378 * rhs
+    y = H/D
+
+    # Eq 52
+    f = 10.666*(9.818-17.96/y**2)*(y-0.7)/(y-1)*(6e-4/y+0.44*Re)
+
+    return f
+
+
+@refDoc(__doi__, [7, 8])
+def f_twisted_turbulent_Lopina(Re, D, H, Dh):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Lopina and Bergles correlation (1969). Only valid for turbulent flow
+    with Re > 5000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    Dh : float
+        Hydraulic diameter, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    Examples
+    --------
+    B2.2.1.2.3 in [8]_
+    >>> print("%0.2f" % f_twisted_turbulent_Lopina(24491, 0.61, 6.1, 1.07))
+    0.01
+    """
+    # Using the modified parameter in HTRI Design Manual, section B2.1.2.1
+
+    Reh = Re*Dh/D
+    y = H/D
+
+    f = 3.8/y**0.406*(0.046/Reh**0.2)
+    return f
+
+
+@refDoc(__doi__, [9])
+def f_twisted_turbulent_Naphon(Re, D, H):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 9
+    f = 3.517/Re**0.414*(1+D/H)**1.045
     return f
 
 
 @refDoc(__doi__, [12])
-def f_twisted_Smithberg(Re, D, H):
+def f_twisted_turbulent_Smithberg(Re, D, H):
     """Calculate friction factor for a pipe with a twisted-tape insert using
     the Smithberg-Landis correlation (1964). Valid for turbulent flow
 
@@ -465,11 +740,11 @@ def f_twisted_Smithberg(Re, D, H):
     # Eq 17
     n = 0.2*(1+1.7*(H/D)**-0.5)
     f = (0.046 + 2.1/(H/D-0.5)**1.2) / Re**n
-    return f
+    return 4*f
 
 
 @refDoc(__doi__, [16, 17, 18, 19, 20])
-def f_twisted_Murugesan(Re, D, H, mod="", de=None, w=None):
+def f_twisted_turbulent_Murugesan(Re, D, H, mod="", de=None, w=None):
     """Calculate friction factor for a pipe with a twisted-tape insert using
     the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
 
@@ -524,7 +799,7 @@ def f_twisted_Murugesan(Re, D, H, mod="", de=None, w=None):
 
 
 @refDoc(__doi__, [21])
-def f_twisted_Jaisankar(Re, D, H):
+def f_twisted_turbulent_Jaisankar(Re, D, H):
     """Calculate friction factor a pipe with a twisted-tape insert using
     the Jaisankar et al. correlation (2009).
 
@@ -551,11 +826,10 @@ def f_twisted_Jaisankar(Re, D, H):
     return f
 
 
-@refDoc(__doi__, [13, 14, 22, 23])
-def f_helical_Sivashanmugam(Re, D, H, S=None):
-    """Calculate friction factor for a pipe with a twisted-tape insert using
-    the Sivashanmugam-Suresh correlation (2006) with lamanar flow correlation
-    for spacer from Ibrahim correlation (2011).
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35])
+def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", dW=0, w=0, S=0, beta=0):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Eiamsa-ard et al. correlation (2010).
 
     Parameters
     ----------
@@ -565,242 +839,130 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
         Internal diameter of tube, [m]
     H : float
         Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        CT | CoT | oDWT | sDWT | PT | ST
+    dW : float
+        depth of wing cut, [m]
+    w : float
+        Peripherally-cut width
     S : float
         Spacer lenght without twisted section, [m]
+    beta : float
+        Attack angle, [ºdeg]
 
     Returns
     -------
     f : float
         Friction factor, [-]
     """
-    if Re > 2000:
-        # Turbulent flow
-        if S:
-            # Eq 6 in 22_
-            f = Re**-0.384*(H/D)**-0.852*(1+S/D)**-0.047
-        else:
-            # Eq 6 in 14_
-            f = 32.415*Re**-0.598*(H/D)**-0.7986
+    # Be careful with nomenclature in papers, use y as tape width
+    y = H/D
 
+    if mod == "CT":
+        # Eq 14 from [30]_
+        f = 72.29 / Re**0.53 / y**1.01
+    elif mod == "CoT":
+        # Eq 16 from [30]_
+        f = 41.7 / Re**0.52 / y**0.84
+    elif mod == "oDWT":
+        # Eq 16 from [31]_
+        f = 24.8 / Re**0.51 / y**0.566 * (1+dW/D)**1.87
+    elif mod == "sDWT":
+        # Eq 19 from [31]_
+        f = 21.7 / Re**0.45 / y**0.564 * (1+dW/D)**1.41
+    elif mod == "PT":
+        # Eq 18 from [32]_
+        f = 39.46 / Re**0.591 * y**0.195 / (w/D)**0.201
+    elif mod == "ST":
+        # Eq 20 from [33]_
+        f = 3.044 / y**0.556 / (S/D+1)**0.34
+    elif mod == "WT":
+        # Table 2 from [34]_
+        f = 14.039 / Re**0.505 * (1+tan(beta))**0.406
+    elif mod == "AWT":
+        # Table 2 from [34]_
+        f = 20.445 / Re**0.504 * (1+tan(beta))**0.283
+    elif mod == "DST":
+        # Eq 24 from [35]_
+        f = 30.5 / Re**0.56 / y**0.54 / (1.5*S/D+1)**0.2
     else:
-        # Laminar flow
-        if S:
-            # Eq 12 in 23_
-            Nu = 54.41*Re**-0.87*(1+S/D)**-0.045*(H/D)**-0.146
-        else:
-            # Eq 6 in 13_
-            f = 10.7564*Re**0.387*(H/D)**-1.054
+        # Eq 12 from [30]_
+        f = 65.4 / Re**0.52 / y**1.31
 
     return f
 
 
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35])
+def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", dW=0, w=0, S=0, beta=0):
+    """Calculate nusselt number for a pipe with a twisted-tape insert using
+    the Eiamsa-ard et al. correlation (2010).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        CT | CoT | oDWT | sDWT | PT
+    dW : float
+        depth of wing cut, [m]
+    w : float
+        Peripherally-cut width
+    S : float
+        Spacer lenght without twisted section, [m]
+    beta : float
+        Attack angle, [ºdeg]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Be careful with nomenclature in papers, use y as tape width
+    y = H/D
+
+    if mod == "CT":
+        # Eq 13 from [30]_
+        Nu = 0.473 * Re**0.66 * Pr**0.4 / y**0.9
+    elif mod == "CoT":
+        # Eq 15 from [30]_
+        Nu = 0.264 * Re**0.66 * Pr**0.4 / y**0.61
+    elif mod == "oDWT":
+        # Eq 15 from [31]_
+        Nu = 0.18 * Re**0.67 * Pr**0.4 / y**0.423 * (1+dW/D)**0.982
+    elif mod == "sDWT":
+        # Eq 18 from [31]_
+        Nu = 0.184 * Re**0.675 * Pr**0.4 / y**0.465 * (1+dW/D)**0.76
+    elif mod == "PT":
+        # Eq 17 from [32]_
+        Nu = 0.244 * Re**0.625 * Pr**0.4 * y**0.168 / (w/D)**0.112
+    elif mod == "ST":
+        # Eq 19 from [33]_
+        Nu = 0.144 * Re**0.697 * Pr**0.4 / y**0.228 / (S/D+1)**0.179
+    elif mod == "WT":
+        # Table 2 from [34]_
+        Nu = 0.232 * Re**0.595 * Pr**0.4 * (1+tan(beta))**0.202
+    elif mod == "AWT":
+        # Table 2 from [34]_
+        Nu = 0.385* Re**0.568 * Pr**0.4 * (1+tan(beta))**0.129
+    elif mod == "DST":
+        # Eq 23 from [35]_
+        Nu = 0.069 * Re**0.74 * Pr**0.4 / y**0.26 / (1.5*S/D+1)**0.1
+    else:
+        # Eq 11 from [30]_
+        Nu = 0.224 * Re**0.66 * Pr**0.4 / y**0.6
+
+    return Nu
+
+
 # Heat Transfer coefficient correlations
-@refDoc(__doi__, [2])
-def Nu_twisted_Plessis(Re, Pr, D, H, delta, Ae, De, x=None):
-    """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Plessis and Kröger correlation (1987).
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-    delta : float
-        Tape thickness, [m]
-    Ae : float
-        Effective flow area, [m²]
-    De : float
-        Effective hydraulic diameter, [m]
-    x : float, optional
-        Length in axial flow, [m]
-
-    Returns
-    -------
-    Nu : float
-        Nusselt number, [-]
-    """
-    y = H/D
-    A = pi*D**2/4
-    Ac = A-D*delta
-
-    # Eq 2
-    Psye = (D/De)**2*Ae/A
-
-    Ree = Re*A/Ae*De/D
-    Omge = Ree/y
-
-    if x is not None:
-        # Correction for flow don't fully developed
-        xe = x*Ac/Ae
-        xe_ = xe/(Ree*Pr*De)
-        xinf = xe_ * (1+0.04*(Omge*Pr)**3)**(1/3)
-        Psye *= (1+0.153*xinf**-1.05)**(1/3)
-
-    # Eq 14
-    Nu = 1.58*Psye*(1+6.4e-5*(Omge*Pr)**3)**0.117*(1+0.002*Omge**1.4)**(1/7)
-
-    return Nu
-
-
-@refDoc(__doi__, [6])
-def Nu_twisted_Hong(Re, Pr, D, H):
-    """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Hong and Bergles correlation (1976). Valid only for laminar region
-    Re < 2500
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    Pr : float
-        Prandtl number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-
-    Returns
-    -------
-    Nu : float
-        Nusselt number, [-]
-    """
-    y = H/D
-
-    # Eq 3
-    Nu = 5.172*(1+5.484e-3*Pr**0.7*(Re/y)**1.25)**0.5
-    return Nu
-
-
-@refDoc(__doi__, [4, 5])
-def Nu_twisted_Manglik(Re, Pr, Gr, Gz, D, H, delta, Dh, mu, muW):
-    """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Manglik and Bergles correlation (1993)
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    Pr : float
-        Prandtl number, [-]
-    Gr : float
-        Grashof number, [-]
-    Gz : float
-        Graetz number, [-]
-    D : float
-        Internal pipe diameter, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-    delta : float
-        Tape thickness, [m]
-    Dh : float
-        Hydraulic diameter, [m]
-    mu : float
-        Bulk flow temperature viscosity, [Pa·s]
-    muW : float
-        Wall flow temperature viscosity, [Pa·s]
-
-    Returns
-    -------
-    Nu : float
-        Nusselt number, [-]
-    """
-
-    if Re <= 2000:
-        # Laminar flow
-
-        y = H/D
-        Ra = Gr*Pr
-
-        A = pi*D**2/4
-        Ac = A-D*delta
-
-        Resw = Re*(pi/(pi-4*delta/D)) * ((pi*D/H)**2)**0.5
-        Sw = Resw/(H/2/D)**0.5
-        Reax = Resw/Vs*Va*(1+(pi/2/y)**2)**0.5
-
-        # Eq 17
-        Nu = 4.612*(mu/muW)**0.14*(
-            ((1+0.0951*Gz**0.894)**2.5 + 6.413e-9*(Sw*Pr**0.391)**3.835)**2
-            + 2.132e-14*(Reax*Ra)**2.23)**0.1
-
-    elif Re >= 5000:
-        # Turbulent flow
-        # Eq 8-9
-        Nu = (1+0.769/y)*0.023*Re**0.8*Pr**0.4*(pi/(pi-4*delta/D))**0.8 \
-            * ((pi+2-2*delta/D)/(pi-4*delta/D))**0.2
-
-        if mu < muW:
-            # Cooling
-            n = 0.3
-        else:
-            n = 0.18
-        Nu *= (mu/muW)**n
-
-    else:
-        NuL = Nu_twisted_Manglik(2000, Pr, Gr, Gz, D, H, delta, Dh, mu, muW)
-        NuH = Nu_twisted_Manglik(2000, Pr, Gr, Gz, D, H, delta, Dh, mu, muW)
-        Nu = NuL*(5000-Re)/3000 + NuH*(Re-2000)/3000
-    return Nu
-
-
-@refDoc(__doi__, [7, 8])
-def Nu_twisted_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, DT, HTRI=False):
-    """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Lopina and Bergles correlation (1969). Only valid for turbulent flow
-    with Re > 5000
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    Pr : float
-        Prandtl number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-    Dh : float
-        Hydraulic diameter, [m]
-    mu : float
-        Bulk flow temperature viscosity, [Pa·s]
-    muW : float
-        Wall flow temperature viscosity, [Pa·s]
-    beta : float, optional
-        Volumetric expansion coefficient, [1/K]
-    dT : float, optional
-        Temperature difference between bulk and wall, [K]
-
-    Returns
-    -------
-    Nu : float
-        Nusselt number, [-]
-    """
-    Reh = Re*Dh/D
-    y = H/D
-    alpha = (1+(pi/y)**2)**0.5
-
-    if HTRI:
-        # Use parameter used in HTRI manual
-        F = 1.03
-        x = 0.79
-    else:
-        F = 1.137
-        x = 0.8
-
-    if mu >= muW:
-        # In liquids viscosity decrease with temperature, so cooling processes
-        Nc = 0
-    else:
-        # Heating processes
-        Nc = 0.193*((2*Reh/y)**2*Dh/D*beta*DT*Pr)**(1/3)
-
-    Nu = F*(0.023*(alpha*Reh)**x * Pr**0.4 + Nc)
-    return Nu
-
-
 @refDoc(__doi__, [8])
 def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
@@ -812,8 +974,6 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    Gz : float
-        Graetz number, [-]
     D : float
         Internal pipe diameter, [m]
     H : float
@@ -869,7 +1029,7 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
             Nu = Pr*(NuH-NuL)/1800 + NuL - (NuH-NuL)/9
 
     elif Re >= 5000:
-        Nu = Nu_twisted_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, dT, HTRI=True)
+        Nu = Nu_twisted_turbulent_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, dT, HTRI=True)
 
     else:
         NuL = Nu_twisted_HTRI(2000, Pr, D, H, Dh, mu, muW)
@@ -879,10 +1039,89 @@ def Nu_twisted_HTRI(Re, Pr, D, H, Dh, mu, muW, beta=None, dT=None, L=None):
     return Nu
 
 
-@refDoc(__doi__, [9])
-def Nu_twisted_Naphon(Re, Pr, D, H):
+@refDoc(__doi__, [4, 5])
+def Nu_twisted_Manglik(Re, Pr, D, H, delta, Dh, mu, muW):
+    r"""Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Manglik and Bergles correlation (1993)
+
+    In laminar flow for simplicity use only fully developed swirl flow
+    correlation and without thermal entrance effects and combined forced and
+    free convection.
+
+    .. math::
+        Nu = 4.612 \left(1+6.413e-9\left(Sw Pr^{0.391}\right)^{3.835}\right)^{0.2}
+
+    For turbulent flow:
+
+    .. math::
+        \frac{Nu}{Nu_{y=\infty}} = 1+\frac{0.769}{y}
+
+    .. math::
+        Nu_{y=\infty} = 0.023 Re^{0.8} Pr^{0.4}
+        \left(\frac{\pi}{pi-4\delta/d}\right)^{0.8}
+        \left(\frac{\pi+2-2\delta/d}{\pi-4\delta/d}\right)^{0.2}
+
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal pipe diameter, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+    Dh : float
+        Hydraulic diameter, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    if Re <= 2000:
+        # Laminar flow
+
+        y = H/D
+
+        Resw = Re*(pi/(pi-4*delta/D)) * ((pi*D/H)**2)**0.5
+        Sw = Resw/(H/2/D)**0.5
+
+        # Eq 14
+        Nu = 4.612*(mu/muW)**0.14*((1 + 6.413e-9*(Sw*Pr**0.391)**3.835)**0.2)
+
+    elif Re >= 5000:
+        # Turbulent flow
+        # Eq 8-9
+        Nu = (1+0.769/y)*0.023*Re**0.8*Pr**0.4*(pi/(pi-4*delta/D))**0.8 \
+            * ((pi+2-2*delta/D)/(pi-4*delta/D))**0.2
+
+        if mu < muW:
+            # Cooling
+            n = 0.3
+        else:
+            n = 0.18
+        Nu *= (mu/muW)**n
+
+    else:
+        NuL = Nu_twisted_Manglik(2000, Pr, D, H, delta, Dh, mu, muW)
+        NuH = Nu_twisted_Manglik(2000, Pr, D, H, delta, Dh, mu, muW)
+        Nu = NuL*(5000-Re)/3000 + NuH*(Re-2000)/3000
+    return Nu
+
+
+@refDoc(__doi__, [15])
+def Nu_twisted_Sarma(Re, Pr, D, H):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+    the Sarma et al. correlation (2005)
 
     Parameters
     ----------
@@ -901,12 +1140,180 @@ def Nu_twisted_Naphon(Re, Pr, D, H):
         Nusselt number, [-]
     """
     # Eq 8
-    Nu = 0.648*Re**0.36*Pr**(1/3)*(1+D/H)**2.475
+    rhs = 0.974 - 0.783*log10(Re) + 0.35*log10(Re)**2 - 0.0273*log10(Re)**3
+    Nu = Pr**(1/3) * (1+D/H)**2 * 10**rhs
+    return Nu
+
+
+@refDoc(__doi__, [27, 28, 29])
+def Nu_twisted_Chang(Re, Pr, D, H, mod="", bf=False):
+    """Calculate friction factor a pipe with a twisted-tape insert using
+    the Chang et al. correlation (2012).
+
+    The twisted-tape have geometrical modifications:
+
+        * PT: Perforated twisted tape
+        * PJT: Perforated twisted tape with jaggedness
+        * PST: Perforated spiky twisted tape
+        * PJST: Perforated spicy twisted tape with jaggedness
+        * VST: V-notched spicy twisted tape
+        * SR: Serrated roughened twisted tape
+        * BT: Broken twisted tape
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    mod : string
+        Name of modification code of twisted tape
+        PT | PJT | PST | PJSJ | VST
+    bf : boolean
+        In jaggedness mod flow orientation is relevant, set backward flow state
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+
+    # Coef for developed flow from Table 3(b)
+    if mod == "PT":
+        ai = (0.0364, 0.771, 0.363)
+        bi = (0.782, 0.239, 0.145)
+    elif mod == "PJT":
+        if bf:
+            ai = (0.0364, 0.581, 0.282)
+            bi = (0.782, 0.199, 0.103)
+        else:
+            ai = (0.0364, 0.732, 0.367)
+            bi = (0.782, 0.223, 0.161)
+    elif mod == "PST":
+        ai = (0.0452, 0.56, 0.286)
+        bi = (0.77, 0.184, 0.147)
+    elif mod == "PJST":
+        if bf:
+            ai = (0.0452, 0.416, 0.323)
+            bi = (0.77, 0.144, 0.098)
+        else:
+            ai = (0.0452, 0.333, 0.323)
+            bi = (0.77, 0.126, 0.226)
+    elif mod == "VST":
+        ai = (0.0452, 0.337, 0.204)
+        bi = (0.77, 0.122, 0.109)
+
+    elif mod == "BT":
+        # From [29]_, Eq 4
+        # Using only the parameter for developed flow
+        ai = (0.0452, 0.3, 0.141)
+        bi = (0.77, 0.157, 0.13)
+
+    # From [28]_
+    elif mod == "SR":
+        # Eq 7 in [28]_
+        ai = (0.118, 5.84, 1.83)
+        bi = (0.73, 0.695, 1.26)
+    else:
+        # Smooth twisted tape
+        # Eq 6 in [28]_
+        ai = (0.0364, 3.66, 1.11)
+        bi = (0.8, 0.375, 0.31)
+
+    A = ai[0]+ai[1]*exp(-ai[2]*y)
+    B = bi[0]-bi[1]*exp(-bi[2]*y)
+
+    Nu = A*Re**B*Pr**(1/3)
+
+    return Nu
+
+
+@refDoc(__doi__, [2])
+def Nu_twisted_laminar_Plessis(Re, Pr, D, H, delta, Ae, De, x=None):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Plessis and Kröger correlation (1987).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+    Ae : float
+        Effective flow area, [m²]
+    De : float
+        Effective hydraulic diameter, [m]
+    x : float, optional
+        Length in axial flow, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+    A = pi*D**2/4
+    Ac = A-D*delta
+
+    # Eq 2
+    Psye = (D/De)**2*Ae/A
+
+    Ree = Re*A/Ae*De/D
+    Omge = Ree/y
+
+    if x is not None:
+        # Correction for flow don't fully developed
+        xe = x*Ac/Ae
+        xe_ = xe/(Ree*Pr*De)
+        xinf = xe_ * (1+0.04*(Omge*Pr)**3)**(1/3)
+        Psye *= (1+0.153*xinf**-1.05)**(1/3)
+
+    # Eq 14
+    Nu = 1.58*Psye*(1+6.4e-5*(Omge*Pr)**3)**0.117*(1+0.002*Omge**1.4)**(1/7)
+
+    return Nu
+
+
+@refDoc(__doi__, [6])
+def Nu_twisted_laminar_Hong(Re, Pr, D, H):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Hong and Bergles correlation (1976). Valid only for laminar region
+    Re < 2500
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+
+    # Eq 3
+    Nu = 5.172*(1+5.484e-3*Pr**0.7*(Re/y)**1.25)**0.5
     return Nu
 
 
 @refDoc(__doi__, [10])
-def Nu_twisted_Agarwal(Re, Pr, D, H, mu, muW):
+def Nu_twisted_laminar_Agarwal(Re, Pr, D, H, mu, muW):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Agarwal and Raja Rao correlation (1996).
 
@@ -945,8 +1352,181 @@ def Nu_twisted_Agarwal(Re, Pr, D, H, mu, muW):
     return Nu
 
 
+@refDoc(__doi__, [24])
+def Nu_twisted_laminar_Saha(Re, Pr, D, H, delta, S):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Saha-Gaitonde-Date correlation (1989).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+    S : float
+        Spacer lenght without twisted section, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+    s = S/D
+
+    if Re > 2300 or y > 10 or y < 3 or s < 2.5 or s > 10:
+        raise NotImplementedError("Input out of bound")
+
+    K1 = pi*D**2*(y+s)/((pi*D**2-4*delta*D)*y+pi*(D**2-delta**2)*s)     # Eq 35
+
+    if y < 7.5:
+        C = (0.057*y*s+0.3622)*exp((-0.0296*y-0.305)*s)                 # Eq 38
+    elif s <= 5:
+        C = 0.0112*y*s - 0.1233*s - 0.0629*y + 0.6948                   # Eq 36
+    else:
+        C = 0.00015*y*s - 0.00377*s - 0.0056*y + 0.0751                 # Eq 37
+
+    if Re < 700:
+        X = 1-4.0422e-2*s                                               # Eq 39
+    else:
+        X = 1
+
+    Nu = 5.172*(1+6.7482e-3*Pr**0.7*(K1*Re/y)**1.25)**0.5*(1+C*s)*X     # Eq 34
+
+    return Nu
+
+
+@refDoc(__doi__, [24])
+def Nu_twisted_laminar_Klaczak(Re, Pr, D, H, delta, mu=None, muW=None):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Klaczak correlation (2000).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    delta : float
+        Tape thickness, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    y = H/D
+
+    Sw = Re/y**0.5*(pi/(pi-4*delta/D)) * (1+(pi/2/y)**2)**0.5           # Eq 10
+
+    if Sw < 58 or Sw > 2300 or y > 5.29 or y < 1.62 or Pr < 2.06 or Pr > 2.73:
+        raise NotImplementedError("Input out of bound")
+
+    Nu = 0.858 * Pr**0.3 * Sw**0.3                                      # Eq 11
+
+    if mu and muW:
+        Nu *= (mu/muW)**0.14
+
+    return Nu
+
+
+@refDoc(__doi__, [7, 8])
+def Nu_twisted_turbulent_Lopina(Re, Pr, D, H, Dh, mu, muW, beta, DT, HTRI=False):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Lopina and Bergles correlation (1969). Only valid for turbulent flow
+    with Re > 5000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    Dh : float
+        Hydraulic diameter, [m]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+    beta : float, optional
+        Volumetric expansion coefficient, [1/K]
+    dT : float, optional
+        Temperature difference between bulk and wall, [K]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    Reh = Re*Dh/D
+    y = H/D
+    alpha = (1+(pi/y)**2)**0.5
+
+    if HTRI:
+        # Use parameter used in HTRI manual
+        F = 1.03
+        x = 0.79
+    else:
+        F = 1.137
+        x = 0.8
+
+    if mu >= muW:
+        # In liquids viscosity decrease with temperature, so cooling processes
+        Nc = 0
+    else:
+        # Heating processes
+        Nc = 0.193*((2*Reh/y)**2*Dh/D*beta*DT*Pr)**(1/3)
+
+    Nu = F*(0.023*(alpha*Reh)**x * Pr**0.4 + Nc)
+    return Nu
+
+
+@refDoc(__doi__, [9])
+def Nu_twisted_turbulent_Naphon(Re, Pr, D, H):
+    """Calculate Nusselt number for a pipe with a twisted-tape insert using
+    the Naphon correlation (2006). Only valid for turbulent flow with Re > 7000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 8
+    Nu = 0.648*Re**0.36*Pr**(1/3)*(1+D/H)**2.475
+    return Nu
+
+
 @refDoc(__doi__, [11])
-def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
+def Nu_twisted_turbulent_Kidd(Re, Pr, D, H, L, T, Tw):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Kidd correlation (1969).
 
@@ -983,35 +1563,8 @@ def Nu_twisted_Kidd(Re, Pr, D, H, L, T, Tw):
     return Nu
 
 
-@refDoc(__doi__, [15])
-def Nu_twisted_Sarma(Re, Pr, D, H):
-    """Calculate Nusselt number for a pipe with a twisted-tape insert using
-    the Sarma et al. correlation (2005)
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    Pr : float
-        Prandtl number, [-]
-    D : float
-        Internal diameter of tube, [m]
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
-
-    Returns
-    -------
-    Nu : float
-        Nusselt number, [-]
-    """
-    # Eq 8
-    rhs = 0.974 - 0.783*log10(Re) + 0.35*log10(Re)**2 - 0.0273*log10(Re)**3
-    Nu = Pr**(1/3) * (1+D/H)**2 * 10**rhs
-    return Nu
-
-
 @refDoc(__doi__, [12])
-def Nu_twisted_Smithberg(Re, Pr, D, H, Dh):
+def Nu_twisted_turbulent_Smithberg(Re, Pr, D, H, Dh):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Smithberg-Landis correlation (1964)
 
@@ -1033,7 +1586,7 @@ def Nu_twisted_Smithberg(Re, Pr, D, H, Dh):
     Nu : float
         Nusselt number, [-]
     """
-    f = f_twisted_Smithberg(Re, D, H)
+    f = f_twisted_turbulent_Smithberg(Re, D, H)
 
     # Eq 38
     P = (1+0.0219/(H/D)**2/f)**0.5
@@ -1045,7 +1598,7 @@ def Nu_twisted_Smithberg(Re, Pr, D, H, Dh):
 
 
 @refDoc(__doi__, [16, 17, 18, 19, 20])
-def Nu_twisted_Murugesan(Re, Pr, D, H, mod="", de=None, w=None):
+def Nu_twisted_turbulent_Murugesan(Re, Pr, D, H, mod="", de=None, w=None):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Murugesan-Mayilsamy-Suresh correlation (2010). Valid in turbulent flow
 
@@ -1103,7 +1656,7 @@ def Nu_twisted_Murugesan(Re, Pr, D, H, mod="", de=None, w=None):
 
 
 @refDoc(__doi__, [21])
-def Nu_twisted_Jaisankar(Re, Pr, D, H):
+def Nu_twisted_turbulent_Jaisankar(Re, Pr, D, H):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Jaisankar et al. correlation (2009).
 
@@ -1130,6 +1683,50 @@ def Nu_twisted_Jaisankar(Re, Pr, D, H):
     Nu = 0.000115*Re**1.169*Pr**2.424*(H/D)**-0.511
 
     return Nu
+
+
+@refDoc(__doi__, [13, 14, 22, 23])
+def f_helical_Sivashanmugam(Re, D, H, S=None):
+    """Calculate friction factor for a pipe with a twisted-tape insert using
+    the Sivashanmugam-Suresh correlation (2006) with lamanar flow correlation
+    for spacer from Ibrahim correlation (2011).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    H : float
+        Tape pitch for twist of π radians (180º), [m]
+    S : float
+        Spacer lenght without twisted section, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re > 2000:
+        # Turbulent flow
+        if S:
+            # Eq 6 in 22_
+            f = Re**-0.384*(H/D)**-0.852*(1+S/D)**-0.047
+        else:
+            # Eq 6 in 14_
+            f = 32.415*Re**-0.598*(H/D)**-0.7986
+
+    else:
+        # Laminar flow
+        if S:
+            # Eq 12 in 23_
+            Nu = 54.41*Re**-0.87*(1+S/D)**-0.045*(H/D)**-0.146
+        else:
+            # Eq 6 in 13_
+            f = 10.7564*Re**0.387*(H/D)**-1.054
+
+    return f
+
 
 
 @refDoc(__doi__, [13, 14, 22, 23])
@@ -1187,10 +1784,14 @@ class TwistedTape(CallableEntity):
 
     Parameters
     ----------
-    methodFriction : integer
-        Index of method used for friction factor calculation
-    methodHeat : integer
-        Index of method used for heat transfer calculation
+    methodFrictionLaminar : integer
+        Index of method used for friction factor calculation in laminar flow
+    methodFrictionTurbulent: integer
+        Index of method used for friction factor calculation in turbulent flow
+    methodHeatLaminar : integer
+        Index of method used for heat transfer calculation in laminar flow
+    methodHeatTurbulent : integer
+        Index of method used for heat transfer calculation in turbulent flow
     H : float
         Tape pitch for twist of π radians (180º), [m]
     Dt : float
@@ -1198,37 +1799,55 @@ class TwistedTape(CallableEntity):
     delta : float
         Tape thickness, [m]
 
-    Lopina: Turbulent flow
-    Naphon: Turbulent flow
-    Kidd: Turbulent flow, developed with gas data
     """
 
-    TEXT_FRICTION = (
+    TEXT_LAMINAR_FRICTION = (
         "Manglik-Bergles (1993)",
         "Plessis-Kröger (1984)",
-        "Lopina-Bergles (1969)",
         "Shah-London (1978)",
-        "Naphon (2006)",
         "Agarwal-Rao (1996)",
+        "Sarma (2005)",
+        "Saha-Gaitonde-Date (1989)",
+        "Date-Gaitonde (1990)",
+        "Chang (2012)"
+        )
+
+    TEXT_TURBULENT_FRICTION = (
+        "Manglik-Bergles (1993)",
+        "Lopina-Bergles (1969)",
+        "Naphon (2006)",
         "Sarma (2005)",
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
+        "Chang (2012)",
+        "Eiamsa-ard (2010)"
         )
 
-    TEXT_HEAT = (
+    TEXT_LAMINAR_HEAT = (
         "HTRI",
         "Manglik-Bergles (1993)",
-        "Plessis-Kröger (1987)",
-        "Lopina-Bergles (1969)",
+        "Plessis-Kröger (1984)",
         "Hong-Bergles (1976)",
-        "Naphon (2006)",
         "Agarwal-Rao (1996)",
+        "Sarma (2005)",
+        "Saha-Gaitonde-Date (1989)",
+        "Klaczak (2000)",
+        "Chang (2012)"
+        )
+
+    TEXT_TURBULENT_HEAT = (
+        "HTRI",
+        "Manglik-Bergles (1993)",
+        "Lopina-Bergles (1969)",
+        "Naphon (2006)",
         "Kidd (1969)",
         "Sarma (2005)",
         "Smithberg-Landis (1964)",
         "Murugesan (2010)",
         "Jaisankar (2009)",
+        "Chang (2012)",
+        "Eiamsa-ard (2010)"
         )
 
     TEXT_MURUGESAN = (
@@ -1240,23 +1859,60 @@ class TwistedTape(CallableEntity):
         "Vertical wings",
         "Horizontal wings")
 
+    TEXT_CHANG = ("", "PT", "PJT", "PST", "PJST", "VST", "SR", "BT")
+    TEXT_CHANG_TOOLTIP = (
+        "",
+        translate("twistedtape", "Perforated twisted tape"),
+        translate("twistedtape", "Perforated twisted tape with jaggedness"),
+        translate("twistedtape", "Perforated spiky twisted tape"),
+        translate("twistedtape", "Perforated spicy twisted tape with jaggedness"),
+        translate("twistedtape", "V-notched spicy twisted tape"),
+        translate("twistedtape", "Serrated roughened twisted tape"),
+        translate("twistedtape", "Broken twisted tape"))
+
+    TEXT_EIAMSA = ("", "CT", "CoT", "oDWT", "sDWT", "PT","WT", "AWT", "ST",
+                   "DST")
+    TEXT_EIAMSA_TOOLTIP = (
+        "",
+        translate("twistedtape", "Twin counter twisted tape"),
+        translate("twistedtape", "Twin co-twisted tape"),
+        translate("twistedtape", "Oblique delta-winglet twisted tape"),
+        translate("twistedtape", "Straight delta-winglet twisted tape"),
+        translate("twistedtape", "Peripherally-cut twisted tape"),
+        translate("twistedtape", "Twisted tape with centre wings"),
+        translate("twistedtape", "Twisted tape with centre wings and alternate axes"),
+        translate("twistedtape", "Regularly-spaced twisted tape"),
+        translate("twistedtape", "Regularly-spaced dual twisted tape"))
+
     # Helical method
     # "Sivashanmugam-Suresh-Ibrahim (2006)"
 
     status = 0
     msg = ""
     kw = {
-        "methodFriction": 0,
-        "methodHeat": 0,
+        "methodFrictionLaminar": 0,
+        "methodFrictionTurbulent": 0,
+        "methodHeatLaminar": 0,
+        "methodHeatTurbulent": 0,
+
         "H": 0,
         "Dt": 0,
         "delta": 0,
+        "S": 0,
+
         "isHelical": False,
+
         "modMurugesan": "",
         "Vcut_w": 0,
         "Vcut_De": 0,
-        "S": 0
-        }
+
+        "modChang": "",
+        "bf": False,
+
+        "modEiamsa": "",
+        "dW": 0,
+        "w": 0,
+        "beta": 0}
 
     valueChanged = QtCore.pyqtSignal(object)
     inputChanged = QtCore.pyqtSignal(object)
@@ -1307,211 +1963,297 @@ class TwistedTape(CallableEntity):
         # Tape twist parameter
         self.y = Dimensionless(self.H/self.Dt)
 
+        # Helix angle
+        self.alpha = atan(pi/2/self.y)
+
         self.valueChanged.emit(self)
 
     def Nu(self, Re, Pr, mu, muW, beta, dT, L, method=None):
         """Calculate nusselt number"""
-
         msg = ""
-        if method is None:
-            method = self.kw["methodHeat"]
 
         if self.kw["isHelical"]:
             Nu = Nu_helical_Sivashanmugam(Re, Pr, self.Dt, self.H, self.kw["S"])
             return Nu
 
-        if method == 0:
-            # HTRI
-            Nu = Nu_twisted_HTRI(
-                Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT, L)
+        if Re < 2000:
+            # Laminar methods
 
-        elif method == 1:
-            # Manglik-Bergles (1993)
-            Nu = Nu_twisted_Manglik(
-                Re, Pr, Gr, Gz, self.Dt, self.H, self.delta, self.De, mu, muW)
+            if method is None:
+                method = self.kw["methodHeatLaminar"]
 
-        elif method == 2:
-            # Plessis-Kröger (1987)
-            Nu = Nu_twisted_Plessis(
-                Re, Pr, self.Dt, self.H, self.delta, self.Ae, self.De)
+            if method == 1:
+                # Manglik-Bergles (1993)
+                Nu = Nu_twisted_Manglik(Re, Pr, self.Dt, self.H,
+                                        self.delta, self.De, mu, muW)
 
-        elif method == 3:
-            # Lopina-Bergles (1969)
-            if Re < 5000:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Lopina correlation only valid in turbulent flow, using "
-                msg += "HTRI instead"
+            elif method == 2:
+                # Plessis-Kröger (1987)
+                Nu = Nu_twisted_laminar_Plessis(
+                    Re, Pr, self.Dt, self.H, self.delta, self.Ae, self.De)
+
+            elif method == 3:
+                # Hong-Bergles (1976)
+                Nu = Nu_twisted_laminar_Hong(Re, Pr, self.Dt, self.H)
+
+            elif method == 4:
+                # Agarwal-Rao (1996)
+                try:
+                    Nu = Nu_twisted_laminar_Agarwal(
+                        Re, Pr, self.Dt, self.H, mu, muW)
+                except NotImplementedError:
+                    Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                    msg = "Agarwal correlation out of range, using HTRI instead"
+
+            elif method == 5:
+                # Sarma (2005)
+                Nu = Nu_twisted_Sarma(Re, Pr, self.Dt, self.H)
+
+            elif method == 6:
+                # Saha-Gaitonde-Date (1989)
+                try:
+                    Nu = Nu_twisted_laminar_Saha(
+                        Re, Pr, self.Dt, self.H, self.delta, self.kw["S"])
+                except NotImplementedError:
+                    Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                    msg = "Saha-Gaitonde-Date correlation out of range, "
+                    msg += "using HTRI instead"
+
+            elif method == 7:
+                # Klaczak (2000)
+                try:
+                    Nu = Nu_twisted_laminar_Klaczak(
+                        Re, Pr, self.Dt, self.H, self.delta, mu, muW)
+                except NotImplementedError:
+                    Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
+                    msg = "Klaczak correlation out of range, using HTRI instead"
+
+            elif method == 8:
+                # Chang (2012)
+                Nu = Nu_twisted_Chang(Re, Pr, self.Dt, self.H,
+                                      self.kw["modChang"], self.kw["bf"])
+
             else:
-                Nu = Nu_twisted_Lopina(
+                # HTRI
+                Nu = Nu_twisted_HTRI(
+                    Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT, L)
+
+        else:
+            # Turbulent methods
+            if method is None:
+                method = self.kw["methodHeatTurbulent"]
+
+            if method == 1:
+                # Manglik-Bergles (1993)
+                Nu = Nu_twisted_Manglik(Re, Pr, self.Dt, self.H,
+                                        self.delta, self.De, mu, muW)
+
+            elif method == 2:
+                # Lopina-Bergles (1969)
+                Nu = Nu_twisted_turbulent_Lopina(
                     Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT)
 
-        elif method == 4:
-            # Hong-Bergles (1976)
-            if Re > 2500:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Hong correlation only valid in laminar flow, using "
-                msg += "HTRI instead"
+            elif method == 3:
+                # Naphon (2006)
+                Nu = Nu_twisted_turbulent_Naphon(Re, Pr, self.Dt, self.H)
+
+            elif method == 4:
+                # Kidd (1969)
+                Nu = Nu_twisted_turbulent_Kidd(
+                    Re, Pr, self.Dt, self.H, L, 1, 1)
+
+            elif method == 5:
+                # Sarma (2005)
+                Nu = Nu_twisted_Sarma(Re, Pr, self.Dt, self.H)
+
+            elif method == 6:
+                # Smithberg-Landis (1964)
+                Nu = Nu_twisted_turbulent_Smithberg(
+                    Re, Pr, self.Dt, self.H, self.De)
+
+            elif method == 7:
+                # Murugesan (2010)
+                if self.kw["modMurugesan"] == "V cut" and self.kw["Vcut_De"] \
+                        and self.kw["Vcut_w"]:
+                    Nu = Nu_twisted_turbuletn_Murugesan(
+                        Re, Pr, self.Dt, self.H, self.kw["modMurugesan"],
+                        self.kw["Vcut_De"], self.kw["Vcut_w"])
+                elif self.kw["modMurugesan"] == "V cut":
+                    Nu = Nu_twisted_turbuletn_Murugesan(
+                        Re, Pr, self.Dt, self.H)
+                    msg = "V cut twisted tape geometry don't defined, using "
+                    msg += "plain twisted tape instead"
+                else:
+                    Nu = Nu_twisted_turbulent_Murugesan(
+                        Re, Pr, self.Dt, self.H, self.kw["modMurugesan"])
+
+            elif method == 8:
+                # Jaisankar
+                Nu = Nu_twisted_turbulent_Jaisankar(Re, Pr, self.Dt, self.H)
+
+            elif method == 9:
+                # Chang (2012)
+                Nu = Nu_twisted_Chang(Re, Pr, self.Dt, self.H,
+                                      self.kw["modChang"], self.kw["bf"])
+
+            elif method == 10:
+                # Eiamsa-ard (2010)
+                kw = {"mod": self.kw["modEiamsa"],
+                      "dW": self.kw["dW"],
+                      "w": self.kw["w"],
+                      "S": self.kw["S"],
+                      "beta": self.kw["beta"]}
+
+                if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
+                    kw["mod"] = ""
+                    msg = "Depth of wing cut don't defined, using plain "
+                    msg += "twisted tape instead"
+                elif self.kw["modEiamsa"] == "PT" and not self.kw["w"]:
+                    kw["mod"] = ""
+                    msg = "Peripherally-cut width don't defined, using plain "
+                    msg += "twisted tape instead"
+
+                Nu = Nu_twisted_turbulent_Eiamsaard(
+                    Re, Pr, self.Dt, self.H, **kw)
+
             else:
-                Nu = Nu_twisted_Hong(Re, Pr, self.Dt, self.H)
+                # HTRI
+                Nu = Nu_twisted_HTRI(
+                    Re, Pr, self.Dt, self.H, self.De, mu, muW, beta, dT, L)
 
-        elif method == 5:
-            # Naphon (2006)
-            if Re < 5000:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Naphon correlation only valid in laminar flow, using "
-                msg += "HTRI instead"
-            else:
-                Nu = Nu_twisted_Naphon(Re, Pr, self.Dt, self.H)
-
-        elif method == 6:
-            # Agarwal-Rao (1996)
-            try:
-                Nu = Nu_twisted_Agarwal(Re, Pr, self.Dt, self.H, mu, muW)
-            except NotImplementedError:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Agarwal correlation out of range, using HTRI instead"
-
-        elif method == 7:
-            # Kidd (1969)
-            if Re < 2e4:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Kidd correlation only valid in turbulent flow, using "
-                msg += "HTRI instead"
-            else:
-                Nu = Nu_twisted_Kidd(Re, Pr, self.Dt, self.H, L, 1, 1)
-
-        elif method == 8:
-            # Sarma (2005)
-            Nu = Nu_twisted_Sarma(Re, Pr, self.Dt, self.H)
-
-        elif method == 9:
-            # Smithberg-Landis (1964)
-            if Re < 5000:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Smithberg correlation only valid in turbulent flow, "
-                msg += "using HTRI instead"
-            else:
-                Nu = Nu_twisted_Smithberg(Re, Pr, self.Dt, self.H, self.De)
-
-        elif method == 10:
-            # Murugesan (2010)
-            if Re < 2000:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Murugesan correlation only valid in turbulent flow, "
-                msg += "using HTRI instead"
-            elif self.kw["modMurugesan"] == "V cut" and self.kw["Vcut_De"] \
-                    and self.kw["Vcut_w"]:
-                Nu = Nu_twisted_Murugesan(
-                    Re, Pr, self.Dt, self.H, self.kw["modMurugesan"],
-                    self.kw["Vcut_De"], self.kw["Vcut_w"])
-            elif self.kw["modMurugesan"] == "V cut":
-                Nu = Nu_twisted_Murugesan(Re, Pr, self.Dt, self.H)
-                msg = "V cut twisted tape geometry don't defined, using plain "
-                msg += "twisted tape instead"
-            else:
-                Nu = Nu_twisted_Murugesan(
-                    Re, Pr, self.Dt, self.H, self.kw["modMurugesan"])
-
-        elif method == 11:
-            # Jaisankar
-            if Re < 2000:
-                Nu = self.Nu(Re, Pr, mu, muW, beta, dT, L, method=0)
-                msg = "Jaisankar correlation only valid in turbulent flow, "
-                msg += "using HTRI instead"
-            else:
-                Nu = Nu_twisted_Jaisankar(Re, Pr, self.Dt, self.H)
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
 
         return Nu
 
     def f(self, Re, method=None):
         """Calculate friction factor"""
         msg = ""
-        if method is None:
-            method = self.kw["methodFriction"]
 
         if self.kw["isHelical"]:
             f = f_helical_Sivashanmugam(Re, self.Dt, self.H, self.kw["S"])
             return f
 
-        if method == 0:
-            # Manglik-Bergles (1993)
-            f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
+        if Re < 2000:
+            # Laminar methods
 
-        elif method == 1:
-            # Plessis-Kröger (1984)
-            f = f_twisted_Plessis(
-                Re, self.Dt, self.H, self.delta, self.Ae, self.De)
+            if method is None:
+                method = self.kw["methodFrictionLaminar"]
 
-        elif method == 2:
-            # Lopina-Bergles (1969)
-            if Re < 5000:
-                f = self.f(Re, 0)
-                msg = "Lopina correlation only valid in turbulent flow, using "
-                msg += "Manglik instead"
+            if method == 1:
+                # Plessis-Kröger (1984)
+                f = f_twisted_laminar_Plessis(
+                    Re, self.Dt, self.H, self.delta, self.Ae, self.De)
+
+            elif method == 2:
+                # Shah-London (1978)
+                f = f_twisted_laminar_Shah(Re, self.Dt, self.H, self.delta)
+
+            elif method == 3:
+                # Agarwal-Rao (1996)
+                try:
+                    f = f_twisted_laminar_Agarwal(Re, self.Dt, self.H)
+                except NotImplementedError:
+                    f = self.f(Re, 0)
+                    msg = "Agarwal correlation out of range, "
+                    msg += "using Manglik instead"
+
+            elif method == 4:
+                # Sarma (2005)
+                f = f_twisted_Sarma(Re, self.Dt, self.H)
+
+            elif method == 5:
+                # Saha-Gaitonde-Date (1989)
+                try:
+                    f = f_twisted_laminar_Saha(
+                        Re, self.Dt, self.H, self.delta, self.kw["S"])
+                except NotImplementedError:
+                    f = self.f(Re, 0)
+                    msg = "Saha-Gaitonde-Date correlation out of range, "
+                    msg += "using Manglik instead"
+
+            elif method == 6:
+                # Date-Gaitonde (1990)
+                f = f_twisted_laminar_Date(Re, self.Dt, self.H)
+
+            elif method == 7:
+                # Chang (2012)
+                f = f_twisted_Chang(
+                    Re, self.Dt, self.H, self.kw["modChang"], self.kw["bf"])
+
             else:
-                f = f_twisted_Lopina(Re, self.Dt, self.H, self.De)
+                # Manglik-Bergles (1993)
+                f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
 
-        elif method == 3:
-            # Shah-London (1978)
-            f = f_twisted_Shah(Re, self.Dt, self.H, self.delta)
+        else:
+            # Turbulent methods
+            if method is None:
+                method = self.kw["methodFrictionTurbulent"]
 
-        elif method == 4:
-            # Naphon (2006)
-            if Re < 5000:
-                f = self.f(Re, 0)
-                msg = "Naphon correlation only valid in turbulent flow, using "
-                msg += "Manglik instead"
+            if method == 1:
+                # Lopina-Bergles (1969)
+                f = f_twisted_turbulent_Lopina(Re, self.Dt, self.H, self.De)
+
+            elif method == 2:
+                # Naphon (2006)
+                f = f_twisted_turbulent_Naphon(Re, self.Dt, self.H)
+
+            elif method == 3:
+                # Sarma (2005)
+                f = f_twisted_Sarma(Re, self.Dt, self.H)
+
+            elif method == 4:
+                # Smithberg-Landis (1964)
+                f = f_twisted_turbulent_Smithberg(Re, self.Dt, self.H)
+
+            elif method == 5:
+                # Murugesan (2010)
+                if self.kw["modMurugesan"] == "V cut" and self.kw["Vcut_De"] \
+                        and self.kw["Vcut_w"]:
+                    f = f_twisted_turbulent_Murugesan(
+                        Re, self.Dt, self.H, self.kw["modMurugesan"],
+                        self.kw["Vcut_w"], self.kw["Vcut_De"])
+                elif self.kw["modMurugesan"] == "V cut":
+                    f = f_twisted_turbulent_Murugesan(Re, self.Dt, self.H)
+                    msg = "V cut twisted tape geometry don't defined, using "
+                    msg += "plain twisted tape instead"
+                else:
+                    f = f_twisted_turbulent_Murugesan(
+                        Re, self.Dt, self.H, self.kw["modMurugesan"])
+
+            elif method == 6:
+                # Jaisankar (2009)
+                f = f_twisted_turbulent_Jaisankar(Re, self.Dt, self.H)
+
+            elif method == 7:
+                # Chang (2012)
+                f = f_twisted_Chang(
+                    Re, self.Dt, self.H, self.kw["modChang"], self.kw["bf"])
+
+            elif method == 8:
+                # Eiamsa-ard (2010)
+                kw = {"mod": self.kw["modEiamsa"],
+                      "dW": self.kw["dW"],
+                      "w": self.kw["w"],
+                      "S": self.kw["S"],
+                      "beta": self.kw["beta"]}
+
+                if "DWT" in self.kw["modEiamsa"] and not self.kw["dW"]:
+                    kw["mod"] = ""
+                    msg = "Depth of wing cut don't defined, using plain "
+                    msg += "twisted tape instead"
+                elif self.kw["modEiamsa"] == "PT" and not self.kw["w"]:
+                    kw["mod"] = ""
+                    msg = "Peripherally-cut width don't defined, using plain "
+                    msg += "twisted tape instead"
+
+                f = f_twisted_turbulent_Eiamsaard(Re, self.Dt, self.H, **kw)
+
             else:
-                f = f_twisted_Naphon(Re, self.Dt, self.H)
-
-        elif method == 5:
-            # Agarwal-Rao (1996)
-            try:
-                f = f_twisted_Agarwal(Re, self.Dt, self.H)
-            except NotImplementedError:
-                f = self.f(Re, 0)
-                msg = "Agarwal correlation out of range, using Manglik instead"
-
-        elif method == 6:
-            # Sarma (2005)
-            f = f_twisted_Sarma(Re, self.Dt, self.H)
-
-        elif method == 7:
-            # Smithberg-Landis (1964)
-            if Re < 3000:
-                f = self.f(Re, 0)
-                msg = "Smithberg correlation only valid in turbulent flow, "
-                msg += "using Manglik instead"
-            else:
-                f = f_twisted_Smithberg(Re, self.Dt, self.H)
-
-        elif method == 8:
-            # Murugesan (2010)
-            if Re < 2000:
-                f = self.f(Re, 0)
-                msg = "Murugesan correlation only valid in turbulent flow, "
-                msg += "using Manglik instead"
-            elif self.kw["modMurugesan"] == "V cut" and self.kw["Vcut_De"] \
-                    and self.kw["Vcut_w"]:
-                f = f_twisted_Murugesan(
-                    Re, self.Dt, self.H, self.kw["modMurugesan"],
-                    self.kw["Vcut_w"], self.kw["Vcut_De"])
-            elif self.kw["modMurugesan"] == "V cut":
-                f = f_twisted_Murugesan(Re, self.Dt, self.H)
-                msg = "V cut twisted tape geometry don't defined, using plain "
-                msg += "twisted tape instead"
-            else:
-                f = f_twisted_Murugesan(
-                    Re, self.Dt, self.H, self.kw["modMurugesan"])
-
-        elif method == 9:
-            # Jaisankar
-            if Re < 3000:
-                f = self.f(Re, 0)
-                msg = "Jaisankar correlation only valid in turbulent flow, "
-                msg += "using Manglik instead"
-            else:
-                f = f_twisted_Jaisankar(Re, self.Dt, self.H)
+                # Manglik-Bergles (1993)
+                f = f_twisted_Manglik(Re, self.Dt, self.H, self.delta, self.De)
 
         if msg:
             self.status = 3
@@ -1530,47 +2272,86 @@ class UI_TwistedTape(ToolGui):
         """Add widget"""
         self.Entity = TwistedTape()
 
-        lyt = self.layout()
+        lyt = self.wdg.layout()
 
-        lytH = QtWidgets.QHBoxLayout()
-        lytH.addWidget(QtWidgets.QLabel(
-            self.tr("Friction factor calculation method")))
-        self.methodFriction = QtWidgets.QComboBox()
-        for method in TwistedTape.TEXT_FRICTION:
-            self.methodFriction.addItem(method)
-        self.methodFriction.currentIndexChanged.connect(
-            partial(self.changeParams, "methodFriction"))
-        self.methodFriction.currentTextChanged.connect(self.setVisibleMod)
-        lytH.addWidget(self.methodFriction)
-        lyt.addLayout(lytH, 2, 1, 1, 2)
+        lytM = QtWidgets.QGridLayout()
 
-        lytH = QtWidgets.QHBoxLayout()
-        lytH.addWidget(QtWidgets.QLabel(
-            self.tr("Heat transfer calculation method")))
-        self.methodHeat = QtWidgets.QComboBox()
-        for method in TwistedTape.TEXT_HEAT:
-            self.methodHeat.addItem(method)
-        self.methodHeat.currentIndexChanged.connect(
-            partial(self.changeParams, "methodHeat"))
-        self.methodHeat.currentTextChanged.connect(self.setVisibleMod)
-        lytH.addWidget(self.methodHeat)
-        lyt.addLayout(lytH, 3, 1, 1, 2)
+        lbl = QtWidgets.QLabel(self.tr("Laminar Flow"))
+        lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter
+                         | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        lytM.addWidget(lbl, 1, 2)
+        lbl = QtWidgets.QLabel(self.tr("Turbulent Flow"))
+        lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter
+                         | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        lytM.addWidget(lbl, 1, 3)
+        lytM.addWidget(QtWidgets.QLabel(
+            self.tr("Friction factor method")), 2, 1)
+        self.methodFrictionLaminar = QtWidgets.QComboBox()
+        for method in TwistedTape.TEXT_LAMINAR_FRICTION:
+            self.methodFrictionLaminar.addItem(method)
+        self.methodFrictionLaminar.currentIndexChanged.connect(
+            partial(self.changeParams, "methodFrictionLaminar"))
+        self.methodFrictionLaminar.currentTextChanged.connect(self.setVisibleMod)
+        lytM.addWidget(self.methodFrictionLaminar, 2, 2)
+        self.methodFrictionTurbulent = QtWidgets.QComboBox()
+        for method in TwistedTape.TEXT_TURBULENT_FRICTION:
+            self.methodFrictionTurbulent.addItem(method)
+        self.methodFrictionTurbulent.currentIndexChanged.connect(
+            partial(self.changeParams, "methodFrictionTurbulent"))
+        self.methodFrictionTurbulent.currentTextChanged.connect(self.setVisibleMod)
+        lytM.addWidget(self.methodFrictionTurbulent, 2, 3)
+
+        lytM.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer method")), 3, 1)
+        self.methodHeatLaminar = QtWidgets.QComboBox()
+        for method in TwistedTape.TEXT_LAMINAR_HEAT:
+            self.methodHeatLaminar.addItem(method)
+        self.methodHeatLaminar.currentIndexChanged.connect(
+            partial(self.changeParams, "methodHeatLaminar"))
+        self.methodHeatLaminar.currentTextChanged.connect(self.setVisibleMod)
+        lytM.addWidget(self.methodHeatLaminar, 3, 2)
+        self.methodHeatTurbulent = QtWidgets.QComboBox()
+        for method in TwistedTape.TEXT_TURBULENT_HEAT:
+            self.methodHeatTurbulent.addItem(method)
+        self.methodHeatTurbulent.currentIndexChanged.connect(
+            partial(self.changeParams, "methodHeatTurbulent"))
+        self.methodHeatTurbulent.currentTextChanged.connect(self.setVisibleMod)
+        lytM.addWidget(self.methodHeatTurbulent, 3, 3)
+        lyt.addLayout(lytM, 2, 1, 1, 2)
+
+        self.helical = QtWidgets.QCheckBox(self.tr(
+            "Helical screw-tape inserts"))
+        self.helical.toggled.connect(
+            partial(self.changeParams, "isHelical"))
+        self.helical.toggled.connect(self.setEnableSpacer)
+        lyt.addWidget(self.helical, 3, 1, 1, 3)
+
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1, 1, 2)
 
         label = QtWidgets.QLabel(self.tr("Tape pitch"))
         label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
-        lyt.addWidget(label, 4, 1)
+        lyt.addWidget(label, 5, 1)
         self.H = Entrada_con_unidades(Length)
         self.H.valueChanged.connect(partial(self.changeParams, "H"))
-        lyt.addWidget(self.H, 4, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 5, 1)
+        lyt.addWidget(self.H, 5, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape diameter")), 6, 1)
         self.Dt = Entrada_con_unidades(Length, "PipeDiameter")
         self.Dt.valueChanged.connect(partial(self.changeParams, "Dt"))
-        lyt.addWidget(self.Dt, 5, 2)
-        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 6, 1)
+        lyt.addWidget(self.Dt, 6, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Tape thickness")), 7, 1)
         self.delta = Entrada_con_unidades(Length, "Thickness")
         self.delta.valueChanged.connect(partial(self.changeParams, "delta"))
-        lyt.addWidget(self.delta, 6, 2)
+        lyt.addWidget(self.delta, 7, 2)
 
+        self.lblS = QtWidgets.QLabel(self.tr("Spacer lenght"))
+        lyt.addWidget(self.lblS, 8, 1)
+        self.S = Entrada_con_unidades(Length)
+        self.S.valueChanged.connect(partial(self.changeParams, "S"))
+        lyt.addWidget(self.S, 8, 2)
+
+        # Murugesan additional parameters
         self.groupMurugesan = QtWidgets.QWidget()
         lytMuru = QtWidgets.QGridLayout(self.groupMurugesan)
         lytMuru.addWidget(QtWidgets.QLabel(self.tr(
@@ -1587,54 +2368,148 @@ class UI_TwistedTape(ToolGui):
         self.De = Entrada_con_unidades(Length, "thickness")
         self.De.valueChanged.connect(partial(self.changeParams, "Vcut_De"))
         lytMuru.addWidget(self.De, 2, 3)
-        self.lblw = QtWidgets.QLabel(self.tr("Widgth of V cut"))
-        lytMuru.addWidget(self.lblw, 3, 2)
+        self.lblVcut_w = QtWidgets.QLabel(self.tr("Widgth of V cut"))
+        lytMuru.addWidget(self.lblVcut_w, 3, 2)
+        self.Vcut_w = Entrada_con_unidades(Length, "thickness")
+        self.Vcut_w.valueChanged.connect(partial(self.changeParams, "Vcut_w"))
+        lytMuru.addWidget(self.Vcut_w, 3, 3)
+        lytMuru.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 4)
+        lyt.addWidget(self.groupMurugesan, 9, 1, 1, 2)
+
+        # Chang-Guo additional parameters
+        self.groupChang = QtWidgets.QWidget()
+        lytChang = QtWidgets.QGridLayout(self.groupChang)
+        lytChang.addWidget(QtWidgets.QLabel(self.tr(
+            "Chan-Guo correlation modification")), 1, 1, 1, 2)
+        self.modChang = QtWidgets.QComboBox()
+        for method, txt in zip(TwistedTape.TEXT_CHANG, TwistedTape.TEXT_CHANG_TOOLTIP):
+            if method and txt:
+                self.modChang.addItem(f"{method} - {txt}")
+            else:
+                self.modChang.addItem("")
+        self.modChang.currentTextChanged.connect(self.changeModChang)
+        lytChang.addWidget(self.modChang, 1, 3)
+        lytChang.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 2, 1)
+        self.checkBF = QtWidgets.QCheckBox(self.tr("Backward flow"))
+        self.checkBF.toggled.connect(partial(self.changeParams, "bf"))
+        lytChang.addWidget(self.checkBF, 2, 2)
+        lytChang.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 4)
+        lyt.addWidget(self.groupChang, 10, 1, 1, 2)
+
+        # Eiamsa-ard additional parameters
+        self.groupEiamsa = QtWidgets.QWidget()
+        lytEiamsa = QtWidgets.QGridLayout(self.groupEiamsa)
+        lytEiamsa.addWidget(QtWidgets.QLabel(self.tr(
+            "Eiamsa-ard correlation modification")), 1, 1, 1, 2)
+        self.modEiamsa = QtWidgets.QComboBox()
+        for method, txt in zip(TwistedTape.TEXT_EIAMSA, TwistedTape.TEXT_EIAMSA_TOOLTIP):
+            if method and txt:
+                self.modEiamsa.addItem(f"{method} - {txt}")
+            else:
+                self.modEiamsa.addItem("")
+        self.modEiamsa.currentTextChanged.connect(self.changeModEiamsa)
+        lytEiamsa.addWidget(self.modEiamsa, 1, 3)
+
+        self.lbldW = QtWidgets.QLabel(self.tr("Depth of wing cut"))
+        lytEiamsa.addWidget(self.lbldW, 2, 2)
+        self.dW = Entrada_con_unidades(Length, "thickness")
+        self.dW.valueChanged.connect(partial(self.changeParams, "dW"))
+        lytEiamsa.addWidget(self.dW, 2, 3)
+        self.lblw = QtWidgets.QLabel(self.tr("Peripherally-cut width"))
+        lytEiamsa.addWidget(self.lblw, 3, 2)
         self.w = Entrada_con_unidades(Length, "thickness")
-        self.w.valueChanged.connect(partial(self.changeParams, "Vcut_w"))
-        lytMuru.addWidget(self.w, 3, 3)
+        self.w.valueChanged.connect(partial(self.changeParams, "w"))
+        lytEiamsa.addWidget(self.w, 3, 3)
+        self.lblbeta = QtWidgets.QLabel(self.tr("Attack angle"))
+        lytEiamsa.addWidget(self.lblbeta, 4, 2)
+        self.beta = Entrada_con_unidades(Angle)
+        self.beta.valueChanged.connect(partial(self.changeParams, "beta"))
+        lytEiamsa.addWidget(self.beta, 4, 3)
 
-        lyt.addWidget(self.groupMurugesan, 8, 1, 1, 2)
-
-        self.helical = QtWidgets.QCheckBox(self.tr(
-            "Helical screw-tape inserts"))
-        self.helical.toggled.connect(
-            partial(self.changeParams, "isHelical"))
-        self.helical.toggled.connect(self.setEnableSpacer)
-        lyt.addWidget(self.helical, 9, 1, 1, 3)
-
-        lytH = QtWidgets.QHBoxLayout()
-        self.lblS = QtWidgets.QLabel(self.tr("Spacer lenght"))
-        lytH.addWidget(self.lblS)
-        self.S = Entrada_con_unidades(Length)
-        self.S.valueChanged.connect(partial(self.changeParams, "S"))
-        lytH.addWidget(self.S)
-        lyt.addLayout(lytH, 10, 2, 1, 2)
+        lyt.addWidget(self.groupEiamsa, 11, 1, 1, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
 
+    def changeModChang(self, txt):
+        """Extract code from txt"""
+        if txt:
+            txt = txt.split(" - ")[0]
+        self.changeParams("modChang", txt)
+        self.checkBF.setEnabled("J" in txt)
+
+    def changeModEiamsa(self, txt):
+        """Extract code from txt"""
+        self.setEnable_Eiamsa(txt)
+        if txt:
+            txt = txt.split(" - ")[0]
+        self.changeParams("modEiamsa", txt)
+
     def setVisibleMod(self):
-        if self.methodHeat.currentText() == "Murugesan (2010)" or \
-                self.methodFriction.currentText() == "Murugesan (2010)":
+        """Enable widget with special parameters for selected method"""
+        # Murugesan method
+        if self.methodHeatTurbulent.currentText() == "Murugesan (2010)" or \
+                self.methodFrictionTurbulent.currentText() == "Murugesan (2010)":
             self.groupMurugesan.setVisible(True)
         else:
             self.groupMurugesan.setVisible(False)
         self.setEnable_Murugesan(self.modMurugesan.currentText())
 
+        # Saha use Spacer special parameter
+        self.setEnableSpacer()
+
+        # Chang method
+        if self.methodHeatTurbulent.currentText() == "Chang (2012)" or \
+                self.methodFrictionTurbulent.currentText() == "Chang (2012)" or \
+                self.methodHeatLaminar.currentText() == "Chang (2012)" or \
+                self.methodFrictionLaminar.currentText() == "Chang (2012)":
+            self.groupChang.setVisible(True)
+        else:
+            self.groupChang.setVisible(False)
+        self.checkBF.setEnabled("J" in self.modChang.currentText())
+
+        # Eiamsa-ard method
+        if self.methodHeatTurbulent.currentText() == "Eiamsa-ard (2010)" or \
+                self.methodFrictionTurbulent.currentText() == "Eiamsa-ard (2010)":
+            self.groupEiamsa.setVisible(True)
+        else:
+            self.groupEiamsa.setVisible(False)
+        self.setEnable_Eiamsa(self.modEiamsa.currentText())
+
     def setEnable_Murugesan(self, mod):
         """Change Enable/Disable state for Murugesan aditional parameters"""
         self.lblDe.setEnabled(mod == "V cut")
         self.De.setEnabled(mod == "V cut")
-        self.lblw.setEnabled(mod == "V cut")
-        self.w.setEnabled(mod == "V cut")
+        self.lblVcut_w.setEnabled(mod == "V cut")
+        self.Vcut_w.setEnabled(mod == "V cut")
+
+    def setEnable_Eiamsa(self, mod):
+        """Change Enable/Disable state for Eiamsa-ard aditional parameters"""
+        self.lbldW.setEnabled("DWT" in mod)
+        self.dW.setEnabled("DWT" in mod)
+        self.lblw.setEnabled("PT" in mod)
+        self.w.setEnabled("PT" in mod)
+        self.lblbeta.setEnabled(mod[:3] in ("AWT", "WT "))
+        self.beta.setEnabled(mod[:3] in ("AWT", "WT "))
+        self.setEnableSpacer()
 
     def setEnabled(self, boolean):
         """Add logic to parent setEnabled for orientation option"""
         ToolGui.setEnabled(self, boolean)
-        self.setEnableSpacer(boolean and self.helical.isChecked())
+        self.setEnableSpacer()
 
-    def setEnableSpacer(self, boolean):
+    def setEnableSpacer(self):
+        method = self.methodHeatLaminar.currentText() == "Saha-Gaitonde-Date (1989)" or \
+            self.methodFrictionLaminar.currentText() == "Saha-Gaitonde-Date (1989)"
+        eiamsa = self.groupEiamsa.isVisible() and "ST" in self.modEiamsa.currentText()
+        boolean = method or eiamsa or self.helical.isChecked()
         self.lblS.setEnabled(boolean)
         self.S.setEnabled(boolean)
 

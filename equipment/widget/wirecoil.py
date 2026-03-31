@@ -791,7 +791,7 @@ class UI_WireCoil(ToolGui):
         """Add widget"""
         self.Entity = WireCoil()
 
-        lyt = self.layout()
+        lyt = self.wdg.layout()
 
         lytH = QtWidgets.QHBoxLayout()
         lytH.addWidget(QtWidgets.QLabel(

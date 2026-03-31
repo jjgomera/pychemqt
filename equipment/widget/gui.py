@@ -31,22 +31,25 @@ class ToolGui(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        lyt = QtWidgets.QGridLayout(self)
+        lyt = QtWidgets.QVBoxLayout(self)
+
         self.check = QtWidgets.QCheckBox(self.title)
         self.check.toggled.connect(self.setEnabled)
-        lyt.addWidget(self.check, 0, 1, 1, 3)
-        lyt.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
-            QtWidgets.QSizePolicy.Policy.Fixed), 1, 1)
+        lyt.addWidget(self.check)
+
+        scroll = QtWidgets.QScrollArea()
+        scroll.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
+        self.wdg = QtWidgets.QWidget()
+        wdglyt = QtWidgets.QGridLayout(self.wdg)
+        wdglyt.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetFixedSize)
 
         self.loadUI()
 
-        lyt.addItem(QtWidgets.QSpacerItem(
-            10, 10, QtWidgets.QSizePolicy.Policy.Expanding,
-            QtWidgets.QSizePolicy.Policy.Expanding), 19, 4)
+        scroll.setWidget(self.wdg)
+        lyt.addWidget(scroll)
 
         self.msg = SimpleStatus()
-        lyt.addWidget(self.msg, 20, 1, 1, 3)
+        lyt.addWidget(self.msg)
 
         self.setEnabled(False)
 
