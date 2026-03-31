@@ -311,8 +311,13 @@ __doi__ = {
                   "twisted tape",
          "ref": "Applied Thermal Engineering 30(13) (2010) 1673-1682",
          "doi": "10.1016/j.applthermaleng.2010.03.026"},
-
-    # 45:
+    45:
+        {"autor": "Nanan, K., Thianpong, C., Promvonge, P., Eiamsa-ard, S.",
+         "title": "Investigation of heat transfer enhancement by perforated "
+                  "helical twisted-tapes",
+         "ref": "Int. Comm. Heat Mass Transfer 52 (2014) 106-112",
+         "doi": "10.1016/j.icheatmasstransfer.2014.01.018"},
+    # 46:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -825,10 +830,6 @@ def f_twisted_turbulent_Murugesan(Re, D, H, mod="", de=None, w=None):
     f : float
         Friction factor, [-]
     """
-
-    if Re < 2000:
-        raise NotImplementedError("Input out of bound")
-
     if mod == "Nails":
         # Eq 6
         f = 28.91*Re**-0.731*(H/D)**-0.255
@@ -882,7 +883,7 @@ def f_twisted_turbulent_Jaisankar(Re, D, H):
     return f
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 44])
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 44, 45])
 def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
     """Calculate friction factor a pipe with a twisted-tape insert using
     the Eiamsa-ard et al. correlation (2010).
@@ -897,8 +898,8 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT |
-        CCC | T-Tra | T-Rec | T_Tri | STT
+        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT | HPT
+        | CCC | T-Tra | T-Rec | T_Tri | STT
     dW : float
         depth of wing cut, [m]
     w : float
@@ -977,6 +978,11 @@ def f_twisted_turbulent_Eiamsaard(Re, D, H, mod="", **kw):
         sP = kw.get("sP", 0)
         dP = kw.get("dP", 0)
         f = 9.03 / Re**0.272 / y**0.631 / (sP/D)**0.204 * (dP/D)**0.428
+    elif mod == "HPT":
+        # Eq 7 from [45]_
+        sP = kw.get("sP", 0)
+        dP = kw.get("dP", 0)
+        f = 1.915 / Re**0.299 / (dP/D)**0.068 * (sP/D)**0.094
     elif mod == "CCC":
         # Eq 13 from [41]_
         tita = kw.get("tita", 0)
@@ -1801,7 +1807,7 @@ def Nu_twisted_turbulent_Jaisankar(Re, Pr, D, H):
     return Nu
 
 
-@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42])
+@refDoc(__doi__, [30, 31, 32, 33, 34, 35, 38, 39, 40, 41, 42, 44, 45])
 def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
     """Calculate nusselt number for a pipe with a twisted-tape insert using
     the Eiamsa-ard et al. correlation (2010).
@@ -1818,8 +1824,8 @@ def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
         Tape pitch for twist of π radians (180º), [m]
     mod : string
         Name of modification code of twisted tape
-        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT
-        CCC | T-Tra | T-Rec | T_Tri
+        CT | CoT | oDWT | sDWT | PCT | ST | WT | AWT | DST | TT | AT | PT | HPT
+        | CCC | T-Tra | T-Rec | T_Tri
     dW : float
         depth of wing cut, [m]
     w : float
@@ -1898,6 +1904,11 @@ def Nu_twisted_turbulent_Eiamsaard(Re, Pr, D, H, mod="", **kw):
         sP = kw.get("sP", 0)
         dP = kw.get("dP", 0)
         Nu = 0.09 * Re**0.768 * Pr**0.4 / y**0.325 / (sP/D)**0.133 * (dP/D)**0.114
+    elif mod == "HPT":
+        # Eq 6 from [45]_
+        sP = kw.get("sP", 0)
+        dP = kw.get("dP", 0)
+        Nu = 0.035 * Re**0.795 * Pr**0.4 / (dP/D)**0.068 * (sP/D)**0.094
     elif mod == "CCC":
         # Eq 12 from [41]_
         tita = kw.get("tita", 0)
@@ -2029,19 +2040,19 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
         # Turbulent flow
         if S:
             # Eq 6 in 22_
-            f = Re**-0.384*(H/D)**-0.852*(1+S/D)**-0.047
+            f = 1 / Re**0.384 / (H/D)**0.852 / (1+S/D)**0.047
         else:
             # Eq 6 in 14_
-            f = 32.415*Re**-0.598*(H/D)**-0.7986
+            f = 32.415 / Re**0.598 / (H/D)**0.7986
 
     else:
         # Laminar flow
         if S:
             # Eq 12 in 23_
-            f = 54.41*Re**-0.87*(1+S/D)**-0.045*(H/D)**-0.146
+            f = 54.41 / Re**0.87 / (1+S/D)**0.045 / (H/D)**0.146
         else:
             # Eq 6 in 13_
-            f = 10.7564*Re**0.387*(H/D)**-1.054
+            f = 10.7564 / Re**0.387 / (H/D)**1.054
 
     return f
 
@@ -2077,19 +2088,19 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
         # Turbulent flow
         if S:
             # Eq 5 in 22_
-            Nu = 0.258*Re**0.554*Pr*(H/D)**-0.242*(1+S/D)**-0.042
+            Nu = 0.258 * Re**0.554 * Pr / (H/D)**0.242 / (1+S/D)**0.042
         else:
             # Eq 5 in 14_
-            Nu = 0.4675*Re**0.4774*Pr*(H/D)**-0.2138
+            Nu = 0.4675 * Re**0.4774 * Pr / (H/D)**0.2138
 
     else:
         # Laminar flow
         if S:
             # Eq 11 in 23_
-            Nu = 6.11*Re**0.199*(1+S/D)**-0.064*(H/D)**-0.318
+            Nu = 6.11 * Re**0.199 * (1+S/D)**-0.064 / (H/D)**0.318
         else:
             # Eq 6 in 13_
-            Nu = 0.017*Re**0.996*Pr*(H/D)**-0.5437
+            Nu = 0.017 * Re**0.996 * Pr / (H/D)**0.5437
 
     return Nu
 
@@ -2244,14 +2255,14 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Perforated twisted tape"),
         translate("twistedtape", "Perforated twisted tape with jaggedness"),
         translate("twistedtape", "Perforated spiky twisted tape"),
-        translate("twistedtape", "Perforated spicy twisted tape with jaggedness"),
-        translate("twistedtape", "V-notched spicy twisted tape"),
+        translate("twistedtape", "Perforated spiky twisted tape with jaggedness"),
+        translate("twistedtape", "V-notched spiky twisted tape"),
         translate("twistedtape", "Serrated roughened twisted tape"),
         translate("twistedtape", "Broken twisted tape"))
 
     TEXT_EIAMSA = ("", "CT", "CoT", "oDWT", "sDWT", "PCT", "WT", "AWT", "ST",
-                   "DST", "TT", "AT", "PT", "CCC", "T-Tra", "T-Rec", "T-Tri",
-                   "STT")
+                   "DST", "TT", "AT", "PT", "HPT", "CCC", "T-Tra", "T-Rec",
+                   "T-Tri", "STT")
     TEXT_EIAMSA_TOOLTIP = (
         "",
         translate("twistedtape", "Twin counter twisted tape"),
@@ -2266,6 +2277,7 @@ class TwistedTape(CallableEntity):
         translate("twistedtape", "Tapered twisted tape"),
         translate("twistedtape", "Alternate axes twisted tape"),
         translate("twistedtape", "Perforated twisted tape"),
+        translate("twistedtape", "Perforated helical twisted tape"),
         translate("twistedtape", "Alternate clockwise and counter-clockwise twisted tape"),
         translate("twistedtape", "Twisted tape with trapezoid wings"),
         translate("twistedtape", "Twisted tape with rectangular wings"),
@@ -2540,7 +2552,7 @@ class TwistedTape(CallableEntity):
                     kw["mod"] = ""
                     msg = "Peripherally-cut width don't defined, using plain "
                     msg += "twisted tape instead"
-                elif self.kw["modEiamsa"] == "PT" and \
+                elif "PT" in self.kw["modEiamsa"] and \
                         (not self.kw["sP"] or not self.kw["dP"]):
                     kw["mod"] = ""
                     msg = "Perforated geometry don't defined, using plain "
@@ -2704,7 +2716,7 @@ class TwistedTape(CallableEntity):
                     kw["mod"] = ""
                     msg = "Peripherally-cut width don't defined, using plain "
                     msg += "twisted tape instead"
-                elif self.kw["modEiamsa"] == "PT" and \
+                elif "PT" in self.kw["modEiamsa"] and \
                         (not self.kw["sP"] or not self.kw["dP"]):
                     kw["mod"] = ""
                     msg = "Perforated geometry don't defined, using plain "
@@ -3086,10 +3098,10 @@ class UI_TwistedTape(ToolGui):
         self.teta.setVisible(mod == "TT")
         self.lbll.setVisible(mod == "AT")
         self.l.setVisible(mod == "AT")
-        self.lblsP.setVisible(mod == "PT")
-        self.sP.setVisible(mod == "PT")
-        self.lbldP.setVisible(mod == "PT")
-        self.dP.setVisible(mod == "PT")
+        self.lblsP.setVisible("PT" in mod)
+        self.sP.setVisible("PT" in mod)
+        self.lbldP.setVisible("PT" in mod)
+        self.dP.setVisible("PT" in mod)
         self.lbltita.setVisible(mod == "CCC")
         self.tita.setVisible(mod == "CCC")
         self.lblSw.setVisible(mod == "STT")
