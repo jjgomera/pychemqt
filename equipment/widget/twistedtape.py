@@ -324,8 +324,21 @@ __doi__ = {
                   "in a Heat Exchanger Tube",
          "ref": "Chinese J. Chem. Eng. 19(3) (2011) 410-423",
          "doi": "10.1016/S1004-9541(11)60001-3"},
-
-    # 47:
+    47:
+        {"autor": "Sivashanmugam, P., Nagarajan, P.K.",
+         "title": "Studies on heat transfer and friction factor "
+                  "characteristics of laminar flow through a circular tube "
+                  "fitted with right and left helical screw-tape inserts",
+         "ref": "Exp. Thermal Fluid Sci. 32(1) (2007) 192-197",
+         "doi": "10.1016/j.expthermflusci.2007.03.005"},
+    48:
+        {"autor": "Sivashanmugam, P., Nagarajan, P.K., Suresh, S.",
+         "title": "Experimental Studies on Heat Transfer and Friction Factor "
+                  "Characteristics of Turbulent Flow Through a Circular Tube "
+                  "Fitted with Right and Left Helical Screw-Tape Inserts",
+         "ref": "Chem. Eng. Comm. 195(8) (2008) 977-987",
+         "doi": "10.1080/00986440801906658"},
+    # 49:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -2074,8 +2087,8 @@ def Nu_twisted_turbulent_Bas(Re, Pr, D, H, c=0):
 
 
 # Helical screw-tape
-@refDoc(__doi__, [13, 14, 22, 23])
-def f_helical_Sivashanmugam(Re, D, H, S=None):
+@refDoc(__doi__, [13, 14, 22, 23, 47, 48])
+def f_helical_Sivashanmugam(Re, D, H, S=None, LR=0):
     """Calculate friction factor for a pipe with a twisted-tape insert using
     the Sivashanmugam-Suresh correlation (2006) with lamanar flow correlation
     for spacer from Ibrahim correlation (2011).
@@ -2090,6 +2103,8 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
         Tape pitch for twist of π radians (180º), [m]
     S : float
         Spacer length without twisted section, [m]
+    LR : float
+        Ratio of left twist length over right twist length, [-]
 
     Returns
     -------
@@ -2098,7 +2113,10 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
     """
     if Re > 2000:
         # Turbulent flow
-        if S:
+        if LR:
+            # Eq 6 in [48]_
+            f = 129.182 / Re**0.799 / (H/D)**0.372 * LR**0.09
+        elif S:
             # Eq 6 in 22_
             f = 1 / Re**0.384 / (H/D)**0.852 / (1+S/D)**0.047
         else:
@@ -2107,7 +2125,10 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
 
     else:
         # Laminar flow
-        if S:
+        if LR:
+            # Eq 6 in [47]_
+            f = 739.2 / Re**1.013 / (H/D)**0.634 * LR**0.234
+        elif S:
             # Eq 12 in 23_
             f = 54.41 / Re**0.87 / (1+S/D)**0.045 / (H/D)**0.146
         else:
@@ -2117,8 +2138,8 @@ def f_helical_Sivashanmugam(Re, D, H, S=None):
     return f
 
 
-@refDoc(__doi__, [13, 14, 22, 23])
-def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
+@refDoc(__doi__, [13, 14, 22, 23, 47, 48])
+def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None, LR=0):
     """Calculate Nusselt number for a pipe with a twisted-tape insert using
     the Sivashanmugam-Suresh correlation (2006) with lamanar flow correlation
     for spacer from Ibrahim correlation (2011).
@@ -2138,6 +2159,8 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
         Tape pitch for twist of π radians (180º), [m]
     S : float
         Spacer length without twisted section, [m]
+    LR : float
+        Ratio of left twist length over right twist length, [-]
 
     Returns
     -------
@@ -2146,7 +2169,10 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
     """
     if Re > 2000:
         # Turbulent flow
-        if S:
+        if LR:
+            # Eq 5 in [48]_
+            Nu = 0.114 * Re**0.622 * Pr / (H/D)**0.12 * LR**0.036
+        elif S:
             # Eq 5 in 22_
             Nu = 0.258 * Re**0.554 * Pr / (H/D)**0.242 / (1+S/D)**0.042
         else:
@@ -2155,7 +2181,10 @@ def Nu_helical_Sivashanmugam(Re, Pr, D, H, S=None):
 
     else:
         # Laminar flow
-        if S:
+        if LR:
+            # Eq 5 in [47]_
+            Nu = 0.196 * Re**0.608 * Pr / (H/D)**0.386 * LR**0.118
+        elif S:
             # Eq 11 in 23_
             Nu = 6.11 * Re**0.199 * (1+S/D)**-0.064 / (H/D)**0.318
         else:
@@ -2368,6 +2397,7 @@ class TwistedTape(CallableEntity):
         "S": 0,
 
         "isHelical": False,
+        "LR": 0,
         "isHollow": False,
         "C": 0,
 
@@ -2461,7 +2491,8 @@ class TwistedTape(CallableEntity):
         msg = ""
 
         if self.kw["isHelical"]:
-            Nu = Nu_helical_Sivashanmugam(Re, Pr, self.Dt, self.H, self.kw["S"])
+            Nu = Nu_helical_Sivashanmugam(
+                Re, Pr, self.Dt, self.H, self.kw["S"], self.kw["LR"])
             return Nu
 
         if self.kw["isHollow"]:
@@ -2657,7 +2688,8 @@ class TwistedTape(CallableEntity):
         msg = ""
 
         if self.kw["isHelical"]:
-            f = f_helical_Sivashanmugam(Re, self.Dt, self.H, self.kw["S"])
+            f = f_helical_Sivashanmugam(
+                Re, self.Dt, self.H, self.kw["S"], self.kw["LR"])
             return f
 
         if self.kw["isHollow"]:
@@ -2896,8 +2928,7 @@ class UI_TwistedTape(ToolGui):
 
         self.helical = QtWidgets.QRadioButton(self.tr(
             "Helical screw-tape inserts"))
-        self.helical.toggled.connect(partial(self.changeParams, "isHelical"))
-        self.helical.toggled.connect(self.setEnableSpacer)
+        self.helical.toggled.connect(self.setEnableHelical)
         lyt.addWidget(self.helical, 3, 1, 1, 3)
 
         self.hollow = QtWidgets.QRadioButton(self.tr(
@@ -2934,6 +2965,14 @@ class UI_TwistedTape(ToolGui):
         self.C = Entrada_con_unidades(Length)
         self.C.valueChanged.connect(partial(self.changeParams, "C"))
         lyt.addWidget(self.C, 10, 2)
+
+        self.lblLR = QtWidgets.QLabel(self.tr("LR Ratio"))
+        self.lblLR.setToolTip(self.tr(
+            "Ratio between left and right twist sections length"))
+        lyt.addWidget(self.lblLR, 10, 1)
+        self.LR = Entrada_con_unidades(float)
+        self.LR.valueChanged.connect(partial(self.changeParams, "LR"))
+        lyt.addWidget(self.LR, 10, 2)
 
         # Murugesan additional parameters
         self.groupMurugesan = QtWidgets.QWidget()
@@ -3099,6 +3138,8 @@ class UI_TwistedTape(ToolGui):
         self.setVisibleMod()
         self.lblC.setVisible(False)
         self.C.setVisible(False)
+        self.lblLR.setVisible(False)
+        self.LR.setVisible(False)
 
     def changeModChang(self, txt):
         """Extract code from txt"""
@@ -3217,6 +3258,12 @@ class UI_TwistedTape(ToolGui):
         boolean = method or eiamsa or self.helical.isChecked()
         self.lblS.setEnabled(boolean)
         self.S.setEnabled(boolean)
+
+    def setEnableHelical(self, boolean):
+        self.lblLR.setVisible(boolean)
+        self.LR.setVisible(boolean)
+        self.changeParams("isHelical", boolean)
+        self.setEnableSpacer()
 
     def setEnableHollow(self, boolean):
         self.lblC.setVisible(boolean)
