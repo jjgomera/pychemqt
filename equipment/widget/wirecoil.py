@@ -30,6 +30,7 @@ Friction factor:
     * :func:`f_wire_Gunes`: Gunes et al. (2010)
     * :func:`f_wire_Ravigururajan`: Ravigururajan-Bergles (1996)
     * :func:`f_wire_Sethumadhavan`: Sethumadhavan-Raja Rao (1983)
+    * :func:`f_wire_Yakut`: Yakut-Sahin (2004)
 
 Heat transfer:
 
@@ -41,6 +42,7 @@ Heat transfer:
     * :func:`Nu_wire_Klaczak`: Klaczak (1973)
     * :func:`Nu_wire_Ravigururajan`: Ravigururajan-Bergles (1996)
     * :func:`Nu_wire_Sethumadhavan`: Sethumadhavan-Raja Rao (1983)
+    * :func:`Nu_wire_Yakut`: Yakut-Sahin (2004)
 
 
 All methods are integrated in:
@@ -113,7 +115,13 @@ __doi__ = {
          "title": "Turbulent Flow Heat Transfer and Fluid Friction in "
                   "Helical-Wire-Coil-Inserted Tubes",
          "ref": "Int. J. Heat Mass Transfer 26(12) (1983) 1833-1845",
-         "doi": "10.1016/s0017-9310(83)80154-9"}}
+         "doi": "10.1016/s0017-9310(83)80154-9"},
+    9:
+        {"autor": "Yakut, K., Sahin, B.",
+         "title": "The effects of vortex characteristics on performance of "
+                  "coiled wire turbulators used for heat transfer augmentation",
+         "ref": "Applied Thermal Eng. 24(16) (2004) 2427-2438",
+         "doi": "10.1016/j.applthermaleng.2004.03.008"}}
 
 
 # Friction factor correlations
@@ -287,7 +295,6 @@ def f_wire_Sethumadhavan(Re, P, e, D):
     f : float
         Friction factor, [-]
     """
-    print(Re, P, e, D)
     if Re < 5000:
         raise NotImplementedError("Input out of bound")
 
@@ -308,6 +315,34 @@ def f_wire_Sethumadhavan(Re, P, e, D):
 
     if isinstance(f, complex):
         raise ValueError("Solution don't converge")
+
+    return f
+
+
+@refDoc(__doi__, [9])
+def f_wire_Yakut(Re, P, D):
+    """Calculate nusselt number for a pipe with a wire coil using the
+    Yakut-Sahin correlation (2004).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 13
+    f = 4.44 / Re**0.218 / (P/D)**0.223
 
     return f
 
@@ -588,6 +623,36 @@ def Nu_wire_Sethumadhavan(Re, Pr, P, e, D):
     return St*Re*Pr
 
 
+@refDoc(__doi__, [9])
+def Nu_wire_Yakut(Re, Pr, P, D):
+    """Calculate nusselt number for a pipe with a wire coil using the
+    Yakut-Sahin correlation (2004).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    D : float
+        Internal diameter of tube, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 5000:
+        raise NotImplementedError("Input out of bound")
+
+    # Eq 12
+    Nu = 0.91 * Re**0.522 * Pr**0.4 * (P/D)**0.128
+
+    return Nu
+
+
 class WireCoil(CallableEntity):
     """Wire coil insert for pipe to improve heat transfer
 
@@ -604,7 +669,8 @@ class WireCoil(CallableEntity):
         "Naphon (2006)",
         "Gunes (2010)",
         "Ravigururajan (1996)",
-        "Sethumadhavan-Raja Rao (1983)")
+        "Sethumadhavan-Raja Rao (1983)",
+        "Yakut-Sahin (2004)")
 
     TEXT_HEAT = (
         "García (2005)",
@@ -614,7 +680,8 @@ class WireCoil(CallableEntity):
         "Gunes (2010)",
         "Klaczak (1973)",
         "Ravigururajan (1996)",
-        "Sethumadhavan-Raja Rao (1983)")
+        "Sethumadhavan-Raja Rao (1983)",
+        "Yakut-Sahin (2004)")
 
     status = 0
     msg = ""
@@ -709,6 +776,15 @@ class WireCoil(CallableEntity):
             else:
                 Nu = Nu_wire_Sethumadhavan(Re, Pr, self.P, self.e, D)
 
+        elif method == 8:
+            # Yakut-Sahin (2004)
+            if Re < 5000:
+                Nu = self.Nu(Re, Pr, D, mu, muW, 0)
+                msg = "Yakut-Sahin correlation only valid in turbulent flow,"
+                msg += " using Garcia instead"
+            else:
+                Nu = Nu_wire_Yakut(Re, Pr, self.P, D)
+
         else:
             # García (2005)
             Nu = Nu_wire_Garcia(Re, Pr, self.P, self.e)
@@ -769,6 +845,15 @@ class WireCoil(CallableEntity):
                     f = self.f(Re, D, 0)
                     msg = "Ravigururajan correlation don't converge,"
                     msg += " using Garcia instead"
+
+        elif method == 6:
+            # Yakut-Sahin (2004)
+            if Re < 5000:
+                f = self.f(Re, D, 0)
+                msg = "Yakut-Sahin correlation only valid in turbulent flow,"
+                msg += " using Garcia instead"
+            else:
+                f = f_wire_Yakut(Re, self.P, D)
 
         else:
             # García (2005)
