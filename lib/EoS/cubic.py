@@ -469,9 +469,12 @@ class Cubic(EoS):
         mixpar : list
             List with mixture parameters, [-]
         """
-        self.kij = Kij(self.mezcla.ids, eq)
+        self.kij = self._Kij(eq)
         mixpar = Mixing_Rule(xi, par, self.kij)
         return mixpar
+
+    def _Kij(self, eq):
+        return Kij(self.mezcla.ids, eq)
 
     def _Tr(self):
         """Definition of reducing parameters"""
