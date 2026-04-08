@@ -558,6 +558,8 @@ class Hairpin(equipment):
         twistedTape: Twisted tape insert instance
         hasWireCoil: Boolean to use a wire coil insert
         wireCoil: Wire-coil insert instance
+        hasRib: Boolean to use a tube with helical rib
+        rib: Helical rib instance
         hasTwistedAnnuli: Boolean to use a twisted tape in annuli section
         twistedAnnuli: Twisted tape in annulli section instance
 
@@ -631,6 +633,8 @@ class Hairpin(equipment):
         "twistedTape": None,
         "hasWireCoil": False,
         "wireCoil": None,
+        "hasRib": False,
+        "rib": None,
         "hasTwistedAnnuli": False,
         "twistedAnnuli": None,
 
@@ -1021,6 +1025,8 @@ class Hairpin(equipment):
             Nu = self.kwargs["twistedTape"].Nu(re, pr, mu, mu, beta, 0, self.L)
         elif self.kwargs["hasWireCoil"] and self.kwargs["wireCoil"]:
             Nu = self.kwargs["wireCoil"].Nu(re, pr, self.Di, mu, mu)
+        elif self.kwargs["hasRib"] and self.kwargs["rib"]:
+            Nu = self.kwargs["rib"].Nu(re, pr, self.Di)
 
         elif self.phaseTube[:6] == "Latent":
 
@@ -1108,6 +1114,8 @@ class Hairpin(equipment):
             f = self.kwargs["twistedTape"].f(Re)
         elif self.kwargs["hasWireCoil"] and self.kwargs["wireCoil"]:
             f = self.kwargs["wireCoil"].f(Re, self.Di)
+        elif self.kwargs["hasRib"] and self.kwargs["rib"]:
+            f = self.kwargs["rib"].f(Re, self.Di)
         else:
             f = f_friccion(Re, eD)
         print("f: ", f)
