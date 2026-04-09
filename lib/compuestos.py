@@ -124,6 +124,7 @@ Others method:
 '''
 
 
+from ast import literal_eval
 import math
 import os
 import re
@@ -5192,7 +5193,7 @@ class Componente(object):
         self.CASNumber = str(cmp[131])
         self.alternateFormula = str(cmp[132])
         if cmp[133]:
-            self.UNIFAC = eval(cmp[133])
+            self.UNIFAC = {ai[0]: ai[1] for ai in literal_eval(cmp[133])}
         else:
             self.UNIFAC = []
 

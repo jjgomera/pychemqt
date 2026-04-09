@@ -39,6 +39,8 @@ from lib.EoS.Cubic.PRTwu import PRTwu
 from lib.EoS.Cubic.PRYuLu import PRYuLu
 from lib.EoS.Cubic.PRLinDuan import PRLinDuan
 
+from lib.EoS.Cubic.PPR78 import PPR78
+
 from lib.EoS.Cubic.ALS1983 import ALS1983
 
 from lib.EoS.Cubic.PT import PT
@@ -58,6 +60,7 @@ _all = [vdW,
         PR, PR78, PRMathiasCopeman,
         PRGasem, PRMelhem, PRAlmeida, PRSV, PRSV2, PRZV, PRTwu, PRYuLu,
         PRLinDuan,
+        PPR78,
         ALS1983,
         PT, PTV, PTVC,
         TB, TBS,

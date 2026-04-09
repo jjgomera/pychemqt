@@ -1700,12 +1700,12 @@ class View_Component(QtWidgets.QDialog):
 
             self.formula2.setPixmap(QtGui.QPixmap(imageFile.name))
 
-        if self.cmp.UNIFAC != []:
+        if self.cmp.UNIFAC:
             self.UNIFAC.setRowCount(len(self.cmp.UNIFAC))
-            for i, unifac in enumerate(self.cmp.UNIFAC):
+            for i, code in enumerate(self.cmp.UNIFAC.keys()):
                 self.UNIFAC.setRowHeight(i, 25)
-                item = QtWidgets.QTableWidgetItem(str(unifac[0]))
-                item2 = QtWidgets.QTableWidgetItem(str(unifac[1]))
+                item = QtWidgets.QTableWidgetItem(str(code))
+                item2 = QtWidgets.QTableWidgetItem(str(self.cmp.UNIFAC[code]))
                 self.UNIFAC.setItem(i, 0, item)
                 self.UNIFAC.setItem(i, 1, item2)
                 self.UNIFAC.item(i, 1).setTextAlignment(
