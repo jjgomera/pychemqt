@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import log
+from math import atan, log, pi
 
 from scipy.optimize import newton
 from tools.qt import QtCore, QtWidgets, translate
@@ -56,8 +56,13 @@ __doi__ = {
                   "of Single and Multistart Spirally Enghanced Tubes",
          "ref": "J. Heat Transfer 108(1) (1986) 55-61",
          "doi": "10.1115/1.3246905"},
-
-    # 5:
+    5:
+        {"autor": "Dong, Y., Huixiong, L., Tingkuan, C.",
+         "title": "Pressure drop, heat transfer and performance of "
+                  "single-phase turbulent flow in spirally corrugated tubes",
+         "ref": "Exp. Thermal Fluid Sci. 24(3-4) (2001) 131-138",
+         "doi": "10.1016/S0894-1777(01)00047-4"},
+    # 6:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -87,6 +92,7 @@ def f_corrugated_Vicente(Re, Di, p, h):
     f : float
         Friction factor, [-]
     """
+    # Tube severity factor
     phi = h**2/p/Di
 
     if Re > 2000:
@@ -97,6 +103,7 @@ def f_corrugated_Vicente(Re, Di, p, h):
         f = 29.8 * phi**0.11 / Re**0.97
 
     return f
+
 
 @refDoc(__doi__, [4])
 def f_corrugated_Sethumadhavan(Re, Di, P, h):
@@ -122,16 +129,62 @@ def f_corrugated_Sethumadhavan(Re, Di, P, h):
     if Re < 5000:
         raise NotImplementedError("Input out of bound")
 
-    # Helix angle
     Deq = Di-h
 
     # Eq 13
     def f_res(f):
         """Iterative solution of intrinsic equation"""
 
-        R = 2**0.5/f + 2.5*log(2*h/Deq) + 3.75
+        R = (2/f)**0.5 + 2.5*log(2*h/Deq) + 3.75
         h_ = h/Deq * Re * (f/2)**0.5
         return R*h**2/(P*Deq)**0.33 - 0.40*h_**0.164
+
+    fo = f_corrugated_Vicente(Re, Di, P, h)
+    f = newton(f_res, fo)
+
+    if isinstance(f, complex):
+        raise ValueError("Solution don't converge")
+
+    return f
+
+
+@refDoc(__doi__, [5])
+def f_corrugated_Dong(Re, Di, P, h):
+    """Calculate friction factor for a corrugated pipe using the Dong et al.
+    correlation (2001).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    h : float
+        Roughness height, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    if Re < 6000:
+        raise NotImplementedError("Input out of bound")
+
+    # Helix angle
+    alpha = atan(P/pi/Di)*180/pi
+
+    # Tube severity factor
+    phi = h**2/P/Di
+
+    # Eq 13
+    def f_res(f):
+        """Iterative solution of intrinsic equation"""
+
+        R = (2/f)**0.5 + 2.5*log(2*h/Di) + 3.75
+        h_ = h/Di * Re * (f/2)**0.5
+        return R * phi**0.317 / (alpha/50)**0.16 - 0.455*h_**0.169
 
     fo = f_corrugated_Vicente(Re, Di, P, h)
     f = newton(f_res, fo)
@@ -166,6 +219,7 @@ def Nu_corrugated_Vicente(Re, Pr, Di, p, h):
     Nu : float
         Nusselt number, [-]
     """
+    # Tube severity factor
     phi = h**2/p/Di
 
     if Re > 2000:
@@ -209,10 +263,53 @@ def Nu_corrugated_Sethumadhavan(Re, Pr, Di, P, h):
 
     f = f_corrugated_Vicente(Re, Di, P, h)
     h_ = h/Deq * Re * (f/2)**0.5
-    R = 2**0.5/f + 2.5*log(2*h/Deq) + 3.75
+    R = (2/f)**0.5 + 2.5*log(2*h/Deq) + 3.75
 
     # Eq 15
     G = 8.6 * h_**0.13 * Pr**-0.55
+
+    # Eq 7
+    St = 1/((((G-R)*(f/2)**0.5)+1)*2/f)
+
+    return St*Re*Pr
+
+
+@refDoc(__doi__, [5])
+def Nu_corrugated_Dong(Re, Pr, Di, P, h):
+    """Calculate nusselt number for a corrugated pipe using the Dong et al.
+    correlation (2001).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    D : float
+        Internal diameter of tube, [m]
+    P : float
+        helical pitch for twist of 2π radians (360º), [m]
+    h : float
+        Roughness height, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re < 6000:
+        raise NotImplementedError("Input out of bound")
+
+    # Helix angle
+    alpha = atan(P/pi/Di)*180/pi
+    Deq = Di-h
+
+    f = f_corrugated_Vicente(Re, Di, P, h)
+    h = h/Deq * Re * (f/2)**0.5
+    R = (2/f)**0.5 + 2.5*log(2*h/Deq) + 3.75
+
+    # Eq 16
+    G = 7.33*h**0.175 / (alpha/50)**0.16 * Pr**0.548
 
     # Eq 7
     St = 1/((((G-R)*(f/2)**0.5)+1)*2/f)

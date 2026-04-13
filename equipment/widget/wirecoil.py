@@ -306,7 +306,7 @@ def f_wire_Sethumadhavan(Re, P, e, D):
     def f_res(f):
         """Iterative solution of intrinsic equation"""
 
-        R = 2**0.5/f + 2.5*log(2*e/Deq) + 3.75
+        R = (2/f)**0.5 + 2.5*log(2*e/Deq) + 3.75
         h = e/Deq * Re * (f/2)**0.5
         return R*tan(alpha)**0.18-7*h**0.13
 
@@ -612,7 +612,7 @@ def Nu_wire_Sethumadhavan(Re, Pr, P, e, D):
 
     f = f_wire_Garcia(Re, P, e)
     h = e/Deq * Re * (f/2)**0.5
-    R = 2**0.5/f + 2.5*log(2*e/Deq) + 3.75
+    R = (2/f)**0.5 + 2.5*log(2*e/Deq) + 3.75
 
     # Eq 16
     G = 8.6*h**0.13/tan(alpha)**0.18/Pr**-0.55
