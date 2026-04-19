@@ -62,7 +62,13 @@ __doi__ = {
                   "single-phase turbulent flow in spirally corrugated tubes",
          "ref": "Exp. Thermal Fluid Sci. 24(3-4) (2001) 131-138",
          "doi": "10.1016/S0894-1777(01)00047-4"},
-    # 6:
+    6:
+        {"autor": "Srinivasan, V., Christensen, R.N.",
+         "title": "Experimental Investigation of Heat Transfer and Pressure "
+                  "Drop Characteristics of Flow Through Spirally Fluted Tubes",
+         "ref": "Exp. Thermal Fluid Sci. 5(6) (1992) 820-827",
+         "doi": "10.1016/0894-1777(92)90126-P"},
+    # 7:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -315,6 +321,80 @@ def Nu_corrugated_Dong(Re, Pr, Di, P, h):
     St = 1/((((G-R)*(f/2)**0.5)+1)*2/f)
 
     return St*Re*Pr
+
+
+# Fluted tubes
+@refDoc(__doi__, [1])
+def f_fluted_Srinivasan(Re, Di, p, h, N):
+    """Calculate friction factor for a spirally flutud tube using the
+    Srinivasan correlation (1992).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Di : float
+        Internal diameter of tube, [m]
+    p : float
+        Helical rib pitch for twist of 2π radians (360º), [m]
+    h : float
+        Flute depth, [m]
+    N : integer
+        Number of flute starts, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Di/N)*180/pi
+    tita = alpha/90
+
+    # Eq 2
+    f = 12.745 * Re**(-0.474-0.209*p/Di+0.685*tita) * \
+        (h/Di)**(1.292+0.031*p/Di) * p/Di**(9.908+0.331e-5*Re-12.074*tita)
+
+    return f
+
+
+@refDoc(__doi__, [1])
+def Nu_fluted_Srinavasan(Re, Pr, Di, p, h, N):
+    """Calculate Nusselt number for a tube with helical rib using the Naphon
+    correlation (2006).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    Di : float
+        Internal diameter of tube, [m]
+    p : float
+        Helical rib pitch for twist of 2π radians (360º), [m]
+    h : float
+        Helical rib depth, [m]
+    N : integer
+        Number of flute starts, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Di/N)*180/pi
+    tita = alpha/90
+
+    if Re < 5000:
+        # Eq 4, laminar flow
+        Nu = 0.014*Re**0.847*Pr**0.4/(h/Di)**0.067/(p/Di)**0.293/tita**0.705
+    else:
+        # Eq 5, turbulent flow
+        Nu = 0.064*Re**0.773*Pr**0.4/(h/Di)**0.242/(p/Di)**0.108/tita**0.599
+
+    return Nu
 
 
 # Rib correlation
