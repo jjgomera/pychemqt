@@ -80,7 +80,7 @@ __doi__ = {
 @refDoc(__doi__, [2, 3])
 def f_corrugated_Vicente(Re, Di, p, h):
     """Calculate friction factor for a corrugated tube using the Vicente et al.
-    Tcorrelation (2004).
+    correlation (2004).
 
     Parameters
     ----------
@@ -137,7 +137,7 @@ def f_corrugated_Sethumadhavan(Re, Di, P, h):
 
     Deq = Di-h
 
-    # Eq 13
+    # Eq 11
     def f_res(f):
         """Iterative solution of intrinsic equation"""
 
@@ -190,7 +190,7 @@ def f_corrugated_Dong(Re, Di, P, h):
 
         R = (2/f)**0.5 + 2.5*log(2*h/Di) + 3.75
         h_ = h/Di * Re * (f/2)**0.5
-        return R * phi**0.317 / (alpha/50)**0.16 - 0.455*h_**0.169
+        return R * phi**0.317 * (alpha/50)**0.16 - 0.455*h_**0.169
 
     fo = f_corrugated_Vicente(Re, Di, P, h)
     f = newton(f_res, fo)
@@ -272,7 +272,7 @@ def Nu_corrugated_Sethumadhavan(Re, Pr, Di, P, h):
     R = (2/f)**0.5 + 2.5*log(2*h/Deq) + 3.75
 
     # Eq 15
-    G = 8.6 * h_**0.13 * Pr**-0.55
+    G = 8.6 * h_**0.13 * Pr**0.55
 
     # Eq 7
     St = 1/((((G-R)*(f/2)**0.5)+1)*2/f)
@@ -311,11 +311,11 @@ def Nu_corrugated_Dong(Re, Pr, Di, P, h):
     Deq = Di-h
 
     f = f_corrugated_Vicente(Re, Di, P, h)
-    h = h/Deq * Re * (f/2)**0.5
+    h_ = h/Deq * Re * (f/2)**0.5
     R = (2/f)**0.5 + 2.5*log(2*h/Deq) + 3.75
 
     # Eq 16
-    G = 7.33*h**0.175 / (alpha/50)**0.16 * Pr**0.548
+    G = 7.33*h_**0.175 / (alpha/50)**0.16 * Pr**0.548
 
     # Eq 7
     St = 1/((((G-R)*(f/2)**0.5)+1)*2/f)
@@ -358,10 +358,10 @@ def f_fluted_Srinivasan(Re, Di, p, h, N):
     return f
 
 
-@refDoc(__doi__, [1])
-def Nu_fluted_Srinavasan(Re, Pr, Di, p, h, N):
+@refDoc(__doi__, [6])
+def Nu_fluted_Srinivasan(Re, Pr, Di, p, h, N):
     """Calculate Nusselt number for a tube with helical rib using the Naphon
-    correlation (2006).
+    correlation (1992).
 
     Parameters
     ----------
@@ -465,11 +465,27 @@ class Rib(CallableEntity):
         Helical rib depth, [m]
     """
 
+    TEXT_FRICTION = (
+        "Vicente (2004)",
+        "Sethumadhavan-Raja Rao (1986)",
+        "Dong (2001)")
+    TEXT_HEAT = (
+        "Vicente (2004)",
+        "Sethumadhavan-Raja Rao (1986)",
+        "Dong (2001)")
+
     status = 0
     msg = ""
     kw = {
         "p": 0,
-        "h": 0}
+        "h": 0,
+
+        "methodCorrugatedFriction": 0,
+        "methodCorrugatedHeat": 0,
+
+        "isRib": False,
+        "isFluted": False,
+        "N": 1}
 
     valueChanged = QtCore.pyqtSignal(object)
     inputChanged = QtCore.pyqtSignal(object)
@@ -499,12 +515,69 @@ class Rib(CallableEntity):
 
     def Nu(self, Re, Pr, Di):
         """Calculate nusselt number"""
-        Nu = Nu_rib_Naphon(Re, Pr, Di, self.p, self.h)
+        msg = ""
+        if self.kw["isRib"]:
+            Nu = Nu_rib_Naphon(Re, Pr, Di, self.p, self.h)
+            return Nu
+        if self.kw["isFluted"]:
+            Nu = Nu_fluted_Srinivasan(Re, Pr, Di, self.p, self.h, self.kw["N"])
+            return Nu
+
+        if self.kw["methodCorrugatedHeat"] == 1:
+            # "Sethumadhavan-Raja Rao (1986)",
+            try:
+                Nu = Nu_corrugated_Sethumadhavan(Re, Pr, Di, self.p, self.h)
+            except RuntimeError:
+                Nu = Nu_corrugated_Vicente(Re, Pr, Di, self.p, self.h)
+                msg = "Sethumadhavan method don't converge, using Vicente method instead"
+
+        elif self.kw["methodCorrugatedHeat"] == 2:
+            # "Dong (2001)")
+            Nu = Nu_corrugated_Dong(Re, Pr, Di, self.p, self.h)
+
+        else:
+            # "Vicente (2004)",
+            Nu = Nu_corrugated_Vicente(Re, Pr, Di, self.p, self.h)
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
+
         return Nu
 
     def f(self, Re, Di):
         """Calculate friction factor"""
-        f = f_rib_Naphon(Re, Di, self.p, self.h)
+        msg = ""
+
+        if self.kw["isRib"]:
+            f = f_rib_Naphon(Re, Di, self.p, self.h)
+            return f
+        if self.kw["isFluted"]:
+            f = f_fluted_Srinivasan(Re, Di, self.p, self.h, self.kw["N"])
+            return f
+
+        if self.kw["methodCorrugatedFriction"] == 1:
+            # "Sethumadhavan-Raja Rao (1986)",
+            try:
+                f = f_corrugated_Sethumadhavan(Re, Di, self.p, self.h)
+            except RuntimeError:
+                f = f_corrugated_Vicente(Re, Di, self.p, self.h)
+                msg = "Sethumadhavan method don't converge, using Vicente method instead"
+
+        elif self.kw["methodCorrugatedFriction"] == 2:
+            # "Dong (2001)")
+            f = f_corrugated_Dong(Re, Di, self.p, self.h)
+
+        else:
+            # "Vicente (2004)",
+            f = f_corrugated_Vicente(Re, Di, self.p, self.h)
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
+
         return f
 
 
@@ -519,21 +592,70 @@ class UI_Rib(ToolGui):
 
         lyt = self.wdg.layout()
 
+        self.corrugated = QtWidgets.QRadioButton(self.tr("Corrugated tube"))
+        self.corrugated.setChecked(True)
+        lyt.addWidget(self.corrugated, 1, 1, 1, 3)
+
+        groupMethods = QtWidgets.QWidget()
+        lytM = QtWidgets.QGridLayout(groupMethods)
+        lytM.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 0, 2, 1)
+        lytM.addWidget(QtWidgets.QLabel(
+            self.tr("Friction factor method")), 1, 1)
+        self.methodCorrugatedFriction = QtWidgets.QComboBox()
+        for method in Rib.TEXT_FRICTION:
+            self.methodCorrugatedFriction.addItem(method)
+        self.methodCorrugatedFriction.currentIndexChanged.connect(
+            partial(self.changeParams, "methodCorrugatedFriction"))
+        lytM.addWidget(self.methodCorrugatedFriction, 1, 2)
+        lytM.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer method")), 2, 1)
+        self.methodCorrugatedHeat = QtWidgets.QComboBox()
+        for method in Rib.TEXT_HEAT:
+            self.methodCorrugatedHeat.addItem(method)
+        self.methodCorrugatedHeat.currentIndexChanged.connect(
+            partial(self.changeParams, "methodCorrugatedHeat"))
+        lytM.addWidget(self.methodCorrugatedHeat, 2, 2)
+        lyt.addWidget(groupMethods, 2, 1, 1, 2)
+        self.corrugated.toggled.connect(groupMethods.setEnabled)
+
+        self.rib = QtWidgets.QRadioButton(self.tr("Rib tube"))
+        self.rib.toggled.connect(partial(self.changeParams, "isRib"))
+        lyt.addWidget(self.rib, 4, 1, 1, 3)
+
+        self.fluted = QtWidgets.QRadioButton(self.tr("Fluted tube"))
+        self.fluted.toggled.connect(self.setEnableFluted)
+        lyt.addWidget(self.fluted, 5, 1, 1, 3)
+
+        lyt.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 6, 1)
         label = QtWidgets.QLabel(self.tr("Rib pitch"))
-        label.setToolTip(self.tr("Rib pitch for twist of 2π radians (360º)"))
-        lyt.addWidget(label, 2, 1)
+        label.setToolTip(self.tr("Pitch for twist of 2π radians (360º)"))
+        lyt.addWidget(label, 8, 1)
         self.p = Entrada_con_unidades(Length)
         self.p.valueChanged.connect(partial(self.changeParams, "p"))
-        lyt.addWidget(self.p, 2, 2)
-        label = QtWidgets.QLabel("Rib depth")
-        lyt.addWidget(label, 3, 1)
+        lyt.addWidget(self.p, 8, 2)
+        lyt.addWidget(QtWidgets.QLabel("Rib depth"), 9, 1)
         self.h = Entrada_con_unidades(Length, "Thickness")
         self.h.valueChanged.connect(partial(self.changeParams, "h"))
-        lyt.addWidget(self.h, 3, 2)
+        lyt.addWidget(self.h, 9, 2)
+        self.lblN = QtWidgets.QLabel(self.tr("Rib count"))
+        lyt.addWidget(self.lblN, 10, 1)
+        self.N = Entrada_con_unidades(int, spinbox=True)
+        self.N.valueChanged.connect(partial(self.changeParams, "N"))
+        lyt.addWidget(self.N, 10, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
+        self.lblN.setVisible(False)
+        self.N.setVisible(False)
 
+    def setEnableFluted(self, boolean):
+        self.lblN.setVisible(boolean)
+        self.N.setVisible(boolean)
+        self.changeParams("isFluted", boolean)
 
 class Dialog(QtWidgets.QDialog):
     """Component list config dialog"""

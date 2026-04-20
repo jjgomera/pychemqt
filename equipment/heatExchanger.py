@@ -655,7 +655,7 @@ class Hairpin(equipment):
                    "tubeTout", "annulliTout")
     kwargsList = ("modo", "flujo", "orientacion", "annulliNuMethod")
     kwargsCheck = ("finnedPipe", )
-    kwargsMandatory = ("twistedTape", "twistedAnnuli", "wireCoil")
+    kwargsMandatory = ("twistedTape", "twistedAnnuli", "wireCoil", "rib")
     calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
                       "deltaPTube", "deltaPAnnulli", "CF")
     calculateCostos = ("C_adq", "C_inst")

@@ -2598,11 +2598,11 @@ class TwistedTape(CallableEntity):
                 # Murugesan (2010)
                 if self.kw["modMurugesan"] == "V cut" and self.kw["Vcut_De"] \
                         and self.kw["Vcut_w"]:
-                    Nu = Nu_twisted_turbuletn_Murugesan(
+                    Nu = Nu_twisted_turbulent_Murugesan(
                         Re, Pr, self.Dt, self.H, self.kw["modMurugesan"],
                         self.kw["Vcut_De"], self.kw["Vcut_w"])
                 elif self.kw["modMurugesan"] == "V cut":
-                    Nu = Nu_twisted_turbuletn_Murugesan(
+                    Nu = Nu_twisted_turbulent_Murugesan(
                         Re, Pr, self.Dt, self.H)
                     msg = "V cut twisted tape geometry don't defined, using "
                     msg += "plain twisted tape instead"
@@ -2865,15 +2865,14 @@ class UI_TwistedTape(ToolGui):
 
         lyt = self.wdg.layout()
 
-
         self.twisted = QtWidgets.QRadioButton(self.tr(
             "Tipical twisted-tape inserts"))
         self.twisted.setChecked(True)
         self.twisted.toggled.connect(self.setVisibleMod)
         lyt.addWidget(self.twisted, 1, 1, 1, 2)
 
-        self.groupMethods = QtWidgets.QWidget()
-        lytM = QtWidgets.QGridLayout(self.groupMethods)
+        groupMethods = QtWidgets.QWidget()
+        lytM = QtWidgets.QGridLayout(groupMethods)
         lytM.addItem(QtWidgets.QSpacerItem(
             20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 1, 0)
@@ -2923,8 +2922,8 @@ class UI_TwistedTape(ToolGui):
         lytM.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
-        lyt.addWidget(self.groupMethods, 2, 1, 1, 2)
-        self.twisted.toggled.connect(self.groupMethods.setEnabled)
+        lyt.addWidget(groupMethods, 2, 1, 1, 2)
+        self.twisted.toggled.connect(groupMethods.setEnabled)
 
         self.helical = QtWidgets.QRadioButton(self.tr(
             "Helical screw-tape inserts"))
