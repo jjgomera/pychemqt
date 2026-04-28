@@ -37,23 +37,127 @@ __doi__ = {
          "ref": "Heat Transfer Eng. 38(5) (2017) 447-474",
          "doi": "10.1080/01457632.2016.1194693"},
     2:
-        {"autor": "Xin, R.C., Ebadian, M.A.  ",
-         "title": "The Effects of Prandtl Numbers on Local and Average "
-                  "Convective Heat Transfer Characteristics in Helical Pipes",
-         "ref": "J. Heat Transfer 119(3) (1997) 467-73",
-         "doi": "10.1115/1.2824120."}
+        {"autor": "Schmidt, E.F.",
+         "title": "Wärmeübergand und Druckverlust in Rohrschlangen",
+         "ref": "Chemie Ingenieur Technik 39(13) (1967) 781-789",
+         "doi": "10.1002/cite.330391302"}
+
     # 3:
         # {"autor": "",
          # "title": "",
          # "ref": "",
          # "doi": ""}
+
+    20:
+        {"autor": "Xin, R.C., Ebadian, M.A.  ",
+         "title": "The Effects of Prandtl Numbers on Local and Average "
+                  "Convective Heat Transfer Characteristics in Helical Pipes",
+         "ref": "J. Heat Transfer 119(3) (1997) 467-73",
+         "doi": "10.1115/1.2824120."}
 }
 
 
+# Critical Reynolds number correlations
+@refDoc(__doi__, [2])
+def Rec_Schmidt(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Schmidt (1967)
+
+    .. math::
+        Re_c = 2300 \left(1+8.6\left(\frac{di}{Dc}\right)^{0.45}\right)
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+    # Eq 14
+    Rec = 2300*(1+8.6*(di/Dc)**0.45)
+    return Rec
+
+
+# Friction factor correlations
+@refDoc(__doi__, [2])
+def f_Schmidt(Re, di, Dc):
+    """Calculate friction factor for internal flow of a helical coil using
+    the correlation of Schmidt (1967)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    Rec = Rec_Schmidt(di, Dc)
+
+    if Re < Rec:
+        # Laminar flow, Eq 15
+        f = 64/Re * (1+0.14*(di/Dc)**0.97*Re**(1-0.644*(di/Dc)**0.312))
+    elif Re < 2.2e4:
+        # Eq 16
+        f = 0.3164/Re**0.25 * (1+2.88e4/Re*(di/Dc)**0.62)
+    else:
+        # Eq 17
+        f = 0.3164/Re**0.25 * (1+0.0823*(1+di/Dc)*(di/Dc)**0.53*Re**0.25)
+
+    return f
 
 
 # Heat Transfer coefficient correlations
-@refDoc(__doi__, [2, 1])
+@refDoc(__doi__, [2])
+def Nu_Schmidt(Re, Pr, di, Dc):
+    r"""Calculates Nusselt number for internal flow of a helical coil using the
+    correlation of Schmidt (1967)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    Rec = Rec_Schmidt(di, Dc)
+
+    if Re < Rec:
+        # Laminar flow, Eq 18
+        Nu = 3.65 + Pr**0.8 * 0.08*(1+0.8*(di/Dc)**0.9) \
+            * Re**(0.5+0.2903*(di/Dc)**0.194)
+    elif Re < 2.2e4:
+        # Eq 21
+        Nu = 0.023 * Pr**(1/3) * (1+14.8*(1+di/Dc)*(di/Dc)**(1/3)) \
+            * Re**(0.8-0.22*(di/Dc)**0.1)
+    else:
+        # Eq 22
+        Nu = 0.023 * (1+3.6*(1-di/Dc)*(di/Dc)**0.8) * Re**0.8 * Pr**(1/3)
+
+    return Nu
+
+
+@refDoc(__doi__, [20, 1])
 def Nu_turbulent_XinEbadian(Re, Pr, Di, Dc):
     r"""Calculates Nusselt number for internal flow of a helical coil using the
     correlation of Xin-Ebadian (1997)
@@ -87,6 +191,8 @@ def Nu_turbulent_XinEbadian(Re, Pr, Di, Dc):
     else:
         # Eq 6
         Nu = 0.00619 * Re**0.92 * Pr**0.4 * (1+3.455*Di/Dc)
+
+    return Nu
 
 
 class Helical(CallableEntity):
