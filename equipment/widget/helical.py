@@ -40,9 +40,19 @@ __doi__ = {
         {"autor": "Schmidt, E.F.",
          "title": "Wärmeübergand und Druckverlust in Rohrschlangen",
          "ref": "Chemie Ingenieur Technik 39(13) (1967) 781-789",
-         "doi": "10.1002/cite.330391302"}
-
-    # 3:
+         "doi": "10.1002/cite.330391302"},
+    3:
+        {"autor": "Ito, H.",
+         "title": "Friction Factors for Turbulent Flow in Curved Pipes",
+         "ref": "J. Basic Eng. 81 (1959) 123-134",
+         "doi": "10.1115/1.4008390"},
+    4:
+        {"autor": "Kubair, V., Kuloor, N.R.",
+         "title": "Heat Transfer to Newtonian Fluids in Coiled Pipes in "
+                  "Laminar Flow",
+         "ref": "Int. J. Heat Mass Transfer 9 (1966) 63-75",
+         "doi": "10.1016/0017-9310(66)90057-3"},
+    # 5:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -80,6 +90,31 @@ def Rec_Schmidt(di, Dc):
     """
     # Eq 14
     Rec = 2300*(1+8.6*(di/Dc)**0.45)
+    return Rec
+
+
+@refDoc(__doi__, [3])
+def Rec_Ito(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Ito (1959)
+
+    .. math::
+        Re_c = 2x10^4 \left(\frac{di}{Dc}\right)^{0.32}
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+    # Eq 11
+    Rec = 200*(di/Dc)**0.32)
     return Rec
 
 
@@ -158,13 +193,20 @@ def Nu_Schmidt(Re, Pr, di, Dc):
 
 
 @refDoc(__doi__, [20, 1])
-def Nu_turbulent_XinEbadian(Re, Pr, Di, Dc):
+def Nu_XinEbadian(Re, Pr, di, Dc):
     r"""Calculates Nusselt number for internal flow of a helical coil using the
     correlation of Xin-Ebadian (1997)
 
+    For laminar flow:
+
     .. math::
-        Nu = 0.00619Re^{0.92} Pr^{0.4}\left[1 + 3.455\left(\frac{D_i}{D_c}
-        \right)\right]
+        Nu = \left(2.153 + 0.318 \left(Re \frac{d_i}{D_c}\right)^{0.643}\right)
+        Pr^{0.177}
+
+    For turbulent flow:
+
+    .. math::
+        Nu = 0.00619 Re^{0.92} Pr^{0.4} \left(1 + 3.455 \frac{d_i}{D_c}\right)
 
     Parameters
     ----------
@@ -172,7 +214,7 @@ def Nu_turbulent_XinEbadian(Re, Pr, Di, Dc):
         Reynolds number, [-]
     Pr : float
         Prandtl number, [-]
-    Di : float
+    di : float
         Inner diameter of the pipe, [m]
     Dc : float
         Diameter of the helix, [m]
@@ -184,13 +226,13 @@ def Nu_turbulent_XinEbadian(Re, Pr, Di, Dc):
     """
     # Laminar flow
     if Re < 5000:
-        De = Re*(Di/Dc)**0.5
+        De = Re*(di/Dc)**0.5
 
         # Eq 5
         Nu = (2.153+0.318*De**0.643) * Pr**0.177
     else:
         # Eq 6
-        Nu = 0.00619 * Re**0.92 * Pr**0.4 * (1+3.455*Di/Dc)
+        Nu = 0.00619 * Re**0.92 * Pr**0.4 * (1+3.455*di/Dc)
 
     return Nu
 
@@ -202,7 +244,7 @@ class Helical(CallableEntity):
     ----------
     H : float
         Tape pitch for twist of π radians (180º), [m]
-    Di : float
+    di : float
         Inner diameter of the pipe, [m]
     Dc : float
         Diameter of the helix, [m]
@@ -218,7 +260,7 @@ class Helical(CallableEntity):
         "methodHeatTurbulent": 0,
 
         "H": 0,
-        "Di": 0,
+        "di": 0,
         "Dc": 0}
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -227,7 +269,7 @@ class Helical(CallableEntity):
     @property
     def isCalculable(self):
         """Check if all input are defined"""
-        if not self.kw["Di"]:
+        if not self.kw["di"]:
             self.msg = translate("equipment", "undefined internal diameter")
             self.status = 0
             return False
@@ -242,7 +284,7 @@ class Helical(CallableEntity):
 
     def calculo(self):
         """Definition of twisted tape inserts for annuli sections"""
-        self.Di = self.kw["Di"]
+        self.di = self.kw["di"]
         self.Dc = self.kw["Dc"]
 
         self.valueChanged.emit(self)
@@ -251,7 +293,12 @@ class Helical(CallableEntity):
     def ReCritical(self):
         """Calculate critical Reynolds number to define transition of regimen
         flow from laminar to turbulent"""
-        return 2000
+        if self.kw["methodReCritic"] == 1:
+            pass
+        else:
+            Rec = Rec_Schmidt(self.di, self.Dc)
+
+        return Rec
 
     def Nu(self, Re, Pr):
         """Calculate nusselt number"""
@@ -261,7 +308,7 @@ class Helical(CallableEntity):
             # Laminar flow
             pass
         else:
-            Nu = Nu_turbulent_XinEbadian(Re, Pr, self.Di, self.Dc)
+            Nu = Nu_XinEbadian(Re, Pr, self.di, self.Dc)
 
         return Nu
 
@@ -287,12 +334,12 @@ class UI_Helical(ToolGui):
         # self.H = Entrada_con_unidades(Length)
         # self.H.valueChanged.connect(partial(self.changeParams, "H"))
         # lyt.addWidget(self.H, 2, 2)
-        # label = QtWidgets.QLabel("Di")
+        # label = QtWidgets.QLabel("di")
         # label.setToolTip(self.tr("Internal diameter of annuli section"))
         # lyt.addWidget(label, 3, 1)
-        # self.Di = Entrada_con_unidades(Length, "PipeDiameter")
-        # self.Di.valueChanged.connect(partial(self.changeParams, "Di"))
-        # lyt.addWidget(self.Di, 3, 2)
+        # self.di = Entrada_con_unidades(Length, "PipeDiameter")
+        # self.di.valueChanged.connect(partial(self.changeParams, "di"))
+        # lyt.addWidget(self.di, 3, 2)
         # label = QtWidgets.QLabel("Do")
         # label.setToolTip(self.tr("External diameter of annuli section"))
         # lyt.addWidget(label, 4, 1)
