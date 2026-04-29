@@ -114,7 +114,31 @@ def Rec_Ito(di, Dc):
         Critical reynolds number, [-]
     """
     # Eq 11
-    Rec = 200*(di/Dc)**0.32)
+    Rec = 2e4*(di/Dc)**0.32
+    return Rec
+
+
+@refDoc(__doi__, [4])
+def Rec_Kubair(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Kubair-Kuloor (1966)
+
+    .. math::
+        Re_c = 1.273x10^4 \left(\frac{di}{Dc}\right)^{0.2}
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+    Rec = 1.273e4*(di/Dc)**0.2
     return Rec
 
 
@@ -250,6 +274,11 @@ class Helical(CallableEntity):
         Diameter of the helix, [m]
     """
 
+    TEXT_REYNOLDS_CRITICAL = (
+        "Schmidt (1967)"
+        "Ito (1959)",
+        "Kubair-Kuloor (1966)")
+
     status = 0
     msg = ""
     kw = {
@@ -294,8 +323,15 @@ class Helical(CallableEntity):
         """Calculate critical Reynolds number to define transition of regimen
         flow from laminar to turbulent"""
         if self.kw["methodReCritic"] == 1:
-            pass
+            # Ito (1959)
+            Rec = Rec_Ito(self.di, self.Dc)
+
+        elif self.kw["methodReCritic"] == 2:
+            # Kubair-Kuloor (1966)
+            Rec = Rec_Kubair(self.di, self.Dc)
+
         else:
+            # Schmidt (1967)
             Rec = Rec_Schmidt(self.di, self.Dc)
 
         return Rec
@@ -314,7 +350,9 @@ class Helical(CallableEntity):
 
     def f(self, Re):
         """Calculate friction factor"""
-        pass
+        f = f_Schmidt(Re, self.di, self.Dc)
+
+        return f
 
 
 class UI_Helical(ToolGui):
