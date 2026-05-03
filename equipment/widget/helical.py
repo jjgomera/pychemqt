@@ -24,6 +24,8 @@ from math import pi, log, cos, atan
 from tools.qt import QtCore, QtWidgets, translate
 
 from equipment.widget.gui import ToolGui, CallableEntity
+from lib.adimensional import Dean
+from lib.friction import f_friccion
 from lib.unidades import Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
@@ -37,21 +39,37 @@ __doi__ = {
          "ref": "Heat Transfer Eng. 38(5) (2017) 447-474",
          "doi": "10.1080/01457632.2016.1194693"},
     2:
+        {"autor": "",
+         "title": "Perry's Chemical Engineers' Handbook 9th Edition",
+         "ref": "McGraw-Hill (2019)",
+         "doi": ""},
+    3:
         {"autor": "Schmidt, E.F.",
          "title": "Wärmeübergand und Druckverlust in Rohrschlangen",
          "ref": "Chemie Ingenieur Technik 39(13) (1967) 781-789",
          "doi": "10.1002/cite.330391302"},
-    3:
+    4:
         {"autor": "Ito, H.",
          "title": "Friction Factors for Turbulent Flow in Curved Pipes",
          "ref": "J. Basic Eng. 81 (1959) 123-134",
          "doi": "10.1115/1.4008390"},
-    4:
+    5:
         {"autor": "Kubair, V., Kuloor, N.R.",
          "title": "Heat Transfer to Newtonian Fluids in Coiled Pipes in "
                   "Laminar Flow",
          "ref": "Int. J. Heat Mass Transfer 9 (1966) 63-75",
          "doi": "10.1016/0017-9310(66)90057-3"},
+    6:
+        {"autor": "Srinivasan, P.S., Nandapurkar, S.S., Holland, F.A.",
+         "title": "Pressure Drop and Heat Transfer in Coils",
+         "ref": "Chemical Engineer, vol. 218, CE131–119, 1968.",
+         "doi": ""}
+    7:
+        {"autor": "White, C.M.",
+         "title": "Streamline Flow through Curved Pipes",
+         "ref": "Proc. R .Soc. London A 123 (1929) 645-63",
+         "doi": "10.1098/rspa.1929.0089"}
+
     # 5:
         # {"autor": "",
          # "title": "",
@@ -69,6 +87,54 @@ __doi__ = {
 
 # Critical Reynolds number correlations
 @refDoc(__doi__, [2])
+def helical_transition_Re_Srinivasan(Di, Dc):
+    r'''Calculates the transition Reynolds number for flow inside a curved or
+    helical coil between laminar and turbulent flow, using the method of [1]_,
+    also shown in [2]_ and [3]_. Correlation recommended in [3]_.
+
+    .. math::
+        Re_{crit} = 2100\left[1 + 12\left(\frac{D_i}{D_c}\right)^{0.5}\right]
+
+    Parameters
+    ----------
+    Di : float
+        Inner diameter of the coil, [m]
+    Dc : float
+        Diameter of the helix/coil measured from the center of the tube on one
+        side to the center of the tube on the other side, [m]
+
+    Returns
+    -------
+    Re_crit : float
+        Transition Reynolds number between laminar and turbulent [-]
+
+    Notes
+    -----
+    At very low curvatures, converges to Re = 2100.
+    Recommended for :math:`0.004 < d_i/D_c < 0.1`.
+
+    Examples
+    --------
+    >>> helical_transition_Re_Srinivasan(1, 7.)
+    11624.704719832524
+
+    References
+    ----------
+    .. [1] Srinivasan, P. S., Nandapurkar, S. S., and Holland, F. A., "Pressure
+       Drop and Heat Transfer in Coils", Chemical Engineering, 218, CE131-119,
+       (1968).
+    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
+       Correlations for Convection Heat Transfer and Pressure Losses in
+       Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
+       (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
+    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
+       Transfer, 3E. New York: McGraw-Hill, 1998.
+    '''
+    return 2100.*(1. + 12.*sqrt(Di/Dc))
+
+
+
+@refDoc(__doi__, [3])
 def Rec_Schmidt(di, Dc):
     r"""Calculates critical Reynolds to define transition between laminar and
     turbulent flow using using the correlation of Schmidt (1967)
@@ -93,7 +159,7 @@ def Rec_Schmidt(di, Dc):
     return Rec
 
 
-@refDoc(__doi__, [3])
+@refDoc(__doi__, [4])
 def Rec_Ito(di, Dc):
     r"""Calculates critical Reynolds to define transition between laminar and
     turbulent flow using using the correlation of Ito (1959)
@@ -118,7 +184,7 @@ def Rec_Ito(di, Dc):
     return Rec
 
 
-@refDoc(__doi__, [4])
+@refDoc(__doi__, [5])
 def Rec_Kubair(di, Dc):
     r"""Calculates critical Reynolds to define transition between laminar and
     turbulent flow using using the correlation of Kubair-Kuloor (1966)
@@ -142,8 +208,33 @@ def Rec_Kubair(di, Dc):
     return Rec
 
 
+@refDoc(__doi__, [5, 2])
+def Rec_Srinivasan(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Srinivasan (1968). Recomended
+    method by [2]_.
+
+    .. math::
+        Re_c = 2100 \left(1 + 12\sqrt{\frac{d_i}{D_c}}\right)
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+    Rec = 2100 * (1 + 12*(di/Dc)**0.5)
+    return Rec
+
+
 # Friction factor correlations
-@refDoc(__doi__, [2])
+@refDoc(__doi__, [3])
 def f_Schmidt(Re, di, Dc):
     """Calculate friction factor for internal flow of a helical coil using
     the correlation of Schmidt (1967)
@@ -177,8 +268,41 @@ def f_Schmidt(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [7])
+def f_laminar_White(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of White (1929).
+
+    .. math::
+        f_c = \frac{f_{s,L}} {1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
+        \right)^{\frac{1}{0.45}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re=Re, Di=Di, D=Dc)
+    fd = f_friccion(Re)
+    if De > 11.6:
+        C = 1 - (1 - (11.6/De)**0.45)**(1/0.45)
+    else:
+        C = 1
+    return fd/C
+
+
 # Heat Transfer coefficient correlations
-@refDoc(__doi__, [2])
+@refDoc(__doi__, [3])
 def Nu_Schmidt(Re, Pr, di, Dc):
     r"""Calculates Nusselt number for internal flow of a helical coil using the
     correlation of Schmidt (1967)
@@ -277,7 +401,8 @@ class Helical(CallableEntity):
     TEXT_REYNOLDS_CRITICAL = (
         "Schmidt (1967)"
         "Ito (1959)",
-        "Kubair-Kuloor (1966)")
+        "Kubair-Kuloor (1966)",
+        "Srinivasan (1968)")
 
     status = 0
     msg = ""
@@ -329,6 +454,10 @@ class Helical(CallableEntity):
         elif self.kw["methodReCritic"] == 2:
             # Kubair-Kuloor (1966)
             Rec = Rec_Kubair(self.di, self.Dc)
+
+        elif self.kw["methodReCritic"] == 2:
+            # Srinivasan (1968)
+            Rec = Rec_Srinivasan(self.di, self.Dc)
 
         else:
             # Schmidt (1967)
