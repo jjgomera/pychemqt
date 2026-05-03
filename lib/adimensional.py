@@ -41,6 +41,7 @@ This module implements physics adimensional groups
     * :func:`Sc`: Schmidt number
     * :func:`St`: Stanton number
     * :func:`We`: Weber number
+    * :func:`De`: Dean number
 '''
 
 
@@ -934,6 +935,35 @@ def We(V, L, rho, sigma):
     9.88
     """
     return Dimensionless(V**2*L*rho/sigma)
+
+
+@refDoc(__doi__, [2])
+def Dean(Re, di, Dc):
+    r"""Calculates Dean number, `De`, for a fluid with the Reynolds number `Re`,
+    tube diameter `di`, and helical coil diameter `Dc`.
+
+    .. math::
+        \text{De} = Re \sqrt{\frac{d_i}{D_c}}
+
+    Used in flow in curved geometry like helical coil.
+
+    Cited in [2]_, Eq 6-101
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, []
+    di : float
+        Inner tube diameter, [m]
+    Dc : float
+        Diameter of helical coil, [m]
+
+    Returns
+    -------
+    De : float
+        Dean number [-]
+    """
+    return Re / (Dc/di)**0.5
 
 
 if __name__ == "__main__":
