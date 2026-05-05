@@ -358,6 +358,51 @@ def Nu_Schmidt(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [9])
+def Nu_laminar_MoriNakayama(Re, Pr, di, Dc):
+    r"""Calculates Nusselt number for internal flow of a helical coil in
+    laminar flow using the method of Mori-Nakayama (1965).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    if Pr >= 1:
+        # Eq 2.15
+        Z = 2/11*(1+(1+77/4/Pr**2)**0.5)
+    else:
+        # Eq 2.18
+        Z = (2+(10/Pr**2-1)**0.5)/5
+
+    # Eq 2.23
+    NuI = 0.1979*De**0.5/Z
+
+    if Pr >= 1:
+        # Eq 2.24
+        f = 1 + 37.05/Z * (1/40 - 17/120*Z + (1/10/Z + 13/30)/10/Pr)*De**-0.5
+    else:
+        # Eq 2.25
+        f = 1 - 37.05/Z * (Z**2/12 + 1/24 - 1/120/Z
+                           - (4/3*Z - 1/3/Z + 1/15/Z**2)/20/Pr)*De**-0.5
+    NuII = NuI/f
+
+    return NuII * 48/11
+
+
 @refDoc(__doi__, [20, 1])
 def Nu_XinEbadian(Re, Pr, di, Dc):
     r"""Calculates Nusselt number for internal flow of a helical coil using the
@@ -435,12 +480,13 @@ class Helical(CallableEntity):
 
     TEXT_LAMINAR_HEAT = (
         "Schmidt (1967)",
-        "Xin-Ebadian (1997)"
+        "Xin-Ebadian (1997)",
+        "Mori-Nakayama (1965)",
     )
 
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
-        "Xin-Ebadian (1997)"
+        "Xin-Ebadian (1997)",
     )
 
 
@@ -518,6 +564,10 @@ class Helical(CallableEntity):
             if self.kw["methodHeatLaminar"] == 1:
                 # Xin-Ebadian (1997)
                 Nu = Nu_XinEbadian(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 2:
+                # Mori-Nakayama (1965)
+                Nu = Nu_laminar_MoriNakayama(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
