@@ -417,11 +417,32 @@ class Helical(CallableEntity):
     """
 
     TEXT_REYNOLDS_CRITICAL = (
-        "Schmidt (1967)"
+        "Schmidt (1967)",
         "Ito (1959)",
         "Kubair-Kuloor (1966)",
         "Srinivasan (1968)",
         "Kutateladze (1966)")
+
+    TEXT_LAMINAR_FRICTION = (
+        "Schmidt (1967)",
+        "White (1929)",
+        "Mori-Nakayama (1965)",
+    )
+
+    TEXT_TURBULENT_FRICTION = (
+        "Schmidt (1967)",
+    )
+
+    TEXT_LAMINAR_HEAT = (
+        "Schmidt (1967)",
+        "Xin-Ebadian (1997)"
+    )
+
+    TEXT_TURBULENT_HEAT = (
+        "Schmidt (1967)",
+        "Xin-Ebadian (1997)"
+    )
+
 
     status = 0
     msg = ""
@@ -432,7 +453,7 @@ class Helical(CallableEntity):
         "methodHeatLaminar": 0,
         "methodHeatTurbulent": 0,
 
-        "H": 0,
+        # "H": 0,
         "di": 0,
         "Dc": 0}
 
@@ -494,15 +515,49 @@ class Helical(CallableEntity):
 
         if Re < Rec:
             # Laminar flow
-            pass
+            if self.kw["methodHeatLaminar"] == 1:
+                # Xin-Ebadian (1997)
+                Nu = Nu_XinEbadian(Re, Pr, self.di, self.Dc)
+
+            else:
+                # Schmidt (1967)
+                Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
+
         else:
-            Nu = Nu_XinEbadian(Re, Pr, self.di, self.Dc)
+            # Turbulent flow
+            if self.kw["methodHeatTurbulent"] == 1:
+                # Xin-Ebadian (1997)
+                Nu = Nu_XinEbadian(Re, Pr, self.di, self.Dc)
+
+            else:
+                # Schmidt (1967)
+                Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
 
         return Nu
 
     def f(self, Re):
         """Calculate friction factor"""
-        f = f_Schmidt(Re, self.di, self.Dc)
+        Rec = self.ReCritical
+
+        if Rec < Rec:
+            # Laminar flow
+            if self.kw["methodFrictionLaminar"] == 1:
+                # White (1929)
+                f = f_laminar_White(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 1:
+                # Mori-Nakayama (1965)
+                f = f_laminar_Mori_Nakayama(Re, self.di, self.Dc)
+
+            else:
+                # Schmidt (1967)
+                f = f_Schmidt(Re, self.di, self.Dc)
+
+        else:
+            # Turbulent flow
+
+            # Schmidt (1967)
+            f = f_Schmidt(Re, self.di, self.Dc)
 
         return f
 
@@ -518,48 +573,81 @@ class UI_Helical(ToolGui):
 
         lyt = self.wdg.layout()
 
-        # label = QtWidgets.QLabel(self.tr("Tape pitch, H"))
-        # label.setToolTip(self.tr("Tape pitch for twist of π radians (180º)"))
-        # lyt.addWidget(label, 2, 1)
-        # self.H = Entrada_con_unidades(Length)
-        # self.H.valueChanged.connect(partial(self.changeParams, "H"))
-        # lyt.addWidget(self.H, 2, 2)
-        # label = QtWidgets.QLabel("di")
-        # label.setToolTip(self.tr("Internal diameter of annuli section"))
-        # lyt.addWidget(label, 3, 1)
-        # self.di = Entrada_con_unidades(Length, "PipeDiameter")
-        # self.di.valueChanged.connect(partial(self.changeParams, "di"))
-        # lyt.addWidget(self.di, 3, 2)
-        # label = QtWidgets.QLabel("Do")
-        # label.setToolTip(self.tr("External diameter of annuli section"))
-        # lyt.addWidget(label, 4, 1)
-        # self.Do = Entrada_con_unidades(Length, "PipeDiameter")
-        # self.Do.valueChanged.connect(partial(self.changeParams, "Do"))
-        # lyt.addWidget(self.Do, 4, 2)
+        groupMethods = QtWidgets.QWidget()
+        lytM = QtWidgets.QGridLayout(groupMethods)
+        lytM.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 1, 0)
+        lbl = QtWidgets.QLabel(self.tr("Laminar Flow"))
+        lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter
+                         | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        lytM.addWidget(lbl, 1, 2)
+        lbl = QtWidgets.QLabel(self.tr("Turbulent Flow"))
+        lbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter
+                         | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        lytM.addWidget(lbl, 1, 3)
+        lytM.addWidget(QtWidgets.QLabel(
+            self.tr("Friction factor method")), 2, 1)
+        self.methodFrictionLaminar = QtWidgets.QComboBox()
+        for method in Helical.TEXT_LAMINAR_FRICTION:
+            self.methodFrictionLaminar.addItem(method)
+        self.methodFrictionLaminar.currentIndexChanged.connect(
+            partial(self.changeParams, "methodFrictionLaminar"))
+        lytM.addWidget(self.methodFrictionLaminar, 2, 2)
+        self.methodFrictionTurbulent = QtWidgets.QComboBox()
+        for method in Helical.TEXT_TURBULENT_FRICTION:
+            self.methodFrictionTurbulent.addItem(method)
+        self.methodFrictionTurbulent.currentIndexChanged.connect(
+            partial(self.changeParams, "methodFrictionTurbulent"))
+        lytM.addWidget(self.methodFrictionTurbulent, 2, 3)
+        lytM.addWidget(QtWidgets.QLabel(
+            self.tr("Heat transfer method")), 3, 1)
+        self.methodHeatLaminar = QtWidgets.QComboBox()
+        for method in Helical.TEXT_LAMINAR_HEAT:
+            self.methodHeatLaminar.addItem(method)
+        self.methodHeatLaminar.currentIndexChanged.connect(
+            partial(self.changeParams, "methodHeatLaminar"))
+        lytM.addWidget(self.methodHeatLaminar, 3, 2)
+        self.methodHeatTurbulent = QtWidgets.QComboBox()
+        for method in Helical.TEXT_TURBULENT_HEAT:
+            self.methodHeatTurbulent.addItem(method)
+        self.methodHeatTurbulent.currentIndexChanged.connect(
+            partial(self.changeParams, "methodHeatTurbulent"))
+        lytM.addWidget(self.methodHeatTurbulent, 3, 3)
+        lytM.addItem(QtWidgets.QSpacerItem(
+            10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
+        lyt.addWidget(groupMethods, 1, 1, 1, 2)
 
-        # self.angled = QtWidgets.QCheckBox(self.tr("Angled twisted-tape"))
-        # self.angled.toggled.connect(self.setEnableOrientation)
-        # lyt.addWidget(self.angled, 5, 1, 1, 2)
+        lytH = QtWidgets.QHBoxLayout()
+        lytH.addWidget(QtWidgets.QLabel(
+            self.tr("Critical Reynolds correlation")))
+        self.methodReCritic = QtWidgets.QComboBox()
+        for method in Helical.TEXT_REYNOLDS_CRITICAL:
+            self.methodReCritic.addItem(method)
+        self.methodReCritic.currentIndexChanged.connect(
+            partial(self.changeParams, "methodReCritic"))
+        lytH.addWidget(self.methodReCritic)
+        lytH.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+            QtWidgets.QSizePolicy.Policy.Fixed))
+        lyt.addLayout(lytH, 2, 1, 1, 2)
 
-        # lytH = QtWidgets.QHBoxLayout()
-        # self.labelOrientation = QtWidgets.QLabel(self.tr(
-            # "Direction of flow relative to the tape curvature"))
-        # lytH.addWidget(self.labelOrientation)
-        # self.orientation = QtWidgets.QComboBox()
-        # for method in TwistedTapeAnnuli.TEXT_ORIENTACION:
-            # self.orientation.addItem(method)
-        # self.orientation.currentIndexChanged.connect(
-            # partial(self.changeParams, "orientation"))
-        # lytH.addWidget(self.orientation)
-        # lyt.addLayout(lytH, 7, 1, 1, 2)
+        lyt.addItem(QtWidgets.QSpacerItem(
+            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+            QtWidgets.QSizePolicy.Policy.Fixed), 3, 1)
+
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Pipe internal diameter")), 4, 1)
+        self.di = Entrada_con_unidades(Length, "PipeDiameter")
+        self.di.valueChanged.connect(partial(self.changeParams, "di"))
+        lyt.addWidget(self.di, 4, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Helical coil diameter")), 5, 1)
+        self.Dc = Entrada_con_unidades(Length)
+        self.Dc.valueChanged.connect(partial(self.changeParams, "Dc"))
+        lyt.addWidget(self.Dc, 5, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
-
-    def setEnableOrientation(self, boolean):
-        """Change Enable/Disable state for orientation of twisted tape"""
-        self.labelOrientation.setEnabled(boolean)
-        self.orientation.setEnabled(boolean)
-        self.changeParams("angled", boolean)
 
 
 class Dialog(QtWidgets.QDialog):
