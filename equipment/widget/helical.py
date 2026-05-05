@@ -63,77 +63,34 @@ __doi__ = {
         {"autor": "Srinivasan, P.S., Nandapurkar, S.S., Holland, F.A.",
          "title": "Pressure Drop and Heat Transfer in Coils",
          "ref": "Chemical Engineer, vol. 218, CE131–119, 1968.",
-         "doi": ""}
+         "doi": ""},
     7:
+        {"autor": "Kutateladze, S.S., Borishanskii, V.M. ",
+         "title": "A Concise Encyclopedia of Heat Transfer",
+         "ref": "Pergamon Press (1966)",
+         "doi": ""},
+    8:
         {"autor": "White, C.M.",
          "title": "Streamline Flow through Curved Pipes",
          "ref": "Proc. R .Soc. London A 123 (1929) 645-63",
-         "doi": "10.1098/rspa.1929.0089"}
+         "doi": "10.1098/rspa.1929.0089"},
 
-    # 5:
+    # 9:
         # {"autor": "",
          # "title": "",
          # "ref": "",
-         # "doi": ""}
+         # "doi": ""},
 
     20:
         {"autor": "Xin, R.C., Ebadian, M.A.  ",
          "title": "The Effects of Prandtl Numbers on Local and Average "
                   "Convective Heat Transfer Characteristics in Helical Pipes",
          "ref": "J. Heat Transfer 119(3) (1997) 467-73",
-         "doi": "10.1115/1.2824120."}
+         "doi": "10.1115/1.2824120."},
 }
 
 
 # Critical Reynolds number correlations
-@refDoc(__doi__, [2])
-def helical_transition_Re_Srinivasan(Di, Dc):
-    r'''Calculates the transition Reynolds number for flow inside a curved or
-    helical coil between laminar and turbulent flow, using the method of [1]_,
-    also shown in [2]_ and [3]_. Correlation recommended in [3]_.
-
-    .. math::
-        Re_{crit} = 2100\left[1 + 12\left(\frac{D_i}{D_c}\right)^{0.5}\right]
-
-    Parameters
-    ----------
-    Di : float
-        Inner diameter of the coil, [m]
-    Dc : float
-        Diameter of the helix/coil measured from the center of the tube on one
-        side to the center of the tube on the other side, [m]
-
-    Returns
-    -------
-    Re_crit : float
-        Transition Reynolds number between laminar and turbulent [-]
-
-    Notes
-    -----
-    At very low curvatures, converges to Re = 2100.
-    Recommended for :math:`0.004 < d_i/D_c < 0.1`.
-
-    Examples
-    --------
-    >>> helical_transition_Re_Srinivasan(1, 7.)
-    11624.704719832524
-
-    References
-    ----------
-    .. [1] Srinivasan, P. S., Nandapurkar, S. S., and Holland, F. A., "Pressure
-       Drop and Heat Transfer in Coils", Chemical Engineering, 218, CE131-119,
-       (1968).
-    .. [2] El-Genk, Mohamed S., and Timothy M. Schriener. "A Review and
-       Correlations for Convection Heat Transfer and Pressure Losses in
-       Toroidal and Helically Coiled Tubes." Heat Transfer Engineering 0, no. 0
-       (June 7, 2016): 1-28. doi:10.1080/01457632.2016.1194693.
-    .. [3] Rohsenow, Warren and James Hartnett and Young Cho. Handbook of Heat
-       Transfer, 3E. New York: McGraw-Hill, 1998.
-    '''
-    return 2100.*(1. + 12.*sqrt(Di/Dc))
-
-
-
 @refDoc(__doi__, [3])
 def Rec_Schmidt(di, Dc):
     r"""Calculates critical Reynolds to define transition between laminar and
@@ -233,6 +190,31 @@ def Rec_Srinivasan(di, Dc):
     return Rec
 
 
+@refDoc(__doi__, [7])
+def Rec_Kutateladze(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Kutateladze (1966).
+
+    .. math::
+        Re_c = 2300 + 10500 \left(\frac{d_i}{D_c}\right)^{0.3}
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+    # Eq 7.26
+    Rec = 2300 + 10500*(di/Dc)**0.3
+    return Rec
+
+
 # Friction factor correlations
 @refDoc(__doi__, [3])
 def f_Schmidt(Re, di, Dc):
@@ -268,7 +250,7 @@ def f_Schmidt(Re, di, Dc):
     return f
 
 
-@refDoc(__doi__, [7])
+@refDoc(__doi__, [8])
 def f_laminar_White(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
     laminar flow using the method of White (1929).
@@ -402,7 +384,8 @@ class Helical(CallableEntity):
         "Schmidt (1967)"
         "Ito (1959)",
         "Kubair-Kuloor (1966)",
-        "Srinivasan (1968)")
+        "Srinivasan (1968)",
+        "Kutateladze (1966)")
 
     status = 0
     msg = ""
@@ -458,6 +441,10 @@ class Helical(CallableEntity):
         elif self.kw["methodReCritic"] == 2:
             # Srinivasan (1968)
             Rec = Rec_Srinivasan(self.di, self.Dc)
+
+        elif self.kw["methodReCritic"] == 3:
+            # Kutateladze (1966)
+            Rec = Rec_Kutateladze(self.di, self.Dc)
 
         else:
             # Schmidt (1967)
