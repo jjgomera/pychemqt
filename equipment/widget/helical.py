@@ -74,8 +74,14 @@ __doi__ = {
          "title": "Streamline Flow through Curved Pipes",
          "ref": "Proc. R .Soc. London A 123 (1929) 645-63",
          "doi": "10.1098/rspa.1929.0089"},
+    9:
+        {"autor": "Mori, Y., Nakayama, W.",
+         "title": "Study on Forced Convective Heat Transfer in Curved Pipes "
+                  "(1st Report, Laminar Region)",
+         "ref": "Int. J. Heat Mass Transfer 8 (1965) 67-82",
+         "doi": "10.1016/0017-9310(65)90098-0"},
 
-    # 9:
+    # 10:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -274,13 +280,43 @@ def f_laminar_White(Re, di, Dc):
         Friction factor, [-]
 
     """
-    De = Dean(Re=Re, Di=Di, D=Dc)
+    De = Dean(Re, di, Dc)
     fd = f_friccion(Re)
     if De > 11.6:
         C = 1 - (1 - (11.6/De)**0.45)**(1/0.45)
     else:
         C = 1
     return fd/C
+
+
+@refDoc(__doi__, [9])
+def f_laminar_Mori_Nakayama(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Mori-Nakayama (1965).
+
+    .. math::
+        \frac{f_c}{f_{s}=\left(\frac{0.108De^{0.5}}{1-3.253 De^{-0.5}}\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    fI = 0.108*De**0.5                                                # Eq 1.33
+    fII = fI / (1-3.253/De**0.5)                                      # Eq 1.34
+    return fII * fd
 
 
 # Heat Transfer coefficient correlations
