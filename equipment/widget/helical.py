@@ -78,8 +78,14 @@ __doi__ = {
         {"autor": "Mori, Y., Nakayama, W.",
          "title": "Study on Forced Convective Heat Transfer in Curved Pipes "
                   "(1st Report, Laminar Region)",
-         "ref": "Int. J. Heat Mass Transfer 8 (1965) 67-82",
+         "ref": "Int. J. Heat Mass Transfer 8(1) (1965) 67-82",
          "doi": "10.1016/0017-9310(65)90098-0"},
+    10:
+        {"autor": "Mori, Y., Nakayama, W.",
+         "title": "Study on Forced Convective Heat Transfer in Curved Pipes "
+                  "(2nd Report, Turbulent Region)",
+         "ref": "Int. J. Heat Mass Transfer 10(1) (1967) 37-59",
+         "doi": "10.1016/0017-9310(67)90182-2"},
 
     # 10:
         # {"autor": "",
@@ -289,8 +295,8 @@ def f_laminar_White(Re, di, Dc):
     return fd/C
 
 
-@refDoc(__doi__, [9])
-def f_laminar_Mori_Nakayama(Re, di, Dc):
+@refDoc(__doi__, [9, 10])
+def f_MoriNakayama(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
     laminar flow using the method of Mori-Nakayama (1965).
 
@@ -311,13 +317,29 @@ def f_laminar_Mori_Nakayama(Re, di, Dc):
     f : float
         Friction factor, [-]
     """
-    De = Dean(Re, di, Dc)
-    fd = f_friccion(Re)
 
-    fI = 0.108*De**0.5                                                # Eq 1.33
-    fII = fI / (1-3.253/De**0.5)                                      # Eq 1.34
-    return fII * fd
+    Rec = Rec_Ito(di, Dc)
 
+    # Limit between both turbulent phases, Eq. 43
+    Re_ = 6.5e5 * (di/Dc)**0.5
+
+    if Re < Rec:
+        # Laminar flow
+        De = Dean(Re, di, Dc)
+        fd = f_friccion(Re)
+
+        fI = 0.108*De**0.5                                            # Eq 1.33
+        fII = fI / (1-3.253/De**0.5)                                  # Eq 1.34
+        f = fII * fd
+    elif Re < Re_:
+        # Low turbulent region, # Eq 40 from [10]_
+        f = 0.3/(Re*(di/Dc)**2)**0.2*(1+0.112/(Re*(di/Dc)**2)**0.2)/(di/Dc)**0.5
+    else:
+        # Hith turbulent region, # Eq 41 from [10]_
+        f = 0.192/(Re*(di/Dc)**2.5)**(1/6) * \
+            (1+0.068/(Re*(di/Dc)**2.5)**(1/6)) / (di/Dc)**0.5
+
+    return f
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [3])
@@ -358,8 +380,8 @@ def Nu_Schmidt(Re, Pr, di, Dc):
     return Nu
 
 
-@refDoc(__doi__, [9])
-def Nu_laminar_MoriNakayama(Re, Pr, di, Dc):
+@refDoc(__doi__, [9, 10])
+def Nu_MoriNakayama(Re, Pr, di, Dc):
     r"""Calculates Nusselt number for internal flow of a helical coil in
     laminar flow using the method of Mori-Nakayama (1965).
 
@@ -379,28 +401,38 @@ def Nu_laminar_MoriNakayama(Re, Pr, di, Dc):
     Nu : float
         Nusselt number, [-]
     """
-    De = Dean(Re, di, Dc)
+    Rec = Rec_Ito(di, Dc)
 
-    if Pr >= 1:
-        # Eq 2.15
-        Z = 2/11*(1+(1+77/4/Pr**2)**0.5)
+    if Re < Rec:
+        # Laminar flow
+        De = Dean(Re, di, Dc)
+
+        if Pr >= 1:
+            # Eq 2.15
+            Z = 2/11*(1+(1+77/4/Pr**2)**0.5)
+        else:
+            # Eq 2.18
+            Z = (2+(10/Pr**2-1)**0.5)/5
+
+        # Eq 2.23
+        NuI = 0.1979*De**0.5/Z
+
+        if Pr >= 1:
+            # Eq 2.24
+            f = 1 + 37.05/Z * (1/40 - 17/120*Z + (1/10/Z + 13/30)/10/Pr)*De**-0.5
+        else:
+            # Eq 2.25
+            f = 1 - 37.05/Z * (Z**2/12 + 1/24 - 1/120/Z
+                               - (4/3*Z - 1/3/Z + 1/15/Z**2)/20/Pr)*De**-0.5
+        Nu = 48/11 * NuI/f
+
     else:
-        # Eq 2.18
-        Z = (2+(10/Pr**2-1)**0.5)/5
+        # Turbulent flow
+        # Eq 91 in [10]_
+        Nu = Pr/(26.2*(Pr**(2/3)-0.074)) * Re**0.8 * (di/Dc)**0.1 * \
+            (1+0.098/(Re*(di/Dc)**2)**0.2)
 
-    # Eq 2.23
-    NuI = 0.1979*De**0.5/Z
-
-    if Pr >= 1:
-        # Eq 2.24
-        f = 1 + 37.05/Z * (1/40 - 17/120*Z + (1/10/Z + 13/30)/10/Pr)*De**-0.5
-    else:
-        # Eq 2.25
-        f = 1 - 37.05/Z * (Z**2/12 + 1/24 - 1/120/Z
-                           - (4/3*Z - 1/3/Z + 1/15/Z**2)/20/Pr)*De**-0.5
-    NuII = NuI/f
-
-    return NuII * 48/11
+    return Nu
 
 
 @refDoc(__doi__, [20, 1])
@@ -476,6 +508,7 @@ class Helical(CallableEntity):
 
     TEXT_TURBULENT_FRICTION = (
         "Schmidt (1967)",
+        "Mori-Nakayama (1965)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -487,6 +520,7 @@ class Helical(CallableEntity):
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
         "Xin-Ebadian (1997)",
+        "Mori-Nakayama (1965)",
     )
 
 
@@ -567,7 +601,7 @@ class Helical(CallableEntity):
 
             elif self.kw["methodHeatLaminar"] == 2:
                 # Mori-Nakayama (1965)
-                Nu = Nu_laminar_MoriNakayama(Re, Pr, self.di, self.Dc)
+                Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
@@ -579,6 +613,10 @@ class Helical(CallableEntity):
                 # Xin-Ebadian (1997)
                 Nu = Nu_XinEbadian(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatLaminar"] == 2:
+                # Mori-Nakayama (1965)
+                Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -589,7 +627,7 @@ class Helical(CallableEntity):
         """Calculate friction factor"""
         Rec = self.ReCritical
 
-        if Rec < Rec:
+        if Re < Rec:
             # Laminar flow
             if self.kw["methodFrictionLaminar"] == 1:
                 # White (1929)
@@ -597,7 +635,7 @@ class Helical(CallableEntity):
 
             elif self.kw["methodFrictionLaminar"] == 1:
                 # Mori-Nakayama (1965)
-                f = f_laminar_Mori_Nakayama(Re, self.di, self.Dc)
+                f = f_MoriNakayama(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
@@ -605,9 +643,13 @@ class Helical(CallableEntity):
 
         else:
             # Turbulent flow
+            if self.kw["methodFrictionLaminar"] == 1:
+                # Mori-Nakayama (1965)
+                f = f_MoriNakayama(Re, self.di, self.Dc)
 
-            # Schmidt (1967)
-            f = f_Schmidt(Re, self.di, self.Dc)
+            else:
+                # Schmidt (1967)
+                f = f_Schmidt(Re, self.di, self.Dc)
 
         return f
 
