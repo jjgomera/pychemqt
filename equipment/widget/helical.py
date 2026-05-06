@@ -86,8 +86,13 @@ __doi__ = {
                   "(2nd Report, Turbulent Region)",
          "ref": "Int. J. Heat Mass Transfer 10(1) (1967) 37-59",
          "doi": "10.1016/0017-9310(67)90182-2"},
+    11:
+        {"autor": "Hart, J., Ellenberger, J., Hamersma, P.J.",
+         "title": "Single- and Two-Phase Flow Through Helically Coiled Tubes",
+         "ref": "Chem. Eng. Sci. 43(4) (1988) 775-783",
+         "doi": "10.1016/0009-2509(88)80072-1"},
 
-    # 10:
+    # 12:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -262,39 +267,6 @@ def f_Schmidt(Re, di, Dc):
     return f
 
 
-@refDoc(__doi__, [8])
-def f_laminar_White(Re, di, Dc):
-    r"""Calculates friction factor for internal flow of a helical coil in
-    laminar flow using the method of White (1929).
-
-    .. math::
-        f_c = \frac{f_{s,L}} {1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
-        \right)^{\frac{1}{0.45}}
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    di : float
-        Inner diameter of the pipe, [m]
-    Dc : float
-        Diameter of the helix, [m]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-
-    """
-    De = Dean(Re, di, Dc)
-    fd = f_friccion(Re)
-    if De > 11.6:
-        C = 1 - (1 - (11.6/De)**0.45)**(1/0.45)
-    else:
-        C = 1
-    return fd/C
-
-
 @refDoc(__doi__, [9, 10])
 def f_MoriNakayama(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -340,6 +312,71 @@ def f_MoriNakayama(Re, di, Dc):
             (1+0.068/(Re*(di/Dc)**2.5)**(1/6)) / (di/Dc)**0.5
 
     return f
+
+
+@refDoc(__doi__, [8])
+def f_laminar_White(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of White (1929).
+
+    .. math::
+        f_c = \frac{f_{s,L}} {1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
+        \right)^{\frac{1}{0.45}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+    if De > 11.6:
+        C = 1 - (1 - (11.6/De)**0.45)**(1/0.45)
+    else:
+        C = 1
+    return fd/C
+
+
+@refDoc(__doi__, [11, 2])
+def f_laminar_Hart(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Hart (1988).
+
+    .. math::
+        f_c = \frac{f_{s,L}} {1 + 0.09 \frac{De^{1.5}}{70+De}
+
+    Recomended method in [2]_ for friction factor in laminar flow.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    f = 1 + 0.09 * De**1.5 / (70+De)
+    return f * fd
+
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [3])
@@ -504,6 +541,7 @@ class Helical(CallableEntity):
         "Schmidt (1967)",
         "White (1929)",
         "Mori-Nakayama (1965)",
+        "Hart (1988)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -633,9 +671,13 @@ class Helical(CallableEntity):
                 # White (1929)
                 f = f_laminar_White(Re, self.di, self.Dc)
 
-            elif self.kw["methodFrictionLaminar"] == 1:
+            elif self.kw["methodFrictionLaminar"] == 2:
                 # Mori-Nakayama (1965)
                 f = f_MoriNakayama(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 3:
+                # Hart (1988)
+                f = f_laminar_Hart(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
