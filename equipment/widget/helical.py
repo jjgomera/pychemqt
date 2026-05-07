@@ -102,8 +102,14 @@ __doi__ = {
          "title": "Momentum Transfer in Curved Pipes. 1. Newtonian Fluids",
          "ref": "Ind. Eng. Chem. Process Des. Dev. 18(1) (1979) 130-137",
          "doi": "10.1021_i260069a017"},
+    14:
+        {"autor": "Czop, V., Barbier, D., Dong, S.",
+         "title": "Pressure drop, void fraction and shear stress measurements "
+                  "in an adiabatic two-phase flow in a coiled tube",
+         "ref": "Nuclear Eng. Design 149 (1994) 323-333",
+         "doi": "10.1016/0029-5493(94)90298-4"},
 
-    # 14:
+    # 15:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -115,6 +121,7 @@ __doi__ = {
                   "Convective Heat Transfer Characteristics in Helical Pipes",
          "ref": "J. Heat Transfer 119(3) (1997) 467-73",
          "doi": "10.1115/1.2824120."},
+
 }
 
 
@@ -464,6 +471,39 @@ def f_laminar_Hart(Re, di, Dc):
     return f * fd
 
 
+@refDoc(__doi__, [14])
+def f_turbulent_Czop(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    turbulent flow using the method of Czop (1994).
+
+    .. math::
+        f_c =  \frac{0.096}{De^{-1517}}
+
+    The paper give this correlation for single phase flow. Give too
+    correlations for two phase flow.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 9
+    f = 0.096 / De**0.1517
+    return f
+
+
+
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [3])
 def Nu_Schmidt(Re, Pr, di, Dc):
@@ -637,6 +677,7 @@ class Helical(CallableEntity):
         "Mori-Nakayama (1965)",
         "Ju (2001)",
         "Mishra-Gupta (1979)",
+        "Czop (1994)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -741,7 +782,7 @@ class Helical(CallableEntity):
                 # Xin-Ebadian (1997)
                 Nu = Nu_XinEbadian(Re, Pr, self.di, self.Dc)
 
-            elif self.kw["methodHeatLaminar"] == 2:
+            elif self.kw["methodHeatTurbulent"] == 2:
                 # Mori-Nakayama (1965)
                 Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
 
@@ -783,17 +824,21 @@ class Helical(CallableEntity):
 
         else:
             # Turbulent flow
-            if self.kw["methodFrictionLaminar"] == 1:
+            if self.kw["methodFrictionTurbulent"] == 1:
                 # Mori-Nakayama (1965)
                 f = f_MoriNakayama(Re, self.di, self.Dc)
 
-            elif self.kw["methodFrictionLaminar"] == 2:
+            elif self.kw["methodFrictionTurbulent"] == 2:
                 # Ju (2001)
                 f = f_Ju(Re, self.di, self.Dc)
 
-            elif self.kw["methodFrictionLaminar"] == 3:
+            elif self.kw["methodFrictionTurbulent"] == 3:
                 # Mishra-Gupta (1979)
                 f = f_MishraGupta(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 4:
+                # Czop (1994)
+                f = f_turbulent_Czop(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
