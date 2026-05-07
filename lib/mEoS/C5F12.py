@@ -130,7 +130,7 @@ class C5F12(MEoS):
 class Test(TestCase):
     """Testing"""
     def test_gao(self):
-        """Pag. 14"""
+        """Table 14, pag 17225"""
         st = C5F12(T=250, rhom=0)
         self.assertEqual(round(st.P.MPa, 6), 0)
         self.assertEqual(round(st.cvM.JmolK, 4), 199.2576)
