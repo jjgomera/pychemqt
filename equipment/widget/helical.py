@@ -92,11 +92,11 @@ __doi__ = {
          "ref": "Chem. Eng. Sci. 43(4) (1988) 775-783",
          "doi": "10.1016/0009-2509(88)80072-1"},
     12:
-        {"autor": "Xin, R.C., Ebadian, M.A.  ",
-         "title": "The Effects of Prandtl Numbers on Local and Average "
-                  "Convective Heat Transfer Characteristics in Helical Pipes",
-         "ref": "J. Heat Transfer 119(3) (1997) 467-73",
-         "doi": "10.1115/1.2824120."},
+        {"autor": "Ju, H., Huang, Z., Xu, Y., Duan, B, Yu, Y.",
+         "title": "Hydraulic Performance of Small Bending Radius Helical "
+                  "Coil-Pipe",
+         "ref": "J. Nuclear Sci. Eng. 38(10) (2001) 826-831",
+         "doi": "10.1080/18811248.2001.9715102"},
     13:
         {"autor": "Mishra, P., Gupta, S.N.",
          "title": "Momentum Transfer in Curved Pipes. 1. Newtonian Fluids",
@@ -324,6 +324,44 @@ def f_MoriNakayama(Re, di, Dc):
 
     return f
 
+
+@refDoc(__doi__, [12])
+def f_Ju(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Ju et al. (2001).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    Rec = Rec_Srinivasan(di, Dc)
+
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    if De < 11.6:
+        # Laminar flow, Eq 12, straight tube correlation
+        f = fd
+    elif Re < Rec:
+        # Laminar with big vortex, Eq. 13
+        f = fd * (1 + 0.015*Re**0.75*(di/Dc)**0.4)
+    else:
+        # Turbulent flow, Eq 14
+        f = fd * (1 + 0.011*Re**0.23*(di/Dc)**0.14)
+
+    return f
+
+
 @refDoc(__doi__, [13])
 def f_MishraGupta(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil using
@@ -520,7 +558,7 @@ def Nu_MoriNakayama(Re, Pr, di, Dc):
     return Nu
 
 
-@refDoc(__doi__, [12])
+@refDoc(__doi__, [21])
 def Nu_XinEbadian(Re, Pr, di, Dc):
     r"""Calculates Nusselt number for internal flow of a helical coil using the
     correlation of Xin-Ebadian (1997)
@@ -590,12 +628,14 @@ class Helical(CallableEntity):
         "White (1929)",
         "Mori-Nakayama (1965)",
         "Hart (1988)",
+        "Ju (2001)",
         "Mishra-Gupta (1979)",
     )
 
     TEXT_TURBULENT_FRICTION = (
         "Schmidt (1967)",
         "Mori-Nakayama (1965)",
+        "Ju (2001)",
         "Mishra-Gupta (1979)",
     )
 
@@ -730,6 +770,10 @@ class Helical(CallableEntity):
                 f = f_laminar_Hart(Re, self.di, self.Dc)
 
             elif self.kw["methodFrictionLaminar"] == 4:
+                # Ju (2001)
+                f = f_Ju(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 5:
                 # Mishra-Gupta (1979)
                 f = f_MishraGupta(Re, self.di, self.Dc)
 
@@ -744,6 +788,10 @@ class Helical(CallableEntity):
                 f = f_MoriNakayama(Re, self.di, self.Dc)
 
             elif self.kw["methodFrictionLaminar"] == 2:
+                # Ju (2001)
+                f = f_Ju(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 3:
                 # Mishra-Gupta (1979)
                 f = f_MishraGupta(Re, self.di, self.Dc)
 
