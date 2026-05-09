@@ -33,14 +33,18 @@ class R1243zf(MEoS):
     synonym = "R-1243zf"
     rhoc = unidades.Density(413.019859)
     Tc = unidades.Temperature(376.93)
-    Pc = unidades.Pressure(3517.9, "kPa")
+    Pc = unidades.Pressure(3513.7, "kPa")
     M = 96.05113  # g/mol
-    Tt = unidades.Temperature(0)
-    Tb = unidades.Temperature(247.726)
-    f_acent = 0.26
+    Tt = unidades.Temperature(122.35)
+    Tb = unidades.Temperature(247.666)
+    f_acent = 0.2595
     momentoDipolar = unidades.DipoleMoment(0, "Debye")
 
     Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1], "ao_pow": [-12.2722866918, 8.2858157407],
+           "ao_exp": [13.285, 7.67], "titao": [877.6/Tc, 3562.5/Tc]}
+
+    Fi2 = {"ao_log": [1, 3],
            "pow": [0, 1], "ao_pow": [-12.06546081, 8.207216743],
            "ao_exp": [11.247, 8.1391], "titao": [789/Tc, 2196/Tc]}
 
@@ -53,6 +57,41 @@ class R1243zf(MEoS):
     akasaka = {
         "__type__": "Helmholtz",
         "__name__": "Helmholtz equation of state for R1243zf of Akasaka "
+                    "(2025)",
+        "__doi__": {"autor": "Akasaka, R., Lemmon, E.W.",
+                    "title": "A Helmholtz Energy Equation of State for "
+                             "3,3,3‐Trifluoroprop‐1‐ene (R‐1243zf)",
+                    "ref": "Int. J. Thermophysics 46 (2025) 23",
+                    "doi": "10.1007/s10765-024-03481-6"},
+
+        "R": 8.314462618,
+        "cp": Fi1,
+        "ref": "IIR",
+
+        "Tmin": 234, "Tmax": 430, "Pmax": 35000.0,
+
+        "nr1": [0.02626021, 0.701348, -0.6180002748076, 0.1916400159007,
+                0.0762, -0.795],
+        "d1": [4, 1, 1, 2, 3, 2],
+        "t1": [1, 0.12425, 1.0096, 0.271875, 0.405, 1.07288],
+
+        "nr2": [-0.8537, -0.3531, -0.07971, -0.05411, -0.0424],
+        "d2": [1, 1, 1, 2, 3],
+        "t2": [1.45525, 2.105, 6.07, 5.794375, 4.094],
+        "c2": [1, 2, 3, 3, 3],
+        "gamma2": [1, 1, 1, 0.66, 0.33],
+
+        "nr3": [-0.06774, -0.01032, -0.1184, -0.1135],
+        "d3": [1, 2, 1, 1],
+        "t3": [1.029, 1.65, 1.62, 1.653125],
+        "alfa3": [0.78, 2.796, 1.643, 3.03],
+        "beta3": [0, 0, 1.86, 2.03],
+        "gamma3": [1, 1, 0.80625, 1.16],
+        "epsilon3": [1.09375, 1.0392, -0.3076, -0.426]}
+
+    akasaka2019 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1243zf of Akasaka "
                     "(2019)",
         "__doi__": {"autor": "Akasaka, R., Lemmon, E.W.",
                     "title": "Fundamental Equations of State for cis-1,3,3,3-"
@@ -62,8 +101,9 @@ class R1243zf(MEoS):
                     "doi": "10.1021/acs.jced.9b00007"},
 
         "R": 8.3144598,
-        "cp": Fi1,
+        "cp": Fi2,
         "ref": "IIR",
+        "Pc": 3517.9,
 
         "Tmin": 234, "Tmax": 430, "Pmax": 35000.0,
 
@@ -103,7 +143,7 @@ class R1243zf(MEoS):
         "ref": "IIR",
 
         "Tmin": 234, "Tmax": 376, "Pmax": 35000.0,
-        "rhoc": 4.313,
+        "rhoc": 4.313, "Pc": 3517.9,
 
         "nr1": [7.778443271, -8.690330704, -0.2796711221, 0.1454690442,
                 0.008976776111],
@@ -118,7 +158,7 @@ class R1243zf(MEoS):
         "c2": [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3],
         "gamma2": [1]*12}
 
-    eq = akasaka, akasaka2016
+    eq = akasaka, akasaka2019, akasaka2016
 
     _surface = {
         "__doi__": {
@@ -131,16 +171,16 @@ class R1243zf(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-7.3009, 1.5186, -2.5303, -1.5139],
-        "t": [1, 1.5, 2.8, 5]}
+        "n": [-7.2325, 1.3165, -0.8189, -3.5606, -3.4861],
+        "t": [1, 1.5, 2.32, 4.07, 15.4]}
     _liquid_Density = {
         "eq": 1,
-        "n": [2.3870, -1.2213, 4.8105, -5.7706, 2.6755],
-        "t": [0.362, 0.83, 1.31, 1.82, 2.4]}
+        "n": [1.2627, 2.6023, -2.4034, 1.6370, 0.29192],
+        "t": [0.258, 0.82, 1.43, 2.11, 8.4]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-2.9588, -7.1173, -21.945, -54.068, -128.95],
-        "t": [0.385, 1.25, 3.4, 7.25, 16]}
+        "n": [-1.6776, -6.5573, -14.195, -33.488, -49.802, -127.65],
+        "t": [0.28, 0.96, 2.78, 5.38, 9.36, 16.6]}
 
     trnECS = {"__name__": "Huber (2018)",
 
@@ -175,38 +215,76 @@ class Test(TestCase):
     """Test class"""
 
     def test_akasaka(self):
+        """Table 6, pag 23"""
+        st = R1243zf(T=280, rhom=0)
+        self.assertEqual(round(st.P.MPa, 6), 0)
+        self.assertEqual(round(st.cvM.JmolK, 4), 76.6072)
+        self.assertEqual(round(st.cpM.JmolK, 4), 84.9217)
+        self.assertEqual(round(st.w, 3), 163.915)
+
+        st = R1243zf(T=280, rhom=11)
+        self.assertEqual(round(st.P.MPa, 6), 7.393335)
+        self.assertEqual(round(st.cvM.JmolK, 4), 90.7467)
+        self.assertEqual(round(st.cpM.JmolK, 3), 130.734)
+        self.assertEqual(round(st.w, 3), 648.467)
+
+        st = R1243zf(T=280, rhom=0.1)
+        self.assertEqual(round(st.P.MPa, 7), 0.2177605)
+        self.assertEqual(round(st.cvM.JmolK, 4), 79.7211)
+        self.assertEqual(round(st.cpM.JmolK, 4), 91.2493)
+        self.assertEqual(round(st.w, 3), 155.465)
+
+        st = R1243zf(T=360, rhom=8)
+        self.assertEqual(round(st.P.MPa, 6), 3.992633)
+        self.assertEqual(round(st.cvM.JmolK, 3), 106.367)
+        self.assertEqual(round(st.cpM.JmolK, 3), 184.593)
+        self.assertEqual(round(st.w, 3), 269.396)
+
+        st = R1243zf(T=360, rhom=1)
+        self.assertEqual(round(st.P.MPa, 6), 2.054891)
+        self.assertEqual(round(st.cvM.JmolK, 3), 103.218)
+        self.assertEqual(round(st.cpM.JmolK, 3), 146.368)
+        self.assertEqual(round(st.w, 3), 135.631)
+
+        st = R1243zf(T=378, rhom=4)
+        self.assertEqual(round(st.P.MPa, 6), 3.582568)
+        self.assertEqual(round(st.cvM.JmolK, 3), 120.166)
+        self.assertEqual(round(st.cpM.JmolK, 2), 6522.37)
+        self.assertEqual(round(st.w, 4), 93.0173)
+
+    def test_akasaka2019(self):
         """Table 6, pag 4690"""
-        st = R1243zf(T=250, rhom=0)
+        st = R1243zf(T=250, rhom=0, eq=1)
         self.assertEqual(round(st.P.MPa, 6), 0)
         self.assertEqual(round(st.cvM.kJmolK, 7), 0.0690267)
         self.assertEqual(round(st.cpM.kJmolK, 7), 0.0773412)
         self.assertEqual(round(st.w, 3), 155.716)
 
-        st = R1243zf(T=250, rhom=12)
+        st = R1243zf(T=250, rhom=12, eq=1)
         self.assertEqual(round(st.P.MPa, 5), 21.70009)
         self.assertEqual(round(st.cvM.kJmolK, 7), 0.0862865)
         self.assertEqual(round(st.cpM.kJmolK, 7), 0.1181422)
         self.assertEqual(round(st.w, 3), 852.712)
 
-        st = R1243zf(T=250, rhom=0.05)
+        st = R1243zf(T=250, rhom=0.05, eq=1)
         self.assertEqual(round(st.P.MPa, 8), 0.09953467)
         self.assertEqual(round(st.cvM.kJmolK, 7), 0.0707756)
         self.assertEqual(round(st.cpM.kJmolK, 7), 0.0811839)
         self.assertEqual(round(st.w, 3), 150.725)
 
-        st = R1243zf(T=350, rhom=9)
+        st = R1243zf(T=350, rhom=9, eq=1)
         self.assertEqual(round(st.P.MPa, 6), 7.656805)
         self.assertEqual(round(st.cvM.kJmolK, 6), 0.105027)
         self.assertEqual(round(st.cpM.kJmolK, 6), 0.157970)
         self.assertEqual(round(st.w, 3), 392.414)
 
-        st = R1243zf(T=350, rhom=1)
+        st = R1243zf(T=350, rhom=1, eq=1)
         self.assertEqual(round(st.P.MPa, 6), 1.939182)
         self.assertEqual(round(st.cvM.kJmolK, 6), 0.105867)
         self.assertEqual(round(st.cpM.kJmolK, 6), 0.158364)
         self.assertEqual(round(st.w, 3), 129.425)
 
-        st = R1243zf(T=377, rhom=4.3)
+        st = R1243zf(T=377, rhom=4.3, eq=1)
         self.assertEqual(round(st.P.MPa, 6), 3.522701)
         self.assertEqual(round(st.cvM.kJmolK, 6), 0.129027)
         self.assertEqual(round(st.cpM.kJmolK, 4), 89.7236)
@@ -214,25 +292,25 @@ class Test(TestCase):
 
     def test_akasaka2016(self):
         """Table 4, pag 1143"""
-        st = R1243zf(T=250, rhom=12, eq=1)
+        st = R1243zf(T=250, rhom=12, eq=2)
         self.assertEqual(round(st.P.MPa, 5), 20.79095)
         self.assertEqual(round(st.cvM.JmolK, 4), 81.4603)
         self.assertEqual(round(st.cpM.JmolK, 3), 114.052)
         self.assertEqual(round(st.w, 3), 848.109)
 
-        st = R1243zf(T=250, rhom=0, eq=1)
+        st = R1243zf(T=250, rhom=0, eq=2)
         self.assertEqual(round(st.P.MPa, 6), 0.0)
         self.assertEqual(round(st.cvM.JmolK, 4), 68.2399)
         self.assertEqual(round(st.cpM.JmolK, 4), 76.5544)
         self.assertEqual(round(st.w, 3), 155.812)
 
-        st = R1243zf(T=350, rhom=9, eq=1)
+        st = R1243zf(T=350, rhom=9, eq=2)
         self.assertEqual(round(st.P.MPa, 6), 7.690727)
         self.assertEqual(round(st.cvM.JmolK, 3), 103.673)
         self.assertEqual(round(st.cpM.JmolK, 3), 153.996)
         self.assertEqual(round(st.w, 3), 390.988)
 
-        st = R1243zf(T=350, rhom=1, eq=1)
+        st = R1243zf(T=350, rhom=1, eq=2)
         self.assertEqual(round(st.P.MPa, 6), 1.938399)
         self.assertEqual(round(st.cvM.JmolK, 3), 104.900)
         self.assertEqual(round(st.cpM.JmolK, 3), 161.146)
@@ -240,6 +318,6 @@ class Test(TestCase):
 
     def test_Huber(self):
         """Table 7, pag 266"""
-        st = R1243zf(T=339.2, rhom=8.901)
+        st = R1243zf(T=339.2, rhom=8.901, eq=1)
         self.assertEqual(round(st.mu.muPas, 4), 103.5662)
         self.assertEqual(round(st.k.mWmK, 4), 59.9259)
