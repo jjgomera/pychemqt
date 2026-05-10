@@ -574,7 +574,7 @@ class Hairpin(equipment):
         tubeTout: Output temperature of fluid in tubeside
         annulliTout: Output temperature of fluid in annulliside
 
-    Coste:
+    Cost:
         material:
             0 - Carbon steel/carbon steel
             1 - Carbon steel/304 stainless
