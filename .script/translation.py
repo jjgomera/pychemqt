@@ -13,6 +13,9 @@
 # When translation done make the translation release
 # lrelease pychemqt_es.ts
 
+# To get this command in debian
+# apt install pyqt6-dev-tools qt6-tools-dev
+
 
 import glob
 

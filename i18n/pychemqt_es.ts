@@ -1277,6 +1277,21 @@
         <translation>Configuración de PFD</translation>
     </message>
     <message>
+        <location filename="../equipment/widget/fouling.py" line="286"/>
+        <location filename="../equipment/widget/finnedPipe.py" line="125"/>
+        <source>Finned pipe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="923"/>
+        <location filename="../equipment/widget/twistedtape.py" line="3278"/>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="409"/>
+        <location filename="../equipment/widget/rib.py" line="664"/>
+        <location filename="../equipment/widget/helical.py" line="1011"/>
+        <source>Twisted-tape insert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../tools/UI_Tables/__init__.py" line="891"/>
         <source>Choose fluid</source>
         <translation>Elige fluido</translation>
@@ -1303,49 +1318,40 @@
 <context>
     <name>Dialog_Finned</name>
     <message>
-        <location filename="../equipment/widget.py" line="263"/>
         <source>Specify tube finned characteristics</source>
-        <translation>Especificar caracteristicas de aletas</translation>
+        <translation type="vanished">Especificar caracteristicas de aletas</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="272"/>
         <source>Material</source>
-        <translation>Material</translation>
+        <translation type="vanished">Material</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="275"/>
         <source>Carbon Steel</source>
-        <translation>Acero al carbón</translation>
+        <translation type="vanished">Acero al carbón</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="278"/>
         <source>Thermal Conductivity</source>
-        <translation>Conductividad Térmica</translation>
+        <translation type="vanished">Conductividad Térmica</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="285"/>
         <source>Root diameter</source>
-        <translation>Diámetro de la base</translation>
+        <translation type="vanished">Diámetro de la base</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="288"/>
         <source>Fin Height</source>
-        <translation>Algura de las aletas</translation>
+        <translation type="vanished">Algura de las aletas</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="291"/>
         <source>Base Fin Thickness</source>
-        <translation>Anchura de la base de la aleta</translation>
+        <translation type="vanished">Anchura de la base de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="294"/>
         <source>Top Fin Thickness</source>
-        <translation>Anchura en la cima de la aleta</translation>
+        <translation type="vanished">Anchura en la cima de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/widget.py" line="297"/>
         <source>Number of fins</source>
-        <translation>Número de aletas</translation>
+        <translation type="vanished">Número de aletas</translation>
     </message>
 </context>
 <context>
@@ -1933,57 +1939,57 @@
 <context>
     <name>EquipmentItem</name>
     <message>
-        <location filename="../UI/flujo.py" line="1604"/>
+        <location filename="../UI/flujo.py" line="1638"/>
         <source>View Properties</source>
         <translation>Ver propiedades</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1612"/>
+        <location filename="../UI/flujo.py" line="1646"/>
         <source>Edit</source>
         <translation>Editar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1616"/>
+        <location filename="../UI/flujo.py" line="1650"/>
         <source>Delete</source>
         <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1621"/>
+        <location filename="../UI/flujo.py" line="1655"/>
         <source>Export to spreadsheet</source>
         <translation>Exporta a hoja de cálculo</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1623"/>
+        <location filename="../UI/flujo.py" line="1657"/>
         <source>Show/Hide Id Label</source>
         <translation>Mostrar/Ocultar etiqueta</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1638"/>
+        <location filename="../UI/flujo.py" line="1670"/>
         <source>Transform</source>
         <translation>Transformar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1642"/>
+        <location filename="../UI/flujo.py" line="1674"/>
         <source>Rotate by 90</source>
         <translation>Rotar 90º</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1647"/>
+        <location filename="../UI/flujo.py" line="1679"/>
         <source>Rotate by 180</source>
         <translation>Rotar 180º</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1652"/>
+        <location filename="../UI/flujo.py" line="1684"/>
         <source>Rotate by 270</source>
         <translation>Rotar 270º</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1656"/>
+        <location filename="../UI/flujo.py" line="1688"/>
         <source>Mirror about X</source>
         <translation>Voltear horizontalmente</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1659"/>
+        <location filename="../UI/flujo.py" line="1691"/>
         <source>Mirror about Y</source>
         <translation>Horizontal verticalmente</translation>
     </message>
@@ -2159,12 +2165,12 @@
 <context>
     <name>GeometricItem</name>
     <message>
-        <location filename="../UI/flujo.py" line="890"/>
+        <location filename="../UI/flujo.py" line="888"/>
         <source>Delete</source>
         <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="894"/>
+        <location filename="../UI/flujo.py" line="892"/>
         <source>Appearance</source>
         <translation>Apariencia</translation>
     </message>
@@ -2172,42 +2178,42 @@
 <context>
     <name>GraphicsEntity</name>
     <message>
-        <location filename="../UI/flujo.py" line="1053"/>
+        <location filename="../UI/flujo.py" line="1055"/>
         <source>Project Name</source>
         <translation>Nombre del proyecto</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1058"/>
+        <location filename="../UI/flujo.py" line="1060"/>
         <source>Stream Id</source>
         <translation>Corriente Id</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1060"/>
+        <location filename="../UI/flujo.py" line="1062"/>
         <source>Equipment Id</source>
         <translation>Id equipo</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1064"/>
+        <location filename="../UI/flujo.py" line="1066"/>
         <source>Report generated at</source>
         <translation>Informe generado</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1072"/>
+        <location filename="../UI/flujo.py" line="1074"/>
         <source>Select Spreadsheet</source>
         <translation>Seleccionar hoja de cálculo</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1077"/>
+        <location filename="../UI/flujo.py" line="1079"/>
         <source>Libreoffice spreadsheet files</source>
         <translation>Hoja de cálculo de Libreoffice</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1080"/>
+        <location filename="../UI/flujo.py" line="1082"/>
         <source>Microsoft Excel 97/2000/XP/2003 XMLL</source>
         <translation>Microsoft Excel 97/2000/XP/2003 XMLL</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1084"/>
+        <location filename="../UI/flujo.py" line="1086"/>
         <source>Microsoft Excel 2007/2010 XML</source>
         <translation>Microsoft Excel 2007/2010 XML</translation>
     </message>
@@ -2255,7 +2261,7 @@
         <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="420"/>
+        <location filename="../UI/flujo.py" line="413"/>
         <source>Click in desire text position in screen</source>
         <translation>Pinchar en la posición deseada de la pantalla para añadir el texto</translation>
     </message>
@@ -2263,17 +2269,17 @@
 <context>
     <name>GridConfig</name>
     <message>
-        <location filename="../UI/widgets.py" line="1006"/>
+        <location filename="../UI/widgets.py" line="1019"/>
         <source>Show grid</source>
         <translation>Mostrar rejilla</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1010"/>
+        <location filename="../UI/widgets.py" line="1023"/>
         <source>Which</source>
         <translation>Cual</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1021"/>
+        <location filename="../UI/widgets.py" line="1034"/>
         <source>Axis</source>
         <translation>Eje</translation>
     </message>
@@ -2367,42 +2373,42 @@
 <context>
     <name>LineConfig</name>
     <message>
-        <location filename="../UI/widgets.py" line="899"/>
+        <location filename="../UI/widgets.py" line="912"/>
         <source>Line width</source>
         <translation>Anchura de línea</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="902"/>
+        <location filename="../UI/widgets.py" line="915"/>
         <source>Line style</source>
         <translation>Estilo de línea</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="905"/>
+        <location filename="../UI/widgets.py" line="918"/>
         <source>Line color</source>
         <translation>Color de línea</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="908"/>
+        <location filename="../UI/widgets.py" line="921"/>
         <source>Line marker</source>
         <translation>Marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="923"/>
+        <location filename="../UI/widgets.py" line="936"/>
         <source>Marker size</source>
         <translation>Tamaño de marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="926"/>
+        <location filename="../UI/widgets.py" line="939"/>
         <source>Marker face color</source>
         <translation>Color fondo marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="934"/>
+        <location filename="../UI/widgets.py" line="947"/>
         <source>Marker edge width</source>
         <translation>Anchura de borde de marca</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="937"/>
+        <location filename="../UI/widgets.py" line="950"/>
         <source>Marker edge color</source>
         <translation>Color borde de marca</translation>
     </message>
@@ -2518,68 +2524,68 @@ Crítica</translation>
 <context>
     <name>NumericFactor</name>
     <message>
-        <location filename="../UI/widgets.py" line="1131"/>
+        <location filename="../UI/widgets.py" line="1144"/>
         <source>Format</source>
         <translation>Formato</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1133"/>
+        <location filename="../UI/widgets.py" line="1146"/>
         <source>Fixed decimal point</source>
         <translation>Punto decimal fijo</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1135"/>
+        <location filename="../UI/widgets.py" line="1148"/>
         <source>Total digits</source>
         <translation>Dígitos totales</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1140"/>
+        <location filename="../UI/widgets.py" line="1153"/>
         <source>Decimal digits</source>
         <translation>Dígitos decimales</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1145"/>
+        <location filename="../UI/widgets.py" line="1158"/>
         <source>Significant figures</source>
         <translation>Datos significativos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1154"/>
-        <location filename="../UI/widgets.py" line="1147"/>
+        <location filename="../UI/widgets.py" line="1167"/>
+        <location filename="../UI/widgets.py" line="1160"/>
         <source>Figures</source>
         <translation>Datos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1152"/>
+        <location filename="../UI/widgets.py" line="1165"/>
         <source>Exponential preferred</source>
         <translation>Exponencial preferida</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1162"/>
+        <location filename="../UI/widgets.py" line="1175"/>
         <source>Exponential for big/small values</source>
         <translation>Exponencia para valores muy grantes/pequeños</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1164"/>
+        <location filename="../UI/widgets.py" line="1177"/>
         <source>Tolerance</source>
         <translation>Tolerancia</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1170"/>
+        <location filename="../UI/widgets.py" line="1183"/>
         <source>Show sign in positive values</source>
         <translation>Mostras signo en valores positivos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1173"/>
+        <location filename="../UI/widgets.py" line="1186"/>
         <source>Show thousand separator</source>
         <translation>Mostrar separador de miles</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1242"/>
+        <location filename="../UI/widgets.py" line="1255"/>
         <source>Convert units</source>
         <translation>Convertir unidades</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1260"/>
+        <location filename="../UI/widgets.py" line="1273"/>
         <source>Sample</source>
         <translation>Muestra</translation>
     </message>
@@ -2622,23 +2628,23 @@ Crítica</translation>
 <context>
     <name>PathConfig</name>
     <message>
-        <location filename="../UI/widgets.py" line="832"/>
+        <location filename="../UI/widgets.py" line="845"/>
         <source>Browse</source>
         <translation>Navegar</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="844"/>
-        <location filename="../UI/widgets.py" line="839"/>
+        <location filename="../UI/widgets.py" line="857"/>
+        <location filename="../UI/widgets.py" line="852"/>
         <source>All files</source>
         <translation>Todos los archivos</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="842"/>
+        <location filename="../UI/widgets.py" line="855"/>
         <source>Executable files</source>
         <translation>Archivos ejecuables</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="848"/>
+        <location filename="../UI/widgets.py" line="861"/>
         <source>Select path of file</source>
         <translation>Seleccionar ruta del archivo</translation>
     </message>
@@ -2877,17 +2883,17 @@ Crítica</translation>
 <context>
     <name>Plots</name>
     <message>
-        <location filename="../plots/__init__.py" line="32"/>
+        <location filename="../plots/__init__.py" line="31"/>
         <source>Petro</source>
         <translation>Petróleo</translation>
     </message>
     <message>
-        <location filename="../plots/__init__.py" line="33"/>
+        <location filename="../plots/__init__.py" line="32"/>
         <source>Fluid Flow</source>
         <translation>Flujo de fluidos</translation>
     </message>
     <message>
-        <location filename="../plots/__init__.py" line="34"/>
+        <location filename="../plots/__init__.py" line="33"/>
         <source>Heat Exchanger</source>
         <translation>Cambiador de calor</translation>
     </message>
@@ -3209,42 +3215,42 @@ Crítica</translation>
 <context>
     <name>SelectStreamProject</name>
     <message>
-        <location filename="../UI/flujo.py" line="1706"/>
+        <location filename="../UI/flujo.py" line="1743"/>
         <source>Select stream from file</source>
         <translation>Selección corriente de archivo</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1709"/>
+        <location filename="../UI/flujo.py" line="1746"/>
         <source>Project path</source>
         <translation>Ruta del proyecto</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1710"/>
+        <location filename="../UI/flujo.py" line="1747"/>
         <source>Select pychemqt project file</source>
         <translation>Seleccionar archivo de proyecto de pychemqt</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1712"/>
+        <location filename="../UI/flujo.py" line="1749"/>
         <source>pychemqt project file</source>
         <translation>archivos de proyecto de pychemqt</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1719"/>
+        <location filename="../UI/flujo.py" line="1756"/>
         <source>Streams</source>
         <translation>Corrientes</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1747"/>
+        <location filename="../UI/flujo.py" line="1784"/>
         <source>Loading project...</source>
         <translation>Cargando proyecto...</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1754"/>
+        <location filename="../UI/flujo.py" line="1791"/>
         <source>Failed to loading project...</source>
         <translation>Error al cargar proyecto...</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1758"/>
+        <location filename="../UI/flujo.py" line="1795"/>
         <source>Project loaded succesfully</source>
         <translation>Proyecto cargado con éxito</translation>
     </message>
@@ -3305,9 +3311,19 @@ Crítica</translation>
         <translation>doi</translation>
     </message>
     <message>
-        <location filename="../tools/doi.py" line="285"/>
+        <location filename="../tools/doi.py" line="214"/>
+        <source>library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tools/doi.py" line="291"/>
         <source>Equipments</source>
         <translation>Equipos</translation>
+    </message>
+    <message>
+        <location filename="../tools/doi.py" line="310"/>
+        <source>Accesories</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3454,42 +3470,42 @@ Crítica</translation>
 <context>
     <name>StreamItem</name>
     <message>
-        <location filename="../UI/flujo.py" line="1235"/>
+        <location filename="../UI/flujo.py" line="1252"/>
         <source>View Properties</source>
         <translation>Ver propiedades</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1238"/>
+        <location filename="../UI/flujo.py" line="1255"/>
         <source>Solid Distribution Fit</source>
         <translation>Ajustar distribución de sólidos</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1252"/>
+        <location filename="../UI/flujo.py" line="1269"/>
         <source>Copy from another project</source>
         <translation>Copiar de otro proyecto</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1256"/>
+        <location filename="../UI/flujo.py" line="1273"/>
         <source>Edit</source>
         <translation>Editar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1260"/>
+        <location filename="../UI/flujo.py" line="1277"/>
         <source>Delete</source>
         <translation>Borrar</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1265"/>
+        <location filename="../UI/flujo.py" line="1282"/>
         <source>Export to spreadsheet</source>
         <translation>Exporta a hoja de cálculo</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1267"/>
+        <location filename="../UI/flujo.py" line="1284"/>
         <source>Show/Hide Id Label</source>
         <translation>Mostrar/Ocultar etiqueta</translation>
     </message>
     <message>
-        <location filename="../UI/flujo.py" line="1270"/>
+        <location filename="../UI/flujo.py" line="1287"/>
         <source>Appearance</source>
         <translation>Apariencia</translation>
     </message>
@@ -3690,7 +3706,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
 <context>
     <name>Table_Graphics</name>
     <message>
-        <location filename="../UI/widgets.py" line="1411"/>
+        <location filename="../UI/widgets.py" line="1424"/>
         <source>Undefined</source>
         <translation>No definida</translation>
     </message>
@@ -3872,7 +3888,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
 <context>
     <name>TextItemDlg</name>
     <message>
-        <location filename="../UI/flujo.py" line="1781"/>
+        <location filename="../UI/flujo.py" line="1818"/>
         <source>Edit text</source>
         <translation>Editar texto</translation>
     </message>
@@ -4430,6 +4446,92 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
     </message>
 </context>
 <context>
+    <name>UI_FinnedPipe</name>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="54"/>
+        <source>Pipe from database</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="60"/>
+        <source>Material</source>
+        <translation type="unfinished">Material</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="63"/>
+        <source>Carbon Steel</source>
+        <translation type="unfinished">Acero al carbón</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="66"/>
+        <source>Thermal Conductivity</source>
+        <translation type="unfinished">Conductividad Térmica</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="73"/>
+        <source>Root diameter</source>
+        <translation type="unfinished">Diámetro de la base</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="76"/>
+        <source>Fin Height</source>
+        <translation type="unfinished">Algura de las aletas</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="79"/>
+        <source>Base Fin Thickness</source>
+        <translation type="unfinished">Anchura de la base de la aleta</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="82"/>
+        <source>Top Fin Thickness</source>
+        <translation type="unfinished">Anchura en la cima de la aleta</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="85"/>
+        <source>Number of fins</source>
+        <translation type="unfinished">Número de aletas</translation>
+    </message>
+</context>
+<context>
+    <name>UI_Helical</name>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="935"/>
+        <source>Laminar Flow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="939"/>
+        <source>Turbulent Flow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="944"/>
+        <source>Friction factor method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="958"/>
+        <source>Heat transfer method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="978"/>
+        <source>Critical Reynolds correlation</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="994"/>
+        <source>Pipe internal diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="998"/>
+        <source>Helical coil diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>UI_Psychrometry</name>
     <message>
         <location filename="../tools/UI_psychrometry.py" line="282"/>
@@ -4475,6 +4577,49 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <location filename="../tools/UI_psychrometry.py" line="494"/>
         <source>Using</source>
         <translation>Usando</translation>
+    </message>
+</context>
+<context>
+    <name>UI_Rib</name>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="595"/>
+        <source>Corrugated tube</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="605"/>
+        <source>Friction factor method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="613"/>
+        <source>Heat transfer method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="623"/>
+        <source>Rib tube</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="627"/>
+        <source>Fluted tube</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="634"/>
+        <source>Rib pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="635"/>
+        <source>Pitch for twist of 2π radians (360º)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="644"/>
+        <source>Rib count</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4614,6 +4759,246 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <location filename="../tools/UI_Tables/table.py" line="877"/>
         <source>Internal Energy</source>
         <translation>Energía interna</translation>
+    </message>
+</context>
+<context>
+    <name>UI_TwistedTape</name>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2868"/>
+        <source>Tipical twisted-tape inserts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2879"/>
+        <source>Laminar Flow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2883"/>
+        <source>Turbulent Flow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2888"/>
+        <source>Friction factor method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2907"/>
+        <source>Heat transfer method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2928"/>
+        <source>Helical screw-tape inserts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2933"/>
+        <source>Hollow twisted-tape inserts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2941"/>
+        <source>Tape pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2942"/>
+        <source>Tape pitch for twist of π radians (180º)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2947"/>
+        <source>Tape diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2951"/>
+        <source>Tape thickness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2956"/>
+        <source>Spacer length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2962"/>
+        <source>Hollow width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2968"/>
+        <source>LR Ratio</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2969"/>
+        <source>Ratio between left and right twist sections length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2979"/>
+        <source>Murugesan correlation modification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2988"/>
+        <source>Depth of V cut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2993"/>
+        <source>Widgth of V cut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3006"/>
+        <source>Chan-Guo correlation modification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3092"/>
+        <location filename="../equipment/widget/twistedtape.py" line="3019"/>
+        <source>Backward flow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3030"/>
+        <source>Eiamsa-ard correlation modification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3041"/>
+        <source>Depth of wing cut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3046"/>
+        <source>Peripherally-cut width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3051"/>
+        <source>Attack angle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3056"/>
+        <source>Taper angle</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3061"/>
+        <source>Alternate axes length</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3066"/>
+        <source>Diameter of perforated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3071"/>
+        <source>Spaced-pitch length of perforated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3076"/>
+        <source>Angle between alternate sections</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3082"/>
+        <source>Serration width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3087"/>
+        <source>Serration depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3095"/>
+        <source>Wing width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3100"/>
+        <source>Pitch length of wing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3111"/>
+        <source>Ponnada correlation modification</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3127"/>
+        <source>Clearance</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="3128"/>
+        <source>Clearance between inner wall and twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UI_TwistedTapeAnnuli</name>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="356"/>
+        <source>Tape pitch, H</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="357"/>
+        <source>Tape pitch for twist of π radians (180º)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="363"/>
+        <source>Internal diameter of annuli section</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="369"/>
+        <source>External diameter of annuli section</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="375"/>
+        <source>Angled twisted-tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="380"/>
+        <source>Direction of flow relative to the tape curvature</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>UI_WireCoil</name>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="883"/>
+        <source>Friction factor calculation method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="894"/>
+        <source>Heat transfer calculation method</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="903"/>
+        <source>Wire pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="904"/>
+        <source>Wire pitch for twist of 2π radians (360º)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4876,7 +5261,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
 <context>
     <name>UI_equipment</name>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="340"/>
+        <location filename="../equipment/UI_shellTube.py" line="338"/>
         <location filename="../equipment/UI_scrubber.py" line="85"/>
         <location filename="../equipment/UI_pump.py" line="96"/>
         <location filename="../equipment/UI_flash.py" line="81"/>
@@ -4914,7 +5299,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
     <message>
         <location filename="../equipment/UI_scrubber.py" line="58"/>
         <location filename="../equipment/UI_reactor.py" line="629"/>
-        <location filename="../equipment/UI_hairpin.py" line="132"/>
+        <location filename="../equipment/UI_hairpin.py" line="177"/>
         <location filename="../equipment/UI_gravityChamber.py" line="48"/>
         <location filename="../equipment/UI_electricPrecipitator.py" line="48"/>
         <location filename="../equipment/UI_dryer.py" line="52"/>
@@ -4982,7 +5367,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <location filename="../equipment/UI_pipe.py" line="1029"/>
         <location filename="../equipment/UI_neumatic.py" line="128"/>
         <location filename="../equipment/UI_heatExchanger.py" line="90"/>
-        <location filename="../equipment/UI_hairpin.py" line="185"/>
+        <location filename="../equipment/UI_hairpin.py" line="230"/>
         <location filename="../equipment/UI_grinder.py" line="73"/>
         <location filename="../equipment/UI_gravityChamber.py" line="98"/>
         <location filename="../equipment/UI_fireHeater.py" line="79"/>
@@ -5000,9 +5385,9 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Velocidad del gas</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="341"/>
+        <location filename="../equipment/UI_shellTube.py" line="339"/>
         <location filename="../equipment/UI_heatExchanger.py" line="65"/>
-        <location filename="../equipment/UI_hairpin.py" line="203"/>
+        <location filename="../equipment/UI_hairpin.py" line="248"/>
         <location filename="../equipment/UI_electricPrecipitator.py" line="99"/>
         <location filename="../equipment/UI_electricPrecipitator.py" line="58"/>
         <location filename="../equipment/UI_baghouse.py" line="142"/>
@@ -5182,6 +5567,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Velocidad de admisión</translation>
     </message>
     <message>
+        <location filename="../equipment/UI_hairpin.py" line="78"/>
         <location filename="../equipment/UI_ciclon.py" line="129"/>
         <source>Geometry</source>
         <translation>Geometría</translation>
@@ -5195,8 +5581,8 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
     </message>
     <message>
         <location filename="../equipment/UI_turbine.py" line="117"/>
-        <location filename="../equipment/UI_shellTube.py" line="435"/>
-        <location filename="../equipment/UI_hairpin.py" line="256"/>
+        <location filename="../equipment/UI_shellTube.py" line="433"/>
+        <location filename="../equipment/UI_hairpin.py" line="301"/>
         <location filename="../equipment/UI_flash.py" line="135"/>
         <location filename="../equipment/UI_fireHeater.py" line="138"/>
         <location filename="../equipment/UI_compressor.py" line="158"/>
@@ -5279,8 +5665,8 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Razón de reflujo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="418"/>
-        <location filename="../equipment/UI_hairpin.py" line="237"/>
+        <location filename="../equipment/UI_shellTube.py" line="416"/>
+        <location filename="../equipment/UI_hairpin.py" line="282"/>
         <location filename="../equipment/UI_columnFUG.py" line="114"/>
         <source>Design Pressure</source>
         <translation>Presión de diseño</translation>
@@ -5331,9 +5717,9 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Tipo de columna</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="408"/>
+        <location filename="../equipment/UI_shellTube.py" line="406"/>
         <location filename="../equipment/UI_pump.py" line="162"/>
-        <location filename="../equipment/UI_hairpin.py" line="227"/>
+        <location filename="../equipment/UI_hairpin.py" line="272"/>
         <location filename="../equipment/UI_flash.py" line="69"/>
         <location filename="../equipment/UI_fireHeater.py" line="115"/>
         <location filename="../equipment/UI_columnFUG.py" line="194"/>
@@ -5617,7 +6003,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
     <message>
         <location filename="../equipment/UI_heatExchanger.py" line="93"/>
         <location filename="../equipment/UI_heatExchanger.py" line="58"/>
-        <location filename="../equipment/UI_hairpin.py" line="188"/>
+        <location filename="../equipment/UI_hairpin.py" line="233"/>
         <location filename="../equipment/UI_dryer.py" line="81"/>
         <source>Heat Duty</source>
         <translation>Intercambio de calor</translation>
@@ -5742,7 +6128,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Combustible</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="401"/>
+        <location filename="../equipment/UI_shellTube.py" line="399"/>
         <location filename="../equipment/UI_reactor.py" line="569"/>
         <location filename="../equipment/UI_fireHeater.py" line="95"/>
         <source>Type</source>
@@ -5764,7 +6150,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Calentador de tipo caja</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="326"/>
+        <location filename="../equipment/UI_shellTube.py" line="324"/>
         <location filename="../equipment/UI_shellTube.py" line="141"/>
         <location filename="../equipment/UI_flash.py" line="62"/>
         <source>Orientation</source>
@@ -5845,166 +6231,193 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Tipo:</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="270"/>
-        <location filename="../equipment/UI_hairpin.py" line="50"/>
+        <location filename="../equipment/UI_hairpin.py" line="315"/>
+        <location filename="../equipment/UI_hairpin.py" line="52"/>
         <source>Tube</source>
         <translation>Tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="271"/>
-        <location filename="../equipment/UI_hairpin.py" line="51"/>
+        <location filename="../equipment/UI_hairpin.py" line="316"/>
+        <location filename="../equipment/UI_hairpin.py" line="53"/>
         <source>Annulli</source>
         <translation>Anillo</translation>
     </message>
     <message>
+        <location filename="../equipment/UI_shellTube.py" line="158"/>
         <location filename="../equipment/UI_pipe.py" line="951"/>
-        <location filename="../equipment/UI_hairpin.py" line="55"/>
+        <location filename="../equipment/UI_hairpin.py" line="57"/>
         <source>Catalog</source>
         <translation>Catálogo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="168"/>
-        <location filename="../equipment/UI_hairpin.py" line="57"/>
+        <location filename="../equipment/UI_hairpin.py" line="60"/>
+        <source>Correlations</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/UI_hairpin.py" line="63"/>
+        <source>Heat transfer in annuli section</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/UI_shellTube.py" line="170"/>
+        <location filename="../equipment/UI_hairpin.py" line="80"/>
         <source>Tube length</source>
         <translation>Longitud del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="65"/>
+        <location filename="../equipment/UI_hairpin.py" line="88"/>
         <source>Tube internal diameter</source>
         <translation>Diámetro interno del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="173"/>
-        <location filename="../equipment/UI_hairpin.py" line="70"/>
+        <location filename="../equipment/UI_shellTube.py" line="175"/>
+        <location filename="../equipment/UI_hairpin.py" line="93"/>
         <source>Tube external diameter</source>
         <translation>Diemtro externo del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="177"/>
-        <location filename="../equipment/UI_hairpin.py" line="74"/>
+        <location filename="../equipment/UI_shellTube.py" line="179"/>
+        <location filename="../equipment/UI_hairpin.py" line="97"/>
         <source>Tube thickness</source>
         <translation>Espesor del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="181"/>
-        <location filename="../equipment/UI_hairpin.py" line="78"/>
+        <location filename="../equipment/UI_shellTube.py" line="183"/>
+        <location filename="../equipment/UI_hairpin.py" line="101"/>
         <source>Tube roughness</source>
         <translation>Rugosidad</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="86"/>
+        <location filename="../equipment/UI_hairpin.py" line="109"/>
         <source>Annulli external diameter</source>
         <translation>Diametro externo del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="185"/>
-        <location filename="../equipment/UI_hairpin.py" line="91"/>
+        <location filename="../equipment/UI_shellTube.py" line="187"/>
+        <location filename="../equipment/UI_hairpin.py" line="114"/>
         <source>Thermal conductivity</source>
         <translation>Conductividad térmica</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="95"/>
+        <location filename="../equipment/UI_hairpin.py" line="118"/>
         <source>Tube Count</source>
         <translation>Número de tubos</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="189"/>
+        <location filename="../equipment/UI_shellTube.py" line="191"/>
         <location filename="../equipment/UI_neumatic.py" line="103"/>
-        <location filename="../equipment/UI_hairpin.py" line="100"/>
+        <location filename="../equipment/UI_hairpin.py" line="123"/>
         <source>Pipe Database</source>
         <translation>Base de datos de tuberías</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="106"/>
-        <source>Finned Tube</source>
-        <translation>Tubo con aletas</translation>
-    </message>
-    <message>
-        <location filename="../equipment/UI_shellTube.py" line="208"/>
-        <location filename="../equipment/UI_hairpin.py" line="109"/>
-        <source>Finned Pipe Database</source>
-        <translation>Base de datos de tuberias con aletas</translation>
-    </message>
-    <message>
-        <location filename="../equipment/UI_hairpin.py" line="116"/>
+        <location filename="../equipment/UI_hairpin.py" line="129"/>
         <source>Inside Fouling</source>
         <translation>Obstrucción interior</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="121"/>
+        <location filename="../equipment/UI_hairpin.py" line="134"/>
         <source>Outside Fouling</source>
         <translation>Obstrucción exterior</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="139"/>
+        <location filename="../equipment/UI_shellTube.py" line="220"/>
+        <location filename="../equipment/UI_hairpin.py" line="144"/>
+        <source>Finned pipe</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/UI_shellTube.py" line="222"/>
+        <location filename="../equipment/UI_hairpin.py" line="151"/>
+        <source>Twisted-tape insert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/UI_hairpin.py" line="158"/>
+        <source>Wire-coil insert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/UI_hairpin.py" line="165"/>
+        <source>Helical rib</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/UI_hairpin.py" line="172"/>
+        <source>Annulli Twisted-tape insert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/UI_hairpin.py" line="184"/>
         <source>Flujo</source>
         <translation>Flujo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="146"/>
+        <location filename="../equipment/UI_hairpin.py" line="191"/>
         <source>Layout</source>
         <translation>Disposición</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="159"/>
+        <location filename="../equipment/UI_hairpin.py" line="204"/>
         <source>Output inside temperature</source>
         <translation>Temperatura interior a la salida</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="165"/>
+        <location filename="../equipment/UI_hairpin.py" line="210"/>
         <source>Output annulli temperature</source>
         <translation>Temperatura a la salida del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="170"/>
+        <location filename="../equipment/UI_hairpin.py" line="215"/>
         <source>Output inside quality</source>
         <translation>Fracción de vapor a la salida del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="175"/>
+        <location filename="../equipment/UI_hairpin.py" line="220"/>
         <source>Output annulli quality</source>
         <translation>Fracción de vapor a la salida del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="195"/>
-        <location filename="../equipment/UI_hairpin.py" line="191"/>
+        <location filename="../equipment/UI_hairpin.py" line="240"/>
+        <location filename="../equipment/UI_hairpin.py" line="236"/>
         <source>Tout Tube</source>
         <translation>T salida del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="199"/>
+        <location filename="../equipment/UI_hairpin.py" line="244"/>
         <source>U</source>
         <translation>U</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="206"/>
+        <location filename="../equipment/UI_hairpin.py" line="251"/>
         <source>Lenght</source>
         <translation>Longitud</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="209"/>
+        <location filename="../equipment/UI_hairpin.py" line="254"/>
         <source>DeltaP Tube</source>
         <translation>Perdida de presión en el tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="213"/>
+        <location filename="../equipment/UI_hairpin.py" line="258"/>
         <source>DeltaP Annulli</source>
         <translation>Perdida de presión en el anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_hairpin.py" line="217"/>
+        <location filename="../equipment/UI_hairpin.py" line="262"/>
         <source>CF</source>
         <translation>CF</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="438"/>
-        <location filename="../equipment/UI_hairpin.py" line="259"/>
+        <location filename="../equipment/UI_shellTube.py" line="436"/>
+        <location filename="../equipment/UI_hairpin.py" line="304"/>
         <source>Purchase Cost</source>
         <translation>Coste Adquisición</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="442"/>
-        <location filename="../equipment/UI_hairpin.py" line="263"/>
+        <location filename="../equipment/UI_shellTube.py" line="440"/>
+        <location filename="../equipment/UI_hairpin.py" line="308"/>
         <source>Installed Cost</source>
         <translation>Coste Instalación</translation>
     </message>
@@ -6051,12 +6464,12 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_neumatic.py" line="69"/>
+        <location filename="../equipment/UI_neumatic.py" line="68"/>
         <source>Saltation velocity method:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_neumatic.py" line="82"/>
+        <location filename="../equipment/UI_neumatic.py" line="81"/>
         <source>Solid friction factor method:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6386,7 +6799,7 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Añadir perfil</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="393"/>
+        <location filename="../equipment/UI_shellTube.py" line="391"/>
         <location filename="../equipment/UI_reactor.py" line="626"/>
         <source>Design</source>
         <translation>Diseño</translation>
@@ -6471,15 +6884,15 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Gas limpio</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="449"/>
-        <location filename="../equipment/UI_shellTube.py" line="158"/>
+        <location filename="../equipment/UI_shellTube.py" line="447"/>
+        <location filename="../equipment/UI_shellTube.py" line="160"/>
         <location filename="../equipment/UI_shellTube.py" line="102"/>
         <source>Tubes</source>
         <translation>Tubos</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="450"/>
-        <location filename="../equipment/UI_shellTube.py" line="228"/>
+        <location filename="../equipment/UI_shellTube.py" line="448"/>
+        <location filename="../equipment/UI_shellTube.py" line="226"/>
         <location filename="../equipment/UI_shellTube.py" line="103"/>
         <source>Shell</source>
         <translation>Carcasa</translation>
@@ -6510,173 +6923,158 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <translation>Métodos de cálculo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="160"/>
+        <location filename="../equipment/UI_shellTube.py" line="162"/>
         <source>Number of tubes</source>
         <translation>Número de tubos</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="164"/>
+        <location filename="../equipment/UI_shellTube.py" line="166"/>
         <source>Number of tube passes</source>
         <translation>Número de pasos de los tubos</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="196"/>
+        <location filename="../equipment/UI_shellTube.py" line="198"/>
         <source>Tube pattern</source>
         <translation>Modelo de tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="203"/>
+        <location filename="../equipment/UI_shellTube.py" line="205"/>
         <source>Tube pitch</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="207"/>
-        <source>Fin Tube</source>
-        <translation>Aletas</translation>
-    </message>
-    <message>
-        <location filename="../equipment/UI_shellTube.py" line="213"/>
-        <source>Bared tube</source>
-        <translation>Tubos lisos</translation>
-    </message>
-    <message>
-        <location filename="../equipment/UI_shellTube.py" line="214"/>
-        <source>Finned tube</source>
-        <translation>Tubos con aletas</translation>
-    </message>
-    <message>
-        <location filename="../equipment/UI_shellTube.py" line="256"/>
-        <location filename="../equipment/UI_shellTube.py" line="217"/>
+        <location filename="../equipment/UI_shellTube.py" line="254"/>
+        <location filename="../equipment/UI_shellTube.py" line="210"/>
         <source>Fouling</source>
         <translation>Obstrucción</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="231"/>
+        <location filename="../equipment/UI_shellTube.py" line="229"/>
         <source>Exchangers in paralell</source>
         <translation>Cambiadores en paralelo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="236"/>
+        <location filename="../equipment/UI_shellTube.py" line="234"/>
         <source>Exchangers in serie</source>
         <translation>Cambiadores en serie</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="243"/>
+        <location filename="../equipment/UI_shellTube.py" line="241"/>
         <source>Shell Diameter</source>
         <translation>Diámetro de la carcasa</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="250"/>
+        <location filename="../equipment/UI_shellTube.py" line="248"/>
         <source>Shell Material</source>
         <translation>Material de la carcasa</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="264"/>
+        <location filename="../equipment/UI_shellTube.py" line="262"/>
         <source>Sealing Strips</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="270"/>
+        <location filename="../equipment/UI_shellTube.py" line="268"/>
         <source>Clearances</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="273"/>
+        <location filename="../equipment/UI_shellTube.py" line="271"/>
         <source>Tube to baffle hole</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="278"/>
+        <location filename="../equipment/UI_shellTube.py" line="276"/>
         <source>Shell to baffle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="283"/>
+        <location filename="../equipment/UI_shellTube.py" line="281"/>
         <source>Shell to bundle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="294"/>
+        <location filename="../equipment/UI_shellTube.py" line="292"/>
         <source>Baffle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="296"/>
+        <location filename="../equipment/UI_shellTube.py" line="294"/>
         <source>Baffle type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="306"/>
+        <location filename="../equipment/UI_shellTube.py" line="304"/>
         <source>Inlet spacing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="311"/>
+        <location filename="../equipment/UI_shellTube.py" line="309"/>
         <source>Outlet spacing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="316"/>
+        <location filename="../equipment/UI_shellTube.py" line="314"/>
         <source>Baffle spacing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="321"/>
+        <location filename="../equipment/UI_shellTube.py" line="319"/>
         <source>Baffle thickness</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="328"/>
+        <location filename="../equipment/UI_shellTube.py" line="326"/>
         <source>Horizontal</source>
         <translation>Horizontal</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="329"/>
+        <location filename="../equipment/UI_shellTube.py" line="327"/>
         <source>Vertical</source>
         <translation>Vertical</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="333"/>
+        <location filename="../equipment/UI_shellTube.py" line="331"/>
         <source>Cut percent</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="338"/>
+        <location filename="../equipment/UI_shellTube.py" line="336"/>
         <source>Cut base</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="352"/>
+        <location filename="../equipment/UI_shellTube.py" line="350"/>
         <source>Nozzles</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="355"/>
+        <location filename="../equipment/UI_shellTube.py" line="353"/>
         <source>Shellside</source>
         <translation>Lado de la carcasa</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="357"/>
+        <location filename="../equipment/UI_shellTube.py" line="355"/>
         <source>Tubeside</source>
         <translation>Lado del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="358"/>
+        <location filename="../equipment/UI_shellTube.py" line="356"/>
         <source>Input diameter</source>
         <translation>Diámetro a la entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="369"/>
+        <location filename="../equipment/UI_shellTube.py" line="367"/>
         <source>Output diameter</source>
         <translation>Diámetro a la salida</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="390"/>
+        <location filename="../equipment/UI_shellTube.py" line="388"/>
         <source>Calculation Mode</source>
         <translation>Modo de cálculo</translation>
     </message>
     <message>
-        <location filename="../equipment/UI_shellTube.py" line="392"/>
+        <location filename="../equipment/UI_shellTube.py" line="390"/>
         <source>Rating</source>
         <translation>Evaluación</translation>
     </message>
@@ -7185,6 +7583,26 @@ Puedes empezar creando un nuevo projecto o abriendo un projecto existente.</tran
         <location filename="../equipment/UI_valve.py" line="69"/>
         <source>T bubble point</source>
         <translation>Tª punto de burbuja</translation>
+    </message>
+    <message>
+        <source>Finned Tube</source>
+        <translation type="vanished">Tubo con aletas</translation>
+    </message>
+    <message>
+        <source>Finned Pipe Database</source>
+        <translation type="vanished">Base de datos de tuberias con aletas</translation>
+    </message>
+    <message>
+        <source>Fin Tube</source>
+        <translation type="vanished">Aletas</translation>
+    </message>
+    <message>
+        <source>Bared tube</source>
+        <translation type="vanished">Tubos lisos</translation>
+    </message>
+    <message>
+        <source>Finned tube</source>
+        <translation type="vanished">Tubos con aletas</translation>
     </message>
 </context>
 <context>
@@ -9675,8 +10093,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <location filename="../equipment/pump.py" line="183"/>
         <location filename="../equipment/pipe.py" line="150"/>
         <location filename="../equipment/neumatic.py" line="109"/>
-        <location filename="../equipment/heatExchanger.py" line="295"/>
-        <location filename="../equipment/heatExchanger.py" line="111"/>
+        <location filename="../equipment/heatExchanger.py" line="296"/>
+        <location filename="../equipment/heatExchanger.py" line="112"/>
         <location filename="../equipment/gas_solid.py" line="1175"/>
         <location filename="../equipment/gas_solid.py" line="914"/>
         <location filename="../equipment/gas_solid.py" line="470"/>
@@ -9696,9 +10114,9 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     <message>
         <location filename="../equipment/pump.py" line="437"/>
         <location filename="../equipment/pipe.py" line="430"/>
-        <location filename="../equipment/heatExchanger.py" line="1112"/>
-        <location filename="../equipment/heatExchanger.py" line="422"/>
-        <location filename="../equipment/heatExchanger.py" line="168"/>
+        <location filename="../equipment/heatExchanger.py" line="1167"/>
+        <location filename="../equipment/heatExchanger.py" line="423"/>
+        <location filename="../equipment/heatExchanger.py" line="169"/>
         <location filename="../equipment/gas_solid.py" line="1255"/>
         <location filename="../equipment/gas_solid.py" line="1055"/>
         <location filename="../equipment/gas_solid.py" line="748"/>
@@ -9717,8 +10135,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     <message>
         <location filename="../equipment/pump.py" line="443"/>
         <location filename="../equipment/pipe.py" line="439"/>
-        <location filename="../equipment/heatExchanger.py" line="1121"/>
-        <location filename="../equipment/heatExchanger.py" line="435"/>
+        <location filename="../equipment/heatExchanger.py" line="1176"/>
+        <location filename="../equipment/heatExchanger.py" line="436"/>
         <location filename="../equipment/gas_solid.py" line="762"/>
         <location filename="../equipment/compressor.py" line="667"/>
         <location filename="../equipment/compressor.py" line="374"/>
@@ -9726,8 +10144,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Estimación de costos</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="443"/>
-        <location filename="../equipment/heatExchanger.py" line="175"/>
+        <location filename="../equipment/heatExchanger.py" line="444"/>
+        <location filename="../equipment/heatExchanger.py" line="176"/>
         <location filename="../equipment/compressor.py" line="674"/>
         <location filename="../equipment/compressor.py" line="382"/>
         <source>Input Temperature</source>
@@ -9743,8 +10161,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Presión de entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="447"/>
-        <location filename="../equipment/heatExchanger.py" line="179"/>
+        <location filename="../equipment/heatExchanger.py" line="448"/>
+        <location filename="../equipment/heatExchanger.py" line="180"/>
         <location filename="../equipment/compressor.py" line="676"/>
         <location filename="../equipment/compressor.py" line="384"/>
         <source>Temperature increase</source>
@@ -9752,8 +10170,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     </message>
     <message>
         <location filename="../equipment/pipe.py" line="473"/>
-        <location filename="../equipment/heatExchanger.py" line="445"/>
-        <location filename="../equipment/heatExchanger.py" line="177"/>
+        <location filename="../equipment/heatExchanger.py" line="446"/>
+        <location filename="../equipment/heatExchanger.py" line="178"/>
         <location filename="../equipment/flux.py" line="600"/>
         <location filename="../equipment/flux.py" line="417"/>
         <location filename="../equipment/distillation.py" line="280"/>
@@ -9775,8 +10193,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Presión de salida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="449"/>
-        <location filename="../equipment/heatExchanger.py" line="181"/>
+        <location filename="../equipment/heatExchanger.py" line="450"/>
+        <location filename="../equipment/heatExchanger.py" line="182"/>
         <location filename="../equipment/compressor.py" line="679"/>
         <location filename="../equipment/compressor.py" line="387"/>
         <source>Pressure increase</source>
@@ -9816,8 +10234,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     <message>
         <location filename="../equipment/pump.py" line="466"/>
         <location filename="../equipment/pipe.py" line="476"/>
-        <location filename="../equipment/heatExchanger.py" line="1194"/>
-        <location filename="../equipment/heatExchanger.py" line="457"/>
+        <location filename="../equipment/heatExchanger.py" line="1249"/>
+        <location filename="../equipment/heatExchanger.py" line="458"/>
         <location filename="../equipment/gas_solid.py" line="790"/>
         <location filename="../equipment/compressor.py" line="688"/>
         <location filename="../equipment/compressor.py" line="397"/>
@@ -9827,8 +10245,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     <message>
         <location filename="../equipment/pump.py" line="467"/>
         <location filename="../equipment/pipe.py" line="477"/>
-        <location filename="../equipment/heatExchanger.py" line="1195"/>
-        <location filename="../equipment/heatExchanger.py" line="458"/>
+        <location filename="../equipment/heatExchanger.py" line="1250"/>
+        <location filename="../equipment/heatExchanger.py" line="459"/>
         <location filename="../equipment/gas_solid.py" line="791"/>
         <location filename="../equipment/compressor.py" line="689"/>
         <location filename="../equipment/compressor.py" line="398"/>
@@ -9838,8 +10256,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     <message>
         <location filename="../equipment/pump.py" line="468"/>
         <location filename="../equipment/pipe.py" line="478"/>
-        <location filename="../equipment/heatExchanger.py" line="1196"/>
-        <location filename="../equipment/heatExchanger.py" line="459"/>
+        <location filename="../equipment/heatExchanger.py" line="1251"/>
+        <location filename="../equipment/heatExchanger.py" line="460"/>
         <location filename="../equipment/gas_solid.py" line="792"/>
         <location filename="../equipment/compressor.py" line="690"/>
         <location filename="../equipment/compressor.py" line="399"/>
@@ -9886,8 +10304,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     <message>
         <location filename="../equipment/pump.py" line="477"/>
         <location filename="../equipment/pipe.py" line="479"/>
-        <location filename="../equipment/heatExchanger.py" line="1199"/>
-        <location filename="../equipment/heatExchanger.py" line="467"/>
+        <location filename="../equipment/heatExchanger.py" line="1254"/>
+        <location filename="../equipment/heatExchanger.py" line="468"/>
         <location filename="../equipment/gas_solid.py" line="794"/>
         <location filename="../equipment/compressor.py" line="691"/>
         <location filename="../equipment/compressor.py" line="409"/>
@@ -9897,8 +10315,8 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     <message>
         <location filename="../equipment/pump.py" line="478"/>
         <location filename="../equipment/pipe.py" line="480"/>
-        <location filename="../equipment/heatExchanger.py" line="1200"/>
-        <location filename="../equipment/heatExchanger.py" line="468"/>
+        <location filename="../equipment/heatExchanger.py" line="1255"/>
+        <location filename="../equipment/heatExchanger.py" line="469"/>
         <location filename="../equipment/gas_solid.py" line="795"/>
         <location filename="../equipment/compressor.py" line="692"/>
         <location filename="../equipment/compressor.py" line="410"/>
@@ -9932,7 +10350,7 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     </message>
     <message>
         <location filename="../equipment/shellTube.py" line="519"/>
-        <location filename="../equipment/heatExchanger.py" line="650"/>
+        <location filename="../equipment/heatExchanger.py" line="671"/>
         <location filename="../equipment/distillation.py" line="111"/>
         <source>Horizontal</source>
         <translation>Horizontal</translation>
@@ -9944,19 +10362,22 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Vertical</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="282"/>
+        <location filename="../equipment/tank.py" line="39"/>
+        <location filename="../equipment/heatExchanger.py" line="283"/>
         <location filename="../equipment/distillation.py" line="368"/>
         <location filename="../equipment/distillation.py" line="114"/>
         <source>Carbon steel</source>
         <translation>Acero al carbón</translation>
     </message>
     <message>
+        <location filename="../equipment/tank.py" line="41"/>
         <location filename="../equipment/distillation.py" line="369"/>
         <location filename="../equipment/distillation.py" line="115"/>
         <source>Stainless steel 304</source>
         <translation>Acero inoxidable 304</translation>
     </message>
     <message>
+        <location filename="../equipment/tank.py" line="40"/>
         <location filename="../equipment/distillation.py" line="370"/>
         <location filename="../equipment/distillation.py" line="116"/>
         <source>Stainless steel 316</source>
@@ -9997,6 +10418,7 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Incoloy 825</translation>
     </message>
     <message>
+        <location filename="../equipment/tank.py" line="47"/>
         <location filename="../equipment/shellTube.py" line="546"/>
         <location filename="../equipment/pump.py" line="164"/>
         <location filename="../equipment/distillation.py" line="376"/>
@@ -10037,7 +10459,7 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Composición molar del líquido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1153"/>
+        <location filename="../equipment/heatExchanger.py" line="1208"/>
         <location filename="../equipment/gas_solid.py" line="1269"/>
         <location filename="../equipment/gas_solid.py" line="1069"/>
         <location filename="../equipment/gas_solid.py" line="770"/>
@@ -10646,14 +11068,14 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Cámara de sedimentación por gravedad</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="645"/>
+        <location filename="../equipment/heatExchanger.py" line="666"/>
         <location filename="../equipment/gas_solid.py" line="441"/>
         <location filename="../equipment/gas_solid.py" line="200"/>
         <source>Rating</source>
         <translation>Evaluación</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="644"/>
+        <location filename="../equipment/heatExchanger.py" line="665"/>
         <location filename="../equipment/gas_solid.py" line="442"/>
         <location filename="../equipment/gas_solid.py" line="201"/>
         <source>Design</source>
@@ -10691,7 +11113,7 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
     </message>
     <message>
         <location filename="../equipment/pipe.py" line="449"/>
-        <location filename="../equipment/heatExchanger.py" line="1129"/>
+        <location filename="../equipment/heatExchanger.py" line="1184"/>
         <location filename="../equipment/gas_solid.py" line="319"/>
         <source>Length</source>
         <translation>Longitud</translation>
@@ -10869,14 +11291,14 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Todos los filtros en operación de limpieza</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="309"/>
+        <location filename="../equipment/heatExchanger.py" line="310"/>
         <location filename="../equipment/gas_solid.py" line="946"/>
         <location filename="../equipment/gas_solid.py" line="941"/>
         <source>using default efficiency</source>
         <translation>usando rendimientos por defecto</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="426"/>
+        <location filename="../equipment/heatExchanger.py" line="427"/>
         <location filename="../equipment/gas_solid.py" line="1259"/>
         <location filename="../equipment/gas_solid.py" line="1059"/>
         <source>stimated</source>
@@ -10983,429 +11405,429 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Área</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="64"/>
+        <location filename="../equipment/heatExchanger.py" line="65"/>
         <source>Heat Exchanger</source>
         <translation>Cambiador de calor</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="123"/>
+        <location filename="../equipment/heatExchanger.py" line="124"/>
         <source>undefined output temperature specification</source>
         <translation>especificación de la temperatura de salida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="182"/>
+        <location filename="../equipment/heatExchanger.py" line="183"/>
         <source>Heat</source>
         <translation>Calor</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="245"/>
+        <location filename="../equipment/heatExchanger.py" line="246"/>
         <source>Fired Heater</source>
         <translation>Calentador por fuego directo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="273"/>
+        <location filename="../equipment/heatExchanger.py" line="274"/>
         <source>Box Type</source>
         <translation>Tipo Caja</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="461"/>
-        <location filename="../equipment/heatExchanger.py" line="274"/>
+        <location filename="../equipment/heatExchanger.py" line="462"/>
+        <location filename="../equipment/heatExchanger.py" line="275"/>
         <source>Cylindrical type</source>
         <translation>Tipo cilíndrico</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="276"/>
+        <location filename="../equipment/heatExchanger.py" line="277"/>
         <source>Process heater</source>
         <translation>Calentador de proceso</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="277"/>
+        <location filename="../equipment/heatExchanger.py" line="278"/>
         <source>Pyrolysis</source>
         <translation>Pirólisis</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="278"/>
+        <location filename="../equipment/heatExchanger.py" line="279"/>
         <source>Reforme without catalysis</source>
         <translation>Reformador sin catálisis</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="280"/>
+        <location filename="../equipment/heatExchanger.py" line="281"/>
         <source>Cylindrical</source>
         <translation>Cilíndrico</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="281"/>
+        <location filename="../equipment/heatExchanger.py" line="282"/>
         <source>Dowtherm</source>
         <translation>Dowtherm</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="283"/>
+        <location filename="../equipment/heatExchanger.py" line="284"/>
         <source>Cr-Mo steel</source>
         <translation>Acero Cr-Mo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="284"/>
+        <location filename="../equipment/heatExchanger.py" line="285"/>
         <source>Stainless steel</source>
         <translation>Acero inoxidable</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="300"/>
+        <location filename="../equipment/heatExchanger.py" line="301"/>
         <source>undefined output temperature condition</source>
         <translation>condición de temperatura de salida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="304"/>
+        <location filename="../equipment/heatExchanger.py" line="305"/>
         <source>bad output temperature condition</source>
         <translation>condición de temperatura de salida mal definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="313"/>
+        <location filename="../equipment/heatExchanger.py" line="314"/>
         <source>using default fuel calorific value</source>
         <translation>usando valor por defecto de la capacidad calorífica del combustible</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="450"/>
+        <location filename="../equipment/heatExchanger.py" line="451"/>
         <source>Maximum heat</source>
         <translation>Flujo de calor máximo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="451"/>
+        <location filename="../equipment/heatExchanger.py" line="452"/>
         <source>Thermal Efficiency</source>
         <translation>Eficiencia térmica</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="453"/>
+        <location filename="../equipment/heatExchanger.py" line="454"/>
         <source>Fuel Heating Value</source>
         <translation>Poder calorífico del refrigerante</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="455"/>
+        <location filename="../equipment/heatExchanger.py" line="456"/>
         <source>Required Fuel</source>
         <translation>Combustible requerido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="460"/>
+        <location filename="../equipment/heatExchanger.py" line="461"/>
         <source>FireHeater type</source>
         <translation>Tipo de calentador</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="463"/>
+        <location filename="../equipment/heatExchanger.py" line="464"/>
         <source>Box type</source>
         <translation>Tipo caja</translation>
     </message>
     <message>
         <location filename="../equipment/pump.py" line="472"/>
         <location filename="../equipment/pipe.py" line="447"/>
-        <location filename="../equipment/heatExchanger.py" line="1197"/>
-        <location filename="../equipment/heatExchanger.py" line="465"/>
+        <location filename="../equipment/heatExchanger.py" line="1252"/>
+        <location filename="../equipment/heatExchanger.py" line="466"/>
         <source>Material</source>
         <translation>Material</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1198"/>
-        <location filename="../equipment/heatExchanger.py" line="466"/>
+        <location filename="../equipment/heatExchanger.py" line="1253"/>
+        <location filename="../equipment/heatExchanger.py" line="467"/>
         <source>Design Pressure</source>
         <translation>Presión de diseño</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="587"/>
+        <location filename="../equipment/heatExchanger.py" line="597"/>
         <source>Hairpin Heat Exchanger</source>
         <translation>Cambiador de calor de tubos concentricos</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="647"/>
+        <location filename="../equipment/heatExchanger.py" line="668"/>
         <source>Counterflow</source>
         <translation>Contracorriente</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="648"/>
+        <location filename="../equipment/heatExchanger.py" line="669"/>
         <source>Parallelflow</source>
         <translation>Cocorriente</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="651"/>
+        <location filename="../equipment/heatExchanger.py" line="672"/>
         <source>Vertical, (in down)</source>
         <translation>Vertical (interno hacia abajo)</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="652"/>
+        <location filename="../equipment/heatExchanger.py" line="673"/>
         <source>Vertical, (in up)</source>
         <translation>Vertical (Interno hacia arriba)</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="654"/>
+        <location filename="../equipment/heatExchanger.py" line="675"/>
         <source>Carbon steel/carbon steel</source>
         <translation>Acero al carbón/Acero al carbón</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="655"/>
+        <location filename="../equipment/heatExchanger.py" line="676"/>
         <source>Carbon steel/304 stainless</source>
         <translation>Acero al carboón/Acero inoxidable 304</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="656"/>
+        <location filename="../equipment/heatExchanger.py" line="677"/>
         <source>Carbon steel/316 stainless</source>
         <translation>Acero al carboón/Acero inoxidable 316</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="670"/>
+        <location filename="../equipment/heatExchanger.py" line="696"/>
         <source>undefined internal stream input</source>
         <translation>corriente interna no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="674"/>
+        <location filename="../equipment/heatExchanger.py" line="700"/>
         <source>undefined external stream input</source>
         <translation>corriente externa no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="679"/>
+        <location filename="../equipment/heatExchanger.py" line="705"/>
         <source>undefined pipe external diameter</source>
         <translation>diámetro externo de la tubería no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="691"/>
+        <location filename="../equipment/heatExchanger.py" line="717"/>
         <source>undefined pipe diameters</source>
         <translation>diametros de la tuberia no definidos</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="696"/>
+        <location filename="../equipment/heatExchanger.py" line="722"/>
         <source>undefined pipe material thermal conductivity</source>
         <translation>conductividad térmica del material de la tubería no definido</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="702"/>
+        <location filename="../equipment/heatExchanger.py" line="728"/>
         <source>Bare Tube</source>
         <translation>Tubo liso</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1141"/>
-        <location filename="../equipment/heatExchanger.py" line="704"/>
+        <location filename="../equipment/heatExchanger.py" line="1196"/>
+        <location filename="../equipment/heatExchanger.py" line="730"/>
         <source>Finned Tube</source>
         <translation>Tubo con aletas</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="710"/>
+        <location filename="../equipment/heatExchanger.py" line="736"/>
         <source>fin not specified, using bare tube</source>
         <translation>aletas no especificadas, usando tubos lisos</translation>
     </message>
     <message>
         <location filename="../equipment/pipe.py" line="154"/>
         <location filename="../equipment/neumatic.py" line="119"/>
-        <location filename="../equipment/heatExchanger.py" line="715"/>
+        <location filename="../equipment/heatExchanger.py" line="741"/>
         <source>undefined pipe length</source>
         <translation>longitud de la tubería no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="729"/>
+        <location filename="../equipment/heatExchanger.py" line="755"/>
         <source>undefined output condition</source>
         <translation>condición de salida no definida</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="747"/>
+        <location filename="../equipment/heatExchanger.py" line="773"/>
         <source>Pipe thickness discard</source>
         <translation>descartado el espesor de la tubería</translation>
     </message>
     <message>
         <location filename="../equipment/pipe.py" line="416"/>
-        <location filename="../equipment/heatExchanger.py" line="1104"/>
+        <location filename="../equipment/heatExchanger.py" line="1159"/>
         <source>Catalog</source>
         <translation>Catálogo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1130"/>
+        <location filename="../equipment/heatExchanger.py" line="1185"/>
         <source>Pipe Internal Diameter</source>
         <translation>Diámetro interno de la tubería</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1131"/>
+        <location filename="../equipment/heatExchanger.py" line="1186"/>
         <source>Pipe External Diameter</source>
         <translation>Diámetro externo de la tubería</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1132"/>
+        <location filename="../equipment/heatExchanger.py" line="1187"/>
         <source>Annulli External Diameter</source>
         <translation>Diámetro externo del anillo</translation>
     </message>
     <message>
         <location filename="../equipment/pipe.py" line="453"/>
-        <location filename="../equipment/heatExchanger.py" line="1134"/>
+        <location filename="../equipment/heatExchanger.py" line="1189"/>
         <source>Thickness</source>
         <translation>Espesor</translation>
     </message>
     <message>
         <location filename="../equipment/pipe.py" line="450"/>
-        <location filename="../equipment/heatExchanger.py" line="1135"/>
+        <location filename="../equipment/heatExchanger.py" line="1190"/>
         <source>Roughness</source>
         <translation>Rugosidad</translation>
     </message>
     <message>
         <location filename="../equipment/pipe.py" line="455"/>
-        <location filename="../equipment/heatExchanger.py" line="1136"/>
+        <location filename="../equipment/heatExchanger.py" line="1191"/>
         <source>External Area</source>
         <translation>Area externa</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1137"/>
+        <location filename="../equipment/heatExchanger.py" line="1192"/>
         <source>Thermal Conductivity</source>
         <translation>Conductividad Térmica</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1139"/>
+        <location filename="../equipment/heatExchanger.py" line="1194"/>
         <source>Internal Fouling</source>
         <translation>Obstrucción interna</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1140"/>
+        <location filename="../equipment/heatExchanger.py" line="1195"/>
         <source>External Fouling</source>
         <translation>Obstrucción externa</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1142"/>
+        <location filename="../equipment/heatExchanger.py" line="1197"/>
         <source>Fin height</source>
         <translation>Altura de aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1143"/>
+        <location filename="../equipment/heatExchanger.py" line="1198"/>
         <source>Thickness at bottom of fin</source>
         <translation>Espesor en la base de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1145"/>
+        <location filename="../equipment/heatExchanger.py" line="1200"/>
         <source>Thickness at top of fin</source>
         <translation>Espesor en la punta de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1147"/>
+        <location filename="../equipment/heatExchanger.py" line="1202"/>
         <source>External diameter at bottom of fin</source>
         <translation>Diamero externo en la base de las aletas</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1149"/>
+        <location filename="../equipment/heatExchanger.py" line="1204"/>
         <source>Fin thermal conductivity</source>
         <translation>Conductividad térmica de la aleta</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1151"/>
+        <location filename="../equipment/heatExchanger.py" line="1206"/>
         <source>Fin count per meter</source>
         <translation>Número de aletas por metro</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1154"/>
+        <location filename="../equipment/heatExchanger.py" line="1209"/>
         <source>Arrangement Flow</source>
         <translation>Distribución de flujo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1156"/>
+        <location filename="../equipment/heatExchanger.py" line="1211"/>
         <source>Layout</source>
         <translation>Disposición</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1158"/>
+        <location filename="../equipment/heatExchanger.py" line="1213"/>
         <source>Tube Mechanism</source>
         <translation>Mecanismo tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1159"/>
+        <location filename="../equipment/heatExchanger.py" line="1214"/>
         <source>Tube Fluid Speed</source>
         <translation>Velocidad del fluido en el tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1160"/>
+        <location filename="../equipment/heatExchanger.py" line="1215"/>
         <source>Tube Reynolds</source>
         <translation>Reynolds en el tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1162"/>
+        <location filename="../equipment/heatExchanger.py" line="1217"/>
         <source>Tube In Temperature</source>
         <translation>Temperatura de entrada al tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1164"/>
+        <location filename="../equipment/heatExchanger.py" line="1219"/>
         <source>Tube In Quality</source>
         <translation>Fracción de vapor de entrada al tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1166"/>
+        <location filename="../equipment/heatExchanger.py" line="1221"/>
         <source>Tube Out Temperature</source>
         <translation>Temperatura de salida del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1168"/>
+        <location filename="../equipment/heatExchanger.py" line="1223"/>
         <source>Tube Out Quality</source>
         <translation>Fracción de vapor a la salida del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1170"/>
+        <location filename="../equipment/heatExchanger.py" line="1225"/>
         <source>ΔP Tube</source>
         <translation>ΔP Tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1171"/>
+        <location filename="../equipment/heatExchanger.py" line="1226"/>
         <source>Tube heat transfer</source>
         <translation>Transferencia de calor del tubo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1173"/>
+        <location filename="../equipment/heatExchanger.py" line="1228"/>
         <source>Annulli Mechanism</source>
         <translation>Mecanismo en el anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1174"/>
+        <location filename="../equipment/heatExchanger.py" line="1229"/>
         <source>Annulli Fluid Speed</source>
         <translation>Velocidad del fluido en el anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1176"/>
+        <location filename="../equipment/heatExchanger.py" line="1231"/>
         <source>Annulli Reynolds</source>
         <translation>Reynolds en el anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1178"/>
+        <location filename="../equipment/heatExchanger.py" line="1233"/>
         <source>Annulli In Temperature</source>
         <translation>Temperatura de entrada al anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1180"/>
+        <location filename="../equipment/heatExchanger.py" line="1235"/>
         <source>Annulli In Quality</source>
         <translation>Fracción de vapor a la entrada del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1182"/>
+        <location filename="../equipment/heatExchanger.py" line="1237"/>
         <source>Annulli Out Temperature</source>
         <translation>Temperatura de salida del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1184"/>
+        <location filename="../equipment/heatExchanger.py" line="1239"/>
         <source>Annulli Out Quality</source>
         <translation>Fracción de vapor de salida del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1186"/>
+        <location filename="../equipment/heatExchanger.py" line="1241"/>
         <source>ΔP Annulli</source>
         <translation>ΔP Anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1188"/>
+        <location filename="../equipment/heatExchanger.py" line="1243"/>
         <source>Annulli heat transfer</source>
         <translation>Transferencia de calor del anillo</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1190"/>
+        <location filename="../equipment/heatExchanger.py" line="1245"/>
         <source>U</source>
         <translation>U</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1191"/>
+        <location filename="../equipment/heatExchanger.py" line="1246"/>
         <source>Q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1192"/>
+        <location filename="../equipment/heatExchanger.py" line="1247"/>
         <source>Clean Factor</source>
         <translation>Factor de limpieza</translation>
     </message>
     <message>
-        <location filename="../equipment/heatExchanger.py" line="1193"/>
+        <location filename="../equipment/heatExchanger.py" line="1248"/>
         <source>Over Surface</source>
         <translation>Sobresuperficie</translation>
     </message>
@@ -11420,45 +11842,45 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="170"/>
+        <location filename="../equipment/parents.py" line="172"/>
         <source>Input properties</source>
         <translation>Propiedades especificadas</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="306"/>
-        <location filename="../equipment/parents.py" line="188"/>
+        <location filename="../equipment/parents.py" line="308"/>
+        <location filename="../equipment/parents.py" line="190"/>
         <source>Notes</source>
         <translation>Notas</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="190"/>
+        <location filename="../equipment/parents.py" line="192"/>
         <source>Object Type</source>
         <translation>Tipo de objeto</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="233"/>
+        <location filename="../equipment/parents.py" line="235"/>
         <source>Ignore</source>
         <translation>Ignorar</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="265"/>
-        <location filename="../equipment/parents.py" line="256"/>
+        <location filename="../equipment/parents.py" line="267"/>
+        <location filename="../equipment/parents.py" line="258"/>
         <source>Input</source>
         <translation>Entrada</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="274"/>
+        <location filename="../equipment/parents.py" line="276"/>
         <source>Calculation</source>
         <translation>Cálculo</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="283"/>
+        <location filename="../equipment/parents.py" line="285"/>
         <source>Cost</source>
         <translation>Coste</translation>
     </message>
     <message>
-        <location filename="../equipment/parents.py" line="299"/>
-        <location filename="../equipment/parents.py" line="291"/>
+        <location filename="../equipment/parents.py" line="301"/>
+        <location filename="../equipment/parents.py" line="293"/>
         <source>Output</source>
         <translation>Salida</translation>
     </message>
@@ -11704,6 +12126,7 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Aleación Gould nº 20</translation>
     </message>
     <message>
+        <location filename="../equipment/tank.py" line="43"/>
         <location filename="../equipment/pump.py" line="160"/>
         <source>Nickel</source>
         <translation>Níquel</translation>
@@ -12468,6 +12891,56 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <translation>Ruta de la hoja de cálculo</translation>
     </message>
     <message>
+        <location filename="../equipment/tank.py" line="42"/>
+        <source>Stainless steel 347</source>
+        <translation>Acero inoxidable 347</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="44"/>
+        <source>Monel</source>
+        <translation>Monel</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="45"/>
+        <source>Inconel</source>
+        <translation>Inconel</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="46"/>
+        <source>Zirconium</source>
+        <translation>Zirconio</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="48"/>
+        <source>Brick and rubber or brick and polyester-lined steel</source>
+        <translation>Ladrillo y caucho o ladrillo y acero recubierto de poliester</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="49"/>
+        <source>Rubber or lead-lined steel</source>
+        <translation>Caucho o acero recubierto de plomo</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="50"/>
+        <source>Polyester, fiberglass-reinforced</source>
+        <translation>Poliester reforzado con fibra de carbono</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="51"/>
+        <source>Aluminum</source>
+        <translation>Aluminio</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="52"/>
+        <source>Copper</source>
+        <translation>Cobre</translation>
+    </message>
+    <message>
+        <location filename="../equipment/tank.py" line="53"/>
+        <source>Concrete</source>
+        <translation>Hormigón</translation>
+    </message>
+    <message>
         <location filename="../equipment/UI_pipe.py" line="486"/>
         <source>Type</source>
         <translation>Tipo</translation>
@@ -12476,6 +12949,113 @@ Estas son las opciones que debes especificar a continuación:&lt;br&gt;
         <location filename="../equipment/UI_pipe.py" line="488"/>
         <source>Description</source>
         <translation>Descripción</translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/finnedPipe.py" line="46"/>
+        <source>Use finned tube</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/fouling.py" line="237"/>
+        <source>Use fouling factor</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="297"/>
+        <location filename="../equipment/widget/helical.py" line="777"/>
+        <source>undefined internal diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="781"/>
+        <source>undefined diameter of helix</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/helical.py" line="922"/>
+        <source>Use helical coil</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="497"/>
+        <source>undefined rib pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="501"/>
+        <source>undefined rib depth</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/rib.py" line="587"/>
+        <source>Use helical rib in tube</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="274"/>
+        <source>Along flow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="275"/>
+        <source>Against flow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2437"/>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="293"/>
+        <source>undefined tape pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="301"/>
+        <source>undefined external diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="319"/>
+        <source>Coetzee correlation out of bound, using Gupte instead</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtapeAnnulli.py" line="348"/>
+        <source>Use twisted tape insert in annuli section</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2441"/>
+        <source>undefined tape diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2445"/>
+        <source>undefined tape thickness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2450"/>
+        <source>undefined hollow width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2860"/>
+        <source>Use twisted tape insert</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="701"/>
+        <source>undefined wire coil pitch</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="705"/>
+        <source>undefined wire coil diameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/wirecoil.py" line="873"/>
+        <source>Use wire coil insert</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -13887,6 +14467,146 @@ Verde: Gas, g/l</translation>
         <location filename="../tools/UI_Tables/chooseFluid.py" line="974"/>
         <source>Sublimation Pressure</source>
         <translation>Línea de sublimación</translation>
+    </message>
+</context>
+<context>
+    <name>twistedtape</name>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2377"/>
+        <location filename="../equipment/widget/twistedtape.py" line="2364"/>
+        <location filename="../equipment/widget/twistedtape.py" line="2340"/>
+        <source>Perforated twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2341"/>
+        <source>Perforated twisted tape with jaggedness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2342"/>
+        <source>Perforated spiky twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2343"/>
+        <source>Perforated spiky twisted tape with jaggedness</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2344"/>
+        <source>V-notched spiky twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2345"/>
+        <source>Serrated roughened twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2346"/>
+        <source>Broken twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2353"/>
+        <source>Twin counter twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2354"/>
+        <source>Twin co-twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2355"/>
+        <source>Oblique delta-winglet twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2356"/>
+        <source>Straight delta-winglet twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2357"/>
+        <source>Peripherally-cut twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2358"/>
+        <source>Twisted tape with centre wings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2359"/>
+        <source>Twisted tape with centre wings and alternate axes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2360"/>
+        <source>Regularly-spaced twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2361"/>
+        <source>Regularly-spaced dual twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2362"/>
+        <source>Tapered twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2363"/>
+        <source>Alternate axes twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2365"/>
+        <source>Perforated helical twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2366"/>
+        <source>Alternate clockwise and counter-clockwise twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2367"/>
+        <source>Twisted tape with trapezoid wings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2368"/>
+        <source>Twisted tape with rectangular wings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2369"/>
+        <source>Twisted tape with triangular wings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2370"/>
+        <source>Serrated twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2371"/>
+        <source>Delta wings twisted tape</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2372"/>
+        <source>Delta wings twisted tape with alternate axis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../equipment/widget/twistedtape.py" line="2378"/>
+        <source>Perforated twisted tape with alternate axis</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -15643,42 +16363,42 @@ Verde: Gas, g/l</translation>
 <context>
     <name>widgets</name>
     <message>
-        <location filename="../UI/widgets.py" line="66"/>
+        <location filename="../UI/widgets.py" line="79"/>
         <source>Underspecified</source>
         <translation>No especificado</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="67"/>
+        <location filename="../UI/widgets.py" line="80"/>
         <source>Solved</source>
         <translation>Resuelto</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="68"/>
+        <location filename="../UI/widgets.py" line="81"/>
         <source>Ignored</source>
         <translation>Ignorado</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="69"/>
+        <location filename="../UI/widgets.py" line="82"/>
         <source>Warning</source>
         <translation>Aviso</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="70"/>
+        <location filename="../UI/widgets.py" line="83"/>
         <source>Calculating...</source>
         <translation>Calculando...</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="71"/>
+        <location filename="../UI/widgets.py" line="84"/>
         <source>Error</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1495"/>
+        <location filename="../UI/widgets.py" line="1508"/>
         <source>Unsaved changes</source>
         <translation>Cambios sin salvar</translation>
     </message>
     <message>
-        <location filename="../UI/widgets.py" line="1496"/>
+        <location filename="../UI/widgets.py" line="1509"/>
         <source>Save unsaved changes?</source>
         <translation>¿Guardar cambios?</translation>
     </message>
