@@ -23,48 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from math import log, exp, pi
 
+from lib.adimensional import Re
 from lib.unidades import Density, Length, Currency, Volume
 from lib.corriente import Corriente
 from .parents import equipment
+from tools.qt import translate
 
 
 class Tank(equipment):
-    """Clase que define los tanques de almacenamiento"""
-    title="Deposito de almacenamiento"
-    help=""
+    """Class to model tank
 
-    def __call__(self, **kwargs):
+    Parameters:
 
-        self.Di=1.
-        self.L=3.
-        self.volumen(3)
-        self.Coste(1.7, 0)
-
-
-    def volumen(self, cabeza):
-        """
-        cabeza: tipo de cabeza del recipiente
-            0   -   Ellipsoidal
-            1   -   Hemispherical
-            2   -   Bumped
-            3   -   Flat
-        """
-        V_carcasa=pi/4*self.Di**2*self.L
-
-        if cabeza==0:
-            V_cabeza=4./3*pi/8*self.Di**3
-        elif cabeza==1:
-            V_cabeza=4./3*pi/8/2*self.Di**3
-        elif cabeza==2:
-            V_cabeza=0.215483/2*self.Di**3
-        else:
-            V_cabeza=0.
-
-        self.Volumen=Volume(V_carcasa+V_cabeza)
-
-
-    def coste(self, *args, **kwargs):
-        """
+    Cost:
         material:
             0   -   Carbon steel
             1   -   Stainless steel 316
@@ -81,33 +52,145 @@ class Tank(equipment):
             12  -   Aluminum
             13  -   Copper
             14  -   Concrete
-        """
-        self._indicesCoste(*args)
 
-        self.material=kwargs["material"]
+        head : Type of head
+            0   -   Ellipsoidal
+            1   -   Hemispherical
+            2   -   Bumped
+    """
 
-        V=self.Volumen.galUS
+    title="Deposito de almacenamiento"
+    help=""
 
-        Fm=[1., 2.7, 2.4, 3.0, 3.5, 3.3, 3.8, 11.0, 11.0, 2.75, 1.9, 0.32, 2.7, 2.3, 0.55][self.material]
+    kwargs = {
+        "entrada": None,
+        "Di": 0,
+        "L": 0,
 
-        if V<=21000:
-            C=Fm*exp(2.631+1.3673*log(V)-0.06309*log(V)**2)
+        "hasHelicalCoil": False,
+        "helicalCoil": None,
+
+        "f_install": 1.7,
+        "Base_index": 0.0,
+        "Current_index": 0.0,
+        "material": 0,
+        "head": 0}
+
+    kwargsInput = ("entrada",)
+    kwargsValue = ("Di", "L")
+    kwargsMandatory = ("helicalCoil", )
+
+    calculateCostos = ("C_adq", "C_inst")
+    indiceCostos = 3
+
+    TEXT_MATERIAL = [
+        translate("equipment", "Carbon steel"),
+        translate("equipment", "Stainless steel 316"),
+        translate("equipment", "Stainless steel 304"),
+        translate("equipment", "Stainless steel 347"),
+        translate("equipment", "Nickel"),
+        translate("equipment", "Monel"),
+        translate("equipment", "Inconel"),
+        translate("equipment", "Zirconium"),
+        translate("equipment", "Titanium"),
+        translate("equipment", "Brick and rubber or brick and polyester-lined steel"),
+        translate("equipment", "Rubber or lead-lined steel"),
+        translate("equipment", "Polyester, fiberglass-reinforced"),
+        translate("equipment", "Aluminum"),
+        translate("equipment", "Copper"),
+        translate("equipment", "Concrete")]
+
+    TEXT_HEAD = [
+        translate("equipment", "Ellipsoidal"),
+        translate("equipment", "Hemispherical"),
+        translate("equipment", "Bumped"),
+        translate("equipment", "Flat")]
+
+    @property
+    def isCalculable(self):
+        self.status = 1
+        self.msg = ""
+        if self.kwargs["f_install"] and self.kwargs["Base_index"] and \
+                self.kwargs["Current_index"]:
+            self.statusCoste = True
         else:
-            C=Fm*exp(11.662+0.6104*log(V)-0.04536*log(V)**2)
+            self.statusCoste = False
 
-        self.C_adq=Currency(C*self.Current_index/self.Base_index)
-        self.C_inst=Currency(self.C_adq*self.f_install)
+        if not self.kwargs["entrada"]:
+            self.msg = translate("equipment", "undefined stream input")
+            self.status = 0
+            return
+
+        if not self.kwargs["Di"]:
+            self.msg = translate("equipment", "undefined internal diameter")
+            self.status = 0
+            return
+        if not self.kwargs["L"]:
+            self.msg = translate("equipment", "undefined length")
+            self.status = 0
+            return
+
+        return True
+
+    def calculo(self):
+        self.V = self.volumen()
+
+        if self.kwargs["hasHelicalCoil"] and self.kwargs["helicalCoil"]:
+            fluid = self.kwargs["entrada"]
+            if fluid.x == 0:
+                fluido = fluid.Liquido
+            else:
+                fluido = fluid.Vapor
+
+            rho = fluido.rho
+            mu = fluido.mu
+            k = fluido.k
+            v = fluid.Q*4/pi/self.kwargs["Di"]**2
+            re = Re(D=self.kwargs["Di"], V=v, rho=rho, mu=mu)
+            pr = fluido.Prandt
+
+            f = self.kwargs["helicalCoil"].f(re)
+            Nu = self.kwargs["helicalCoil"].Nu(re, pr)
+            print("f: ", f)
+            print("Nu: ", Nu)
+
+    def volumen(self):
+        """Calculate volume of shell of equipment"""
+        V_shell = pi/4*self.kwargs["Di"]**2*self.kwargs["L"]
+
+        if self.kwargs["head"] == 0:
+            V_head = 4/3*pi/8*self.kwargs["Di"]**3
+        elif self.kwargs["head"] == 1:
+            V_head = 4/3*pi/8/2*self.kwargs["Di"]**3
+        elif self.kwargs["head"] == 2:
+            V_head = 0.215483/2*self.kwargs["Di"]**3
+        else:
+            V_head = 0
+
+        return Volume(V_shell+V_head)
 
 
+    def coste(self):
+        """Calculate cost parameters"""
+        self.material = self.kwargs["material"]
+        CI = self.kwargs["Current_index"]
+        BI = self.kwargs["Base_index"]
 
+        V = self.V.galUS
+
+        Fm = [1, 2.7, 2.4, 3.0, 3.5, 3.3, 3.8, 11.0, 11.0, 2.75, 1.9, 0.32,
+              2.7, 2.3, 0.55][self.kwargs["material"]]
+
+        if V <= 21000:
+            C = Fm*exp(2.631+1.3673*log(V)-0.06309*log(V)**2)
+        else:
+            C = Fm*exp(11.662+0.6104*log(V)-0.04536*log(V)**2)
+
+        self.C_adq = Currency(C * CI / BI)
+        self.C_inst = Currency(self.C_adq * self.kwargs["f_install"])
 
 
 if __name__ == '__main__':
-
     tanque=Tank()
     print((tanque.C_inst))
-    print((tanque.Volumen))
-
-
-
-#    flash.Coste(1.7, 0, 0, 3, 1, 2, 0.05, 0.05, 0)
+    print((tanque.V))

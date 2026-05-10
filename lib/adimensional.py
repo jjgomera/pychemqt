@@ -41,7 +41,7 @@ This module implements physics adimensional groups
     * :func:`Sc`: Schmidt number
     * :func:`St`: Stanton number
     * :func:`We`: Weber number
-    * :func:`De`: Dean number
+    * :func:`Dean`: Dean number
 '''
 
 
