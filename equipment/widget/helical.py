@@ -108,19 +108,23 @@ __doi__ = {
                   "in an adiabatic two-phase flow in a coiled tube",
          "ref": "Nuclear Eng. Design 149 (1994) 323-333",
          "doi": "10.1016/0029-5493(94)90298-4"},
-
-    # 15:
-        # {"autor": "",
-         # "title": "",
-         # "ref": "",
-         # "doi": ""},
-
-    20:
+    15:
         {"autor": "Xin, R.C., Ebadian, M.A.  ",
          "title": "The Effects of Prandtl Numbers on Local and Average "
                   "Convective Heat Transfer Characteristics in Helical Pipes",
          "ref": "J. Heat Transfer 119(3) (1997) 467-73",
          "doi": "10.1115/1.2824120."},
+    16:
+        {"autor": "Seban R.A., McLaughlin, E.F.",
+         "title": "Heat Transfer in Tube Coils with Laminar and Turbulent Flow",
+         "ref": "Int. J. Heat Mass Transfer 6() (1963) 387-395",
+         "doi": "10.1016/0017-9310(63)90100-5"}
+
+    # 17:
+        # {"autor": "",
+         # "title": "",
+         # "ref": "",
+         # "doi": ""},
 
 }
 
@@ -598,7 +602,7 @@ def Nu_MoriNakayama(Re, Pr, di, Dc):
     return Nu
 
 
-@refDoc(__doi__, [21])
+@refDoc(__doi__, [15])
 def Nu_XinEbadian(Re, Pr, di, Dc):
     r"""Calculates Nusselt number for internal flow of a helical coil using the
     correlation of Xin-Ebadian (1997)
@@ -639,6 +643,61 @@ def Nu_XinEbadian(Re, Pr, di, Dc):
     else:
         # Eq 6
         Nu = 0.00619 * Re**0.92 * Pr**0.4 * (1+3.455*di/Dc)
+
+    return Nu
+
+
+@refDoc(__doi__, [16])
+def Nu_SebanMcLaughlin(Re, Pr, di, Dc):
+    r"""Calculates Nusselt number for internal flow of a helical coil using the
+    correlation of Seban-McLaughlin (1963)
+
+    For laminar flow:
+
+    .. math::
+        Nu = 1.04 \left(\frac{Re}{1-\left(1-\left(1-\frac{11.6}{De}\right)
+        ^{0.45}\right)^{1/0.45}}\right)^{1/3} Pr^{1/3}
+
+    For turbulent flow:
+
+    .. math::
+        Nu = 0.023 Re^{0.85} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.1}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    Rec = Rec_Ito(di, Dc)
+
+    if Re < Rec:
+        # Laminar flow
+        # Use Whie correlation for friction factor
+        f = f_laminar_White(Re, di, Dc)
+
+        # Eq 3
+        Nu = 0.13*(f/8*Re**2)**(1/3)*Pr**(1/3)
+
+    else:
+        # Use friction factor for a straight tube given in paper
+        fs = 0.023 / Re**0.2
+
+        # Eq 4, Friction factor
+        f = fs * (Re*(di/Dc)**2)**0.05
+
+        # Eq 6
+        Nu = f * Re * Pr**0.4
 
     return Nu
 
@@ -684,12 +743,14 @@ class Helical(CallableEntity):
         "Schmidt (1967)",
         "Xin-Ebadian (1997)",
         "Mori-Nakayama (1965)",
+        "Seban-McLaughlin (1963)",
     )
 
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
         "Xin-Ebadian (1997)",
         "Mori-Nakayama (1965)",
+        "Seban-McLaughlin (1963)",
     )
 
 
@@ -772,6 +833,10 @@ class Helical(CallableEntity):
                 # Mori-Nakayama (1965)
                 Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatLaminar"] == 3:
+                # Seban-McLaughlin (1963)
+                Nu = Nu_SebanMcLaughlin(Re, Pr, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -785,6 +850,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 2:
                 # Mori-Nakayama (1965)
                 Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 3:
+                # Seban-McLaughlin (1963)
+                Nu = Nu_SebanMcLaughlin(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
