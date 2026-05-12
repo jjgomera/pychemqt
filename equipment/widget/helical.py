@@ -118,9 +118,15 @@ __doi__ = {
         {"autor": "Seban R.A., McLaughlin, E.F.",
          "title": "Heat Transfer in Tube Coils with Laminar and Turbulent Flow",
          "ref": "Int. J. Heat Mass Transfer 6() (1963) 387-395",
-         "doi": "10.1016/0017-9310(63)90100-5"}
+         "doi": "10.1016/0017-9310(63)90100-5"},
+    17:
+        {"autor": "Manlapaz, R.L., Churchill, S.W.",
+         "title": "Fully Developed Laminar Flow in a Helically Coiled Tube of "
+                  "Finite Pitch",
+         "ref": "Chem. Eng. Communications 7 (1980) 57-78",
+         "doi": "10.1080/00986448008912549"},
 
-    # 17:
+    # 18:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -409,6 +415,54 @@ def f_MishraGupta(Re, di, Dc):
         f = fd + 0.03*(di/Dc)**0.5
 
     return f
+
+@refDoc(__doi__, [17])
+def f_laminar_ManlapazChurchill(Re, di, Dc, p):
+    r"""Calculates friction factor in laminar regimen for internal flow of a
+    helical coil using the method of Manlapaz-Churchill (1980).
+
+    .. math::
+        \frac{f_c}{f_{s,L}} = \left[\left(1 -
+        \frac{0.18}{\left(1+\left(\frac{35}{De}\right)^2\right)^{1/2}}\right)^m
+        + \left(1+\frac{d_i}{3 D_c}\right)^2 \frac{De}{88.33}\right]^{1/2}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    fd = f_friccion(Re)
+    De = Dean(Re, di, Dc)
+
+    if De <= 20:
+        m = 2
+    elif De <= 40:
+        m = 1
+    else:
+        m = 0
+
+    if p:
+        # Eq 25
+        X = De*(1/(1+(p/Dc/2/pi)**2))**0.5
+    else:
+        X = De
+
+    # Eq 29
+    f = fd * ((1-0.18/(1+(35/X)**2)**0.5)**m + (1+di/Dc/3)**2*X/88.33)**0.5
+
+    return f
+
 
 
 @refDoc(__doi__, [8])
@@ -707,12 +761,12 @@ class Helical(CallableEntity):
 
     Parameters
     ----------
-    H : float
-        Tape pitch for twist of π radians (180º), [m]
     di : float
         Inner diameter of the pipe, [m]
     Dc : float
         Diameter of the helix, [m]
+    p : float, optional
+        Pitch for twist of 2π radians (360º), [m]
     """
 
     TEXT_REYNOLDS_CRITICAL = (
@@ -729,6 +783,7 @@ class Helical(CallableEntity):
         "Hart (1988)",
         "Ju (2001)",
         "Mishra-Gupta (1979)",
+        "Manlapaz-Churchill (1980)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -753,7 +808,6 @@ class Helical(CallableEntity):
         "Seban-McLaughlin (1963)",
     )
 
-
     status = 0
     msg = ""
     kw = {
@@ -763,9 +817,10 @@ class Helical(CallableEntity):
         "methodHeatLaminar": 0,
         "methodHeatTurbulent": 0,
 
-        # "H": 0,
         "di": 0,
-        "Dc": 0}
+        "Dc": 0,
+        "p": 0
+    }
 
     valueChanged = QtCore.pyqtSignal(object)
     inputChanged = QtCore.pyqtSignal(object)
@@ -863,6 +918,7 @@ class Helical(CallableEntity):
 
     def f(self, Re):
         """Calculate friction factor"""
+        msg = ""
         Rec = self.ReCritical
 
         if Re < Rec:
@@ -886,6 +942,14 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 5:
                 # Mishra-Gupta (1979)
                 f = f_MishraGupta(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 6:
+                # Manlapaz-Churchill (1980)
+                f = f_laminar_ManlapazChurchill(
+                    Re, self.di, self.Dc, self.kw["p"])
+                if not self.kw["p"]:
+                    msg = "Helical pitch undefined, using Manlapaz correlation"
+                    msg += "with Dean number"
 
             else:
                 # Schmidt (1967)
@@ -912,6 +976,11 @@ class Helical(CallableEntity):
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
 
         return f
 
@@ -999,6 +1068,10 @@ class UI_Helical(ToolGui):
         self.Dc = Entrada_con_unidades(Length)
         self.Dc.valueChanged.connect(partial(self.changeParams, "Dc"))
         lyt.addWidget(self.Dc, 5, 2)
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Helical pitch")), 6, 1)
+        self.p = Entrada_con_unidades(Length)
+        self.p.valueChanged.connect(partial(self.changeParams, "p"))
+        lyt.addWidget(self.p, 6, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
