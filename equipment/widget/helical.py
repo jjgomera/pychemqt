@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import pi, log, cos, atan
+from math import pi, cos, atan, log10
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -409,7 +409,7 @@ def f_MishraGupta(Re, di, Dc):
     if Re < Rec:
         # Laminar flow, Eq 5.
         De = Dean(Re, di, Dc)
-        f = fd * (1 + 0.033*log(De)**4)
+        f = fd * (1 + 0.033*log10(De)**4)
     else:
         # Turbulent flow, Eq 10.
         f = fd + 0.03*(di/Dc)**0.5
