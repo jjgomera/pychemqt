@@ -125,8 +125,14 @@ __doi__ = {
                   "Finite Pitch",
          "ref": "Chem. Eng. Communications 7 (1980) 57-78",
          "doi": "10.1080/00986448008912549"},
+    18:
+        {"autor": "Prasad, B.V.S.S.S., Das, D.H., Prabhaker, A.K.",
+         "title": "Pressure Drop, Heat Transfer and Performance of a "
+                  "Helically Coiled Tubular Exchanger",
+         "ref": "Heat Recovery Systems & CHP 9(3) (1989) 249-256",
+         "doi": "10.1016/0890-4332(89)90008-2"},
 
-    # 18:
+    # 19:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -416,15 +422,23 @@ def f_MishraGupta(Re, di, Dc):
 
     return f
 
-@refDoc(__doi__, [17])
-def f_laminar_ManlapazChurchill(Re, di, Dc, p):
-    r"""Calculates friction factor in laminar regimen for internal flow of a
-    helical coil using the method of Manlapaz-Churchill (1980).
+
+@refDoc(__doi__, [18])
+def f_Prasad(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Prasad et al. (1989).
+
+    For laminar flow use a modified Write correlation:
 
     .. math::
-        \frac{f_c}{f_{s,L}} = \left[\left(1 -
-        \frac{0.18}{\left(1+\left(\frac{35}{De}\right)^2\right)^{1/2}}\right)^m
-        + \left(1+\frac{d_i}{3 D_c}\right)^2 \frac{De}{88.33}\right]^{1/2}
+        \frac{f}{f_s} = \frac{1}{1-\left(1-\left(\frac{B}{De}\right)^{0.45}
+        \right)^{\frac{1}{0.45}}}
+
+    For turbulent flow use a modified Ito correlation:
+
+    .. math::
+        \frac{f}{f_s} = 1 +
+        0.18\left(Re \left(\frac{d_i}{D_c}\right)^2\right)^{0.25}
 
     Parameters
     ----------
@@ -434,35 +448,32 @@ def f_laminar_ManlapazChurchill(Re, di, Dc, p):
         Inner diameter of the pipe, [m]
     Dc : float
         Diameter of the helix, [m]
-    p : float
-        Pitch for twist of 2π radians (360º), [m]
 
     Returns
     -------
     f : float
         Friction factor, [-]
     """
+
+    Rec = Rec_Ito(di, Dc)
+
     fd = f_friccion(Re)
-    De = Dean(Re, di, Dc)
 
-    if De <= 20:
-        m = 2
-    elif De <= 40:
-        m = 1
+    if Re < Rec:
+        # Laminar flow
+        De = Dean(Re, di, Dc)
+        if De < 500:
+            B = 11.6
+        else:
+            B = 6
+
+        f = fd / (1-(1-(B/De)*0.45)**(1/0.45))
+
     else:
-        m = 0
-
-    if p:
-        # Eq 25
-        X = De*(1/(1+(p/Dc/2/pi)**2))**0.5
-    else:
-        X = De
-
-    # Eq 29
-    f = fd * ((1-0.18/(1+(35/X)**2)**0.5)**m + (1+di/Dc/3)**2*X/88.33)**0.5
+        # Turbulent flow
+        f = fd * (1+0.18*(Re*(di/Dc)**2)**0.25)
 
     return f
-
 
 
 @refDoc(__doi__, [8])
@@ -527,6 +538,54 @@ def f_laminar_Hart(Re, di, Dc):
 
     f = 1 + 0.09 * De**1.5 / (70+De)
     return f * fd
+
+
+@refDoc(__doi__, [17])
+def f_laminar_ManlapazChurchill(Re, di, Dc, p):
+    r"""Calculates friction factor in laminar regimen for internal flow of a
+    helical coil using the method of Manlapaz-Churchill (1980).
+
+    .. math::
+        \frac{f_c}{f_{s,L}} = \left[\left(1 -
+        \frac{0.18}{\left(1+\left(\frac{35}{De}\right)^2\right)^{1/2}}\right)^m
+        + \left(1+\frac{d_i}{3 D_c}\right)^2 \frac{De}{88.33}\right]^{1/2}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    fd = f_friccion(Re)
+    De = Dean(Re, di, Dc)
+
+    if De <= 20:
+        m = 2
+    elif De <= 40:
+        m = 1
+    else:
+        m = 0
+
+    if p:
+        # Eq 25
+        X = De*(1/(1+(p/Dc/2/pi)**2))**0.5
+    else:
+        X = De
+
+    # Eq 29
+    f = fd * ((1-0.18/(1+(35/X)**2)**0.5)**m + (1+di/Dc/3)**2*X/88.33)**0.5
+
+    return f
 
 
 @refDoc(__doi__, [14])
@@ -756,6 +815,54 @@ def Nu_SebanMcLaughlin(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [18])
+def Nu_Prasad(Re, Pr, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Prasad et al. (1989).
+
+    For laminar flow:
+
+    .. math::
+        Nu = 0.25 \left(\frac{f}{8} Re^2\right)^{1/3} Pr^{1/3}
+
+    For turbulent flow:
+
+    .. math::
+        Nu = \frac{f}{8} Re
+
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    Rec = Rec_Ito(di, Dc)
+
+    f = f_Prasad(Re, di, Dc)
+
+    if Re < Rec:
+        # Laminar flow
+        Nu = 0.25 * (f/8*Re**2)**(1/3) * Pr
+
+    else:
+        # Turbulent flow
+        Nu = f/8 * Re
+
+    return Nu
+
+
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
@@ -784,6 +891,7 @@ class Helical(CallableEntity):
         "Ju (2001)",
         "Mishra-Gupta (1979)",
         "Manlapaz-Churchill (1980)",
+        "Prasad (1989)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -792,6 +900,7 @@ class Helical(CallableEntity):
         "Ju (2001)",
         "Mishra-Gupta (1979)",
         "Czop (1994)",
+        "Prasad (1989)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -799,6 +908,7 @@ class Helical(CallableEntity):
         "Xin-Ebadian (1997)",
         "Mori-Nakayama (1965)",
         "Seban-McLaughlin (1963)",
+        "Prasad (1989)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -806,6 +916,7 @@ class Helical(CallableEntity):
         "Xin-Ebadian (1997)",
         "Mori-Nakayama (1965)",
         "Seban-McLaughlin (1963)",
+        "Prasad (1989)",
     )
 
     status = 0
@@ -892,6 +1003,10 @@ class Helical(CallableEntity):
                 # Seban-McLaughlin (1963)
                 Nu = Nu_SebanMcLaughlin(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatLaminar"] == 4:
+                # Prasad (1989)
+                Nu = Nu_Prasad(Re, Pr, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -909,6 +1024,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 3:
                 # Seban-McLaughlin (1963)
                 Nu = Nu_SebanMcLaughlin(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 4:
+                # Prasad (1989)
+                Nu = Nu_Prasad(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
@@ -951,6 +1070,10 @@ class Helical(CallableEntity):
                     msg = "Helical pitch undefined, using Manlapaz correlation"
                     msg += "with Dean number"
 
+            elif self.kw["methodFrictionLaminar"] == 7:
+                # Prasad (1989)
+                f = f_Prasad(Re, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -972,6 +1095,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 4:
                 # Czop (1994)
                 f = f_turbulent_Czop(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 5:
+                # Prasad (1989)
+                f = f_Prasad(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
