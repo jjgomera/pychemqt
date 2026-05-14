@@ -131,8 +131,13 @@ __doi__ = {
                   "Helically Coiled Tubular Exchanger",
          "ref": "Heat Recovery Systems & CHP 9(3) (1989) 249-256",
          "doi": "10.1016/0890-4332(89)90008-2"},
+    19:
+        {"autor": "Liu, S., Afacan, A., Nasr-El-Din, H.A., Masliyah, J.H.",
+         "title": "An Experimental Study of Pressure Drop in Helical Pipes",
+         "ref": "Proc. R. Soc. Lond. A 444 (1994) 307-316",
+         "doi": "10.1098/rspa.1994.0020"},
 
-    # 19:
+    # 20:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -584,6 +589,43 @@ def f_laminar_ManlapazChurchill(Re, di, Dc, p):
 
     # Eq 29
     f = fd * ((1-0.18/(1+(35/X)**2)**0.5)**m + (1+di/Dc/3)**2*X/88.33)**0.5
+
+    return f
+
+
+@refDoc(__doi__, [14])
+def f_laminar_Liu(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Liu et al. (1994).
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    Rc = Dc/di
+    De = Dean(Re, di, Dc)
+
+    # Torsion, Eq 1a
+    nu = (p/2/pi)/(Rc**2+(p/2/pi)**2)
+
+    # Curvature ratio, Eq 1b
+    l = Rc/(Rc**2+(p/2/pi)**2)
+
+    # Eq 12
+    f = (16 + (0.378*Re**0.5 + 12.1/l**0.5/De**0.5)*nu**2) / Re * \
+        (1+((0.0908+0.0233*l**0.5)*De**0.5-0.132*l**0.5+0.37*l-0.2)/(1+49/De))
 
     return f
 
@@ -1073,6 +1115,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 7:
                 # Prasad (1989)
                 f = f_Prasad(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 8:
+                # Liu (1994)
+                f = f_laminar_Liu(Re, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
