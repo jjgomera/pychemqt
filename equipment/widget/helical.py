@@ -136,8 +136,14 @@ __doi__ = {
          "title": "An Experimental Study of Pressure Drop in Helical Pipes",
          "ref": "Proc. R. Soc. Lond. A 444 (1994) 307-316",
          "doi": "10.1098/rspa.1994.0020"},
+    20:
+        {"autor": "Seth, K.K., Stahel, E.P.",
+         "title": "Heat Transfer from Helical Coils Immersed in Agitated "
+                  "Vessels",
+         "ref": "Ind. Eng. Chem. 61(6) (1969) 39-49",
+         "doi": "10.1021/ie50714a007"},
 
-    # 20:
+    # 21:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -268,6 +274,32 @@ def Rec_Kutateladze(di, Dc):
     """
     # Eq 7.26
     Rec = 2300 + 10500*(di/Dc)**0.3
+    return Rec
+
+
+@refDoc(__doi__, [20])
+def Rec_SethStahel(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Seth-Stahel (1969).
+
+    .. math::
+        Re_c = 1900 \left(1 + 8 \sqrt{\frac{d_i}{D_c}}\right)
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+
+    # Eq 32
+    Rec = 1900 * (1 + 8*(di/Dc)**0.5)
     return Rec
 
 
@@ -918,12 +950,14 @@ class Helical(CallableEntity):
         Pitch for twist of 2π radians (360º), [m]
     """
 
+
     TEXT_REYNOLDS_CRITICAL = (
         "Schmidt (1967)",
         "Ito (1959)",
         "Kubair-Kuloor (1966)",
         "Srinivasan (1968)",
-        "Kutateladze (1966)")
+        "Kutateladze (1966)",
+        "Seth-Stahel (1969)")
 
     TEXT_LAMINAR_FRICTION = (
         "Schmidt (1967)",
@@ -1020,6 +1054,10 @@ class Helical(CallableEntity):
         elif self.kw["methodReCritic"] == 3:
             # Kutateladze (1966)
             Rec = Rec_Kutateladze(self.di, self.Dc)
+
+        elif self.kw["methodReCritic"] == 4:
+            #  Seth-Stahel (1969)
+            Rec = Rec_SethStahel(self.di, self.Dc)
 
         else:
             # Schmidt (1967)
