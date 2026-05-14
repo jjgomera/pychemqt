@@ -142,8 +142,14 @@ __doi__ = {
                   "Vessels",
          "ref": "Ind. Eng. Chem. 61(6) (1969) 39-49",
          "doi": "10.1021/ie50714a007"},
+    21:
+        {"autor": "Ali, S.",
+         "title": "Pressure drop correlations for flow through regular "
+                  "helical coil tubes",
+         "ref": "Fluid Dyn. Research 28 (2001) 295-310",
+         "doi": "10.1016/s0169-5983(00)00034-4"},
 
-    # 21:
+    # 22:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -509,6 +515,61 @@ def f_Prasad(Re, di, Dc):
     else:
         # Turbulent flow
         f = fd * (1+0.18*(Re*(di/Dc)**2)**0.25)
+
+    return f
+
+
+@refDoc(__doi__, [21])
+def f_Ali(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Ali (2001).
+
+    Define four flow regime fitted with the correlation:
+
+    .. math::
+        f = Eu\frac{d}{L}=\alpha\left(\frac{d_i}{D_{eq}}\right)^{0.15}Re^{\beta}
+
+    with the equivalent diameter of coil:
+
+    .. math::
+        D_{eq} = \sqrt{\frac{p^2+\left(\pi D\right)^2}{pi}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Friction give in darcy format, x4 to convert to fanning
+
+    # Equivalent diameter of coil
+    Deq = ((p**2 + (pi*Dc)**2)/pi)**0.5
+
+    if Re < 500:
+        # Low Laminar flow, Eq 15
+        f = 21.88*4 * (di/Deq)**0.15 / Re**0.9
+
+    elif Re < 6300:
+        # Laminar flow, Eq 16
+        f = 5.25*4 * (di/Deq)**0.15 / Re**(2/3)
+
+    elif Re < 10000:
+        # Mixed flow, Eq 17
+        f = 0.56*4 * (di/Deq)**0.15 / Re**(2/5)
+
+    else:
+        # Turbulent flow, Eq 18
+        f = 0.09*4 * (di/Deq)**0.15 / Re**(1/5)
 
     return f
 
@@ -968,6 +1029,8 @@ class Helical(CallableEntity):
         "Mishra-Gupta (1979)",
         "Manlapaz-Churchill (1980)",
         "Prasad (1989)",
+        "Liu (1994)",
+        "Ali (2001)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -977,6 +1040,7 @@ class Helical(CallableEntity):
         "Mishra-Gupta (1979)",
         "Czop (1994)",
         "Prasad (1989)",
+        "Ali (2001)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -1158,6 +1222,10 @@ class Helical(CallableEntity):
                 # Liu (1994)
                 f = f_laminar_Liu(Re, self.di, self.Dc, self.kw["p"])
 
+            elif self.kw["methodFrictionLaminar"] == 9:
+                # Ali (2001)
+                f = f_Ali(Re, self.di, self.Dc, self.kw["p"])
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -1183,6 +1251,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 5:
                 # Prasad (1989)
                 f = f_Prasad(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 6:
+                # Ali (2001)
+                f = f_Ali(Re, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
