@@ -148,8 +148,14 @@ __doi__ = {
                   "helical coil tubes",
          "ref": "Fluid Dyn. Research 28 (2001) 295-310",
          "doi": "10.1016/s0169-5983(00)00034-4"},
+    22:
+        {"autor": "Guo, L., Feng, Z, Chen, X.",
+         "title": "An experimental investigation of the frictional pressure "
+                  "drop of steam–water two-phase flow in helical coils",
+         "ref": "Int. J. Heat Mass Transfer 44(14) (2001): 2601-2610",
+         "doi": "10.1016/S0017-9310(00)00312-4"},
 
-    # 22:
+    # 23:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -755,6 +761,33 @@ def f_turbulent_Czop(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [22])
+def f_turbulent_Guo(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    turbulent flow using the method of Guo et al. (2001).
+
+    .. math::
+        f_c = 2.552 Re^{-0.15} \left(\frac{d_i}{D_c}\right)^{0.51}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 20
+    # Convert fanning friction factor
+    f = 2.552/4 / Re**0.15 * (di/Dc)**0.51
+    return f
+
 
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [3])
@@ -1041,6 +1074,7 @@ class Helical(CallableEntity):
         "Czop (1994)",
         "Prasad (1989)",
         "Ali (2001)",
+        "Guo (2001)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -1256,6 +1290,9 @@ class Helical(CallableEntity):
                 # Ali (2001)
                 f = f_Ali(Re, self.di, self.Dc, self.kw["p"])
 
+            elif self.kw["methodFrictionTurbulent"] == 7:
+                # Guo (2001)
+                f = f_turbulent_Guo(Re, self.di, self.Dc)
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
