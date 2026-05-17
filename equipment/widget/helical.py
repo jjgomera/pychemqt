@@ -154,8 +154,12 @@ __doi__ = {
                   "drop of steam–water two-phase flow in helical coils",
          "ref": "Int. J. Heat Mass Transfer 44(14) (2001): 2601-2610",
          "doi": "10.1016/S0017-9310(00)00312-4"},
-
-    # 23:
+    23:
+        {"autor": "Ito, H.",
+         "title": "Laminar Flow in Curved Pipes",
+         "ref": "Z. Angew. Math. Mech. 11 (1969) 653-663",
+         "doi": "10.1002/zamm.19690491104"},
+    # 24:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -729,6 +733,37 @@ def f_laminar_Liu(Re, di, Dc, p):
     return f
 
 
+@refDoc(__doi__, [23])
+def f_laminar_Ito(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Ito (1969).
+
+    .. math::
+        \frac{f_c}{f_s} = 0.1033 De^{0.5} \left(\left(1+\frac{1.729}{De}\right)
+        ^{0.5} - \frac{1.315}{De^{0.5}}\right)^{-3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    f = fd * 0.1033 * De**0.5 / ((1+1.729/De)**0.5 - 1.315/De**0.5)**3
+    return f
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1064,6 +1099,7 @@ class Helical(CallableEntity):
         "Prasad (1989)",
         "Liu (1994)",
         "Ali (2001)",
+        "Ito (1969)"
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1259,6 +1295,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 9:
                 # Ali (2001)
                 f = f_Ali(Re, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodFrictionLaminar"] == 10:
+                # Ito (1969)
+                f = f_laminar_Ito(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
