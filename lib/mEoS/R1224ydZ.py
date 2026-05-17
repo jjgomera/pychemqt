@@ -31,14 +31,20 @@ class R1224ydZ(MEoS):
     CASNumber = "111512-60-8"
     formula = "CHCl=CFCF3"
     synonym = "R-1224yd(Z)"
-    rhoc = unidades.Density(527.127785)
+    rhoc = unidades.Density(539.3036944)
     Tc = unidades.Temperature(428.69)
-    Pc = unidades.Pressure(3337, "kPa")
+    Pc = unidades.Pressure(3334, "kPa")
     M = 148.4867  # g/mol
-    Tt = unidades.Temperature(263)
-    Tb = unidades.Temperature(287.767)
-    f_acent = 0.322
+    Tt = unidades.Temperature(157.8)
+    Tb = unidades.Temperature(288.004)
+    f_acent = 0.3247
     momentoDipolar = unidades.DipoleMoment(1.47, "Debye")
+
+    Fi1 = {"ao_log": [1, 3],
+           "pow": [0, 1],
+           "ao_pow": [-17.859290811, 11.052900649],
+           "ao_exp": [9.057, 11.91],
+           "titao": [511/Tc, 1425/Tc]}
 
     CP1 = {"ao": 4,
            "ao_exp": [15.1, 0.703],
@@ -46,20 +52,57 @@ class R1224ydZ(MEoS):
 
     akasaka = {
         "__type__": "Helmholtz",
-        "__name__": "Helmholtz equation of state for R1243zf of Akasaka "
-                    "(2016)",
-        "__doi__": {"autor": "Akasaka, R., Fukushima, M., Lemmon, E.W.",
-                    "title": "A Helmholtz Energy Equation of State for "
-                             "Cis-1-chloro-2,3,3,3-tetrafluoropropene "
-                             "(R-1224yd(Z))",
-                    "ref": "21st European Conference on Thermophysical "
-                           "Properties, Graz, Austria, September 3-8, 2017",
-                    "doi": ""},
+        "__name__": "Helmholtz equation of state for R1243ydZ of Akasaka (2023)",
+        "__doi__": {
+            "autor": "Akasaka, R., Fukushima, M., Lemmon, E.W.",
+            "title": "A Helmholtz Energy Equation of State for cis‐1‐Chloro‐"
+                     "2,3,3,3‐tetrafluoro‐1‐propene [R‐1224yd(Z)]",
+            "ref": "Int. J. Thermophysics 44 (2023) 166",
+            "doi": "10.1007/s10765-023-03266-3"},
+
+        "R": 8.314462618,
+        "cp": Fi1,
+        "ref": "IIR",
+
+        "Tmin": Tt, "Tmax": 473, "Pmax": 35000,
+
+        "nr1": [0.05515868, 1.9416962, -2.2385064629867, -0.8414463720438,
+                0.22459576],
+        "d1": [4, 1, 1, 2, 3],
+        "t1": [1, 0.226, 0.661, 1.128, 0.51],
+
+        "nr2": [-1.6513724, -0.022916841, -1.588437, 0.56220803, -0.67885338,
+                -0.027421084, -0.021429988],
+        "d2": [1, 1, 3, 2, 2, 7, 2],
+        "t2": [1.98, 8.5, 2.27, 0.89, 2.78, 1.0, 6.36],
+        "c2": [2, 3, 2, 1, 2, 1, 3],
+        "gamma2": [1]*7,
+
+        "nr3": [0.26924542, -0.33022951, 2.2799188, -0.42644754, -0.38611218,
+                0.13232403, -0.33124629],
+        "d3": [2, 2, 1, 1, 1, 1, 1],
+        "t3": [4.5, 2.84, 1.15, 1.25, 2.32, 3.5, 1.06],
+        "alfa3": [23.96, 23.81, 1.327, 1.941, 1.516, 1.7, 2.23],
+        "beta3": [1028, 1014, 1.23, 1.146, 0.803, 0.83, 1.21],
+        "gamma3": [1.06, 1.062, 1.296, 1.245, 1.0, 1.45, 1.215],
+        "epsilon3": [0.9578, 0.9577, 0.8713, 1.183, 1.25, 1.19, 0.842]}
+
+    akasaka2017 = {
+        "__type__": "Helmholtz",
+        "__name__": "Helmholtz equation of state for R1243ydZ of Akasaka (2016)",
+        "__doi__": {
+            "autor": "Akasaka, R., Fukushima, M., Lemmon, E.W.",
+            "title": "A Helmholtz Energy Equation of State for Cis-1-chloro-"
+                     "2,3,3,3-tetrafluoropropene (R-1224yd(Z))",
+            "ref": "21st European Conference on Thermophysical Properties, "
+                   "Graz, Austria, September 3-8, 2017",
+            "doi": ""},
         # data from the .fld file courteously provided by Mr. Akasaka
 
         "R": 8.3144598,
         "cp": CP1,
         "ref": "IIR",
+        "Pc": 3337, "rhoc": 3.55,
 
         "Tmin": 263, "Tmax": 473.15, "Pmax": 40000,
 
@@ -81,7 +124,7 @@ class R1224ydZ(MEoS):
         "gamma3": [1.075, 1.124, 1.084, 1.093, 1.07],
         "epsilon3": [0.763, 0.884, 0.265, 0.696, 0.681]}
 
-    eq = (akasaka, )
+    eq = (akasaka, akasaka2017)
 
     _surface = {
         "__doi__": {"autor": "Huber, M.L.",
@@ -94,16 +137,16 @@ class R1224ydZ(MEoS):
 
     _vapor_Pressure = {
         "eq": 3,
-        "n": [-7.5822, 1.6998, -2.6426, -3.5124],
-        "t": [1.0, 1.5, 2.52, 5]}
+        "n": [-7.5763, 1.5053, -3.7306, -2.7425],
+        "t": [1.0, 1.5, 2.95, 5.8]}
     _liquid_Density = {
         "eq": 1,
-        "n": [0.939, 1.7931, 0.043779, -0.097119],
-        "t": [0.22, 0.62, 1, 1.8]}
+        "n": [3.7298, -2.6186, 5.9922, -10.25, 6.1004],
+        "t": [0.293, 0.332, 1.09, 1.55, 1.9]}
     _vapor_Density = {
         "eq": 2,
-        "n": [-1.7785, -7.1173, -19.416, -43.38],
-        "t": [0.284, 1, 3, 6]}
+        "n": [-1.1894, -6.3255, -18.408, -53.621, -135.5],
+        "t": [0.23, 0.824, 2.72, 6, 13]}
 
     trnECS = {"__name__": "Huber (2018)",
 
@@ -136,16 +179,54 @@ class R1224ydZ(MEoS):
 
 class Test(TestCase):
     """Test class"""
+    def test_akasaka(self):
+        """Table 7, pag 22"""
+        st = R1224ydZ(T=300, rhom=0)
+        self.assertEqual(round(st.P.MPa, 5), 0)
+        self.assertEqual(round(st.cvM.JmolK, 3), 104.075)
+        self.assertEqual(round(st.cpM.JmolK, 3), 112.389)
+        self.assertEqual(round(st.w, 3), 134.686)
+
+        st = R1224ydZ(T=300, rhom=10)
+        self.assertEqual(round(st.P.MPa, 5), 55.03321)
+        self.assertEqual(round(st.cvM.JmolK, 3), 122.878)
+        self.assertEqual(round(st.cpM.JmolK, 3), 160.984)
+        self.assertEqual(round(st.w, 3), 892.196)
+
+        st = R1224ydZ(T=300, rhom=0.05)
+        self.assertEqual(round(st.P.MPa, 7), 0.1187058)
+        self.assertEqual(round(st.cvM.JmolK, 3), 108.960)
+        self.assertEqual(round(st.cpM.JmolK, 3), 120.269)
+        self.assertEqual(round(st.w, 3), 129.430)
+
+        st = R1224ydZ(T=400, rhom=8)
+        self.assertEqual(round(st.P.MPa, 5), 21.17907)
+        self.assertEqual(round(st.cvM.JmolK, 3), 139.592)
+        self.assertEqual(round(st.cpM.JmolK, 3), 185.184)
+        self.assertEqual(round(st.w, 3), 489.479)
+
+        st = R1224ydZ(T=400, rhom=0.9)
+        self.assertEqual(round(st.P.MPa, 6), 1.927264)
+        self.assertEqual(round(st.cvM.JmolK, 3), 145.150)
+        self.assertEqual(round(st.cpM.JmolK, 3), 212.723)
+        self.assertEqual(round(st.w, 3), 103.907)
+
+        st = R1224ydZ(T=430, rhom=4)
+        self.assertEqual(round(st.P.MPa, 6), 3.418542)
+        self.assertEqual(round(st.cvM.JmolK, 3), 172.715)
+        self.assertEqual(round(st.cpM.JmolK, 2), 5047.17)
+        self.assertEqual(round(st.w, 4), 67.4779)
 
     def test_Huber(self):
         """Table 7, pag 266"""
-        st = R1224ydZ(T=385.8, rhom=7.275)
+        st = R1224ydZ(T=385.8, rhom=7.275, eq=1)
         self.assertEqual(round(st.mu.muPas, 4), 113.9873)
         self.assertEqual(round(st.k.mWmK, 4), 53.9323)
 
     def test_Surface(self):
         """Table 10, pag 271"""
-        self.assertEqual(round(R1224ydZ(T=385.8, x=0.5).sigma, 7), 0.0032758)
+        self.assertEqual(round(
+            R1224ydZ(T=385.8, x=0.5, eq=1).sigma, 7), 0.0032758)
 
 
 if __name__ == "__main__":
@@ -161,11 +242,11 @@ if __name__ == "__main__":
     Tg = []
     rhog = []
     for t in Ti:
-        stl = R1224ydZ(T=t, x=0)
+        stl = R1224ydZ(T=t, x=0, eq=1)
         if stl.status:
             Tl.append(stl.T)
             rhol.append(stl.rhoM)
-        stg = R1224ydZ(T=t, x=1)
+        stg = R1224ydZ(T=t, x=1, eq=1)
         if stg.status:
             Tg.append(stg.T)
             rhog.append(stg.rhoM)

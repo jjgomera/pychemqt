@@ -57,7 +57,6 @@ class C4F10(MEoS):
                      "n-Perfluerohexane",
             "ref": "Ind. Eng. Chem. Res. 60(47) (2021) 17207-17227",
             "doi": "10.1021/acs.iecr.1c02969"},
-        # Find published paper
 
         "R": 8.314462618,
         "cp": CP1,
@@ -132,7 +131,7 @@ class Test(TestCase):
     """Testing"""
 
     def test_gao(self):
-        """Pag. 14"""
+        """Table 14, pag 17225"""
         st = C4F10(T=225, rhom=0)
         self.assertEqual(round(st.P.MPa, 6), 0)
         self.assertEqual(round(st.cvM.JmolK, 4), 171.2260)
