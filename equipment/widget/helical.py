@@ -132,10 +132,11 @@ __doi__ = {
          "ref": "Heat Recovery Systems & CHP 9(3) (1989) 249-256",
          "doi": "10.1016/0890-4332(89)90008-2"},
     19:
-        {"autor": "Liu, S., Afacan, A., Nasr-El-Din, H.A., Masliyah, J.H.",
-         "title": "An Experimental Study of Pressure Drop in Helical Pipes",
-         "ref": "Proc. R. Soc. Lond. A 444 (1994) 307-316",
-         "doi": "10.1098/rspa.1994.0020"},
+        {"autor": "Liu, S., Masliyah, J.H.",
+         "title": "Axially invariant laminar flow in helical pipes with a "
+                  "finite pitch",
+         "ref": "J. Fluid Mech. 251 (1993) 315-353",
+         "doi": "10.1017/S002211209300343X"},
     20:
         {"autor": "Seth, K.K., Stahel, E.P.",
          "title": "Heat Transfer from Helical Coils Immersed in Agitated "
@@ -738,10 +739,10 @@ def f_laminar_ManlapazChurchill(Re, di, Dc, p):
     return f
 
 
-@refDoc(__doi__, [14])
-def f_laminar_Liu(Re, di, Dc, p):
+@refDoc(__doi__, [19])
+def f_laminar_LiuMasliyah(Re, di, Dc, p):
     r"""Calculates friction factor for internal flow of a helical coil in
-    laminar flow using the method of Liu et al. (1994).
+    laminar flow using the method of Liu-Masliyah (1993).
 
     Parameters
     ----------
@@ -762,14 +763,14 @@ def f_laminar_Liu(Re, di, Dc, p):
     Rc = Dc/di
     De = Dean(Re, di, Dc)
 
-    # Torsion, Eq 1a
-    nu = (p/2/pi)/(Rc**2+(p/2/pi)**2)
-
-    # Curvature ratio, Eq 1b
+    # Curvature ratio, Eq 10
     l = Rc/(Rc**2+(p/2/pi)**2)
 
-    # Eq 12
-    f = (16 + (0.378*Re**0.5 + 12.1/l**0.5/De**0.5)*nu**2) / Re * \
+    # Torsion, Eq 11
+    nu = (p/2/pi)/(Rc**2+(p/2/pi)**2)
+
+    # Eq 43
+    f = (16 + (0.378*De*l**0.25 + 12.1)*De**0.5*l**0.5*nu**2) / Re * \
         (1+((0.0908+0.0233*l**0.5)*De**0.5-0.132*l**0.5+0.37*l-0.2)/(1+49/De))
 
     return f
@@ -1234,7 +1235,7 @@ class Helical(CallableEntity):
         "Mishra-Gupta (1979)",
         "Manlapaz-Churchill (1980)",
         "Prasad (1989)",
-        "Liu (1994)",
+        "Liu-Masliyah (1993)",
         "Ali (2001)",
         "Ito (1969)",
         "Tarbell-Samuels (1973)",
@@ -1437,8 +1438,8 @@ class Helical(CallableEntity):
                 f = f_Prasad(Re, self.di, self.Dc)
 
             elif self.kw["methodFrictionLaminar"] == 8:
-                # Liu (1994)
-                f = f_laminar_Liu(Re, self.di, self.Dc, self.kw["p"])
+                # Liu-Masliyah (1993)
+                f = f_laminar_LiuMasliyah(Re, self.di, self.Dc, self.kw["p"])
 
             elif self.kw["methodFrictionLaminar"] == 9:
                 # Ali (2001)
