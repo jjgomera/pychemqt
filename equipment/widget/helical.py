@@ -164,8 +164,14 @@ __doi__ = {
          "title": "Momentum and Heat Transfer in Helical Coils",
          "ref": "Chem. Eng. J. 5 (1973) 117-127",
          "doi": "10.1016/0300-9467(73)80002-4"},
+    25:
+        {"autor": "Mandal, M. M., Nigam, K.D.P.",
+         "title": "Experimental Study on Pressure Drop and Heat Transfer of "
+                  "Turbulent Flow in Tube in Tube Helical Heat Exchanger",
+         "ref": "Ind. Eng. Chem. Res. 48(20) (2009) 9318-9324",
+         "doi": "10.1021/ie9002393"},
 
-    # 25:
+    # 26:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -861,6 +867,36 @@ def f_turbulent_Guo(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [25])
+def f_turbulent_MandalNigam(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    turbulent flow using the method of Mandal-Nigam (2009).
+
+    .. math::
+        f_{curv} = f_{\text{str,turb}} [1 + 0.03{De}^{0.27}]
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 11
+    f = fd * (1 + 0.03*De**0.27)
+    return f
+
+
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [3])
 def Nu_Schmidt(Re, Pr, di, Dc):
@@ -1057,7 +1093,7 @@ def Nu_SebanMcLaughlin(Re, Pr, di, Dc):
 
 @refDoc(__doi__, [18])
 def Nu_Prasad(Re, Pr, di, Dc):
-    r"""Calculates friction factor for internal flow of a helical coil using
+    r"""Calculates nusselt number for internal flow of a helical coil using
     the method of Prasad et al. (1989).
 
     For laminar flow:
@@ -1100,6 +1136,37 @@ def Nu_Prasad(Re, Pr, di, Dc):
         # Turbulent flow
         Nu = f/8 * Re
 
+    return Nu
+
+
+@refDoc(__doi__, [25])
+def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Mandal-Nigam (2009).
+
+    .. math::
+        Nu = 0.55 De^{0.637} Pr^{0.4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 13
+    Nu = 0.55 * De**0.637 * Pr**0.4
     return Nu
 
 
@@ -1149,6 +1216,7 @@ class Helical(CallableEntity):
         "Prasad (1989)",
         "Ali (2001)",
         "Guo (2001)",
+        "Mandal-Nigam (2009)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -1165,6 +1233,7 @@ class Helical(CallableEntity):
         "Mori-Nakayama (1965)",
         "Seban-McLaughlin (1963)",
         "Prasad (1989)",
+        "Mandal-Nigam (2009)",
     )
 
     status = 0
@@ -1281,6 +1350,10 @@ class Helical(CallableEntity):
                 # Prasad (1989)
                 Nu = Nu_Prasad(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatTurbulent"] == 5:
+                # Mandal-Nigam (2009)
+                Nu = Nu_turbulent_MandalNigam(Re, Pr, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -1375,6 +1448,11 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 7:
                 # Guo (2001)
                 f = f_turbulent_Guo(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 8:
+                # Mandal-Nigam (2009)
+                f = f_turbulent_MandalNigam(Re, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
