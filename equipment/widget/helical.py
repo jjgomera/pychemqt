@@ -177,8 +177,13 @@ __doi__ = {
                   "turbulent flow transition in helically coiled pipes",
          "ref": "Exp. Thermal Fluid Sci. 30 (2006) 367-380",
          "doi": "10.1016/j.expthermflusci.2005.08.005"},
+    27:
+        {"autor": "Adler, M.",
+         "title": "Strömung in gekrümmten Rohren",
+         "ref": "Z. Angew. Math. Mech. 14(5) 257-275",
+         "doi": "10.1002/zamm.19340140502"},
 
-    # 27:
+    # 28:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -839,6 +844,36 @@ def f_laminar_TarbellSamuels(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [27])
+def f_laminar_Adler(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Adler (1934).
+
+    .. math::
+        \frac{f_c}{f_s} = 0.1064 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 29
+    f = fd * 0.1064*De**0.5
+    return f
+
 
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
@@ -1239,6 +1274,7 @@ class Helical(CallableEntity):
         "Ali (2001)",
         "Ito (1969)",
         "Tarbell-Samuels (1973)",
+        "Adler (1934)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1452,6 +1488,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 11:
                 # Tarbell-Samuels (1973)
                 f = f_laminar_TarbellSamuels(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 12:
+                # Adler (1934)
+                f = f_laminar_Adler(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
