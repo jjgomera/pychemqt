@@ -159,7 +159,13 @@ __doi__ = {
          "title": "Laminar Flow in Curved Pipes",
          "ref": "Z. Angew. Math. Mech. 11 (1969) 653-663",
          "doi": "10.1002/zamm.19690491104"},
-    # 24:
+    24:
+        {"autor": "Tarbell, J.M., Samuels, M.R.",
+         "title": "Momentum and Heat Transfer in Helical Coils",
+         "ref": "Chem. Eng. J. 5 (1973) 117-127",
+         "doi": "10.1016/0300-9467(73)80002-4"},
+
+    # 25:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -758,8 +764,41 @@ def f_laminar_Ito(Re, di, Dc):
     De = Dean(Re, di, Dc)
     fd = f_friccion(Re)
 
+    # Eq 57
     f = fd * 0.1033 * De**0.5 / ((1+1.729/De)**0.5 - 1.315/De**0.5)**3
     return f
+
+
+@refDoc(__doi__, [24])
+def f_laminar_TarbellSamuels(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Tarbell-Samuels (1973).
+
+    .. math::
+        \frac{f_c}{f_s} = 1 + \left(
+        8.279e^{-4} + \frac{7.964e{-3}}{d_i/D_c}\right) Re - 2.096e-7 Re^2
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    fd = f_friccion(Re)
+
+    # Eq 27
+    f = fd * (1 + (8.279e-4 + 7.964e-3/(Dc/di))*Re - 2.096e-7*Re**2)
+    return f
+
 
 
 @refDoc(__doi__, [14])
@@ -1097,7 +1136,8 @@ class Helical(CallableEntity):
         "Prasad (1989)",
         "Liu (1994)",
         "Ali (2001)",
-        "Ito (1969)"
+        "Ito (1969)",
+        "Tarbell-Samuels (1973)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1297,6 +1337,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 10:
                 # Ito (1969)
                 f = f_laminar_Ito(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 11:
+                # Tarbell-Samuels (1973)
+                f = f_laminar_TarbellSamuels(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
