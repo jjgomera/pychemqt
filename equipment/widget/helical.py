@@ -343,7 +343,7 @@ def f_Schmidt(Re, di, Dc):
 
     if Re < Rec:
         # Laminar flow, Eq 15
-        f = 64/Re * (1+0.14*(di/Dc)**0.97*Re**(1-0.644*(di/Dc)**0.312))
+        f = 16/Re * (1+0.14*(di/Dc)**0.97*Re**(1-0.644*(di/Dc)**0.312))
     elif Re < 2.2e4:
         # Eq 16
         f = 0.3164/Re**0.25 * (1+2.88e4/Re*(di/Dc)**0.62)
@@ -520,7 +520,7 @@ def f_Prasad(Re, di, Dc):
         else:
             B = 6
 
-        f = fd / (1-(1-(B/De)*0.45)**(1/0.45))
+        f = fd / (1-(1-(B/De)**0.45)**(1/0.45))
 
     else:
         # Turbulent flow
@@ -560,26 +560,24 @@ def f_Ali(Re, di, Dc, p):
     f : float
         Friction factor, [-]
     """
-    # Friction give in darcy format, x4 to convert to fanning
-
     # Equivalent diameter of coil
     Deq = ((p**2 + (pi*Dc)**2)/pi)**0.5
 
     if Re < 500:
         # Low Laminar flow, Eq 15
-        f = 21.88*4 * (di/Deq)**0.15 / Re**0.9
+        f = 21.88 * (di/Deq)**0.15 / Re**0.9
 
     elif Re < 6300:
         # Laminar flow, Eq 16
-        f = 5.25*4 * (di/Deq)**0.15 / Re**(2/3)
+        f = 5.25 * (di/Deq)**0.15 / Re**(2/3)
 
     elif Re < 10000:
         # Mixed flow, Eq 17
-        f = 0.56*4 * (di/Deq)**0.15 / Re**(2/5)
+        f = 0.56 * (di/Deq)**0.15 / Re**(2/5)
 
     else:
         # Turbulent flow, Eq 18
-        f = 0.09*4 * (di/Deq)**0.15 / Re**(1/5)
+        f = 0.09 * (di/Deq)**0.15 / Re**(1/5)
 
     return f
 
