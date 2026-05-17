@@ -170,8 +170,14 @@ __doi__ = {
                   "Turbulent Flow in Tube in Tube Helical Heat Exchanger",
          "ref": "Ind. Eng. Chem. Res. 48(20) (2009) 9318-9324",
          "doi": "10.1021/ie9002393"},
+    26:
+        {"autor": "Ciencolini, A., Santini, L.",
+         "title": "An experimental investigation regarding the laminar to "
+                  "turbulent flow transition in helically coiled pipes",
+         "ref": "Exp. Thermal Fluid Sci. 30 (2006) 367-380",
+         "doi": "10.1016/j.expthermflusci.2005.08.005"},
 
-    # 26:
+    # 27:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -328,6 +334,32 @@ def Rec_SethStahel(di, Dc):
 
     # Eq 32
     Rec = 1900 * (1 + 8*(di/Dc)**0.5)
+    return Rec
+
+
+@refDoc(__doi__, [26])
+def Rec_Cioncolini(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Cioncolini-Santini (2006).
+
+    .. math::
+        Re_c = 30,000 \left(\frac{d_i}{D_c}\right)^{0.47}
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+
+    # Eq 13
+    Rec = 30000 * (di/Dc)**0.47
     return Rec
 
 
@@ -1185,12 +1217,13 @@ class Helical(CallableEntity):
 
 
     TEXT_REYNOLDS_CRITICAL = (
-        "Schmidt (1967)",
         "Ito (1959)",
+        "Schmidt (1967)",
         "Kubair-Kuloor (1966)",
         "Srinivasan (1968)",
         "Kutateladze (1966)",
-        "Seth-Stahel (1969)")
+        "Seth-Stahel (1969)",
+        "Cioncolini-Santini (2006)")
 
     TEXT_LAMINAR_FRICTION = (
         "Schmidt (1967)",
@@ -1281,8 +1314,8 @@ class Helical(CallableEntity):
         """Calculate critical Reynolds number to define transition of regimen
         flow from laminar to turbulent"""
         if self.kw["methodReCritic"] == 1:
-            # Ito (1959)
-            Rec = Rec_Ito(self.di, self.Dc)
+            # Schmidt (1967)
+            Rec = Rec_Schmidt(self.di, self.Dc)
 
         elif self.kw["methodReCritic"] == 2:
             # Kubair-Kuloor (1966)
@@ -1300,9 +1333,13 @@ class Helical(CallableEntity):
             #  Seth-Stahel (1969)
             Rec = Rec_SethStahel(self.di, self.Dc)
 
+        elif self.kw["methodReCritic"] == 5:
+            # Cioncolini-Santini (2006)
+            Rec = Rec_Cioncolini(self.di, self.Dc)
+
         else:
-            # Schmidt (1967)
-            Rec = Rec_Schmidt(self.di, self.Dc)
+            # Ito (1959)
+            Rec = Rec_Ito(self.di, self.Dc)
 
         return Rec
 
