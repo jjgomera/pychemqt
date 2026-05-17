@@ -38,7 +38,7 @@ from tools import (UI_confComponents, UI_Preferences, UI_confTransport,
                    UI_confThermo, UI_confUnits, UI_databank, UI_Tables,
                    UI_unitConverter, UI_psychrometry, costIndex, doi,
                    dependences, terminal, qtelemental, wizard)
-from UI import newComponent, flujo, plots, viewComponents
+from UI import newComponent, flujo, plots, viewComponents, BIP
 from UI.prefPFD import BrushCombo
 from UI.petro import Definicion_Petro
 from UI.widgets import createAction, okToContinue
@@ -391,6 +391,12 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             icon=os.path.join("button", "list.png"),
             tip=self.tr("Show/Hide item list"),
             checkable=True, parent=self)
+
+        self.BIPAction = createAction(
+            self.tr("Binary interaction parameters"),
+            slot=self.bip,
+            tip=self.tr("Show binary interaction parameters dialog"),
+            parent=self)
 
         self.calculatorAction = createAction(
             self.tr("&Calculator"),
@@ -937,6 +943,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
         self.menuHerramientas.addAction(
             self.tr("Component database"),
             partial(self.launch, UI_databank.UI_databank))
+        self.menuHerramientas.addAction(self.BIPAction)
         self.menuHerramientas.addAction(self.menuAddComponent.menuAction())
         self.menuHerramientas.addSeparator()
         self.menuHerramientas.addAction(self.calculatorAction)
@@ -1731,6 +1738,14 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.list.clear()
 
     # Tools
+    def bip(self):
+        dlg = UI_confComponents.Dialog(solido=False)
+        dlg.setWindowTitle(self.tr("Select compounds"))
+        if dlg.exec():
+            print(dlg.cmp())
+            bip = BIP.Ui_BIP(dlg.cmp())
+            bip.exec()
+
     def calculator(self):
         """Show external calculator application"""
         command = str(Preferences.get("Applications", 'Calculator'))

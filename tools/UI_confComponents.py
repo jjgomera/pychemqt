@@ -49,7 +49,7 @@ class UI_confComponents_widget(QtWidgets.QWidget):
     """Component list widget to use in dialor and in wizard"""
     componentChanged = QtCore.pyqtSignal("bool")
 
-    def __init__(self, config=None, parent=None):
+    def __init__(self, config=None, solido=True, parent=None):
         """Constructor, opcional config parameter with project config"""
         super().__init__(parent)
         layout = QtWidgets.QGridLayout(self)
@@ -112,14 +112,21 @@ class UI_confComponents_widget(QtWidgets.QWidget):
         self.clearSolido.clicked.connect(self.clearSolids)
         layout.addWidget(self.clearSolido, 15, 2)
 
-        layout.addItem(QtWidgets.QSpacerItem(
-            20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
-            QtWidgets.QSizePolicy.Policy.Expanding), 10, 4, 1, 1)
-        layout.addWidget(QtWidgets.QLabel(self.tr("Solids", None)), 11, 3)
         self.ListaSolidos = QtWidgets.QListWidget()
         self.ListaSolidos.setFixedHeight(100)
         self.ListaSolidos.itemSelectionChanged.connect(self.comprobarBotones)
         layout.addWidget(self.ListaSolidos, 12, 3, 5, 1)
+
+        if solido:
+            layout.addItem(QtWidgets.QSpacerItem(
+                20, 20, QtWidgets.QSizePolicy.Policy.Fixed,
+                QtWidgets.QSizePolicy.Policy.Expanding), 10, 4, 1, 1)
+            layout.addWidget(QtWidgets.QLabel(self.tr("Solids", None)), 11, 3)
+        else:
+            self.DeleteSolido.setVisible(False)
+            self.AddSolido.setVisible(False)
+            self.clearSolido.setVisible(False)
+            self.ListaSolidos.setVisible(False)
 
         self.indices = []
         self.solidos = []
@@ -262,11 +269,11 @@ class UI_confComponents_widget(QtWidgets.QWidget):
 
 class Dialog(QtWidgets.QDialog):
     """Component list config dialog"""
-    def __init__(self, config=None, parent=None):
+    def __init__(self, config=None, parent=None, **kw):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Define project Components"))
         layout = QtWidgets.QVBoxLayout(self)
-        self.datos = UI_confComponents_widget(config)
+        self.datos = UI_confComponents_widget(config, **kw)
         layout.addWidget(self.datos)
         self.buttonBox = QtWidgets.QDialogButtonBox(
             QtWidgets.QDialogButtonBox.StandardButton.Cancel
@@ -279,6 +286,10 @@ class Dialog(QtWidgets.QDialog):
         """Function to result wizard"""
         config = self.datos.value(config)
         return config
+
+    def cmp(self):
+        """Direct access to list of compounds selected in widget"""
+        return self.datos.indices
 
 
 if __name__ == "__main__":
