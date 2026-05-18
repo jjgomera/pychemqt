@@ -182,8 +182,13 @@ __doi__ = {
          "title": "Strömung in gekrümmten Rohren",
          "ref": "Z. Angew. Math. Mech. 14(5) 257-275",
          "doi": "10.1002/zamm.19340140502"},
+    28:
+        {"autor": "Barua, S.N.",
+         "title": "On Secondary Flow in Stationary Curved Pipes",
+         "ref": "Quart. J. Mech. Appl. Math. 16(1) (1963) 61-77",
+         "doi": "10.1093/qjmam_16.1.61"},
 
-    # 28:
+    # 29:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -875,6 +880,37 @@ def f_laminar_Adler(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [28])
+def f_laminar_Barua(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Barua (1963).
+
+    .. math::
+        \frac{f_c}{f_s} = 0.509 + 0.0918 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 29
+    f = fd * (0.509 + 0.0918*De**0.5)
+    return f
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1275,6 +1311,7 @@ class Helical(CallableEntity):
         "Ito (1969)",
         "Tarbell-Samuels (1973)",
         "Adler (1934)",
+        "Barua (1963)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1492,6 +1529,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 12:
                 # Adler (1934)
                 f = f_laminar_Adler(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 13:
+                # Barua (1963)
+                f = f_laminar_Barua(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
