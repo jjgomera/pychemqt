@@ -187,8 +187,14 @@ __doi__ = {
          "title": "On Secondary Flow in Stationary Curved Pipes",
          "ref": "Quart. J. Mech. Appl. Math. 16(1) (1963) 61-77",
          "doi": "10.1093/qjmam_16.1.61"},
+    29:
+        {"autor": "Pimenta, T.A., Campos, J.B.L.M.",
+         "title": "Friction losses of Newtonian and non-Newtonian fluids "
+                  "flowing in laminar regime in a helical coil",
+         "ref": "Exp. Thermal Fluid Sci. 36 (2012) 194-204",
+         "doi": "10.1016/j.expthermflusci.2011.09.013"},
 
-    # 29:
+    # 30:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -911,6 +917,37 @@ def f_laminar_Barua(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [29])
+def f_laminar_PimentaCampos(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Pimenta-Campos (2012)
+
+    .. math::
+        \frac{f_c}{f_s} = 1 + \frac{0.028 De^{1.68}}{70+De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 10
+    f = fd * (1 + 0.028*De**1.68/(70+De))
+    return f
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1310,6 +1347,7 @@ class Helical(CallableEntity):
         "Ali (2001)",
         "Ito (1969)",
         "Tarbell-Samuels (1973)",
+        "Pimenta-Campos (2012)",
         "Adler (1934)",
         "Barua (1963)",
     )
@@ -1527,10 +1565,14 @@ class Helical(CallableEntity):
                 f = f_laminar_TarbellSamuels(Re, self.di, self.Dc)
 
             elif self.kw["methodFrictionLaminar"] == 12:
+                # Pimenta-Campos (2012)
+                f = f_laminar_PimentaCampos(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 13:
                 # Adler (1934)
                 f = f_laminar_Adler(Re, self.di, self.Dc)
 
-            elif self.kw["methodFrictionLaminar"] == 13:
+            elif self.kw["methodFrictionLaminar"] == 14:
                 # Barua (1963)
                 f = f_laminar_Barua(Re, self.di, self.Dc)
 
