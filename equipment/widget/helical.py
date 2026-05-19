@@ -193,8 +193,13 @@ __doi__ = {
                   "flowing in laminar regime in a helical coil",
          "ref": "Exp. Thermal Fluid Sci. 36 (2012) 194-204",
          "doi": "10.1016/j.expthermflusci.2011.09.013"},
+    30:
+        {"autor": "Yanase, S., Goto, N., Yamamoto, K.",
+         "title": "Dual solutions of the flow through a curved tube",
+         "ref": "Fluid Dyn. Research 5 (1989) 191-201",
+         "doi": "10.1016/0169-5983(89)90021-x"},
 
-    # 30:
+    # 31:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -948,6 +953,37 @@ def f_laminar_PimentaCampos(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [30])
+def f_laminar_Yanase(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Yanase et al. (1989)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.557 + 0.0938 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 18
+    f = fd * (0.557 + 0.0938*De**0.5)
+    return f
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1350,6 +1386,7 @@ class Helical(CallableEntity):
         "Pimenta-Campos (2012)",
         "Adler (1934)",
         "Barua (1963)",
+        "Yanase (1989)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1575,6 +1612,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 14:
                 # Barua (1963)
                 f = f_laminar_Barua(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 15:
+                # Yanase (1989)
+                f = f_laminar_Yanase(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
