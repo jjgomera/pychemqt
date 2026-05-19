@@ -204,8 +204,13 @@ __doi__ = {
                   "using a new finite-difference method",
          "ref": "J. Fluid Mech. 99(3) (1980) 449-467",
          "doi": "10.1017/S0022112080000705"},
-
-    # 32:
+    32:
+        {"autor": "Van Dyke, M.",
+         "title": "Extended Stokes series: laminar flow through a loosely "
+                  "coiled pipe",
+         "ref": "J. Fluid Mech. 86(1) 129-145",
+         "doi": "10.1017/S0022112078001032"},
+        # 34:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1021,6 +1026,38 @@ def f_laminar_Dennis(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [32])
+def f_laminar_vanDyke(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Van Dyke (1978)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.47136 De^{0.25}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 7.6
+    f = fd * 0.47136 * De**0.25
+    return f
+
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1425,6 +1462,8 @@ class Helical(CallableEntity):
         "Barua (1963)",
         "Yanase (1989)",
         "Dennis (1980)",
+        "van Dyke (1978)",
+        "Collins-Dennis (1975)",
     )
 
     TEXT_TURBULENT_FRICTION = (
