@@ -210,7 +210,13 @@ __doi__ = {
                   "coiled pipe",
          "ref": "J. Fluid Mech. 86(1) 129-145",
          "doi": "10.1017/S0022112078001032"},
-        # 34:
+    33:
+        {"autor": "Collins, W.M., Dennis, S.C.R.",
+         "title": "The Steady Motion of a Viscous Fluid in a Curved Tube",
+         "ref": "Q. J. Mech. Appl. Math. 28(2) (1975) 133-156",
+         "doi": "10.1093/qjmam_28.2.133"},
+
+    # 34:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1057,6 +1063,36 @@ def f_laminar_vanDyke(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [33])
+def f_laminar_CollinsDennis(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Collins-Dennis (1975)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.38036 + 0.1028 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 34
+    f = fd * (0.38036 + 0.1028*De**0.5)
+    return f
+
 
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
@@ -1697,6 +1733,14 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 16:
                 # Dennis (1980)
                 f = f_laminar_Dennis(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 17:
+                # Van Dyke (1978)
+                f = f_laminar_vanDyke(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 18:
+                # Collins-Dennis (1975)
+                f = f_laminar_CollinsDennis(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
