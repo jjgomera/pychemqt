@@ -132,10 +132,11 @@ __doi__ = {
          "ref": "Heat Recovery Systems & CHP 9(3) (1989) 249-256",
          "doi": "10.1016/0890-4332(89)90008-2"},
     19:
-        {"autor": "Liu, S., Afacan, A., Nasr-El-Din, H.A., Masliyah, J.H.",
-         "title": "An Experimental Study of Pressure Drop in Helical Pipes",
-         "ref": "Proc. R. Soc. Lond. A 444 (1994) 307-316",
-         "doi": "10.1098/rspa.1994.0020"},
+        {"autor": "Liu, S., Masliyah, J.H.",
+         "title": "Axially invariant laminar flow in helical pipes with a "
+                  "finite pitch",
+         "ref": "J. Fluid Mech. 251 (1993) 315-353",
+         "doi": "10.1017/S002211209300343X"},
     20:
         {"autor": "Seth, K.K., Stahel, E.P.",
          "title": "Heat Transfer from Helical Coils Immersed in Agitated "
@@ -170,8 +171,61 @@ __doi__ = {
                   "Turbulent Flow in Tube in Tube Helical Heat Exchanger",
          "ref": "Ind. Eng. Chem. Res. 48(20) (2009) 9318-9324",
          "doi": "10.1021/ie9002393"},
+    26:
+        {"autor": "Ciencolini, A., Santini, L.",
+         "title": "An experimental investigation regarding the laminar to "
+                  "turbulent flow transition in helically coiled pipes",
+         "ref": "Exp. Thermal Fluid Sci. 30 (2006) 367-380",
+         "doi": "10.1016/j.expthermflusci.2005.08.005"},
+    27:
+        {"autor": "Adler, M.",
+         "title": "Strömung in gekrümmten Rohren",
+         "ref": "Z. Angew. Math. Mech. 14(5) 257-275",
+         "doi": "10.1002/zamm.19340140502"},
+    28:
+        {"autor": "Barua, S.N.",
+         "title": "On Secondary Flow in Stationary Curved Pipes",
+         "ref": "Quart. J. Mech. Appl. Math. 16(1) (1963) 61-77",
+         "doi": "10.1093/qjmam_16.1.61"},
+    29:
+        {"autor": "Pimenta, T.A., Campos, J.B.L.M.",
+         "title": "Friction losses of Newtonian and non-Newtonian fluids "
+                  "flowing in laminar regime in a helical coil",
+         "ref": "Exp. Thermal Fluid Sci. 36 (2012) 194-204",
+         "doi": "10.1016/j.expthermflusci.2011.09.013"},
+    30:
+        {"autor": "Yanase, S., Goto, N., Yamamoto, K.",
+         "title": "Dual solutions of the flow through a curved tube",
+         "ref": "Fluid Dyn. Research 5 (1989) 191-201",
+         "doi": "10.1016/0169-5983(89)90021-x"},
+    31:
+        {"autor": "Dennis, S.C.R.",
+         "title": "Calculation of the steady flow through a curved tube "
+                  "using a new finite-difference method",
+         "ref": "J. Fluid Mech. 99(3) (1980) 449-467",
+         "doi": "10.1017/S0022112080000705"},
+    32:
+        {"autor": "Van Dyke, M.",
+         "title": "Extended Stokes series: laminar flow through a loosely "
+                  "coiled pipe",
+         "ref": "J. Fluid Mech. 86(1) 129-145",
+         "doi": "10.1017/S0022112078001032"},
+    33:
+        {"autor": "Collins, W.M., Dennis, S.C.R.",
+         "title": "The Steady Motion of a Viscous Fluid in a Curved Tube",
+         "ref": "Q. J. Mech. Appl. Math. 28(2) (1975) 133-156",
+         "doi": "10.1093/qjmam_28.2.133"},
+    34:
+        {"autor": "Dean, W.R.",
+         "title": "The stream-line motion of fluid in a curved pipe "
+                  "(Second paper)",
+         "ref": "London Edinburgh Dublin Phil. Mag. J. Sci. Serie 7 5(30) "
+                "(1928) 673-695",
+         "doi": "10.1080/14786440408564513"},
 
-    # 26:
+
+
+    # 35:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -328,6 +382,32 @@ def Rec_SethStahel(di, Dc):
 
     # Eq 32
     Rec = 1900 * (1 + 8*(di/Dc)**0.5)
+    return Rec
+
+
+@refDoc(__doi__, [26])
+def Rec_Cioncolini(di, Dc):
+    r"""Calculates critical Reynolds to define transition between laminar and
+    turbulent flow using using the correlation of Cioncolini-Santini (2006).
+
+    .. math::
+        Re_c = 30,000 \left(\frac{d_i}{D_c}\right)^{0.47}
+
+    Parameters
+    ----------
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Rec : float
+        Critical reynolds number, [-]
+    """
+
+    # Eq 13
+    Rec = 30000 * (di/Dc)**0.47
     return Rec
 
 
@@ -706,10 +786,10 @@ def f_laminar_ManlapazChurchill(Re, di, Dc, p):
     return f
 
 
-@refDoc(__doi__, [14])
-def f_laminar_Liu(Re, di, Dc, p):
+@refDoc(__doi__, [19])
+def f_laminar_LiuMasliyah(Re, di, Dc, p):
     r"""Calculates friction factor for internal flow of a helical coil in
-    laminar flow using the method of Liu et al. (1994).
+    laminar flow using the method of Liu-Masliyah (1993).
 
     Parameters
     ----------
@@ -730,14 +810,14 @@ def f_laminar_Liu(Re, di, Dc, p):
     Rc = Dc/di
     De = Dean(Re, di, Dc)
 
-    # Torsion, Eq 1a
-    nu = (p/2/pi)/(Rc**2+(p/2/pi)**2)
-
-    # Curvature ratio, Eq 1b
+    # Curvature ratio, Eq 10
     l = Rc/(Rc**2+(p/2/pi)**2)
 
-    # Eq 12
-    f = (16 + (0.378*Re**0.5 + 12.1/l**0.5/De**0.5)*nu**2) / Re * \
+    # Torsion, Eq 11
+    nu = (p/2/pi)/(Rc**2+(p/2/pi)**2)
+
+    # Eq 43
+    f = (16 + (0.378*De*l**0.25 + 12.1)*De**0.5*l**0.5*nu**2) / Re * \
         (1+((0.0908+0.0233*l**0.5)*De**0.5-0.132*l**0.5+0.37*l-0.2)/(1+49/De))
 
     return f
@@ -805,6 +885,262 @@ def f_laminar_TarbellSamuels(Re, di, Dc):
     f = fd * (1 + (8.279e-4 + 7.964e-3/(Dc/di))*Re - 2.096e-7*Re**2)
     return f
 
+
+@refDoc(__doi__, [27])
+def f_laminar_Adler(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Adler (1934).
+
+    .. math::
+        \frac{f_c}{f_s} = 0.1064 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 29
+    f = fd * 0.1064*De**0.5
+    return f
+
+
+@refDoc(__doi__, [28])
+def f_laminar_Barua(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Barua (1963).
+
+    .. math::
+        \frac{f_c}{f_s} = 0.509 + 0.0918 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 29
+    f = fd * (0.509 + 0.0918*De**0.5)
+    return f
+
+
+@refDoc(__doi__, [29])
+def f_laminar_PimentaCampos(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Pimenta-Campos (2012)
+
+    .. math::
+        \frac{f_c}{f_s} = 1 + \frac{0.028 De^{1.68}}{70+De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 10
+    f = fd * (1 + 0.028*De**1.68/(70+De))
+    return f
+
+
+@refDoc(__doi__, [30])
+def f_laminar_Yanase(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Yanase et al. (1989)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.557 + 0.0938 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 18
+    f = fd * (0.557 + 0.0938*De**0.5)
+    return f
+
+
+@refDoc(__doi__, [31])
+def f_laminar_Dennis(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Dennis (1980)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.388 + 0.1015 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 18
+    f = fd * (0.388 + 0.1015*De**0.5)
+    return f
+
+
+@refDoc(__doi__, [32])
+def f_laminar_vanDyke(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Van Dyke (1978)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.47136 De^{0.25}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 7.6
+    f = fd * 0.47136 * De**0.25
+    return f
+
+
+@refDoc(__doi__, [33])
+def f_laminar_CollinsDennis(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Collins-Dennis (1975)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.38036 + 0.1028 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Eq 34
+    f = fd * (0.38036 + 0.1028*De**0.5)
+    return f
+
+
+@refDoc(__doi__, [34])
+def f_laminar_Dean(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Dean (1928)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.38036 + 0.1028 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    Notes
+    -----
+    Correlation only valid for De < 20
+
+    """
+    De = Dean(Re, di, Dc)
+
+    if De > 20:
+        raise ValueError("Input out of range")
+
+    fd = f_friccion(Re)
+
+    # Eq 29
+    # The K parameter in original paper really is 2*De²
+    f = fd * (1 - 0.03058*(De**2/288)**2 + 0.01195*(De**2/288)**4)
+    return f
 
 
 @refDoc(__doi__, [14])
@@ -1185,12 +1521,13 @@ class Helical(CallableEntity):
 
 
     TEXT_REYNOLDS_CRITICAL = (
-        "Schmidt (1967)",
         "Ito (1959)",
+        "Schmidt (1967)",
         "Kubair-Kuloor (1966)",
         "Srinivasan (1968)",
         "Kutateladze (1966)",
-        "Seth-Stahel (1969)")
+        "Seth-Stahel (1969)",
+        "Cioncolini-Santini (2006)")
 
     TEXT_LAMINAR_FRICTION = (
         "Schmidt (1967)",
@@ -1201,10 +1538,18 @@ class Helical(CallableEntity):
         "Mishra-Gupta (1979)",
         "Manlapaz-Churchill (1980)",
         "Prasad (1989)",
-        "Liu (1994)",
+        "Liu-Masliyah (1993)",
         "Ali (2001)",
         "Ito (1969)",
         "Tarbell-Samuels (1973)",
+        "Pimenta-Campos (2012)",
+        "Adler (1934)",
+        "Barua (1963)",
+        "Yanase (1989)",
+        "Dennis (1980)",
+        "van Dyke (1978)",
+        "Collins-Dennis (1975)",
+        "Dean (1928)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1281,8 +1626,8 @@ class Helical(CallableEntity):
         """Calculate critical Reynolds number to define transition of regimen
         flow from laminar to turbulent"""
         if self.kw["methodReCritic"] == 1:
-            # Ito (1959)
-            Rec = Rec_Ito(self.di, self.Dc)
+            # Schmidt (1967)
+            Rec = Rec_Schmidt(self.di, self.Dc)
 
         elif self.kw["methodReCritic"] == 2:
             # Kubair-Kuloor (1966)
@@ -1300,9 +1645,13 @@ class Helical(CallableEntity):
             #  Seth-Stahel (1969)
             Rec = Rec_SethStahel(self.di, self.Dc)
 
+        elif self.kw["methodReCritic"] == 5:
+            # Cioncolini-Santini (2006)
+            Rec = Rec_Cioncolini(self.di, self.Dc)
+
         else:
-            # Schmidt (1967)
-            Rec = Rec_Schmidt(self.di, self.Dc)
+            # Ito (1959)
+            Rec = Rec_Ito(self.di, self.Dc)
 
         return Rec
 
@@ -1400,8 +1749,8 @@ class Helical(CallableEntity):
                 f = f_Prasad(Re, self.di, self.Dc)
 
             elif self.kw["methodFrictionLaminar"] == 8:
-                # Liu (1994)
-                f = f_laminar_Liu(Re, self.di, self.Dc, self.kw["p"])
+                # Liu-Masliyah (1993)
+                f = f_laminar_LiuMasliyah(Re, self.di, self.Dc, self.kw["p"])
 
             elif self.kw["methodFrictionLaminar"] == 9:
                 # Ali (2001)
@@ -1414,6 +1763,42 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 11:
                 # Tarbell-Samuels (1973)
                 f = f_laminar_TarbellSamuels(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 12:
+                # Pimenta-Campos (2012)
+                f = f_laminar_PimentaCampos(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 13:
+                # Adler (1934)
+                f = f_laminar_Adler(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 14:
+                # Barua (1963)
+                f = f_laminar_Barua(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 15:
+                # Yanase (1989)
+                f = f_laminar_Yanase(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 16:
+                # Dennis (1980)
+                f = f_laminar_Dennis(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 17:
+                # Van Dyke (1978)
+                f = f_laminar_vanDyke(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 18:
+                # Collins-Dennis (1975)
+                f = f_laminar_CollinsDennis(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 19:
+                # Dean (1928)
+                try:
+                    f = f_laminar_Dean(Re, self.di, self.Dc)
+                except ValueError:
+                    f = f_Schmidt(Re, self.di, self.Dc)
+                    msg = "Dean correlation out of range, using Schmidt instead"
 
             else:
                 # Schmidt (1967)
