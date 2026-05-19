@@ -215,8 +215,17 @@ __doi__ = {
          "title": "The Steady Motion of a Viscous Fluid in a Curved Tube",
          "ref": "Q. J. Mech. Appl. Math. 28(2) (1975) 133-156",
          "doi": "10.1093/qjmam_28.2.133"},
+    34:
+        {"autor": "Dean, W.R.",
+         "title": "The stream-line motion of fluid in a curved pipe "
+                  "(Second paper)",
+         "ref": "London Edinburgh Dublin Phil. Mag. J. Sci. Serie 7 5(30) "
+                "(1928) 673-695",
+         "doi": "10.1080/14786440408564513"},
 
-    # 34:
+
+
+    # 35:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1094,6 +1103,46 @@ def f_laminar_CollinsDennis(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [34])
+def f_laminar_Dean(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Dean (1928)
+
+    .. math::
+        \frac{f_c}{f_s} = 0.38036 + 0.1028 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    Notes
+    -----
+    Correlation only valid for De < 20
+
+    """
+    De = Dean(Re, di, Dc)
+
+    if De > 20:
+        raise ValueError("Input out of range")
+
+    fd = f_friccion(Re)
+
+    # Eq 29
+    # The K parameter in original paper really is 2*De²
+    f = fd * (1 - 0.03058*(De**2/288)**2 + 0.01195*(De**2/288)**4)
+    return f
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1500,6 +1549,7 @@ class Helical(CallableEntity):
         "Dennis (1980)",
         "van Dyke (1978)",
         "Collins-Dennis (1975)",
+        "Dean (1928)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1741,6 +1791,14 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionLaminar"] == 18:
                 # Collins-Dennis (1975)
                 f = f_laminar_CollinsDennis(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionLaminar"] == 19:
+                # Dean (1928)
+                try:
+                    f = f_laminar_Dean(Re, self.di, self.Dc)
+                except ValueError:
+                    f = f_Schmidt(Re, self.di, self.Dc)
+                    msg = "Dean correlation out of range, using Schmidt instead"
 
             else:
                 # Schmidt (1967)
