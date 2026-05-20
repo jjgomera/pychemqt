@@ -229,8 +229,14 @@ __doi__ = {
                   "and experimental validation using a 3D-printed model",
          "ref": "Chem. Eng. Sci. 207(7) (2019) 1030-1039",
          "doi": "10.1016/j.ces.2019.07.018"},
+    36:
+        {"autor": "Kalb, C.E., Seader, J.D.",
+         "title": "Heat and Mass Transfer Phenomena for Viscous Flow in "
+                  "Curved Circular Tubes",
+         "ref": "Int. J. Heat Mass TRansfer 15() (1972) 801-817",
+         "doi": ""},
 
-    # 36:
+    # 37:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1545,6 +1551,50 @@ def Nu_Prasad(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [36])
+def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Kalb-Seader (1972).
+
+    For Pr < 0.05:
+
+    .. math::
+        Nu = 3.31 De^{0.115} Pr^{0.0108}
+
+    For Pr > 0.7
+
+    .. math::
+        Nu = 0.913 De^{0.476} Pr^{0.2}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    if Pr < 0.5:
+        # Eq 22
+        Nu = 3.31 * De**0.115 * Pr**0.0108
+    else:
+        # Eq 23
+        Nu = 0.913 * De**0.476 * Pr**0.2
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -1641,6 +1691,7 @@ class Helical(CallableEntity):
         "Mori-Nakayama (1965)",
         "Seban-McLaughlin (1963)",
         "Prasad (1989)",
+        "Kalb-Seader (1972)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -1747,6 +1798,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatLaminar"] == 4:
                 # Prasad (1989)
                 Nu = Nu_Prasad(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 5:
+                # Kalb-Seader (1972)
+                Nu = Nu_laminar_KalbSeader(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
