@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import pi, cos, atan, log10
+from math import atan, exp, log10, pi
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -222,10 +222,15 @@ __doi__ = {
          "ref": "London Edinburgh Dublin Phil. Mag. J. Sci. Serie 7 5(30) "
                 "(1928) 673-695",
          "doi": "10.1080/14786440408564513"},
+    35:
+        {"autor": "Abushammala, O., Hreiz, R., Lamaître, C., Favre, E.",
+         "title": "Laminar flow friction factor in highly curved helical "
+                  "pipes: Numerical investigation, predictive correlation "
+                  "and experimental validation using a 3D-printed model",
+         "ref": "Chem. Eng. Sci. 207(7) (2019) 1030-1039",
+         "doi": "10.1016/j.ces.2019.07.018"},
 
-
-
-    # 35:
+    # 36:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1143,6 +1148,71 @@ def f_laminar_Dean(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [35])
+def f_laminar_Abushammala(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Abushammala et al. (2019)
+
+    .. math::
+        f_c = f_s + A B e^{-C}
+
+    with:
+
+    .. math::
+        A = p_1 D \left(\frac{D}{Re}\right)^{p_2}
+
+    .. math::
+        B = \left(\frac{D_c}{2 d_i} + \frac{2 d_i}{D_c}\right)^{p_3}
+
+    .. math::
+        C = p_4 D \frac{p}{d_i} \left(\frac{D_c}{2 d_i}\right)^{-p_5}
+
+    .. math::
+        D = \left(\left(\frac{D_c}{2 d_i}\right)^{-p6} \left(1 + \left(
+        \frac{p/d_i}{2 \pi D_c/2/d_i}\right)^2\right)\right)^{-p_7}
+
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    Notes
+    -----
+    Correlation only valid for De < 20
+
+    """
+    Rh = Dc/2/di
+    ph = p/di
+
+    fd = f_friccion(Re)
+
+    # Table 3, parameters
+    if Re < 400:
+        p = (1.98, 4.07e-1, 8.49e-1, 8.71e-2, 8.91e-1, 2.31, 3.67e-1)
+    else:
+        p = (2.88, 3.82e-1, 9.16e-3, 2.48e-3, 2.62, 1.1, 3.23e-1)
+
+    # Eq 7
+    D = (Rh**-p[5]*(1+(ph/2/pi/Rh)**2))**-p[6]
+    C = p[3]*D*ph*Rh**-p[4]
+    B = (Rh+1/Rh)**p[2]
+    A = p[0]*D*(D/Re)**p[1]
+    f = fd + A*B*exp(-C)/4
+    return f
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1550,6 +1620,7 @@ class Helical(CallableEntity):
         "van Dyke (1978)",
         "Collins-Dennis (1975)",
         "Dean (1928)",
+        "Abushammala (2019)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1799,6 +1870,10 @@ class Helical(CallableEntity):
                 except ValueError:
                     f = f_Schmidt(Re, self.di, self.Dc)
                     msg = "Dean correlation out of range, using Schmidt instead"
+
+            elif self.kw["methodFrictionLaminar"] == 20:
+                # Abushammala (2019)
+                f = f_laminar_Abushammala(Re, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
