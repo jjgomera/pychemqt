@@ -242,8 +242,13 @@ __doi__ = {
                   "Transfer in Helically Coiled Tubes",
          "ref": "AIChE J. 17(5) (1971) 1114-1122",
          "doi": "10.1002/aic.690170517"},
+    38:
+        {"autor": "Janssen, L.A.M., Hoogendoorn, C.J.",
+         "title": "Laminar Convective Heat Transfer in Helical Coiled Tubes",
+         "ref": "Int. J. Heat Mass Transfer 21(9) (1978) 1197-1206",
+         "doi": "10.1016/0017-9310(78)90138-2"},
 
-    # 38:
+    # 39:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1635,6 +1640,48 @@ def Nu_laminar_Dravid(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [38])
+def Nu_laminar_JanssenHoogendoorn(Re, Pr, di, Dc, f):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Janssen-Hoogendoorn (1978).
+
+    .. math::
+        Nu = 0.6166 \left(f Re^2\right)^{0.26} Pr^{1/6}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    f : float
+        Friction factor, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+
+    if De > 20:
+        # Eq 19
+        # The original equation use the Darcy-Weisbach friction factor, so
+        # convert to Fanning:
+        # 0.43*4**0.26
+        Nu = 0.6166 * (f*Re**2)**0.26 * Pr**(1/6)
+    else:
+        # Eq 22
+        Nu = 1.7 * (De**2*Pr)**(1/6)
+
+    return Nu
+
 
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
@@ -1734,6 +1781,7 @@ class Helical(CallableEntity):
         "Prasad (1989)",
         "Kalb-Seader (1972)",
         "Dravid (1971)",
+        "Janssen-Hoogendoorn (1978)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -1848,6 +1896,11 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatLaminar"] == 6:
                 # Dravid (1971)
                 Nu = Nu_laminar_Dravid(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 7:
+                # Janssen-Hoogendoorn (1978)
+                f = self.f(Re)
+                Nu = Nu_laminar_JanssenHoogendoorn(Re, Pr, self.di, self.Dc, f)
 
             else:
                 # Schmidt (1967)
