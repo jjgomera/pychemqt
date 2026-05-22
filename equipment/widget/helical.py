@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import atan, exp, log10, pi
+from math import exp, log10, pi
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -247,8 +247,13 @@ __doi__ = {
          "title": "Laminar Convective Heat Transfer in Helical Coiled Tubes",
          "ref": "Int. J. Heat Mass Transfer 21(9) (1978) 1197-1206",
          "doi": "10.1016/0017-9310(78)90138-2"},
+    39:
+        {"autor": "Manlapaz, R.L., Churchill, S.W.",
+         "title": "Fully Developed Laminar Convection From a Helical Coil",
+         "ref": "Chem. Eng. Commun. 9 (1981) 185-200",
+         "doi": "10.1080/00986448108911023"},
 
-    # 39:
+    # 40:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1683,6 +1688,48 @@ def Nu_laminar_JanssenHoogendoorn(Re, Pr, di, Dc, f):
     return Nu
 
 
+@refDoc(__doi__, [39])
+def Nu_laminar_ManlapazChurchill(Re, Pr, di, Dc, p):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Manlapaz-Churchill (1981).
+
+    .. math::
+        Nu = \left(\left(3.657 + \frac{4.343}{\left(1+\frac{957}{Pr He^2}
+        \right)^2\right)^3 + 1.158 \left(\frac{He}{1+\frac{0.477}{Pr}\right)
+        ^{1.5}\right)^{1/3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float, optional
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+    He = De/(1+(p/2/pi/di)**2)**0.5
+
+    # Eq 39, Uniform wall temperature
+    Nu = ((3.657 + 4.343/(1+957/Pr/He**2)**2)**3
+          + 1.158*(He/(1+0.477/Pr))**1.5)**(1/3)
+
+    # Paper give too a correlation for uniform heat flux
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -1782,6 +1829,7 @@ class Helical(CallableEntity):
         "Kalb-Seader (1972)",
         "Dravid (1971)",
         "Janssen-Hoogendoorn (1978)",
+        "Manlapaz-Churchill (1981)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -1901,6 +1949,11 @@ class Helical(CallableEntity):
                 # Janssen-Hoogendoorn (1978)
                 f = self.f(Re)
                 Nu = Nu_laminar_JanssenHoogendoorn(Re, Pr, self.di, self.Dc, f)
+
+            elif self.kw["methodHeatLaminar"] == 8:
+                # Manlapaz-Churchill (1981)
+                Nu = Nu_laminar_ManlapazChurchill(
+                    Re, Pr, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
