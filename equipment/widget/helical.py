@@ -252,8 +252,14 @@ __doi__ = {
          "title": "Fully Developed Laminar Convection From a Helical Coil",
          "ref": "Chem. Eng. Commun. 9 (1981) 185-200",
          "doi": "10.1080/00986448108911023"},
+    40:
+        {"autor": "Salimpour, M.R.",
+         "title": "Heat transfer coefficients of shell and coiled tube heat "
+                  "exchangers",
+         "ref": "Exp. Thermal Fluid Sci. 33(2) (2009) 203-207",
+         "doi": ""},
 
-    # 40:
+    # 41:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1730,6 +1736,42 @@ def Nu_laminar_ManlapazChurchill(Re, Pr, di, Dc, p):
     return Nu
 
 
+@refDoc(__doi__, [40])
+def Nu_laminar_Salimpour(Re, Pr, di, Dc, p):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Salimpour (2009).
+
+    .. math::
+        Nu = 0.152De^{0.431}Pr^{1.06}\left(\frac{b}{2 \pi D_c}\right)^{-0.277}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float, optional
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+
+    # Eq 5
+    Nu = 0.152 * De**0.431 * Pr**1.06 * (2*pi*di/p)**0.277
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -1830,6 +1872,7 @@ class Helical(CallableEntity):
         "Dravid (1971)",
         "Janssen-Hoogendoorn (1978)",
         "Manlapaz-Churchill (1981)",
+        "Salimpour (2009)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -1917,6 +1960,7 @@ class Helical(CallableEntity):
 
     def Nu(self, Re, Pr):
         """Calculate nusselt number"""
+        msg = ""
         Rec = self.ReCritical
 
         if Re < Rec:
@@ -1955,6 +1999,16 @@ class Helical(CallableEntity):
                 Nu = Nu_laminar_ManlapazChurchill(
                     Re, Pr, self.di, self.Dc, self.kw["p"])
 
+            elif self.kw["methodHeatLaminar"] == 9:
+                # Salimpour (2009)
+                if self.kw["p"]:
+                    Nu = Nu_laminar_Salimpour(
+                        Re, Pr, self.di, self.Dc, self.kw["p"])
+                else:
+                    Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
+                    msg = "Helical pitch undefined, using Schmidt correlation"
+                    msg += "instead."
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -1984,6 +2038,11 @@ class Helical(CallableEntity):
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
 
         return Nu
 
