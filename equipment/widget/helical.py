@@ -258,8 +258,14 @@ __doi__ = {
                   "exchangers",
          "ref": "Exp. Thermal Fluid Sci. 33(2) (2009) 203-207",
          "doi": ""},
+    41:
+        {"autor": "Pimenta, T.A., Campos, J.B.L.M.",
+         "title": "Heat transfer coefficients from Newtonian and non-Newtonian"
+                  " fluids flowing in laminar regime in a helical coil",
+         "ref": "Int. J. Heat Mass Transfer 58 (2013) 676-690",
+         "doi": "10.1016/j.ijheatmasstransfer.2012.10.078"},
 
-    # 41:
+    # 42:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1772,6 +1778,40 @@ def Nu_laminar_Salimpour(Re, Pr, di, Dc, p):
     return Nu
 
 
+@refDoc(__doi__, [41])
+def Nu_laminar_PimentaCampos(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Pimenta-Campos (2013).
+
+    .. math::
+        Nu = \left(0.5 De^{0.481} - 0.465\right) Pr^{0.367}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+
+    # Eq 38
+    Nu = (0.5*De**0.481 - 0.465) * Pr**0.367
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -1873,6 +1913,7 @@ class Helical(CallableEntity):
         "Janssen-Hoogendoorn (1978)",
         "Manlapaz-Churchill (1981)",
         "Salimpour (2009)",
+        "Pimenta-Campos (2013)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -2008,6 +2049,10 @@ class Helical(CallableEntity):
                     Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
                     msg = "Helical pitch undefined, using Schmidt correlation"
                     msg += "instead."
+
+            elif self.kw["methodHeatLaminar"] == 10:
+                # Pimenta-Campos (2013)
+                Nu = Nu_laminar_PimentaCampos(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
