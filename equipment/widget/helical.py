@@ -275,8 +275,14 @@ __doi__ = {
                   "single phase flow",
          "ref": "Int. J. Heat Mass Transf. 89 (2015) 522-538",
          "doi": "10.1016/j.ijheatmasstransfer.2015.05.069"},
+    44:
+        {"autor": "Rogers, G.F.C., Mayhew, Y.R.",
+         "title": "Heat Transfer and Pressure Loss in Helically Coiled Tubes "
+                  "with Turbulent Flow",
+         "ref": "Int. J. Heat Mass Transfer 7(11) (1964) 1207-1216",
+         "doi": "10.1016/0017-9310(64)90062-6"},
 
-    # 44:
+    # 45:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1916,6 +1922,35 @@ def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [44])
+def Nu_turbulent_RogersMayhew(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Rogers-Mayhew (1964).
+
+    .. math::
+        Nu = 0.023 Re^^{0.85} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.1}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 12
+    Nu = 0.023 * Re**0.85 * Pr**0.4 * (di/Dc)**0.1
+    return Nu
+
+
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
@@ -1998,6 +2033,7 @@ class Helical(CallableEntity):
         "Seban-McLaughlin (1963)",
         "Prasad (1989)",
         "Mandal-Nigam (2009)",
+        "Rogers-Mayhew (1964)",
     )
 
     status = 0
@@ -2162,6 +2198,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 5:
                 # Mandal-Nigam (2009)
                 Nu = Nu_turbulent_MandalNigam(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 6:
+                # Rogers-Mayhew (1964)
+                Nu = Nu_turbulent_RogersMayhew(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
