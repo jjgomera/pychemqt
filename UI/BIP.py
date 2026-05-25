@@ -101,18 +101,12 @@ class Ui_BIP(QtWidgets.QDialog):
                 0, 0, QtWidgets.QSizePolicy.Policy.Expanding,
                 QtWidgets.QSizePolicy.Policy.Expanding))
 
-            width = table1.verticalHeader().sizeHint().width() + 2
-            for i in range(table1.columnCount()):
-                width += table1.columnWidth(i)
-            table1.setFixedWidth(width)
-
             height = table1.horizontalHeader().sizeHint().height() + 2
             for i in range(table1.rowCount()):
                 height += table1.rowHeight(i)
             table1.setFixedHeight(height)
 
             if EoS == "NRTL":
-                table2.setFixedWidth(width)
                 table2.setFixedHeight(height)
 
             self.stacked.addWidget(widget)
