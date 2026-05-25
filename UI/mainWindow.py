@@ -27,7 +27,6 @@ import subprocess
 import sys
 import time
 
-
 import equipment
 from lib import config
 from lib.config import conf_dir, setMainWindowConfig, IMAGE_PATH, Preferences
@@ -396,6 +395,13 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.tr("Binary interaction parameters"),
             slot=self.bip,
             tip=self.tr("Show binary interaction parameters dialog"),
+            parent=self)
+
+        self.PlotAction = createAction(
+            self.tr("Plot compounds properties"),
+            slot=self.plotProperties,
+            icon=os.path.join("button", "plot.png"),
+            tip=self.tr("Plot temperature dependent properties of compounds"),
             parent=self)
 
         self.calculatorAction = createAction(
@@ -944,6 +950,7 @@ class UI_pychemqt(QtWidgets.QMainWindow):
             self.tr("Component database"),
             partial(self.launch, UI_databank.UI_databank))
         self.menuHerramientas.addAction(self.BIPAction)
+        self.menuHerramientas.addAction(self.PlotAction)
         self.menuHerramientas.addAction(self.menuAddComponent.menuAction())
         self.menuHerramientas.addSeparator()
         self.menuHerramientas.addAction(self.calculatorAction)
@@ -1739,12 +1746,23 @@ class UI_pychemqt(QtWidgets.QMainWindow):
 
     # Tools
     def bip(self):
+        """Show bip parameters of selected compounds"""
         dlg = UI_confComponents.Dialog(solido=False)
         dlg.setWindowTitle(self.tr("Select compounds"))
         if dlg.exec():
-            print(dlg.cmp())
             bip = BIP.Ui_BIP(dlg.cmp())
             bip.exec()
+
+    def plotProperties(self):
+        """Plot temperature dependent properties of selected compounds"""
+        dlg = UI_confComponents.Dialog(solido=False)
+        dlg.setWindowTitle(self.tr("Select compounds"))
+        if dlg.exec():
+            selectDlg = viewComponents.SelectPropertyDialog()
+            if selectDlg.exec():
+                code = selectDlg.property.currentText()
+                plt = viewComponents.PlotPropertiesDialog(dlg.cmp(), code)
+                plt.exec()
 
     def calculator(self):
         """Show external calculator application"""

@@ -792,6 +792,106 @@ class Parametric_widget(QtWidgets.QGroupBox):
                 msg = self.tr("Fit unsuccessfully")
                 QtWidgets.QMessageBox.warning(self, title, msg)
 
+class SelectPropertyDialog(QtWidgets.QDialog):
+    """Dialog to select propertis to plot"""
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        lyt = QtWidgets.QVBoxLayout(self)
+        self.property = QtWidgets.QComboBox()
+        for prop in PlotPropertiesDialog.data.keys():
+            self.property.addItem(prop)
+        lyt.addWidget(self.property)
+        self.btnBox = QtWidgets.QDialogButtonBox(
+            QtWidgets.QDialogButtonBox.StandardButton.Ok
+            | QtWidgets.QDialogButtonBox.StandardButton.Cancel)
+        self.btnBox.accepted.connect(self.accept)
+        self.btnBox.rejected.connect(self.reject)
+        lyt.addWidget(self.btnBox)
+
+
+class PlotPropertiesDialog(PlotDialog):
+    """Dialog with plot for temperature dependence properties of pure
+    compounds"""
+
+    f = {"Pv_Antoine": Pv_Antoine,
+         "Pv_Wagner": Pv_Wagner,
+         "Mu_Parametric": MuL_Parametric,
+         "Tension_Parametric": Tension_Parametric,
+         "H_Henry": Henry}
+    data = {"Pv_Antoine": "antoine",
+            "Pv_Wagner": "wagner",
+            "Mu_Parametric": "_parametricMu",
+            "Tension_Parametric": "_parametricSigma",
+            "H_Henry": "henry",
+            "DIPPR_rhoS": "_dipprRhoS",
+            "DIPPR_RhoL": "_dipprRhoL",
+            "DIPPR_Pv": "_dipprPv",
+            "DIPPR_Hv": "_dipprHv",
+            "DIPPR_cpS": "_dipprCpS",
+            "DIPPR_CpL": "_dipprCpL",
+            "DIPPR_CpG": "_dipprCpG",
+            "DIPPR_MuL": "_dipprMuL",
+            "DIPPR_MuG": "_dipprMuG",
+            "DIPPR_KL": "_dipprKL",
+            "DIPPR_KG": "_dipprKG",
+            "DIPPR_Tension": "_dipprSigma"}
+    unitDIPPR = {"DIPPR_rhoS": "rhoS",
+                 "DIPPR_RhoL": "rhoL",
+                 "DIPPR_Pv": "Pv",
+                 "DIPPR_Hv": "Hv",
+                 "DIPPR_cpS": "cpS",
+                 "DIPPR_CpL": "cpL",
+                 "DIPPR_CpG": "cpG",
+                 "DIPPR_MuL": "muL",
+                 "DIPPR_MuG": "muG",
+                 "DIPPR_KL": "kL",
+                 "DIPPR_KG": "kG",
+                 "DIPPR_Tension": "sigma"}
+
+    def __init__(self, cmp, prop, parent=None):
+        super().__init__(parent)
+
+        for idx in cmp:
+            cmp = Componente(idx)
+            coef = getattr(cmp, self.data[prop])
+
+            if cmp.Tf:
+                tmin = cmp.Tf
+            elif cmp.presion_vapor != [0]*8:
+                tmin = cmp.presion_vapor[-2]
+            else:
+                tmin = 300
+
+            if cmp.Tb:
+                tmax = cmp.Tb
+            elif cmp.presion_vapor != [0]*8:
+                tmax = cmp.presion_vapor[-1]
+            else:
+                tmax = 500
+            t = linspace(tmin, tmax, 100)
+
+            if prop in self.f:
+                args = [coef]
+                kw = {}
+                if prop == "Pv_Antoine":
+                    kw["Tc"] = cmp.Tc
+                elif prop == "Pv_Wagner":
+                    kw["Tc"] = cmp.Tc
+                    kw["Pc"] = cmp.Pc
+                elif prop == "Tension_Parametric":
+                    kw["Tc"] = cmp.Tc
+
+                var = [self.f[prop](ti, *args, **kw) for ti in t]
+            else:
+                kw = {}
+                kw["Tc"] = cmp.Tc
+                kw["M"] = cmp.M
+                var = [DIPPR(self.unitDIPPR[prop], ti, coef[:6], **kw)
+                       for ti in t]
+
+            self.addData(t, var, label=cmp.name)
+            self.plot.ax.legend()
+
 
 class View_Component(QtWidgets.QDialog):
     """Dialog to view the properties of compounds in pychemqt database in user
