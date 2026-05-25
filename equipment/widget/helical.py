@@ -264,13 +264,17 @@ __doi__ = {
                   " fluids flowing in laminar regime in a helical coil",
          "ref": "Int. J. Heat Mass Transfer 58 (2013) 676-690",
          "doi": "10.1016/j.ijheatmasstransfer.2012.10.078"},
+    42:
+        {"autor": "Pawar, S.S., Sunnapwar, V.K.",
+         "title": "Studies on convective heat transfer through helical coils",
+         "ref": "Heat Mass Transfer 49(12) (2013) 1741-1754",
+         "doi": "10.1007/s00231-013-1210-3"},
 
-    # 42:
+    # 43:
         # {"autor": "",
          # "title": "",
          # "ref": "",
          # "doi": ""},
-
 }
 
 
@@ -1812,6 +1816,37 @@ def Nu_laminar_PimentaCampos(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [42])
+def Nu_laminar_PawarSunnapwar(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Pawar-Sunnapwar (2013).
+
+    .. math::
+        Nu = 0.02198 Re^{0.9314} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.391}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 23
+    Nu = 0.02198 * Re**0.9314 * Pr**0.4 * (di/Dc)**0.391
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -1914,6 +1949,7 @@ class Helical(CallableEntity):
         "Manlapaz-Churchill (1981)",
         "Salimpour (2009)",
         "Pimenta-Campos (2013)",
+        "Pawar-Sunnapwar (2013)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -2053,6 +2089,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatLaminar"] == 10:
                 # Pimenta-Campos (2013)
                 Nu = Nu_laminar_PimentaCampos(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 11:
+                # Pawar-Sunnapwar (2013)
+                Nu = Nu_laminar_PawarSunnapwar(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
