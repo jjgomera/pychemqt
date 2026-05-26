@@ -281,8 +281,14 @@ __doi__ = {
                   "with Turbulent Flow",
          "ref": "Int. J. Heat Mass Transfer 7(11) (1964) 1207-1216",
          "doi": "10.1016/0017-9310(64)90062-6"},
-
-    # 45:
+    45:
+        {"autor": "Pawar, S.S., Sunnapwar, V.K.",
+         "title": "Experimental studies on heat transfer to Newtonian and "
+                  "non-Newtonian fluids in helical coils with laminar and "
+                  "turbulent flow",
+         "ref": "Exp. Thermal Fluid Sci. 44 (2013) 792-804",
+         "doi": "10.1016/j.expthermflusci.2012.09.024"},
+    # 46:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1596,6 +1602,52 @@ def Nu_Prasad(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [42, 45])
+def Nu_PawarSunnapwar(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil using the method of Pawar-Sunnapwar
+    (2013).
+
+    For laminar flow:
+
+    .. math::
+        Nu = 0.02198 Re^{0.9314} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.391}
+
+    For turbulent flow:
+
+    .. math::
+        Nu = 0.0472 De^{0.8346} Pr^{0.4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    Rec = Rec_Ito(di, Dc)
+
+    if Re < Rec:
+        # Laminar flow, Eq 23 in [42]_
+        Nu = 0.02198 * Re**0.9314 * Pr**0.4 * (di/Dc)**0.391
+
+    else:
+        # Turbulent flow, Eq 16 in [45]_
+        De = Dean(Re, di, Dc)
+        Nu = 0.0472 * De**0.8346 * Pr**0.4
+
+    return Nu
+
+
 @refDoc(__doi__, [36])
 def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow at constant heat flux
@@ -1828,35 +1880,6 @@ def Nu_laminar_PimentaCampos(Re, Pr, di, Dc):
     return Nu
 
 
-@refDoc(__doi__, [42])
-def Nu_laminar_PawarSunnapwar(Re, Pr, di, Dc):
-    r"""Calculates nusselt number for internal flow at constant heat flux
-    boundary condition of a helical coil in laminar flow using the method of
-    Pawar-Sunnapwar (2013).
-
-    .. math::
-        Nu = 0.02198 Re^{0.9314} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.391}
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    Pr : float
-        Prandtl number, [-]
-    di : float
-        Inner diameter of the pipe, [m]
-    Dc : float
-        Diameter of the helix, [m]
-
-    Returns
-    -------
-    Nu : float
-        Nusselt number, [-]
-    """
-    # Eq 23
-    Nu = 0.02198 * Re**0.9314 * Pr**0.4 * (di/Dc)**0.391
-
-    return Nu
 
 
 @refDoc(__doi__, [43])
@@ -2034,6 +2057,7 @@ class Helical(CallableEntity):
         "Prasad (1989)",
         "Mandal-Nigam (2009)",
         "Rogers-Mayhew (1964)",
+        "Pawar-Sunnapwar (2013)",
     )
 
     status = 0
@@ -2167,7 +2191,7 @@ class Helical(CallableEntity):
 
             elif self.kw["methodHeatLaminar"] == 11:
                 # Pawar-Sunnapwar (2013)
-                Nu = Nu_laminar_PawarSunnapwar(Re, Pr, self.di, self.Dc)
+                Nu = Nu_PawarSunnapwar(Re, Pr, self.di, self.Dc)
 
             elif self.kw["methodHeatLaminar"] == 12:
                 # Hardik (2015)
@@ -2202,6 +2226,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 6:
                 # Rogers-Mayhew (1964)
                 Nu = Nu_turbulent_RogersMayhew(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 7:
+                # Pawar-Sunnapwar (2013)
+                Nu = Nu_PawarSunnapwar(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
