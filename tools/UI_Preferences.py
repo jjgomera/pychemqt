@@ -50,12 +50,12 @@ from equipment import equipments
 from lib import unidades, corriente
 from lib.config import IMAGE_PATH
 from lib.openbabel import ConfBabel
-from lib.plot import ConfPlot
 from lib.utilities import representacion
 import plots
 from tools.firstrun import which
 from tools.qt import QtCore, QtGui, QtWidgets, translate
 from tools.qtelemental import Config as ConfigElemental
+from tools.UI_confPlot import ConfPlot
 from tools.UI_psychrometry import Config as ConfigPsychrometry
 from tools.UI_Tables import prefMEOS
 from UI import prefPFD, prefPetro
