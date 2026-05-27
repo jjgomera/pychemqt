@@ -113,7 +113,7 @@ __doi__ = {
          "title": "The Effects of Prandtl Numbers on Local and Average "
                   "Convective Heat Transfer Characteristics in Helical Pipes",
          "ref": "J. Heat Transfer 119(3) (1997) 467-73",
-         "doi": "10.1115/1.2824120."},
+         "doi": "10.1115/1.2824120"},
     16:
         {"autor": "Seban R.A., McLaughlin, E.F.",
          "title": "Heat Transfer in Tube Coils with Laminar and Turbulent Flow",
@@ -257,7 +257,7 @@ __doi__ = {
          "title": "Heat transfer coefficients of shell and coiled tube heat "
                   "exchangers",
          "ref": "Exp. Thermal Fluid Sci. 33(2) (2009) 203-207",
-         "doi": ""},
+         "doi": "10.1016/j.expthermflusci.2008.07.015"},
     41:
         {"autor": "Pimenta, T.A., Campos, J.B.L.M.",
          "title": "Heat transfer coefficients from Newtonian and non-Newtonian"
@@ -288,7 +288,15 @@ __doi__ = {
                   "turbulent flow",
          "ref": "Exp. Thermal Fluid Sci. 44 (2013) 792-804",
          "doi": "10.1016/j.expthermflusci.2012.09.024"},
-    # 46:
+    46:
+        {"autor": "Mori, Y., Nakayama, W.",
+         "title": "Study on Forced Convective Heat Transfer in Curved Pipes "
+                  "(3rd Report, Theoretical Analysis under the Condition of "
+                  "Uniform Wall Temperature and Practical Formulae)",
+         "ref": "Int. J. Heat Mass Transfer 10(5) (1967) 681-695",
+         "doi": "10.1016_0017-9310(67)90113-5"},
+
+    # 47:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1399,8 +1407,8 @@ def Nu_Schmidt(Re, Pr, di, Dc):
     return Nu
 
 
-@refDoc(__doi__, [9, 10])
-def Nu_MoriNakayama(Re, Pr, di, Dc):
+@refDoc(__doi__, [9, 10, 46])
+def Nu_MoriNakayama(Re, Pr, di, Dc, simple=False):
     r"""Calculates Nusselt number for internal flow of a helical coil in
     laminar flow using the method of Mori-Nakayama (1965).
 
@@ -1433,23 +1441,36 @@ def Nu_MoriNakayama(Re, Pr, di, Dc):
             # Eq 2.18
             Z = (2+(10/Pr**2-1)**0.5)/5
 
-        # Eq 2.23
-        NuI = 0.1979*De**0.5/Z
+        if simple:
+            # Simplified formulae from [46]_
 
-        if Pr >= 1:
-            # Eq 2.24
-            f = 1 + 37.05/Z * (1/40 - 17/120*Z + (1/10/Z + 13/30)/10/Pr)*De**-0.5
+            # Eq 55
+            Nu = 0.864/Z * De**0.5 * (1+2.35/De**0.5)
+
         else:
-            # Eq 2.25
-            f = 1 - 37.05/Z * (Z**2/12 + 1/24 - 1/120/Z
-                               - (4/3*Z - 1/3/Z + 1/15/Z**2)/20/Pr)*De**-0.5
-        Nu = 48/11 * NuI/f
+            # Eq 2.23
+            NuI = 0.1979*De**0.5/Z
+
+            if Pr >= 1:
+                # Eq 2.24
+                f = 1 + 37.05/Z * (1/40 - 17/120*Z + (1/10/Z+13/30)/10/Pr)*De**-0.5
+            else:
+                # Eq 2.25
+                f = 1 - 37.05/Z * (Z**2/12 + 1/24 - 1/120/Z
+                                   - (4/3*Z - 1/3/Z + 1/15/Z**2)/20/Pr)*De**-0.5
+            Nu = 48/11 * NuI/f
+
 
     else:
         # Turbulent flow
-        # Eq 91 in [10]_
-        Nu = Pr/(26.2*(Pr**(2/3)-0.074)) * Re**0.8 * (di/Dc)**0.1 * \
-            (1+0.098/(Re*(di/Dc)**2)**0.2)
+        if Pr < 10:
+            # Eq 91 in [10]_, for gases
+            Nu = Pr/(26.2*(Pr**(2/3)-0.074)) * Re**0.8 * (di/Dc)**0.1 * \
+                (1+0.098/(Re*(di/Dc)**2)**0.2)
+        else:
+            # Eq 94 in [10], for liquids
+            Nu = Re**(5/6)/41*(di/Dc)**(1/12)*(1+0.061/(Re*(di/Dc)**2.5)**(1/6))
+
 
     return Nu
 
@@ -1985,6 +2006,8 @@ class Helical(CallableEntity):
         Diameter of the helix, [m]
     p : float, optional
         Pitch for twist of 2π radians (360º), [m]
+    MoriSimple : boolean, optional
+        Use Simple correlation for Mori-Nakayama nusselt number correlation
     """
 
 
@@ -2071,7 +2094,9 @@ class Helical(CallableEntity):
 
         "di": 0,
         "Dc": 0,
-        "p": 0
+        "p": 0,
+
+        "MoriSimple": False
     }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -2147,7 +2172,8 @@ class Helical(CallableEntity):
 
             elif self.kw["methodHeatLaminar"] == 2:
                 # Mori-Nakayama (1965)
-                Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
+                Nu = Nu_MoriNakayama(
+                    Re, Pr, self.di, self.Dc, self.kw["MoriSimple"])
 
             elif self.kw["methodHeatLaminar"] == 3:
                 # Seban-McLaughlin (1963)
@@ -2209,7 +2235,8 @@ class Helical(CallableEntity):
 
             elif self.kw["methodHeatTurbulent"] == 2:
                 # Mori-Nakayama (1965)
-                Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
+                Nu = Nu_MoriNakayama(
+                    Re, Pr, self.di, self.Dc, self.kw["MoriSimple"])
 
             elif self.kw["methodHeatTurbulent"] == 3:
                 # Seban-McLaughlin (1963)
@@ -2432,6 +2459,7 @@ class UI_Helical(ToolGui):
             self.methodHeatLaminar.addItem(method)
         self.methodHeatLaminar.currentIndexChanged.connect(
             partial(self.changeParams, "methodHeatLaminar"))
+        self.methodHeatLaminar.currentTextChanged.connect(self.setVisibleMod)
         lytM.addWidget(self.methodHeatLaminar, 3, 2)
         self.methodHeatTurbulent = QtWidgets.QComboBox()
         for method in Helical.TEXT_TURBULENT_HEAT:
@@ -2475,8 +2503,23 @@ class UI_Helical(ToolGui):
         self.p.valueChanged.connect(partial(self.changeParams, "p"))
         lyt.addWidget(self.p, 6, 2)
 
+        # Mori-Nakayama additional parameters
+        self.MoriSimple = QtWidgets.QCheckBox(self.tr(
+            "Use simple correlation for laminar nusselt number"))
+        self.MoriSimple.toggled.connect(
+            partial(self.changeParams, "MoriSimple"))
+        lyt.addWidget(self.MoriSimple, 7, 1, 1, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
+
+    def setVisibleMod(self):
+        """Enable widget with special parameters for selected method"""
+        # Mori-Nakayama
+        if self.methodHeatLaminar.currentText() == "Mori-Nakayama (1965)":
+            self.MoriSimple.setVisible(True)
+        else:
+            self.MoriSimple.setVisible(False)
 
 
 class Dialog(QtWidgets.QDialog):
