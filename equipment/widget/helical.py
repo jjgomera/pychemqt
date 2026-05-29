@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import exp, log10, pi
+from math import atan, exp, log10, pi, tan
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -72,7 +72,7 @@ __doi__ = {
     8:
         {"autor": "White, C.M.",
          "title": "Streamline Flow through Curved Pipes",
-         "ref": "Proc. R .Soc. London A 123 (1929) 645-63",
+         "ref": "Proc. R .Soc. London A 123 (1929) 645-663",
          "doi": "10.1098/rspa.1929.0089"},
     9:
         {"autor": "Mori, Y., Nakayama, W.",
@@ -163,7 +163,7 @@ __doi__ = {
     24:
         {"autor": "Tarbell, J.M., Samuels, M.R.",
          "title": "Momentum and Heat Transfer in Helical Coils",
-         "ref": "Chem. Eng. J. 5 (1973) 117-127",
+         "ref": "Chem. Eng. J. 5(2) (1973) 117-127",
          "doi": "10.1016/0300-9467(73)80002-4"},
     25:
         {"autor": "Mandal, M. M., Nigam, K.D.P.",
@@ -744,13 +744,70 @@ def f_Ali(Re, di, Dc, p):
     return f
 
 
+@refDoc(__doi__, [1])
+def f_ElGenkSchriener(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of ElGenk-Schriener (2017).
+
+    .. math::
+        \frac{f_c}{f_s} = 1 + 0.00325 De_m
+
+    where modified Dean number is defined as:
+
+    .. math::
+        De_m = De^{0.86} \delta^{0.09} \left(\frac{d_i}{D_c}\right)^{-0.38}
+
+    δ is the curvature defined as:
+
+    .. math::
+        \delta = \frac{d_i/D_c}{1+4\pi^2 \tan^2 \alpha}
+
+    α is the helix angle:
+
+    .. math::
+        |alpha = \tan^{-1}{\frac{p}{\pi D}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Dc)
+
+    # Curvature
+    delta = (di/Dc)/(1+4*pi**2*tan(alpha)**2)
+
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Modified Dean number
+    Dem = De**0.86 * delta**0.09 / (di/Dc)**0.38
+
+    # Eq 50
+    f = fd * (1+0.00325*Dem)
+
+    return f
+
+
 @refDoc(__doi__, [8])
 def f_laminar_White(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
     laminar flow using the method of White (1929).
 
     .. math::
-        f_c = \frac{f_{s,L}} {1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
+        \frac{f_c}{f_s} = 1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
         \right)^{\frac{1}{0.45}}
 
     Parameters
@@ -1669,6 +1726,63 @@ def Nu_PawarSunnapwar(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [1])
+def Nu_ElGenkSchriener(Re, Pr, di, Dc, p):
+    r"""Calculates nusselt number for internal flow of a helical coil using
+    the method of ElGenk-Schriener (2017).
+
+    For fluids with Pr < 15:
+
+    .. math::
+        Nu_c = 3.66 + 0.014 Re_m^{0.86} Pr^{0.4}
+
+    For fluids with Pr > 15:
+
+    .. math::
+        Nu_c = 3.66 + 0.02 Re_m^{0.7} Pr^{0.4}
+
+    using a modified Reynolds number:
+
+    .. math::
+
+        Re_m = Re \left(1+3.4 \delta\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Dc)
+
+    # Curvature
+    delta = (di/Dc)/(1+4*pi**2*tan(alpha)**2)
+
+    Rem = Re * (1+3.4*delta)
+
+    if Pr < 15:
+        # Eq 51
+        Nu = 3.66 + 0.014*Re**0.86*Pr**0.4
+    else:
+        # Eq 52
+        Nu = 3.66 + 0.02*Re**0.7*Pr**0.4
+
+    return Nu
+
+
 @refDoc(__doi__, [36])
 def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow at constant heat flux
@@ -2042,6 +2156,7 @@ class Helical(CallableEntity):
         "Collins-Dennis (1975)",
         "Dean (1928)",
         "Abushammala (2019)",
+        "ElGenk-Schriener (2017)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -2054,6 +2169,7 @@ class Helical(CallableEntity):
         "Ali (2001)",
         "Guo (2001)",
         "Mandal-Nigam (2009)",
+        "ElGenk-Schriener (2017)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -2070,6 +2186,7 @@ class Helical(CallableEntity):
         "Pimenta-Campos (2013)",
         "Pawar-Sunnapwar (2013)",
         "Hardik (2015)",
+        "ElGenk-Schriener (2017)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -2081,6 +2198,7 @@ class Helical(CallableEntity):
         "Mandal-Nigam (2009)",
         "Rogers-Mayhew (1964)",
         "Pawar-Sunnapwar (2013)",
+        "ElGenk-Schriener (2017)",
     )
 
     status = 0
@@ -2223,6 +2341,10 @@ class Helical(CallableEntity):
                 # Hardik (2015)
                 Nu = Nu_laminar_Hardik(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatLaminar"] == 13:
+                # ElGenk-Schriener (2017)
+                Nu = Nu_ElGenkSchriener(Re, Pr, self.di, self.Dc, self.kw["p"])
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -2257,6 +2379,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 7:
                 # Pawar-Sunnapwar (2013)
                 Nu = Nu_PawarSunnapwar(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 8:
+                # ElGenk-Schriener (2017)
+                Nu = Nu_ElGenkSchriener(Re, Pr, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
@@ -2364,6 +2490,10 @@ class Helical(CallableEntity):
                 # Abushammala (2019)
                 f = f_laminar_Abushammala(Re, self.di, self.Dc, self.kw["p"])
 
+            elif self.kw["methodFrictionLaminar"] == 21:
+                # ElGenk-Schriener (2017)
+                f = f_ElGenkSchriener(Re, self.di, self.Dc, self.kw["p"])
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -2401,6 +2531,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 8:
                 # Mandal-Nigam (2009)
                 f = f_turbulent_MandalNigam(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 9:
+                # ElGenk-Schriener (2017)
+                f = f_ElGenkSchriener(Re, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
