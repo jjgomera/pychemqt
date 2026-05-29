@@ -295,8 +295,14 @@ __doi__ = {
                   "Uniform Wall Temperature and Practical Formulae)",
          "ref": "Int. J. Heat Mass Transfer 10(5) (1967) 681-695",
          "doi": "10.1016_0017-9310(67)90113-5"},
+    47:
+        {"autor": "Shchukin, V.K.",
+         "title": "Correlation of Experimental Data on Heat Transfer in "
+                  "Curved Pipes",
+         "ref": "Teploenergetika 16(2) (1969) 72-76",
+         "doi": ""},
 
-    # 47:
+    # 48:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2086,7 +2092,7 @@ def Nu_turbulent_RogersMayhew(Re, Pr, di, Dc):
     turbulent flow using the method of Rogers-Mayhew (1964).
 
     .. math::
-        Nu = 0.023 Re^^{0.85} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.1}
+        Nu = 0.023 Re^{0.85} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.1}
 
     Parameters
     ----------
@@ -2106,6 +2112,45 @@ def Nu_turbulent_RogersMayhew(Re, Pr, di, Dc):
     """
     # Eq 12
     Nu = 0.023 * Re**0.85 * Pr**0.4 * (di/Dc)**0.1
+    return Nu
+
+
+@refDoc(__doi__, [44, 1])
+def Nu_turbulent_Shchukin(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Shchukin (1969) as show in [1]_
+
+    For math:`Re (d_i/D_c)^2 < 20`
+
+    .. math::
+        Nu = 0.0316 Re^{0.8} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.05}
+
+    For math:`Re (d_i/D_c)^2 > 20`
+
+    .. math::
+        Nu = 0.0266 Re^{0.85} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.15}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re*(di/Dc)**2 < 20:
+        Nu = 0.0316 * Re**0.8 * Pr**0.4 * (di/Dc)**0.05
+    else:
+        Nu = 0.0266 * Re**0.85 * Pr**0.4 * (di/Dc)**0.15
+
     return Nu
 
 
@@ -2199,6 +2244,7 @@ class Helical(CallableEntity):
         "Rogers-Mayhew (1964)",
         "Pawar-Sunnapwar (2013)",
         "ElGenk-Schriener (2017)",
+        "Shchukin (1969)",
     )
 
     status = 0
@@ -2383,6 +2429,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 8:
                 # ElGenk-Schriener (2017)
                 Nu = Nu_ElGenkSchriener(Re, Pr, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodHeatTurbulent"] == 9:
+                # Shchukin (1969)
+                Nu = Nu_turbulent_Shchukin(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
