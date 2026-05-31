@@ -301,8 +301,19 @@ __doi__ = {
                   "Curved Pipes",
          "ref": "Teploenergetika 16(2) (1969) 72-76",
          "doi": ""},
+    48:
+        {"autor": "Srinivasan, P.S., Nandapurkar, S.S., Holland, F.A.",
+         "title": "Pressure Drop and Heat Transfer in Coils",
+         "ref": "Chem. Eng. 218 (1968) 113-119",
+         "doi": ""},
+    49:
+        {"autor": "Guo, L., Chen, X., Feng, Z., Bai, B.",
+         "title": "Transie:nt convective heat transfer in a helical coiled "
+                  "tube with pulsatile fully developed turbulent flow",
+         "ref": "Int. J. Heat Mass Transfer 41() (1998) 2867-2875",
+         "doi": "10.1016/s0017-9310(98)80003-3"},
 
-    # 48:
+    # 50:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -385,11 +396,11 @@ def Rec_Kubair(di, Dc):
     return Rec
 
 
-@refDoc(__doi__, [5, 2])
+@refDoc(__doi__, [48, 1, 2])
 def Rec_Srinivasan(di, Dc):
     r"""Calculates critical Reynolds to define transition between laminar and
-    turbulent flow using using the correlation of Srinivasan (1968). Recomended
-    method by [2]_.
+    turbulent flow using using the correlation of Srinivasan (1968) as shown in
+    [1]_. Recomended method by [2]_.
 
     .. math::
         Re_c = 2100 \left(1 + 12\sqrt{\frac{d_i}{D_c}}\right)
@@ -2154,6 +2165,34 @@ def Nu_turbulent_Shchukin(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [49])
+def Nu_turbulent_Guo(Re, Pr):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Guo (1998).
+
+    .. math::
+        Nu = 0.023 Re^{0.58} Pr^{0.4}
+
+    This correlation don't include any helical coil geometrical parameters
+    dependence.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 12
+    Nu = 0.328 * Re**0.58 * Pr**0.4
+    return Nu
+
+
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
@@ -2245,6 +2284,7 @@ class Helical(CallableEntity):
         "Pawar-Sunnapwar (2013)",
         "ElGenk-Schriener (2017)",
         "Shchukin (1969)",
+        "Guo (1998)",
     )
 
     status = 0
@@ -2433,6 +2473,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 9:
                 # Shchukin (1969)
                 Nu = Nu_turbulent_Shchukin(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 10:
+                # Guo (1998)
+                Nu = Nu_turbulent_Guo(Re, Pr)
 
             else:
                 # Schmidt (1967)
