@@ -854,6 +854,53 @@ def f_Srinivasan(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [23, 4])
+def f_Ito(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Ito (1969).
+
+    For laminar flow:
+
+    .. math::
+        \frac{f_c}{f_s} = 0.1033 De^{0.5} \left(\left(1+\frac{1.729}{De}\right)
+        ^{0.5} - \frac{1.315}{De^{0.5}}\right)^{-3}
+
+    For turbulent flow:
+
+    .. math::
+        f_c = 4 \left(0.029 sqrt{\frac{d_i}{D_c}} + 0.304 Re^{-0.25}\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+
+    Rec = Rec_Ito(di, Dc)
+
+    if Re < Rec:
+        # Laminar flow, Eq 57 from [23]_
+        De = Dean(Re, di, Dc)
+        fd = f_friccion(Re)
+
+        f = fd * 0.1033 * De**0.5 / ((1+1.729/De)**0.5 - 1.315/De**0.5)**3
+    else:
+        # Turbulent flow, Eq 2 from [4]_
+        f = 0.029*(di/Dc)**0.5 + 0.304/Re**0.25
+
+    return f
+
+
 @refDoc(__doi__, [8])
 def f_laminar_White(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1000,38 +1047,6 @@ def f_laminar_LiuMasliyah(Re, di, Dc, p):
     f = (16 + (0.378*De*l**0.25 + 12.1)*De**0.5*l**0.5*nu**2) / Re * \
         (1+((0.0908+0.0233*l**0.5)*De**0.5-0.132*l**0.5+0.37*l-0.2)/(1+49/De))
 
-    return f
-
-
-@refDoc(__doi__, [23])
-def f_laminar_Ito(Re, di, Dc):
-    r"""Calculates friction factor for internal flow of a helical coil in
-    laminar flow using the method of Ito (1969).
-
-    .. math::
-        \frac{f_c}{f_s} = 0.1033 De^{0.5} \left(\left(1+\frac{1.729}{De}\right)
-        ^{0.5} - \frac{1.315}{De^{0.5}}\right)^{-3}
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    di : float
-        Inner diameter of the pipe, [m]
-    Dc : float
-        Diameter of the helix, [m]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-
-    """
-    De = Dean(Re, di, Dc)
-    fd = f_friccion(Re)
-
-    # Eq 57
-    f = fd * 0.1033 * De**0.5 / ((1+1.729/De)**0.5 - 1.315/De**0.5)**3
     return f
 
 
@@ -2292,6 +2307,7 @@ class Helical(CallableEntity):
         "Mandal-Nigam (2009)",
         "ElGenk-Schriener (2017)",
         "Srinivasan (1968)",
+        "Ito (1959)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -2576,7 +2592,7 @@ class Helical(CallableEntity):
 
             elif self.kw["methodFrictionLaminar"] == 10:
                 # Ito (1969)
-                f = f_laminar_Ito(Re, self.di, self.Dc)
+                f = f_Ito(Re, self.di, self.Dc)
 
             elif self.kw["methodFrictionLaminar"] == 11:
                 # Tarbell-Samuels (1973)
@@ -2675,6 +2691,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 10:
                 # Srinivasan (1968)
                 f = f_Srinivasan(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 11:
+                # Ito (1959)
+                f = f_Ito(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
