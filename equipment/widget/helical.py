@@ -62,7 +62,7 @@ __doi__ = {
     6:
         {"autor": "Srinivasan, P.S., Nandapurkar, S.S., Holland, F.A.",
          "title": "Pressure Drop and Heat Transfer in Coils",
-         "ref": "Chemical Engineer, vol. 218, CE131–119, 1968.",
+         "ref": "Chem. Eng. 218 (1968) 113-119",
          "doi": ""},
     7:
         {"autor": "Kutateladze, S.S., Borishanskii, V.M. ",
@@ -302,16 +302,17 @@ __doi__ = {
          "ref": "Teploenergetika 16(2) (1969) 72-76",
          "doi": ""},
     48:
-        {"autor": "Srinivasan, P.S., Nandapurkar, S.S., Holland, F.A.",
-         "title": "Pressure Drop and Heat Transfer in Coils",
-         "ref": "Chem. Eng. 218 (1968) 113-119",
-         "doi": ""},
-    49:
         {"autor": "Guo, L., Chen, X., Feng, Z., Bai, B.",
          "title": "Transie:nt convective heat transfer in a helical coiled "
                   "tube with pulsatile fully developed turbulent flow",
          "ref": "Int. J. Heat Mass Transfer 41() (1998) 2867-2875",
          "doi": "10.1016/s0017-9310(98)80003-3"},
+    49:
+        {"autor": "Ghobadi, M., Muzychka, Y.S.",
+         "title": "A Review of Heat Transfer and Pressure Drop Correlations "
+                  "for Laminar Flow in Curved Circular Ducts",
+         "ref": "Heat Transfer Eng. 37(10) (2016) 815-839",
+         "doi": "10.1080/01457632.2015.1089735"},
 
     # 50:
         # {"autor": "",
@@ -396,7 +397,7 @@ def Rec_Kubair(di, Dc):
     return Rec
 
 
-@refDoc(__doi__, [48, 1, 2])
+@refDoc(__doi__, [6, 1, 2])
 def Rec_Srinivasan(di, Dc):
     r"""Calculates critical Reynolds to define transition between laminar and
     turbulent flow using using the correlation of Srinivasan (1968) as shown in
@@ -814,6 +815,41 @@ def f_ElGenkSchriener(Re, di, Dc, p):
 
     # Eq 50
     f = fd * (1+0.00325*Dem)
+
+    return f
+
+
+@refDoc(__doi__, [6, 49])
+def f_Srinivasan(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Srinivasan (1968) as explain in [49]_.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    if De < 30:
+        f = fd
+
+    elif De < 300:
+        f = fd * 0.419 * De**0.275
+
+    else:
+        f = fd * 0.1125 * De**0.5
 
     return f
 
@@ -2165,7 +2201,7 @@ def Nu_turbulent_Shchukin(Re, Pr, di, Dc):
     return Nu
 
 
-@refDoc(__doi__, [49])
+@refDoc(__doi__, [48])
 def Nu_turbulent_Guo(Re, Pr):
     r"""Calculates nusselt number for internal flow of a helical coil in
     turbulent flow using the method of Guo (1998).
@@ -2241,6 +2277,7 @@ class Helical(CallableEntity):
         "Dean (1928)",
         "Abushammala (2019)",
         "ElGenk-Schriener (2017)",
+        "Srinivasan (1968)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -2254,6 +2291,7 @@ class Helical(CallableEntity):
         "Guo (2001)",
         "Mandal-Nigam (2009)",
         "ElGenk-Schriener (2017)",
+        "Srinivasan (1968)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -2588,6 +2626,10 @@ class Helical(CallableEntity):
                 # ElGenk-Schriener (2017)
                 f = f_ElGenkSchriener(Re, self.di, self.Dc, self.kw["p"])
 
+            elif self.kw["methodFrictionLaminar"] == 22:
+                # Srinivasan (1968)
+                f = f_Srinivasan(Re, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -2629,6 +2671,10 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 9:
                 # ElGenk-Schriener (2017)
                 f = f_ElGenkSchriener(Re, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodFrictionTurbulent"] == 10:
+                # Srinivasan (1968)
+                f = f_Srinivasan(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
@@ -2740,6 +2786,7 @@ class UI_Helical(ToolGui):
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
+        self.setVisibleMod()
 
     def setVisibleMod(self):
         """Enable widget with special parameters for selected method"""
