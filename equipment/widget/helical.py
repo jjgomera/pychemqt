@@ -313,8 +313,15 @@ __doi__ = {
                   "for Laminar Flow in Curved Circular Ducts",
          "ref": "Heat Transfer Eng. 37(10) (2016) 815-839",
          "doi": "10.1080/01457632.2015.1089735"},
+    50:
+        {"autor": "Jayakumar, J.S., Mahajani, S.M., Mandal, J.C., Vijayan, "
+                  "P.K., Bhoi, R.",
+         "title": "Experimental and CFD estimation of heat transfer in "
+                  "helically coiled heat exchangers",
+         "ref": "Chem. Eng. Res. Design 86(3) (2008) 221-232",
+         "doi": "10.1016/j.cherd.2007.10.021"},
 
-    # 50:
+    # 51:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2244,6 +2251,38 @@ def Nu_turbulent_Guo(Re, Pr):
     return Nu
 
 
+@refDoc(__doi__, [50])
+def Nu_turbulent_Jayakumar(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Jayakumar et al. (2008)
+
+    .. math::
+        Nu = 0.025 De^{0.9112} Pr^{0.4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 8
+    Nu = 0.025 * De**0.9112 * Pr**0.4
+
+    return Nu
+
+
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
@@ -2339,6 +2378,7 @@ class Helical(CallableEntity):
         "ElGenk-Schriener (2017)",
         "Shchukin (1969)",
         "Guo (1998)",
+        "Jayakumar (2008)",
     )
 
     status = 0
@@ -2531,6 +2571,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 10:
                 # Guo (1998)
                 Nu = Nu_turbulent_Guo(Re, Pr)
+
+            elif self.kw["methodHeatTurbulent"] == 11:
+                # Jayakumar (2008)
+                Nu = Nu_turbulent_Jayakumar(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
