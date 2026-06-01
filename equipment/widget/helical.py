@@ -559,7 +559,7 @@ def f_MoriNakayama(Re, di, Dc):
     laminar flow using the method of Mori-Nakayama (1965).
 
     .. math::
-        \frac{f_c}{f_{s}=\left(\frac{0.108De^{0.5}}{1-3.253 De^{-0.5}}\right)
+        \frac{f_c}{f_s}=\left(\frac{0.108De^{0.5}}{1-3.253 De^{-0.5}}\right)
 
     Parameters
     ----------
@@ -643,7 +643,7 @@ def f_MishraGupta(Re, di, Dc):
     the method of Mishra-Gupta (1979).
 
     .. math::
-        f_c = \frac{f_{s,L}} {1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
+        \frac{f_c}{f_s} = 1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
         \right)^{\frac{1}{0.45}}
 
     Parameters
@@ -802,7 +802,7 @@ def f_ElGenkSchriener(Re, di, Dc, p):
     α is the helix angle:
 
     .. math::
-        |alpha = \tan^{-1}{\frac{p}{\pi D}}
+        \alpha = \tan^{-1}{\frac{p}{\pi D}}
 
     Parameters
     ----------
@@ -959,7 +959,7 @@ def f_laminar_Hart(Re, di, Dc):
     laminar flow using the method of Hart (1988).
 
     .. math::
-        f_c = \frac{f_{s,L}} {1 + 0.09 \frac{De^{1.5}}{70+De}
+        \frac{f_c}{f_s} = 1 + 0.09 \frac{De^{1.5}}{70+De}
 
     Recomended method in [2]_ for friction factor in laminar flow.
 
@@ -1428,7 +1428,7 @@ def f_turbulent_Czop(Re, di, Dc):
     turbulent flow using the method of Czop (1994).
 
     .. math::
-        f_c =  \frac{0.096}{De^{-1517}}
+        f_c =  \frac{0.096}{De^{-0.1517}}
 
     The paper give this correlation for single phase flow. Give too
     correlations for two phase flow.
@@ -1488,7 +1488,7 @@ def f_turbulent_MandalNigam(Re, di, Dc):
     turbulent flow using the method of Mandal-Nigam (2009).
 
     .. math::
-        f_{curv} = f_{\text{str,turb}} [1 + 0.03{De}^{0.27}]
+        \frac{f_c}{f_s} = 1 + 0.03{De}^{0.27}
 
     Parameters
     ----------
@@ -1998,7 +1998,7 @@ def Nu_laminar_ManlapazChurchill(Re, Pr, di, Dc, p):
 
     .. math::
         Nu = \left(\left(3.657 + \frac{4.343}{\left(1+\frac{957}{Pr He^2}
-        \right)^2\right)^3 + 1.158 \left(\frac{He}{1+\frac{0.477}{Pr}\right)
+        \right)^2}\right)^3 + 1.158 \left(\frac{He}{1+\frac{0.477}{Pr}}\right)
         ^{1.5}\right)^{1/3}
 
     Parameters
