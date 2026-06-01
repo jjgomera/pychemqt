@@ -320,8 +320,14 @@ __doi__ = {
                   "helically coiled heat exchangers",
          "ref": "Chem. Eng. Res. Design 86(3) (2008) 221-232",
          "doi": "10.1016/j.cherd.2007.10.021"},
+    51:
+        {"autor": "Yildiz, C., Biçer, Y., Pehlivan, D.",
+         "title": "Heat Transfer and Pressure Drop in a Heat Exchanger with "
+                  "a Helical Pipe Containing Inside Springs",
+         "ref": "Energy Convers. Management 38(6) (1997) 619-624",
+         "doi": "10.1016/S0196-8904(96)00040-4"},
 
-    # 51:
+    # 52:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2283,6 +2289,39 @@ def Nu_turbulent_Jayakumar(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [51])
+def Nu_turbulent_Yildiz(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Yildiz et al. (1997)
+
+    .. math::
+        Nu = 0.0551 De^{0.864} Pr^{0.4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 5
+    Nu = 0.0551 * De**0.864 * Pr**0.4
+
+    return Nu
+
+
+
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
@@ -2379,6 +2418,7 @@ class Helical(CallableEntity):
         "Shchukin (1969)",
         "Guo (1998)",
         "Jayakumar (2008)",
+        "Yildiz (1997)",
     )
 
     status = 0
@@ -2575,6 +2615,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 11:
                 # Jayakumar (2008)
                 Nu = Nu_turbulent_Jayakumar(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 12:
+                # Yildiz (1997)
+                Nu = Nu_turbulent_Yildiz(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
