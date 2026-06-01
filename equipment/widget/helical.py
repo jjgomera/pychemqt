@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import pi, cos, atan, log10
+from math import atan, exp, log10, pi, tan
 
 from tools.qt import QtCore, QtWidgets, translate
 
@@ -62,7 +62,7 @@ __doi__ = {
     6:
         {"autor": "Srinivasan, P.S., Nandapurkar, S.S., Holland, F.A.",
          "title": "Pressure Drop and Heat Transfer in Coils",
-         "ref": "Chemical Engineer, vol. 218, CE131–119, 1968.",
+         "ref": "Chem. Eng. 218 (1968) 113-119",
          "doi": ""},
     7:
         {"autor": "Kutateladze, S.S., Borishanskii, V.M. ",
@@ -72,7 +72,7 @@ __doi__ = {
     8:
         {"autor": "White, C.M.",
          "title": "Streamline Flow through Curved Pipes",
-         "ref": "Proc. R .Soc. London A 123 (1929) 645-63",
+         "ref": "Proc. R .Soc. London A 123 (1929) 645-663",
          "doi": "10.1098/rspa.1929.0089"},
     9:
         {"autor": "Mori, Y., Nakayama, W.",
@@ -113,7 +113,7 @@ __doi__ = {
          "title": "The Effects of Prandtl Numbers on Local and Average "
                   "Convective Heat Transfer Characteristics in Helical Pipes",
          "ref": "J. Heat Transfer 119(3) (1997) 467-73",
-         "doi": "10.1115/1.2824120."},
+         "doi": "10.1115/1.2824120"},
     16:
         {"autor": "Seban R.A., McLaughlin, E.F.",
          "title": "Heat Transfer in Tube Coils with Laminar and Turbulent Flow",
@@ -163,7 +163,7 @@ __doi__ = {
     24:
         {"autor": "Tarbell, J.M., Samuels, M.R.",
          "title": "Momentum and Heat Transfer in Helical Coils",
-         "ref": "Chem. Eng. J. 5 (1973) 117-127",
+         "ref": "Chem. Eng. J. 5(2) (1973) 117-127",
          "doi": "10.1016/0300-9467(73)80002-4"},
     25:
         {"autor": "Mandal, M. M., Nigam, K.D.P.",
@@ -222,15 +222,122 @@ __doi__ = {
          "ref": "London Edinburgh Dublin Phil. Mag. J. Sci. Serie 7 5(30) "
                 "(1928) 673-695",
          "doi": "10.1080/14786440408564513"},
+    35:
+        {"autor": "Abushammala, O., Hreiz, R., Lamaître, C., Favre, E.",
+         "title": "Laminar flow friction factor in highly curved helical "
+                  "pipes: Numerical investigation, predictive correlation "
+                  "and experimental validation using a 3D-printed model",
+         "ref": "Chem. Eng. Sci. 207(7) (2019) 1030-1039",
+         "doi": "10.1016/j.ces.2019.07.018"},
+    36:
+        {"autor": "Kalb, C.E., Seader, J.D.",
+         "title": "Heat and Mass Transfer Phenomena for Viscous Flow in "
+                  "Curved Circular Tubes",
+         "ref": "Int. J. Heat Mass TRansfer 15() (1972) 801-817",
+         "doi": "10.1016/0017-9310(72)90122-6"},
 
+    37:
+        {"autor": "Dravid, A.N., Smith, K.A., Merrill, E.W., Brian, P.L.T.",
+         "title": "Effect of Secondary Fluid Motion on Laminar Flow Heat "
+                  "Transfer in Helically Coiled Tubes",
+         "ref": "AIChE J. 17(5) (1971) 1114-1122",
+         "doi": "10.1002/aic.690170517"},
+    38:
+        {"autor": "Janssen, L.A.M., Hoogendoorn, C.J.",
+         "title": "Laminar Convective Heat Transfer in Helical Coiled Tubes",
+         "ref": "Int. J. Heat Mass Transfer 21(9) (1978) 1197-1206",
+         "doi": "10.1016/0017-9310(78)90138-2"},
+    39:
+        {"autor": "Manlapaz, R.L., Churchill, S.W.",
+         "title": "Fully Developed Laminar Convection From a Helical Coil",
+         "ref": "Chem. Eng. Commun. 9 (1981) 185-200",
+         "doi": "10.1080/00986448108911023"},
+    40:
+        {"autor": "Salimpour, M.R.",
+         "title": "Heat transfer coefficients of shell and coiled tube heat "
+                  "exchangers",
+         "ref": "Exp. Thermal Fluid Sci. 33(2) (2009) 203-207",
+         "doi": "10.1016/j.expthermflusci.2008.07.015"},
+    41:
+        {"autor": "Pimenta, T.A., Campos, J.B.L.M.",
+         "title": "Heat transfer coefficients from Newtonian and non-Newtonian"
+                  " fluids flowing in laminar regime in a helical coil",
+         "ref": "Int. J. Heat Mass Transfer 58 (2013) 676-690",
+         "doi": "10.1016/j.ijheatmasstransfer.2012.10.078"},
+    42:
+        {"autor": "Pawar, S.S., Sunnapwar, V.K.",
+         "title": "Studies on convective heat transfer through helical coils",
+         "ref": "Heat Mass Transfer 49(12) (2013) 1741-1754",
+         "doi": "10.1007/s00231-013-1210-3"},
+    43:
+        {"autor": "Hardik, B.K., Baburajan, P.K., Prabhu, S.V.",
+         "title": "Local heat transfer coefficient in helical coils with "
+                  "single phase flow",
+         "ref": "Int. J. Heat Mass Transf. 89 (2015) 522-538",
+         "doi": "10.1016/j.ijheatmasstransfer.2015.05.069"},
+    44:
+        {"autor": "Rogers, G.F.C., Mayhew, Y.R.",
+         "title": "Heat Transfer and Pressure Loss in Helically Coiled Tubes "
+                  "with Turbulent Flow",
+         "ref": "Int. J. Heat Mass Transfer 7(11) (1964) 1207-1216",
+         "doi": "10.1016/0017-9310(64)90062-6"},
+    45:
+        {"autor": "Pawar, S.S., Sunnapwar, V.K.",
+         "title": "Experimental studies on heat transfer to Newtonian and "
+                  "non-Newtonian fluids in helical coils with laminar and "
+                  "turbulent flow",
+         "ref": "Exp. Thermal Fluid Sci. 44 (2013) 792-804",
+         "doi": "10.1016/j.expthermflusci.2012.09.024"},
+    46:
+        {"autor": "Mori, Y., Nakayama, W.",
+         "title": "Study on Forced Convective Heat Transfer in Curved Pipes "
+                  "(3rd Report, Theoretical Analysis under the Condition of "
+                  "Uniform Wall Temperature and Practical Formulae)",
+         "ref": "Int. J. Heat Mass Transfer 10(5) (1967) 681-695",
+         "doi": "10.1016_0017-9310(67)90113-5"},
+    47:
+        {"autor": "Shchukin, V.K.",
+         "title": "Correlation of Experimental Data on Heat Transfer in "
+                  "Curved Pipes",
+         "ref": "Teploenergetika 16(2) (1969) 72-76",
+         "doi": ""},
+    48:
+        {"autor": "Guo, L., Chen, X., Feng, Z., Bai, B.",
+         "title": "Transie:nt convective heat transfer in a helical coiled "
+                  "tube with pulsatile fully developed turbulent flow",
+         "ref": "Int. J. Heat Mass Transfer 41() (1998) 2867-2875",
+         "doi": "10.1016/s0017-9310(98)80003-3"},
+    49:
+        {"autor": "Ghobadi, M., Muzychka, Y.S.",
+         "title": "A Review of Heat Transfer and Pressure Drop Correlations "
+                  "for Laminar Flow in Curved Circular Ducts",
+         "ref": "Heat Transfer Eng. 37(10) (2016) 815-839",
+         "doi": "10.1080/01457632.2015.1089735"},
+    50:
+        {"autor": "Jayakumar, J.S., Mahajani, S.M., Mandal, J.C., Vijayan, "
+                  "P.K., Bhoi, R.",
+         "title": "Experimental and CFD estimation of heat transfer in "
+                  "helically coiled heat exchangers",
+         "ref": "Chem. Eng. Res. Design 86(3) (2008) 221-232",
+         "doi": "10.1016/j.cherd.2007.10.021"},
+    51:
+        {"autor": "Yildiz, C., Biçer, Y., Pehlivan, D.",
+         "title": "Heat Transfer and Pressure Drop in a Heat Exchanger with "
+                  "a Helical Pipe Containing Inside Springs",
+         "ref": "Energy Convers. Management 38(6) (1997) 619-624",
+         "doi": "10.1016/S0196-8904(96)00040-4"},
+    52:
+        {"autor": "Wu, Z., Li, K., Zhang, K., Tian, W.",
+         "title": "Single-phase flow heat transfer characteristics in helical "
+                  "coils with large coil diameters",
+         "ref": "Appl. Thermal Eng. 266 (2025) 125776",
+         "doi": "10.1016/j.applthermaleng.2025.125776"},
 
-
-    # 35:
+    # 53:
         # {"autor": "",
          # "title": "",
          # "ref": "",
          # "doi": ""},
-
 }
 
 
@@ -309,11 +416,11 @@ def Rec_Kubair(di, Dc):
     return Rec
 
 
-@refDoc(__doi__, [5, 2])
+@refDoc(__doi__, [6, 1, 2])
 def Rec_Srinivasan(di, Dc):
     r"""Calculates critical Reynolds to define transition between laminar and
-    turbulent flow using using the correlation of Srinivasan (1968). Recomended
-    method by [2]_.
+    turbulent flow using using the correlation of Srinivasan (1968) as shown in
+    [1]_. Recomended method by [2]_.
 
     .. math::
         Re_c = 2100 \left(1 + 12\sqrt{\frac{d_i}{D_c}}\right)
@@ -674,13 +781,152 @@ def f_Ali(Re, di, Dc, p):
     return f
 
 
+@refDoc(__doi__, [1])
+def f_ElGenkSchriener(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of ElGenk-Schriener (2017).
+
+    .. math::
+        \frac{f_c}{f_s} = 1 + 0.00325 De_m
+
+    where modified Dean number is defined as:
+
+    .. math::
+        De_m = De^{0.86} \delta^{0.09} \left(\frac{d_i}{D_c}\right)^{-0.38}
+
+    δ is the curvature defined as:
+
+    .. math::
+        \delta = \frac{d_i/D_c}{1+4\pi^2 \tan^2 \alpha}
+
+    α is the helix angle:
+
+    .. math::
+        |alpha = \tan^{-1}{\frac{p}{\pi D}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Dc)
+
+    # Curvature
+    delta = (di/Dc)/(1+4*pi**2*tan(alpha)**2)
+
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    # Modified Dean number
+    Dem = De**0.86 * delta**0.09 / (di/Dc)**0.38
+
+    # Eq 50
+    f = fd * (1+0.00325*Dem)
+
+    return f
+
+
+@refDoc(__doi__, [6, 49])
+def f_Srinivasan(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Srinivasan (1968) as explain in [49]_.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    if De < 30:
+        f = fd
+
+    elif De < 300:
+        f = fd * 0.419 * De**0.275
+
+    else:
+        f = fd * 0.1125 * De**0.5
+
+    return f
+
+
+@refDoc(__doi__, [23, 4])
+def f_Ito(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Ito (1969).
+
+    For laminar flow:
+
+    .. math::
+        \frac{f_c}{f_s} = 0.1033 De^{0.5} \left(\left(1+\frac{1.729}{De}\right)
+        ^{0.5} - \frac{1.315}{De^{0.5}}\right)^{-3}
+
+    For turbulent flow:
+
+    .. math::
+        f_c = 4 \left(0.029 sqrt{\frac{d_i}{D_c}} + 0.304 Re^{-0.25}\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+
+    Rec = Rec_Ito(di, Dc)
+
+    if Re < Rec:
+        # Laminar flow, Eq 57 from [23]_
+        De = Dean(Re, di, Dc)
+        fd = f_friccion(Re)
+
+        f = fd * 0.1033 * De**0.5 / ((1+1.729/De)**0.5 - 1.315/De**0.5)**3
+    else:
+        # Turbulent flow, Eq 2 from [4]_
+        f = 0.029*(di/Dc)**0.5 + 0.304/Re**0.25
+
+    return f
+
+
 @refDoc(__doi__, [8])
 def f_laminar_White(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
     laminar flow using the method of White (1929).
 
     .. math::
-        f_c = \frac{f_{s,L}} {1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
+        \frac{f_c}{f_s} = 1 - \left(1-\left(\frac{11.6}{De}\right)^{0.45}
         \right)^{\frac{1}{0.45}}
 
     Parameters
@@ -820,38 +1066,6 @@ def f_laminar_LiuMasliyah(Re, di, Dc, p):
     f = (16 + (0.378*De*l**0.25 + 12.1)*De**0.5*l**0.5*nu**2) / Re * \
         (1+((0.0908+0.0233*l**0.5)*De**0.5-0.132*l**0.5+0.37*l-0.2)/(1+49/De))
 
-    return f
-
-
-@refDoc(__doi__, [23])
-def f_laminar_Ito(Re, di, Dc):
-    r"""Calculates friction factor for internal flow of a helical coil in
-    laminar flow using the method of Ito (1969).
-
-    .. math::
-        \frac{f_c}{f_s} = 0.1033 De^{0.5} \left(\left(1+\frac{1.729}{De}\right)
-        ^{0.5} - \frac{1.315}{De^{0.5}}\right)^{-3}
-
-    Parameters
-    ----------
-    Re : float
-        Reynolds number, [-]
-    di : float
-        Inner diameter of the pipe, [m]
-    Dc : float
-        Diameter of the helix, [m]
-
-    Returns
-    -------
-    f : float
-        Friction factor, [-]
-
-    """
-    De = Dean(Re, di, Dc)
-    fd = f_friccion(Re)
-
-    # Eq 57
-    f = fd * 0.1033 * De**0.5 / ((1+1.729/De)**0.5 - 1.315/De**0.5)**3
     return f
 
 
@@ -1143,6 +1357,71 @@ def f_laminar_Dean(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [35])
+def f_laminar_Abushammala(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Abushammala et al. (2019)
+
+    .. math::
+        f_c = f_s + A B e^{-C}
+
+    with:
+
+    .. math::
+        A = p_1 D \left(\frac{D}{Re}\right)^{p_2}
+
+    .. math::
+        B = \left(\frac{D_c}{2 d_i} + \frac{2 d_i}{D_c}\right)^{p_3}
+
+    .. math::
+        C = p_4 D \frac{p}{d_i} \left(\frac{D_c}{2 d_i}\right)^{-p_5}
+
+    .. math::
+        D = \left(\left(\frac{D_c}{2 d_i}\right)^{-p6} \left(1 + \left(
+        \frac{p/d_i}{2 \pi D_c/2/d_i}\right)^2\right)\right)^{-p_7}
+
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    Notes
+    -----
+    Correlation only valid for De < 20
+
+    """
+    Rh = Dc/2/di
+    ph = p/di
+
+    fd = f_friccion(Re)
+
+    # Table 3, parameters
+    if Re < 400:
+        p = (1.98, 4.07e-1, 8.49e-1, 8.71e-2, 8.91e-1, 2.31, 3.67e-1)
+    else:
+        p = (2.88, 3.82e-1, 9.16e-3, 2.48e-3, 2.62, 1.1, 3.23e-1)
+
+    # Eq 7
+    D = (Rh**-p[5]*(1+(ph/2/pi/Rh)**2))**-p[6]
+    C = p[3]*D*ph*Rh**-p[4]
+    B = (Rh+1/Rh)**p[2]
+    A = p[0]*D*(D/Re)**p[1]
+    f = fd + A*B*exp(-C)/4
+    return f
+
+
 @refDoc(__doi__, [14])
 def f_turbulent_Czop(Re, di, Dc):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -1272,8 +1551,8 @@ def Nu_Schmidt(Re, Pr, di, Dc):
     return Nu
 
 
-@refDoc(__doi__, [9, 10])
-def Nu_MoriNakayama(Re, Pr, di, Dc):
+@refDoc(__doi__, [9, 10, 46])
+def Nu_MoriNakayama(Re, Pr, di, Dc, simple=False):
     r"""Calculates Nusselt number for internal flow of a helical coil in
     laminar flow using the method of Mori-Nakayama (1965).
 
@@ -1306,23 +1585,36 @@ def Nu_MoriNakayama(Re, Pr, di, Dc):
             # Eq 2.18
             Z = (2+(10/Pr**2-1)**0.5)/5
 
-        # Eq 2.23
-        NuI = 0.1979*De**0.5/Z
+        if simple:
+            # Simplified formulae from [46]_
 
-        if Pr >= 1:
-            # Eq 2.24
-            f = 1 + 37.05/Z * (1/40 - 17/120*Z + (1/10/Z + 13/30)/10/Pr)*De**-0.5
+            # Eq 55
+            Nu = 0.864/Z * De**0.5 * (1+2.35/De**0.5)
+
         else:
-            # Eq 2.25
-            f = 1 - 37.05/Z * (Z**2/12 + 1/24 - 1/120/Z
-                               - (4/3*Z - 1/3/Z + 1/15/Z**2)/20/Pr)*De**-0.5
-        Nu = 48/11 * NuI/f
+            # Eq 2.23
+            NuI = 0.1979*De**0.5/Z
+
+            if Pr >= 1:
+                # Eq 2.24
+                f = 1 + 37.05/Z * (1/40 - 17/120*Z + (1/10/Z+13/30)/10/Pr)*De**-0.5
+            else:
+                # Eq 2.25
+                f = 1 - 37.05/Z * (Z**2/12 + 1/24 - 1/120/Z
+                                   - (4/3*Z - 1/3/Z + 1/15/Z**2)/20/Pr)*De**-0.5
+            Nu = 48/11 * NuI/f
+
 
     else:
         # Turbulent flow
-        # Eq 91 in [10]_
-        Nu = Pr/(26.2*(Pr**(2/3)-0.074)) * Re**0.8 * (di/Dc)**0.1 * \
-            (1+0.098/(Re*(di/Dc)**2)**0.2)
+        if Pr < 10:
+            # Eq 91 in [10]_, for gases
+            Nu = Pr/(26.2*(Pr**(2/3)-0.074)) * Re**0.8 * (di/Dc)**0.1 * \
+                (1+0.098/(Re*(di/Dc)**2)**0.2)
+        else:
+            # Eq 94 in [10], for liquids
+            Nu = Re**(5/6)/41*(di/Dc)**(1/12)*(1+0.061/(Re*(di/Dc)**2.5)**(1/6))
+
 
     return Nu
 
@@ -1475,6 +1767,373 @@ def Nu_Prasad(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [42, 45])
+def Nu_PawarSunnapwar(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil using the method of Pawar-Sunnapwar
+    (2013).
+
+    For laminar flow:
+
+    .. math::
+        Nu = 0.02198 Re^{0.9314} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.391}
+
+    For turbulent flow:
+
+    .. math::
+        Nu = 0.0472 De^{0.8346} Pr^{0.4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    Rec = Rec_Ito(di, Dc)
+
+    if Re < Rec:
+        # Laminar flow, Eq 23 in [42]_
+        Nu = 0.02198 * Re**0.9314 * Pr**0.4 * (di/Dc)**0.391
+
+    else:
+        # Turbulent flow, Eq 16 in [45]_
+        De = Dean(Re, di, Dc)
+        Nu = 0.0472 * De**0.8346 * Pr**0.4
+
+    return Nu
+
+
+@refDoc(__doi__, [1])
+def Nu_ElGenkSchriener(Re, Pr, di, Dc, p):
+    r"""Calculates nusselt number for internal flow of a helical coil using
+    the method of ElGenk-Schriener (2017).
+
+    For fluids with Pr < 15:
+
+    .. math::
+        Nu_c = 3.66 + 0.014 Re_m^{0.86} Pr^{0.4}
+
+    For fluids with Pr > 15:
+
+    .. math::
+        Nu_c = 3.66 + 0.02 Re_m^{0.7} Pr^{0.4}
+
+    using a modified Reynolds number:
+
+    .. math::
+
+        Re_m = Re \left(1+3.4 \delta\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Dc)
+
+    # Curvature
+    delta = (di/Dc)/(1+4*pi**2*tan(alpha)**2)
+
+    Rem = Re * (1+3.4*delta)
+
+    if Pr < 15:
+        # Eq 51
+        Nu = 3.66 + 0.014*Re**0.86*Pr**0.4
+    else:
+        # Eq 52
+        Nu = 3.66 + 0.02*Re**0.7*Pr**0.4
+
+    return Nu
+
+
+@refDoc(__doi__, [36])
+def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Kalb-Seader (1972).
+
+    For Pr < 0.05:
+
+    .. math::
+        Nu = 3.31 De^{0.115} Pr^{0.0108}
+
+    For Pr > 0.7
+
+    .. math::
+        Nu = 0.913 De^{0.476} Pr^{0.2}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    if Pr < 0.5:
+        # Eq 22
+        Nu = 3.31 * De**0.115 * Pr**0.0108
+    else:
+        # Eq 23
+        Nu = 0.913 * De**0.476 * Pr**0.2
+
+    return Nu
+
+
+@refDoc(__doi__, [37])
+def Nu_laminar_Dravid(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Dravid et al. (1971).
+
+    .. math::
+        Nu = \left(0.76 + 0.65 De^{0.5}\right) Pr^{0.175}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 23
+    Nu = (0.76 + 0.65*De**0.5) * Pr**0.175
+
+    return Nu
+
+
+@refDoc(__doi__, [38])
+def Nu_laminar_JanssenHoogendoorn(Re, Pr, di, Dc, f):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Janssen-Hoogendoorn (1978).
+
+    .. math::
+        Nu = 0.6166 \left(f Re^2\right)^{0.26} Pr^{1/6}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    f : float
+        Friction factor, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+
+    if De > 20:
+        # Eq 19
+        # The original equation use the Darcy-Weisbach friction factor, so
+        # convert to Fanning:
+        # 0.43*4**0.26
+        Nu = 0.6166 * (f*Re**2)**0.26 * Pr**(1/6)
+    else:
+        # Eq 22
+        Nu = 1.7 * (De**2*Pr)**(1/6)
+
+    return Nu
+
+
+@refDoc(__doi__, [39])
+def Nu_laminar_ManlapazChurchill(Re, Pr, di, Dc, p):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Manlapaz-Churchill (1981).
+
+    .. math::
+        Nu = \left(\left(3.657 + \frac{4.343}{\left(1+\frac{957}{Pr He^2}
+        \right)^2\right)^3 + 1.158 \left(\frac{He}{1+\frac{0.477}{Pr}\right)
+        ^{1.5}\right)^{1/3}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float, optional
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+    He = De/(1+(p/2/pi/di)**2)**0.5
+
+    # Eq 39, Uniform wall temperature
+    Nu = ((3.657 + 4.343/(1+957/Pr/He**2)**2)**3
+          + 1.158*(He/(1+0.477/Pr))**1.5)**(1/3)
+
+    # Paper give too a correlation for uniform heat flux
+
+    return Nu
+
+
+@refDoc(__doi__, [40])
+def Nu_laminar_Salimpour(Re, Pr, di, Dc, p):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Salimpour (2009).
+
+    .. math::
+        Nu = 0.152De^{0.431}Pr^{1.06}\left(\frac{b}{2 \pi D_c}\right)^{-0.277}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float, optional
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+
+    # Eq 5
+    Nu = 0.152 * De**0.431 * Pr**1.06 * (2*pi*di/p)**0.277
+
+    return Nu
+
+
+@refDoc(__doi__, [41])
+def Nu_laminar_PimentaCampos(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Pimenta-Campos (2013).
+
+    .. math::
+        Nu = \left(0.5 De^{0.481} - 0.465\right) Pr^{0.367}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    De = Dean(Re, di, Dc)
+
+    # Eq 38
+    Nu = (0.5*De**0.481 - 0.465) * Pr**0.367
+
+    return Nu
+
+
+@refDoc(__doi__, [43])
+def Nu_laminar_Hardik(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow at constant heat flux
+    boundary condition of a helical coil in laminar flow using the method of
+    Hardik et al. (2015).
+
+    .. math::
+        Nu = 0.0456 Re^{0.8} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.16}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 22
+    Nu = 0.0456 * (di/Dc)**0.16 * Re**0.8 * Pr**0.4
+
+    return Nu
+
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -1506,6 +2165,198 @@ def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [44])
+def Nu_turbulent_RogersMayhew(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Rogers-Mayhew (1964).
+
+    .. math::
+        Nu = 0.023 Re^{0.85} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.1}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 12
+    Nu = 0.023 * Re**0.85 * Pr**0.4 * (di/Dc)**0.1
+    return Nu
+
+
+@refDoc(__doi__, [44, 1])
+def Nu_turbulent_Shchukin(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Shchukin (1969) as show in [1]_
+
+    For math:`Re (d_i/D_c)^2 < 20`
+
+    .. math::
+        Nu = 0.0316 Re^{0.8} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.05}
+
+    For math:`Re (d_i/D_c)^2 > 20`
+
+    .. math::
+        Nu = 0.0266 Re^{0.85} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.15}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if Re*(di/Dc)**2 < 20:
+        Nu = 0.0316 * Re**0.8 * Pr**0.4 * (di/Dc)**0.05
+    else:
+        Nu = 0.0266 * Re**0.85 * Pr**0.4 * (di/Dc)**0.15
+
+    return Nu
+
+
+@refDoc(__doi__, [48])
+def Nu_turbulent_Guo(Re, Pr):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Guo (1998).
+
+    .. math::
+        Nu = 0.023 Re^{0.58} Pr^{0.4}
+
+    This correlation don't include any helical coil geometrical parameters
+    dependence.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 12
+    Nu = 0.328 * Re**0.58 * Pr**0.4
+    return Nu
+
+
+@refDoc(__doi__, [50])
+def Nu_turbulent_Jayakumar(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Jayakumar et al. (2008)
+
+    .. math::
+        Nu = 0.025 De^{0.9112} Pr^{0.4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 8
+    Nu = 0.025 * De**0.9112 * Pr**0.4
+
+    return Nu
+
+
+@refDoc(__doi__, [51])
+def Nu_turbulent_Yildiz(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Yildiz et al. (1997)
+
+    .. math::
+        Nu = 0.0551 De^{0.864} Pr^{0.4}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 5
+    Nu = 0.0551 * De**0.864 * Pr**0.4
+
+    return Nu
+
+
+@refDoc(__doi__, [52])
+def Nu_turbulent_Wu(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Wu et al. (2025)
+
+    .. math::
+        Nu = 0.023 Re^{0.759} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{-0.079}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    # Eq 26
+    Nu = 0.023 * Re**0.759 * Pr**0.4 / (di/Dc)**0.079
+
+    return Nu
+
+
+
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
@@ -1517,6 +2368,8 @@ class Helical(CallableEntity):
         Diameter of the helix, [m]
     p : float, optional
         Pitch for twist of 2π radians (360º), [m]
+    MoriSimple : boolean, optional
+        Use Simple correlation for Mori-Nakayama nusselt number correlation
     """
 
 
@@ -1550,6 +2403,9 @@ class Helical(CallableEntity):
         "van Dyke (1978)",
         "Collins-Dennis (1975)",
         "Dean (1928)",
+        "Abushammala (2019)",
+        "ElGenk-Schriener (2017)",
+        "Srinivasan (1968)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -1562,6 +2418,9 @@ class Helical(CallableEntity):
         "Ali (2001)",
         "Guo (2001)",
         "Mandal-Nigam (2009)",
+        "ElGenk-Schriener (2017)",
+        "Srinivasan (1968)",
+        "Ito (1959)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -1570,6 +2429,15 @@ class Helical(CallableEntity):
         "Mori-Nakayama (1965)",
         "Seban-McLaughlin (1963)",
         "Prasad (1989)",
+        "Kalb-Seader (1972)",
+        "Dravid (1971)",
+        "Janssen-Hoogendoorn (1978)",
+        "Manlapaz-Churchill (1981)",
+        "Salimpour (2009)",
+        "Pimenta-Campos (2013)",
+        "Pawar-Sunnapwar (2013)",
+        "Hardik (2015)",
+        "ElGenk-Schriener (2017)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -1579,6 +2447,14 @@ class Helical(CallableEntity):
         "Seban-McLaughlin (1963)",
         "Prasad (1989)",
         "Mandal-Nigam (2009)",
+        "Rogers-Mayhew (1964)",
+        "Pawar-Sunnapwar (2013)",
+        "ElGenk-Schriener (2017)",
+        "Shchukin (1969)",
+        "Guo (1998)",
+        "Jayakumar (2008)",
+        "Yildiz (1997)",
+        "Wu (2025)",
     )
 
     status = 0
@@ -1592,7 +2468,9 @@ class Helical(CallableEntity):
 
         "di": 0,
         "Dc": 0,
-        "p": 0
+        "p": 0,
+
+        "MoriSimple": False
     }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -1657,6 +2535,7 @@ class Helical(CallableEntity):
 
     def Nu(self, Re, Pr):
         """Calculate nusselt number"""
+        msg = ""
         Rec = self.ReCritical
 
         if Re < Rec:
@@ -1667,7 +2546,8 @@ class Helical(CallableEntity):
 
             elif self.kw["methodHeatLaminar"] == 2:
                 # Mori-Nakayama (1965)
-                Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
+                Nu = Nu_MoriNakayama(
+                    Re, Pr, self.di, self.Dc, self.kw["MoriSimple"])
 
             elif self.kw["methodHeatLaminar"] == 3:
                 # Seban-McLaughlin (1963)
@@ -1676,6 +2556,50 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatLaminar"] == 4:
                 # Prasad (1989)
                 Nu = Nu_Prasad(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 5:
+                # Kalb-Seader (1972)
+                Nu = Nu_laminar_KalbSeader(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 6:
+                # Dravid (1971)
+                Nu = Nu_laminar_Dravid(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 7:
+                # Janssen-Hoogendoorn (1978)
+                f = self.f(Re)
+                Nu = Nu_laminar_JanssenHoogendoorn(Re, Pr, self.di, self.Dc, f)
+
+            elif self.kw["methodHeatLaminar"] == 8:
+                # Manlapaz-Churchill (1981)
+                Nu = Nu_laminar_ManlapazChurchill(
+                    Re, Pr, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodHeatLaminar"] == 9:
+                # Salimpour (2009)
+                if self.kw["p"]:
+                    Nu = Nu_laminar_Salimpour(
+                        Re, Pr, self.di, self.Dc, self.kw["p"])
+                else:
+                    Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
+                    msg = "Helical pitch undefined, using Schmidt correlation"
+                    msg += "instead."
+
+            elif self.kw["methodHeatLaminar"] == 10:
+                # Pimenta-Campos (2013)
+                Nu = Nu_laminar_PimentaCampos(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 11:
+                # Pawar-Sunnapwar (2013)
+                Nu = Nu_PawarSunnapwar(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 12:
+                # Hardik (2015)
+                Nu = Nu_laminar_Hardik(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 13:
+                # ElGenk-Schriener (2017)
+                Nu = Nu_ElGenkSchriener(Re, Pr, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
@@ -1689,7 +2613,8 @@ class Helical(CallableEntity):
 
             elif self.kw["methodHeatTurbulent"] == 2:
                 # Mori-Nakayama (1965)
-                Nu = Nu_MoriNakayama(Re, Pr, self.di, self.Dc)
+                Nu = Nu_MoriNakayama(
+                    Re, Pr, self.di, self.Dc, self.kw["MoriSimple"])
 
             elif self.kw["methodHeatTurbulent"] == 3:
                 # Seban-McLaughlin (1963)
@@ -1703,9 +2628,46 @@ class Helical(CallableEntity):
                 # Mandal-Nigam (2009)
                 Nu = Nu_turbulent_MandalNigam(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatTurbulent"] == 6:
+                # Rogers-Mayhew (1964)
+                Nu = Nu_turbulent_RogersMayhew(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 7:
+                # Pawar-Sunnapwar (2013)
+                Nu = Nu_PawarSunnapwar(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 8:
+                # ElGenk-Schriener (2017)
+                Nu = Nu_ElGenkSchriener(Re, Pr, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodHeatTurbulent"] == 9:
+                # Shchukin (1969)
+                Nu = Nu_turbulent_Shchukin(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 10:
+                # Guo (1998)
+                Nu = Nu_turbulent_Guo(Re, Pr)
+
+            elif self.kw["methodHeatTurbulent"] == 11:
+                # Jayakumar (2008)
+                Nu = Nu_turbulent_Jayakumar(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 12:
+                # Yildiz (1997)
+                Nu = Nu_turbulent_Yildiz(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 13:
+                # Wu (2025)
+                Nu = Nu_turbulent_Wu(Re, Pr, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
+
+        if msg:
+            self.status = 3
+            self.msg = translate("equipment", msg)
+            self.inputChanged.emit(self)
 
         return Nu
 
@@ -1758,7 +2720,7 @@ class Helical(CallableEntity):
 
             elif self.kw["methodFrictionLaminar"] == 10:
                 # Ito (1969)
-                f = f_laminar_Ito(Re, self.di, self.Dc)
+                f = f_Ito(Re, self.di, self.Dc)
 
             elif self.kw["methodFrictionLaminar"] == 11:
                 # Tarbell-Samuels (1973)
@@ -1800,6 +2762,18 @@ class Helical(CallableEntity):
                     f = f_Schmidt(Re, self.di, self.Dc)
                     msg = "Dean correlation out of range, using Schmidt instead"
 
+            elif self.kw["methodFrictionLaminar"] == 20:
+                # Abushammala (2019)
+                f = f_laminar_Abushammala(Re, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodFrictionLaminar"] == 21:
+                # ElGenk-Schriener (2017)
+                f = f_ElGenkSchriener(Re, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodFrictionLaminar"] == 22:
+                # Srinivasan (1968)
+                f = f_Srinivasan(Re, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -1837,6 +2811,18 @@ class Helical(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 8:
                 # Mandal-Nigam (2009)
                 f = f_turbulent_MandalNigam(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 9:
+                # ElGenk-Schriener (2017)
+                f = f_ElGenkSchriener(Re, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodFrictionTurbulent"] == 10:
+                # Srinivasan (1968)
+                f = f_Srinivasan(Re, self.di, self.Dc)
+
+            elif self.kw["methodFrictionTurbulent"] == 11:
+                # Ito (1959)
+                f = f_Ito(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
@@ -1895,6 +2881,7 @@ class UI_Helical(ToolGui):
             self.methodHeatLaminar.addItem(method)
         self.methodHeatLaminar.currentIndexChanged.connect(
             partial(self.changeParams, "methodHeatLaminar"))
+        self.methodHeatLaminar.currentTextChanged.connect(self.setVisibleMod)
         lytM.addWidget(self.methodHeatLaminar, 3, 2)
         self.methodHeatTurbulent = QtWidgets.QComboBox()
         for method in Helical.TEXT_TURBULENT_HEAT:
@@ -1938,8 +2925,24 @@ class UI_Helical(ToolGui):
         self.p.valueChanged.connect(partial(self.changeParams, "p"))
         lyt.addWidget(self.p, 6, 2)
 
+        # Mori-Nakayama additional parameters
+        self.MoriSimple = QtWidgets.QCheckBox(self.tr(
+            "Use simple correlation for laminar nusselt number"))
+        self.MoriSimple.toggled.connect(
+            partial(self.changeParams, "MoriSimple"))
+        lyt.addWidget(self.MoriSimple, 7, 1, 1, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
+        self.setVisibleMod()
+
+    def setVisibleMod(self):
+        """Enable widget with special parameters for selected method"""
+        # Mori-Nakayama
+        if self.methodHeatLaminar.currentText() == "Mori-Nakayama (1965)":
+            self.MoriSimple.setVisible(True)
+        else:
+            self.MoriSimple.setVisible(False)
 
 
 class Dialog(QtWidgets.QDialog):
