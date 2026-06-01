@@ -326,8 +326,14 @@ __doi__ = {
                   "a Helical Pipe Containing Inside Springs",
          "ref": "Energy Convers. Management 38(6) (1997) 619-624",
          "doi": "10.1016/S0196-8904(96)00040-4"},
+    52:
+        {"autor": "Wu, Z., Li, K., Zhang, K., Tian, W.",
+         "title": "Single-phase flow heat transfer characteristics in helical "
+                  "coils with large coil diameters",
+         "ref": "Appl. Thermal Eng. 266 (2025) 125776",
+         "doi": "10.1016/j.applthermaleng.2025.125776"},
 
-    # 52:
+    # 53:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2096,8 +2102,6 @@ def Nu_laminar_PimentaCampos(Re, Pr, di, Dc):
     return Nu
 
 
-
-
 @refDoc(__doi__, [43])
 def Nu_laminar_Hardik(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow at constant heat flux
@@ -2321,6 +2325,37 @@ def Nu_turbulent_Yildiz(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [52])
+def Nu_turbulent_Wu(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Wu et al. (2025)
+
+    .. math::
+        Nu = 0.023 Re^{0.759} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{-0.079}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    # Eq 26
+    Nu = 0.023 * Re**0.759 * Pr**0.4 / (di/Dc)**0.079
+
+    return Nu
+
+
 
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
@@ -2419,6 +2454,7 @@ class Helical(CallableEntity):
         "Guo (1998)",
         "Jayakumar (2008)",
         "Yildiz (1997)",
+        "Wu (2025)",
     )
 
     status = 0
@@ -2619,6 +2655,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 12:
                 # Yildiz (1997)
                 Nu = Nu_turbulent_Yildiz(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 13:
+                # Wu (2025)
+                Nu = Nu_turbulent_Wu(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
