@@ -332,8 +332,14 @@ __doi__ = {
                   "coils with large coil diameters",
          "ref": "Appl. Thermal Eng. 266 (2025) 125776",
          "doi": "10.1016/j.applthermaleng.2025.125776"},
+    53:
+        {"autor": "Acharya, N., Sen, M., Chang, H.-C.",
+         "title": "Analysis of heat transfer enhancement in coiled-tube heat "
+                  "exchangers",
+         "ref": "Int. J. Heat Mass Transfer 44(17) (2001) 3189-3199",
+         "doi": "10.1016/S0017-9310(01)00002-3"},
 
-    # 53:
+    # 54:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2133,6 +2139,71 @@ def Nu_laminar_Hardik(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [53])
+def Nu_laminar_Acharya(Re, Pr, di, Dc, AA=False):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Acharya et al. (2001)
+
+    For Pr > 1:
+
+    .. math::
+        Nu = 0.67 Re^{0.5} Pr^{0.21} \left(\frac{d_i}{D_c}\right)^{0.13}
+
+    For Pr ≤ 1:
+
+    .. math::
+        Nu = 0.69 Re^{0.5} Pr^{0.43} \left(\frac{d_i}{D_c}\right)^{0.13}
+
+
+    Include too correlations for alternate axis coil geometric configuration
+
+    For Pr > 1:
+
+    .. math::
+        Nu = 0.7 Re^{0.5} Pr^{0.3} \left(\frac{d_i}{D_c}\right)^{0.18}
+
+    For Pr ≤ 1:
+
+    .. math::
+        Nu = 0.7 Re^{0.5} Pr^{0.375} \left(\frac{d_i}{D_c}\right)^{0.18}
+
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    AA : boolean
+        Set alternalte axis configuraiton for helical coil
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if AA:
+        if Pr <= 1:
+            # Eq 15
+            Nu = 0.7 * Re**0.5 * Pr**0.375 * (di/Dc)**0.18
+        else:
+            # Eq 16
+            Nu = 0.7 * Re**0.5 * Pr**0.3 * (di/Dc)**0.18
+
+    else:
+        if Pr <= 1:
+            # Eq 17
+            Nu = 0.69 * Re**0.5 * Pr**0.43 * (di/Dc)**0.13
+        else:
+            # Eq 18
+            Nu = 0.67 * Re**0.5 * Pr**0.21 * (di/Dc)**0.13
+
+    return Nu
+
 
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
@@ -2370,8 +2441,9 @@ class Helical(CallableEntity):
         Pitch for twist of 2π radians (360º), [m]
     MoriSimple : boolean, optional
         Use Simple correlation for Mori-Nakayama nusselt number correlation
+    AA : boolean, optional
+        Use alternate axis configuration for Acharya nusselt number correlation
     """
-
 
     TEXT_REYNOLDS_CRITICAL = (
         "Ito (1959)",
@@ -2438,6 +2510,7 @@ class Helical(CallableEntity):
         "Pawar-Sunnapwar (2013)",
         "Hardik (2015)",
         "ElGenk-Schriener (2017)",
+        "Acharya (2001)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -2470,7 +2543,8 @@ class Helical(CallableEntity):
         "Dc": 0,
         "p": 0,
 
-        "MoriSimple": False
+        "MoriSimple": False,
+        "AA": False
     }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -2600,6 +2674,11 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatLaminar"] == 13:
                 # ElGenk-Schriener (2017)
                 Nu = Nu_ElGenkSchriener(Re, Pr, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodHeatLaminar"] == 14:
+                # Acharya (2001)
+                Nu = Nu_laminar_Acharya(
+                    Re, Pr, self.di, self.Dc, self.kw["AA"])
 
             else:
                 # Schmidt (1967)
@@ -2932,6 +3011,13 @@ class UI_Helical(ToolGui):
             partial(self.changeParams, "MoriSimple"))
         lyt.addWidget(self.MoriSimple, 7, 1, 1, 2)
 
+        # Acharya additional parameters
+        self.AA = QtWidgets.QCheckBox(self.tr(
+            "Use alternate axis geometric configuration"))
+        self.AA.toggled.connect(
+            partial(self.changeParams, "AA"))
+        lyt.addWidget(self.AA, 8, 1, 1, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
@@ -2939,10 +3025,12 @@ class UI_Helical(ToolGui):
     def setVisibleMod(self):
         """Enable widget with special parameters for selected method"""
         # Mori-Nakayama
-        if self.methodHeatLaminar.currentText() == "Mori-Nakayama (1965)":
-            self.MoriSimple.setVisible(True)
-        else:
-            self.MoriSimple.setVisible(False)
+        self.MoriSimple.setVisible(
+            self.methodHeatLaminar.currentText() == "Mori-Nakayama (1965)")
+
+        # Acharya
+        self.AA.setVisible(
+            self.methodHeatLaminar.currentText() == "Acharya (2001)")
 
 
 class Dialog(QtWidgets.QDialog):
