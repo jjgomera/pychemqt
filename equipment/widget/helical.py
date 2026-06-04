@@ -350,8 +350,14 @@ __doi__ = {
                   "coiled tubes with different parameters",
          "ref": "Energy Conv. Management 52(2) (2011) 1150-1156",
          "doi": "10.1016/j.enconman.2010.09.009"},
+    56:
+        {"autor": "Rainieri, S., Bozzoli, F., Cattani, L., Pagliarini, G.",
+         "title": "Compound convective heat transfer enhancement in helically "
+                  "coiled wall corrugated tubes",
+         "ref": "Int. J. Heat Mass Transfer 59 (2013) 353-362",
+         "doi": "10.1016/j.ijheatmasstransfer.2012.12.037"},
 
-    # 56:
+    # 57:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1880,10 +1886,10 @@ def Nu_ElGenkSchriener(Re, Pr, di, Dc, p):
 
     if Pr < 15:
         # Eq 51
-        Nu = 3.66 + 0.014*Re**0.86*Pr**0.4
+        Nu = 3.66 + 0.014*Rem**0.86*Pr**0.4
     else:
         # Eq 52
-        Nu = 3.66 + 0.02*Re**0.7*Pr**0.4
+        Nu = 3.66 + 0.02*Rem**0.7*Pr**0.4
 
     return Nu
 
@@ -2285,6 +2291,50 @@ def Nu_laminar_Moawed(Re, do, Dc, p):
     return Nu
 
 
+@refDoc(__doi__, [56])
+def Nu_laminar_Rainieri(Re, Pr, di, Dc, corrugated):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Rainieri et al. (2013)
+
+    .. math::
+        Nu = 1.168 De^{0.47} Pr^{0.16}
+
+    For corrugated helical pipe:
+
+    .. math::
+        Nu = 0.0191 De^{1.36} Pr^{0.2}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    corrugated : float, optional
+        Use correlation for corrugated wall tube
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    if corrugated:
+        # Eq 11
+        Nu = 0.0191 * De**1.36 * Pr**0.2
+
+    else:
+        # Eq 10
+        Nu = 1.168 * De**0.47 * Pr**0.16
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -2523,6 +2573,8 @@ class Helical(CallableEntity):
         Use Simple correlation for Mori-Nakayama nusselt number correlation
     AA : boolean, optional
         Use alternate axis configuration for Acharya nusselt number correlation
+    corrugated : boolean, optional
+        Use Rainieri correlation for corrugated wall
     """
 
     TEXT_REYNOLDS_CRITICAL = (
@@ -2593,6 +2645,7 @@ class Helical(CallableEntity):
         "Acharya (2001)",
         "Akiyama-Cheng (1971)",
         "Moawed (2011)",
+        "Rainieri (2013)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -2626,7 +2679,8 @@ class Helical(CallableEntity):
         "p": 0,
 
         "MoriSimple": False,
-        "AA": False
+        "AA": False,
+        "corrugated": False
     }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -2774,6 +2828,11 @@ class Helical(CallableEntity):
                     Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
                     msg = "Helical pitch undefined, using Schmidt correlation"
                     msg += "instead."
+
+            elif self.kw["methodHeatLaminar"] == 17:
+                # Rainieri (2013)
+                Nu = Nu_laminar_Rainieri(
+                    Re, Pr, self.di, self.Dc, self.kw["corrugated"])
 
             else:
                 # Schmidt (1967)
@@ -3109,9 +3168,15 @@ class UI_Helical(ToolGui):
         # Acharya additional parameters
         self.AA = QtWidgets.QCheckBox(self.tr(
             "Use alternate axis geometric configuration"))
-        self.AA.toggled.connect(
-            partial(self.changeParams, "AA"))
+        self.AA.toggled.connect(partial(self.changeParams, "AA"))
         lyt.addWidget(self.AA, 8, 1, 1, 2)
+
+        # Rainieri additional parameters
+        self.corrugated = QtWidgets.QCheckBox(self.tr(
+            "Use alternate correlation for corrugated pipe"))
+        self.corrugated.toggled.connect(
+            partial(self.changeParams, "corrugated"))
+        lyt.addWidget(self.corrugated, 9, 1, 1, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
@@ -3126,6 +3191,10 @@ class UI_Helical(ToolGui):
         # Acharya
         self.AA.setVisible(
             self.methodHeatLaminar.currentText() == "Acharya (2001)")
+
+        # Rainieri
+        self.corrugated.setVisible(
+            self.methodHeatLaminar.currentText() == "Rainieri (2013)")
 
 
 class Dialog(QtWidgets.QDialog):
