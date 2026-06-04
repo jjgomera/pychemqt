@@ -344,8 +344,14 @@ __doi__ = {
                   "Heat Transfer in Curved Pipes",
          "ref": "Int. J. Heat Mass Transfer 14(10) (1971) 1659-1675",
          "doi": "10.1016/0017-9310(71)90075-5"},
+    55:
+        {"autor": "Moawed, M.",
+         "title": "Experimental study of forced convection from helical "
+                  "coiled tubes with different parameters",
+         "ref": "Energy Conv. Management 52(2) (2011) 1150-1156",
+         "doi": "10.1016/j.enconman.2010.09.009"},
 
-    # 55:
+    # 56:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2246,6 +2252,39 @@ def Nu_laminar_AkiyamaCheng(Re, Pr, di, Dc):
     return Nur * 48/11
 
 
+@refDoc(__doi__, [55])
+def Nu_laminar_Moawed(Re, do, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Moawed (2011)
+
+    .. math::
+        Nu = 0.0345 Re^{0.48} \left(\frac{D_c}{d_o}\right)^{0.914}
+        \left(\frac{p}{d_o}\right)^{0.281}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    do : float
+        Outer diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float, optional
+        Pitch for twist of 2π radians (360º), [m]
+
+    This correlation use external diameter of pipe, without Prandtl dependence
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 8
+    Nu = 0.0345 * Re**0.48 * (Dc/do)**0.914 * (p/do)**0.281
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -2553,6 +2592,7 @@ class Helical(CallableEntity):
         "ElGenk-Schriener (2017)",
         "Acharya (2001)",
         "Akiyama-Cheng (1971)",
+        "Moawed (2011)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -2725,6 +2765,15 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatLaminar"] == 15:
                 # Akiyama-Cheng (1971)
                 Nu = Nu_laminar_AkiyamaCheng(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 16:
+                # Moawed (2011)
+                if self.kw["p"]:
+                    Nu = Nu_laminar_Moawed(Re, self.di, self.Dc, self.kw["p"])
+                else:
+                    Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
+                    msg = "Helical pitch undefined, using Schmidt correlation"
+                    msg += "instead."
 
             else:
                 # Schmidt (1967)
