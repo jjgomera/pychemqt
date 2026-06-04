@@ -338,8 +338,14 @@ __doi__ = {
                   "exchangers",
          "ref": "Int. J. Heat Mass Transfer 44(17) (2001) 3189-3199",
          "doi": "10.1016/S0017-9310(01)00002-3"},
+    54:
+        {"autor": "Akiyama, M., Chen g, K.C.",
+         "title": "Boundary Vorticity Method for Lamniar Forced Convection "
+                  "Heat Transfer in Curved Pipes",
+         "ref": "Int. J. Heat Mass Transfer 14(10) (1971) 1659-1675",
+         "doi": "10.1016/0017-9310(71)90075-5"},
 
-    # 54:
+    # 55:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2205,6 +2211,41 @@ def Nu_laminar_Acharya(Re, Pr, di, Dc, AA=False):
     return Nu
 
 
+@refDoc(__doi__, [54])
+def Nu_laminar_AkiyamaCheng(Re, Pr, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Akiyama-Cheng (1971)
+
+    .. math::
+        \frac{Nu}{Nu_o} = 0.181 Q
+        \left(1 - 0.839Q^{-1} + 35.4Q^{-2} - 207Q^{-3} + 419Q^{-4}\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    Q = (De**2*Pr)**0.25
+
+    # Eq 20
+    Nur = 0.181*Q*(1 - 0.839/Q + 35.4/Q**2 -207/Q**3 + 419/Q**4)
+
+    return Nur * 48/11
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -2511,6 +2552,7 @@ class Helical(CallableEntity):
         "Hardik (2015)",
         "ElGenk-Schriener (2017)",
         "Acharya (2001)",
+        "Akiyama-Cheng (1971)",
     )
 
     TEXT_TURBULENT_HEAT = (
@@ -2679,6 +2721,10 @@ class Helical(CallableEntity):
                 # Acharya (2001)
                 Nu = Nu_laminar_Acharya(
                     Re, Pr, self.di, self.Dc, self.kw["AA"])
+
+            elif self.kw["methodHeatLaminar"] == 15:
+                # Akiyama-Cheng (1971)
+                Nu = Nu_laminar_AkiyamaCheng(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
