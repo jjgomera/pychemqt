@@ -149,10 +149,18 @@ class Tank(equipment):
             re = Re(D=self.kwargs["Di"], V=v, rho=rho, mu=mu)
             pr = fluido.Prandt
 
-            f = self.kwargs["helicalCoil"].f(re)
-            Nu = self.kwargs["helicalCoil"].Nu(re, pr)
-            print("f: ", f)
-            print("Nu: ", Nu)
+            helical = self.kwargs["helicalCoil"]
+            methodfl = helical.TEXT_LAMINAR_FRICTION[helical.kw["methodFrictionLaminar"]]
+            methodft = helical.TEXT_TURBULENT_FRICTION[helical.kw["methodFrictionTurbulent"]]
+            methodNul = helical.TEXT_LAMINAR_HEAT[helical.kw["methodHeatLaminar"]]
+            methodNut = helical.TEXT_TURBULENT_HEAT[helical.kw["methodHeatTurbulent"]]
+            f = helical.f(1000)
+            Nu = helical.Nu(1000, pr)
+            print(f"fl {methodfl}: {f}    Nul {methodNul}: {Nu}")
+
+            f = helical.f(10000)
+            Nu = helical.Nu(10000, pr)
+            print(f"ft {methodft}: {f}    Nut {methodNut}: {Nu}")
 
     def volumen(self):
         """Calculate volume of shell of equipment"""

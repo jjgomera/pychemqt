@@ -26,6 +26,7 @@ from tools.qt import QtCore, QtWidgets, translate
 from equipment.widget.gui import ToolGui, CallableEntity
 from lib.adimensional import Dean
 from lib.friction import f_friccion
+from lib.heatTransfer import h_tubeside_turbulent_Dittus_Boelter
 from lib.unidades import Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
@@ -356,8 +357,13 @@ __doi__ = {
                   "coiled wall corrugated tubes",
          "ref": "Int. J. Heat Mass Transfer 59 (2013) 353-362",
          "doi": "10.1016/j.ijheatmasstransfer.2012.12.037"},
+    57:
+        {"autor": "Jha, R.K., Raja Rao, M.",
+         "title": "Heat Transfer Through Coiled Tubes in Agitated Vessels",
+         "ref": "Int. J. Heat Mass Transfer 10(3) (1967) 395-397",
+         "doi": "10.1016/0017-9310(67)90155-x "},
 
-    # 57:
+    # 58:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2557,6 +2563,40 @@ def Nu_turbulent_Wu(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [57])
+def Nu_turbulent_JhaRajaRao(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Jha et al. (1967)
+
+    .. math::
+        \frac{Nu}{Nu_s} = 1 + 3.46 \frac{d_i}{D_c}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    Nus = h_tubeside_turbulent_Dittus_Boelter(Re, Pr, True)
+
+    # Eq 4
+    Nu = Nus * (1 + 3.46 * di/Dc)
+
+    return Nu
+
+
+
 
 class Helical(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
@@ -2663,6 +2703,7 @@ class Helical(CallableEntity):
         "Jayakumar (2008)",
         "Yildiz (1997)",
         "Wu (2025)",
+        "Jha (1967)",
     )
 
     status = 0
@@ -2892,6 +2933,10 @@ class Helical(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 13:
                 # Wu (2025)
                 Nu = Nu_turbulent_Wu(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 14:
+                # Jha (1967)
+                Nu = Nu_turbulent_JhaRajaRao(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
