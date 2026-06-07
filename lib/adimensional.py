@@ -42,10 +42,12 @@ This module implements physics adimensional groups
     * :func:`St`: Stanton number
     * :func:`We`: Weber number
     * :func:`Dean`: Dean number
+    * :func:`Helical`: Helical number
+    * :func:`Germano`: Germano number
 '''
 
 
-from scipy.constants import g
+from scipy.constants import g, pi
 
 from lib.unidades import Dimensionless
 from lib.utilities import refDoc
@@ -60,7 +62,13 @@ __doi__ = {
         {"autor": "",
          "title": "Perry's Chemical Engineers' Handbook 9th Edition",
          "ref": "McGraw-Hill (2019)",
-         "doi": ""}}
+         "doi": ""},
+    3:
+        {"autor": "Liu, S., Masliyah, J.H.",
+         "title": "Axially invariant laminar flow in helical pipes with a "
+                  "finite pitch",
+         "ref": "J. Fluid Mech. 251 (1993) 315-353",
+         "doi": "10.1017/S002211209300343X"}}
 
 
 @refDoc(__doi__, [1])
@@ -964,6 +972,67 @@ def Dean(Re, di, Dc):
         Dean number [-]
     """
     return Re / (Dc/di)**0.5
+
+
+@refDoc(__doi__, [3])
+def Helical(Re, di, Dc, p):
+    r"""Calculates Helical number, `He`, for a fluid with the Reynolds number
+    `Re`, tube diameter `di`, helical coil diameter `Dc` and helical pitch `p`.
+
+    .. math::
+        \text{He} = De \left(1 + \left(\frac{p}{2 \pi D}\right)^2\right)^0.5
+
+    Used in flow in curved geometry like helical coil.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, []
+    di : float
+        Inner tube diameter, [m]
+    Dc : float
+        Diameter of helical coil, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    He : float
+        Helical number [-]
+    """
+    De = Dean(Re, di, Dc)
+    He = De * (1+(p/2/pi/Dc)**2)**0.5
+    return He
+
+
+@refDoc(__doi__, [3])
+def Germano(Re, di, Dc, p):
+    r"""Calculates Germano number, `Gn`, for a fluid with the Reynolds number
+    `Re`, tube diameter `di`, helical coil diameter `Dc` and helical pitch `p`.
+    Is a measure of the torsion effect over twisting forces in helical coil.
+
+    .. math::
+        \text{Gn} = Re \frac{\pi \frac{p}{d_i}}{\left(
+        \pi \frac{D_c}{d_i}\right)^2 + \left(\frac{p}{d_i}\right)^2}
+
+    Used in flow in curved geometry like helical coil.
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, []
+    di : float
+        Inner tube diameter, [m]
+    Dc : float
+        Diameter of helical coil, [m]
+
+    Returns
+    -------
+    Gn : float
+        Germano number [-]
+    """
+    Gn = Re * (pi*p/di)/((pi*Dc/di)**2 + (p/di)**2)
+    return Gn
 
 
 if __name__ == "__main__":

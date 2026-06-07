@@ -24,7 +24,7 @@ from math import atan, exp, log10, pi, tan
 from tools.qt import QtCore, QtWidgets, translate
 
 from equipment.widget.gui import ToolGui, CallableEntity
-from lib.adimensional import Dean
+from lib.adimensional import Dean, Helical, Germano
 from lib.friction import f_friccion
 from lib.heatTransfer import h_tubeside_turbulent_Dittus_Boelter
 from lib.unidades import Length
@@ -362,8 +362,13 @@ __doi__ = {
          "title": "Heat Transfer Through Coiled Tubes in Agitated Vessels",
          "ref": "Int. J. Heat Mass Transfer 10(3) (1967) 395-397",
          "doi": "10.1016/0017-9310(67)90155-x "},
+    58:
+        {"autor": "Gupta, R., Wanchoo, R.K., Jafar Ali, T.R.M.",
+         "title": "Laminar Flow in Helical Coils: A Parametric Study",
+         "ref": "Ind. Eng. Chem. Res. 50(2) (2011) 1150-1157",
+         "doi": "10.1021/ie101752z"},
 
-    # 58:
+    # 59:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -668,7 +673,7 @@ def f_Ju(Re, di, Dc):
 
 
 @refDoc(__doi__, [13])
-def f_MishraGupta(Re, di, Dc):
+def f_MishraGupta(Re, di, Dc, p):
     r"""Calculates friction factor for internal flow of a helical coil using
     the method of Mishra-Gupta (1979).
 
@@ -684,6 +689,8 @@ def f_MishraGupta(Re, di, Dc):
         Inner diameter of the pipe, [m]
     Dc : float
         Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
 
     Returns
     -------
@@ -696,8 +703,8 @@ def f_MishraGupta(Re, di, Dc):
 
     if Re < Rec:
         # Laminar flow, Eq 5.
-        De = Dean(Re, di, Dc)
-        f = fd * (1 + 0.033*log10(De)**4)
+        He = Helical(Re, di, Dc, p)
+        f = fd * (1 + 0.033*log10(He)**4)
     else:
         # Turbulent flow, Eq 10.
         f = fd + 0.03*(di/Dc)**0.5
@@ -1449,6 +1456,41 @@ def f_laminar_Abushammala(Re, di, Dc, p):
     B = (Rh+1/Rh)**p[2]
     A = p[0]*D*(D/Re)**p[1]
     f = fd + A*B*exp(-C)/4
+    return f
+
+
+@refDoc(__doi__, [58])
+def f_laminar_Gupta(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Gupta et al. (2011)
+
+    .. math::
+        f_c = f_s \left(1 + a Gn^b\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    Gn = Germano(Re, di, Dc, p)
+    fd = f_friccion(Re)
+
+    if Gn <= 70:
+        f = fd * (1 + 0.903 * Gn**0.227)
+    else:
+        f = fd * (1 + 0.525 * Gn**0.516)
+
     return f
 
 
@@ -2596,9 +2638,7 @@ def Nu_turbulent_JhaRajaRao(Re, Pr, di, Dc):
     return Nu
 
 
-
-
-class Helical(CallableEntity):
+class HelicalCoil(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
     Parameters
@@ -2650,6 +2690,7 @@ class Helical(CallableEntity):
         "Abushammala (2019)",
         "ElGenk-Schriener (2017)",
         "Srinivasan (1968)",
+        "Gupta (2011)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -2974,7 +3015,7 @@ class Helical(CallableEntity):
 
             elif self.kw["methodFrictionLaminar"] == 5:
                 # Mishra-Gupta (1979)
-                f = f_MishraGupta(Re, self.di, self.Dc)
+                f = f_MishraGupta(Re, self.di, self.Dc, self.kw["p"])
 
             elif self.kw["methodFrictionLaminar"] == 6:
                 # Manlapaz-Churchill (1980)
@@ -3052,6 +3093,14 @@ class Helical(CallableEntity):
                 # Srinivasan (1968)
                 f = f_Srinivasan(Re, self.di, self.Dc)
 
+            elif self.kw["methodFrictionLaminar"] == 23:
+                # Gupta (2011)
+                if self.kw["p"]:
+                    f = f_laminar_Gupta(Re, self.di, self.Dc, self.kw["p"])
+                else:
+                    f = f_Schmidt(Re, self.di, self.Dc)
+                    msg = "Helical pitch undefined, using Schmidt correlation"
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -3068,7 +3117,7 @@ class Helical(CallableEntity):
 
             elif self.kw["methodFrictionTurbulent"] == 3:
                 # Mishra-Gupta (1979)
-                f = f_MishraGupta(Re, self.di, self.Dc)
+                f = f_MishraGupta(Re, self.di, self.Dc, self.kw["p"])
 
             elif self.kw["methodFrictionTurbulent"] == 4:
                 # Czop (1994)
@@ -3121,7 +3170,7 @@ class UI_Helical(ToolGui):
 
     def loadUI(self):
         """Add widget"""
-        self.Entity = Helical()
+        self.Entity = HelicalCoil()
 
         lyt = self.wdg.layout()
 
@@ -3141,13 +3190,13 @@ class UI_Helical(ToolGui):
         lytM.addWidget(QtWidgets.QLabel(
             self.tr("Friction factor method")), 2, 1)
         self.methodFrictionLaminar = QtWidgets.QComboBox()
-        for method in Helical.TEXT_LAMINAR_FRICTION:
+        for method in HelicalCoil.TEXT_LAMINAR_FRICTION:
             self.methodFrictionLaminar.addItem(method)
         self.methodFrictionLaminar.currentIndexChanged.connect(
             partial(self.changeParams, "methodFrictionLaminar"))
         lytM.addWidget(self.methodFrictionLaminar, 2, 2)
         self.methodFrictionTurbulent = QtWidgets.QComboBox()
-        for method in Helical.TEXT_TURBULENT_FRICTION:
+        for method in HelicalCoil.TEXT_TURBULENT_FRICTION:
             self.methodFrictionTurbulent.addItem(method)
         self.methodFrictionTurbulent.currentIndexChanged.connect(
             partial(self.changeParams, "methodFrictionTurbulent"))
@@ -3155,14 +3204,14 @@ class UI_Helical(ToolGui):
         lytM.addWidget(QtWidgets.QLabel(
             self.tr("Heat transfer method")), 3, 1)
         self.methodHeatLaminar = QtWidgets.QComboBox()
-        for method in Helical.TEXT_LAMINAR_HEAT:
+        for method in HelicalCoil.TEXT_LAMINAR_HEAT:
             self.methodHeatLaminar.addItem(method)
         self.methodHeatLaminar.currentIndexChanged.connect(
             partial(self.changeParams, "methodHeatLaminar"))
         self.methodHeatLaminar.currentTextChanged.connect(self.setVisibleMod)
         lytM.addWidget(self.methodHeatLaminar, 3, 2)
         self.methodHeatTurbulent = QtWidgets.QComboBox()
-        for method in Helical.TEXT_TURBULENT_HEAT:
+        for method in HelicalCoil.TEXT_TURBULENT_HEAT:
             self.methodHeatTurbulent.addItem(method)
         self.methodHeatTurbulent.currentIndexChanged.connect(
             partial(self.changeParams, "methodHeatTurbulent"))
@@ -3176,7 +3225,7 @@ class UI_Helical(ToolGui):
         lytH.addWidget(QtWidgets.QLabel(
             self.tr("Critical Reynolds correlation")))
         self.methodReCritic = QtWidgets.QComboBox()
-        for method in Helical.TEXT_REYNOLDS_CRITICAL:
+        for method in HelicalCoil.TEXT_REYNOLDS_CRITICAL:
             self.methodReCritic.addItem(method)
         self.methodReCritic.currentIndexChanged.connect(
             partial(self.changeParams, "methodReCritic"))
