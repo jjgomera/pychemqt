@@ -19,8 +19,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 
 from functools import partial
-from math import atan, exp, log10, pi, tan
+from math import atan, exp, log, log10, pi, tan
 
+from scipy.optimize import fsolve
 from tools.qt import QtCore, QtWidgets, translate
 
 from equipment.widget.gui import ToolGui, CallableEntity
@@ -372,8 +373,14 @@ __doi__ = {
          "title": "Streamline flow resistance in coils",
          "ref": "Res. Corresp. 1 S1 (1955).",
          "doi": ""},
+    60:
+        {"autor": "Zhao, H.,  Li, X., Wu, X.",
+         "title": "New friction factor equations developed for turbulent "
+                  "flow in rough helical tubes",
+         "ref": "Int. J. Heat Mass Transfer 95 (2016) 525-534",
+         "doi": "10.1016/j.ijheatmasstransfer.2015.12.035"},
 
-    # 60:
+    # 61:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1619,6 +1626,46 @@ def f_turbulent_MandalNigam(Re, di, Dc):
     return f
 
 
+@refDoc(__doi__, [60])
+def f_turbulent_Zhao(Re, do, Dc, epsilon):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    turbulent flow using the method of Zhao et al. (2016).
+
+    .. math::
+        \frac{1}{f_c^{0.5}} = 0.923 \ln \left(\frac{0.104\epsilon}{f_c}
+        \left(\frac{d_o}{D_c}\right)^{0.5} + \frac{1.142}{f_c^{1.5}Re}
+        \left(\frac{d_o}{D_c}\right)^{0.5}\right)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    do : float
+        External diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    epsilon : float
+        Relative roughness, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+
+    # Implicit equation so need iteration
+    def fc(f):
+        # Eq 50
+        return 1/f**0.5 - 0.923*log(
+            0.104*epsilon/f*(do/Dc)**0.5 + 1.142/f**1.5/Re*(do/Dc)**0.5)
+
+    fo = f_Schmidt(Re, do, Dc)
+    f = fsolve(fc, fo)[0]
+
+    return f
+
+
+
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [3])
 def Nu_Schmidt(Re, Pr, di, Dc):
@@ -2690,6 +2737,9 @@ class HelicalCoil(CallableEntity):
         Use alternate axis configuration for Acharya nusselt number correlation
     corrugated : boolean, optional
         Use Rainieri correlation for corrugated wall
+    epsilon : float, optional
+        Relative roughness of pipe, used in Zhao correlation for turbulent
+        friction factor, [-]
     """
 
     TEXT_REYNOLDS_CRITICAL = (
@@ -2742,6 +2792,7 @@ class HelicalCoil(CallableEntity):
         "ElGenk-Schriener (2017)",
         "Srinivasan (1968)",
         "Ito (1959)",
+        "Zhao (2016)",
     )
 
     TEXT_LAMINAR_HEAT = (
@@ -2798,7 +2849,8 @@ class HelicalCoil(CallableEntity):
 
         "MoriSimple": False,
         "AA": False,
-        "corrugated": False
+        "corrugated": False,
+        "epsilon": 0,
     }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -3191,6 +3243,10 @@ class HelicalCoil(CallableEntity):
                 # Ito (1959)
                 f = f_Ito(Re, self.di, self.Dc)
 
+            elif self.kw["methodFrictionTurbulent"] == 12:
+                # Zhao (2016)
+                f = f_turbulent_Zhao(Re, self.di, self.Dc, self.kw["epsilon"])
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -3240,6 +3296,8 @@ class UI_Helical(ToolGui):
             self.methodFrictionTurbulent.addItem(method)
         self.methodFrictionTurbulent.currentIndexChanged.connect(
             partial(self.changeParams, "methodFrictionTurbulent"))
+        self.methodFrictionTurbulent.currentTextChanged.connect(
+            self.setVisibleMod)
         lytM.addWidget(self.methodFrictionTurbulent, 2, 3)
         lytM.addWidget(QtWidgets.QLabel(
             self.tr("Heat transfer method")), 3, 1)
@@ -3312,6 +3370,15 @@ class UI_Helical(ToolGui):
             partial(self.changeParams, "corrugated"))
         lyt.addWidget(self.corrugated, 9, 1, 1, 2)
 
+        # Zhao additional parameters
+        self.groupZhao = QtWidgets.QWidget()
+        lytg = QtWidgets.QHBoxLayout(self.groupZhao)
+        lytg.addWidget(QtWidgets.QLabel(self.tr("Relalive roughness")))
+        self.epsilon = Entrada_con_unidades(float)
+        self.epsilon.valueChanged.connect(partial(self.changeParams, "epsilon"))
+        lytg.addWidget(self.epsilon)
+        lyt.addWidget(self.groupZhao, 10, 1, 1, 2)
+
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
         self.setVisibleMod()
@@ -3329,6 +3396,11 @@ class UI_Helical(ToolGui):
         # Rainieri
         self.corrugated.setVisible(
             self.methodHeatLaminar.currentText() == "Rainieri (2013)")
+
+        # Zhao
+        self.groupZhao.setVisible(
+            self.methodFrictionTurbulent.currentText() == "Zhao (2016)")
+        "Zhao (2016)",
 
 
 class Dialog(QtWidgets.QDialog):
