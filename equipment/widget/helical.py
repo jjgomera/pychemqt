@@ -367,8 +367,13 @@ __doi__ = {
          "title": "Laminar Flow in Helical Coils: A Parametric Study",
          "ref": "Ind. Eng. Chem. Res. 50(2) (2011) 1150-1157",
          "doi": "10.1021/ie101752z"},
+    59:
+        {"autor": "Hasson, D.",
+         "title": "Streamline flow resistance in coils",
+         "ref": "Res. Corresp. 1 S1 (1955).",
+         "doi": ""},
 
-    # 59:
+    # 60:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1491,6 +1496,36 @@ def f_laminar_Gupta(Re, di, Dc, p):
     else:
         f = fd * (1 + 0.525 * Gn**0.516)
 
+    return f
+
+
+@refDoc(__doi__, [59, 21])
+def f_laminar_Hasson(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Hasson (1955) as shown in [21]_.
+
+    .. math::
+        \frac{f_c}{f_s} = 0.556 + 0.0969 \sqrt{De}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    De = Dean(Re, di, Dc)
+    fd = f_friccion(Re)
+
+    f = fd * (0.556 + 0.0969*De**0.5)
     return f
 
 
@@ -2691,6 +2726,7 @@ class HelicalCoil(CallableEntity):
         "ElGenk-Schriener (2017)",
         "Srinivasan (1968)",
         "Gupta (2011)",
+        "Hasson (1955)",
     )
 
     TEXT_TURBULENT_FRICTION = (
@@ -3100,6 +3136,10 @@ class HelicalCoil(CallableEntity):
                 else:
                     f = f_Schmidt(Re, self.di, self.Dc)
                     msg = "Helical pitch undefined, using Schmidt correlation"
+
+            elif self.kw["methodFrictionLaminar"] == 24:
+                # Hasson (1955)
+                f = f_laminar_Hasson(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
