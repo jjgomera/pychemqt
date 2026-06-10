@@ -390,8 +390,14 @@ __doi__ = {
                   "Circular Tubes with Uniform Wall Temperature",
          "ref": "AIChE J. 20(2) (1974) 340-346",
          "doi": "10.1002/aic.690200220"},
+    63:
+        {"autor": "Naphon, P., Wongwises, S.",
+         "title": "An Experimental Study on the In-Tube Convective Heat "
+                  "Transfer Coefficients in a Spiral Coil Heat Exchanger",
+         "ref": "Int. Comm. Heat Mass Transfer 29(6) (2002) 797-809",
+         "doi": "10.1016/s0735-1933(02)00370-6"},
 
-    # 63:
+    # 64:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2483,6 +2489,39 @@ def Nu_laminar_Moawed(Re, do, Dc, p):
     return Nu
 
 
+@refDoc(__doi__, [63])
+def Nu_laminar_NaphonWongwises(Re, Pr, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil with a
+    spiral configuration in laminar flow using the method of Naphon-Wongwises
+    (2002)
+
+    .. math::
+        Nu = 27.358 De^{0.287} Pr^{-0.949}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = Dean(Re, di, Dc)
+
+    # Eq 14
+    Nu = 27.358 * De**0.287 / Pr**0.949
+
+    return Nu
+
+
 @refDoc(__doi__, [56])
 def Nu_laminar_Rainieri(Re, Pr, di, Dc, corrugated):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -2878,7 +2917,8 @@ class HelicalCoil(CallableEntity):
         "Acharya (2001)",
         "Akiyama-Cheng (1971)",
         "Moawed (2011)",
-        "Rainieri (2013)")
+        "Rainieri (2013)",
+        "Naphon-Wongwises (2002)")
 
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
@@ -3072,6 +3112,10 @@ class HelicalCoil(CallableEntity):
                 # Rainieri (2013)
                 Nu = Nu_laminar_Rainieri(
                     Re, Pr, self.di, self.Dc, self.kw["corrugated"])
+
+            elif self.kw["methodHeatLaminar"] == 18:
+                # Naphon-Wongwises (2002)
+                Nu = Nu_laminar_NaphonWongwises(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
