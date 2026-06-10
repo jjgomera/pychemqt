@@ -384,8 +384,14 @@ __doi__ = {
          "title": "Water Flow Through Helical Coils in Turbulent Condition",
          "ref": "Can. J. Chem. Eng. 71 (1993) 971-973",
          "doi": "10.1002/cjce.5450710620"},
+    62:
+        {"autor": "Kalb, C.E., Seader, J.D.",
+         "title": "Fully Developed Viscous-Flow Heat Transfer in Curved "
+                  "Circular Tubes with Uniform Wall Temperature",
+         "ref": "AIChE J. 20(2) (1974) 340-346",
+         "doi": "10.1002/aic.690200220"},
 
-    # 62:
+    # 63:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1732,7 +1738,7 @@ def Nu_Schmidt(Re, Pr, di, Dc):
 
     if Re < Rec:
         # Laminar flow, Eq 18
-        Nu = 3.65 + Pr**0.8 * 0.08*(1+0.8*(di/Dc)**0.9) \
+        Nu = 3.65 + Pr**(1/3) * 0.08*(1+0.8*(di/Dc)**0.9) \
             * Re**(0.5+0.2903*(di/Dc)**0.194)
     elif Re < 2.2e4:
         # Eq 21
@@ -2064,11 +2070,12 @@ def Nu_ElGenkSchriener(Re, Pr, di, Dc, p):
     return Nu
 
 
-@refDoc(__doi__, [36])
-def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
-    r"""Calculates nusselt number for internal flow at constant heat flux
-    boundary condition of a helical coil in laminar flow using the method of
-    Kalb-Seader (1972).
+@refDoc(__doi__, [36, 62])
+def Nu_laminar_KalbSeader(Re, Pr, di, Dc, boundary=0):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    laminar flow using the method of Kalb-Seader (1972).
+
+    At constant heat flux boundary condition:
 
     For Pr < 0.05:
 
@@ -2080,6 +2087,11 @@ def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
     .. math::
         Nu = 0.913 De^{0.476} Pr^{0.2}
 
+    At uniform wall temperature boundary condition:
+
+    .. math::
+        Nu = 0.836 De^{0.5} Pr^{0.1}
+
     Parameters
     ----------
     Re : float
@@ -2090,6 +2102,10 @@ def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
         Inner diameter of the pipe, [m]
     Dc : float
         Diameter of the helix, [m]
+    boundary : int
+        Index of boundary condition
+            0 - Constant heat flux
+            1 - Uniform wall temperature
 
     Returns
     -------
@@ -2098,12 +2114,18 @@ def Nu_laminar_KalbSeader(Re, Pr, di, Dc):
     """
     De = Dean(Re, di, Dc)
 
-    if Pr < 0.5:
-        # Eq 22
-        Nu = 3.31 * De**0.115 * Pr**0.0108
+    if boundary == 0:
+        # Constant heat flux, [36]_
+        if Pr < 0.5:
+            # Eq 22
+            Nu = 3.31 * De**0.115 * Pr**0.0108
+        else:
+            # Eq 23
+            Nu = 0.913 * De**0.476 * Pr**0.2
+
     else:
-        # Eq 23
-        Nu = 0.913 * De**0.476 * Pr**0.2
+        # Uniform wall temperature, [62]_, Eq 11
+        Nu = 0.836 * De**0.5 * Pr**0.1
 
     return Nu
 
@@ -2771,6 +2793,10 @@ class HelicalCoil(CallableEntity):
         Diameter of the helix, [m]
     p : float, optional
         Pitch for twist of 2π radians (360º), [m]
+    boundary : int, optional
+        Set boundary condition in correlation with several implmented
+            0 - Constant heat flux
+            1 - Uniform wall temperature
     MoriSimple : boolean, optional
         Use Simple correlation for Mori-Nakayama nusselt number correlation
     AA : boolean, optional
@@ -2816,8 +2842,7 @@ class HelicalCoil(CallableEntity):
         "ElGenk-Schriener (2017)",
         "Srinivasan (1968)",
         "Gupta (2011)",
-        "Hasson (1955)",
-    )
+        "Hasson (1955)")
 
     TEXT_TURBULENT_FRICTION = (
         "Schmidt (1967)",
@@ -2833,8 +2858,7 @@ class HelicalCoil(CallableEntity):
         "Srinivasan (1968)",
         "Ito (1959)",
         "Zhao (2016)",
-        "Das (1993)",
-    )
+        "Das (1993)")
 
     TEXT_LAMINAR_HEAT = (
         "Schmidt (1967)",
@@ -2854,8 +2878,7 @@ class HelicalCoil(CallableEntity):
         "Acharya (2001)",
         "Akiyama-Cheng (1971)",
         "Moawed (2011)",
-        "Rainieri (2013)",
-    )
+        "Rainieri (2013)")
 
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
@@ -2872,8 +2895,11 @@ class HelicalCoil(CallableEntity):
         "Jayakumar (2008)",
         "Yildiz (1997)",
         "Wu (2025)",
-        "Jha (1967)",
-    )
+        "Jha (1967)")
+
+    TEXT_BOUNDARY = (
+        translate("equipment", "Constant heat flux"),
+        translate("equipment", "Uniform wall temperature"))
 
     status = 0
     msg = ""
@@ -2892,6 +2918,7 @@ class HelicalCoil(CallableEntity):
         "AA": False,
         "corrugated": False,
         "eD": 0,
+        "boundary": 0,
     }
 
     valueChanged = QtCore.pyqtSignal(object)
@@ -2980,7 +3007,8 @@ class HelicalCoil(CallableEntity):
 
             elif self.kw["methodHeatLaminar"] == 5:
                 # Kalb-Seader (1972)
-                Nu = Nu_laminar_KalbSeader(Re, Pr, self.di, self.Dc)
+                Nu = Nu_laminar_KalbSeader(
+                    Re, Pr, self.di, self.Dc, self.kw["boundary"])
 
             elif self.kw["methodHeatLaminar"] == 6:
                 # Dravid (1971)
@@ -3363,7 +3391,7 @@ class UI_Helical(ToolGui):
         lytM.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Fixed,
             QtWidgets.QSizePolicy.Policy.Fixed), 4, 1)
-        lyt.addWidget(groupMethods, 1, 1, 1, 2)
+        lyt.addWidget(groupMethods, 1, 1, 1, 3)
 
         lytH = QtWidgets.QHBoxLayout()
         lytH.addWidget(QtWidgets.QLabel(
@@ -3396,25 +3424,33 @@ class UI_Helical(ToolGui):
         self.p.valueChanged.connect(partial(self.changeParams, "p"))
         lyt.addWidget(self.p, 6, 2)
 
+        lyt.addWidget(QtWidgets.QLabel(self.tr("Boundary condition")), 7, 1)
+        self.boundary = QtWidgets.QComboBox()
+        for method in HelicalCoil.TEXT_BOUNDARY:
+            self.boundary.addItem(method)
+        self.boundary.currentIndexChanged.connect(
+            partial(self.changeParams, "boundary"))
+        lyt.addWidget(self.boundary, 7, 2)
+
         # Mori-Nakayama additional parameters
         self.MoriSimple = QtWidgets.QCheckBox(self.tr(
             "Use simple correlation for laminar nusselt number"))
         self.MoriSimple.toggled.connect(
             partial(self.changeParams, "MoriSimple"))
-        lyt.addWidget(self.MoriSimple, 7, 1, 1, 2)
+        lyt.addWidget(self.MoriSimple, 8, 1, 1, 2)
 
         # Acharya additional parameters
         self.AA = QtWidgets.QCheckBox(self.tr(
             "Use alternate axis geometric configuration"))
         self.AA.toggled.connect(partial(self.changeParams, "AA"))
-        lyt.addWidget(self.AA, 8, 1, 1, 2)
+        lyt.addWidget(self.AA, 9, 1, 1, 2)
 
         # Rainieri additional parameters
         self.corrugated = QtWidgets.QCheckBox(self.tr(
             "Use alternate correlation for corrugated pipe"))
         self.corrugated.toggled.connect(
             partial(self.changeParams, "corrugated"))
-        lyt.addWidget(self.corrugated, 9, 1, 1, 2)
+        lyt.addWidget(self.corrugated, 10, 1, 1, 2)
 
         # eD additional parameters
         self.groupeD = QtWidgets.QWidget()
@@ -3423,7 +3459,7 @@ class UI_Helical(ToolGui):
         self.eD = Entrada_con_unidades(float)
         self.eD.valueChanged.connect(partial(self.changeParams, "eD"))
         lytg.addWidget(self.eD)
-        lyt.addWidget(self.groupeD, 10, 1, 1, 2)
+        lyt.addWidget(self.groupeD, 11, 1, 1, 2)
 
         self.Entity.valueChanged.connect(self.valueChanged.emit)
         self.Entity.inputChanged.connect(self.populate)
@@ -3447,6 +3483,10 @@ class UI_Helical(ToolGui):
         self.groupeD.setVisible(
             self.methodFrictionTurbulent.currentText() in (
                 "Zhao (2016)", "Das (1993)"))
+
+        # Boundary condition
+        self.boundary.setEnabled(
+            self.methodHeatLaminar.currentText() == "Kalb-Seader (1972)")
 
 
 class Dialog(QtWidgets.QDialog):
