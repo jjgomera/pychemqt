@@ -396,8 +396,15 @@ __doi__ = {
                   "Transfer Coefficients in a Spiral Coil Heat Exchanger",
          "ref": "Int. Comm. Heat Mass Transfer 29(6) (2002) 797-809",
          "doi": "10.1016/s0735-1933(02)00370-6"},
+    64:
+        {"autor": "Zheng, X., Lu, X., Gao, Y., Jin, D., Hu, Y., Hu, Y., Mao, Y.",
+         "title": "Experimental study on friction pressure drop and "
+                  "circumferential heat transfer characteristics in helical "
+                  "tubes",
+         "ref": "Front. Energy Res. 11 (2023) 1204850.",
+         "doi": "10.3389/fenrg.2023.1204850"},
 
-    # 64:
+    # 65:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1718,6 +1725,52 @@ def f_turbulent_Das(Re, di, Dc, p, eD):
     return f
 
 
+@refDoc(__doi__, [64])
+def f_turbulent_Zheng(Re, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    turbulent flow using the method of Zheng et al. (2023).
+
+    .. math::
+        f_c = \frac{0.0791}{Re^{0.25} + \frac{81858}{Re^{1.54}}
+        \left(\frac{d_i}{D_{cm}}\right)^{0.48}
+
+    D_cm is defined as:
+
+    .. math::
+        D_{cm} = D_c \left(1+\tan{\alpha}\right)
+
+    α is the helix angle:
+
+    .. math::
+        \alpha = \tan^{-1}{\frac{p}{\pi D_c}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Internal diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Dc)
+
+    Dcm = Dc * (1+tan(alpha))
+
+    # Eq 14
+    f = 0.0791/Re**0.25 + 81858/Re**1.54 * (di/Dcm)**0.48
+
+    return f
+
+
 # Heat Transfer coefficient correlations
 @refDoc(__doi__, [3])
 def Nu_Schmidt(Re, Pr, di, Dc):
@@ -2821,6 +2874,54 @@ def Nu_turbulent_JhaRajaRao(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [64])
+def Nu_turbulent_Zheng(Re, Pr, di, Dc, p):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    turbulent flow using the method of Zheng et al. (2023).
+
+    .. math::
+        f_c = \frac{0.0791}{Re^{0.25} + \frac{81858}{Re^{1.54}}
+        \left(\frac{d_i}{D_{cm}}\right)^{0.48}
+
+    D_cm is defined as:
+
+    .. math::
+        D_{cm} = D_c \left(1+\tan{\alpha}\right)
+
+    α is the helix angle:
+
+    .. math::
+        \alpha = \tan^{-1}{\frac{p}{\pi D_c}}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Internal diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    p : float
+        Pitch for twist of 2π radians (360º), [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Helix angle
+    alpha = atan(p/pi/Dc)
+
+    Dcm = Dc * (1+tan(alpha))
+
+    # Eq 20
+    Nu = 0.052 * Re**0.77 * Pr**0.4 * (di/Dcm)**0.092
+
+    return Nu
+
+
 class HelicalCoil(CallableEntity):
     """Helical coil tube used as anhancing heat transfer equipment.
 
@@ -2897,7 +2998,8 @@ class HelicalCoil(CallableEntity):
         "Srinivasan (1968)",
         "Ito (1959)",
         "Zhao (2016)",
-        "Das (1993)")
+        "Das (1993)",
+        "Zheng (2023)")
 
     TEXT_LAMINAR_HEAT = (
         "Schmidt (1967)",
@@ -2935,7 +3037,8 @@ class HelicalCoil(CallableEntity):
         "Jayakumar (2008)",
         "Yildiz (1997)",
         "Wu (2025)",
-        "Jha (1967)")
+        "Jha (1967)",
+        "Zheng (2023)")
 
     TEXT_BOUNDARY = (
         translate("equipment", "Constant heat flux"),
@@ -3180,6 +3283,10 @@ class HelicalCoil(CallableEntity):
                 # Jha (1967)
                 Nu = Nu_turbulent_JhaRajaRao(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatTurbulent"] == 15:
+                # Zheng (2023)
+                Nu = Nu_turbulent_Zheng(Re, Pr, self.di, self.Dc, self.kw["p"])
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -3364,6 +3471,10 @@ class HelicalCoil(CallableEntity):
                 # Das (1993)
                 f = f_turbulent_Das(
                     Re, self.di, self.Dc, self.kw["p"], self.kw["eD"])
+
+            elif self.kw["methodFrictionTurbulent"] == 14:
+                # Zheng (2023)
+                f = f_turbulent_Zheng(Re, self.di, self.Dc, self.kw["p"])
 
             else:
                 # Schmidt (1967)
