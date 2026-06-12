@@ -403,8 +403,14 @@ __doi__ = {
                   "tubes",
          "ref": "Front. Energy Res. 11 (2023) 1204850.",
          "doi": "10.3389/fenrg.2023.1204850"},
+    65:
+        {"autor": "Zhao, H., Li, X., Wu, Y., Wu, X.",
+         "title": "Friction factor and Nusselt number correlations for forced"
+                  "convection in helical tubes",
+         "ref": "Int. J. Heat Mass Transfer 155 (2020) 119759",
+         "doi": "10.1016/j.ijheatmasstransfer.2020.119759"},
 
-    # 65:
+    # 66:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2129,6 +2135,52 @@ def Nu_ElGenkSchriener(Re, Pr, di, Dc, p):
     return Nu
 
 
+@refDoc(__doi__, [65])
+def Nu_Zhou(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil using
+    the method of Zhou et al. (2020).
+
+    For laminar regimen:
+
+    .. math::
+        Nu = 0.0254 f Re^{1.197} Pr^{0.159}
+
+    For turbulent regimen:
+        Nu = 0.013 Re^{0.93} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.177}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if di/Dc < 0.001:
+        # Eq 20
+        Rec = 2300
+    else:
+        Rec = Rec_Ito(di, Dc)
+
+    if Re < Rec:
+        # Laminar regimen, Eq 22
+        f = f_Ito(Re, di, Dc)
+        Nu = 0.0254 * f * Re**1.197 * Pr**0.159
+    else:
+        # Turbulent regimen, Eq 23
+        Nu = 0.013 * Re**0.93 * Pr**0.4 * (di/Dc)**0.4
+
+    return Nu
+
+
 @refDoc(__doi__, [36, 62])
 def Nu_laminar_KalbSeader(Re, Pr, di, Dc, boundary=0):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -3020,7 +3072,8 @@ class HelicalCoil(CallableEntity):
         "Akiyama-Cheng (1971)",
         "Moawed (2011)",
         "Rainieri (2013)",
-        "Naphon-Wongwises (2002)")
+        "Naphon-Wongwises (2002)",
+        "Zhou (2020)")
 
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
@@ -3038,7 +3091,8 @@ class HelicalCoil(CallableEntity):
         "Yildiz (1997)",
         "Wu (2025)",
         "Jha (1967)",
-        "Zheng (2023)")
+        "Zheng (2023)",
+        "Zhou (2020)")
 
     TEXT_BOUNDARY = (
         translate("equipment", "Constant heat flux"),
@@ -3220,6 +3274,10 @@ class HelicalCoil(CallableEntity):
                 # Naphon-Wongwises (2002)
                 Nu = Nu_laminar_NaphonWongwises(Re, Pr, self.di, self.Dc)
 
+            elif self.kw["methodHeatLaminar"] == 19:
+                # Zhou (2020)
+                Nu = Nu_Zhou(Re, Pr, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
@@ -3286,6 +3344,10 @@ class HelicalCoil(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 15:
                 # Zheng (2023)
                 Nu = Nu_turbulent_Zheng(Re, Pr, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodHeatTurbulent"] == 16:
+                # Zhou (2020)
+                Nu = Nu_Zhou(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
