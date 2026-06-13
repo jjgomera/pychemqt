@@ -409,8 +409,13 @@ __doi__ = {
                   "convection in helical tubes",
          "ref": "Int. J. Heat Mass Transfer 155 (2020) 119759",
          "doi": "10.1016/j.ijheatmasstransfer.2020.119759"},
+    66:
+        {"autor": "Jeschke, H.",
+         "title": "Wärmeübergang und Druckverlust in Rohrschlangen",
+         "ref": "VDI Z. 69 (1925) 24-28",
+         "doi": ""},
 
-    # 66:
+    # 67:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2926,6 +2931,36 @@ def Nu_turbulent_JhaRajaRao(Re, Pr, di, Dc):
     return Nu
 
 
+@refDoc(__doi__, [66, 65])
+def Nu_turbulent_Jeschke(Re, Pr, di, Dc):
+    r"""Calculates nusselt number for internal flow of a helical coil in
+    turbulent flow using the method of Jeschke (1925) as shown in [66]_
+
+    .. math::
+        Nu = \left(0.039+0.138 \frac{d_i}{D_c}\right) \left(Re Pr\right)^{0.76}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+
+    Nu = (0.039 + 0.138 * di/Dc) * (Re*Pr)**0.76
+
+    return Nu
+
+
 @refDoc(__doi__, [64])
 def Nu_turbulent_Zheng(Re, Pr, di, Dc, p):
     r"""Calculates friction factor for internal flow of a helical coil in
@@ -3092,7 +3127,8 @@ class HelicalCoil(CallableEntity):
         "Wu (2025)",
         "Jha (1967)",
         "Zheng (2023)",
-        "Zhou (2020)")
+        "Zhou (2020)",
+        "Jeschke (1925)")
 
     TEXT_BOUNDARY = (
         translate("equipment", "Constant heat flux"),
@@ -3348,6 +3384,10 @@ class HelicalCoil(CallableEntity):
             elif self.kw["methodHeatTurbulent"] == 16:
                 # Zhou (2020)
                 Nu = Nu_Zhou(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatTurbulent"] == 17:
+                # Jeschke (1925)
+                Nu = Nu_turbulent_Jeschke(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
