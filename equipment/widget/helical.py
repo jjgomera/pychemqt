@@ -414,8 +414,16 @@ __doi__ = {
          "title": "Wärmeübergang und Druckverlust in Rohrschlangen",
          "ref": "VDI Z. 69 (1925) 24-28",
          "doi": ""},
+    67:
+        {"autor": "Ayuob, S., Mahmood, M., Ahmad, N., Waqas, A., Saeed, H., "
+                  "Sajid, M.B.",
+         "title": "Development and validation of Nusselt number correlations "
+                  "for a helical coil based energy storage integrated with "
+                  "solar water heating system",
+         "ref": "J. Energy Storage 55 (2022) 105777",
+         "doi": "10.1016/j.est.2022.105777"},
 
-    # 67:
+    # 68:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2676,6 +2684,49 @@ def Nu_laminar_Rainieri(Re, Pr, di, Dc, corrugated):
     return Nu
 
 
+@refDoc(__doi__, [67])
+def Nu_laminar_Ayuob(Re, Pr, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Ayuob et al. (2022)
+
+    .. math::
+        Nu = 1.168 De^{0.47} Pr^{0.16}
+
+    For corrugated helical pipe:
+
+    .. math::
+        Nu = 0.0191 De^{1.36} Pr^{0.2}
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+    corrugated : float, optional
+        Use correlation for corrugated wall tube
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 8
+    M = Re**0.64/0.26/(di/Dc)**0.18
+
+    if M > 2100:
+        raise ValueError("Input out of range")
+
+    # Eq 19
+    Nu = 0.1868 * M**0.6958 * Pr**0.4 * (di/Dc)**0.1703
+
+    return Nu
+
+
 @refDoc(__doi__, [25])
 def Nu_turbulent_MandalNigam(Re, Pr, di, Dc):
     r"""Calculates nusselt number for internal flow of a helical coil in
@@ -3108,7 +3159,8 @@ class HelicalCoil(CallableEntity):
         "Moawed (2011)",
         "Rainieri (2013)",
         "Naphon-Wongwises (2002)",
-        "Zhou (2020)")
+        "Zhou (2020)",
+        "Ayuob (2022)")
 
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
@@ -3313,6 +3365,14 @@ class HelicalCoil(CallableEntity):
             elif self.kw["methodHeatLaminar"] == 19:
                 # Zhou (2020)
                 Nu = Nu_Zhou(Re, Pr, self.di, self.Dc)
+
+            elif self.kw["methodHeatLaminar"] == 20:
+                # Ayuob (2022)
+                try:
+                    Nu = Nu_laminar_Ayuob(Re, Pr, self.di, self.Dc)
+                except ValueError:
+                    Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
+                    msg = "Ayuob correlation out of range, using Schmidt instead"
 
             else:
                 # Schmidt (1967)
