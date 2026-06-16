@@ -422,8 +422,13 @@ __doi__ = {
                   "solar water heating system",
          "ref": "J. Energy Storage 55 (2022) 105777",
          "doi": "10.1016/j.est.2022.105777"},
+    68:
+        {"autor": "Berg, R.R., Bonilla, C.F.",
+         "title": "Heating of fluids in coils",
+         "ref": "NY Academic Sciences 13 (1950) 12-18",
+         "doi": "10.1111_j.2164-0947.1950.tb00976.x "},
 
-    # 68:
+    # 69:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -2690,12 +2695,7 @@ def Nu_laminar_Ayuob(Re, Pr, di, Dc):
     laminar flow using the method of Ayuob et al. (2022)
 
     .. math::
-        Nu = 1.168 De^{0.47} Pr^{0.16}
-
-    For corrugated helical pipe:
-
-    .. math::
-        Nu = 0.0191 De^{1.36} Pr^{0.2}
+        Nu = 0.1868 M^{0.6958} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.1703}
 
     Parameters
     ----------
@@ -2707,8 +2707,6 @@ def Nu_laminar_Ayuob(Re, Pr, di, Dc):
         Inner diameter of the pipe, [m]
     Dc : float
         Diameter of the helix, [m]
-    corrugated : float, optional
-        Use correlation for corrugated wall tube
 
     Returns
     -------
@@ -2723,6 +2721,36 @@ def Nu_laminar_Ayuob(Re, Pr, di, Dc):
 
     # Eq 19
     Nu = 0.1868 * M**0.6958 * Pr**0.4 * (di/Dc)**0.1703
+
+    return Nu
+
+
+@refDoc(__doi__, [68])
+def Nu_laminar_BergBonilla(Re, Pr, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil in
+    laminar flow using the method of Berg-Bonilla (1950)
+
+    .. math::
+        Nu = \left(0.0000229 + 0.000636 \frac{d_i}{D_c}\right) Re^{1.29} Pr
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 5
+    Nu = (0.000029 + 0.000636 * di/Dc) * Re**1.29 * Pr
 
     return Nu
 
@@ -3160,7 +3188,8 @@ class HelicalCoil(CallableEntity):
         "Rainieri (2013)",
         "Naphon-Wongwises (2002)",
         "Zhou (2020)",
-        "Ayuob (2022)")
+        "Ayuob (2022)",
+        "Berg-Bonilla (1950)")
 
     TEXT_TURBULENT_HEAT = (
         "Schmidt (1967)",
@@ -3373,6 +3402,10 @@ class HelicalCoil(CallableEntity):
                 except ValueError:
                     Nu = Nu_Schmidt(Re, Pr, self.di, self.Dc)
                     msg = "Ayuob correlation out of range, using Schmidt instead"
+
+            elif self.kw["methodHeatLaminar"] == 21:
+                # Berg-Bonilla (1950)
+                Nu = Nu_laminar_BergBonilla(Re, Pr, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
