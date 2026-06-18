@@ -427,8 +427,13 @@ __doi__ = {
          "title": "Heating of fluids in coils",
          "ref": "NY Academic Sciences 13 (1950) 12-18",
          "doi": "10.1111_j.2164-0947.1950.tb00976.x "},
+    69:
+        {"autor": "Rao, M.V.R., Sadasividu, D.",
+         "title": "Pressure drop studies in helical coils",
+         "ref": "Indian J.  Tech. 12 (1974) 473-474",
+         "doi": ""},
 
-    # 69:
+    # 70:
         # {"autor": "",
          # "title": "",
          # "ref": "",
@@ -1015,6 +1020,58 @@ def f_Ito(Re, di, Dc):
         f = 0.029*(di/Dc)**0.5 + 0.304/Re**0.25
 
     return f
+
+
+@refDoc(__doi__, [69, 21])
+def f_RaoSadasivudu(Re, di, Dc):
+    r"""Calculates friction factor for internal flow of a helical coil using
+    the method of Rao-Sadasivudu (1974) as show in Ali [21]_.
+
+    Several correlation for different Reynolds number range
+
+    .. math::
+        f_c = 1.55 \exp{14.12 \frac{d_i}{D_c}} Re^{-1}, Re < 1200
+
+    .. math::
+        f_c = 1.55 \exp{14.12 \frac{d_i}{D_c}} Re^{-0.64}, 1200 < Re < Re_c
+
+    .. math::
+        f_c = 0.0382 \exp{11.17 \frac{d_i}{D_c}} Re^{-0.2}, Re_c < Re < 27000
+
+    .. math::
+        f_c = 0.01065 \frac{d_i^{0.94}}{D_c^{0.1}} Re^{-0.2}, Re > 27000
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    di : float
+        Inner diameter of the pipe, [m]
+    Dc : float
+        Diameter of the helix, [m]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+
+    """
+    Rec = Rec_Ito(di, Dc)
+
+    if Re < 1200:
+        f = 1.55 * exp(14.12*di/Dc) / Re
+
+    elif Re < Rec:
+        f = 1.55 * exp(14.12*di/Dc) / Re**0.64
+
+    elif Re < 27000:
+        f = 0.0382 * exp(11.17*di/Dc) / Re**0.2
+
+    else:
+        # Turbulent flow
+        f = 0.01065 * di**0.94 / Dc**0.1 / Re**0.2
+
+    return 4*f
 
 
 @refDoc(__doi__, [8])
@@ -3148,7 +3205,8 @@ class HelicalCoil(CallableEntity):
         "ElGenk-Schriener (2017)",
         "Srinivasan (1968)",
         "Gupta (2011)",
-        "Hasson (1955)")
+        "Hasson (1955)",
+        "Rao-Sadasivudu (1974)")
 
     TEXT_TURBULENT_FRICTION = (
         "Schmidt (1967)",
@@ -3165,7 +3223,8 @@ class HelicalCoil(CallableEntity):
         "Ito (1959)",
         "Zhao (2016)",
         "Das (1993)",
-        "Zheng (2023)")
+        "Zheng (2023)",
+        "Rao-Sadasivudu (1974)")
 
     TEXT_LAMINAR_HEAT = (
         "Schmidt (1967)",
@@ -3608,6 +3667,10 @@ class HelicalCoil(CallableEntity):
                 # Hasson (1955)
                 f = f_laminar_Hasson(Re, self.di, self.Dc)
 
+            elif self.kw["methodFrictionLaminar"] == 25:
+                # Rao-Sadasivudu (1974)
+                f = f_RaoSadasivudu(Re, self.di, self.Dc)
+
             else:
                 # Schmidt (1967)
                 f = f_Schmidt(Re, self.di, self.Dc)
@@ -3670,6 +3733,10 @@ class HelicalCoil(CallableEntity):
             elif self.kw["methodFrictionTurbulent"] == 14:
                 # Zheng (2023)
                 f = f_turbulent_Zheng(Re, self.di, self.Dc, self.kw["p"])
+
+            elif self.kw["methodFrictionTurbulent"] == 15:
+                # Rao-Sadasivudu (1974)
+                f = f_RaoSadasivudu(Re, self.di, self.Dc)
 
             else:
                 # Schmidt (1967)
