@@ -15,7 +15,25 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Helically coiled tubes have many applications in engineering. Examples of it
+use include compact heat exchanger, steam generators, distillation, or chemical
+reactors...
+
+In curved pipes, the more rapidly flowing central parts of the flow are forced
+outwards by centrifugal action, while the slower parts along the wall are
+forced inwards where the pressusre is less, and a secondary flow takes place
+at right angles to the main flow. If the curvature is significant, the axial
+velocity distribution is entirely altered by the secondary flow, and a
+considerable increase in resistance an heat transfer is observed.
+
+The heat transfer and pressure losses depend on the Dean number
+:math:`De = Re (d_i/D_c)^{0.5}`
+
+There is many literature about the flow in curved pipes, here is implemented
+some of more relevant correlation for friction factor and nusselt number.
+'''
 
 
 from functools import partial
@@ -431,14 +449,12 @@ __doi__ = {
         {"autor": "Rao, M.V.R., Sadasividu, D.",
          "title": "Pressure drop studies in helical coils",
          "ref": "Indian J.  Tech. 12 (1974) 473-474",
-         "doi": ""},
+         "doi": ""}}
 
-    # 70:
-        # {"autor": "",
-         # "title": "",
-         # "ref": "",
-         # "doi": ""},
-}
+
+# TODO: Add two phase correlation
+# For this is necessary add a stream as input parameter to get the necessary
+# properties for its calculation
 
 
 # Critical Reynolds number correlations
@@ -2221,6 +2237,8 @@ def Nu_Zhou(Re, Pr, di, Dc):
         Nu = 0.0254 f Re^{1.197} Pr^{0.159}
 
     For turbulent regimen:
+
+    .. math::
         Nu = 0.013 Re^{0.93} Pr^{0.4} \left(\frac{d_i}{D_c}\right)^{0.177}
 
     Parameters
