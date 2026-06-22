@@ -47,9 +47,9 @@ Heat transfer:
 
 All methods are integrated in:
 
-* :class:`WireCoil`. A simple callable to integrate all calculation method
-* :class:`UI_WireCoil`. Graphical interface to define methods and properties
-
+* :class:`WireCoil`: A simple callable to integrate all calculation method
+* :class:`UI_WireCoil`: Graphical interface to define methods and properties
+* :class:`Dialog`: Standalone dialog
 
 '''
 
@@ -917,7 +917,7 @@ class UI_WireCoil(ToolGui):
 
 
 class Dialog(QtWidgets.QDialog):
-    """Component list config dialog"""
+    """Standalone dialog"""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Twisted-tape insert"))
@@ -930,6 +930,14 @@ class Dialog(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
+
+
+__all__ = ("f_wire_Garcia", "f_wire_Inaba", "f_wire_Naphon", "f_wire_Gunes",
+           "f_wire_Ravigururajan", "f_wire_Sethumadhavan", "f_wire_Yakut",
+           "Nu_wire_Garcia", "Nu_wire_Uttarwar", "Nu_wire_Inaba",
+           "Nu_wire_Naphon", "Nu_wire_Gunes", "Nu_wire_Klaczak",
+           "Nu_wire_Ravigururajan", "Nu_wire_Sethumadhavan", "Nu_wire_Yakut",
+           "WireCoil", "UI_WireCoil")
 
 
 if __name__ == "__main__":

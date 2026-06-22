@@ -15,7 +15,72 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Twisted tape insert are use to enhance heat transfer of instaled pipes. The
+insert enhance mixing of fluid increase pressure loss and heat transfer.
+
+This module implement correlations for friction factor and nusselt number
+for pipe equipment with this enhancement, including geometric variations
+available in the literature.
+
+Friction factor:
+
+    * :func:`f_twisted_Manglik`:
+    * :func:`f_twisted_Sarma`
+    * :func:`f_twisted_Chang`
+    * :func:`f_twisted_laminar_Plessis`
+    * :func:`f_twisted_laminar_Shah`
+    * :func:`f_twisted_laminar_Agarwal`
+    * :func:`f_twisted_laminar_Saha`
+    * :func:`f_twisted_laminar_Date`
+    * :func:`f_twisted_turbulent_Lopina`
+    * :func:`f_twisted_turbulent_Naphon`
+    * :func:`f_twisted_turbulent_Smithberg`
+    * :func:`f_twisted_turbulent_Murugesan`
+    * :func:`f_twisted_turbulent_Jaisankar`
+    * :func:`f_twisted_turbulent_Eiamsaard`
+    * :func:`f_twisted_turbulent_Ponnada`
+    * :func:`f_twisted_turbulent_Bas`
+
+Heat transfer:
+
+    * :func:`Nu_twisted_HTRI`
+    * :func:`Nu_twisted_Manglik`
+    * :func:`Nu_twisted_Sarma`
+    * :func:`Nu_twisted_Chang`
+    * :func:`Nu_twisted_laminar_Plessis`
+    * :func:`Nu_twisted_laminar_Hong`
+    * :func:`Nu_twisted_laminar_Agarwal`
+    * :func:`Nu_twisted_laminar_Saha`
+    * :func:`Nu_twisted_laminar_Klaczak`
+    * :func:`Nu_twisted_turbulent_Lopina`
+    * :func:`Nu_twisted_turbulent_Naphon`
+    * :func:`Nu_twisted_turbulent_Kidd`
+    * :func:`Nu_twisted_turbulent_Smithberg`
+    * :func:`Nu_twisted_turbulent_Murugesan`
+    * :func:`Nu_twisted_turbulent_Jaisankar`
+    * :func:`Nu_twisted_turbulent_Eiamsaard`
+    * :func:`Nu_twisted_turbulent_Ponnada`
+    * :func:`Nu_twisted_turbulent_Bas`
+
+Corelation for helical twisted tape:
+
+    * :func:`f_helical_Sivashanmugam`
+    * :func:`Nu_helical_Sivashanmugam`
+
+Corelation for hollow twisted tape:
+
+    * :func:`f_hollow_He`
+    * :func:`Nu_hollow_He`
+
+All methods are integrated in:
+
+* :class:`TwistedTape`: A simple callable to integrate all calculation method
+* :class:`UI_TwistedTape`: Graphical interface to define methods and properties
+* :class:`Dialog`: Standalone dialog
+
+'''
 
 
 from functools import partial
@@ -337,14 +402,7 @@ __doi__ = {
                   "Characteristics of Turbulent Flow Through a Circular Tube "
                   "Fitted with Right and Left Helical Screw-Tape Inserts",
          "ref": "Chem. Eng. Comm. 195(8) (2008) 977-987",
-         "doi": "10.1080/00986440801906658"},
-    # 49:
-    #     {"autor": "",
-    #      "title": "",
-    #      "ref": "",
-    #      "doi": ""},
-
-        }
+         "doi": "10.1080/00986440801906658"}}
 
 
 # Friction factor correlations
@@ -3286,6 +3344,25 @@ class Dialog(QtWidgets.QDialog):
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
 
+
+__all__ = ("f_twisted_Manglik", "f_twisted_Sarma", "f_twisted_Chang",
+           "f_twisted_laminar_Plessis", "f_twisted_laminar_Shah",
+           "f_twisted_laminar_Agarwal", "f_twisted_laminar_Saha",
+           "f_twisted_laminar_Date", "f_twisted_turbulent_Lopina",
+           "f_twisted_turbulent_Naphon", "f_twisted_turbulent_Smithberg",
+           "f_twisted_turbulent_Murugesan", "f_twisted_turbulent_Jaisankar",
+           "f_twisted_turbulent_Eiamsaard", "f_twisted_turbulent_Ponnada",
+           "f_twisted_turbulent_Bas", "Nu_twisted_HTRI", "Nu_twisted_Manglik",
+           "Nu_twisted_Sarma", "Nu_twisted_Chang", "Nu_twisted_laminar_Plessis",
+           "Nu_twisted_laminar_Hong", "Nu_twisted_laminar_Agarwal",
+           "Nu_twisted_laminar_Saha", "Nu_twisted_laminar_Klaczak",
+           "Nu_twisted_turbulent_Lopina", "Nu_twisted_turbulent_Naphon",
+           "Nu_twisted_turbulent_Kidd", "Nu_twisted_turbulent_Smithberg",
+           "Nu_twisted_turbulent_Murugesan", "Nu_twisted_turbulent_Jaisankar",
+           "Nu_twisted_turbulent_Eiamsaard", "Nu_twisted_turbulent_Ponnada",
+           "Nu_twisted_turbulent_Bas", "f_helical_Sivashanmugam",
+           "Nu_helical_Sivashanmugam", "f_hollow_He", "Nu_hollow_He",
+           "TwistedTape", "UI_TwistedTape", "Dialog")
 
 if __name__ == "__main__":
     import sys

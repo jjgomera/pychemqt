@@ -15,7 +15,30 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+Twisted tape insert for annulli section of a double pipe section to enhanced
+heat exchanger rate. This module implement several correlation to calculate
+its thermal eficiency and friction factor
+
+Friction factor:
+
+    * :func:`f_twistedAnnulli_Coetzee`: Coetzee (2005)
+    * :func:`f_twistedAnnulli_Gupte`: Gupte (1989)
+
+Heat transfer:
+
+    * :func:`Nu_twistedAnnulli_Coetzee`: Coetzee (2005)
+    * :func:`Nu_twistedAnnulli_Gupte`: Gupte (1989)
+
+All methods are integrated in:
+
+    * :class:`TwistedTapeAnnuli`: A simple callable to integrate all method
+    * :class:`UI_TwistedTapeAnnuli`: Graphical interface
+    * :class:`Dialog`: Standalone dialog
+
+'''
 
 
 from functools import partial
@@ -403,7 +426,7 @@ class UI_TwistedTapeAnnuli(ToolGui):
 
 
 class Dialog(QtWidgets.QDialog):
-    """Component list config dialog"""
+    """Standalone dialog"""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle(self.tr("Twisted-tape insert"))
@@ -416,6 +439,11 @@ class Dialog(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
+
+
+__all__ = ("f_twistedAnnulli_Coetzee", "f_twistedAnnulli_Gupte",
+          "Nu_twistedAnnulli_Coetzee", "Nu_twistedAnnulli_Gupte",
+           "TwistedTapeAnnuli", "UI_TwistedTapeAnnuli", "Dialog")
 
 
 if __name__ == "__main__":

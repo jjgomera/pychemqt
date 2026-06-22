@@ -236,6 +236,11 @@ for wdg in equipment.widget.__all__:
         print("equipment.widget.%s module" % wdg, file=file)
         print("="*(len(wdg)+10+13), file=file)
         print("", file=file)
+
+        if len(module.__doc__.split("\n")) > 15:
+            print("Module API", file=file)
+            print("----------", file=file)
+
         print(".. automodule:: equipment.widget.%s" % wdg, file=file)
 
         if module.__doi__:

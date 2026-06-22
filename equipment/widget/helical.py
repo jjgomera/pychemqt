@@ -32,7 +32,94 @@ The heat transfer and pressure losses depend on the Dean number
 :math:`De = Re (d_i/D_c)^{0.5}`
 
 There is many literature about the flow in curved pipes, here is implemented
-some of more relevant correlation for friction factor and nusselt number.
+some of more relevant correlation for friction factor and nusselt number and
+transition Reynolds number.
+
+Transition Reynolds number:
+
+    * :func:`Rec_Schmidt`
+    * :func:`Rec_Ito`
+    * :func:`Rec_Kubair`
+    * :func:`Rec_Srinivasan`
+    * :func:`Rec_Kutateladze`
+    * :func:`Rec_SethStahel`
+    * :func:`Rec_Cioncolini`
+
+Friction factor:
+
+    * :func:`f_Schmidt`
+    * :func:`f_MoriNakayama`
+    * :func:`f_Ju`
+    * :func:`f_MishraGupta`
+    * :func:`f_Prasad`
+    * :func:`f_Ali`
+    * :func:`f_ElGenkSchriener`
+    * :func:`f_Srinivasan`
+    * :func:`f_Ito`
+    * :func:`f_RaoSadasivudu`
+    * :func:`f_laminar_White`
+    * :func:`f_laminar_Hart`
+    * :func:`f_laminar_ManlapazChurchill`
+    * :func:`f_laminar_LiuMasliyah`
+    * :func:`f_laminar_TarbellSamuels`
+    * :func:`f_laminar_Adler`
+    * :func:`f_laminar_Barua`
+    * :func:`f_laminar_PimentaCampos`
+    * :func:`f_laminar_Yanase`
+    * :func:`f_laminar_Dennis`
+    * :func:`f_laminar_vanDyke`
+    * :func:`f_laminar_CollinsDennis`
+    * :func:`f_laminar_Dean`
+    * :func:`f_laminar_Abushammala`
+    * :func:`f_laminar_Gupta`
+    * :func:`f_laminar_Hasson`
+    * :func:`f_turbulent_Czop`
+    * :func:`f_turbulent_Guo`
+    * :func:`f_turbulent_MandalNigam`
+    * :func:`f_turbulent_Zhao`
+    * :func:`f_turbulent_Das`
+    * :func:`f_turbulent_Zheng`
+
+Nusselt number:
+
+    * :func:`Nu_Schmidt`
+    * :func:`Nu_MoriNakayama`
+    * :func:`Nu_XinEbadian`
+    * :func:`Nu_SebanMcLaughlin`
+    * :func:`Nu_Prasad`
+    * :func:`Nu_PawarSunnapwar`
+    * :func:`Nu_ElGenkSchriener`
+    * :func:`Nu_Zhou`
+    * :func:`Nu_laminar_KalbSeader`
+    * :func:`Nu_laminar_Dravid`
+    * :func:`Nu_laminar_JanssenHoogendoorn`
+    * :func:`Nu_laminar_ManlapazChurchill`
+    * :func:`Nu_laminar_Salimpour`
+    * :func:`Nu_laminar_PimentaCampos`
+    * :func:`Nu_laminar_Hardik`
+    * :func:`Nu_laminar_Acharya`
+    * :func:`Nu_laminar_AkiyamaCheng`
+    * :func:`Nu_laminar_Moawed`
+    * :func:`Nu_laminar_NaphonWongwises`
+    * :func:`Nu_laminar_Rainieri`
+    * :func:`Nu_laminar_Ayuob`
+    * :func:`Nu_laminar_BergBonilla`
+    * :func:`Nu_turbulent_MandalNigam`
+    * :func:`Nu_turbulent_RogersMayhew`
+    * :func:`Nu_turbulent_Shchukin`
+    * :func:`Nu_turbulent_Guo`
+    * :func:`Nu_turbulent_Jayakumar`
+    * :func:`Nu_turbulent_Yildiz`
+    * :func:`Nu_turbulent_Wu`
+    * :func:`Nu_turbulent_JhaRajaRao`
+    * :func:`Nu_turbulent_Jeschke`
+    * :func:`Nu_turbulent_Zheng`
+
+All methods are integrated in:
+
+* :class:`HelicalCoil`: A simple callable to integrate all calculation method
+* :class:`UI_Helical`: Graphical interface to define methods and properties
+* :class:`Dialog`: Standalone dialog
 '''
 
 
@@ -49,7 +136,6 @@ from lib.heatTransfer import h_tubeside_turbulent_Dittus_Boelter
 from lib.unidades import Length
 from lib.utilities import refDoc
 from UI.widgets import Entrada_con_unidades
-
 
 __doi__ = {
     1:
@@ -3938,6 +4024,34 @@ class Dialog(QtWidgets.QDialog):
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
         layout.addWidget(self.buttonBox)
+
+
+__all__ = ("Rec_Schmidt", "Rec_Ito", "Rec_Kubair", "Rec_Srinivasan",
+           "Rec_Kutateladze", "Rec_SethStahel", "Rec_Cioncolini",
+           "f_Schmidt", "f_MoriNakayama", "f_Ju", "f_MishraGupta", "f_Prasad",
+           "f_Ali", "f_ElGenkSchriener", "f_Srinivasan", "f_Ito",
+           "f_RaoSadasivudu", "f_laminar_White", "f_laminar_Hart",
+           "f_laminar_ManlapazChurchill", "f_laminar_LiuMasliyah",
+           "f_laminar_TarbellSamuels", "f_laminar_Adler", "f_laminar_Barua",
+           "f_laminar_PimentaCampos", "f_laminar_Yanase", "f_laminar_Dennis",
+           "f_laminar_vanDyke", "f_laminar_CollinsDennis", "f_laminar_Dean",
+           "f_laminar_Abushammala", "f_laminar_Gupta", "f_laminar_Hasson",
+           "f_turbulent_Czop", "f_turbulent_Guo", "f_turbulent_MandalNigam",
+           "f_turbulent_Zhao", "f_turbulent_Das", "f_turbulent_Zheng",
+           "Nu_Schmidt", "Nu_MoriNakayama", "Nu_XinEbadian",
+           "Nu_SebanMcLaughlin", "Nu_Prasad", "Nu_PawarSunnapwar",
+           "Nu_ElGenkSchriener", "Nu_Zhou", "Nu_laminar_KalbSeader",
+           "Nu_laminar_Dravid", "Nu_laminar_JanssenHoogendoorn",
+           "Nu_laminar_ManlapazChurchill", "Nu_laminar_Salimpour",
+           "Nu_laminar_PimentaCampos", "Nu_laminar_Hardik",
+           "Nu_laminar_Acharya", "Nu_laminar_AkiyamaCheng", "Nu_laminar_Moawed",
+           "Nu_laminar_NaphonWongwises", "Nu_laminar_Rainieri",
+           "Nu_laminar_Ayuob", "Nu_laminar_BergBonilla",
+           "Nu_turbulent_MandalNigam", "Nu_turbulent_RogersMayhew",
+           "Nu_turbulent_Shchukin", "Nu_turbulent_Guo",
+           "Nu_turbulent_Jayakumar", "Nu_turbulent_Yildiz", "Nu_turbulent_Wu",
+           "Nu_turbulent_JhaRajaRao", "Nu_turbulent_Jeschke",
+           "Nu_turbulent_Zheng", "HelicalCoil", "UI_Helical", "Dialog")
 
 
 if __name__ == "__main__":
