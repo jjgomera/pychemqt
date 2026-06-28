@@ -250,7 +250,40 @@ __doi__ = {
                   "isothermer Strömung",
          "ref": "Chemie Ingenieur Technik 79(1-2) (2007) 91-95",
          "doi": "10.1002/cite.200600126"},
-    # 33:
+    33:
+        {"autor": "Blasius, H.",
+         "title": "Das Ähnlichkeitsgesetz bei Reibungsvorgängen",
+         "ref": "Z. Ver. Dtsch. Ing. 56(16) (1912) 639-643",
+         "doi": ""},
+    34:
+        {"autor": "McAdams, W.H.",
+         "title": "Heat Transmission 3rd Ed.",
+         "ref": "McGraw-Hill Series in Chem. Eng. (1954)",
+         "doi": ""},
+    35:
+        {"autor": "Drew, T.B., Koo, E.C., McAdams, W.H.",
+         "title": "The Friction Factor for Clean Round Pipes",
+         "ref": "Trans. AIChE 28 (1932) 56-72",
+         "doi": ""},
+    36:
+        {"autor": "Techo, R., Tickner, R.R., James, R.E.",
+         "title": "An Accurate Equation for the Computation of the Friction "
+                  "Factor for Smooth Pipes From the Reynolds Number",
+         "ref": "J. Appl. Mech. 32 (1965) 443",
+         "doi": ""},
+    37:
+        {"autor": "Goudar, C.T., Sonnad, J.R.",
+         "title": "Explicit Friction Factor Correlation for Turbulent Flow "
+                  "in Smooth Pipes",
+         "ref": "Ind Eng. Chem. Res. 42(12) (2003) 2878-2880",
+         "doi": "10.1021_ie0300676"},
+    38:
+        {"autor": "Kakaç, S., Shah, R.K., Aung, W.",
+         "title": "Handbook of Single-Phase Convective Heat Transfer",
+         "ref": "John Wiley & Sons (1987)",
+         "doi": ""},
+
+    # 39:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -385,6 +418,97 @@ def f_laminar(Re, geometry=0, **kw):
 
     return Dimensionless(f)
 
+
+# Turbulent flow in smooth pipes
+@refDoc(__doi__, [33])
+def f_turbulent_Blasius(Re):
+    """Friction factor for smooth circular pipe by Blasius (1912)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    return 0.0791/Re**0.25
+
+
+@refDoc(__doi__, [34])
+def f_turbulent_McAdams(Re):
+    """Friction factor for smooth circular pipe by McAdams (1954)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 6-8a
+    return 0.046/Re**0.2
+
+
+@refDoc(__doi__, [35, 34])
+def f_turbulent_Drew(Re):
+    """Friction factor for smooth circular pipe by Drew-Koo-McAdams (1932)
+    as show in [34]_
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    return 0.0014 + 0.125/Re**0.32
+
+
+@refDoc(__doi__, [36])
+def f_turbulent_Techo(Re):
+    """Friction factor for smooth circular pipe by Techo-Tickner-James (1965)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 2
+    f = (0.86859 * log(Re/(1.964*log(Re)-3.8215)))**-2
+    return f
+
+
+@refDoc(__doi__, [37])
+def f_turbulent_GoudarSonnad(Re):
+    """Friction factor for smooth circular pipe by Goudar-Sonnad (2003)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    # Eq 9
+    f = (1.7372 * lambertw(0.4573*Re).real)**-2
+    return 4*f
 
 
 # Turbulent flow in rough pipes
@@ -1298,16 +1422,6 @@ f_list = (f_colebrook, f_chen, f_Vatankhah, f_buzzelli, f_romeo, f_serghides,
           f_chen1979, f_moody, f_wood, f_eck, f_altshul)
 
 
-def f_blasius(Re):
-    """
-    Friction factor by Blasius, for bare tubes
-
-    Input parameters:
-    Re: Reynolds number
-    """
-    return 0.079/Re**0.25
-
-
 @refDoc(__doi__, [32])
 def f_annulli_Gnielinski(Re, Di, Do):
     """Friction factor for annulli section in bare tubes using the Gnielinski
@@ -1559,9 +1673,11 @@ def f_gas_noisothermal_turbulent(Re, mu, muw, T, Tw, eD=0):
 
 
 if __name__ == "__main__":
-    for f in f_list:
-        line = f.__doc__.split("\n")[0]
-        year = line.split(" ")[-1]
-        name = line.split(" ")[-3]
-        doc = name + " " + year
-        print(f(1e7, 0.0002), doc)
+    # for f in f_list:
+        # line = f.__doc__.split("\n")[0]
+        # year = line.split(" ")[-1]
+        # name = line.split(" ")[-3]
+        # doc = name + " " + year
+        # print(f(1e7, 0.0002), doc)
+
+    print(f_laminar(1, 6, di=0.5, do=1))
