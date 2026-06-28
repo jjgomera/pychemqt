@@ -25,7 +25,7 @@ Module for implement friction factor related functionality
 Global function with all functionality, :func:`f_friccion`
 
 Friction factor for rough pipes, Colebrook-White intrinsic equation is solved
-by iteration so so many method have been implement to get direct equations:
+by iteration so many method have been implement to get direct equations:
 
     * :func:`f_colebrook`
     * :func:`f_chen`
@@ -60,9 +60,10 @@ by iteration so so many method have been implement to get direct equations:
 '''
 
 
-from math import exp, log, log10
+from math import exp, log, log10, pi, tan
 
 from scipy.optimize import fsolve
+from scipy.special import ellipe, lambertw
 
 from lib.unidades import Dimensionless
 from lib.utilities import refDoc
@@ -260,6 +261,133 @@ __doi__ = {
 # Friction factor for pipes
 # All this function return the darcy friction factor, fanning friction factor
 # can be obtained divided darcy factor by 4.
+
+
+# Laminar flow
+@refDoc(__doi__, [29])
+def f_laminar(Re, geometry=0, **kw):
+    """
+    Friction factor in laminar regimen for several geometries
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    geometry: int
+        Index for duct geometry (Table 7.1, Pag 184 in [29]_)
+            * 0 - Circular section (default)
+            * 1 - Square
+            * 2 - Rectangle
+            * 3 - Ellipse
+            * 4 - Equilateral triangle
+            * 4 - Isosceles triangle
+            * 5 - Right triangle
+            * 6 - Anulli
+    args: float
+        Other parameter necessary for noncircular geometries
+            * Rectangle: Ratio width/height, [-]
+            * Equilateral triangle: Count of rounder corner
+            * Isosceles triangle: Angle, [º]
+            * Ellipse: Both diameters of ellipse, [m]
+            * Right triangle: Angle, [º]
+            * Anulli: Internal and external diameter, [m]
+    """
+    # Correlation grouped in Table 3.49 from [38]_
+    # Alternate correlation for several geometries in [29], Table 7.1
+
+    if geometry == 0:
+        # Circular
+        f = 16/Re
+
+    elif geometry == 1:
+        # Flat
+        f = 24/Re
+
+    elif geometry == 2:
+        # Square
+        f = 14.2/Re
+
+    elif geometry == 3:
+        # Rectangle
+        D = kw["D"]
+        d = kw["d"]
+        a = D/d
+        f = 24*(1-1.3553*a+1.9467*a**2-1.7012*a**3+0.9564*a**4-0.2537*a**5)/Re
+
+        # Alternate formulation
+        # f = 16/(2/3+11/24*d/D*(2-d/D))/Re
+
+    elif geometry == 4:
+        # Equilateral triangle, Table 3.19
+        N_round = kw["N_round"]
+        if N_round == 3:
+            f = 15.993*Re
+        elif N_round == 2:
+            f = 14.899*Re
+        elif N_round == 1:
+            f = 14.057*Re
+        else:
+            f = 13.333*Re
+
+    elif geometry == 5:
+        # Isosceles triangle
+        a = kw["a"]
+        b = kw["b"]
+        alpha = b/a
+        if alpha <= 1:
+            f = 12/Re * (
+                1 - 0.0115*alpha + 1.7099*alpha**2 - 4.3394*alpha**3
+                + 4.2732*alpha**4 - 1.5817*alpha**5 + 0.0599 * alpha**6)
+        else:
+            f = 12/Re * (alpha**3 + 0.295*alpha**2 - 0.2046*alpha
+                         + 0.0552/alpha**3)
+
+    elif geometry == 6:
+        # Right triangle
+        a = kw["a"]
+        b = kw["b"]
+        alpha = b/a
+        f = 12/Re * (1 + 0.27956*alpha - 0.2756*alpha**2 + 0.0591*alpha**3
+                     + 0.0622*alpha**4 - 0.029*alpha**5)
+
+    elif geometry == 7:
+        # Ellipse
+        D = kw["D"]
+        d = kw["d"]
+        a = d/D
+        f = 2/Re * (1+a**2) * (pi/ellipe(1-a**2))**2
+
+        # Alternate formulation
+        # c = (D-d)/(D+d)
+        # Dh = 4*d*D*(64-16*c**2)/((d+D)*(64-3*c**4))
+        # f = 2*Dh**2*(D**2+d**2)/D**2/d**2/Re
+
+    elif geometry == 8:
+        # Annulli
+        di = kw["di"]
+        do = kw["do"]
+        # Eq 7.9, 7.10, pag 183
+        # alpha = (do-di)**2/(do**2+di**2-(do**2-di**2)/log(do/di))
+        # f = 16*alpha/Re
+
+        # Eq 3.209
+        r = di/do
+        rm = ((1-r**2)/(2*log(1/r)))**0.5
+        f = 16/Re * (1-r)**2 / (1 + r**2 - 2*rm**2)
+
+    elif geometry == 9:
+        # Regular polygon, Eq 3.195
+        n = kw["n"]
+        f = 16/Re * (n**2/(0.44+n**2))**4
+        return f
+
+    # The table show other exotic geometries don't implemented here
+
+    return Dimensionless(f)
+
+
+
+# Turbulent flow in rough pipes
 @refDoc(__doi__, [1])
 def f_colebrook(Re, eD):
     r"""Calculates friction factor `f` with Colebrook-White correlation (1939)
