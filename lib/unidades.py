@@ -509,6 +509,8 @@ class Angle(unidad):
     __test__ = [{"input": {"value": 25, "unit": "deg"},
                  "prop": {"rad": 0.436332312999}}]
 
+    def base(self):
+        return self._data%(2*k.pi)
 
 class Length(unidad):
     __title__ = translate("unidades", "Length")
