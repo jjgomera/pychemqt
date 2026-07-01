@@ -60,7 +60,7 @@ by iteration so many method have been implement to get direct equations:
 '''
 
 
-from math import exp, log, log10, pi, tan
+from math import exp, log, log10, pi
 
 from scipy.optimize import fsolve
 from scipy.special import ellipe, lambertw
@@ -297,7 +297,7 @@ __doi__ = {
 
 
 # Laminar flow
-@refDoc(__doi__, [29])
+@refDoc(__doi__, [38, 29])
 def f_laminar(Re, geometry=0, **kw):
     """
     Friction factor in laminar regimen for several geometries
@@ -1549,7 +1549,7 @@ def f_friccion(Re, eD=0, method=0, geometry=0, **kw):
 
 
 @refDoc(__doi__, [1])
-def eD(Re, f):
+def eD_Colebrook(Re, f):
     """Calculates relative roughness
 
     Parameters

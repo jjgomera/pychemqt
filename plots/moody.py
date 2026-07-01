@@ -41,12 +41,20 @@ from numpy.lib.scimath import log10
 from matplotlib.patches import ConnectionPatch
 
 from lib.config import conf_dir, Preferences
-from lib.friction import f_list, eD
+from lib.friction import f_list, eD_Colebrook
 from lib.utilities import formatLine, representacion
 from tools.qt import QtWidgets, translate
 from UI.widgets import Entrada_con_unidades, GridConfig, LineConfig
 
 from plots.ui import Chart
+
+
+__doi__ = {
+    1:
+        {"autor": "Moody, L.F.",
+         "title": "Friction Factors for Pipe Flow",
+         "ref": "Trans. ASME 66(8) (1944) 671-684",
+         "doi": "10.1115/1.4018140"}}
 
 
 Re_laminar = [600, 2400]
@@ -188,7 +196,7 @@ class Moody(Chart):
             if f < f_min:
                 Re = f = 0
             else:
-                ed = eD(Re, f)
+                ed = eD_Colebrook(Re, f)
 
         self.createCrux(Re, f, ed)
 
