@@ -25,9 +25,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.'''
 
 from math import exp, factorial, pi
 
+from scipy.special import ellipe
 from numpy import tanh
 from numpy.lib.scimath import log, log10
 
+from lib.unidades import Dimensionless
 from lib.utilities import refDoc
 
 
@@ -92,13 +94,264 @@ __doi__ = {
          "title": "Turbulent Heat Transfer in Annuli with Small Cores",
          "ref": "Int. J. Heat Mass Transfer 11(3) (1968) 415-426",
          "doi": "10.1016/0017-9310(68)90086-0"},
-    # 12:
+    12:
+        {"autor": "Kakaç, S., Shah, R.K., Aung, W.",
+         "title": "Handbook of Single-Phase Convective Heat Transfer",
+         "ref": "John Wiley & Sons (1987)",
+         "doi": ""},
+    13:
+        {"autor": "Hausen, H.",
+         "title": "Darstellung des Wärmeüberganges in Rohren durch "
+                  "verallgemeinerte Potenzbeziehungen",
+         "ref": "VDI Z. Suppl Verfahrenstechnik 4 (1943) 91-98",
+         "doi": ""},
+
+    # 14:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
     #      "doi": ""},
 
 }
+
+
+# Laminar flow
+@refDoc(__doi__, [12])
+def Nu_laminar(Re, boundary="H1", geometry=0, **kw):
+    """Nusselt number in laminar regimen for several geometries
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    geometry : int
+        Index for duct geometry (Table 7.1, Pag 184 in [29]_)
+            * 0 - Circular section (default)
+            * 1 - Flat
+            * 2 - Square
+            * 3 - Rectangle
+            * 4 - Equilateral triangle
+            * 5 - Isosceles triangle
+            * 6 - Right triangle
+            * 7 - Ellipse
+            * 8 - Anulli
+            * 9 - Regular polygon
+    D : float, optional
+        Long axis of geometric like rectangle, ellipse or annulli, [m]
+    d : float, optional
+        Short axis of geometric like rectangle, ellipse or annulli, [m]
+    N_round : int, optional
+        In equilateral triangle, set corner with round knot
+    n : int, optional
+        In regular polygon set the count of corner of polygon
+    """
+    # Correlation grouped in Table 3.49 from [38]_
+
+    if geometry == 0:
+        # Circular
+        if boundary == "T":
+            Nu = 3.6568
+        else:
+            Nu = 4.3636
+
+    elif geometry == 1:
+        # Flat
+        if boundary == "T":
+            Nu = 7.5407
+        else:
+            Nu = 8.2353
+
+    elif geometry == 2:
+        # Square, special case of rectangular geometry
+        return Nu_laminar(Re, boundary, geometry=3, D=1, d=1)
+
+    elif geometry == 3:
+        # Rectangle
+        D = kw["D"]
+        d = kw["d"]
+        a = D/d
+
+        if boundary == "T":
+            Nu = 7.541 * (1 - 2.610*a + 4.97*a**2 - 5.119*a**3 + 2.702*a**4
+                          - 0.548*a**5)
+        elif boundary == "H1":
+            Nu = 8.235 * (1 - 2.0421*a + 3.0853*a**2 - 2.4765*a**3
+                          + 1.0578*a**4 - 0.1861*a**5)
+        else:
+            Nu = 8.235 * (1 - 10.6044*a + 61.1755*a**2 - 155.1803*a**3
+                          + 176.9203*a**4 - 72.9236*a**5)
+
+    elif geometry == 4:
+        # Equilateral triangle, Table 3.19
+        N_round = kw["N_round"]
+        if boundary == "H1":
+            if N_round == 3:
+                Nu = 4.205
+            elif N_round == 2:
+                Nu = 3.756
+            elif N_round == 1:
+                Nu = 3.401
+            else:
+                Nu = 3.111
+
+        elif boundary == "H2":
+            if N_round == 3:
+                Nu = 3.78
+            elif N_round == 2:
+                Nu = 2.715
+            elif N_round == 1:
+                Nu = 2.196
+            else:
+                Nu = 1.892
+
+        else:
+            Nu = 2.49
+
+    elif geometry == 5:
+        # Isosceles triangle
+        d = kw["d"]
+        D = kw["D"]
+        a = D/d
+        if boundary == "T":
+            if a <= 1:
+                Nu = 0.943 * (1 + 4.834*a - 2.1738*a**2 - 4.0797*a**3)
+            else:
+                Nu = 0.943 * (1 + 0.2595/a - 9.2517/a**2 + 11.9314/a**3
+                              - 9.8035/a**4 + 3.3754/a**5)
+        elif boundary == "H1":
+            if a <= 1:
+                Nu = 2.059 * (1 + 0.7139*a + 2.954*a**2 - 7.8785*a**3
+                              + 5.645*a**4 + 0.2144*a**5 - 1.1387*a**6)
+            else:
+                Nu = 2.059 * (1 + 1.2489/a - 1.0559/a**2 + 0.2515/a**3
+                              + 0.152/a**4 - 0.0901/a**5)
+
+        else:
+            if a <= 0.125:
+                Nu = 1.088*a
+            elif a <= 1:
+                Nu = -0.2113 * (1 - 10.9962*a - 15.1301*a**2 + 16.5921*a**3)
+            elif a < 8:
+                Nu = 0.912 * (1 - 13.3739/a + 78.9211/a**2 - 46.6239/a**3)
+            else:
+                Nu = 0.312/a
+
+    elif geometry == 6:
+        # Right triangle
+        d = kw["d"]
+        D = kw["D"]
+        a = D/d
+        if boundary == "T":
+            Nu = 1.1731 * (1 + 3.1312*a - 3.5919*a**2 + 1.7893*a**3
+                           - 0.3189*a**4)
+        else:
+            Nu = 2.0581 * (1 + 1.298*a - 2.1837*a**2 + 4.3496*a**3
+                           - 6.2381*a**4 + 4.314*a**5 - 1.0911*a**6)
+
+    elif geometry == 7:
+        # Ellipse
+        D = kw["D"]
+        d = kw["d"]
+        a = d/D
+
+        if boundary == "T":
+            Nu = 0.3536 * (pi/ellipe(1-a**2))**2 * (
+                1 + 0.9864*a - 0.7189*a**2 + 3.3364*a**3 - 3.0307*a**4
+                + 1.013*a**5)
+        elif boundary == "H1":
+            Nu = 9 * (1+a**2) * (pi/ellipe(1-a**2))**2 \
+                * (a**4+6*a**2+1)/(17*a**4+98*a**2+17)
+        else:
+            Nu = 0.3258*a * (pi/ellipe(1-a**2))**2 * (
+                1 + 15.6397*a - 29.5117*a**2 + 16.225*a**3)
+
+    elif geometry == 8:
+        # Annulli
+        di = kw["d"]
+        do = kw["D"]
+        r = di/do
+
+        if boundary == "T":
+            Nu = 5.3302 * (1 + 3.2904*r - 12.0075*r**2 + 18.8298*r**3
+                           - 9.698*r**4)
+        else:
+            Nu = 6.2066 * (1 + 2.3108*r - 7.7553*r**2 + 13.2851*r**3
+                           - 10.5987*r**4 + 2.6178*r**5 + 0.468*r**6)
+
+    elif geometry == 9:
+        # Regular polygon
+        n = kw["n"]
+        if boundary == "H2":
+            Nu = -2.2578 * (1 - 0.8051*n + 0.0586*n**2 - 0.0007*n**3
+                            -0.0002*n**4 + 0.000003*n**5)
+        else:
+            Nu = 0.1908*(1+7.9489*n - 1.1383*n**2 + 0.0712*n**3 - 0.0016*n**4)
+
+    else:
+        raise ValueError("Geometry don´t defined")
+
+    # The table show other exotic geometries don't implemented here
+
+    return Dimensionless(Nu)
+
+
+@refDoc(__doi__, [13, 12])
+def Nu_laminar_Hausen(Re, Pr, D, L):
+    """Mean Nusselt number for constant wall temperature boundary condition,
+    with fully developed laminar velocity profile and developing thermal
+    profile using the method of Hausen as shown in [12]_
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    D : float
+        Pipe diameter, [m]
+    L : float
+        Pipe length, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Dimensionless axial coordinate for the thermal entrance region
+    x = D/L * Re * Pr
+
+    # Eq 3.50
+    Nu = 3.66 + 0.0668/(x**(1/3)*(0.04+x**(2/3)))
+    return Nu
+
+
+
+# Pipe Laminar flow
+def h_tubeside_laminar_Eubank_Proctor(Gz, Gr, Pr, D, L):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
+    Eubank, D. C. and Proctor W. S. - Effect of natural convection on heat transfer with laminar flow in tubes, MS Thesis, Chemical Engineering Department, Massachusetts Institute of Technology, 1951."""
+    # TODO: De momento se devuelve el valor de h*d/k*(mu_w/mu_a)**0.14
+    return 1.8*(Gz+12.6*(Gr*Pr*D/L)**0.4)**(1./3)
+
+
+def h_tubeside_laminar_VDI(Re, Pr, D, L):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
+    VDI Heat Atlas G1 Pag 695"""
+    Nu1 = 4.364
+    Nu2 = 1.953*(Re*Pr*D/L)**(1./3)
+    Nu3 = 0.924*Pr**(1./3)*(Re*D/L)**0.5
+    return (Nu1**3+0.6**3+(Nu2-0.6)**3+Nu3**3)**(1./3)
+
+
+
+def h_tubeside_laminar_SiederTate(Gz, Gr):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
+    Sieder and Tate - Heat Transfer and Pressure Drop of Liquids in Tubes, Industrial Engineering Chemistry, Vol. 28, p. 1429, 1936.
+    Perry Capitulo 5 pag 15
+    Gz>100"""
+    return 1.86*Gz**(1./3)+0.87*(1+0.015*Gr**(1./3))
+
+
 
 
 @refDoc(__doi__, [1, 2, 3])
@@ -158,41 +411,10 @@ def Nu_vertical_Churchill(Pr, Ra):
     Nu = (0.825+0.387*Ra**(1/6)/f**(8/27))**2                        # Eq 9
     return Nu
 
-
-# Pipe Laminar flow
-def h_tubeside_laminar_Eubank_Proctor(Gz, Gr, Pr, D, L):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
-    Eubank, D. C. and Proctor W. S. - Effect of natural convection on heat transfer with laminar flow in tubes, MS Thesis, Chemical Engineering Department, Massachusetts Institute of Technology, 1951."""
-    # TODO: De momento se devuelve el valor de h*d/k*(mu_w/mu_a)**0.14
-    return 1.8*(Gz+12.6*(Gr*Pr*D/L)**0.4)**(1./3)
-
-
-def h_tubeside_laminar_VDI(Re, Pr, D, L):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
-    VDI Heat Atlas G1 Pag 695"""
-    Nu1 = 4.364
-    Nu2 = 1.953*(Re*Pr*D/L)**(1./3)
-    Nu3 = 0.924*Pr**(1./3)*(Re*D/L)**0.5
-    return (Nu1**3+0.6**3+(Nu2-0.6)**3+Nu3**3)**(1./3)
-
-
-def h_tubeside_laminar_Hausen(Gz):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
-    Perry Capitulo 5 pag 15
-    0.1<Gz<1e4"""
-    return 3.66+0.19*Gz**0.8/(1+0.117*Gz**0.467)
-
-
-def h_tubeside_laminar_Sieder_Tate(Gz, Gr):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
-    Sieder and Tate - Heat Transfer and Pressure Drop of Liquids in Tubes, Industrial Engineering Chemistry, Vol. 28, p. 1429, 1936.
-    Perry Capitulo 5 pag 15
-    Gz>100"""
-    return 1.86*Gz**(1./3)+0.87*(1+0.015*Gr**(1./3))
-
-
 # Pipe Turbulent flow
-def h_tubeside_turbulent_Sieder_Tate(Re, Pr):
+
+@refDoc(__doi__, [6])
+def Nu_tubeside_turbulent_SiederTate(Re, Pr):
     """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
     Sieder and Tate - Heat Transfer and Pressure Drop of Liquids in Tubes, Industrial Engineering Chemistry, Vol. 28, p. 1429, 1936.
     Re>10000
