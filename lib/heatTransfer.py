@@ -325,6 +325,39 @@ def Nu_laminar_Hausen(Re, Pr, D, L):
     return Nu
 
 
+@refDoc(__doi__, [1])
+def Nu_laminar_VDI(Re, Pr, D, L, boundary="T"):
+    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    using the method defined in [1]_, G1 Pag 694-695
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    D : float
+        Pipe diameter, [m]
+    L : float
+        Pipe length, [m]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    if boundary == "T":
+        Nu1 = 3.66                                                      # Eq 4
+        Nu2 = 1.615 * (Re*Pr*D/L)**(1/3)                                # Eq 5
+        Nu3 = (2/(1+22*Pr))**(1/6) * (Re*Pr*D/L)**0.5                   # Eq 11
+        Nu = (Nu1**3 + 0.7**3 + (Nu2-0.7)**3 + Nu3**3)**(1/3)           # Eq 12
+    else:
+        Nu1 = 4.364                                                     # Eq 17
+        Nu2 = 1.953 * (Re*Pr*D/L)**(1/3)                                # Eq 18
+        Nu3 = 0.924 * Pr**(1/3) * (Re*D/L)**0.5                         # Eq 24
+        Nu = (Nu1**3 + 0.6**3 + (Nu2-0.6)**3 + Nu3**3)**(1/3)           # Eq 25
+    return Nu
+
 
 # Pipe Laminar flow
 def h_tubeside_laminar_Eubank_Proctor(Gz, Gr, Pr, D, L):
@@ -332,15 +365,6 @@ def h_tubeside_laminar_Eubank_Proctor(Gz, Gr, Pr, D, L):
     Eubank, D. C. and Proctor W. S. - Effect of natural convection on heat transfer with laminar flow in tubes, MS Thesis, Chemical Engineering Department, Massachusetts Institute of Technology, 1951."""
     # TODO: De momento se devuelve el valor de h*d/k*(mu_w/mu_a)**0.14
     return 1.8*(Gz+12.6*(Gr*Pr*D/L)**0.4)**(1./3)
-
-
-def h_tubeside_laminar_VDI(Re, Pr, D, L):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
-    VDI Heat Atlas G1 Pag 695"""
-    Nu1 = 4.364
-    Nu2 = 1.953*(Re*Pr*D/L)**(1./3)
-    Nu3 = 0.924*Pr**(1./3)*(Re*D/L)**0.5
-    return (Nu1**3+0.6**3+(Nu2-0.6)**3+Nu3**3)**(1./3)
 
 
 
