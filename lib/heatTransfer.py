@@ -111,8 +111,14 @@ __doi__ = {
                   "Flow in Tubes",
          "ref": "MS Thesis, Chemical Engineering Department, MIT, 1951",
          "doi": ""},
+    15:
+        {"autor": "Oliver, D.R.",
+         "title": "The effect of natural convection on viscous-flow heat "
+                  "transfer in horizontal tubes",
+         "ref": "Chem. Eng. Sci. 17(5) (1962) 335-350",
+         "doi": "10.1016/0009-2509(62)80035-9"},
 
-    # 15:
+    # 16:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -438,6 +444,42 @@ def Nu_laminar_EubankProctor(Re, Pr, D, L, Gr, mu=None, muw=None):
         Nu *= (mu/muw)**0.14
     return Nu
 
+
+@refDoc(__doi__, [15])
+def Nu_laminar_Oliver(Re, Pr, D, L, Gr, mu=None, muw=None):
+    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    using the method of Oliver (1962)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    D : float
+        Pipe diameter, [m]
+    L : float
+        Pipe length, [m]
+    Gr : float
+        Grashof number, [-]
+    mu : float, optional
+        Viscosity at bulk temperature, [Pa·s]
+    muw : float, optional
+        Viscosity at wall temperature, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 12
+    Gz = D/L*Re*Pr
+    Nu = 1.75 * (Gz + 5.6e-4*(Gr*Pr*L/D)**0.7)**(1/3)
+
+    # If available properties apply the properties correction
+    if mu and muw:
+        Nu *= (mu/muw)**0.14
+    return Nu
 
 
 @refDoc(__doi__, [1, 2, 3])
