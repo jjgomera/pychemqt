@@ -105,8 +105,14 @@ __doi__ = {
                   "verallgemeinerte Potenzbeziehungen",
          "ref": "VDI Z. Suppl Verfahrenstechnik 4 (1943) 91-98",
          "doi": ""},
+    14:
+        {"autor": "Eubank, O.C., Proctor, W.S.",
+         "title": "Effect of Natural Convection on Heat Transfer with Laminar "
+                  "Flow in Tubes",
+         "ref": "MS Thesis, Chemical Engineering Department, MIT, 1951",
+         "doi": ""},
 
-    # 14:
+    # 15:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -359,22 +365,78 @@ def Nu_laminar_VDI(Re, Pr, D, L, boundary="T"):
     return Nu
 
 
-# Pipe Laminar flow
-def h_tubeside_laminar_Eubank_Proctor(Gz, Gr, Pr, D, L):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
-    Eubank, D. C. and Proctor W. S. - Effect of natural convection on heat transfer with laminar flow in tubes, MS Thesis, Chemical Engineering Department, Massachusetts Institute of Technology, 1951."""
-    # TODO: De momento se devuelve el valor de h*d/k*(mu_w/mu_a)**0.14
-    return 1.8*(Gz+12.6*(Gr*Pr*D/L)**0.4)**(1./3)
+@refDoc(__doi__, [6])
+def Nu_laminar_SiederTate(Re, Pr, D, L, mu=None, muw=None):
+    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    using the method of Sieder-Tate (1936)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    D : float
+        Pipe diameter, [m]
+    L : float
+        Pipe length, [m]
+    mu : float, optional
+        Viscosity at bulk temperature, [Pa·s]
+    muw : float, optional
+        Viscosity at wall temperature, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 2
+    Nu = 1.86 * (D/L*Re*Pr)**(1/3)
+
+    # If available properties apply the properties correction
+    if mu and muw:
+        Nu *= (mu/muw)**0.14
+    return Nu
 
 
+@refDoc(__doi__, [14])
+def Nu_laminar_EubankProctor(Re, Pr, D, L, Gr, mu=None, muw=None):
+    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    using the method of Eubank-Proctor (1951)
 
-def h_tubeside_laminar_SiederTate(Gz, Gr):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen laminar
-    Sieder and Tate - Heat Transfer and Pressure Drop of Liquids in Tubes, Industrial Engineering Chemistry, Vol. 28, p. 1429, 1936.
-    Perry Capitulo 5 pag 15
-    Gz>100"""
-    return 1.86*Gz**(1./3)+0.87*(1+0.015*Gr**(1./3))
+    Modified Sieder-Tate corelation including a term to account the free
+    convection effect.
 
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    D : float
+        Pipe diameter, [m]
+    L : float
+        Pipe length, [m]
+    Gr : float
+        Grashof number, [-]
+    mu : float, optional
+        Viscosity at bulk temperature, [Pa·s]
+    muw : float, optional
+        Viscosity at wall temperature, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # Eq 13
+    Gz = D/L*Re*Pr
+    Nu = 1.8 * (Gz + 12.6*(Gr*Pr*D/L)**0.4)**(1/3)
+
+    # If available properties apply the properties correction
+    if mu and muw:
+        Nu *= (mu/muw)**0.14
+    return Nu
 
 
 
@@ -437,7 +499,7 @@ def Nu_vertical_Churchill(Pr, Ra):
 
 # Pipe Turbulent flow
 
-@refDoc(__doi__, [6])
+# @refDoc(__doi__, [6])
 def Nu_tubeside_turbulent_SiederTate(Re, Pr):
     """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
     Sieder and Tate - Heat Transfer and Pressure Drop of Liquids in Tubes, Industrial Engineering Chemistry, Vol. 28, p. 1429, 1936.
