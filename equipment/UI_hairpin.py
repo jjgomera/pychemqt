@@ -59,16 +59,26 @@ class UI_equipment(UI_equip):
         tabCatalogoMethods = QtWidgets.QWidget()
         tabCatalogo.addTab(tabCatalogoMethods, self.tr("Correlations"))
         lyt = QtWidgets.QGridLayout(tabCatalogoMethods)
+
+        lyt.addWidget(QtWidgets.QLabel(self.tr(
+            "Heat transfer for laminar regimen in circular section")), 1, 1)
+        self.tubesideLaminar = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_METHOD_TUBE_LAMINAR:
+            self.tubesideLaminar.addItem(txt)
+        self.tubesideLaminar.currentIndexChanged.connect(
+            partial(self.changeParams, "tubesideLaminar"))
+        lyt.addWidget(self.tubesideLaminar, 1, 2)
+
+        # "tubesideTurbulent": 0,
+
         lyt.addWidget(QtWidgets.QLabel(
-            self.tr("Heat transfer in annuli section")), 1, 1)
+            self.tr("Heat transfer in annuli section")), 2, 1)
         self.annulliNuMethod = QtWidgets.QComboBox()
         for txt in self.Equipment.TEXT_METHOD_ANNULI:
             self.annulliNuMethod.addItem(txt)
-        # "tubesideLaminar": 0,
-        # "tubesideTurbulent": 0,
         self.annulliNuMethod.currentIndexChanged.connect(
             partial(self.changeParams, "annulliNuMethod"))
-        lyt.addWidget(self.annulliNuMethod, 1, 2)
+        lyt.addWidget(self.annulliNuMethod, 2, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,

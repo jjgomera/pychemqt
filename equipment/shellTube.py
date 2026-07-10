@@ -20,7 +20,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>."""
 
 from numpy import logspace
 
-from lib.unidades import Dimensionless
+import lib.heatTransfer as ht
+from lib.adimensional import Gr, Re
+from lib import unidades
 from tools.qt import translate
 from equipment.parents import equipment
 
@@ -222,7 +224,7 @@ def jFactor(Re, PtD, tubeConf):
     a = a3/(1+0.14*Re**a4)                                             # Eq 6.3
     j = a1*(1.33/PtD)**a*Re**a2                                        # Eq 6.1
 
-    return Dimensionless(j)
+    return unidades.Dimensionless(j)
 
 
 def fFactor(Re, PtD, tubeConf):
@@ -283,7 +285,7 @@ def fFactor(Re, PtD, tubeConf):
 
     b = b3/(1+0.14*Re**b4)                                             # Eq 6.4
     f = b1*(1.33/PtD)**b*Re**b2                                        # Eq 6.2
-    return Dimensionless(f)
+    return unidades.Dimensionless(f)
 
 
 class Shell_Tube(equipment):
@@ -586,18 +588,17 @@ class Shell_Tube(equipment):
             v = self.kwargs["entradaTubo"].Q/N*4/pi/Di
             re = Re(D=Di, V=v, rho=rho, mu=mu)
             pr = self.kwargs["entradaTubo"].Liquido.Pr
-            gz = Gz(w=w, cp=cp, k=k, L=L)
-            gr = Gr(beta=beta, T=self.kwargs["entradaTubo"].T, To=self.kwargs["entradaTubo"].T, L=L, mu=mu)
+            fluidTube = self.kwargs["entradaTubo"]
 
             if re < 2300:
-                if self.kwargs["tubesideLaminar"] == 0:
-                    Nu = h_tubeside_laminar_Eubank_Proctor(Pr=pr, Gz=gz, Gr=gr, D=Di, L=L)
-                elif self.kwargs["tubesideLaminar"] == 1:
-                    Nu = h_tubeside_laminar_VDI(Re=re, Pr=pr, D=Di, L=L)
-                elif self.kwargs["tubesideLaminar"] == 2:
-                    Nu = h_tubeside_laminar_Hausen(Gz=gz)
-                elif self.kwargs["tubesideLaminar"] == 3:
-                    Nu = h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
+                method = self.kwargs["tubesideLaminar"]
+                gr = Gr(L, beta, fluidTube.T, T2=fluidTube.T, mu=mu, rho=rho)
+
+                kw = {}
+                if self.kwargs["tubesideLaminar"] in (3, 5):
+                    kw["Gr"] = gr
+                Nu = ht.Nu_laminar(re, pr, Di, L, method, **kw)
+
             else:
                 if self.kwargs["tubesideTurbulent"] == 0:
                     Nu = h_tubeside_turbulent_Sieder_Tate(Re=re, Pr=pr)

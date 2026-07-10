@@ -37,7 +37,7 @@ from tools.qt import translate
 
 from equipment.parents import equipment
 from lib import unidades
-from lib.adimensional import Re, Pr, Gr, Gz
+from lib.adimensional import Re, Pr, Gr
 from lib.friction import f_friccion
 import lib.heatTransfer as ht
 # from lib.heatTransfer import *  # noqa
@@ -675,6 +675,14 @@ class Hairpin(equipment):
         translate("equipment", "Carbon steel/carbon steel"),
         translate("equipment", "Carbon steel/304 stainless"),
         translate("equipment", "Carbon steel/316 stainless")]
+    TEXT_METHOD_TUBE_LAMINAR = (
+        "VDI",
+        "Kakaç (1987)",
+        "Sieder-Tate (1936)",
+        "Eubank-Proctor (1951)",
+        "Hausen (1943)",
+        "Oliver (1962)",
+        "Shah-London (1978)")
     TEXT_METHOD_ANNULI = [
         "Gnielinski (2009)",
         "Dirker-Meyer (2005)",
@@ -1028,26 +1036,21 @@ class Hairpin(equipment):
         elif self.kwargs["hasRib"] and self.kwargs["rib"]:
             Nu = self.kwargs["rib"].Nu(re, pr, self.Di)
 
-        elif self.phaseTube[:6] == "Latent":
+        elif "Latent" in self.phaseTube:
 
             if re < 2300:
+                method = self.kwargs["tubesideLaminar"]
                 L = self.L
-                cp = fluido.cp
-                w = fluido.caudalmasico
-                gz = Gz(w=w, cp=cp, k=k, L=L)
-                gr = Gr(beta=beta, T=fluidTube.T, To=fluidTube.T, L=L, mu=mu)
-                if self.kwargs["tubesideLaminar"] == 0:
-                    Nu = ht.h_tubeside_laminar_Eubank_Proctor(
-                        Pr=pr, Gz=gz, Gr=gr, D=self.Di, L=L)
-                elif self.kwargs["tubesideLaminar"] == 1:
-                    Nu = ht.h_tubeside_laminar_VDI(Re=re, Pr=pr, D=self.Di, L=L)
-                elif self.kwargs["tubesideLaminar"] == 2:
-                    Nu = ht.h_tubeside_laminar_Hausen(Gz=gz)
-                elif self.kwargs["tubesideLaminar"] == 3:
-                    Nu = ht.h_tubeside_laminar_Sieder_Tate(Gz=gz, Gr=gr)
+                gr = Gr(L, beta, fluidTube.T, T2=fluidTube.T, mu=mu, rho=rho)
+
+                kw = {}
+                if self.kwargs["tubesideLaminar"] in (3, 5):
+                    kw["Gr"] = gr
+                Nu = ht.Nu_laminar(re, pr, self.Di, L, method, **kw)
+
             else:
                 if self.kwargs["tubesideTurbulent"] == 0:
-                    Nu = ht.h_tubeside_turbulent_Sieder_Tate(Re=re, Pr=pr)
+                    Nu = ht.Nu_turbulent_SiederTate(Re=re, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 1:
                     Nu = ht.h_tubeside_turbulent_Colburn(Re=re, Pr=pr)
                 elif self.kwargs["tubesideTurbulent"] == 2:

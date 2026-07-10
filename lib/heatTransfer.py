@@ -117,8 +117,14 @@ __doi__ = {
                   "transfer in horizontal tubes",
          "ref": "Chem. Eng. Sci. 17(5) (1962) 335-350",
          "doi": "10.1016/0009-2509(62)80035-9"},
+    16:
+        {"autor": "Shah, R.K., London, A.L.",
+         "title": "Laminar Flow Forced Convection in Ducts: A Source Book for "
+                  "Compact Heat Exchanger Analytical Data",
+         "ref": "Academic Press 1978",
+         "doi": ""},
 
-    # 16:
+    # 17:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -129,13 +135,15 @@ __doi__ = {
 
 # Laminar flow
 @refDoc(__doi__, [12])
-def Nu_laminar(Re, boundary="H1", geometry=0, **kw):
-    """Nusselt number in laminar regimen for several geometries
+def Nu_laminar_Kakac(Re, boundary="H1", geometry=0, **kw):
+    """Nusselt number for fully developed laminar flow for several geometries
 
     Parameters
     ----------
     Re : float
         Reynolds number, [-]
+    boundary : str
+        Code of boundary T | H1 | H2
     geometry : int
         Index for duct geometry (Table 7.1, Pag 184 in [29]_)
             * 0 - Circular section (default)
@@ -175,7 +183,7 @@ def Nu_laminar(Re, boundary="H1", geometry=0, **kw):
 
     elif geometry == 2:
         # Square, special case of rectangular geometry
-        return Nu_laminar(Re, boundary, geometry=3, D=1, d=1)
+        return Nu_laminar_Kakac(Re, boundary, geometry=3, D=1, d=1)
 
     elif geometry == 3:
         # Rectangle
@@ -339,13 +347,15 @@ def Nu_laminar_Hausen(Re, Pr, D, L):
 
 @refDoc(__doi__, [1])
 def Nu_laminar_VDI(Re, Pr, D, L, boundary="T"):
-    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    """Mean Nusselt number for thermal and hydrodynamic development of flow
     using the method defined in [1]_, G1 Pag 694-695
 
     Parameters
     ----------
     Re : float
         Reynolds number, [-]
+    boundary : str
+        Code of boundary T | H
     Pr : float
         Prandtl number [-]
     D : float
@@ -373,7 +383,7 @@ def Nu_laminar_VDI(Re, Pr, D, L, boundary="T"):
 
 @refDoc(__doi__, [6])
 def Nu_laminar_SiederTate(Re, Pr, D, L, mu=None, muw=None):
-    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    """Mean Nusselt number for thermal and hydrodynamic development of flow
     using the method of Sieder-Tate (1936)
 
     Parameters
@@ -407,7 +417,7 @@ def Nu_laminar_SiederTate(Re, Pr, D, L, mu=None, muw=None):
 
 @refDoc(__doi__, [14])
 def Nu_laminar_EubankProctor(Re, Pr, D, L, Gr, mu=None, muw=None):
-    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    """Mean Nusselt number for thermal and hydrodynamic development of flow
     using the method of Eubank-Proctor (1951)
 
     Modified Sieder-Tate corelation including a term to account the free
@@ -447,7 +457,7 @@ def Nu_laminar_EubankProctor(Re, Pr, D, L, Gr, mu=None, muw=None):
 
 @refDoc(__doi__, [15])
 def Nu_laminar_Oliver(Re, Pr, D, L, Gr, mu=None, muw=None):
-    """Mean Nusselt number for thermal an hydrodynamic development of flow
+    """Mean Nusselt number for thermal and hydrodynamic development of flow
     using the method of Oliver (1962)
 
     Parameters
