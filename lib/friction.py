@@ -311,24 +311,26 @@ def f_laminar(Re, geometry=0, **kw):
     ----------
     Re : float
         Reynolds number, [-]
-    geometry: int
+    geometry : int
         Index for duct geometry (Table 7.1, Pag 184 in [29]_)
             * 0 - Circular section (default)
-            * 1 - Square
-            * 2 - Rectangle
-            * 3 - Ellipse
+            * 1 - Flat
+            * 2 - Square
+            * 3 - Rectangle
             * 4 - Equilateral triangle
-            * 4 - Isosceles triangle
-            * 5 - Right triangle
-            * 6 - Anulli
-    args: float
-        Other parameter necessary for noncircular geometries
-            * Rectangle: Ratio width/height, [-]
-            * Equilateral triangle: Count of rounder corner
-            * Isosceles triangle: Angle, [º]
-            * Ellipse: Both diameters of ellipse, [m]
-            * Right triangle: Angle, [º]
-            * Anulli: Internal and external diameter, [m]
+            * 5 - Isosceles triangle
+            * 6 - Right triangle
+            * 7 - Ellipse
+            * 8 - Anulli
+            * 9 - Regular polygon
+    D : float, optional
+        Long axis of geometric like rectangle, ellipse or annulli, [m]
+    d : float, optional
+        Short axis of geometric like rectangle, ellipse or annulli, [m]
+    N_round : int, optional
+        In equilateral triangle, set corner with round knot
+    n : int, optional
+        In regular polygon set the count of corner of polygon
     """
     # Correlation grouped in Table 3.49 from [38]_
     # Alternate correlation for several geometries in [29], Table 7.1
@@ -382,8 +384,8 @@ def f_laminar(Re, geometry=0, **kw):
 
     elif geometry == 6:
         # Right triangle
-        a = kw["a"]
-        b = kw["b"]
+        a = kw["d"]
+        b = kw["D"]
         alpha = b/a
         f = 12/Re * (1 + 0.27956*alpha - 0.2756*alpha**2 + 0.0591*alpha**3
                      + 0.0622*alpha**4 - 0.029*alpha**5)
@@ -402,8 +404,8 @@ def f_laminar(Re, geometry=0, **kw):
 
     elif geometry == 8:
         # Annulli
-        di = kw["di"]
-        do = kw["do"]
+        di = kw["d"]
+        do = kw["D"]
         # Eq 7.9, 7.10, pag 183
         # alpha = (do-di)**2/(do**2+di**2-(do**2-di**2)/log(do/di))
         # f = 16*alpha/Re
@@ -418,6 +420,9 @@ def f_laminar(Re, geometry=0, **kw):
         n = kw["n"]
         f = 16/Re * (n**2/(0.44+n**2))**4
         return f
+
+    else:
+        raise ValueError("Geometry don´t defined")
 
     # The table show other exotic geometries don't implemented here
 
@@ -954,7 +959,7 @@ def f_zigrang(Re, eD):
         * 4e-5 <= eD <= 5e-2
     """
     # Eq 12
-    A = log10(eD/3.7-5.02/Re*log10(eD/3.7+13./Re))
+    A = log10(eD/3.7-5.02/Re*log10(eD/3.7+13/Re))
     f = 1/(-2*log10(eD/3.7-5.02*A/Re))**2
     return Dimensionless(f)
 
@@ -1106,7 +1111,7 @@ def f_manadilli(Re, eD):
 
 @refDoc(__doi__, [18])
 def f_romeo(Re, eD):
-    r"""Calculates friction factor `f` with Monzon-Romeo-Royo correlation (2002)
+    r"""Calculates friction factor `f` with Romeo-Royo-Monzon correlation (2002)
 
     .. math::
         \frac{1}{\sqrt{f_d}} = -2\log\left\{\frac{\epsilon}{3.7065D}\times
@@ -1352,7 +1357,7 @@ def f_brkic(Re, eD, alternate=False):
 
 @refDoc(__doi__, [25])
 def f_fang(Re, eD):
-    r"""Calculates friction factor `f` with Fang-Xua-Zhou correlation (2011)
+    r"""Calculates friction factor `f` with Fang-Xu-Zhou correlation (2011)
 
     .. math::
         f = 1.613\left\{\ln\left[0.234\frac{\epsilon}{D}^{1.1007}
@@ -1530,39 +1535,8 @@ def f_friccion(Re, eD=0, method=0, geometry=0, **kw):
             * Right triangle: Angle, [º]
             * Anulli: Internal and external diameter, [m]
     """
-    if geometry == 6:
-        f = f_annulli_Gnielinski(Re, **kw)
-
-    elif Re < 2100:
-        if geometry == 0:
-            # Circle
-            f = 16./Re
-        elif geometry == 1:
-            # Square
-            f = 14.2/Re
-        elif geometry == 2:
-            # Isosceles triangle
-            pass
-        elif geometry == 3:
-            # Rectangle
-            D = kw["D"]
-            d = kw["d"]
-            f = 16/(2/3+11/24*d/D*(2-d/D))/Re
-        elif geometry == 4:
-            # Ellipse
-            D = kw["D"]
-            d = kw["d"]
-            c = (D-d)/(D+d)
-            Dh = 4*d*D*(64-16*c**2)/((d+D)*(64-3*c**4))
-            f = 2*Dh**2*(D**2+d**2)/D**2/d**2/Re
-        elif geometry == 5:
-            pass
-        # elif geometry == 6:
-        #     # Annulli
-        #     # Eq 7.9, 7.10, pag 183
-        #     Di, Do = args
-        #     alpha = (Do-Di)**2/(Do**2+Di**2-(Do**2-Di**2)/log(Do/Di))
-        #     f= 16*alpha/Re
+    if Re < 2100:
+        f = f_laminar(Re, geometry, **kw)
 
     else:
         f = f_list[method](Re, eD)
