@@ -282,8 +282,13 @@ __doi__ = {
          "title": "Handbook of Single-Phase Convective Heat Transfer",
          "ref": "John Wiley & Sons (1987)",
          "doi": ""},
+    39:
+        {"autor": "Filonenko, G.K.,",
+         "title": "Hydraulic Resistance in Pipes",
+         "ref": "Teploenergetika 1(4) (1954) 40-44",
+         "doi": ""},
 
-    # 39:
+    # 40:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -509,6 +514,23 @@ def f_turbulent_GoudarSonnad(Re):
     # Eq 9
     f = (1.7372 * lambertw(0.4573*Re).real)**-2
     return 4*f
+
+
+@refDoc(__doi__, [39])
+def f_turbulent_Filonenko(Re):
+    """Friction factor for smooth circular pipe by Filonenko (1954)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+
+    Returns
+    -------
+    f : float
+        Friction factor, [-]
+    """
+    return 1/(1.56*log(Re)-3)**2
 
 
 # Turbulent flow in rough pipes
