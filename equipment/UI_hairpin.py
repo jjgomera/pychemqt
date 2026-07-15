@@ -72,13 +72,22 @@ class UI_equipment(UI_equip):
         # "tubesideTurbulent": 0,
 
         lyt.addWidget(QtWidgets.QLabel(
-            self.tr("Heat transfer in annuli section")), 2, 1)
-        self.annulliNuMethod = QtWidgets.QComboBox()
-        for txt in self.Equipment.TEXT_METHOD_ANNULI:
-            self.annulliNuMethod.addItem(txt)
-        self.annulliNuMethod.currentIndexChanged.connect(
-            partial(self.changeParams, "annulliNuMethod"))
-        lyt.addWidget(self.annulliNuMethod, 2, 2)
+            self.tr("Annulli heat transfer in laminar flow")), 2, 1)
+        self.annulliNuLaminar = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_METHOD_ANNULI_LAMINAR:
+            self.annulliNuLaminar.addItem(txt)
+        self.annulliNuLaminar.currentIndexChanged.connect(
+            partial(self.changeParams, "annulliNuLaminar"))
+        lyt.addWidget(self.annulliNuLaminar, 2, 2)
+
+        lyt.addWidget(QtWidgets.QLabel(
+            self.tr("Annulli heat transfer in turbulent flow")), 3, 1)
+        self.annulliNuTurbulent = QtWidgets.QComboBox()
+        for txt in self.Equipment.TEXT_METHOD_ANNULI_TURBULENT:
+            self.annulliNuTurbulent.addItem(txt)
+        self.annulliNuTurbulent.currentIndexChanged.connect(
+            partial(self.changeParams, "annulliNuTurbulent"))
+        lyt.addWidget(self.annulliNuTurbulent, 3, 2)
 
         lyt.addItem(QtWidgets.QSpacerItem(
             10, 10, QtWidgets.QSizePolicy.Policy.Expanding,

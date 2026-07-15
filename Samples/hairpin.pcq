@@ -122,7 +122,8 @@
             "id": 11,
             "kwarg": {
                 "modo": 1,
-                "annulliNuMethod": 2,
+                "annulliNuTurbulent": 2,
+                "annulliNuLaminar": 0,
                 "DeeTube": 0.07790000000000001,
                 "DeTube": 0.0603,
                 "DiTube": 0.0525,

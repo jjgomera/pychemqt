@@ -40,7 +40,6 @@ from lib import unidades
 from lib.adimensional import Re, Pr, Gr
 from lib.friction import f_friccion
 import lib.heatTransfer as ht
-# from lib.heatTransfer import *  # noqa
 
 
 class Heat_Exchanger(equipment):
@@ -605,7 +604,8 @@ class Hairpin(equipment):
         "orientacion": 0,
         "tubesideLaminar": 0,
         "tubesideTurbulent": 0,
-        "annulliNuMethod": 0,
+        "annulliNuLaminar": 0,
+        "annulliNuTurbulent": 0,
         "metodo": 0,
         "phase": 0,
 
@@ -653,7 +653,8 @@ class Hairpin(equipment):
     kwargsValue = ("DeTube", "DiTube", "wTube", "rTube", "kTube", "LTube",
                    "nTube", "tubeFouling", "annulliFouling", "P_dis",
                    "tubeTout", "annulliTout")
-    kwargsList = ("modo", "flujo", "orientacion", "annulliNuMethod")
+    kwargsList = ("modo", "flujo", "orientacion", "annulliNuTurbulent",
+                  "annulliNuLaminar")
     kwargsCheck = ("finnedPipe", )
     kwargsMandatory = ("twistedTape", "twistedAnnuli", "wireCoil", "rib")
     calculateValue = ("Q", "ToutAnnulli", "ToutTube", "U", "A", "L",
@@ -683,7 +684,10 @@ class Hairpin(equipment):
         "Hausen (1943)",
         "Oliver (1962)",
         "Shah-London (1978)")
-    TEXT_METHOD_ANNULI = [
+    TEXT_METHOD_ANNULI_LAMINAR = [
+        "VDI",
+        "Chen-Hawkins-Solberg (1946)"]
+    TEXT_METHOD_ANNULI_TURBULENT = [
         "Gnielinski (2009)",
         "Dirker-Meyer (2005)",
         "Stein-Begell (1958)",
@@ -1040,13 +1044,12 @@ class Hairpin(equipment):
 
             if re < 2300:
                 method = self.kwargs["tubesideLaminar"]
-                L = self.L
-                gr = Gr(L, beta, fluidTube.T, T2=fluidTube.T, mu=mu, rho=rho)
+                gr = Gr(self.L, beta, fluidTube.T, T2=fluidTube.T, mu=mu, rho=rho)
 
                 kw = {}
                 if self.kwargs["tubesideLaminar"] in (3, 5):
                     kw["Gr"] = gr
-                Nu = ht.Nu_laminar(re, pr, self.Di, L, method, **kw)
+                Nu = ht.Nu_laminar(re, pr, self.Di, self.L, method, **kw)
 
             else:
                 if self.kwargs["tubesideTurbulent"] == 0:
@@ -1106,7 +1109,12 @@ class Hairpin(equipment):
         if self.kwargs["hasTwistedAnnuli"] and self.kwargs["twistedAnnuli"]:
             Nu = self.kwargs["twistedAnnuli"].Nu(re, pr, mu, mu)
         else:
-            kw = {"method": self.kwargs["annulliNuMethod"], "L": self.L}
+            kw = {"methodLam": self.kwargs["annulliNuLaminar"],
+                  "methodTurb": self.kwargs["annulliNuTurbulent"], "L": self.L}
+            if self.kwargs["annulliNuLaminar"] == 1:
+                beta = fluidAnnulli.alfav
+                gr = Gr(self.L, beta, fluidAnnulli.T, T2=fluidAnnulli.T, mu=mu, rho=rho)
+                kw["Gr"] = gr
             Nu = ht.Nu_anulli(re, pr, self.De, self.Dee, **kw)
 
         return unidades.HeatTransfCoef(Nu*k/dh)

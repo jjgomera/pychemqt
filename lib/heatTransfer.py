@@ -123,8 +123,13 @@ __doi__ = {
                   "Compact Heat Exchanger Analytical Data",
          "ref": "Academic Press 1978",
          "doi": ""},
+    17:
+        {"autor": "Chen, C.Y., Hawkins, G.A., Solberg, H.L.",
+         "title": "Heat Transfer in Annulli",
+         "ref": "Trans. ASME 68(2) (1946) 99-106",
+         "doi": "10.1115/1.4018414"},
 
-    # 17:
+    # 18:
     #     {"autor": "",
     #      "title": "",
     #      "ref": "",
@@ -492,153 +497,191 @@ def Nu_laminar_Oliver(Re, Pr, D, L, Gr, mu=None, muw=None):
     return Nu
 
 
-@refDoc(__doi__, [1, 2, 3])
-def Nu_vertical_Churchill(Pr, Ra):
-    r"""Calculates Nusselt number for laminar and turbulent flows near a
-    vertical surface with Churchill-Chu correlation [3]_
-
-    .. math::
-        Nu^{1/2} = 0.825 + \frac{0.387 Ra^{1/6}}
-        {\left(1+(0.492/Pr)^{9/16}\right)^{8/27}}
-
-    For laminar flow (Ra ≤ 10⁹) use this correlation with a slightly better
-    accuracy
-
-    .. math::
-        Nu = 0.68 + \frac{0.67 Ra^{1/4}}
-        {\left(1+(0.492/Pr)^{9/16}\right)^{4/9}}
-
-    The correlation originally developed for vertical flat surfaces can be too
-    applied to vertical cylinders if this conditions is satisfied:
-
-    .. math::
-        \frac{D}{L} \ge \frac{35}{Gr_L^{1/4}}
+@refDoc(__doi__, [16])
+def Nu_laminar_ShahLondon(Re, Pr, D, L, boundary="T"):
+    """Mean Nusselt number for thermal and hydrodynamic development of flow
+    using the method of Shah-London (1978)
 
     Parameters
     ----------
+    Re : float
+        Reynolds number, [-]
+    boundary : str
+        Code of boundary T | H
     Pr : float
         Prandtl number [-]
-    Ra : float
-        Rayleigh number [-]
+    D : float
+        Pipe diameter, [m]
+    L : float
+        Pipe length, [m]
 
     Returns
     -------
     Nu : float
         Nusselt number, [-]
-
-    Notes
-    -----
-    This method does not exactly represent the behavior in the transition zone
-    between laminar and turbulent flows (10⁸ ≤ Ra ≤ 20⁹), but its accuracy is
-    enought for engineering applications in the entire range of Rayleigh
-    numbers.
-
-    Examples
-    --------
-    From [1]_, Example 1, pag. 667
-
-    >>> print("%0.f" % Nu_vertical_Churchill(0.7, 9.26e8))
-    120
-
-    From [2]_, Example 9.2, pag. 574:
-
-    >>> print("%0.f" % Nu_vertical_Churchill(0.69, 1.813E9))
-    147
     """
-    f = 1+(0.492/Pr)**(9/16)
-    Nu = (0.825+0.387*Ra**(1/6)/f**(8/27))**2                        # Eq 9
+    # Dimensionless axial coordinate for the thermal entrance region
+    x = D/L * Re * Pr
+
+    if boundary == "T":
+        if x <= 0.005:
+            # Eq 218
+            Nu = 1.615*x**(-1/3) - 0.7
+        elif x <= 0.03:
+            # Eq 219
+            Nu = 1.615*x**(-1/3) - 0.2
+        else:
+            # Eq 220
+            Nu = 3.657 + 0.0499/x
+    else:
+        if x <= 0.03:
+            # Eq 245
+            Nu = 1.953*x**(-1/3)
+        else:
+            # Eq 246
+            Nu = 4.364 + 0.0722/x
+
     return Nu
 
-# Pipe Turbulent flow
 
-# @refDoc(__doi__, [6])
-def Nu_tubeside_turbulent_SiederTate(Re, Pr):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
-    Sieder and Tate - Heat Transfer and Pressure Drop of Liquids in Tubes, Industrial Engineering Chemistry, Vol. 28, p. 1429, 1936.
-    Re>10000
-    0.7<Pr<16700
-    L/D > 10"""
-    return 0.027*Re**0.8*Pr**(1./3)#*(mu/mu_w)**0.14
+def Nu_laminar(Re, Pr, D, L, method=0, **kw):
+    """Mean Nusselt number for laminar flow in circular tube
 
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    method : int
+        Index for correlation used in calculation
 
-def h_tubeside_turbulent_Colburn(Re, Pr):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
-    DeltaT pequeña
-    Re>10000
-    0.7<Pr<160
-    L/D > 10"""
-    return 0.023*Re**0.8*Pr**(1./3)
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
 
-
-def h_tubeside_turbulent_Dittus_Boelter(Re, Pr, calentamiento):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
-    DeltaT pequeña
-    Re>10000
-    0.7<Pr<160
-    L/D > 10"""
-    if calentamiento:
-        return 0.0243*Re**0.8*Pr**0.4
+    if method == 1:
+        Nu = Nu_laminar_Kakac(Re, **kw)
+    elif method == 2:
+        Nu = Nu_laminar_SiederTate(Re, Pr, D, L, **kw)
+    elif method == 3:
+        Nu = Nu_laminar_EubankProctor(Re, Pr, D, L, **kw)
+    elif method == 4:
+        Nu = Nu_laminar_Hausen(Re, Pr, D, L)
+    elif method == 5:
+        Nu = Nu_laminar_Oliver(Re, Pr, D, L, **kw)
+    elif method == 6:
+        Nu = Nu_laminar_ShahLondon(Re, Pr, D, L, **kw)
     else:
-        return 0.0265*Re**0.8*Pr**0.3
+        Nu = Nu_laminar_VDI(Re, Pr, D, L, **kw)
+    return Nu
 
 
-def h_tubeside_turbulent_ESDU(Re, Pr):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
-    40000<Re<1e6
-    0.3<Pr<300
-    L/D>60"""
-    return 0.0225*Re**0.795*Pr**0.495*exp(-0.0225*log(Pr)**2)
+# Annulli flow
+@refDoc(__doi__, [1, 8])
+def Nu_anulli_Laminar_VDI(Re, Pr, di, do, L=0, boundary="I", Prw=None):
+    """Nusselt number for a annuli section in laminar flow using the method
+    defined in VDI Heat Atlas
 
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    di : float
+        Internal diameter of annulli, [m]
+    do : float
+        External diameter of annulli, [m]
+    L : float
+        Pipe length, [m]
+    boundary : str
+        Code of boundary I | O | B
+    Prw : float
+        Prandtl number evaluated at wall temperature, [-]
 
-def h_tubeside_turbulent_Gnielinski(Re, Pr, D, L):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento y de transición
-    3000<Re<5e6
-    0.5<Pr<2000
-    Serth - Process heat transfer_ principles and applications pag 63"""
-    f = (0.782*log(Re-1.51))**-2
-    return f/8*(Re-1000.)*Pr/(1+12.7*(f/8)**0.5*(Pr**(2./3)-1))*(1+(D/L)**(2./3))
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    # G2 5.1, Pag.702
+    a = di/do
+    Dh = do-di
 
-
-def h_tubeside_turbulent_VDI(Re, Pr, filas_tubos, alineados):
-    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
-    Re>10
-    Pr<600
-    alineados: indica si los tubos estan colocados en linea
-    filas_tubos: numeros de filas de tubos"""
-
-    if alineados:
-        if Re < 300:
-            a = 0.742
-            m = 0.431
-        elif Re < 2e5:
-            a = 0.211
-            m = 0.651
-        else:
-            a = 0.116
-            m = 0.7
+    if boundary == "I":
+        # Inner surface heated
+        Nu1 = 3.66 + 1.2*a**-0.8                                        # Eq 3
+        fg = 1.615*(1 + 0.14/a**0.5)                                    # Eq 7
+    elif boundary == "O":
+        # Outer surface heated
+        Nu1 = 3.66 + 1.2*a**0.5                                         # Eq 4
+        fg = 1.615*(1 + 0.14*a**(1/3))                                  # Eq 8
     else:
-        if Re < 300:
-            a = 1.309
-            m = 0.360
-        elif Re < 2e5:
-            a = 0.273
-            m = 0.635
-        else:
-            a = 0.124
-            m = 0.7
+        # Both surfaces heated
+        Nu1 = 3.66 + (4-0.102/(a+0.02))*a**0.04                         # Eq 5
+        fg = 1.615*(1+0.14*a**0.1)                                      # Eq 9
 
-    F1 = (Pr/Pr_w)**0.26
-    if filas_tubos > 10:
-        F2 = 1
+    if L:
+        Nu2 = fg*(Re*Pr*Dh/L)**(1./3)                                   # Eq 6
+        Nu3 = (2/(1+22*Pr))**(1/6) * (Re*Pr*Dh/L)**0.5                  # Eq 12
     else:
-        F2 = 0.9
+        Nu2 = 0
+        Nu3 = 0
 
-    return a*Re**m*Pr**0.34*F1*F2
+    # Eq 13
+    Nu = (Nu1**3 + Nu2**3 + Nu3**3)**(1/3)
+
+    if Prw:
+        # Temperature dependent physical properties
+        Nu *= (Pr/Prw)**0.11                                            # Eq 11
+
+    return Nu
 
 
-# Double pipe
+@refDoc(__doi__, [17])
+def Nu_anulli_Laminar_Chen(Re, Pr, di, do, L, Gr, mu=0, muw=0):
+    """Nusselt number for a annuli section in laminar flow using the method
+    of Chen-Hawkins-Solberg (1946)
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number [-]
+    di : float
+        Internal diameter of annulli, [m]
+    do : float
+        External diameter of annulli, [m]
+    L : float
+        Pipe length, [m]
+    Gr : float
+        Grashof number, [-]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
+    De = (do**2-di**2)**0.5
+
+    Nu = 1.02 * Re**0.45 * Pr**(1/3) * (De/L)**0.4 * (do/di)**0.8 * Gr**0.05
+
+    if mu and muw:
+        # Temperature dependent physical properties
+        Nu *= (mu/muw)**0.14
+
+    return Nu
+
 @refDoc(__doi__, [7, 8, 1])
-def Nu_anulli_Turbulent_Gnielinski(Re, Pr, di, do, L=None, boundary=0, Prw=None):
+def Nu_anulli_Turbulent_Gnielinski(Re, Pr, di, do, L=0, boundary=0, Prw=None):
     """Calculate Nusselt number for a annuli section in turbulent flow using
     the Gnielinski correlation (2009).
 
@@ -825,67 +868,244 @@ def Nu_anulli_Turbulent_Crookston(Re, Pr, di, do):
 
 
 @refDoc(__doi__, [1])
-def Nu_anulli_Laminar(Re, Pr, di, do, L=0, boundary=0, Prw=None):
-    """Calculate Nusselt number for a annuli section in laminar flow"""
-    # G2 5.1, Pag.702
-    a = di/do
-    Dh = do-di
-
-    if boundary == 0:
-        # Inner surface heated
-        Nu1 = 3.66 + 1.2*a**-0.8                                        # Eq 3
-        fg = 1.615*(1 + 0.14/a**0.5)                                    # Eq 7
-    elif boundary == 1:
-        # Outer surface heated
-        Nu1 = 3.66 + 1.2*a**0.5                                         # Eq 4
-        fg = 1.615*(1 + 0.14*a**(1/3))                                  # Eq 8
-    else:
-        # Both surfaces heated
-        Nu1 = 3.66 + (4-0.102/(a+0.02))*a**0.04                         # Eq 5
-        fg = 1.615*(1+0.14*a**0.1)                                      # Eq 9
-
-    Nu2 = fg*(Re*Pr*Dh/L)**(1./3)                                       # Eq 6
-    Nu3 = (2/(1+22*Pr))**(1/6) * (Re*Pr*Dh/L)**0.5                      # Eq 12
-
-    # Eq 13
-    Nu = (Nu1**3 + Nu2**3 + Nu3**3)**(1/3)
-
-    if Prw:
-        # Temperature dependent physical properties
-        Nu *= (Pr/Prw)**0.11                                            # Eq 11
-
-    return Nu
-
-
-@refDoc(__doi__, [1])
 def Nu_anulli_Transition(Re, Pr, di, do, method, **kw):
-    """Calculate Nusselt number for a annuli section in turbulent flow"""
+    """Calculate Nusselt number for a annuli section in transtion regimen
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Internal diameter of annuli, [m]
+    do : float
+        External diameter of annuli, [m]
+    method : integer
+        Index of method used for turbulent regimen
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
     # G2 6.3, Pag.704
     g = (Re-2300)/(1e4-2300)                                            # Eq 25
-    Nu_lam = Nu_anulli_Laminar(2300, Pr, di, do, **kw)
+    Nu_lam = Nu_anulli_Laminar_VDI(2300, Pr, di, do, **kw)
     Nu_turb = Nu_anulli(1.e4, Pr, di, do, method, **kw)
 
     Nu = (1-g)*Nu_lam+g*Nu_turb                                         # Eq 24
     return Nu
 
 
-def Nu_anulli(Re, Pr, di, do, method=0, **kw):
-    """Calculate Nusselt number for a annuli section"""
+def Nu_anulli(Re, Pr, di, do, methodLam=0, methodTurb=0, **kw):
+    """Calculate Nusselt number for a annuli section
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    di : float
+        Internal diameter of annuli, [m]
+    do : float
+        External diameter of annuli, [m]
+    methodLam: integer
+        Index of method used for laminar regimen
+    methodTurb : integer
+        Index of method used for turbulent regimen
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+    """
     if Re <= 2300:
-        Nu = Nu_anulli_Laminar(Re, Pr, di, do, **kw)
+        if methodLam ==1:
+            Nu = Nu_anulli_Laminar_Chen(Re, Pr, di, do, **kw)
+        else:
+            Nu = Nu_anulli_Laminar_VDI(Re, Pr, di, do, **kw)
+
     elif Re >= 1e4:
-        if method == 1:
+        if methodTurb == 1:
             Nu = Nu_anulli_Turbulent_Dirker(Re, Pr, di, do, **kw)
-        elif method == 2:
+        elif methodTurb == 2:
             Nu = Nu_anulli_Turbulent_Stein(Re, Pr, di, do)
-        elif method == 3:
+        elif methodTurb == 3:
             Nu = Nu_anulli_Turbulent_Crookston(Re, Pr, di, do)
         else:
             Nu = Nu_anulli_Turbulent_Gnielinski(Re, Pr, di, do, **kw)
+
     else:
         Nu = Nu_anulli_Transition(Re, Pr, di, do, method, **kw)
 
     return Nu
+
+
+@refDoc(__doi__, [1, 2, 3])
+def Nu_vertical_Churchill(Pr, Ra):
+    r"""Calculates Nusselt number for laminar and turbulent flows near a
+    vertical surface with Churchill-Chu correlation [3]_
+
+    .. math::
+        Nu^{1/2} = 0.825 + \frac{0.387 Ra^{1/6}}
+        {\left(1+(0.492/Pr)^{9/16}\right)^{8/27}}
+
+    For laminar flow (Ra ≤ 10⁹) use this correlation with a slightly better
+    accuracy
+
+    .. math::
+        Nu = 0.68 + \frac{0.67 Ra^{1/4}}
+        {\left(1+(0.492/Pr)^{9/16}\right)^{4/9}}
+
+    The correlation originally developed for vertical flat surfaces can be too
+    applied to vertical cylinders if this conditions is satisfied:
+
+    .. math::
+        \frac{D}{L} \ge \frac{35}{Gr_L^{1/4}}
+
+    Parameters
+    ----------
+    Pr : float
+        Prandtl number [-]
+    Ra : float
+        Rayleigh number [-]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    Notes
+    -----
+    This method does not exactly represent the behavior in the transition zone
+    between laminar and turbulent flows (10⁸ ≤ Ra ≤ 20⁹), but its accuracy is
+    enought for engineering applications in the entire range of Rayleigh
+    numbers.
+
+    Examples
+    --------
+    From [1]_, Example 1, pag. 667
+
+    >>> print("%0.f" % Nu_vertical_Churchill(0.7, 9.26e8))
+    120
+
+    From [2]_, Example 9.2, pag. 574:
+
+    >>> print("%0.f" % Nu_vertical_Churchill(0.69, 1.813E9))
+    147
+    """
+    f = 1+(0.492/Pr)**(9/16)
+    Nu = (0.825+0.387*Ra**(1/6)/f**(8/27))**2                        # Eq 9
+    return Nu
+
+
+
+# Pipe Turbulent flow
+@refDoc(__doi__, [6])
+def Nu_turbulent_SiederTate(Re, Pr, mu=None, muw=None):
+    """Nusselt number for turbulent flow
+
+    Parameters
+    ----------
+    Re : float
+        Reynolds number, [-]
+    Pr : float
+        Prandtl number, [-]
+    mu : float
+        Bulk flow temperature viscosity, [Pa·s]
+    muW : float
+        Wall flow temperature viscosity, [Pa·s]
+
+    Returns
+    -------
+    Nu : float
+        Nusselt number, [-]
+
+    """
+    Nu = 0.027 * Re**0.8 * Pr**(1/3)
+
+    if mu and muw:
+        # Apply variable properties correction
+        Nu *= (mu/muw)**0.14
+
+    return Nu
+
+
+def h_tubeside_turbulent_Colburn(Re, Pr):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
+    DeltaT pequeña
+    Re>10000
+    0.7<Pr<160
+    L/D > 10"""
+    return 0.023*Re**0.8*Pr**(1./3)
+
+
+def h_tubeside_turbulent_Dittus_Boelter(Re, Pr, calentamiento):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
+    DeltaT pequeña
+    Re>10000
+    0.7<Pr<160
+    L/D > 10"""
+    if calentamiento:
+        return 0.0243*Re**0.8*Pr**0.4
+    else:
+        return 0.0265*Re**0.8*Pr**0.3
+
+
+def h_tubeside_turbulent_ESDU(Re, Pr):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
+    40000<Re<1e6
+    0.3<Pr<300
+    L/D>60"""
+    return 0.0225*Re**0.795*Pr**0.495*exp(-0.0225*log(Pr)**2)
+
+
+def h_tubeside_turbulent_Gnielinski(Re, Pr, D, L):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento y de transición
+    3000<Re<5e6
+    0.5<Pr<2000
+    Serth - Process heat transfer_ principles and applications pag 63"""
+    f = (0.782*log(Re-1.51))**-2
+    return f/8*(Re-1000.)*Pr/(1+12.7*(f/8)**0.5*(Pr**(2./3)-1))*(1+(D/L)**(2./3))
+
+
+def h_tubeside_turbulent_VDI(Re, Pr, filas_tubos, alineados):
+    """Coeficiente de transferencia de calor por calor sensible en el interior de tubos horizontales en regimen turbulento
+    Re>10
+    Pr<600
+    alineados: indica si los tubos estan colocados en linea
+    filas_tubos: numeros de filas de tubos"""
+
+    if alineados:
+        if Re < 300:
+            a = 0.742
+            m = 0.431
+        elif Re < 2e5:
+            a = 0.211
+            m = 0.651
+        else:
+            a = 0.116
+            m = 0.7
+    else:
+        if Re < 300:
+            a = 1.309
+            m = 0.360
+        elif Re < 2e5:
+            a = 0.273
+            m = 0.635
+        else:
+            a = 0.124
+            m = 0.7
+
+    F1 = (Pr/Pr_w)**0.26
+    if filas_tubos > 10:
+        F2 = 1
+    else:
+        F2 = 0.9
+
+    return a*Re**m*Pr**0.34*F1*F2
 
 
 # Unused
